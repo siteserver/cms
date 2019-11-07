@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
@@ -21,23 +22,26 @@ namespace SiteServer.API.Controllers.V1
         private const string RouteAdministrator = "{id:int}";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Create([FromBody] AdministratorInfoCreateUpdate adminInfo)
+        public async Task<IHttpActionResult> Create()
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
-                var retVal = DataProvider.AdministratorDao.ApiInsert(adminInfo, out var errorMessage);
-                if (retVal == null)
+                var administrator = request.GetPostObject<Administrator>("administrator");
+                var password = request.GetPostString("password");
+
+                var retVal = await DataProvider.AdministratorDao.InsertAsync(administrator, password);
+                if (!retVal.IsValid)
                 {
-                    return BadRequest(errorMessage);
+                    return BadRequest(retVal.ErrorMessage);
                 }
 
                 return Ok(new
                 {
-                    Value = retVal
+                    Value = administrator
                 });
             }
             catch (Exception ex)
@@ -48,27 +52,29 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPut, Route(RouteAdministrator)]
-        public IHttpActionResult Update(int id, [FromBody] AdministratorInfoCreateUpdate adminInfo)
+        public async Task<IHttpActionResult> Update(int id, [FromBody] Administrator administrator)
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
-                if (adminInfo == null) return BadRequest("Could not read administrator from body");
+                if (administrator == null) return BadRequest("Could not read administrator from body");
 
-                if (!DataProvider.AdministratorDao.ApiIsExists(id)) return NotFound();
+                if (!await DataProvider.AdministratorDao.IsExistsAsync(id)) return NotFound();
 
-                var retVal = DataProvider.AdministratorDao.ApiUpdate(id, adminInfo, out var errorMessage);
-                if (retVal == null)
+                administrator.Id = id;
+
+                var retVal = await DataProvider.AdministratorDao.UpdateAsync(administrator);
+                if (!retVal.IsValid)
                 {
-                    return BadRequest(errorMessage);
+                    return BadRequest(retVal.ErrorMessage);
                 }
 
                 return Ok(new
                 {
-                    Value = retVal
+                    Value = administrator
                 });
             }
             catch (Exception ex)
@@ -79,21 +85,21 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpDelete, Route(RouteAdministrator)]
-        public IHttpActionResult Delete(int id)
+        public async Task<IHttpActionResult> Delete(int id)
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
-                if (!DataProvider.AdministratorDao.ApiIsExists(id)) return NotFound();
+                if (!await DataProvider.AdministratorDao.IsExistsAsync(id)) return NotFound();
 
-                var adminInfo = DataProvider.AdministratorDao.ApiDelete(id);
+                var administrator = await DataProvider.AdministratorDao.DeleteAsync(id);
 
                 return Ok(new
                 {
-                    Value = adminInfo
+                    Value = administrator
                 });
             }
             catch (Exception ex)
@@ -104,21 +110,21 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpGet, Route(RouteAdministrator)]
-        public IHttpActionResult Get(int id)
+        public async Task<IHttpActionResult> Get(int id)
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
-                if (!DataProvider.AdministratorDao.ApiIsExists(id)) return NotFound();
+                if (!await DataProvider.AdministratorDao.IsExistsAsync(id)) return NotFound();
 
-                var adminInfo = DataProvider.AdministratorDao.ApiGetAdministrator(id);
+                var administrator = await DataProvider.AdministratorDao.GetByIdAsync(id);
 
                 return Ok(new
                 {
-                    Value = adminInfo
+                    Value = administrator
                 });
             }
             catch (Exception ex)
@@ -129,19 +135,19 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult List()
+        public async Task<IHttpActionResult> List()
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 var top = request.GetQueryInt("top", 20);
                 var skip = request.GetQueryInt("skip");
 
-                var administrators = DataProvider.AdministratorDao.ApiGetAdministrators(skip, top);
-                var count = DataProvider.AdministratorDao.ApiGetCount();
+                var administrators = await DataProvider.AdministratorDao.GetAdministratorsAsync(skip, top);
+                var count = await DataProvider.AdministratorDao.GetCountAsync();
 
                 return Ok(new PageResponse(administrators, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
             }
@@ -153,7 +159,7 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(RouteActionsLogin)]
-        public IHttpActionResult Login()
+        public async Task<IHttpActionResult> Login()
         {
             try
             {
@@ -163,20 +169,22 @@ namespace SiteServer.API.Controllers.V1
                 var password = request.GetPostString("password");
                 var isAutoLogin = request.GetPostBool("isAutoLogin");
 
-                AdministratorInfo adminInfo;
+                Administrator adminInfo;
 
-                if (!DataProvider.AdministratorDao.Validate(account, password, true, out var userName, out var errorMessage))
+                var valid = await DataProvider.AdministratorDao.ValidateAsync(account, password, true);
+
+                if (!valid.IsValid)
                 {
-                    adminInfo = AdminManager.GetAdminInfoByUserName(userName);
+                    adminInfo = await AdminManager.GetAdminInfoByUserNameAsync(valid.UserName);
                     if (adminInfo != null)
                     {
-                        DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(adminInfo); // 记录最后登录时间、失败次数+1
+                        await DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLoginAsync(adminInfo); // 记录最后登录时间、失败次数+1
                     }
-                    return BadRequest(errorMessage);
+                    return BadRequest(valid.ErrorMessage);
                 }
 
-                adminInfo = AdminManager.GetAdminInfoByUserName(userName);
-                DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(adminInfo); // 记录最后登录时间、失败次数清零
+                adminInfo = await AdminManager.GetAdminInfoByUserNameAsync(valid.UserName);
+                await DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLoginAsync(adminInfo); // 记录最后登录时间、失败次数清零
                 var accessToken = request.AdminLogin(adminInfo.UserName, isAutoLogin);
                 var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
@@ -223,7 +231,7 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var request = new AuthenticatedRequest();
-                var adminInfo = request.IsAdminLoggin ? request.AdminInfo : null;
+                var adminInfo = request.IsAdminLoggin ? request.Administrator : null;
                 request.AdminLogout();
 
                 return Ok(new
@@ -239,28 +247,30 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(RouteActionsResetPassword)]
-        public IHttpActionResult ResetPassword()
+        public async Task<IHttpActionResult> ResetPassword()
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
                 var newPassword = request.GetPostString("newPassword");
 
-                if (!DataProvider.AdministratorDao.Validate(account, password, true, out var userName, out var errorMessage))
+                var valid1 = await DataProvider.AdministratorDao.ValidateAsync(account, password, true);
+                if (!valid1.IsValid)
                 {
-                    return BadRequest(errorMessage);
+                    return BadRequest(valid1.ErrorMessage);
                 }
 
-                var adminInfo = AdminManager.GetAdminInfoByUserName(userName);
+                var adminInfo = await AdminManager.GetAdminInfoByUserNameAsync(valid1.UserName);
 
-                if (!DataProvider.AdministratorDao.ChangePassword(adminInfo, newPassword, out errorMessage))
+                var valid2 = await DataProvider.AdministratorDao.ChangePasswordAsync(adminInfo, newPassword);
+                if (!valid2.IsValid)
                 {
-                    return BadRequest(errorMessage);
+                    return BadRequest(valid2.ErrorMessage);
                 }
 
                 return Ok(new

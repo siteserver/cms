@@ -5,6 +5,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -81,7 +82,20 @@ namespace SiteServer.CMS.DataCache
             {
                 if (tableName == DataProvider.UserDao.TableName)
                 {
-                    foreach (var columnName in UserAttribute.TableStyleAttributes.Value)
+                    var tableStyleAttributes = new List<string>
+                    {
+                        nameof(UserInfo.DisplayName),
+                        nameof(UserInfo.Mobile),
+                        nameof(UserInfo.Email),
+                        nameof(UserInfo.Gender),
+                        nameof(UserInfo.Birthday),
+                        nameof(UserInfo.WeiXin),
+                        nameof(UserInfo.Qq),
+                        nameof(UserInfo.WeiBo),
+                        nameof(UserInfo.Bio)
+                    };
+
+                    foreach (var columnName in tableStyleAttributes)
                     {
                         if (!StringUtils.ContainsIgnoreCase(allAttributeNames, columnName))
                         {
@@ -120,10 +134,10 @@ namespace SiteServer.CMS.DataCache
             return GetStyleInfoList(DataProvider.ChannelDao.TableName, relatedIdentities);
         }
 
-        public static List<TableStyleInfo> GetContentStyleInfoList(SiteInfo siteInfo, ChannelInfo channelInfo)
+        public static List<TableStyleInfo> GetContentStyleInfoList(Site site, ChannelInfo channelInfo)
         {
             var relatedIdentities = GetRelatedIdentities(channelInfo);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            var tableName = ChannelManager.GetTableName(site, channelInfo);
             return GetStyleInfoList(tableName, relatedIdentities);
         }
 

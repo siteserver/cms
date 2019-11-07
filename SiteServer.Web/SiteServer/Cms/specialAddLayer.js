@@ -16,10 +16,10 @@ function formatDate() {
 }
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryString('siteId')),
-  specialId: pageUtils.getQueryString('specialId'),
-  isEditOnly : pageUtils.getQueryBoolean('isEditOnly'),
-  isUploadOnly : pageUtils.getQueryBoolean('isUploadOnly'),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  specialId: utils.getQueryString('specialId'),
+  isEditOnly : utils.getQueryBoolean('isEditOnly'),
+  isUploadOnly : utils.getQueryBoolean('isUploadOnly'),
   guid: null,
   pageLoad: false,
   pageAlert: null,
@@ -145,7 +145,7 @@ var methods = {
       });
     }
 
-    parent.pageUtils.loading(true);
+    parent.utils.loading(true);
     $api.post({
         siteId: this.siteId,
         guid: this.guid,
@@ -157,7 +157,7 @@ var methods = {
         fileNames: fileNames
       },
       function (err, res) {
-        parent.pageUtils.loading(false);
+        parent.utils.loading(false);
 
         if (err) {
           return $this.pageAlert = {
@@ -172,7 +172,7 @@ var methods = {
   },
 
   btnCancelClick: function() {
-    pageUtils.closeLayer();
+    utils.closeLayer();
   }
 };
 

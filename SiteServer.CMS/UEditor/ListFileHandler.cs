@@ -60,16 +60,16 @@ namespace SiteServer.CMS.UEditor
             var buildingList = new List<String>();
             try
             {
-                var siteInfo = SiteManager.GetSiteInfo(SiteId);
-                var sitePath = PathUtility.GetSitePath(siteInfo); // 本站点物理路径
+                var site = SiteManager.GetSiteAsync(SiteId).GetAwaiter().GetResult();
+                var sitePath = PathUtility.GetSitePath(site); // 本站点物理路径
                 var applicationPath = WebConfigUtils.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\'); // 系统物理路径
                 if (UploadType == EUploadType.Image)
                 {
-                    PathToList = siteInfo.Additional.ImageUploadDirectoryName; 
+                    PathToList = site.Additional.ImageUploadDirectoryName; 
                 }
                 else if(UploadType == EUploadType.File)
                 {
-                    PathToList = siteInfo.Additional.FileUploadDirectoryName;
+                    PathToList = site.Additional.FileUploadDirectoryName;
                 }
 
                 //var localPath = Server.MapPath(PathToList);

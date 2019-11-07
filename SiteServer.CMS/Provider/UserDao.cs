@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Dapper;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
@@ -13,241 +11,79 @@ using SiteServer.Utils.Auth;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
+using SiteServer.CMS.Model.Mappings;
+using SqlKata;
 
 namespace SiteServer.CMS.Provider
 {
     public class UserDao : DataProviderBase
     {
-        public const string DatabaseTableName = "siteserver_User";
+        private readonly Repository<UserInfo> _repository;
 
-        public override string TableName => DatabaseTableName;
-
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public UserDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.UserName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.Password),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.PasswordFormat),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.PasswordSalt),
-                DataType = DataType.VarChar,
-                DataLength = 128
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.CreateDate),
-                DataType = DataType.DateTime
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.LastResetPasswordDate),
-                DataType = DataType.DateTime
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.LastActivityDate),
-                DataType = DataType.DateTime
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.CountOfLogin),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.CountOfFailedLogin),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.GroupId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.IsChecked),
-                DataType = DataType.VarChar,
-                DataLength = 18
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.IsLockedOut),
-                DataType = DataType.VarChar,
-                DataLength = 18
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.DisplayName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.Email),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.Mobile),
-                DataType = DataType.VarChar,
-                DataLength = 20
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.AvatarUrl),
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.Gender),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.Birthday),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.WeiXin),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.Qq),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.WeiBo),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.Bio),
-                DataType = DataType.Text
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserInfo.SettingsXml),
-                DataType = DataType.Text
-            }
-        };
+            _repository = new Repository<UserInfo>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+        }
 
-        private const string ParmId = "@Id";
-        private const string ParmUserName = "@UserName";
-        private const string ParmPassword = "@Password";
-        private const string ParmPasswordFormat = "@PasswordFormat";
-        private const string ParmPasswordSalt = "@PasswordSalt";
-        private const string ParmCreateDate = "@CreateDate";
-        private const string ParmLastResetPasswordDate = "@LastResetPasswordDate";
-        private const string ParmLastActivityDate = "@LastActivityDate";
-        private const string ParmCountOfLogin = "@CountOfLogin";
-        private const string ParmCountOfFailedLogin = "@CountOfFailedLogin";
-        private const string ParmGroupId = "@GroupId";
-        private const string ParmIsChecked = "@IsChecked";
-        private const string ParmIsLockedOut = "@IsLockedOut";
-        private const string ParmDisplayname = "@DisplayName";
-        private const string ParmEmail = "@Email";
-        private const string ParmMobile = "@Mobile";
-        private const string ParmAvatarUrl = "@AvatarUrl";
-        private const string ParmGender = "@Gender";
-        private const string ParmBirthday = "@Birthday";
-        private const string ParmWeixin = "@WeiXin";
-        private const string ParmQq = "@QQ";
-        private const string ParmWeibo = "@WeiBo";
-        private const string ParmBio = "@Bio";
-        private const string ParmSettingsXml = "@SettingsXml";
+        public override string TableName => _repository.TableName;
+        public override List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private bool InsertValidate(string userName, string email, string mobile, string password, string ipAddress, out string errorMessage)
+        private static User ToDto(UserInfo userInfo)
         {
-            errorMessage = string.Empty;
+            return MapperManager.MapTo<User>(userInfo);
+        }
 
+        private static UserInfo ToDb(User user)
+        {
+            return MapperManager.MapTo<UserInfo>(user);
+        }
+
+        private async Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string email, string mobile, string password, string ipAddress)
+        {
             if (!UserManager.IsIpAddressCached(ipAddress))
             {
-                errorMessage = $"同一IP在{ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes}分钟内只能注册一次";
-                return false;
+                return (false, $"同一IP在{ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes}分钟内只能注册一次");
             }
             if (string.IsNullOrEmpty(password))
             {
-                errorMessage = "密码不能为空";
-                return false;
+                return (false, "密码不能为空");
             }
             if (password.Length < ConfigManager.SystemConfigInfo.UserPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.UserPasswordMinLength}";
-                return false;
+                return (false, $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.UserPasswordMinLength}");
             }
             if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.UserPasswordRestriction))
             {
-                errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}";
-                return false;
+                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}");
             }
             if (string.IsNullOrEmpty(userName))
             {
-                errorMessage = "用户名为空，请填写用户名";
-                return false;
+                return (false, "用户名为空，请填写用户名");
             }
-            if (!string.IsNullOrEmpty(userName) && IsUserNameExists(userName))
+            if (!string.IsNullOrEmpty(userName) && await IsUserNameExistsAsync(userName))
             {
-                errorMessage = "用户名已被注册，请更换用户名";
-                return false;
+                return (false, "用户名已被注册，请更换用户名");
             }
             if (!IsUserNameCompliant(userName.Replace("@", string.Empty).Replace(".", string.Empty)))
             {
-                errorMessage = "用户名包含不规则字符，请更换用户名";
-                return false;
+                return (false, "用户名包含不规则字符，请更换用户名");
             }
             
-            if (!string.IsNullOrEmpty(email) && IsEmailExists(email))
+            if (!string.IsNullOrEmpty(email) && await IsEmailExistsAsync(email))
             {
-                errorMessage = "电子邮件地址已被注册，请更换邮箱";
-                return false;
+                return (false, "电子邮件地址已被注册，请更换邮箱");
             }
-            if (!string.IsNullOrEmpty(mobile) && IsMobileExists(mobile))
+            if (!string.IsNullOrEmpty(mobile) && await IsMobileExistsAsync(mobile))
             {
-                errorMessage = "手机号码已被注册，请更换手机号码";
-                return false;
+                return (false, "手机号码已被注册，请更换手机号码");
             }
 
-            return true;
+            return (true, string.Empty);
         }
 
-        private bool UpdateValidate(Dictionary<string, object> body, string userName, string email, string mobile, out string errorMessage)
+        private async Task<(bool IsValid, string ErrorMessage)> UpdateValidateAsync(Dictionary<string, object> body, string userName, string email, string mobile)
         {
-            errorMessage = string.Empty;
-
             var bodyUserName = string.Empty;
             if (body.ContainsKey("userName"))
             {
@@ -258,13 +94,11 @@ namespace SiteServer.CMS.Provider
             {
                 if (!IsUserNameCompliant(bodyUserName.Replace("@", string.Empty).Replace(".", string.Empty)))
                 {
-                    errorMessage = "用户名包含不规则字符，请更换用户名";
-                    return false;
+                    return (false, "用户名包含不规则字符，请更换用户名");
                 }
-                if (!string.IsNullOrEmpty(bodyUserName) && IsUserNameExists(bodyUserName))
+                if (!string.IsNullOrEmpty(bodyUserName) && await IsUserNameExistsAsync(bodyUserName))
                 {
-                    errorMessage = "用户名已被注册，请更换用户名";
-                    return false;
+                    return (false, "用户名已被注册，请更换用户名");
                 }
             }
 
@@ -276,10 +110,9 @@ namespace SiteServer.CMS.Provider
 
             if (bodyEmail != null && bodyEmail != email)
             {
-                if (!string.IsNullOrEmpty(bodyEmail) && IsEmailExists(bodyEmail))
+                if (!string.IsNullOrEmpty(bodyEmail) && await IsEmailExistsAsync(bodyEmail))
                 {
-                    errorMessage = "电子邮件地址已被注册，请更换邮箱";
-                    return false;
+                    return (false, "电子邮件地址已被注册，请更换邮箱");
                 }
             }
 
@@ -291,107 +124,71 @@ namespace SiteServer.CMS.Provider
 
             if (bodyMobile != null && bodyMobile != mobile)
             {
-                if (!string.IsNullOrEmpty(bodyMobile) && IsMobileExists(bodyMobile))
+                if (!string.IsNullOrEmpty(bodyMobile) && await IsMobileExistsAsync(bodyMobile))
                 {
-                    errorMessage = "手机号码已被注册，请更换手机号码";
-                    return false;
+                    return (false, "手机号码已被注册，请更换手机号码");
                 }
             }
 
-            return true;
+            return (true, string.Empty);
         }
 
-        public int Insert(UserInfo userInfo, string password, string ipAddress, out string errorMessage)
+        public async Task<(int UserId, string ErrorMessage)> InsertAsync(User user, string password, string ipAddress)
         {
-            errorMessage = string.Empty;
-            if (userInfo == null) return 0;
-
             if (!ConfigManager.SystemConfigInfo.IsUserRegistrationAllowed)
             {
-                errorMessage = "对不起，系统已禁止新用户注册！";
-                return 0;
+                return (0, "对不起，系统已禁止新用户注册！");
             }
 
             try
             {
-                userInfo.IsChecked = ConfigManager.SystemConfigInfo.IsUserRegistrationChecked;
-                if (StringUtils.IsMobile(userInfo.UserName) && string.IsNullOrEmpty(userInfo.Mobile))
+                user.Checked = ConfigManager.SystemConfigInfo.IsUserRegistrationChecked;
+                if (StringUtils.IsMobile(user.UserName) && string.IsNullOrEmpty(user.Mobile))
                 {
-                    userInfo.Mobile = userInfo.UserName;
+                    user.Mobile = user.UserName;
                 }
 
-                if (!InsertValidate(userInfo.UserName, userInfo.Email, userInfo.Mobile, password, ipAddress, out errorMessage)) return 0;
+                var valid = await InsertValidateAsync(user.UserName, user.Email, user.Mobile, password, ipAddress);
+                if (!valid.IsValid)
+                {
+                    return (0, valid.ErrorMessage);
+                }
 
-                var asswordSalt = GenerateSalt();
-                password = EncodePassword(password, EPasswordFormat.Encrypted, asswordSalt);
-                userInfo.CreateDate = DateTime.Now;
-                userInfo.LastActivityDate = DateTime.Now;
-                userInfo.LastResetPasswordDate = DateTime.Now;
+                var passwordSalt = GenerateSalt();
+                password = EncodePassword(password, EPasswordFormat.Encrypted, passwordSalt);
+                user.CreateDate = DateTime.Now;
+                user.LastActivityDate = DateTime.Now;
+                user.LastResetPasswordDate = DateTime.Now;
 
-                userInfo.Id = InsertWithoutValidation(userInfo, password, EPasswordFormat.Encrypted, asswordSalt);
+                user.Id = await InsertWithoutValidationAsync(user, password, EPasswordFormat.Encrypted, passwordSalt);
 
                 UserManager.CacheIpAddress(ipAddress);
 
-                return userInfo.Id;
+                return (user.Id, string.Empty);
             }
             catch (Exception ex)
             {
-                errorMessage = ex.Message;
-                return 0;
+                return (0, ex.Message);
             }
         }
 
-        private int InsertWithoutValidation(UserInfo userInfo, string password, EPasswordFormat passwordFormat, string passwordSalt)
+        private async Task<int> InsertWithoutValidationAsync(User user, string password, EPasswordFormat passwordFormat, string passwordSalt)
         {
-            var sqlString = $"INSERT INTO {TableName} (UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, GroupId, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Gender, Birthday, WeiXin, QQ, WeiBo, Bio, SettingsXml) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreateDate, @LastResetPasswordDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @GroupId, @IsChecked, @IsLockedOut, @DisplayName, @Email, @Mobile, @AvatarUrl, @Gender, @Birthday, @WeiXin, @QQ, @WeiBo, @Bio, @SettingsXml)";
+            user.CreateDate = DateTime.Now;
+            user.LastActivityDate = DateTime.Now;
+            user.LastResetPasswordDate = DateTime.Now;
 
-            userInfo.CreateDate = DateTime.Now;
-            userInfo.LastActivityDate = DateTime.Now;
-            userInfo.LastResetPasswordDate = DateTime.Now;
+            var userInfo = ToDb(user);
+            userInfo.Password = password;
+            userInfo.PasswordFormat = EPasswordFormatUtils.GetValue(passwordFormat);
+            userInfo.PasswordSalt = passwordSalt;
 
-            userInfo.DisplayName = AttackUtils.FilterXss(userInfo.DisplayName);
-            userInfo.Email = AttackUtils.FilterXss(userInfo.Email);
-            userInfo.Mobile = AttackUtils.FilterXss(userInfo.Mobile);
-            userInfo.AvatarUrl = AttackUtils.FilterXss(userInfo.AvatarUrl);
-            userInfo.Gender = AttackUtils.FilterXss(userInfo.Gender);
-            userInfo.Birthday = AttackUtils.FilterXss(userInfo.Birthday);
-            userInfo.WeiXin = AttackUtils.FilterXss(userInfo.WeiXin);
-            userInfo.Qq = AttackUtils.FilterXss(userInfo.Qq);
-            userInfo.WeiBo = AttackUtils.FilterXss(userInfo.WeiBo);
-            userInfo.Bio = AttackUtils.FilterXss(userInfo.Bio);
-            var settingsXml = userInfo.ToString(UserAttribute.AllAttributes.Value);
+            user.Id = await _repository.InsertAsync(ToDb(user));
 
-            var parameters = new IDataParameter[]
-            {
-                GetParameter(ParmUserName, DataType.VarChar, 255, userInfo.UserName),
-                GetParameter(ParmPassword, DataType.VarChar, 255, password),
-                GetParameter(ParmPasswordFormat, DataType.VarChar, 50, EPasswordFormatUtils.GetValue(passwordFormat)),
-                GetParameter(ParmPasswordSalt, DataType.VarChar, 128, passwordSalt),
-                GetParameter(ParmCreateDate, DataType.DateTime, userInfo.CreateDate),
-                GetParameter(ParmLastResetPasswordDate, DataType.DateTime, userInfo.LastResetPasswordDate),
-                GetParameter(ParmLastActivityDate, DataType.DateTime, userInfo.LastActivityDate),
-                GetParameter(ParmCountOfLogin, DataType.Integer, userInfo.CountOfLogin),
-                GetParameter(ParmCountOfFailedLogin, DataType.Integer, userInfo.CountOfFailedLogin),
-                GetParameter(ParmGroupId, DataType.Integer, userInfo.GroupId),
-                GetParameter(ParmIsChecked, DataType.VarChar, 18, userInfo.IsChecked.ToString()),
-                GetParameter(ParmIsLockedOut, DataType.VarChar, 18, userInfo.IsLockedOut.ToString()),
-                GetParameter(ParmDisplayname, DataType.VarChar, 255, userInfo.DisplayName),
-                GetParameter(ParmEmail, DataType.VarChar, 255, userInfo.Email),
-                GetParameter(ParmMobile, DataType.VarChar, 20, userInfo.Mobile),
-                GetParameter(ParmAvatarUrl, DataType.VarChar, 200, userInfo.AvatarUrl),
-                GetParameter(ParmGender, DataType.VarChar, 255, userInfo.Gender),
-                GetParameter(ParmBirthday, DataType.VarChar, 50, userInfo.Birthday),
-                GetParameter(ParmWeixin, DataType.VarChar, 255, userInfo.WeiXin),
-                GetParameter(ParmQq, DataType.VarChar, 255, userInfo.Qq),
-                GetParameter(ParmWeibo, DataType.VarChar, 255, userInfo.WeiBo),
-                GetParameter(ParmBio, DataType.Text, userInfo.Bio),
-                GetParameter(ParmSettingsXml, DataType.Text, settingsXml)
-            };
-
-            return ExecuteNonQueryAndReturnId(TableName, UserAttribute.Id, sqlString, parameters);
+            return user.Id;
         }
 
-        public bool IsPasswordCorrect(string password, out string errorMessage)
+        public static bool IsPasswordCorrect(string password, out string errorMessage)
         {
             errorMessage = null;
             if (string.IsNullOrEmpty(password))
@@ -413,107 +210,71 @@ namespace SiteServer.CMS.Provider
             return true;
         }
 
-        public UserInfo Update(UserInfo userInfo, Dictionary<string, object> body, out string errorMessage)
+        public async Task<(User User, string ErrorMessage)> UpdateAsync(User user, Dictionary<string, object> body)
         {
-            if (!UpdateValidate(body, userInfo.UserName, userInfo.Email, userInfo.Mobile, out errorMessage)) return null;
-
-            userInfo.Load(body);
-
-            Update(userInfo);
-
-            return userInfo;
-        }
-
-        public void Update(UserInfo userInfo)
-        {
-            if (userInfo == null) return;
-
-            userInfo.DisplayName = AttackUtils.FilterXss(userInfo.DisplayName);
-            userInfo.Email = AttackUtils.FilterXss(userInfo.Email);
-            userInfo.Mobile = AttackUtils.FilterXss(userInfo.Mobile);
-            userInfo.AvatarUrl = AttackUtils.FilterXss(userInfo.AvatarUrl);
-            userInfo.Gender = AttackUtils.FilterXss(userInfo.Gender);
-            userInfo.Birthday = AttackUtils.FilterXss(userInfo.Birthday);
-            userInfo.WeiXin = AttackUtils.FilterXss(userInfo.WeiXin);
-            userInfo.Qq = AttackUtils.FilterXss(userInfo.Qq);
-            userInfo.WeiBo = AttackUtils.FilterXss(userInfo.WeiBo);
-            userInfo.Bio = AttackUtils.FilterXss(userInfo.Bio);
-
-            var sqlString = $"UPDATE {TableName} SET UserName = @UserName, CreateDate = @CreateDate, LastResetPasswordDate = @LastResetPasswordDate, LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, GroupId = @GroupId, IsChecked = @IsChecked, IsLockedOut = @IsLockedOut, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile, AvatarUrl = @AvatarUrl, Gender = @Gender, Birthday = @Birthday, WeiXin = @WeiXin, QQ = @QQ, WeiBo = @WeiBo, Bio = @Bio, SettingsXml = @SettingsXml WHERE Id = @Id";
-
-            var updateParms = new IDataParameter[]
+            var valid = await UpdateValidateAsync(body, user.UserName, user.Email, user.Mobile);
+            if (!valid.IsValid)
             {
-                GetParameter(ParmUserName, DataType.VarChar, 255, userInfo.UserName),
-                GetParameter(ParmCreateDate, DataType.DateTime, userInfo.CreateDate),
-                GetParameter(ParmLastResetPasswordDate, DataType.DateTime, userInfo.LastResetPasswordDate),
-                GetParameter(ParmLastActivityDate, DataType.DateTime, userInfo.LastActivityDate),
-                GetParameter(ParmCountOfLogin, DataType.Integer, userInfo.CountOfLogin),
-                GetParameter(ParmCountOfFailedLogin, DataType.Integer, userInfo.CountOfFailedLogin),
-                GetParameter(ParmGroupId, DataType.Integer, userInfo.GroupId),
-                GetParameter(ParmIsChecked, DataType.VarChar, 18, userInfo.IsChecked.ToString()),
-                GetParameter(ParmIsLockedOut, DataType.VarChar, 18, userInfo.IsLockedOut.ToString()),
-                GetParameter(ParmDisplayname, DataType.VarChar, 255, userInfo.DisplayName),
-                GetParameter(ParmEmail, DataType.VarChar, 255, userInfo.Email),
-                GetParameter(ParmMobile, DataType.VarChar, 20, userInfo.Mobile),
-                GetParameter(ParmAvatarUrl, DataType.VarChar, 200, userInfo.AvatarUrl),
-                GetParameter(ParmGender, DataType.VarChar, 255, userInfo.Gender),
-                GetParameter(ParmBirthday, DataType.VarChar, 50, userInfo.Birthday),
-                GetParameter(ParmWeixin, DataType.VarChar, 255, userInfo.WeiXin),
-                GetParameter(ParmQq, DataType.VarChar, 255, userInfo.Qq),
-                GetParameter(ParmWeibo, DataType.VarChar, 255, userInfo.WeiBo),
-                GetParameter(ParmBio, DataType.Text, userInfo.Bio),
-                GetParameter(ParmSettingsXml, DataType.Text, userInfo.ToString(UserAttribute.AllAttributes.Value)),
-                GetParameter(ParmId, DataType.Integer, userInfo.Id)
-            };
+                return (null, valid.ErrorMessage);
+            }
 
-            ExecuteNonQuery(sqlString, updateParms);
+            user.Load(body);
 
-            UserManager.UpdateCache(userInfo);
+            await UpdateAsync(user);
+
+            return (user, string.Empty);
         }
 
-        private void UpdateLastActivityDateAndCountOfFailedLogin(UserInfo userInfo)
+        public async Task UpdateAsync(User user)
         {
-            if (userInfo == null) return;
+            if (user == null) return;
 
-            userInfo.LastActivityDate = DateTime.Now;
-            userInfo.CountOfFailedLogin += 1;
+            var userInfoDb = await _repository.GetAsync(user.Id);
+            var userInfo = ToDb(user);
+            userInfo.Password = userInfoDb.Password;
+            userInfo.PasswordFormat = userInfoDb.PasswordFormat;
+            userInfo.PasswordSalt = userInfoDb.PasswordSalt;
 
-            var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate, CountOfFailedLogin = @CountOfFailedLogin WHERE Id = @Id";
+            await _repository.UpdateAsync(userInfo);
 
-            IDataParameter[] updateParms = {
-                GetParameter(ParmLastActivityDate, DataType.DateTime, userInfo.LastActivityDate),
-                GetParameter(ParmCountOfFailedLogin, DataType.Integer, userInfo.CountOfFailedLogin),
-                GetParameter(ParmId, DataType.Integer, userInfo.Id)
-            };
-
-            ExecuteNonQuery(sqlString, updateParms);
-
-            UserManager.UpdateCache(userInfo);
+            UserManager.UpdateCache(user);
         }
 
-        public void UpdateLastActivityDateAndCountOfLogin(UserInfo userInfo)
+        private async Task UpdateLastActivityDateAndCountOfFailedLoginAsync(User user)
         {
-            if (userInfo == null) return;
+            if (user == null) return;
 
-            userInfo.LastActivityDate = DateTime.Now;
-            userInfo.CountOfLogin += 1;
-            userInfo.CountOfFailedLogin = 0;
+            user.LastActivityDate = DateTime.Now;
+            user.CountOfFailedLogin += 1;
 
-            var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin WHERE Id = @Id";
+            await _repository.UpdateAsync(Q
+                .Set(nameof(UserInfo.LastActivityDate), user.LastActivityDate)
+                .Set(nameof(UserInfo.CountOfFailedLogin), user.CountOfFailedLogin)
+                .Where(nameof(UserInfo.Id), user.Id)
+            );
 
-            IDataParameter[] updateParms = {
-                GetParameter(ParmLastActivityDate, DataType.DateTime, userInfo.LastActivityDate),
-                GetParameter(ParmCountOfLogin, DataType.Integer, userInfo.CountOfLogin),
-                GetParameter(ParmCountOfFailedLogin, DataType.Integer, userInfo.CountOfFailedLogin),
-                GetParameter(ParmId, DataType.Integer, userInfo.Id)
-            };
-
-            ExecuteNonQuery(sqlString, updateParms);
-
-            UserManager.UpdateCache(userInfo);
+            UserManager.UpdateCache(user);
         }
 
-        private string EncodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
+        public async Task UpdateLastActivityDateAndCountOfLoginAsync(User user)
+        {
+            if (user == null) return;
+
+            user.LastActivityDate = DateTime.Now;
+            user.CountOfLogin += 1;
+            user.CountOfFailedLogin = 0;
+
+            await _repository.UpdateAsync(Q
+                .Set(nameof(UserInfo.LastActivityDate), user.LastActivityDate)
+                .Set(nameof(UserInfo.CountOfLogin), user.CountOfLogin)
+                .Set(nameof(UserInfo.CountOfFailedLogin), user.CountOfFailedLogin)
+                .Where(nameof(UserInfo.Id), user.Id)
+            );
+
+            UserManager.UpdateCache(user);
+        }
+
+        private static string EncodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
         {
             var retVal = string.Empty;
 
@@ -536,19 +297,19 @@ namespace SiteServer.CMS.Provider
             }
             else if (passwordFormat == EPasswordFormat.Encrypted)
             {
-                var encryptor = new DesEncryptor
+                var des = new DesEncryptor
                 {
                     InputString = password,
                     EncryptKey = passwordSalt
                 };
-                encryptor.DesEncrypt();
+                des.DesEncrypt();
 
-                retVal = encryptor.OutString;
+                retVal = des.OutString;
             }
             return retVal;
         }
 
-        private string DecodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
+        private static string DecodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
         {
             var retVal = string.Empty;
             if (passwordFormat == EPasswordFormat.Clear)
@@ -561,14 +322,14 @@ namespace SiteServer.CMS.Provider
             }
             else if (passwordFormat == EPasswordFormat.Encrypted)
             {
-                var encryptor = new DesEncryptor
+                var des = new DesEncryptor
                 {
                     InputString = password,
                     DecryptKey = passwordSalt
                 };
-                encryptor.DesDecrypt();
+                des.DesDecrypt();
 
-                retVal = encryptor.OutString;
+                retVal = des.OutString;
             }
             return retVal;
         }
@@ -580,225 +341,148 @@ namespace SiteServer.CMS.Provider
             return Convert.ToBase64String(data);
         }
 
-        public bool ChangePassword(string userName, string password, out string errorMessage)
+        public async Task<(bool IsValid, string ErrorMessage)> ChangePasswordAsync(string userName, string password)
         {
-            errorMessage = null;
             if (password.Length < ConfigManager.SystemConfigInfo.UserPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.UserPasswordMinLength}";
-                return false;
+                return (false, $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.UserPasswordMinLength}");
             }
             if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.UserPasswordRestriction))
             {
-                errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}";
-                return false;
+                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}");
             }
 
-            var passwordFormat = EPasswordFormat.Encrypted;
             var passwordSalt = GenerateSalt();
-            password = EncodePassword(password, passwordFormat, passwordSalt);
-            ChangePassword(userName, passwordFormat, passwordSalt, password);
-            return true;
+            password = EncodePassword(password, EPasswordFormat.Encrypted, passwordSalt);
+            await ChangePasswordAsync(userName, EPasswordFormat.Encrypted, passwordSalt, password);
+            return (true, string.Empty);
         }
 
-        private void ChangePassword(string userName, EPasswordFormat passwordFormat, string passwordSalt, string password)
+        private async Task ChangePasswordAsync(string userName, EPasswordFormat passwordFormat, string passwordSalt, string password)
         {
-            var userInfo = UserManager.GetUserInfoByUserName(userName);
-            if (userInfo == null) return;
+            var user = await UserManager.GetUserByUserNameAsync(userName);
+            if (user == null) return;
 
-            userInfo.PasswordFormat = EPasswordFormatUtils.GetValue(passwordFormat);
-            userInfo.Password = password;
-            userInfo.PasswordSalt = passwordSalt;
-            userInfo.LastResetPasswordDate = DateTime.Now;
+            user.LastResetPasswordDate = DateTime.Now;
 
-            var sqlString = $"UPDATE {TableName} SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt, LastResetPasswordDate = @LastResetPasswordDate WHERE UserName = @UserName";
+            await _repository.UpdateAsync(Q
+                .Set(nameof(UserInfo.Password), password)
+                .Set(nameof(UserInfo.PasswordFormat), EPasswordFormatUtils.GetValue(passwordFormat))
+                .Set(nameof(UserInfo.PasswordSalt), passwordSalt)
+                .Set(nameof(UserInfo.LastResetPasswordDate), user.LastResetPasswordDate)
+                .Where(nameof(UserInfo.Id), user.Id)
+            );
 
-            var updateParms = new IDataParameter[]
-            {
-                GetParameter(ParmPassword, DataType.VarChar, 255, userInfo.Password),
-                GetParameter(ParmPasswordFormat, DataType.VarChar, 50, userInfo.PasswordFormat),
-                GetParameter(ParmPasswordSalt, DataType.VarChar, 128, userInfo.PasswordSalt),
-                GetParameter(ParmLastResetPasswordDate, DataType.DateTime, userInfo.LastResetPasswordDate),
-                GetParameter(ParmUserName, DataType.VarChar, 255, userName)
-            };
-
-            ExecuteNonQuery(sqlString, updateParms);
             LogUtils.AddUserLog(userName, "修改密码", string.Empty);
 
-            UserManager.UpdateCache(userInfo);
+            UserManager.UpdateCache(user);
         }
 
-        public void Check(List<int> idList)
+        public async Task CheckAsync(List<int> idList)
         {
-            var sqlString =
-                $"UPDATE {TableName} SET IsChecked = '{true}' WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
-
-            ExecuteNonQuery(sqlString);
+            await _repository.UpdateAsync(Q
+                .Set(nameof(UserInfo.IsChecked), true.ToString())
+                .WhereIn(nameof(UserInfo.Id), idList)
+            );
 
             UserManager.ClearCache();
         }
 
-        public void Lock(List<int> idList)
+        public async Task LockAsync(List<int> idList)
         {
-            var sqlString =
-                $"UPDATE {TableName} SET IsLockedOut = '{true}' WHERE Id IN ({TranslateUtils.ToSqlInStringWithQuote(idList)})";
-
-            ExecuteNonQuery(sqlString);
+            await _repository.UpdateAsync(Q
+                .Set(nameof(UserInfo.IsLockedOut), true.ToString())
+                .WhereIn(nameof(UserInfo.Id), idList)
+            );
 
             UserManager.ClearCache();
         }
 
-        public void UnLock(List<int> idList)
+        public async Task UnLockAsync(List<int> idList)
         {
-            var sqlString =
-                $"UPDATE {TableName} SET IsLockedOut = '{false}', CountOfFailedLogin = 0 WHERE Id IN ({TranslateUtils.ToSqlInStringWithQuote(idList)})";
-
-            ExecuteNonQuery(sqlString);
+            await _repository.UpdateAsync(Q
+                .Set(nameof(UserInfo.IsLockedOut), false.ToString())
+                .Set(nameof(UserInfo.CountOfFailedLogin), 0)
+                .WhereIn(nameof(UserInfo.Id), idList)
+            );
 
             UserManager.ClearCache();
         }
 
-        private UserInfo GetByAccount(string account)
+        private async Task<User> GetByAccountAsync(string account)
         {
-            var userInfo = GetByUserName(account);
+            var userInfo = await GetByUserNameAsync(account);
             if (userInfo != null) return userInfo;
-            if (StringUtils.IsMobile(account)) return GetByMobile(account);
-            if (StringUtils.IsEmail(account)) return GetByEmail(account);
+            if (StringUtils.IsMobile(account)) return await GetByMobileAsync(account);
+            if (StringUtils.IsEmail(account)) return await GetByEmailAsync(account);
 
             return null;
         }
 
-        public UserInfo GetByUserName(string userName)
+        public async Task<User> GetByUserNameAsync(string userName)
         {
             if (string.IsNullOrEmpty(userName)) return null;
 
-            UserInfo userInfo = null;
-            var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, GroupId, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Gender, Birthday, WeiXin, QQ, WeiBo, Bio, SettingsXml FROM {TableName} WHERE UserName = @UserName";
+            var userInfo = await _repository.GetAsync(Q.Where(nameof(User.UserName), userName));
+            if (userInfo == null) return null;
 
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmUserName, DataType.VarChar, 255, userName)
-            };
+            var user = ToDto(userInfo);
 
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    userInfo = new UserInfo(rdr);
-                }
-                rdr.Close();
-            }
+            UserManager.UpdateCache(user);
 
-            UserManager.UpdateCache(userInfo);
-
-            return userInfo;
+            return user;
         }
 
-        public UserInfo GetByEmail(string email)
+        public async Task<User> GetByEmailAsync(string email)
         {
             if (string.IsNullOrEmpty(email)) return null;
 
-            UserInfo userInfo = null;
-            var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, GroupId, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Gender, Birthday, WeiXin, QQ, WeiBo, Bio, SettingsXml FROM {TableName} WHERE Email = @Email";
+            var userInfo = await _repository.GetAsync(Q.Where(nameof(User.Email), email));
+            if (userInfo == null) return null;
 
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmEmail, DataType.VarChar, 255, email)
-            };
+            var user = ToDto(userInfo);
 
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    userInfo = new UserInfo(rdr);
-                }
-                rdr.Close();
-            }
+            UserManager.UpdateCache(user);
 
-            UserManager.UpdateCache(userInfo);
-
-            return userInfo;
+            return user;
         }
 
-        public UserInfo GetByMobile(string mobile)
+        public async Task<User> GetByMobileAsync(string mobile)
         {
             if (string.IsNullOrEmpty(mobile)) return null;
 
-            UserInfo userInfo = null;
-            var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, GroupId, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Gender, Birthday, WeiXin, QQ, WeiBo, Bio, SettingsXml FROM {TableName} WHERE Mobile = @Mobile";
+            var userInfo = await _repository.GetAsync(Q.Where(nameof(User.Mobile), mobile));
+            if (userInfo == null) return null;
 
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmMobile, DataType.VarChar, 20, mobile)
-            };
+            var user = ToDto(userInfo);
 
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    userInfo = new UserInfo(rdr);
-                }
-                rdr.Close();
-            }
+            UserManager.UpdateCache(user);
 
-            UserManager.UpdateCache(userInfo);
-
-            return userInfo;
+            return user;
         }
 
-        public UserInfo GetByUserId(int id)
+        public async Task<User> GetByUserIdAsync(int id)
         {
             if (id <= 0) return null;
 
-            UserInfo userInfo = null;
-            var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, GroupId, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Gender, Birthday, WeiXin, QQ, WeiBo, Bio, SettingsXml FROM {TableName} WHERE Id = @Id";
+            var userInfo = await _repository.GetAsync(id);
+            if (userInfo == null) return null;
 
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmId, DataType.Integer, id)
-            };
+            var user = ToDto(userInfo);
 
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    userInfo = new UserInfo(rdr);
-                }
-                rdr.Close();
-            }
+            UserManager.UpdateCache(user);
 
-            UserManager.UpdateCache(userInfo);
-
-            return userInfo;
+            return user;
         }
 
-        public bool IsUserNameExists(string userName)
+        public async Task<bool> IsUserNameExistsAsync(string userName)
         {
             if (string.IsNullOrEmpty(userName)) return false;
 
-            var exists = false;
-
-            var sqlString = $"SELECT Id FROM {TableName} WHERE UserName = @UserName";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmUserName, DataType.VarChar, 255, userName)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read() && !rdr.IsDBNull(0))
-                {
-                    exists = true;
-                }
-                rdr.Close();
-            }
-
-            return exists;
+            return await _repository.ExistsAsync(Q.Where(nameof(UserInfo.UserName), userName));
         }
 
-        private bool IsUserNameCompliant(string userName)
+        private static bool IsUserNameCompliant(string userName)
         {
             if (userName.IndexOf("　", StringComparison.Ordinal) != -1 || userName.IndexOf(" ", StringComparison.Ordinal) != -1 || userName.IndexOf("'", StringComparison.Ordinal) != -1 || userName.IndexOf(":", StringComparison.Ordinal) != -1 || userName.IndexOf(".", StringComparison.Ordinal) != -1)
             {
@@ -807,138 +491,37 @@ namespace SiteServer.CMS.Provider
             return DirectoryUtils.IsDirectoryNameCompliant(userName);
         }
 
-        public bool IsEmailExists(string email)
+        public async Task<bool> IsEmailExistsAsync(string email)
         {
             if (string.IsNullOrEmpty(email)) return false;
 
-            var exists = IsUserNameExists(email);
+            var exists = await IsUserNameExistsAsync(email);
             if (exists) return true;
 
-            var sqlSelect = $"SELECT Email FROM {TableName} WHERE Email = @Email";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmEmail, DataType.VarChar, 200, email)
-            };
-
-            using (var rdr = ExecuteReader(sqlSelect, parms))
-            {
-                if (rdr.Read())
-                {
-                    exists = true;
-                }
-                rdr.Close();
-            }
-
-            return exists;
+            return await _repository.ExistsAsync(Q.Where(nameof(UserInfo.Email), email));
         }
 
-        public bool IsMobileExists(string mobile)
+        public async Task<bool> IsMobileExistsAsync(string mobile)
         {
             if (string.IsNullOrEmpty(mobile)) return false;
 
-            var exists = IsUserNameExists(mobile);
+            var exists = await IsUserNameExistsAsync(mobile);
             if (exists) return true;
 
-            var sqlString = $"SELECT Mobile FROM {TableName} WHERE Mobile = @Mobile";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmMobile, DataType.VarChar, 20, mobile)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    exists = true;
-                }
-                rdr.Close();
-            }
-
-            return exists;
+            return await _repository.ExistsAsync(Q.Where(nameof(UserInfo.Mobile), mobile));
         }
 
-        public List<int> GetIdList(bool isChecked)
+        public async Task<IEnumerable<int>> GetIdListAsync(bool isChecked)
         {
-            var idList = new List<int>();
-
-            var sqlSelect =
-                $"SELECT Id FROM {TableName} WHERE IsChecked = '{isChecked}' ORDER BY Id DESC";
-
-            using (var rdr = ExecuteReader(sqlSelect))
-            {
-                while (rdr.Read())
-                {
-                    idList.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
-
-            return idList;
+            return await _repository.GetAllAsync<int>(Q
+                .Where(nameof(UserInfo.IsChecked), isChecked.ToString())
+                .OrderByDesc(nameof(UserInfo.Id))
+            );
         }
 
-        public string GetSelectCommand()
+        public bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, EPasswordFormat passwordFormat, string passwordSalt)
         {
-            return DataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, string.Empty);
-        }
-
-        public string GetSelectCommand(int groupId, string searchWord, int dayOfCreate, int dayOfLastActivity, int loginCount, string searchType)
-        {
-            var whereBuilder = new StringBuilder();
-
-            if (dayOfCreate > 0)
-            {
-                if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-                var dateTime = DateTime.Now.AddDays(-dayOfCreate);
-                whereBuilder.Append($"(CreateDate >= {SqlUtils.GetComparableDate(dateTime)})");
-            }
-
-            if (dayOfLastActivity > 0)
-            {
-                if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-                var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
-                whereBuilder.Append($"(LastActivityDate >= {SqlUtils.GetComparableDate(dateTime)}) ");
-            }
-
-            if (groupId > -1)
-            {
-                if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-                whereBuilder.Append(groupId == 0 ? "(GroupId = 0 OR GroupId IS NULL)" : $"GroupId = {groupId}");
-            }
-
-            searchWord = AttackUtils.FilterSql(searchWord);
-
-            if (string.IsNullOrEmpty(searchType))
-            {
-                if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-                whereBuilder.Append(
-                    $"(UserName LIKE '%{searchWord}%' OR EMAIL LIKE '%{searchWord}%')");
-            }
-            else
-            {
-                if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-                whereBuilder.Append($"({searchType} LIKE '%{searchWord}%') ");
-            }
-
-            if (loginCount > 0)
-            {
-                if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-                whereBuilder.Append($"(CountOfLogin > {loginCount})");
-            }
-
-            var whereString = string.Empty;
-            if (whereBuilder.Length > 0)
-            {
-                whereString = $"WHERE {whereBuilder}";
-            }
-
-            return DataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
-        }
-
-        public bool CheckPassword(string password, bool isPasswordMd5, string dbpassword, EPasswordFormat passwordFormat, string passwordSalt)
-        {
-            var decodePassword = DecodePassword(dbpassword, passwordFormat, passwordSalt);
+            var decodePassword = DecodePassword(dbPassword, passwordFormat, passwordSalt);
             if (isPasswordMd5)
             {
                 return password == AuthUtils.Md5ByString(decodePassword);
@@ -946,77 +529,65 @@ namespace SiteServer.CMS.Provider
             return password == decodePassword;
         }
 
-        public UserInfo Validate(string account, string password, bool isPasswordMd5, out string userName, out string errorMessage)
+        public async Task<(User User, string UserName, string ErrorMessage)> ValidateAsync(string account, string password, bool isPasswordMd5)
         {
-            userName = string.Empty;
-            errorMessage = string.Empty;
-
             if (string.IsNullOrEmpty(account))
             {
-                errorMessage = "账号不能为空";
-                return null;
+                return (null, null, "账号不能为空");
             }
             if (string.IsNullOrEmpty(password))
             {
-                errorMessage = "密码不能为空";
-                return null;
+                return (null, null, "密码不能为空");
             }
 
-            var userInfo = GetByAccount(account);
+            var user = await GetByAccountAsync(account);
 
-            if (string.IsNullOrEmpty(userInfo?.UserName))
+            if (string.IsNullOrEmpty(user?.UserName))
             {
-                errorMessage = "帐号或密码错误";
-                return null;
+                return (null, null, "帐号或密码错误");
             }
 
-            userName = userInfo.UserName;
-
-            if (!userInfo.IsChecked)
+            if (!user.Checked)
             {
-                errorMessage = "此账号未审核，无法登录";
-                return null;
+                return (null, user.UserName, "此账号未审核，无法登录");
             }
 
-            if (userInfo.IsLockedOut)
+            if (user.Locked)
             {
-                errorMessage = "此账号被锁定，无法登录";
-                return null;
+                return (null, user.UserName, "此账号被锁定，无法登录");
             }
 
             if (ConfigManager.SystemConfigInfo.IsUserLockLogin)
             {
-                if (userInfo.CountOfFailedLogin > 0 && userInfo.CountOfFailedLogin >= ConfigManager.SystemConfigInfo.UserLockLoginCount)
+                if (user.CountOfFailedLogin > 0 && user.CountOfFailedLogin >= ConfigManager.SystemConfigInfo.UserLockLoginCount)
                 {
                     var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserLockLoginType);
                     if (lockType == EUserLockType.Forever)
                     {
-                        errorMessage = "此账号错误登录次数过多，已被永久锁定";
-                        return null;
+                        return (null, user.UserName, "此账号错误登录次数过多，已被永久锁定");
                     }
-                    if (lockType == EUserLockType.Hours && userInfo.LastActivityDate.HasValue)
+                    if (lockType == EUserLockType.Hours && user.LastActivityDate.HasValue)
                     {
-                        var ts = new TimeSpan(DateTime.Now.Ticks - userInfo.LastActivityDate.Value.Ticks);
+                        var ts = new TimeSpan(DateTime.Now.Ticks - user.LastActivityDate.Value.Ticks);
                         var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.UserLockLoginHours - ts.TotalHours);
                         if (hours > 0)
                         {
-                            errorMessage =
-                                $"此账号错误登录次数过多，已被锁定，请等待{hours}小时后重试";
-                            return null;
+                            return (null, user.UserName, $"此账号错误登录次数过多，已被锁定，请等待{hours}小时后重试");
                         }
                     }
                 }
             }
 
+            var userInfo = await _repository.GetAsync(user.Id);
+
             if (!CheckPassword(password, isPasswordMd5, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
             {
-                DataProvider.UserDao.UpdateLastActivityDateAndCountOfFailedLogin(userInfo);
+                await DataProvider.UserDao.UpdateLastActivityDateAndCountOfFailedLoginAsync(user);
                 LogUtils.AddUserLog(userInfo.UserName, "用户登录失败", "帐号或密码错误");
-                errorMessage = "帐号或密码错误";
-                return null;
+                return (null, user.UserName, "帐号或密码错误");
             }
 
-            return userInfo;
+            return (user, user.UserName, string.Empty);
         }
 
         public Dictionary<DateTime, int> GetTrackingDictionary(DateTime dateFrom, DateTime dateTo, string xType)
@@ -1093,57 +664,110 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             return dict;
         }
 
-        public int GetCount()
+        public async Task<int> GetCountAsync()
         {
-            return DataProvider.DatabaseDao.GetCount(TableName);
+            return await _repository.CountAsync();
         }
 
-        public List<UserInfo> GetUsers(int offset, int limit)
+        private Query GetQuery(ETriState state, int groupId, int dayOfLastActivity, string keyword, string order)
         {
-            var list = new List<UserInfo>();
-            List<int> dbList;
+            var query = Q.NewQuery();
 
-            var sqlString =
-                DataProvider.DatabaseDao.GetPageSqlString(TableName, "Id", string.Empty, "ORDER BY Id", offset, limit);
-
-            using (var connection = GetConnection())
+            if (state != ETriState.All)
             {
-                dbList = connection.Query<int>(sqlString).ToList();
+                query.Where(nameof(UserInfo.IsChecked), state.ToString());
             }
 
-            if (dbList.Count > 0)
+            if (dayOfLastActivity > 0)
+            {
+                var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
+                query.WhereDate(nameof(UserInfo.LastActivityDate), ">=", dateTime);
+            }
+
+            if (groupId > -1)
+            {
+                if (groupId > 0)
+                {
+                    query.Where(nameof(UserInfo.GroupId), groupId);
+                }
+                else
+                {
+                    query.Where(q => q
+                        .Where(nameof(UserInfo.GroupId), 0)
+                        .OrWhereNull(nameof(UserInfo.GroupId))
+                    );
+                }
+            }
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                var like = $"%{keyword}%";
+                query.Where(q => q
+                    .WhereLike(nameof(UserInfo.UserName), like)
+                    .OrWhereLike(nameof(UserInfo.Email), like)
+                    .OrWhereLike(nameof(UserInfo.Mobile), like)
+                    .OrWhereLike(nameof(UserInfo.DisplayName), like)
+                );
+            }
+
+            if (!string.IsNullOrEmpty(order))
+            {
+                if (StringUtils.EqualsIgnoreCase(order, nameof(UserInfo.UserName)))
+                {
+                    query.OrderBy(nameof(UserInfo.UserName));
+                }
+                else
+                {
+                    query.OrderByDesc(order);
+                }
+            }
+            else
+            {
+                query.OrderByDesc(nameof(UserInfo.Id));
+            }
+
+            return query;
+        }
+
+        public async Task<int> GetCountAsync(ETriState state, int groupId, int dayOfLastActivity, string keyword)
+        {
+            var query = GetQuery(state, groupId, dayOfLastActivity, keyword, string.Empty);
+            return await _repository.CountAsync(query);
+        }
+
+        public async Task<List<User>> GetUsersAsync(ETriState state, int groupId, int dayOfLastActivity, string keyword, string order, int offset, int limit)
+        {
+            var list = new List<User>();
+
+            var query = GetQuery(state, groupId, dayOfLastActivity, keyword, order);
+            query
+                .Select(nameof(User.Id))
+                .Offset(offset)
+                .Limit(limit);
+
+            var dbList = await _repository.GetAllAsync<int>(query);
+
+            if (dbList != null)
             {
                 foreach (var userId in dbList)
                 {
-                    list.Add(UserManager.GetUserInfoByUserId(userId));
+                    list.Add(await UserManager.GetUserByUserIdAsync(userId));
                 }
             }
 
             return list;
         }
 
-        public bool IsExists(int id)
+        public async Task<bool> IsExistsAsync(int id)
         {
-            var sqlString = $"SELECT COUNT(1) FROM {TableName} WHERE Id = @Id";
-
-            using (var connection = GetConnection())
-            {
-                return connection.ExecuteScalar<bool>(sqlString, new { Id = id });
-            }
+            return await _repository.ExistsAsync(id);
         }
 
-        public void Delete(UserInfo userInfo)
+        public async Task DeleteAsync(User user)
         {
-            var sqlString = $"DELETE FROM {TableName} WHERE Id = @Id";
-
-            var deleteParms = new IDataParameter[]
-            {
-                GetParameter(ParmId, DataType.Integer, userInfo.Id)
-            };
-
-            ExecuteNonQuery(sqlString, deleteParms);
-
-            UserManager.RemoveCache(userInfo);
+            await _repository.DeleteAsync(user.Id);
+            
+            UserManager.RemoveCache(user);
         }
     }
 }

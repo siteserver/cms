@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -45,7 +46,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -65,13 +66,13 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 if (styleInfo.Id == 0 && styleInfo.RelatedIdentity == 0 || styleInfo.RelatedIdentity != relatedIdentities[0])
                 {
                     DataProvider.TableStyleDao.Insert(styleInfo);
-                    request.AddAdminLog("添加表单显示样式", $"字段名:{styleInfo.AttributeName}");
+                    await request.AddAdminLogAsync("添加表单显示样式", $"字段名:{styleInfo.AttributeName}");
                 }
                 //数据库中有此项的表样式
                 else
                 {
                     DataProvider.TableStyleDao.Update(styleInfo, false);
-                    request.AddAdminLog("修改表单显示样式", $"字段名:{styleInfo.AttributeName}");
+                    await request.AddAdminLogAsync("修改表单显示样式", $"字段名:{styleInfo.AttributeName}");
                 }
 
                 return Ok(new{});

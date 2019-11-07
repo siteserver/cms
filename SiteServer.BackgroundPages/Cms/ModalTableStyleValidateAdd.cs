@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -128,12 +129,12 @@ namespace SiteServer.BackgroundPages.Cms
                 if (_styleInfo.Id > 0)
                 {
                     DataProvider.TableStyleDao.Update(_styleInfo);
-                    AuthRequest.AddSiteLog(SiteId, "修改表单验证", $"字段:{_styleInfo.AttributeName}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "修改表单验证", $"字段:{_styleInfo.AttributeName}").GetAwaiter().GetResult();
                 }
                 else
                 {
                     DataProvider.TableStyleDao.Insert(_styleInfo);
-                    AuthRequest.AddSiteLog(SiteId, "新增表单验证", $"字段:{_styleInfo.AttributeName}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "新增表单验证", $"字段:{_styleInfo.AttributeName}").GetAwaiter().GetResult();
                 }
                 isChanged = true;
             }

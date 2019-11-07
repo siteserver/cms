@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings
@@ -27,6 +27,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
+                var allAttributes = DataProvider.UserDao.TableColumns.Select(x => x.AttributeName).ToList();
+
                 var list = new List<object>();
                 foreach (var styleInfo in TableStyleManager.GetUserStyleInfoList())
                 {
@@ -38,7 +40,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                         InputType = InputTypeUtils.GetText(styleInfo.InputType),
                         Validate = styleInfo.Additional.VeeValidate,
                         styleInfo.Taxis,
-                        IsSystem = StringUtils.ContainsIgnoreCase(UserAttribute.AllAttributes.Value, styleInfo.AttributeName)
+                        IsSystem = StringUtils.ContainsIgnoreCase(allAttributes, styleInfo.AttributeName)
                     });
                 }
 
@@ -71,6 +73,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 DataProvider.TableStyleDao.Delete(0, DataProvider.UserDao.TableName, attributeName);
 
+                var allAttributes = DataProvider.UserDao.TableColumns.Select(x => x.AttributeName).ToList();
+
                 var list = new List<object>();
                 foreach (var styleInfo in TableStyleManager.GetUserStyleInfoList())
                 {
@@ -82,7 +86,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                         InputType = InputTypeUtils.GetText(styleInfo.InputType),
                         Validate = TableStyleManager.GetValidateInfo(styleInfo),
                         styleInfo.Taxis,
-                        IsSystem = StringUtils.ContainsIgnoreCase(UserAttribute.AllAttributes.Value, styleInfo.AttributeName)
+                        IsSystem = StringUtils.ContainsIgnoreCase(allAttributes, styleInfo.AttributeName)
                     });
                 }
 

@@ -172,23 +172,23 @@
       <input v-model="siteName" name="siteName" data-vv-as="站点名称" v-validate="'required'" :class="{'is-invalid': errors.has('siteName') }" type="text" class="form-control">
     </div>
 
-    <div v-if="!isRootExists" class="form-group">
+    <div v-if="!rootExists" class="form-group">
       <label>
         站点级别
       </label>
       <div class="m-2">
         <div class="radio radio-primary form-check-inline">
-          <input v-model="isRoot" type="radio" id="isRoot_true" :value="true" name="isRoot">
-          <label for="isRoot_true"> 主站 </label>
+          <input v-model="root" type="radio" id="root_true" :value="true" name="root">
+          <label for="root_true"> 主站 </label>
         </div>
         <div class="radio radio-primary form-check-inline">
-          <input v-model="isRoot" type="radio" id="isRoot_false" :value="false" name="isRoot">
-          <label for="isRoot_false"> 子站 </label>
+          <input v-model="root" type="radio" id="root_false" :value="false" name="root">
+          <label for="root_false"> 子站 </label>
         </div>
       </div>
     </div>
 
-    <div v-if="!isRootExists && !isRoot" class="form-group">
+    <div v-if="!root" class="form-group">
       <label>
         上级站点
       </label>
@@ -197,7 +197,7 @@
       </select>
     </div>
 
-    <div v-if="!isRoot" class="form-group">
+    <div v-if="!root" class="form-group">
       <label>
         文件夹名称
         <small v-show="errors.has('siteDir')" class="text-danger">{{ errors.first('siteDir') }}</small>

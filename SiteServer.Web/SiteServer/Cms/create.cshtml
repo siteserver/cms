@@ -28,7 +28,7 @@
           </div>
 
           <div class="float-left mt-1">
-            <a class="text-dark" target="_blank" onclick="event.stopPropagation()" :href="'../pageRedirect.aspx?siteId=' + channel.siteId + '&channelId=' + channel.id">
+            <a class="text-dark" target="_blank" onclick="event.stopPropagation()" :href="'../redirect.cshtml?siteId=' + channel.siteId + '&channelId=' + channel.id">
               <i v-if="channel.parentId === 0" class="ion-ios-home" style="font-size: 18px;"></i>
               <i v-else-if="channel.linkUrl" class="ion-link" style="font-size: 18px;"></i>
               <i v-else class="ion-folder" style="font-size: 18px;"></i>

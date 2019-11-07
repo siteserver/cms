@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
@@ -16,7 +15,6 @@ namespace SiteServer.CMS.DataCache
     {
         private static class SiteManagerCache
         {
-            private static readonly object LockObject = new object();
             private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(SiteManager));
 
             //private static readonly FileWatcherClass FileWatcher;
@@ -38,29 +36,27 @@ namespace SiteServer.CMS.DataCache
                 //FileWatcher.UpdateCacheFile();
             }
 
-            public static List<KeyValuePair<int, SiteInfo>> GetSiteInfoKeyValuePairList()
+            public static async Task<List<KeyValuePair<int, Site>>> GetSiteKeyValuePairListAsync()
             {
-                var retVal = DataCacheManager.Get<List<KeyValuePair<int, SiteInfo>>>(CacheKey);
+                var retVal = DataCacheManager.Get<List<KeyValuePair<int, Site>>>(CacheKey);
                 if (retVal != null) return retVal;
 
-                lock (LockObject)
+                retVal = DataCacheManager.Get<List<KeyValuePair<int, Site>>>(CacheKey);
+                if (retVal == null)
                 {
-                    retVal = DataCacheManager.Get<List<KeyValuePair<int, SiteInfo>>>(CacheKey);
-                    if (retVal == null)
+                    var list = await DataProvider.SiteDao.GetSiteKeyValuePairListAsync();
+                    retVal = new List<KeyValuePair<int, Site>>();
+                    foreach (var pair in list)
                     {
-                        var list = DataProvider.SiteDao.GetSiteInfoKeyValuePairList();
-                        retVal = new List<KeyValuePair<int, SiteInfo>>();
-                        foreach (var pair in list)
-                        {
-                            var siteInfo = pair.Value;
-                            if (siteInfo == null) continue;
+                        var site = pair.Value;
+                        if (site == null) continue;
 
-                            siteInfo.SiteDir = GetSiteDir(list, siteInfo);
-                            retVal.Add(pair);
-                        }
-
-                        DataCacheManager.Insert(CacheKey, retVal);
+                        site.SiteDir = GetSiteDir(list, site);
+                        site.Children = GetChildren(list, site.Id);
+                        retVal.Add(pair);
                     }
+
+                    DataCacheManager.Insert(CacheKey, retVal);
                 }
 
                 return retVal;
@@ -72,82 +68,85 @@ namespace SiteServer.CMS.DataCache
             SiteManagerCache.Clear();
         }
 
-        public static List<SiteInfo> GetSiteInfoList()
+        public static async Task<List<Site>> GetSiteListAsync()
         {
-            var pairList = SiteManagerCache.GetSiteInfoKeyValuePairList();
+            var pairList = await SiteManagerCache.GetSiteKeyValuePairListAsync();
             return pairList.Select(pair => pair.Value).ToList();
         }
 
-        public static SiteInfo GetSiteInfo(int siteId)
+        private static List<Site> GetChildren(List<KeyValuePair<int, Site>> siteKeyValuePairListAsync, int parentId)
+        {
+            return siteKeyValuePairListAsync.Where(pair => pair.Value.ParentId == parentId).Select(pair => pair.Value).ToList();
+        }
+
+        public static async Task<Site> GetSiteAsync(int siteId)
         {
             if (siteId <= 0) return null;
 
-            var list = SiteManagerCache.GetSiteInfoKeyValuePairList();
-
-            foreach (var pair in list)
-            {
-                var theSiteId = pair.Key;
-                if (theSiteId != siteId) continue;
-                var siteInfo = pair.Value;
-                return siteInfo;
-            }
-            return null;
+            var pairList = await SiteManagerCache.GetSiteKeyValuePairListAsync();
+            return pairList.Where(pair => pair.Key == siteId).Select(pair => pair.Value).FirstOrDefault();
         }
 
-        public static SiteInfo GetSiteInfoBySiteName(string siteName)
+        public static async Task<string> GetTableNameAsync(int siteId)
         {
-            var list = SiteManagerCache.GetSiteInfoKeyValuePairList();
+            var site = await GetSiteAsync(siteId);
+            return site?.TableName;
+        }
+
+        public static async Task<Site> GetSiteBySiteNameAsync(string siteName)
+        {
+            var list = await SiteManagerCache.GetSiteKeyValuePairListAsync();
 
             foreach (var pair in list)
             {
-                var siteInfo = pair.Value;
-                if (siteInfo == null) continue;
+                var site = pair.Value;
+                if (site == null) continue;
 
-                if (StringUtils.EqualsIgnoreCase(siteInfo.SiteName, siteName))
+                if (StringUtils.EqualsIgnoreCase(site.SiteName, siteName))
                 {
-                    return siteInfo;
+                    return site;
                 }
             }
             return null;
         }
 
-        public static SiteInfo GetSiteInfoByIsRoot()
+        public static async Task<Site> GetSiteByIsRootAsync()
         {
-            var list = SiteManagerCache.GetSiteInfoKeyValuePairList();
+            var list = await SiteManagerCache.GetSiteKeyValuePairListAsync();
 
             foreach (var pair in list)
             {
-                var siteInfo = pair.Value;
-                if (siteInfo == null) continue;
+                var site = pair.Value;
+                if (site == null) continue;
 
-                if (siteInfo.IsRoot)
+                if (site.Root)
                 {
-                    return siteInfo;
+                    return site;
                 }
             }
             return null;
         }
 
-        public static SiteInfo GetSiteInfoByDirectory(string siteDir)
+        public static async Task<Site> GetSiteByDirectoryAsync(string siteDir)
         {
-            var list = SiteManagerCache.GetSiteInfoKeyValuePairList();
+            var list = await SiteManagerCache.GetSiteKeyValuePairListAsync();
 
             foreach (var pair in list)
             {
-                var siteInfo = pair.Value;
-                if (siteInfo == null) continue;
+                var site = pair.Value;
+                if (site == null) continue;
 
-                if (StringUtils.EqualsIgnoreCase(siteInfo.SiteDir, siteDir))
+                if (StringUtils.EqualsIgnoreCase(site.SiteDir, siteDir))
                 {
-                    return siteInfo;
+                    return site;
                 }
             }
             return null;
         }
 
-        public static List<int> GetSiteIdList()
+        public static async Task<List<int>> GetSiteIdListAsync()
         {
-            var pairList = SiteManagerCache.GetSiteInfoKeyValuePairList();
+            var pairList = await SiteManagerCache.GetSiteKeyValuePairListAsync();
             var list = new List<int>();
             foreach (var pair in pairList)
             {
@@ -156,36 +155,50 @@ namespace SiteServer.CMS.DataCache
             return list;
         }
 
-        public static List<int> GetSiteIdListOrderByLevel()
+        public static async Task<List<int>> GetSiteIdListAsync(int parentId)
+        {
+            var pairList = await SiteManagerCache.GetSiteKeyValuePairListAsync();
+            var list = new List<int>();
+            foreach (var pair in pairList)
+            {
+                if (pair.Value.ParentId == parentId)
+                {
+                    list.Add(pair.Key);
+                }
+            }
+            return list;
+        }
+
+        public static async Task<List<int>> GetSiteIdListOrderByLevelAsync()
         {
             var retVal = new List<int>();
 
-            var siteIdList = GetSiteIdList();
-            var siteInfoList = new List<SiteInfo>();
+            var siteIdList = await GetSiteIdListAsync();
+            var siteList = new List<Site>();
             var parentWithChildren = new Hashtable();
             var hqSiteId = 0;
             foreach (var siteId in siteIdList)
             {
-                var siteInfo = GetSiteInfo(siteId);
-                if (siteInfo.IsRoot)
+                var site = await GetSiteAsync(siteId);
+                if (site.Root)
                 {
-                    hqSiteId = siteInfo.Id;
+                    hqSiteId = site.Id;
                 }
                 else
                 {
-                    if (siteInfo.ParentId == 0)
+                    if (site.ParentId == 0)
                     {
-                        siteInfoList.Add(siteInfo);
+                        siteList.Add(site);
                     }
                     else
                     {
-                        var children = new List<SiteInfo>();
-                        if (parentWithChildren.Contains(siteInfo.ParentId))
+                        var children = new List<Site>();
+                        if (parentWithChildren.Contains(site.ParentId))
                         {
-                            children = (List<SiteInfo>)parentWithChildren[siteInfo.ParentId];
+                            children = (List<Site>)parentWithChildren[site.ParentId];
                         }
-                        children.Add(siteInfo);
-                        parentWithChildren[siteInfo.ParentId] = children;
+                        children.Add(site);
+                        parentWithChildren[site.ParentId] = children;
                     }
                 }
             }
@@ -195,73 +208,73 @@ namespace SiteServer.CMS.DataCache
                 retVal.Add(hqSiteId);
             }
 
-            var list = siteInfoList.OrderBy(siteInfo => siteInfo.Taxis == 0 ? int.MaxValue : siteInfo.Taxis).ToList();
+            var list = siteList.OrderBy(site => site.Taxis == 0 ? int.MaxValue : site.Taxis).ToList();
 
-            foreach (var siteInfo in list)
+            foreach (var site in list)
             {
-                AddSiteIdList(retVal, siteInfo, parentWithChildren, 0);
+                AddSiteIdList(retVal, site, parentWithChildren, 0);
             }
             return retVal;
         }
 
-        private static void AddSiteIdList(List<int> dataSource, SiteInfo siteInfo, Hashtable parentWithChildren, int level)
+        private static void AddSiteIdList(List<int> dataSource, Site site, Hashtable parentWithChildren, int level)
         {
-            dataSource.Add(siteInfo.Id);
+            dataSource.Add(site.Id);
 
-            if (parentWithChildren[siteInfo.Id] != null)
+            if (parentWithChildren[site.Id] != null)
             {
-                var children = (List<SiteInfo>)parentWithChildren[siteInfo.Id];
+                var children = (List<Site>)parentWithChildren[site.Id];
                 level++;
 
                 var list = children.OrderBy(child => child.Taxis == 0 ? int.MaxValue : child.Taxis).ToList();
 
-                foreach (var subSiteInfo in list)
+                foreach (var subSite in list)
                 {
-                    AddSiteIdList(dataSource, subSiteInfo, parentWithChildren, level);
+                    AddSiteIdList(dataSource, subSite, parentWithChildren, level);
                 }
             }
         }
 
-        public static void GetAllParentSiteIdList(List<int> parentSiteIds, List<int> siteIdCollection, int siteId)
+        public static async Task GetAllParentSiteIdListAsync(List<int> parentSiteIds, List<int> siteIdCollection, int siteId)
         {
-            var siteInfo = GetSiteInfo(siteId);
+            var site = await GetSiteAsync(siteId);
             var parentSiteId = -1;
             foreach (var psId in siteIdCollection)
             {
-                if (psId != siteInfo.ParentId) continue;
+                if (psId != site.ParentId) continue;
                 parentSiteId = psId;
                 break;
             }
             if (parentSiteId == -1) return;
 
             parentSiteIds.Add(parentSiteId);
-            GetAllParentSiteIdList(parentSiteIds, siteIdCollection, parentSiteId);
+            await GetAllParentSiteIdListAsync(parentSiteIds, siteIdCollection, parentSiteId);
         }
 
-        public static bool IsExists(int siteId)
+        public static async Task<bool> IsExistsAsync(int siteId)
         {
             if (siteId == 0) return false;
-            return GetSiteInfo(siteId) != null;
+            return await GetSiteAsync(siteId) != null;
         }
 
-        public static List<string> GetSiteTableNames()
+        public static async Task<List<string>> GetSiteTableNamesAsync()
         {
-            return GetTableNameList(true, false);
+            return await GetTableNameListAsync(true, false);
         }
 
-        public static List<string> GetAllTableNameList()
+        public static async Task<List<string>> GetAllTableNameListAsync()
         {
-            return GetTableNameList(true, true);
+            return await GetTableNameListAsync(true, true);
         }
 
-        private static List<string> GetTableNameList(bool includeSiteTables, bool includePluginTables)
+        private static async Task<List<string>> GetTableNameListAsync(bool includeSiteTables, bool includePluginTables)
         {
             
             var tableNames = new List<string>();
 
             if (includeSiteTables)
             {
-                var pairList = SiteManagerCache.GetSiteInfoKeyValuePairList();
+                var pairList = await SiteManagerCache.GetSiteKeyValuePairListAsync();
                 foreach (var pair in pairList)
                 {
                     if (!StringUtils.ContainsIgnoreCase(tableNames, pair.Value.TableName))
@@ -286,9 +299,9 @@ namespace SiteServer.CMS.DataCache
             return tableNames;
         }
 
-        public static List<string> GetTableNameList(SiteInfo siteInfo)
+        public static List<string> GetTableNameList(Site site)
         {
-            var tableNames = new List<string>{ siteInfo.TableName };
+            var tableNames = new List<string>{ site.TableName };
             var pluginTableNames = PluginContentManager.GetContentTableNameList();
             foreach (var pluginTableName in pluginTableNames)
             {
@@ -300,11 +313,11 @@ namespace SiteServer.CMS.DataCache
             return tableNames;
         }
 
-        //public static ETableStyle GetTableStyle(SiteInfo siteInfo, string tableName)
+        //public static ETableStyle GetTableStyle(Site site, string tableName)
         //{
         //    var tableStyle = ETableStyle.Custom;
 
-        //    if (StringUtils.EqualsIgnoreCase(tableName, siteInfo.AuxiliaryTableForContent))
+        //    if (StringUtils.EqualsIgnoreCase(tableName, site.AuxiliaryTableForContent))
         //    {
         //        tableStyle = ETableStyle.BackgroundContent;
         //    }
@@ -323,60 +336,60 @@ namespace SiteServer.CMS.DataCache
         //    return tableStyle;
         //}
 
-        public static int GetSiteLevel(int siteId)
+        public static async Task<int> GetSiteLevelAsync(int siteId)
         {
             var level = 0;
-            var siteInfo = GetSiteInfo(siteId);
-            if (siteInfo.ParentId != 0)
+            var site = await GetSiteAsync(siteId);
+            if (site.ParentId != 0)
             {
                 level++;
-                level += GetSiteLevel(siteInfo.ParentId);
+                level += await GetSiteLevelAsync(site.ParentId);
             }
             return level;
         }
 
-        public static void AddListItems(ListControl listControl)
+        public static async Task AddListItemsAsync(ListControl listControl)
         {
-            var siteIdList = GetSiteIdList();
-            var mySystemInfoList = new List<SiteInfo>();
+            var siteIdList = await GetSiteIdListAsync();
+            var mySystemInfoList = new List<Site>();
             var parentWithChildren = new Hashtable();
-            SiteInfo hqSiteInfo = null;
+            Site hqSite = null;
             foreach (var siteId in siteIdList)
             {
-                var siteInfo = GetSiteInfo(siteId);
-                if (siteInfo.IsRoot)
+                var site = await GetSiteAsync(siteId);
+                if (site.Root)
                 {
-                    hqSiteInfo = siteInfo;
+                    hqSite = site;
                 }
                 else
                 {
-                    if (siteInfo.ParentId == 0)
+                    if (site.ParentId == 0)
                     {
-                        mySystemInfoList.Add(siteInfo);
+                        mySystemInfoList.Add(site);
                     }
                     else
                     {
-                        var children = new List<SiteInfo>();
-                        if (parentWithChildren.Contains(siteInfo.ParentId))
+                        var children = new List<Site>();
+                        if (parentWithChildren.Contains(site.ParentId))
                         {
-                            children = (List<SiteInfo>)parentWithChildren[siteInfo.ParentId];
+                            children = (List<Site>)parentWithChildren[site.ParentId];
                         }
-                        children.Add(siteInfo);
-                        parentWithChildren[siteInfo.ParentId] = children;
+                        children.Add(site);
+                        parentWithChildren[site.ParentId] = children;
                     }
                 }
             }
-            if (hqSiteInfo != null)
+            if (hqSite != null)
             {
-                AddListItem(listControl, hqSiteInfo, parentWithChildren, 0);
+                AddListItem(listControl, hqSite, parentWithChildren, 0);
             }
-            foreach (var siteInfo in mySystemInfoList)
+            foreach (var site in mySystemInfoList)
             {
-                AddListItem(listControl, siteInfo, parentWithChildren, 0);
+                AddListItem(listControl, site, parentWithChildren, 0);
             }
         }
 
-        private static void AddListItem(ListControl listControl, SiteInfo siteInfo, Hashtable parentWithChildren, int level)
+        private static void AddListItem(ListControl listControl, Site site, Hashtable parentWithChildren, int level)
         {
             var padding = string.Empty;
             for (var i = 0; i < level; i++)
@@ -388,53 +401,53 @@ namespace SiteServer.CMS.DataCache
                 padding += "└ ";
             }
 
-            if (parentWithChildren[siteInfo.Id] != null)
+            if (parentWithChildren[site.Id] != null)
             {
-                var children = (List<SiteInfo>)parentWithChildren[siteInfo.Id];
-                listControl.Items.Add(new ListItem(padding + siteInfo.SiteName + $"({children.Count})", siteInfo.Id.ToString()));
+                var children = (List<Site>)parentWithChildren[site.Id];
+                listControl.Items.Add(new ListItem(padding + site.SiteName + $"({children.Count})", site.Id.ToString()));
                 level++;
-                foreach (SiteInfo subSiteInfo in children)
+                foreach (Site subSite in children)
                 {
-                    AddListItem(listControl, subSiteInfo, parentWithChildren, level);
+                    AddListItem(listControl, subSite, parentWithChildren, level);
                 }
             }
             else
             {
-                listControl.Items.Add(new ListItem(padding + siteInfo.SiteName, siteInfo.Id.ToString()));
+                listControl.Items.Add(new ListItem(padding + site.SiteName, site.Id.ToString()));
             }
         }
 
-        public static int GetParentSiteId(int siteId)
+        public static async Task<int> GetParentSiteIdAsync(int siteId)
         {
             var parentSiteId = 0;
-            var siteInfo = GetSiteInfo(siteId);
-            if (siteInfo != null && siteInfo.IsRoot == false)
+            var site = await GetSiteAsync(siteId);
+            if (site != null && site.Root == false)
             {
-                parentSiteId = siteInfo.ParentId;
+                parentSiteId = site.ParentId;
                 if (parentSiteId == 0)
                 {
-                    parentSiteId = DataProvider.SiteDao.GetIdByIsRoot();
+                    parentSiteId = await DataProvider.SiteDao.GetIdByIsRootAsync();
                 }
             }
             return parentSiteId;
         }
 
-        private static string GetSiteDir(List<KeyValuePair<int, SiteInfo>> listFromDb, SiteInfo siteInfo)
+        private static string GetSiteDir(List<KeyValuePair<int, Site>> listFromDb, Site site)
         {
-            if (siteInfo == null || siteInfo.IsRoot) return string.Empty;
-            if (siteInfo.ParentId != 0)
+            if (site == null || site.Root) return string.Empty;
+            if (site.ParentId > 0)
             {
-                SiteInfo parent = null;
+                Site parent = null;
                 foreach (var pair in listFromDb)
                 {
                     var theSiteId = pair.Key;
-                    if (theSiteId != siteInfo.ParentId) continue;
+                    if (theSiteId != site.ParentId) continue;
                     parent = pair.Value;
                     break;
                 }
-                return PathUtils.Combine(GetSiteDir(listFromDb, parent), PathUtils.GetDirectoryName(siteInfo.SiteDir, false));
+                return PathUtils.Combine(GetSiteDir(listFromDb, parent), PathUtils.GetDirectoryName(site.SiteDir, false));
             }
-            return PathUtils.GetDirectoryName(siteInfo.SiteDir, false);
+            return PathUtils.GetDirectoryName(site.SiteDir, false);
         }
 
         //public static List<int> GetWritingSiteIdList(PermissionsImpl permissionsImpl)
@@ -472,13 +485,13 @@ namespace SiteServer.CMS.DataCache
         //    return siteIdList;
         //}
 
-        public static string GetSiteName(SiteInfo siteInfo)
+        public static async Task<string> GetSiteNameAsync(Site site)
         {
             var padding = string.Empty;
 
-            var level = GetSiteLevel(siteInfo.Id);
+            var level = await GetSiteLevelAsync(site.Id);
             string psLogo;
-            if (siteInfo.IsRoot)
+            if (site.Root)
             {
                 psLogo = "siteHQ.gif";
             }
@@ -501,12 +514,12 @@ namespace SiteServer.CMS.DataCache
                 padding += "└ ";
             }
 
-            return $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;{siteInfo.SiteName}";
+            return $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;{site.SiteName}";
         }
 
-        public static bool IsSiteTable(string tableName)
+        public static async Task<bool> IsSiteTableAsync(string tableName)
         {
-            var pairList = SiteManagerCache.GetSiteInfoKeyValuePairList();
+            var pairList = await SiteManagerCache.GetSiteKeyValuePairListAsync();
             return pairList.Any(pair => StringUtils.EqualsIgnoreCase(pair.Value.TableName, tableName) || StringUtils.EqualsIgnoreCase(pair.Value.TableName, tableName));
         }
     }

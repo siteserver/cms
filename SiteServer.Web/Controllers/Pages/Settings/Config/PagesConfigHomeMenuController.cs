@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Config
 {
@@ -66,7 +68,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit([FromBody] UserMenuInfo menuInfo)
+        public async Task<IHttpActionResult> Submit([FromBody] UserMenuInfo menuInfo)
         {
             try
             {
@@ -81,13 +83,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
                 {
                     DataProvider.UserMenuDao.Insert(menuInfo);
 
-                    request.AddAdminLog("新增用户菜单", $"用户菜单:{menuInfo.Text}");
+                    await request.AddAdminLogAsync("新增用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
                 else if (menuInfo.Id > 0)
                 {
                     DataProvider.UserMenuDao.Update(menuInfo);
 
-                    request.AddAdminLog("修改用户菜单", $"用户菜单:{menuInfo.Text}");
+                    await request.AddAdminLogAsync("修改用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
 
                 return Ok(new
@@ -102,7 +104,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         }
 
         [HttpPost, Route(RouteReset)]
-        public IHttpActionResult Reset()
+        public async Task<IHttpActionResult> Reset()
         {
             try
             {
@@ -118,7 +120,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
                     DataProvider.UserMenuDao.Delete(userMenuInfo.Id);
                 }
 
-                request.AddAdminLog("重置用户菜单");
+                await request.AddAdminLogAsync("重置用户菜单");
 
                 return Ok(new
                 {

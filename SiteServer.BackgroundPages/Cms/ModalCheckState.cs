@@ -6,6 +6,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -41,18 +42,18 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "channelId", "contentID", "returnUrl");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
-            _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
+            _tableName = ChannelManager.GetTableName(Site, _channelId);
             _contentId = AuthRequest.GetQueryInt("contentID");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelId, _contentId);
+            var contentInfo = ContentManager.GetContentInfo(Site, _channelId, _contentId);
 
             int checkedLevel;
-            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, SiteId, out checkedLevel);
+            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, Site, SiteId, out checkedLevel);
             BtnCheck.Visible = CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
 
             LtlTitle.Text = contentInfo.Title;
-            LtlState.Text = CheckManager.GetCheckState(SiteInfo, contentInfo);
+            LtlState.Text = CheckManager.GetCheckState(Site, contentInfo);
 
             var checkInfoList = DataProvider.ContentCheckDao.GetCheckInfoList(_tableName, _contentId);
             if (checkInfoList.Count > 0)
@@ -72,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlCheckDate = (Literal)e.Item.FindControl("ltlCheckDate");
             var ltlReasons = (Literal)e.Item.FindControl("ltlReasons");
 
-            ltlUserName.Text = AdminManager.GetDisplayName(checkInfo.UserName);
+            ltlUserName.Text = AdminManager.GetDisplayNameAsync(checkInfo.UserName).GetAwaiter().GetResult();
             ltlCheckDate.Text = DateUtils.GetDateAndTimeString(checkInfo.CheckDate);
             ltlReasons.Text = checkInfo.Reasons;
         }

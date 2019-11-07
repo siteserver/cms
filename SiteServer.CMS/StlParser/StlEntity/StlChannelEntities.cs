@@ -8,6 +8,7 @@ using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
+using System.Threading.Tasks;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
@@ -111,11 +112,11 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(Content, attributeName))//栏目正文
                 {
-                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.SiteInfo, nodeInfo.Content, pageInfo.IsLocal);
+                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.Site, nodeInfo.Content, pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(NavigationUrl, attributeName))//栏目链接地址
                 {
-                    parsedContent = PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal);
+                    parsedContent = PageUtility.GetChannelUrlAsync(pageInfo.Site, nodeInfo, pageInfo.IsLocal).GetAwaiter().GetResult();
                 }
                 else if (StringUtils.EqualsIgnoreCase(ImageUrl, attributeName))//栏目图片地址
                 {
@@ -123,7 +124,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
+                        parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(AddDate, attributeName))//栏目添加日期
@@ -153,7 +154,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 else
                 {
                     //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, nodeInfo.ChannelId));
-                    //parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.SiteInfo, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
+                    //parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.Site, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
 
                     var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.ChannelDao.TableName, attributeName, TableStyleManager.GetRelatedIdentities(nodeInfo));
                     // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
@@ -164,11 +165,11 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         {
                             if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                             {
-                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
+                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                             }
                             else
                             {
-                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, null, pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty, true);
+                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, null, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
                             }
                         }
                     }

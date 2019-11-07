@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
             string filePath = null;
             string errorMessage = null;
 
-            var siteInfo = SiteManager.GetSiteInfo(AuthRequest.SiteId);
+            var site = SiteManager.GetSiteAsync(AuthRequest.SiteId).GetAwaiter().GetResult();
 
             if (fileCount > 0)
             {
@@ -35,19 +35,19 @@ namespace SiteServer.BackgroundPages.Cms
                 filePath = file.FileName;
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
 
-                if (!PathUtility.IsImageExtenstionAllowed(siteInfo, fileExtName))
+                if (!PathUtility.IsImageExtenstionAllowed(site, fileExtName))
                 {
                     errorMessage = "上传失败，上传图片格式不正确！";
                 }
-                if (!PathUtility.IsImageSizeAllowed(siteInfo, file.ContentLength))
+                if (!PathUtility.IsImageSizeAllowed(site, file.ContentLength))
                 {
                     errorMessage = "上传失败，上传图片超出规定文件大小！";
                 }
 
                 if (string.IsNullOrEmpty(errorMessage))
                 {
-                    var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, fileExtName);
-                    var localFileName = PathUtility.GetUploadFileName(siteInfo, filePath);
+                    var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, fileExtName);
+                    var localFileName = PathUtility.GetUploadFileName(site, filePath);
                     filePath = PathUtils.Combine(localDirectoryPath, localFileName);
                     file.SaveAs(filePath);
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
@@ -13,13 +14,13 @@ namespace SiteServer.API.Controllers.Sys
     public class SysStlActionsIfController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsIf.Route)]
-        public IHttpActionResult Main()
+        public async Task<IHttpActionResult> Main()
         {
             try
             {
                 var request = new AuthenticatedRequest();
 
-                var dynamicInfo = DynamicInfo.GetDynamicInfo(request, request.UserInfo);
+                var dynamicInfo = DynamicInfo.GetDynamicInfo(request, request.User);
                 var ifInfo = TranslateUtils.JsonDeserialize<DynamicInfo.IfInfo>(dynamicInfo.ElementValues);
 
                 var isSuccess = false;
@@ -41,7 +42,7 @@ namespace SiteServer.API.Controllers.Sys
                     }
 
                     var template = isSuccess ? dynamicInfo.SuccessTemplate : dynamicInfo.FailureTemplate;
-                    html = StlDynamic.ParseDynamicContent(dynamicInfo, template);
+                    html = await StlDynamic.ParseDynamicContentAsync(dynamicInfo, template);
                 }
 
                 return Ok(new

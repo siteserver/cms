@@ -9,19 +9,20 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
     internal class ContentIe
     {
-        private readonly SiteInfo _siteInfo;
+        private readonly Site _site;
         private readonly string _siteContentDirectoryPath;
 
-        public ContentIe(SiteInfo siteInfo, string siteContentDirectoryPath)
+        public ContentIe(Site site, string siteContentDirectoryPath)
         {
             _siteContentDirectoryPath = siteContentDirectoryPath;
-            _siteInfo = siteInfo;
+            _site = site;
         }
 
         public void ImportContents(string filePath, bool isOverride, ChannelInfo channelInfo, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, string adminName)
@@ -81,7 +82,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 entries = theEntries;
             }
 
-            var tableName = ChannelManager.GetTableName(_siteInfo, channelInfo);
+            var tableName = ChannelManager.GetTableName(_site, channelInfo);
             var contentIdList = new List<int>();
 
             foreach (AtomEntry entry in entries)
@@ -120,7 +121,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     var dict = new Dictionary<string, object>
                     {
-                        {ContentAttribute.SiteId, _siteInfo.Id},
+                        {ContentAttribute.SiteId, _site.Id},
                         {ContentAttribute.ChannelId, channelInfo.Id},
                         {ContentAttribute.AddUserName, adminName},
                         {ContentAttribute.AddDate, TranslateUtils.ToDateTime(addDate)}
@@ -164,7 +165,7 @@ namespace SiteServer.CMS.ImportExport.Components
                             foreach (int id in existsIDs)
                             {
                                 contentInfo.Id = id;
-                                DataProvider.ContentDao.Update(_siteInfo, channelInfo, contentInfo);
+                                DataProvider.ContentDao.Update(_site, channelInfo, contentInfo);
                             }
                         }
                         else
@@ -179,10 +180,10 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = DataProvider.ContentDao.InsertWithTaxis(tableName, _siteInfo, channelInfo, contentInfo, taxis);
+                        var contentId = DataProvider.ContentDao.InsertWithTaxis(tableName, _site, channelInfo, contentInfo, taxis);
                         contentIdList.Add(contentId);
 
-                        TagUtils.UpdateTags(string.Empty, tags, _siteInfo.Id, contentId);
+                        TagUtils.UpdateTags(string.Empty, tags, _site.Id, contentId);
                     }
 
                     if (isTop)
@@ -201,7 +202,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
         private List<int> ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int adminId, int userId, int sourceId)
         {
-            var tableName = ChannelManager.GetTableName(_siteInfo, channelInfo);
+            var tableName = ChannelManager.GetTableName(_site, channelInfo);
             var contentIdList = new List<int>();
 
             foreach (AtomEntry entry in entries)
@@ -240,7 +241,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     var dict = new Dictionary<string, object>
                     {
-                        {ContentAttribute.SiteId, _siteInfo.Id},
+                        {ContentAttribute.SiteId, _site.Id},
                         {ContentAttribute.ChannelId, channelInfo.Id},
                         {ContentAttribute.AdminId, adminId},
                         {ContentAttribute.UserId, userId},
@@ -286,7 +287,7 @@ namespace SiteServer.CMS.ImportExport.Components
                             foreach (int id in existsIDs)
                             {
                                 contentInfo.Id = id;
-                                DataProvider.ContentDao.Update(_siteInfo, channelInfo, contentInfo);
+                                DataProvider.ContentDao.Update(_site, channelInfo, contentInfo);
                             }
                         }
                         else
@@ -301,11 +302,11 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = DataProvider.ContentDao.InsertWithTaxis(tableName, _siteInfo, channelInfo, contentInfo, taxis);
+                        var contentId = DataProvider.ContentDao.InsertWithTaxis(tableName, _site, channelInfo, contentInfo, taxis);
 
                         contentIdList.Add(contentId);
 
-                        TagUtils.UpdateTags(string.Empty, tags, _siteInfo.Id, contentId);
+                        TagUtils.UpdateTags(string.Empty, tags, _site.Id, contentId);
                     }
 
                     if (isTop)
@@ -322,15 +323,15 @@ namespace SiteServer.CMS.ImportExport.Components
             return contentIdList;
         }
 
-        public bool ExportContents(SiteInfo siteInfo, int channelId, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
+        public bool ExportContents(Site site, int channelId, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var channelInfo = ChannelManager.GetChannelInfo(site.Id, channelId);
             var feed = AtomUtility.GetEmptyFeed();
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var tableName = ChannelManager.GetTableName(site, channelInfo);
                 contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
             }
             if (contentIdList.Count == 0) return false;
@@ -339,10 +340,10 @@ namespace SiteServer.CMS.ImportExport.Components
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
                 try
                 {
-                    ContentUtility.PutImagePaths(siteInfo, contentInfo, collection);
+                    ContentUtility.PutImagePaths(site, contentInfo, collection);
                 }
                 catch
                 {
@@ -364,7 +365,7 @@ namespace SiteServer.CMS.ImportExport.Components
             return true;
         }
 
-        public bool ExportContents(SiteInfo siteInfo, List<ContentInfo> contentInfoList)
+        public bool ExportContents(Site site, List<ContentInfo> contentInfoList)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
             var feed = AtomUtility.GetEmptyFeed();
@@ -375,7 +376,7 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 try
                 {
-                    ContentUtility.PutImagePaths(siteInfo, contentInfo, collection);
+                    ContentUtility.PutImagePaths(site, contentInfo, collection);
                 }
                 catch
                 {

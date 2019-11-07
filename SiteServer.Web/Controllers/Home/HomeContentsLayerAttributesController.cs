@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -15,7 +16,7 @@ namespace SiteServer.API.Controllers.Home
         private const string Route = "";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -38,8 +39,8 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
@@ -50,7 +51,7 @@ namespace SiteServer.API.Controllers.Home
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                            var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -69,10 +70,10 @@ namespace SiteServer.API.Controllers.Home
                             {
                                 contentInfo.IsTop = true;
                             }
-                            DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                            DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
                         }
 
-                        request.AddSiteLog(siteId, "设置内容属性");
+                        await request.AddSiteLogAsync(siteId, "设置内容属性");
                     }
                 }
                 else if(pageType == "cancelAttributes")
@@ -81,7 +82,7 @@ namespace SiteServer.API.Controllers.Home
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                            var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -100,24 +101,24 @@ namespace SiteServer.API.Controllers.Home
                             {
                                 contentInfo.IsTop = false;
                             }
-                            DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                            DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
                         }
 
-                        request.AddSiteLog(siteId, "取消内容属性");
+                        await request.AddSiteLogAsync(siteId, "取消内容属性");
                     }
                 }
                 else if (pageType == "setHits")
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         contentInfo.Hits = hits;
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
                     }
 
-                    request.AddSiteLog(siteId, "设置内容点击量");
+                    await request.AddSiteLogAsync(siteId, "设置内容点击量");
                 }
 
                 return Ok(new

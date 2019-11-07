@@ -12,9 +12,9 @@ Object.defineProperty(Object.prototype, "getProp", {
 });
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
-  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
-  contentId: parseInt(pageUtils.getQueryStringByName('contentId')),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
+  contentId: parseInt(utils.getQueryString('contentId')),
   pageLoad: false,
   pageAlert: null,
   content: null,

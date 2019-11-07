@@ -52,21 +52,21 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(Site, fileExtName);
                 if (!string.IsNullOrEmpty(_currentRootPath))
                 {
-                    localDirectoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
+                    localDirectoryPath = PathUtility.MapPath(Site, _currentRootPath);
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
-                var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
+                var localFileName = PathUtility.GetUploadFileName(Site, filePath);
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-                if (!PathUtility.IsVideoExtenstionAllowed(SiteInfo, fileExtName))
+                if (!PathUtility.IsVideoExtenstionAllowed(Site, fileExtName))
                 {
                     FailMessage("上传失败，上传视频格式不正确！");
                     return;
                 }
-                if (!PathUtility.IsVideoSizeAllowed(SiteInfo, HifUpload.PostedFile.ContentLength))
+                if (!PathUtility.IsVideoSizeAllowed(Site, HifUpload.PostedFile.ContentLength))
                 {
                     FailMessage("上传失败，上传视频超出规定文件大小！");
                     return;
@@ -74,8 +74,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                 HifUpload.PostedFile.SaveAs(localFilePath);
 
-                var videoUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
-                var textBoxUrl = PageUtility.GetVirtualUrl(SiteInfo, videoUrl);
+                var videoUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localFilePath, true).GetAwaiter().GetResult();
+                var textBoxUrl = PageUtility.GetVirtualUrl(Site, videoUrl);
 
                 if (string.IsNullOrEmpty(_textBoxClientId))
                 {

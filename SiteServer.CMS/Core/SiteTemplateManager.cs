@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
@@ -95,7 +97,7 @@ namespace SiteServer.CMS.Core
             return list;
         }
 
-        public void ImportSiteTemplateToEmptySite(int siteId, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, string administratorName)
+        public async Task ImportSiteTemplateToEmptySiteAsync(int siteId, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, string administratorName)
         {
             var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
             if (DirectoryUtils.IsDirectoryExists(siteTemplatePath))
@@ -107,11 +109,11 @@ namespace SiteServer.CMS.Core
 
                 var importObject = new ImportObject(siteId, administratorName);
 
-                importObject.ImportFiles(siteTemplatePath, true);
+                await importObject.ImportFilesAsync(siteTemplatePath, true);
 
-                importObject.ImportTemplates(templateFilePath, true, administratorName);
+                await importObject.ImportTemplatesAsync(templateFilePath, true, administratorName);
 
-                importObject.ImportConfiguration(configurationFilePath);
+                await importObject.ImportConfigurationAsync(configurationFilePath);
 
                 var filePathList = ImportObject.GetSiteContentFilePathList(siteContentDirectoryPath);
 
@@ -129,21 +131,21 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void ExportSiteToSiteTemplate(SiteInfo siteInfo, string siteTemplateDir, string adminName)
+        public static async Task ExportSiteToSiteTemplateAsync(Site site, string siteTemplateDir, string adminName)
         {
-            var exportObject = new ExportObject(siteInfo.Id, adminName);
+            var exportObject = new ExportObject(site.Id, adminName);
 
             var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
 
             //导出模板
             var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
-            exportObject.ExportTemplates(templateFilePath);
+            await exportObject.ExportTemplatesAsync(templateFilePath);
             //导出辅助表及样式
             var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
-            exportObject.ExportTablesAndStyles(tableDirectoryPath);
+            await exportObject.ExportTablesAndStylesAsync(tableDirectoryPath);
             //导出站点属性以及站点属性表单
             var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
-            exportObject.ExportConfiguration(configurationFilePath);
+            await exportObject.ExportConfigurationAsync(configurationFilePath);
             //导出关联字段
             var relatedFieldDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.RelatedField);
             exportObject.ExportRelatedField(relatedFieldDirectoryPath);

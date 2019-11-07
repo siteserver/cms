@@ -12,7 +12,9 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using System.Linq;
+using System.Threading.Tasks;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.Core
 {
@@ -20,18 +22,18 @@ namespace SiteServer.CMS.Core
     {
         public static string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页占位符
 
-        public static string TextEditorContentEncode(SiteInfo siteInfo, string content)
+        public static async Task<string> TextEditorContentEncodeAsync(Site site, string content)
         {
-            if (siteInfo == null) return content;
+            if (site == null) return content;
             
-            if (siteInfo.Additional.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
+            if (site.Additional.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
             {
-                content = PathUtility.SaveImage(siteInfo, content);
+                content = await PathUtility.SaveImageAsync(site, content);
             }
 
             var builder = new StringBuilder(content);
 
-            var url = siteInfo.Additional.WebUrl;
+            var url = site.Additional.WebUrl;
             if (!string.IsNullOrEmpty(url) && url != "/")
             {
                 StringUtils.ReplaceHrefOrSrc(builder, url, "@");
@@ -41,7 +43,7 @@ namespace SiteServer.CMS.Core
             //    StringUtils.ReplaceHrefOrSrc(builder, url, "@");
             //}
 
-            var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
+            var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{site.SiteDir}");
             StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");
 
             builder.Replace("@'@", "'@");
@@ -50,26 +52,26 @@ namespace SiteServer.CMS.Core
             return builder.ToString();
         }
 
-        public static string TextEditorContentDecode(SiteInfo siteInfo, string content, bool isLocal)
+        public static string TextEditorContentDecode(Site site, string content, bool isLocal)
         {
-            if (siteInfo == null) return content;
+            if (site == null) return content;
             
             var builder = new StringBuilder(content);
 
-            var virtualAssetsUrl = $"@/{siteInfo.Additional.AssetsDir}";
+            var virtualAssetsUrl = $"@/{site.Additional.AssetsDir}";
             string assetsUrl;
             if (isLocal)
             {
-                assetsUrl = PageUtility.GetSiteUrl(siteInfo,
-                    siteInfo.Additional.AssetsDir, true);
+                assetsUrl = PageUtility.GetSiteUrl(site,
+                    site.Additional.AssetsDir, true);
             }
             else
             {
-                assetsUrl = siteInfo.Additional.AssetsUrl;
+                assetsUrl = site.Additional.AssetsUrl;
             }
             StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@/", siteInfo.Additional.WebUrl + "/");
-            StringUtils.ReplaceHrefOrSrc(builder, "@", siteInfo.Additional.WebUrl + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@/", site.Additional.WebUrl + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@", site.Additional.WebUrl + "/");
             StringUtils.ReplaceHrefOrSrc(builder, "//", "/");
 
             builder.Replace("&#xa0;", "&nbsp;");
@@ -159,7 +161,7 @@ namespace SiteServer.CMS.Core
             return formattedTitle;
         }
 
-        public static void PutImagePaths(SiteInfo siteInfo, ContentInfo contentInfo, NameValueCollection collection)
+        public static void PutImagePaths(Site site, ContentInfo contentInfo, NameValueCollection collection)
         {
             if (contentInfo == null) return;
 
@@ -170,15 +172,15 @@ namespace SiteServer.CMS.Core
 
             if (!string.IsNullOrEmpty(imageUrl) && PageUtility.IsVirtualUrl(imageUrl))
             {
-                collection[imageUrl] = PathUtility.MapPath(siteInfo, imageUrl);
+                collection[imageUrl] = PathUtility.MapPath(site, imageUrl);
             }
             if (!string.IsNullOrEmpty(videoUrl) && PageUtility.IsVirtualUrl(videoUrl))
             {
-                collection[videoUrl] = PathUtility.MapPath(siteInfo, videoUrl);
+                collection[videoUrl] = PathUtility.MapPath(site, videoUrl);
             }
             if (!string.IsNullOrEmpty(fileUrl) && PageUtility.IsVirtualUrl(fileUrl))
             {
-                collection[fileUrl] = PathUtility.MapPath(siteInfo, fileUrl);
+                collection[fileUrl] = PathUtility.MapPath(site, fileUrl);
             }
 
             var srcList = RegexUtils.GetOriginalImageSrcs(content);
@@ -186,7 +188,7 @@ namespace SiteServer.CMS.Core
             {
                 if (PageUtility.IsVirtualUrl(src))
                 {
-                    collection[src] = PathUtility.MapPath(siteInfo, src);
+                    collection[src] = PathUtility.MapPath(site, src);
                 }
                 else if (PageUtility.IsRelativeUrl(src))
                 {
@@ -199,7 +201,7 @@ namespace SiteServer.CMS.Core
             {
                 if (PageUtility.IsVirtualUrl(href))
                 {
-                    collection[href] = PathUtility.MapPath(siteInfo, href);
+                    collection[href] = PathUtility.MapPath(site, href);
                 }
                 else if (PageUtility.IsRelativeUrl(href))
                 {
@@ -452,7 +454,7 @@ namespace SiteServer.CMS.Core
             return list;
         }
 
-        public static bool AfterContentAdded(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isCrossSiteTrans, bool isAutomatic)
+        public static async Task<bool> AfterContentAddedAsync(Site site, ChannelInfo channelInfo, int contentId, bool isCrossSiteTrans, bool isAutomatic)
         {
             var isTranslated = false;
             if (isCrossSiteTrans && isAutomatic)
@@ -465,24 +467,24 @@ namespace SiteServer.CMS.Core
                 }
                 else if (channelInfo.Additional.TransType == ECrossSiteTransType.SelfSite)
                 {
-                    targetSiteId = siteInfo.Id;
+                    targetSiteId = site.Id;
                 }
                 else if (channelInfo.Additional.TransType == ECrossSiteTransType.ParentSite)
                 {
-                    targetSiteId = SiteManager.GetParentSiteId(siteInfo.Id);
+                    targetSiteId = await SiteManager.GetParentSiteIdAsync(site.Id);
                 }
 
                 if (targetSiteId > 0)
                 {
-                    var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
-                    if (targetSiteInfo != null)
+                    var targetSite = await SiteManager.GetSiteAsync(targetSiteId);
+                    if (targetSite != null)
                     {
                         var targetChannelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.Additional.TransChannelIds);
                         if (targetChannelIdArrayList.Count > 0)
                         {
                             foreach (var targetChannelId in targetChannelIdArrayList)
                             {
-                                CrossSiteTransUtility.TransContentInfo(siteInfo, channelInfo, contentId, targetSiteInfo, targetChannelId);
+                                CrossSiteTransUtility.TransContentInfo(site, channelInfo, contentId, targetSite, targetChannelId);
                                 isTranslated = true;
                             }
                         }
@@ -494,7 +496,7 @@ namespace SiteServer.CMS.Core
             {
                 try
                 {
-                    service.OnContentAddCompleted(new ContentEventArgs(siteInfo.Id, channelInfo.Id, contentId));
+                    service.OnContentAddCompleted(new ContentEventArgs(site.Id, channelInfo.Id, contentId));
                 }
                 catch (Exception ex)
                 {
@@ -505,7 +507,7 @@ namespace SiteServer.CMS.Core
             return isTranslated;
         }
 
-        public static void Translate(SiteInfo siteInfo, int channelId, int contentId, string translateCollection, ETranslateContentType translateType, string administratorName)
+        public static async Task TranslateAsync(Site site, int channelId, int contentId, string translateCollection, ETranslateContentType translateType, string administratorName)
         {
             var translateList = TranslateUtils.StringCollectionToStringList(translateCollection);
             foreach (var translate in translateList)
@@ -518,23 +520,23 @@ namespace SiteServer.CMS.Core
                 var targetSiteId = TranslateUtils.ToInt(translates[0]);
                 var targetChannelId = TranslateUtils.ToInt(translates[1]);
 
-                Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType);
+                await TranslateAsync(site, channelId, contentId, targetSiteId, targetChannelId, translateType);
             }
         }
 
-        public static void Delete(string tableName, SiteInfo siteInfo, int channelId, int contentId)
+        public static void Delete(string tableName, Site site, int channelId, int contentId)
         {
-            if (string.IsNullOrEmpty(tableName) || siteInfo == null || channelId <= 0 || contentId <= 0) return;
+            if (string.IsNullOrEmpty(tableName) || site == null || channelId <= 0 || contentId <= 0) return;
             
-            DataProvider.ContentDao.Delete(tableName, siteInfo.Id, channelId, contentId);
+            DataProvider.ContentDao.Delete(tableName, site.Id, channelId, contentId);
 
-            TagUtils.RemoveTags(siteInfo.Id, contentId);
+            TagUtils.RemoveTags(site.Id, contentId);
 
             foreach (var service in PluginManager.Services)
             {
                 try
                 {
-                    service.OnContentDeleteCompleted(new ContentEventArgs(siteInfo.Id, channelId, contentId));
+                    service.OnContentDeleteCompleted(new ContentEventArgs(site.Id, channelId, contentId));
                 }
                 catch (Exception ex)
                 {
@@ -545,37 +547,37 @@ namespace SiteServer.CMS.Core
             ContentManager.RemoveCache(tableName, channelId);
         }
 
-        public static void Translate(SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType)
+        public static async Task TranslateAsync(Site site, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType)
         {
-            if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
+            if (site == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
-            var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
+            var targetSite = await SiteManager.GetSiteAsync(targetSiteId);
             var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
-            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelInfo);
+            var targetTableName = ChannelManager.GetTableName(targetSite, targetChannelInfo);
 
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            var channelInfo = ChannelManager.GetChannelInfo(site.Id, channelId);
+            var tableName = ChannelManager.GetTableName(site, channelInfo);
 
-            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+            var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
 
             if (contentInfo == null) return;
 
             if (translateType == ETranslateContentType.Copy)
             {
-                FileUtility.MoveFileByContentInfo(siteInfo, targetSiteInfo, contentInfo);
+                FileUtility.MoveFileByContentInfo(site, targetSite, contentInfo);
 
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
-                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
                     try
                     {
-                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(siteInfo.Id, channelInfo.Id, contentId, targetSiteId, targetChannelId, theContentId));
+                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channelInfo.Id, contentId, targetSiteId, targetChannelId, theContentId));
                     }
                     catch (Exception ex)
                     {
@@ -583,12 +585,12 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
-                CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
+                CreateManager.CreateContent(targetSite.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.TriggerContentChangedEvent(targetSite.Id, contentInfo.ChannelId);
             }
             else if (translateType == ETranslateContentType.Cut)
             {
-                FileUtility.MoveFileByContentInfo(siteInfo, targetSiteInfo, contentInfo);
+                FileUtility.MoveFileByContentInfo(site, targetSite, contentInfo);
 
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
@@ -596,13 +598,13 @@ namespace SiteServer.CMS.Core
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
 
-                var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
                     try
                     {
-                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(siteInfo.Id, channelInfo.Id, contentId, targetSiteId, targetChannelId, newContentId));
+                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channelInfo.Id, contentId, targetSiteId, targetChannelId, newContentId));
                     }
                     catch (Exception ex)
                     {
@@ -610,12 +612,12 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                Delete(tableName, siteInfo, channelId, contentId);
+                Delete(tableName, site, channelId, contentId);
 
-                //DataProvider.ContentDao.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
+                //DataProvider.ContentDao.DeleteContents(site.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
 
-                CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, newContentId);
-                CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
+                CreateManager.CreateContent(targetSite.Id, contentInfo.ChannelId, newContentId);
+                CreateManager.TriggerContentChangedEvent(targetSite.Id, contentInfo.ChannelId);
             }
             else if (translateType == ETranslateContentType.Reference)
             {
@@ -627,29 +629,29 @@ namespace SiteServer.CMS.Core
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
-                int theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                int theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSite, targetChannelInfo, contentInfo);
 
-                CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
-                CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
+                CreateManager.CreateContent(targetSite.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.TriggerContentChangedEvent(targetSite.Id, contentInfo.ChannelId);
             }
             else if (translateType == ETranslateContentType.ReferenceContent)
             {
                 if (contentInfo.ReferenceId != 0) return;
 
-                FileUtility.MoveFileByContentInfo(siteInfo, targetSiteInfo, contentInfo);
+                FileUtility.MoveFileByContentInfo(site, targetSite, contentInfo);
 
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
-                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
                     try
                     {
-                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(siteInfo.Id, channelInfo.Id, contentId, targetSiteId, targetChannelId, theContentId));
+                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channelInfo.Id, contentId, targetSiteId, targetChannelId, theContentId));
                     }
                     catch (Exception ex)
                     {
@@ -657,8 +659,8 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
-                CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
+                CreateManager.CreateContent(targetSite.Id, contentInfo.ChannelId, theContentId);
+                CreateManager.TriggerContentChangedEvent(targetSite.Id, contentInfo.ChannelId);
             }
         }
 

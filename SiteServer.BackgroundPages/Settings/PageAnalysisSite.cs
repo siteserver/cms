@@ -68,11 +68,11 @@ namespace SiteServer.BackgroundPages.Settings
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Chart);
 
             DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
-            var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
+            var siteIdList = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             foreach (var siteId in siteIdList)
             {
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                DdlSiteId.Items.Add(new ListItem(siteInfo.SiteName, siteId.ToString()));
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                DdlSiteId.Items.Add(new ListItem(site.SiteName, siteId.ToString()));
             }
 
             TbStartDate.Text = DateUtils.GetDateAndTimeString(_begin);
@@ -106,18 +106,18 @@ yArrayUpdate.push('{yValueUpdate}');";
 
         public void BindGrid()
         {
-            var siteIdList = SiteManager.GetSiteIdList();
+            var siteIdList = SiteManager.GetSiteIdListAsync().GetAwaiter().GetResult();
             
             foreach(var siteId in siteIdList)
             {
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
 
-                var key = siteInfo.Id;
+                var key = site.Id;
                 //x轴信息
-                SetXHashtable(key, siteInfo.SiteName);
+                SetXHashtable(key, site.SiteName);
                 //y轴信息
-                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentAdd(siteInfo.TableName, siteInfo.Id, siteInfo.Id, EScopeType.All, _begin, _end, string.Empty, ETriState.All), YTypeNew);
-                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentUpdate(siteInfo.TableName, siteInfo.Id, siteInfo.Id, EScopeType.All, _begin, _end, string.Empty), YTypeUpdate);
+                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentAdd(site.TableName, site.Id, site.Id, EScopeType.All, _begin, _end, string.Empty, ETriState.All), YTypeNew);
+                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentUpdate(site.TableName, site.Id, site.Id, EScopeType.All, _begin, _end, string.Empty), YTypeUpdate);
             }
 
             RptContents.DataSource = siteIdList;
@@ -130,14 +130,14 @@ yArrayUpdate.push('{yValueUpdate}');";
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
             var siteId = (int) e.Item.DataItem;
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
 
             var ltlSiteName = (Literal)e.Item.FindControl("ltlSiteName");
             var ltlNewContentNum = (Literal)e.Item.FindControl("ltlNewContentNum");
             var ltlUpdateContentNum = (Literal)e.Item.FindControl("ltlUpdateContentNum");
             var ltlTotalNum = (Literal)e.Item.FindControl("ltlTotalNum");
 
-            ltlSiteName.Text = $@"<a href=""{PageAnalysisSiteChannels.GetRedirectUrl(siteId)}"">{siteInfo.SiteName}</a>";
+            ltlSiteName.Text = $@"<a href=""{PageAnalysisSiteChannels.GetRedirectUrl(siteId)}"">{site.SiteName}</a>";
             ltlNewContentNum.Text = GetYHashtable(siteId, YTypeNew);
             ltlUpdateContentNum.Text = GetYHashtable(siteId, YTypeUpdate);
             ltlTotalNum.Text = GetHorizental(siteId);

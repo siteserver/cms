@@ -36,17 +36,17 @@ namespace SiteServer.BackgroundPages.Settings
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Chart);
 
             DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
-            var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
+            var siteIdList = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             foreach (var siteId in siteIdList)
             {
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                DdlSiteId.Items.Add(new ListItem(siteInfo.SiteName, siteId.ToString()));
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                DdlSiteId.Items.Add(new ListItem(site.SiteName, siteId.ToString()));
 
-                var key = siteInfo.Id;
+                var key = site.Id;
                 //x轴信息
-                SetXHashtable(key, siteInfo.SiteName);
+                SetXHashtable(key, site.SiteName);
                 //y轴信息
-                SetYHashtable(key, DataProvider.ContentDao.GetTotalHits(siteInfo.TableName, siteId));
+                SetYHashtable(key, DataProvider.ContentDao.GetTotalHits(site.TableName, siteId));
             }
 
             RptContents.DataSource = siteIdList;
@@ -72,12 +72,12 @@ yArrayHits.push('{yValueHits}');";
 
             var siteId = (int) e.Item.DataItem;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
 
             var ltlSiteName = (Literal)e.Item.FindControl("ltlSiteName");
             var ltlHitsNum = (Literal)e.Item.FindControl("ltlHitsNum");
 
-            ltlSiteName.Text = $@"<a href=""{PageAnalysisSiteHitsChannels.GetRedirectUrl(siteId)}"">{siteInfo.SiteName}</a>";
+            ltlSiteName.Text = $@"<a href=""{PageAnalysisSiteHitsChannels.GetRedirectUrl(siteId)}"">{site.SiteName}</a>";
             ltlHitsNum.Text = GetYHashtable(siteId);
         }
 

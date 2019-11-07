@@ -10,6 +10,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -43,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentId = AuthRequest.GetQueryInt("contentId");
                 var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
-                var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, contentId);
+                var contentInfo = ContentManager.GetContentInfo(Site, channelInfo, contentId);
                 
                 var tagList = TranslateUtils.StringCollectionToStringList(contentInfo.Tags, ' ');
                 if (tagList.Contains(_tag))
@@ -52,19 +53,19 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagList, " ");
-                DataProvider.ContentDao.Update(SiteInfo, channelInfo, contentInfo);
+                DataProvider.ContentDao.Update(Site, channelInfo, contentInfo);
 
                 TagUtils.RemoveTags(SiteId, contentId);
 
-                AuthRequest.AddSiteLog(SiteId, "移除内容", $"内容:{contentInfo.Title}");
+                AuthRequest.AddSiteLogAsync(SiteId, "移除内容", $"内容:{contentInfo.Title}").GetAwaiter().GetResult();
                 SuccessMessage("移除成功");
                 AddWaitAndRedirectScript(PageUrl);
             }
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByContentTag(SiteInfo.TableName, _tag, siteId);
+            SpContents.ItemsPerPage = Site.Additional.PageSize;
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByContentTag(Site.TableName, _tag, siteId);
             SpContents.SortField = ContentAttribute.AddDate;
             SpContents.SortMode = SortMode.DESC;
 
@@ -88,10 +89,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
 
-            ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
+            ltlItemTitle.Text = WebUtils.GetContentTitle(Site, contentInfo, PageUrl);
             ltlItemChannel.Text = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
             ltlItemAddDate.Text = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
-            ltlItemStatus.Text = CheckManager.GetCheckState(SiteInfo, contentInfo);
+            ltlItemStatus.Text = CheckManager.GetCheckState(Site, contentInfo);
 
             if (!HasChannelPermissions(contentInfo.ChannelId, ConfigManager.ChannelPermissions.ContentEdit) &&
                 AuthRequest.AdminName != contentInfo.AddUserName) return;

@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             _siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList();
-            RptContents.DataSource = SiteManager.GetSiteIdListOrderByLevel();
+            RptContents.DataSource = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -38,9 +38,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var siteInfo = SiteManager.GetSiteInfo((int)e.Item.DataItem);
+            var site = SiteManager.GetSiteAsync((int)e.Item.DataItem).GetAwaiter().GetResult();
 
-            if (!_siteIdList.Contains(siteInfo.Id))
+            if (!_siteIdList.Contains(site.Id))
             {
                 e.Item.Visible = false;
                 return;
@@ -50,10 +50,10 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlDir = (Literal)e.Item.FindControl("ltlDir");
             var ltlWebUrl = (Literal)e.Item.FindControl("ltlWebUrl");
 
-            ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageUtils.GetMainUrl(siteInfo.Id))}"" target=""_top"">{SiteManager.GetSiteName(siteInfo)}</a>";
-            ltlDir.Text = siteInfo.SiteDir;
+            ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageUtils.GetMainUrl(site.Id))}"" target=""_top"">{SiteManager.GetSiteNameAsync(site).GetAwaiter().GetResult()}</a>";
+            ltlDir.Text = site.SiteDir;
 
-            ltlWebUrl.Text = $@"<a href=""{siteInfo.Additional.WebUrl}"" target=""_blank"">{siteInfo.Additional.WebUrl}</a>";
+            ltlWebUrl.Text = $@"<a href=""{site.Additional.WebUrl}"" target=""_blank"">{site.Additional.WebUrl}</a>";
         }
     }
 }

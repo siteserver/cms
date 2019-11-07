@@ -369,7 +369,7 @@ namespace SiteServer.BackgroundPages
 
             try
             {
-                SystemManager.InstallDatabase(TbAdminName.Text, TbAdminPassword.Text);
+                SystemManager.InstallDatabaseAsync(TbAdminName.Text, TbAdminPassword.Text).GetAwaiter().GetResult();
                 
                 return true;
             }

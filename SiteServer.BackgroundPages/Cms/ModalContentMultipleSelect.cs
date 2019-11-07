@@ -12,6 +12,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 
@@ -54,8 +55,8 @@ namespace SiteServer.BackgroundPages.Cms
                 channelId = SiteId;
             }
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-            var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
-            _tableStyleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
+            var tableName = ChannelManager.GetTableName(Site, _channelInfo);
+            _tableStyleInfoList = TableStyleManager.GetContentStyleInfoList(Site, _channelInfo);
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.SelectCommand = string.IsNullOrEmpty(AuthRequest.GetQueryString("channelId"))
@@ -68,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
                     AuthRequest.AdminPermissionsImpl.ChannelIdList, AuthRequest.GetQueryString("SearchType"),
                     AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"), true,
                     ETriState.True, true);
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = Site.Additional.PageSize;
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
             SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
@@ -76,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
+            ChannelManager.AddListItems(DdlChannelId.Items, Site, false, true, AuthRequest.AdminPermissionsImpl);
 
             if (_tableStyleInfoList != null)
             {
@@ -125,7 +126,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 ltlChannel.Text = nodeName;
 
-                ltlTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
+                ltlTitle.Text = WebUtils.GetContentTitle(Site, contentInfo, PageUrl);
 
                 ltlSelect.Text =
                     $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.ChannelId}_{contentInfo.Id}"" />";
@@ -152,7 +153,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var channelId = TranslateUtils.ToInt(pair.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(pair.Split('_')[1]);
 
-                    var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                    var tableName = ChannelManager.GetTableName(Site, channelId);
                     var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
                     builder.Append($@"parent.{_jsMethod}('{title}', '{pair}');");
                 }

@@ -11,6 +11,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser;
@@ -27,7 +28,7 @@ namespace SiteServer.API.Controllers.Pages
         private const string RouteActionsDownload = "actions/download";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
@@ -36,13 +37,13 @@ namespace SiteServer.API.Controllers.Pages
                 if (redirect != null) return Ok(redirect);
 
                 var siteId = request.GetQueryInt("siteId");
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var adminInfo = request.AdminInfo;
+                var site = await SiteManager.GetSiteAsync(siteId);
+                var adminInfo = request.Administrator;
                 var permissions = request.AdminPermissionsImpl;
                 var isSuperAdmin = permissions.IsConsoleAdministrator;
                 var siteIdListWithPermissions = permissions.GetSiteIdList();
 
-                if (siteInfo == null || !siteIdListWithPermissions.Contains(siteInfo.Id))
+                if (site == null || !siteIdListWithPermissions.Contains(site.Id))
                 {
                     if (siteIdListWithPermissions.Contains(adminInfo.SiteId))
                     {
@@ -74,7 +75,7 @@ namespace SiteServer.API.Controllers.Pages
                     return Ok(new
                     {
                         Value = false,
-                        RedirectUrl = $"pageError.html?message={HttpUtility.UrlEncode("您没有可以管理的站点，请联系超级管理员协助解决")}"
+                        RedirectUrl = $"error.html?message={HttpUtility.UrlEncode("您没有可以管理的站点，请联系超级管理员协助解决")}"
                     });
                 }
 
@@ -95,27 +96,27 @@ namespace SiteServer.API.Controllers.Pages
                     });
                 }
 
-                var siteIdListLatestAccessed = DataProvider.AdministratorDao.UpdateSiteId(adminInfo, siteInfo.Id);
+                var siteIdListLatestAccessed = await DataProvider.AdministratorDao.UpdateSiteIdAsync(adminInfo, site.Id);
 
                 var permissionList = new List<string>(permissions.PermissionList);
-                if (permissions.HasSitePermissions(siteInfo.Id))
+                if (permissions.HasSitePermissions(site.Id))
                 {
-                    var websitePermissionList = permissions.GetSitePermissions(siteInfo.Id);
+                    var websitePermissionList = permissions.GetSitePermissions(site.Id);
                     if (websitePermissionList != null)
                     {
                         permissionList.AddRange(websitePermissionList);
                     }
                 }
-                var channelPermissions = permissions.GetChannelPermissions(siteInfo.Id);
+                var channelPermissions = permissions.GetChannelPermissions(site.Id);
                 if (channelPermissions.Count > 0)
                 {
                     permissionList.AddRange(channelPermissions);
                 }
 
-                var topMenus = GetTopMenus(siteInfo, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions);
+                var topMenus = await GetTopMenusAsync(site, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions);
                 var siteMenus =
-                    GetLeftMenus(siteInfo, ConfigManager.TopMenu.IdSite, isSuperAdmin, permissionList);
-                var pluginMenus = GetLeftMenus(siteInfo, string.Empty, isSuperAdmin, permissionList);
+                    GetLeftMenus(site, ConfigManager.TopMenu.IdSite, isSuperAdmin, permissionList);
+                var pluginMenus = GetLeftMenus(site, string.Empty, isSuperAdmin, permissionList);
 
                 return Ok(new
                 {
@@ -149,7 +150,7 @@ namespace SiteServer.API.Controllers.Pages
             }
         }
 
-        private static List<Tab> GetTopMenus(SiteInfo siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
+        private static async Task<List<Tab>> GetTopMenusAsync(Site siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
         {
             var menus = new List<Tab>();
 
@@ -166,10 +167,10 @@ namespace SiteServer.API.Controllers.Pages
                 }
                 else
                 {
-                    var siteIdList = AdminManager.GetLatestTop10SiteIdList(siteIdListLatestAccessed, siteIdListWithPermissions);
+                    var siteIdList = await AdminManager.GetLatestTop10SiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
                     foreach (var siteId in siteIdList)
                     {
-                        var site = SiteManager.GetSiteInfo(siteId);
+                        var site = await SiteManager.GetSiteAsync(siteId);
                         if (site == null) continue;
 
                         siteMenus.Add(new Tab
@@ -216,11 +217,11 @@ namespace SiteServer.API.Controllers.Pages
             return menus;
         }
 
-        private static List<Tab> GetLeftMenus(SiteInfo siteInfo, string topId, bool isSuperAdmin, List<string> permissionList)
+        private static List<Tab> GetLeftMenus(Site site, string topId, bool isSuperAdmin, List<string> permissionList)
         {
             var menus = new List<Tab>();
 
-            var tabs = TabManager.GetTabList(topId, siteInfo.Id);
+            var tabs = TabManager.GetTabList(topId, site.Id);
             foreach (var parent in tabs)
             {
                 if (!isSuperAdmin && !TabManager.IsValid(parent, permissionList)) continue;
@@ -238,7 +239,7 @@ namespace SiteServer.API.Controllers.Pages
                             children.Add(new Tab
                             {
                                 Id = childTab.Id,
-                                Href = GetHref(childTab, siteInfo.Id),
+                                Href = GetHref(childTab, site.Id),
                                 Text = childTab.Text,
                                 Target = childTab.Target,
                                 IconClass = childTab.IconClass
@@ -250,7 +251,7 @@ namespace SiteServer.API.Controllers.Pages
                 menus.Add(new Tab
                 {
                     Id = parent.Id,
-                    Href = GetHref(parent, siteInfo.Id),
+                    Href = GetHref(parent, site.Id),
                     Text = parent.Text,
                     Target = parent.Target,
                     IconClass = parent.IconClass,
@@ -280,7 +281,7 @@ namespace SiteServer.API.Controllers.Pages
             try
             {
                 var request = new AuthenticatedRequest();
-                if (!request.IsAdminLoggin || request.AdminInfo == null)
+                if (!request.IsAdminLoggin || request.Administrator == null)
                 {
                     return Unauthorized();
                 }
@@ -294,9 +295,9 @@ namespace SiteServer.API.Controllers.Pages
                 }
 #endif
 
-                if (request.AdminInfo.LastActivityDate != null && ConfigManager.SystemConfigInfo.IsAdminEnforceLogout)
+                if (request.Administrator.LastActivityDate != null && ConfigManager.SystemConfigInfo.IsAdminEnforceLogout)
                 {
-                    var ts = new TimeSpan(DateTime.Now.Ticks - request.AdminInfo.LastActivityDate.Value.Ticks);
+                    var ts = new TimeSpan(DateTime.Now.Ticks - request.Administrator.LastActivityDate.Value.Ticks);
                     if (ts.TotalMinutes > ConfigManager.SystemConfigInfo.AdminEnforceLogoutMinutes)
                     {
                         return Unauthorized();
@@ -360,14 +361,18 @@ namespace SiteServer.API.Controllers.Pages
                 PackageUtils.DownloadPackage(packageId, version);
             }
 
-            if (StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSsCms))
+            var isDownload = PackageUtils.IsPackageDownload(packageId, version);
+            if (isDownload)
             {
-                CacheDbUtils.RemoveAndInsert(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
+                if (StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSsCms))
+                {
+                    CacheDbUtils.RemoveAndInsert(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
+                }
             }
 
             return Ok(new
             {
-                Value = true
+                Value = isDownload
             });
         }
     }

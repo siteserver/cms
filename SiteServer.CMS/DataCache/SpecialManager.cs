@@ -5,6 +5,7 @@ using System.Text;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -16,17 +17,17 @@ namespace SiteServer.CMS.DataCache
         private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(SpecialManager));
         private static readonly object SyncRoot = new object();
 
-	    public static SpecialInfo DeleteSpecialInfo(SiteInfo siteInfo, int specialId)
+	    public static SpecialInfo DeleteSpecialInfo(Site site, int specialId)
 	    {
-	        var specialInfo = GetSpecialInfo(siteInfo.Id, specialId);
+	        var specialInfo = GetSpecialInfo(site.Id, specialId);
 
             if (!string.IsNullOrEmpty(specialInfo.Url) && specialInfo.Url != "/")
             {
-                var directoryPath = GetSpecialDirectoryPath(siteInfo, specialInfo.Url);
+                var directoryPath = GetSpecialDirectoryPath(site, specialInfo.Url);
                 DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             }
 
-            DataProvider.SpecialDao.Delete(siteInfo.Id, specialId);
+            DataProvider.SpecialDao.Delete(site.Id, specialId);
 
 	        return specialInfo;
 	    }
@@ -56,14 +57,14 @@ namespace SiteServer.CMS.DataCache
 	        return title;
 	    }
 
-        public static List<TemplateInfo> GetTemplateInfoList(SiteInfo siteInfo, int specialId)
+        public static List<TemplateInfo> GetTemplateInfoList(Site site, int specialId)
 	    {
             var list = new List<TemplateInfo>();
 
-	        var specialInfo = GetSpecialInfo(siteInfo.Id, specialId);
+	        var specialInfo = GetSpecialInfo(site.Id, specialId);
 	        if (specialInfo != null)
 	        {
-	            var directoryPath = GetSpecialDirectoryPath(siteInfo, specialInfo.Url);
+	            var directoryPath = GetSpecialDirectoryPath(site, specialInfo.Url);
 	            var srcDirectoryPath = GetSpecialSrcDirectoryPath(directoryPath);
 
                 var htmlFilePaths = Directory.GetFiles(srcDirectoryPath, "*.html", SearchOption.AllDirectories);
@@ -80,7 +81,7 @@ namespace SiteServer.CMS.DataCache
                         Id = 0,
                         IsDefault = false,
                         RelatedFileName = string.Empty,
-                        SiteId = siteInfo.Id,
+                        SiteId = site.Id,
                         TemplateType = TemplateType.FileTemplate,
                         TemplateName = relatedPath
                     };
@@ -179,26 +180,26 @@ namespace SiteServer.CMS.DataCache
             }
         }
 
-        public static string GetSpecialDirectoryPath(SiteInfo siteInfo, string url)
+        public static string GetSpecialDirectoryPath(Site site, string url)
 	    {
 	        var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
-	        return PathUtility.MapPath(siteInfo, virtualPath);
+	        return PathUtility.MapPath(site, virtualPath);
 	    }
 
-	    public static string GetSpecialUrl(SiteInfo siteInfo, string url)
+	    public static string GetSpecialUrl(Site site, string url)
 	    {
 	        var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
             if (!PageUtils.IsVirtualUrl(virtualPath))
             {
                 virtualPath = $"@/{StringUtils.TrimSlash(virtualPath)}";
             }
-	        return PageUtility.ParseNavigationUrl(siteInfo, virtualPath, false);
+	        return PageUtility.ParseNavigationUrl(site, virtualPath, false);
 	    }
 
-	    public static string GetSpecialUrl(SiteInfo siteInfo, int specialId)
+	    public static string GetSpecialUrl(Site site, int specialId)
 	    {
-	        var specialInfo = GetSpecialInfo(siteInfo.Id, specialId);
-	        return GetSpecialUrl(siteInfo, specialInfo.Url);
+	        var specialInfo = GetSpecialInfo(site.Id, specialId);
+	        return GetSpecialUrl(site, specialInfo.Url);
 	    }
 
         public static string GetSpecialZipFilePath(string title, string directoryPath)
@@ -206,9 +207,9 @@ namespace SiteServer.CMS.DataCache
 	        return PathUtils.Combine(directoryPath, $"{title}.zip");
 	    }
 
-        public static string GetSpecialZipFileUrl(SiteInfo siteInfo, SpecialInfo specialInfo)
+        public static string GetSpecialZipFileUrl(Site site, SpecialInfo specialInfo)
         {
-            return PageUtility.ParseNavigationUrl(siteInfo, $"@/{specialInfo.Url}/{specialInfo.Title}.zip", true);
+            return PageUtility.ParseNavigationUrl(site, $"@/{specialInfo.Url}/{specialInfo.Title}.zip", true);
         }
 
         public static string GetSpecialSrcDirectoryPath(string directoryPath)

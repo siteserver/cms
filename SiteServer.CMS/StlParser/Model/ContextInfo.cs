@@ -3,6 +3,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -10,7 +11,7 @@ namespace SiteServer.CMS.StlParser.Model
     {
         public ContextInfo(PageInfo pageInfo)
         {
-            SiteInfo = pageInfo.SiteInfo;
+            Site = pageInfo.Site;
             ChannelId = pageInfo.PageChannelId;
             ContentId = pageInfo.PageContentId;
         }
@@ -19,7 +20,7 @@ namespace SiteServer.CMS.StlParser.Model
         private ContextInfo(ContextInfo contextInfo)
         {
             ContextType = contextInfo.ContextType;
-            SiteInfo = contextInfo.SiteInfo;
+            Site = contextInfo.Site;
             ChannelId = contextInfo.ChannelId;
             ContentId = contextInfo.ContentId;
             _channelInfo = contextInfo._channelInfo;
@@ -55,7 +56,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public EContextType ContextType { get; set; } = EContextType.Undefined;
 
-        public SiteInfo SiteInfo { get; set; }
+        public Site Site { get; set; }
 
         public int ChannelId { get; set; }
 
@@ -74,7 +75,7 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 if (_channelInfo != null) return _channelInfo;
                 if (ChannelId <= 0) return null;
-                _channelInfo = ChannelManager.GetChannelInfo(SiteInfo.Id, ChannelId);
+                _channelInfo = ChannelManager.GetChannelInfo(Site.Id, ChannelId);
                 return _channelInfo;
             }
             set { _channelInfo = value; }
@@ -87,7 +88,7 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 if (_contentInfo != null) return _contentInfo;
                 if (ContentId <= 0) return null;
-                _contentInfo = ContentManager.GetContentInfo(SiteInfo, ChannelId, ContentId);
+                _contentInfo = ContentManager.GetContentInfo(Site, ChannelId, ContentId);
                 return _contentInfo;
             }
             set { _contentInfo = value; }

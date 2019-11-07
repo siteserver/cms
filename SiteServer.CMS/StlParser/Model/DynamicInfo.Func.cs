@@ -7,14 +7,14 @@ namespace SiteServer.CMS.StlParser.Model
 {
     public partial class DynamicInfo
     {
-        public static DynamicInfo GetDynamicInfo(IAuthenticatedRequest request, UserInfo userInfo)
+        public static DynamicInfo GetDynamicInfo(IAuthenticatedRequest request, User user)
         {
             var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(TranslateUtils.DecryptStringBySecretKey(request.GetPostString("value")));
             if (dynamicInfo.ChannelId == 0)
             {
                 dynamicInfo.ChannelId = dynamicInfo.SiteId;
             }
-            dynamicInfo.UserInfo = userInfo;
+            dynamicInfo.User = user;
             dynamicInfo.QueryString =
                 PageUtils.GetQueryStringFilterXss(PageUtils.UrlDecode(HttpContext.Current.Request.RawUrl));
             dynamicInfo.QueryString.Remove("siteId");
@@ -42,7 +42,7 @@ namespace SiteServer.CMS.StlParser.Model
 <script type=""text/javascript"" language=""javascript"">
 function stlDynamic{AjaxDivId}(page)
 {{
-    document.getElementById('{AjaxDivId}_loading').style.display = 'block';
+    document.getElementById('{AjaxDivId}_loading').style.display = 'inline-block';
     document.getElementById('{AjaxDivId}_success').style.display = 'none';
     document.getElementById('{AjaxDivId}_failure').style.display = 'none';
     {OnBeforeSend}
@@ -54,10 +54,10 @@ function stlDynamic{AjaxDivId}(page)
             if (data.value) {{
                 {OnSuccess}
                 document.getElementById('{AjaxDivId}_success').innerHTML = data.html;
-                document.getElementById('{AjaxDivId}_success').style.display = 'block';
+                document.getElementById('{AjaxDivId}_success').style.display = 'inline-block';
             }} else {{
                 document.getElementById('{AjaxDivId}_failure').innerHTML = data.html;
-                document.getElementById('{AjaxDivId}_failure').style.display = 'block';
+                document.getElementById('{AjaxDivId}_failure').style.display = 'inline-block';
             }}
         }} else {{
             {OnError}

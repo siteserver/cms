@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
@@ -13,6 +14,7 @@ using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -127,10 +129,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return isLoading ? ParseImplAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString, pageInfo.IsLocal) : ParseImplNotAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString);
+            return isLoading ? ParseImplAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString, pageInfo.IsLocal) : ParseImplNotAjaxAsync(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString).GetAwaiter().GetResult();
 		}
 
-        private static string ParseImplNotAjax(PageInfo pageInfo, ContextInfo contextInfo, string channelIndex, string channelName, int upLevel, int topLevel, string groupChannel, string groupChannelNot, string title, bool isShowContentNum, bool isShowTreeLine, string currentFormatString)
+        private static async Task<string> ParseImplNotAjaxAsync(PageInfo pageInfo, ContextInfo contextInfo, string channelIndex, string channelName, int upLevel, int topLevel, string groupChannel, string groupChannelNot, string title, bool isShowContentNum, bool isShowTreeLine, string currentFormatString)
         {
             var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
@@ -177,7 +179,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 var hasChildren = nodeInfo.ChildrenCount != 0;
 
-                var linkUrl = PageUtility.GetChannelUrl(pageInfo.SiteInfo, theChannelInfo, pageInfo.IsLocal);
+                var linkUrl = await PageUtility.GetChannelUrlAsync(pageInfo.Site, theChannelInfo, pageInfo.IsLocal);
                 var level = theChannelInfo.ParentsCount - channel.ParentsCount;
                 var item = new StlTreeItemNotAjax(isDisplay, selected, pageInfo, nodeInfo, hasChildren, linkUrl, target, isShowTreeLine, isShowContentNum, isLastNodeArray, currentFormatString, channelId, level);
 
@@ -391,7 +393,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 if (_isShowContentNum)
                 {
-                    var count = ContentManager.GetCount(_pageInfo.SiteInfo, _nodeInfo, true);
+                    var count = ContentManager.GetCount(_pageInfo.Site, _nodeInfo, true);
                     htmlBuilder.Append("&nbsp;");
                     htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({count})</span>");
                 }
@@ -605,7 +607,7 @@ var stltree_isNodeTree = {isNodeTree};
                     nodeInfo.ChannelName = title;
                 }
 
-                var rowHtml = GetChannelRowHtml(pageInfo.SiteInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageChannelId, isLocal);
+                var rowHtml = GetChannelRowHtml(pageInfo.Site, nodeInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageChannelId, isLocal);
 
                 htmlBuilder.Append(rowHtml);
             }
@@ -620,9 +622,9 @@ var stltree_isNodeTree = {isNodeTree};
             return htmlBuilder.ToString();
         }
 
-        public static string GetChannelRowHtml(SiteInfo siteInfo, ChannelInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topChannelId, int topParantsCount, int currentChannelId, bool isLocal)
+        public static string GetChannelRowHtml(Site site, ChannelInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topChannelId, int topParantsCount, int currentChannelId, bool isLocal)
         {
-            var nodeTreeItem = new StlTreeItemAjax(siteInfo, nodeInfo, target, isShowContentNum, currentFormatString, topChannelId, topParantsCount, currentChannelId, isLocal);
+            var nodeTreeItem = new StlTreeItemAjax(site, nodeInfo, target, isShowContentNum, currentFormatString, topChannelId, topParantsCount, currentChannelId, isLocal);
             var title = nodeTreeItem.GetItemHtml();
 
             string rowHtml = $@"
@@ -643,7 +645,7 @@ var stltree_isNodeTree = {isNodeTree};
             private readonly string _iconMinusUrl;
             private readonly string _iconPlusUrl;
 
-            private readonly SiteInfo _siteInfo;
+            private readonly Site _site;
             private readonly ChannelInfo _nodeInfo;
             private readonly bool _hasChildren;
             private readonly string _linkUrl;
@@ -654,12 +656,12 @@ var stltree_isNodeTree = {isNodeTree};
             private readonly int _level;
             private readonly int _currentChannelId;
 
-            public StlTreeItemAjax(SiteInfo siteInfo, ChannelInfo nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topChannelId, int topParentsCount, int currentChannelId, bool isLocal)
+            public StlTreeItemAjax(Site site, ChannelInfo nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topChannelId, int topParentsCount, int currentChannelId, bool isLocal)
             {
-                _siteInfo = siteInfo;
+                _site = site;
                 _nodeInfo = nodeInfo;
                 _hasChildren = nodeInfo.ChildrenCount != 0;
-                _linkUrl = PageUtility.GetChannelUrl(siteInfo, nodeInfo, isLocal);
+                _linkUrl = PageUtility.GetChannelUrlAsync(site, nodeInfo, isLocal).GetAwaiter().GetResult();
                 _target = target;
                 _isShowContentNum = isShowContentNum;
                 _currentFormatString = currentFormatString;
@@ -721,7 +723,7 @@ var stltree_isNodeTree = {isNodeTree};
 
                 if (_isShowContentNum)
                 {
-                    var count = ContentManager.GetCount(_siteInfo, _nodeInfo, true);
+                    var count = ContentManager.GetCount(_site, _nodeInfo, true);
                     htmlBuilder.Append("&nbsp;");
                     htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({count})</span>");
                 }

@@ -8,6 +8,7 @@ using SiteServer.Utils.Images;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.IO;
 
@@ -84,16 +85,16 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = SiteInfo.Additional.ConfigSelectFileCurrentUrl.TrimEnd('/');
+                _currentRootPath = Site.Additional.ConfigSelectFileCurrentUrl.TrimEnd('/');
             }
             else
             {
-                SiteInfo.Additional.ConfigSelectFileCurrentUrl = _currentRootPath;
-                DataProvider.SiteDao.Update(SiteInfo);
+                Site.Additional.ConfigSelectFileCurrentUrl = _currentRootPath;
+                DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 
-			_directoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
+			_directoryPath = PathUtility.MapPath(Site, _currentRootPath);
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
 			if (!DirectoryUtils.IsDirectoryExists(_directoryPath))
 			{
@@ -143,7 +144,7 @@ namespace SiteServer.BackgroundPages.Cms
                     else if (directoryName.Equals("@"))
                     {
                         navigationBuilder.Append(
-                            $"<a href='{GetRedirectUrl(_rootPath)}'>{SiteManager.GetSiteInfo(SiteId).SiteDir}</a>");
+                            $"<a href='{GetRedirectUrl(_rootPath)}'>{SiteManager.GetSiteAsync(SiteId).GetAwaiter().GetResult().SiteDir}</a>");
                     }
                     else
                     {
@@ -240,14 +241,14 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 		}
 
-        public static string GetFileSystemIconUrl(SiteInfo siteInfo, FileSystemInfoExtend fileInfo, bool isLargeIcon)
+        public static string GetFileSystemIconUrl(Site site, FileSystemInfoExtend fileInfo, bool isLargeIcon)
         {
             EFileSystemType fileSystemType;
-            if (PathUtility.IsVideoExtenstionAllowed(siteInfo, fileInfo.Type))
+            if (PathUtility.IsVideoExtenstionAllowed(site, fileInfo.Type))
             {
                 fileSystemType = EFileSystemType.Video;
             }
-            else if (PathUtility.IsImageExtenstionAllowed(siteInfo, fileInfo.Type))
+            else if (PathUtility.IsImageExtenstionAllowed(site, fileInfo.Type))
             {
                 fileSystemType = EFileSystemType.Image;
             }
@@ -263,7 +264,7 @@ namespace SiteServer.BackgroundPages.Cms
 			var builder = new StringBuilder();
 			builder.Append(@"<table class=""table table-noborder table-hover"">");
 			
-			var directoryUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, _directoryPath, true);
+			var directoryUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, _directoryPath, true).GetAwaiter().GetResult();
             var backgroundImageUrl = SiteServerAssets.GetIconUrl("filesystem/management/background.gif");
 			var directoryImageUrl = SiteServerAssets.GetFileSystemIconUrl(EFileSystemType.Directory, true);
 
@@ -345,10 +346,10 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				else
 				{
-					fileImageUrl = GetFileSystemIconUrl(SiteInfo, fileInfo, true);
+					fileImageUrl = GetFileSystemIconUrl(Site, fileInfo, true);
 				}
 
-                var attachmentUrl = PageUtility.GetVirtualUrl(SiteInfo, linkUrl);
+                var attachmentUrl = PageUtility.GetVirtualUrl(Site, linkUrl);
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.SiteId, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(SiteId, attachmentUrl,_hiddenClientId);
 
@@ -388,7 +389,7 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 			var builder = new StringBuilder();
 			builder.Append(@"<table class=""table table-bordered table-hover""><tr class=""info thead""><td>名称</td><td width=""80"">大小</td><td width=""120"">类型</td><td width=""120"">修改日期</td></tr>");
-			var directoryUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, _directoryPath, true);
+			var directoryUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, _directoryPath, true).GetAwaiter().GetResult();
 
 			var fileSystemInfoExtendCollection = FileManager.GetFileSystemInfoExtendCollection(_directoryPath, isReload);
 
@@ -407,7 +408,7 @@ namespace SiteServer.BackgroundPages.Cms
 			foreach (FileSystemInfoExtend fileInfo in fileSystemInfoExtendCollection.Files)
 			{
 				string fileNameString =
-				    $"<img src={GetFileSystemIconUrl(SiteInfo, fileInfo, false)} border=0 /> {fileInfo.Name}";
+				    $"<img src={GetFileSystemIconUrl(Site, fileInfo, false)} border=0 /> {fileInfo.Name}";
                 var fileSystemType = EFileSystemTypeUtils.GetEnumType(fileInfo.Type);
                 var fileSystemTypeString = (fileSystemType == EFileSystemType.Unknown) ?
                     $"{fileInfo.Type.TrimStart('.').ToUpper()} 文件"
@@ -419,7 +420,7 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				var fileModifyDateTime = fileInfo.LastWriteTime;
 				var linkUrl = PageUtils.Combine(directoryUrl, fileInfo.Name);
-				var attachmentUrl = linkUrl.Replace(SiteInfo.Additional.WebUrl, "@");
+				var attachmentUrl = linkUrl.Replace(Site.Additional.WebUrl, "@");
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.SiteId, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(SiteId, attachmentUrl,_hiddenClientId);
                 string trHtml =

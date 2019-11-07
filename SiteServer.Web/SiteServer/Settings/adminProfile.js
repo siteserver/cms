@@ -45,7 +45,7 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post($url + '?userId=' + $this.userId, _.assign({}, $this.adminInfo, {
       password: $this.password
     })).then(function (response) {
@@ -67,7 +67,7 @@ var methods = {
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      pageUtils.loading(false);
+      utils.loading(false);
     });
   },
 

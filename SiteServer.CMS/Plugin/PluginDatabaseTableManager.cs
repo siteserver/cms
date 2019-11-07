@@ -6,22 +6,24 @@ namespace SiteServer.CMS.Plugin
 {
     public static class PluginDatabaseTableManager
     {
-        public static void SyncTable(ServiceImpl service)
+        public static async void SyncTable(ServiceImpl service)
         {
             if (service.DatabaseTables == null || service.DatabaseTables.Count <= 0) return;
+
+            var db = new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
 
             foreach (var tableName in service.DatabaseTables.Keys)
             {
                 var tableColumns = service.DatabaseTables[tableName];
                 if (tableColumns == null || tableColumns.Count == 0) continue;
 
-                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
+                if (!await db.IsTableExistsAsync(tableName))
                 {
-                    DatoryUtils.CreateTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, tableColumns);
+                    await db.CreateTableAsync(tableName, tableColumns);
                 }
                 else
                 {
-                    DatoryUtils.AlterTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, tableColumns, null);
+                    await db.AlterTableAsync(tableName, tableColumns);
                 }
             }
         }

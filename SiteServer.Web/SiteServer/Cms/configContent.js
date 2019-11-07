@@ -1,4 +1,4 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/configContent?siteId=' + pageUtils.getQueryStringByName("siteId"));
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/configContent?siteId=' + utils.getQueryString("siteId"));
 
 var data = {
   pageLoad: false,
@@ -48,7 +48,7 @@ var methods = {
 
     $this.isCheckContentLevel = $this.checkContentLevel > 1;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post({
       isSaveImageInTextEditor: $this.isSaveImageInTextEditor,
       isAutoPageInTextEditor: $this.isAutoPageInTextEditor,
@@ -60,7 +60,7 @@ var methods = {
       checkContentLevel: $this.checkContentLevel,
       checkContentDefaultLevel: $this.checkContentDefaultLevel
     }, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',

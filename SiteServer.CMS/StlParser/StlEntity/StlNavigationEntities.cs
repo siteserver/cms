@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -50,7 +51,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     if (siblingChannelId != 0)
                     {
                         var siblingNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, siblingChannelId);
-                        parsedContent = PageUtility.GetChannelUrl(pageInfo.SiteInfo, siblingNodeInfo, pageInfo.IsLocal);
+                        parsedContent = PageUtility.GetChannelUrlAsync(pageInfo.Site, siblingNodeInfo, pageInfo.IsLocal).GetAwaiter().GetResult();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(PreviousContent, attributeName) || StringUtils.EqualsIgnoreCase(NextContent, attributeName))
@@ -59,12 +60,12 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         var taxis = contextInfo.ContentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(attributeName, PreviousContent);
-                        var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
+                        var tableName = ChannelManager.GetTableName(pageInfo.Site, contextInfo.ChannelId);
                         var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, siblingContentId);
-                            parsedContent = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal);
+                            var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, contextInfo.ChannelId, siblingContentId);
+                            parsedContent = PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal).GetAwaiter().GetResult();
                         }
                     }
                 }

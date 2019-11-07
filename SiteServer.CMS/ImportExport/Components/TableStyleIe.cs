@@ -4,6 +4,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.ImportExport.Components
 {

@@ -10,6 +10,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.IO;
 
@@ -70,27 +71,27 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            if (SiteInfo.IsRoot)
+            if (Site.Root)
             {
-                TbSiteTemplateDir.Text = "T_" + SiteInfo.SiteName;
+                TbSiteTemplateDir.Text = "T_" + Site.SiteName;
             }
             else
             {
-                TbSiteTemplateDir.Text = "T_" + SiteInfo.SiteDir.Replace("\\", "_");
+                TbSiteTemplateDir.Text = "T_" + Site.SiteDir.Replace("\\", "_");
             }
-            TbSiteTemplateName.Text = SiteInfo.SiteName;
+            TbSiteTemplateName.Text = Site.SiteName;
 
             EBooleanUtils.AddListItems(RblIsSaveAllFiles, "全部文件", "指定文件");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsSaveAllFiles, true.ToString());
 
-            var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRoot();
-            var fileSystems = FileManager.GetFileSystemInfoExtendCollection(PathUtility.GetSitePath(SiteInfo), true);
+            var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRootAsync().GetAwaiter().GetResult();
+            var fileSystems = FileManager.GetFileSystemInfoExtendCollection(PathUtility.GetSitePath(Site), true);
             foreach (FileSystemInfoExtend fileSystem in fileSystems)
             {
                 if (!fileSystem.IsDirectory) continue;
 
                 var isSiteDirectory = false;
-                if (SiteInfo.IsRoot)
+                if (Site.Root)
                 {
                     foreach (var siteDir in siteDirList)
                     {
@@ -175,7 +176,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             var adminId = AuthRequest.AdminPermissionsImpl.GetAdminId(SiteId, channelInfo.Id);
-            var count = ContentManager.GetCount(SiteInfo, channelInfo, adminId);
+            var count = ContentManager.GetCount(Site, channelInfo, adminId);
 
             itemBuilder.Append($@"
 <span class=""checkbox checkbox-primary"" style=""padding-left: 0px;"">
@@ -238,7 +239,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var siteTemplatePath = PathUtility.GetSiteTemplatesPath(TbSiteTemplateDir.Text);
                 var isSaveAll = TranslateUtils.ToBool(RblIsSaveAllFiles.SelectedValue);
                 var lowerFileSystemArrayList = ControlUtils.GetSelectedListControlValueArrayList(CblDirectoriesAndFiles);
-                _exportObject.ExportFilesToSite(siteTemplatePath, isSaveAll, lowerFileSystemArrayList, true);
+                _exportObject.ExportFilesToSiteAsync(siteTemplatePath, isSaveAll, lowerFileSystemArrayList, true).GetAwaiter().GetResult();
                 errorMessage = "";
                 return true;
             }
@@ -260,7 +261,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var isSaveAllChannels = TranslateUtils.ToBool(RblIsSaveAllChannels.SelectedValue);
 
                 var channelIdList = TranslateUtils.StringCollectionToIntList(Request.Form["ChannelIdCollection"]);
-                _exportObject.ExportSiteContent(siteContentDirectoryPath, isSaveContents, isSaveAllChannels, channelIdList);
+                _exportObject.ExportSiteContentAsync(siteContentDirectoryPath, isSaveContents, isSaveAllChannels, channelIdList).GetAwaiter().GetResult();
 
                 errorMessage = "";
                 return true;
@@ -277,7 +278,7 @@ namespace SiteServer.BackgroundPages.Settings
             errorMessage = string.Empty;
             try
             {
-                SiteTemplateManager.ExportSiteToSiteTemplate(SiteInfo, TbSiteTemplateDir.Text, AuthRequest.AdminName);
+                SiteTemplateManager.ExportSiteToSiteTemplateAsync(Site, TbSiteTemplateDir.Text, AuthRequest.AdminName).GetAwaiter().GetResult();
 
                 return true;
             }
@@ -311,7 +312,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (SaveFiles(out errorMessage))
             {
                 BtnSaveSiteContentsNext.Visible = PhSaveSiteContents.Visible = true;
-                AuthRequest.AddAdminLog("保存站点模板", $"站点:{SiteInfo.SiteName}");
+                AuthRequest.AddAdminLogAsync("保存站点模板", $"站点:{Site.SiteName}").GetAwaiter().GetResult();
             }
             else
             {

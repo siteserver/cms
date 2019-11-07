@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
@@ -177,17 +179,17 @@ namespace SiteServer.CMS.Provider
             return isUserInRole;
         }
 
-        public void AddUserToRoles(string userName, string[] roleNames)
+        public async Task AddUserToRolesAsync(string userName, string[] roleNames)
         {
             foreach (var roleName in roleNames)
             {
-                AddUserToRole(userName, roleName);
+                await AddUserToRoleAsync(userName, roleName);
             }
         }
 
-        public void AddUserToRole(string userName, string roleName)
+        public async Task AddUserToRoleAsync(string userName, string roleName)
         {
-            if (!DataProvider.AdministratorDao.IsUserNameExists(userName)) return;
+            if (!await DataProvider.AdministratorDao.IsUserNameExistsAsync(userName)) return;
             if (!IsUserInRole(userName, roleName))
             {
                 var sqlString = "INSERT INTO siteserver_AdministratorsInRoles (UserName, RoleName) VALUES (@UserName, @RoleName)";

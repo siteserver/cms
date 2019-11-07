@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -60,10 +61,10 @@ namespace SiteServer.BackgroundPages.Cms
                     var templateInfo = TemplateManager.GetTemplateInfo(SiteId, templateId);
                     if (templateInfo != null)
                     {
-                        DataProvider.TemplateDao.Delete(SiteId, templateId);
-                        AuthRequest.AddSiteLog(SiteId,
+                        DataProvider.TemplateDao.DeleteAsync(SiteId, templateId).GetAwaiter().GetResult();
+                        AuthRequest.AddSiteLogAsync(SiteId,
                             $"删除{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
-                            $"模板名称:{templateInfo.TemplateName}");
+                            $"模板名称:{templateInfo.TemplateName}").GetAwaiter().GetResult();
                     }
                     SuccessDeleteMessage();
                 }
@@ -82,9 +83,9 @@ namespace SiteServer.BackgroundPages.Cms
                     if (templateInfo != null)
                     {
                         DataProvider.TemplateDao.SetDefault(SiteId, templateId);
-                        AuthRequest.AddSiteLog(SiteId,
+                        AuthRequest.AddSiteLogAsync(SiteId,
                             $"设置默认{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
-                            $"模板名称:{templateInfo.TemplateName}");
+                            $"模板名称:{templateInfo.TemplateName}").GetAwaiter().GetResult();
                     }
                     SuccessMessage();
                 }
@@ -162,7 +163,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (templateType == TemplateType.IndexPageTemplate || templateType == TemplateType.FileTemplate)
             {
-                var url = PageUtility.ParseNavigationUrl(SiteInfo, createdFileFullName, false);
+                var url = PageUtility.ParseNavigationUrl(Site, createdFileFullName, false);
                 ltlFileName.Text = $"<a href='{url}' target='_blank'>{createdFileFullName}</a>";
             }
 

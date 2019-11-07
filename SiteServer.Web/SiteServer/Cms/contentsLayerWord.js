@@ -2,8 +2,8 @@
 var $uploadUrl = apiUrl + '/pages/cms/contentsLayerWord';
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
-  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
   pageLoad: false,
   pageAlert: null,
   file: null,
@@ -116,7 +116,7 @@ var methods = {
       });
     }
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post({
       siteId: $this.siteId,
       channelId: $this.channelId,

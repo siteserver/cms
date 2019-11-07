@@ -2,6 +2,7 @@
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
@@ -16,16 +17,19 @@ namespace SiteServer.CMS.Api.V1
 
         public bool IsApiAuthorized { get; }
 
-        public SiteInfo SiteInfo { get; }
+        public Site Site { get; }
 
         public PageInfo PageInfo { get; }
 
         public ContextInfo ContextInfo { get; }
 
-        public StlRequest()
+        public StlRequest(AuthenticatedRequest request, bool isApiAuthorized)
         {
-            Request = new AuthenticatedRequest();
-            IsApiAuthorized = Request.IsApiAuthenticated && AccessTokenManager.IsScope(Request.ApiToken, AccessTokenManager.ScopeStl);
+            //Request = new AuthenticatedRequest();
+            //IsApiAuthorized = Request.IsApiAuthenticated && AccessTokenManager.IsScope(Request.ApiToken, AccessTokenManager.ScopeStl);
+
+            Request = request;
+            IsApiAuthorized = isApiAuthorized;
 
             if (!IsApiAuthorized) return;
 
@@ -37,38 +41,38 @@ namespace SiteServer.CMS.Api.V1
 
             if (siteId > 0)
             {
-                SiteInfo = SiteManager.GetSiteInfo(siteId);
+                Site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                SiteInfo = SiteManager.GetSiteInfoByDirectory(siteDir);
+                Site = SiteManager.GetSiteByDirectoryAsync(siteDir).GetAwaiter().GetResult();
             }
             else
             {
-                SiteInfo = SiteManager.GetSiteInfoByIsRoot();
-                if (SiteInfo == null)
+                Site = SiteManager.GetSiteByIsRootAsync().GetAwaiter().GetResult();
+                if (Site == null)
                 {
-                    var siteInfoList = SiteManager.GetSiteInfoList();
-                    if (siteInfoList != null && siteInfoList.Count > 0)
+                    var siteList = SiteManager.GetSiteListAsync().GetAwaiter().GetResult();
+                    if (siteList != null && siteList.Count > 0)
                     {
-                        SiteInfo = siteInfoList[0];
+                        Site = siteList[0];
                     }
                 }
             }
 
-            if (SiteInfo == null) return;
+            if (Site == null) return;
 
             if (channelId == 0)
             {
-                channelId = SiteInfo.Id;
+                channelId = Site.Id;
             }
 
-            var templateInfo = new TemplateInfo(0, SiteInfo.Id, string.Empty, TemplateType.IndexPageTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, true);
+            var templateInfo = new TemplateInfo(0, Site.Id, string.Empty, TemplateType.IndexPageTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, true);
 
-            PageInfo = new PageInfo(channelId, contentId, SiteInfo, templateInfo, new Dictionary<string, object>())
+            PageInfo = new PageInfo(channelId, contentId, Site, templateInfo, new Dictionary<string, object>())
             {
                 UniqueId = 1000,
-                UserInfo = Request.UserInfo
+                User = Request.User
             };
 
             var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();

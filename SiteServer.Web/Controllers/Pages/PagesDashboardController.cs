@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.BackgroundPages.Cms;
@@ -30,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages
                     return Unauthorized();
                 }
 
-                var lastActivityDate = request.AdminInfo.LastActivityDate ?? DateUtils.SqlMinValue;
+                var lastActivityDate = request.Administrator.LastActivityDate ?? DateUtils.SqlMinValue;
 
                 return Ok(new
                 {
@@ -50,7 +51,7 @@ namespace SiteServer.API.Controllers.Pages
         }
 
         [HttpGet, Route(RouteUnCheckedList)]
-        public IHttpActionResult GetUnCheckedList()
+        public async Task<IHttpActionResult> GetUnCheckedList()
         {
             try
             {
@@ -64,15 +65,15 @@ namespace SiteServer.API.Controllers.Pages
 
                 if (request.AdminPermissionsImpl.IsConsoleAdministrator)
                 {
-                    foreach(var siteInfo in SiteManager.GetSiteInfoList())
+                    foreach(var site in await SiteManager.GetSiteListAsync())
                     {
-                        var count = ContentManager.GetCountChecking(siteInfo);
+                        var count = ContentManager.GetCountChecking(site);
                         if (count > 0)
                         {
                             checkingList.Add(new
                             {
-                                Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
-                                siteInfo.SiteName,
+                                Url = PageContentSearch.GetRedirectUrlCheck(site.Id),
+                                site.SiteName,
                                 Count = count
                             });
                         }
@@ -80,18 +81,18 @@ namespace SiteServer.API.Controllers.Pages
                 }
                 else if (request.AdminPermissionsImpl.IsSystemAdministrator)
                 {
-                    foreach (var siteId in TranslateUtils.StringCollectionToIntList(request.AdminInfo.SiteIdCollection))
+                    foreach (var siteId in TranslateUtils.StringCollectionToIntList(request.Administrator.SiteIdCollection))
                     {
-                        var siteInfo = SiteManager.GetSiteInfo(siteId);
-                        if (siteInfo == null) continue;
+                        var site = await SiteManager.GetSiteAsync(siteId);
+                        if (site == null) continue;
 
-                        var count = ContentManager.GetCountChecking(siteInfo);
+                        var count = ContentManager.GetCountChecking(site);
                         if (count > 0)
                         {
                             checkingList.Add(new
                             {
-                                Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
-                                siteInfo.SiteName,
+                                Url = PageContentSearch.GetRedirectUrlCheck(site.Id),
+                                site.SiteName,
                                 Count = count
                             });
                         }

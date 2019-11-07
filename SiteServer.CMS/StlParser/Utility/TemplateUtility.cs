@@ -9,12 +9,13 @@ using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
+using System.Threading.Tasks;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
 	public static class TemplateUtility
 	{
-        public static string GetContentsItemTemplateString(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
+        public static async Task<string> GetContentsItemTemplateStringAsync(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
             //var contentInfo = new BackgroundContentInfo(itemContainer.ContentItem.DataItem);
@@ -25,7 +26,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 contentItemInfo = pageInfo.ContentItems.Peek();
             }
             if (contentItemInfo == null) return string.Empty;
-            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contentItemInfo.ChannelId,
+            var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, contentItemInfo.ChannelId,
                 contentItemInfo.ContentId);
 
             var contextInfo = contextInfoRef.Clone();
@@ -36,13 +37,13 @@ namespace SiteServer.CMS.StlParser.Utility
             contextInfo.ContentId = contentInfo.Id;
             contextInfo.ContentInfo = contentInfo;
 
-            var preSiteInfo = pageInfo.SiteInfo;
+            var preSite = pageInfo.Site;
             var prePageChannelId = pageInfo.PageChannelId;
             var prePageContentId = pageInfo.PageContentId;
             if (contentInfo.SiteId != pageInfo.SiteId)
             {
-                var siteInfo = SiteManager.GetSiteInfo(contentInfo.SiteId);
-                contextInfo.SiteInfo = siteInfo;
+                var siteInfo = await SiteManager.GetSiteAsync(contentInfo.SiteId);
+                contextInfo.Site = siteInfo;
                 pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
             }
 
@@ -81,7 +82,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (contentInfo.SiteId != pageInfo.SiteId)
             {
-                pageInfo.ChangeSite(preSiteInfo, prePageChannelId, prePageContentId, contextInfoRef);
+                pageInfo.ChangeSite(preSite, prePageChannelId, prePageContentId, contextInfoRef);
             }
 
             return innerBuilder.ToString();
@@ -280,19 +281,19 @@ namespace SiteServer.CMS.StlParser.Utility
             return innerBuilder.ToString();
         }
 
-        public static string GetSitesTemplateString(string templateString, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
+        public static async Task<string> GetSitesTemplateStringAsync(string templateString, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
             var siteId = SqlUtils.EvalInt(itemContainer.SiteItem.DataItem, SiteAttribute.Id);
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var siteInfo = await SiteManager.GetSiteAsync(siteId);
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContainerClientId = containerClientId;
             contextInfo.ItemContainer = itemContainer;
             contextInfo.ContextType = contextType;
 
-            var preSiteInfo = pageInfo.SiteInfo;
+            var preSite = pageInfo.Site;
             var prePageChannelId = pageInfo.PageChannelId;
             var prePageContentId = pageInfo.PageContentId;
             pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
@@ -302,7 +303,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             DbItemContainer.PopSiteItems(pageInfo);
 
-            pageInfo.ChangeSite(preSiteInfo, prePageChannelId, prePageContentId, contextInfo);
+            pageInfo.ChangeSite(preSite, prePageChannelId, prePageContentId, contextInfo);
 
             return innerBuilder.ToString();
         }

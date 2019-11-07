@@ -9,6 +9,7 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
+using System.Threading.Tasks;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -23,7 +24,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "显示所有级别的子栏目")]
         public const string IsAllChildren = nameof(IsAllChildren);
 
-        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Channel);
 
@@ -31,7 +32,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (contextInfo.IsStlEntity)
             {
-                return ParseEntity(pageInfo, dataSource);
+                return await ParseEntityAsync(pageInfo, dataSource);
             }
 
             return ParseElement(pageInfo, contextInfo, listInfo, dataSource);
@@ -129,7 +130,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        private static object ParseEntity(PageInfo pageInfo, DataSet dataSource)
+        private static async Task<object> ParseEntityAsync(PageInfo pageInfo, DataSet dataSource)
         {
             var channelInfoList = new List<Dictionary<string,object>>();
             var table = dataSource.Tables[0];
@@ -140,7 +141,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
                 if (channelInfo != null)
                 {
-                    channelInfoList.Add(channelInfo.ToDictionary());
+                    channelInfoList.Add(await channelInfo.ToDictionaryAsync());
                 }
             }
 

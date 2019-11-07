@@ -48,15 +48,15 @@ namespace SiteServer.BackgroundPages.Cms
             _type = AuthRequest.GetQueryString("type");
             if (_type == PageTemplateAssets.TypeInclude)
             {
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsIncludeDir.Trim('/');
+                _assetsDir = Site.Additional.TemplatesAssetsIncludeDir.Trim('/');
             }
             else if (_type == PageTemplateAssets.TypeJs)
             {
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = Site.Additional.TemplatesAssetsJsDir.Trim('/');
             }
             else if (_type == PageTemplateAssets.TypeCss)
             {
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = Site.Additional.TemplatesAssetsCssDir.Trim('/');
             }
 
             if (string.IsNullOrEmpty(_assetsDir)) return;
@@ -75,20 +75,20 @@ namespace SiteServer.BackgroundPages.Cms
                 var assetsDir = TbDirectoryPath.Text.Trim('/');
                 if (_type == PageTemplateAssets.TypeInclude)
                 {
-                    SiteInfo.Additional.TemplatesAssetsIncludeDir = assetsDir;
+                    Site.Additional.TemplatesAssetsIncludeDir = assetsDir;
                 }
                 else if (_type == PageTemplateAssets.TypeJs)
                 {
-                    SiteInfo.Additional.TemplatesAssetsJsDir = assetsDir;
+                    Site.Additional.TemplatesAssetsJsDir = assetsDir;
                 }
                 else if (_type == PageTemplateAssets.TypeCss)
                 {
-                    SiteInfo.Additional.TemplatesAssetsCssDir = assetsDir;
+                    Site.Additional.TemplatesAssetsCssDir = assetsDir;
                 }
 
-                DataProvider.SiteDao.Update(SiteInfo);
+                DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
 
-                AuthRequest.AddSiteLog(SiteId, "模板文件夹设置");
+                AuthRequest.AddSiteLogAsync(SiteId, "模板文件夹设置").GetAwaiter().GetResult();
 
                 isSuccess = true;
             }

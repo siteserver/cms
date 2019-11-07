@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Apis

@@ -28,6 +28,6 @@ namespace SiteServer.CMS.StlParser.Model
         public NameValueCollection QueryString { get; set; }
 
         [JsonIgnore]
-        public UserInfo UserInfo { get; set; }
+        public User User { get; set; }
     }
 }

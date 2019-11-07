@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.UI;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -57,7 +58,7 @@ namespace SiteServer.BackgroundPages
 
             if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {
-                if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null || AuthRequest.AdminInfo.IsLockedOut) // 检测管理员是否登录，检测管理员帐号是否被锁定
+                if (!AuthRequest.IsAdminLoggin || AuthRequest.Administrator == null || AuthRequest.Administrator.Locked) // 检测管理员是否登录，检测管理员帐号是否被锁定
                 {
                     IsForbidden = true;
                     PageUtils.RedirectToLoginPage();

@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var textBoxId = AuthRequest.GetQueryString("TextBoxID");
                 var virtualUrl = AuthRequest.GetQueryString(textBoxId);
-                _filePath = PathUtility.MapPath(SiteInfo, virtualUrl);
+                _filePath = PathUtility.MapPath(Site, virtualUrl);
                 _relatedPath = PageUtils.RemoveFileNameFromUrl(virtualUrl);
                 _fileName = PathUtils.GetFileName(_filePath);
             }
@@ -136,7 +136,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     _fileName = _updateName;
                 }
-                _filePath = PathUtility.MapPath(SiteInfo, PathUtils.Combine(_relatedPath, _fileName));
+                _filePath = PathUtility.MapPath(Site, PathUtils.Combine(_relatedPath, _fileName));
             }
 
             if (!FileUtils.IsFileExists(_filePath))
@@ -158,7 +158,7 @@ namespace SiteServer.BackgroundPages.Cms
             LtlLastAccessTime.Text = fileInfo.LastAccessTime.ToString("yyyy-MM-dd hh:mm:ss");
 
             LtlOpen.Text =
-                $@"<a class=""btn btn-default m-l-5"" href=""{PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, _filePath, true)}"" target=""_blank"">浏 览</a>";
+                $@"<a class=""btn btn-default m-l-5"" href=""{PageUtility.GetSiteUrlByPhysicalPathAsync(Site, _filePath, true).GetAwaiter().GetResult()}"" target=""_blank"">浏 览</a>";
             if (EFileSystemTypeUtils.IsTextEditable(fileType))
             {
                 LtlEdit.Text = $@"<a class=""btn btn-default m-l-5"" href=""{ModalFileEdit.GetRedirectUrl(SiteId, _relatedPath, _fileName, false)}"">修 改</a>";

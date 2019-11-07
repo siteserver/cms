@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -13,7 +14,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
@@ -21,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var userId = request.GetQueryInt("userId");
                 if (userId == 0) userId = request.AdminId;
                 if (!request.IsAdminLoggin) return Unauthorized();
-                var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
+                var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
@@ -41,7 +42,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -49,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var userId = request.GetQueryInt("userId");
                 if (userId == 0) userId = request.AdminId;
                 if (!request.IsAdminLoggin) return Unauthorized();
-                var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
+                var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
@@ -58,13 +59,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 }
 
                 var password = request.GetPostString("password");
-
-                if (!DataProvider.AdministratorDao.ChangePassword(adminInfo, password, out var errorMessage))
+                var valid = await DataProvider.AdministratorDao.ChangePasswordAsync(adminInfo, password);
+                if (!valid.IsValid)
                 {
-                    return BadRequest($"更改密码失败：{errorMessage}");
+                    return BadRequest($"更改密码失败：{valid.ErrorMessage}");
                 }
 
-                request.AddAdminLog("重设管理员密码", $"管理员:{adminInfo.UserName}");
+                await request.AddAdminLogAsync("重设管理员密码", $"管理员:{adminInfo.UserName}");
 
                 return Ok(new
                 {

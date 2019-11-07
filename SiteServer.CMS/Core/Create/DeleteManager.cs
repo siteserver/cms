@@ -2,6 +2,7 @@
 using System.IO;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -9,17 +10,17 @@ namespace SiteServer.CMS.Core.Create
 {
     public class DeleteManager
     {
-        public static void DeleteContentsByPage(SiteInfo siteInfo, List<int> channelIdList)
+        public static void DeleteContentsByPage(Site site, List<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
-                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+                var tableName = ChannelManager.GetTableName(site, channelId);
                 var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
                 if (contentIdList.Count > 0)
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var filePath = PathUtility.GetContentPageFilePath(siteInfo, channelId, contentId, 0);
+                        var filePath = PathUtility.GetContentPageFilePath(site, channelId, contentId, 0);
                         FileUtils.DeleteFileIfExists(filePath);
                         DeletePagingFiles(filePath);
                         DirectoryUtils.DeleteEmptyDirectory(DirectoryUtils.GetDirectoryPath(filePath));
@@ -28,44 +29,44 @@ namespace SiteServer.CMS.Core.Create
             }
         }
 
-        public static void DeleteContents(SiteInfo siteInfo, int channelId, List<int> contentIdList)
+        public static void DeleteContents(Site site, int channelId, List<int> contentIdList)
         {
             foreach (var contentId in contentIdList)
             {
-                DeleteContent(siteInfo, channelId, contentId);
+                DeleteContent(site, channelId, contentId);
             }
         }
 
-        public static void DeleteContent(SiteInfo siteInfo, int channelId, int contentId)
+        public static void DeleteContent(Site site, int channelId, int contentId)
         {
-            var filePath = PathUtility.GetContentPageFilePath(siteInfo, channelId, contentId, 0);
+            var filePath = PathUtility.GetContentPageFilePath(site, channelId, contentId, 0);
             FileUtils.DeleteFileIfExists(filePath);
         }
 
-        public static void DeleteChannels(SiteInfo siteInfo, List<int> channelIdList)
+        public static void DeleteChannels(Site site, List<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
-                var filePath = PathUtility.GetChannelPageFilePath(siteInfo, channelId, 0);
+                var filePath = PathUtility.GetChannelPageFilePath(site, channelId, 0);
 
                 FileUtils.DeleteFileIfExists(filePath);
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+                var tableName = ChannelManager.GetTableName(site, channelId);
                 var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
                 if (contentIdList.Count > 0)
                 {
-                    DeleteContents(siteInfo, channelId, contentIdList);
+                    DeleteContents(site, channelId, contentIdList);
                 }
             }
         }
 
-        public static void DeleteChannelsByPage(SiteInfo siteInfo, List<int> channelIdList)
+        public static void DeleteChannelsByPage(Site site, List<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
-                if (channelId != siteInfo.Id)
+                if (channelId != site.Id)
                 {
-                    var filePath = PathUtility.GetChannelPageFilePath(siteInfo, channelId, 0);
+                    var filePath = PathUtility.GetChannelPageFilePath(site, channelId, 0);
                     FileUtils.DeleteFileIfExists(filePath);
                     DeletePagingFiles(filePath);
                     DirectoryUtils.DeleteEmptyDirectory(DirectoryUtils.GetDirectoryPath(filePath));
@@ -93,17 +94,17 @@ namespace SiteServer.CMS.Core.Create
             }
         }
 
-        public static void DeleteFiles(SiteInfo siteInfo, List<int> templateIdList)
+        public static void DeleteFiles(Site site, List<int> templateIdList)
         {
             foreach (var templateId in templateIdList)
             {
-                var templateInfo = TemplateManager.GetTemplateInfo(siteInfo.Id, templateId);
+                var templateInfo = TemplateManager.GetTemplateInfo(site.Id, templateId);
                 if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
                 {
                     return;
                 }
 
-                var filePath = PathUtility.MapPath(siteInfo, templateInfo.CreatedFileFullName);
+                var filePath = PathUtility.MapPath(site, templateInfo.CreatedFileFullName);
 
                 FileUtils.DeleteFileIfExists(filePath);
             }

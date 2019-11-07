@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 
@@ -73,32 +74,32 @@ namespace SiteServer.BackgroundPages.Cms
             var parentWithChildren = new Hashtable();
             foreach (var siteId in siteIdList)
             {
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo.ParentId == 0)
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                if (site.ParentId == 0)
                 {
-                    mySystemInfoArrayList.Add(siteInfo);
+                    mySystemInfoArrayList.Add(site);
                 }
                 else
                 {
                     var children = new ArrayList();
-                    if (parentWithChildren.Contains(siteInfo.ParentId))
+                    if (parentWithChildren.Contains(site.ParentId))
                     {
-                        children = (ArrayList)parentWithChildren[siteInfo.ParentId];
+                        children = (ArrayList)parentWithChildren[site.ParentId];
                     }
-                    children.Add(siteInfo);
-                    parentWithChildren[siteInfo.ParentId] = children;
+                    children.Add(site);
+                    parentWithChildren[site.ParentId] = children;
                 }
             }
-            foreach (SiteInfo siteInfo in mySystemInfoArrayList)
+            foreach (Site site in mySystemInfoArrayList)
             {
-                AddSite(DdlSiteId, siteInfo, parentWithChildren, 0);
+                AddSite(DdlSiteId, site, parentWithChildren, 0);
             }
             ControlUtils.SelectSingleItem(DdlSiteId, _targetSiteId.ToString());
 
             var targetChannelId = AuthRequest.GetQueryInt("TargetChannelId");
             if (targetChannelId > 0)
             {
-                var siteName = SiteManager.GetSiteInfo(_targetSiteId).SiteName;
+                var siteName = SiteManager.GetSiteAsync(_targetSiteId).GetAwaiter().GetResult().SiteName;
                 var nodeNames = ChannelManager.GetChannelNameNavigation(_targetSiteId, targetChannelId);
                 if (_targetSiteId != SiteId)
                 {
@@ -122,7 +123,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     ["linkUrl"] = GetRedirectUrl(_targetSiteId, string.Empty)
                 };
-                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteManager.GetSiteInfo(_targetSiteId), string.Empty, ELoadingType.ChannelClickSelect, additional));
+                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteManager.GetSiteAsync(_targetSiteId).GetAwaiter().GetResult(), string.Empty, ELoadingType.ChannelClickSelect, additional));
 
                 var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, EScopeType.Children, string.Empty, string.Empty, string.Empty);
 
@@ -149,7 +150,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ["linkUrl"] = GetRedirectUrl(_targetSiteId, string.Empty)
             };
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelClickSelect, additional, AuthRequest.AdminPermissionsImpl);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(Site, nodeInfo, enabled, ELoadingType.ChannelClickSelect, additional, AuthRequest.AdminPermissionsImpl);
         }
 
         public void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)
@@ -158,7 +159,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.Redirect(redirectUrl);
         }
 
-        private void AddSite(ListControl listControl, SiteInfo siteInfo, Hashtable parentWithChildren, int level)
+        private void AddSite(ListControl listControl, Site site, Hashtable parentWithChildren, int level)
         {
             var padding = string.Empty;
             for (var i = 0; i < level; i++)
@@ -170,25 +171,25 @@ namespace SiteServer.BackgroundPages.Cms
                 padding += "└ ";
             }
 
-            if (parentWithChildren[siteInfo.Id] != null)
+            if (parentWithChildren[site.Id] != null)
             {
-                var children = (ArrayList)parentWithChildren[siteInfo.Id];
+                var children = (ArrayList)parentWithChildren[site.Id];
 
-                var listitem = new ListItem(padding + siteInfo.SiteName +
-                                                 $"({children.Count})", siteInfo.Id.ToString());
-                if (siteInfo.Id == SiteId) listitem.Selected = true;
+                var listitem = new ListItem(padding + site.SiteName +
+                                                 $"({children.Count})", site.Id.ToString());
+                if (site.Id == SiteId) listitem.Selected = true;
 
                 listControl.Items.Add(listitem);
                 level++;
-                foreach (SiteInfo subSiteInfo in children)
+                foreach (Site subSite in children)
                 {
-                    AddSite(listControl, subSiteInfo, parentWithChildren, level);
+                    AddSite(listControl, subSite, parentWithChildren, level);
                 }
             }
             else
             {
-                var listitem = new ListItem(padding + siteInfo.SiteName, siteInfo.Id.ToString());
-                if (siteInfo.Id == SiteId) listitem.Selected = true;
+                var listitem = new ListItem(padding + site.SiteName, site.Id.ToString());
+                if (site.Id == SiteId) listitem.Selected = true;
 
                 listControl.Items.Add(listitem);
             }

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Plugin;
@@ -390,32 +392,32 @@ namespace SiteServer.CMS.StlParser.Utility
             return "ajaxElement_" + updaterId + "_" + StringUtils.GetRandomInt(100, 1000);
         }
 
-        public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, ContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
+        public static async Task<string> GetStlCurrentUrlAsync(Site site, int channelId, int contentId, ContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
         {
             var currentUrl = string.Empty;
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                currentUrl = siteInfo.Additional.WebUrl;
+                currentUrl = site.Additional.WebUrl;
             }
             else if (templateType == TemplateType.ContentTemplate)
             {
                 if (contentInfo == null)
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                    currentUrl = PageUtility.GetContentUrl(siteInfo, nodeInfo, contentId, isLocal);
+                    var nodeInfo = ChannelManager.GetChannelInfo(site.Id, channelId);
+                    currentUrl = await PageUtility.GetContentUrlAsync(site, nodeInfo, contentId, isLocal);
                 }
                 else
                 {
-                    currentUrl = PageUtility.GetContentUrl(siteInfo, contentInfo, isLocal);
+                    currentUrl = await PageUtility.GetContentUrlAsync(site, contentInfo, isLocal);
                 }
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
-                currentUrl = PageUtility.GetChannelUrl(siteInfo, ChannelManager.GetChannelInfo(siteInfo.Id, channelId), isLocal);
+                currentUrl = await PageUtility.GetChannelUrlAsync(site, ChannelManager.GetChannelInfo(site.Id, channelId), isLocal);
             }
             else if (templateType == TemplateType.FileTemplate)
             {
-                currentUrl = PageUtility.GetFileUrl(siteInfo, templateId, isLocal);
+                currentUrl = PageUtility.GetFileUrl(site, templateId, isLocal);
             }
             //currentUrl是当前页面的地址，前后台分离的时候，不允许带上protocol
             //return PageUtils.AddProtocolToUrl(currentUrl);

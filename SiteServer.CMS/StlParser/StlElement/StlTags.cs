@@ -4,6 +4,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -139,7 +140,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    var url = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo,
+                    var url = PageUtility.ParseNavigationUrl(pageInfo.Site,
                         $"@/utils/tags.html?tagName={PageUtils.UrlEncode(tagInfo.Tag)}", pageInfo.IsLocal);
                     tagsBuilder.Append($@"
 <li class=""tag_popularity_{tagInfo.Level}""><a target=""_blank"" href=""{url}"">{tagInfo.Tag}</a></li>

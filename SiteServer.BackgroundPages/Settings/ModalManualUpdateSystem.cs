@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Settings
 	        //    return;
 	        //}
 
-	        AuthRequest.AddAdminLog($"手动升级 SiteServer CMS 版本：{TbVersion.Text}");
+	        AuthRequest.AddAdminLogAsync($"手动升级 SiteServer CMS 版本：{TbVersion.Text}").GetAwaiter().GetResult();
 
 	        LayerUtils.CloseAndRedirect(Page, PageUtils.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml")));
 	    }
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	        ZipUtils.ExtractZip(localFilePath, directoryPath);
 
-	        AuthRequest.AddAdminLog("手动升级 SiteServer CMS 版本：" + idAndVersion);
+	        AuthRequest.AddAdminLogAsync("手动升级 SiteServer CMS 版本：" + idAndVersion).GetAwaiter().GetResult();
 
 	        LayerUtils.CloseAndRedirect(Page, PageUtils.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml")));
 	    }

@@ -1,9 +1,9 @@
 ﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerTaxis');
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
-  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
-  channelContentIds: pageUtils.getQueryString('channelContentIds'),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
+  channelContentIds: utils.getQueryString('channelContentIds'),
   pageLoad: false,
   pageAlert: null,
   isUp: true,
@@ -17,7 +17,7 @@ var methods = {
   btnSubmitClick: function () {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post({
       siteId: $this.siteId,
       channelId: $this.channelId,

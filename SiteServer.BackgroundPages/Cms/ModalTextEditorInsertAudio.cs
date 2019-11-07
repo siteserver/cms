@@ -44,10 +44,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            CbIsAutoPlay.Checked = SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay;
+            CbIsAutoPlay.Checked = Site.Additional.ConfigUEditorAudioIsAutoPlay;
         }
 
-        public string TypeCollection => SiteInfo.Additional.VideoUploadTypeCollection;
+        public string TypeCollection => Site.Additional.VideoUploadTypeCollection;
 
         private Hashtable Upload()
         {
@@ -66,12 +66,12 @@ namespace SiteServer.BackgroundPages.Cms
                         var fileExtName = PathUtils.GetExtension(filePath);
 
                         var isAllow = true;
-                        if (!PathUtility.IsVideoExtenstionAllowed(SiteInfo, fileExtName))
+                        if (!PathUtility.IsVideoExtenstionAllowed(Site, fileExtName))
                         {
                             message = "此格式不允许上传，请选择有效的音频文件";
                             isAllow = false;
                         }
-                        if (!PathUtility.IsVideoSizeAllowed(SiteInfo, postedFile.ContentLength))
+                        if (!PathUtility.IsVideoSizeAllowed(Site, postedFile.ContentLength))
                         {
                             message = "上传失败，上传文件超出规定文件大小";
                             isAllow = false;
@@ -79,13 +79,13 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (isAllow)
                         {
-                            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
-                            var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
+                            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(Site, fileExtName);
+                            var localFileName = PathUtility.GetUploadFileName(Site, filePath);
                             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
                             postedFile.SaveAs(localFilePath);
-                            playUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
-                            playUrl = PageUtility.GetVirtualUrl(SiteInfo, playUrl);
+                            playUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localFilePath, true).GetAwaiter().GetResult();
+                            playUrl = PageUtility.GetVirtualUrl(Site, playUrl);
                             success = true;
                         }
                     }
@@ -116,13 +116,13 @@ namespace SiteServer.BackgroundPages.Cms
             var playUrl = TbPlayUrl.Text;
             var isAutoPlay = CbIsAutoPlay.Checked;
 
-            if (isAutoPlay != SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay)
+            if (isAutoPlay != Site.Additional.ConfigUEditorAudioIsAutoPlay)
             {
-                SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
-                DataProvider.SiteDao.Update(SiteInfo);
+                Site.Additional.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
+                DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
             }
 
-            var script = "parent." + UEditorUtils.GetInsertAudioScript(_attributeName, playUrl, SiteInfo);
+            var script = "parent." + UEditorUtils.GetInsertAudioScript(_attributeName, playUrl, Site);
             LayerUtils.CloseWithoutRefresh(Page, script);
         }
 

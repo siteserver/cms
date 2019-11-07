@@ -10,6 +10,7 @@ using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -52,8 +53,8 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             int checkedLevel;
-            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, SiteId, out checkedLevel);
-            CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, null, isChecked, checkedLevel);
+            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, Site, SiteId, out checkedLevel);
+            CheckManager.LoadContentLevelToEdit(DdlContentLevel, Site, null, isChecked, checkedLevel);
             ControlUtils.SelectSingleItem(DdlContentLevel, CheckManager.LevelInt.CaoGao.ToString());
         }
 
@@ -76,18 +77,18 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (fileNames.Count > 1)
             {
-                var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
-                var styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
+                var tableName = ChannelManager.GetTableName(Site, _channelInfo);
+                var styleInfoList = TableStyleManager.GetContentStyleInfoList(Site, _channelInfo);
 
                 foreach (var fileName in fileNames)
                 {
                     if (!string.IsNullOrEmpty(fileName))
                     {
-                        var formCollection = WordUtils.GetWordNameValueCollection(SiteId, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, fileName);
+                        var formCollection = WordUtils.GetWordNameValueCollectionAsync(SiteId, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, fileName).GetAwaiter().GetResult();
 
                         if (!string.IsNullOrEmpty(formCollection[ContentAttribute.Title]))
                         {
-                            var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value);
+                            var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
 
                             var contentInfo = new ContentInfo(dict)
                             {
@@ -101,11 +102,11 @@ namespace SiteServer.BackgroundPages.Cms
                             contentInfo.LastEditDate = contentInfo.AddDate;
 
                             contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
-                            contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
+                            contentInfo.IsChecked = contentInfo.CheckedLevel >= Site.Additional.CheckContentLevel;
 
                             contentInfo.Title = formCollection[ContentAttribute.Title];
 
-                            contentInfo.Id = DataProvider.ContentDao.Insert(tableName, SiteInfo, _channelInfo, contentInfo);
+                            contentInfo.Id = DataProvider.ContentDao.Insert(tableName, Site, _channelInfo, contentInfo);
 
                             CreateManager.CreateContent(SiteId, _channelInfo.Id, contentInfo.Id);
                             CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);

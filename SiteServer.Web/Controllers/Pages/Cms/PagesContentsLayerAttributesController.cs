@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -15,7 +16,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         private const string Route = "";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -36,8 +37,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 if (pageType == "setAttributes")
                 {
@@ -46,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         foreach (var channelContentId in channelContentIds)
                         {
                             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
+                            var contentInfo = ContentManager.GetContentInfo(site, channelInfo, channelContentId.Id);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -65,10 +66,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             {
                                 contentInfo.IsTop = true;
                             }
-                            DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                            DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
                         }
 
-                        request.AddSiteLog(siteId, "设置内容属性");
+                        await request.AddSiteLogAsync(siteId, "设置内容属性");
                     }
                 }
                 else if(pageType == "cancelAttributes")
@@ -78,7 +79,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         foreach (var channelContentId in channelContentIds)
                         {
                             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
+                            var contentInfo = ContentManager.GetContentInfo(site, channelInfo, channelContentId.Id);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -97,10 +98,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             {
                                 contentInfo.IsTop = false;
                             }
-                            DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                            DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
                         }
 
-                        request.AddSiteLog(siteId, "取消内容属性");
+                        await request.AddSiteLogAsync(siteId, "取消内容属性");
                     }
                 }
                 else if (pageType == "setHits")
@@ -108,14 +109,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     foreach (var channelContentId in channelContentIds)
                     {
                         var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
+                        var contentInfo = ContentManager.GetContentInfo(site, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         contentInfo.Hits = hits;
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
                     }
 
-                    request.AddSiteLog(siteId, "设置内容点击量");
+                    await request.AddSiteLogAsync(siteId, "设置内容点击量");
                 }
 
                 return Ok(new

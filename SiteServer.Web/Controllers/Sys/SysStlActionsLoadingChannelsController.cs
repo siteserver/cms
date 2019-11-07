@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
@@ -14,7 +15,7 @@ namespace SiteServer.API.Controllers.Sys
     public class SysStlActionsLoadingChannelsController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsLoadingChannels.Route)]
-        public void Main()
+        public async Task Main()
         {
             var builder = new StringBuilder();
 
@@ -31,14 +32,14 @@ namespace SiteServer.API.Controllers.Sys
                 var topParentsCount = TranslateUtils.ToInt(form["topParentsCount"]);
                 var currentChannelId = TranslateUtils.ToInt(form["currentChannelId"]);
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = await SiteManager.GetSiteAsync(siteId);
                 var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
 
                 foreach (var channelId in channelIdList)
                 {
                     var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-                    builder.Append(StlTree.GetChannelRowHtml(siteInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, TranslateUtils.DecryptStringBySecretKey(currentFormatString), topChannelId, topParentsCount, currentChannelId, false));
+                    builder.Append(StlTree.GetChannelRowHtml(site, nodeInfo, target, isShowTreeLine, isShowContentNum, TranslateUtils.DecryptStringBySecretKey(currentFormatString), topChannelId, topParentsCount, currentChannelId, false));
                 }
             }
             catch

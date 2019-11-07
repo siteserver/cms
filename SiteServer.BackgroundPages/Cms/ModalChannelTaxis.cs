@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
                     DataProvider.ChannelDao.UpdateTaxis(SiteId, channelId, isSubtract);
                 }
 
-                AuthRequest.AddSiteLog(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"), $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}");
+                AuthRequest.AddSiteLogAsync(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"), $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}").GetAwaiter().GetResult();
             }
             LayerUtils.Close(Page);
         }

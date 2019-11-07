@@ -3,6 +3,7 @@ using System.Data;
 using Datory;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider

@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
 
-            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.TemplateFilePathRule, _additional));
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(Site, string.Empty, ELoadingType.TemplateFilePathRule, _additional));
 
             if (AuthRequest.IsQueryExists("CurrentChannelId"))
             {
@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, channelInfo, enabled, ELoadingType.TemplateFilePathRule, _additional, AuthRequest.AdminPermissionsImpl);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(Site, channelInfo, enabled, ELoadingType.TemplateFilePathRule, _additional, AuthRequest.AdminPermissionsImpl);
         }
 	}
 }

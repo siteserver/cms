@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
@@ -43,7 +44,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -73,7 +74,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
 //}};
 //";
 
-                request.AddAdminLog("修改用户中心设置");
+                await request.AddAdminLogAsync("修改用户中心设置");
 
                 return Ok(new
                 {

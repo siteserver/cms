@@ -39,8 +39,8 @@ namespace SiteServer.BackgroundPages.Cms
                 EBooleanUtils.AddListItems(DdlIsCreateChannelIfContentChanged, "生成", "不生成");
                 ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfContentChanged, nodeInfo.Additional.IsCreateChannelIfContentChanged.ToString());
 
-                //NodeManager.AddListItemsForAddContent(this.channelIdCollection.Items, base.SiteInfo, false);
-                ChannelManager.AddListItemsForCreateChannel(LbChannelId.Items, SiteInfo, false, AuthRequest.AdminPermissionsImpl);
+                //NodeManager.AddListItemsForAddContent(this.channelIdCollection.Items, base.Site, false);
+                ChannelManager.AddListItemsForCreateChannel(LbChannelId.Items, Site, false, AuthRequest.AdminPermissionsImpl);
                 ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.CreateChannelIdsIfContentChanged));
 			}
 		}
@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 DataProvider.ChannelDao.Update(nodeInfo);
 
-                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "设置栏目变动生成页面", $"栏目:{nodeInfo.ChannelName}");
+                AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "设置栏目变动生成页面", $"栏目:{nodeInfo.ChannelName}").GetAwaiter().GetResult();
                 isSuccess = true;
             }
             catch (Exception ex)

@@ -9,7 +9,7 @@ namespace SiteServer.CMS.Plugin.Impl
     {
         public ParseContextImpl(string stlOuterHtml, string stlInnerHtml, NameValueCollection stlAttributes, PageInfo pageInfo, ContextInfo contextInfo)
         {
-            SiteId = contextInfo.SiteInfo.Id;
+            SiteId = contextInfo.Site.Id;
             ChannelId = contextInfo.ChannelId;
             ContentId = contextInfo.ContentId;
             ContentInfo = contextInfo.ContentInfo;

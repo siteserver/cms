@@ -3,6 +3,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.DataCache
 {

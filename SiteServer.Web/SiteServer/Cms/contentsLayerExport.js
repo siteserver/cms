@@ -1,9 +1,9 @@
 ﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerExport');
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryString('siteId')),
-  channelId: parseInt(pageUtils.getQueryString('channelId')),
-  channelContentIds: pageUtils.getQueryString('channelContentIds'),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
+  channelContentIds: utils.getQueryString('channelContentIds'),
   pageLoad: false,
   pageAlert: null,
   columns: null,
@@ -82,7 +82,7 @@ var methods = {
       };
     }
 
-    parent.pageUtils.loading(true);
+    parent.utils.loading(true);
     $api.post({
         siteId: $this.siteId,
         channelId: $this.channelId,
@@ -96,7 +96,7 @@ var methods = {
         columnNames: $this.columnNames
       },
       function (err, res) {
-        parent.pageUtils.loading(false);
+        parent.utils.loading(false);
 
         if (err) {
           return $this.pageAlert = {

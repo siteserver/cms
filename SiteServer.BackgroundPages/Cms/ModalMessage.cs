@@ -81,13 +81,13 @@ namespace SiteServer.BackgroundPages.Cms
             if (StringUtils.EqualsIgnoreCase(_type, TypePreviewImage))
             {
                 var siteId = AuthRequest.GetQueryInt("siteID");
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
                 var textBoxClientId = AuthRequest.GetQueryString("textBoxClientID");
                 LtlHtml.Text = $@"
 <span id=""previewImage""></span>
 <script>
 var rootUrl = '{PageUtils.GetRootUrl(string.Empty)}';
-var siteUrl = '{PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}")}';
+var siteUrl = '{PageUtils.ParseNavigationUrl($"~/{site.SiteDir}")}';
 var imageUrl = window.parent.document.getElementById('{textBoxClientId}').value;
 if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png|\.webp$/i) != -1){{
 	if (imageUrl.charAt(0) == '~'){{
@@ -106,14 +106,14 @@ if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png|\.webp$/i) != -1)
             else if (StringUtils.EqualsIgnoreCase(_type, TypePreviewVideo))
             {
                 var siteId = AuthRequest.GetQueryInt("siteID");
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
                 var textBoxClientId = AuthRequest.GetQueryString("textBoxClientID");
 
                 LtlHtml.Text = $@"
 <span id=""previewVideo""></span>
 <script>
 var rootUrl = '{PageUtils.GetRootUrl(string.Empty)}';
-var siteUrl = '{PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}")}';
+var siteUrl = '{PageUtils.ParseNavigationUrl($"~/{site.SiteDir}")}';
 var videoUrl = window.parent.document.getElementById('{textBoxClientId}').value;
 if (videoUrl.charAt(0) == '~'){{
 	videoUrl = videoUrl.replace('~', rootUrl);
@@ -132,12 +132,12 @@ if (videoUrl){{
             else if (StringUtils.EqualsIgnoreCase(_type, TypePreviewVideoByUrl))
             {
                 var siteId = AuthRequest.GetQueryInt("siteID");
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
                 var videoUrl = AuthRequest.GetQueryString("videoUrl");
 
                 LtlHtml.Text = $@"
 <embed src=""../assets/player.swf"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart=true&file={PageUtility
-                    .ParseNavigationUrl(siteInfo, videoUrl, true)}"" width=""{450}"" height=""{350}""/>
+                    .ParseNavigationUrl(site, videoUrl, true)}"" width=""{450}"" height=""{350}""/>
 ";
             }
             else

@@ -6,6 +6,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 
@@ -43,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            ECrossSiteTransTypeUtils.AddAllListItems(DdlTransType, SiteInfo.ParentId > 0);
+            ECrossSiteTransTypeUtils.AddAllListItems(DdlTransType, Site.ParentId > 0);
 
             ControlUtils.SelectSingleItem(DdlTransType, ECrossSiteTransTypeUtils.GetValue(_channelInfo.Additional.TransType));
 
@@ -97,12 +98,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (PhSite.Visible)
             {
-                var siteIdList = SiteManager.GetSiteIdList();
+                var siteIdList = SiteManager.GetSiteIdListAsync().GetAwaiter().GetResult();
 
                 var allParentSiteIdList = new List<int>();
                 if (contributeType == ECrossSiteTransType.AllParentSite)
                 {
-                    SiteManager.GetAllParentSiteIdList(allParentSiteIdList, siteIdList, SiteId);
+                    SiteManager.GetAllParentSiteIdListAsync(allParentSiteIdList, siteIdList, SiteId).GetAwaiter().GetResult();
                 }
                 else if (contributeType == ECrossSiteTransType.SelfSite)
                 {
@@ -114,7 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 foreach (var psId in siteIdList)
                 {
-                    var psInfo = SiteManager.GetSiteInfo(psId);
+                    var psInfo = SiteManager.GetSiteAsync(psId).GetAwaiter().GetResult();
                     var show = false;
                     if (contributeType == ECrossSiteTransType.SpecifiedSite)
                     {
@@ -129,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else if (contributeType == ECrossSiteTransType.ParentSite)
                     {
-                        if (psInfo.Id == SiteInfo.ParentId || (SiteInfo.ParentId == 0 && psInfo.IsRoot))
+                        if (psInfo.Id == Site.ParentId || (Site.ParentId == 0 && psInfo.Root))
                         {
                             show = true;
                         }
@@ -137,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
                     if (!show) continue;
 
                     var listitem = new ListItem(psInfo.SiteName, psId.ToString());
-                    if (psInfo.IsRoot) listitem.Selected = true;
+                    if (psInfo.Root) listitem.Selected = true;
                     DdlSiteId.Items.Add(listitem);
                 }
             }
@@ -149,7 +150,7 @@ namespace SiteServer.BackgroundPages.Cms
             LbChannelId.Items.Clear();
             if (PhSite.Visible && DdlSiteId.Items.Count > 0)
             {
-                ChannelManager.AddListItemsForAddContent(LbChannelId.Items, SiteManager.GetSiteInfo(int.Parse(DdlSiteId.SelectedValue)), false, AuthRequest.AdminPermissionsImpl);
+                ChannelManager.AddListItemsForAddContent(LbChannelId.Items, SiteManager.GetSiteAsync(int.Parse(DdlSiteId.SelectedValue)).GetAwaiter().GetResult(), false, AuthRequest.AdminPermissionsImpl);
             }
         }
 
@@ -171,7 +172,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 DataProvider.ChannelDao.Update(_channelInfo);
 
-                AuthRequest.AddSiteLog(SiteId, "修改跨站转发设置");
+                AuthRequest.AddSiteLogAsync(SiteId, "修改跨站转发设置").GetAwaiter().GetResult();
 
                 isSuccess = true;
             }

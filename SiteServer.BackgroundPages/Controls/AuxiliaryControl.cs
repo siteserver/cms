@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -18,7 +19,7 @@ namespace SiteServer.BackgroundPages.Controls
     {
         public AttributesImpl Attributes { get; set; }
 
-        public SiteInfo SiteInfo { get; set; }
+        public Site Site { get; set; }
 
         public int ChannelId { get; set; }
 
@@ -38,13 +39,13 @@ namespace SiteServer.BackgroundPages.Controls
                 if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Title)) continue;
 
                 string extra;
-                var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out extra);
+                var value = BackgroundInputTypeParser.Parse(Site, ChannelId, styleInfo, Attributes, pageScripts, out extra);
 
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
                 if (styleInfo.InputType == InputType.TextEditor)
                 {
-                    var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
+                    var commands = WebUtils.GetTextEditorCommands(Site, styleInfo.AttributeName);
                     builder.Append($@"
 <div class=""form-group form-row"">
     <label class=""col-sm-1 col-form-label text-right text-truncate text-nowrap"">{styleInfo.DisplayName}</label>
@@ -74,7 +75,7 @@ namespace SiteServer.BackgroundPages.Controls
 
                     if (styleInfo.InputType == InputType.Customize)
                     {
-                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, ContentId, Attributes.ToDictionary(), styleInfo.AttributeName, html);
+                        var eventArgs = new ContentFormLoadEventArgs(Site.Id, ChannelId, ContentId, Attributes.ToDictionary(), styleInfo.AttributeName, html);
                         foreach (var service in PluginManager.Services)
                         {
                             try

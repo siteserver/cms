@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -13,7 +14,7 @@ namespace SiteServer.API.Controllers.Home
         private const string Route = "";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -31,17 +32,17 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var tableName = ChannelManager.GetTableName(site, channelInfo);
 
                 DataProvider.ContentDao.UpdateArrangeTaxis(tableName, channelId, attributeName, isDesc);
 
-                request.AddSiteLog(siteId, "批量整理", string.Empty);
+                await request.AddSiteLogAsync(siteId, "批量整理", string.Empty);
 
                 return Ok(new
                 {

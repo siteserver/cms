@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -40,7 +41,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpDelete, Route(Route)]
-        public IHttpActionResult Delete()
+        public async Task<IHttpActionResult> Delete()
         {
             try
             {
@@ -59,7 +60,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 DataProvider.SitePermissionsDao.Delete(roleInfo.RoleName);
                 DataProvider.RoleDao.DeleteRole(roleInfo.Id);
 
-                request.AddAdminLog("删除管理员角色", $"角色名称:{roleInfo.RoleName}");
+                await request.AddAdminLogAsync("删除管理员角色", $"角色名称:{roleInfo.RoleName}");
 
                 var roleInfoList = request.AdminPermissionsImpl.IsConsoleAdministrator
                     ? DataProvider.RoleDao.GetRoleInfoList()

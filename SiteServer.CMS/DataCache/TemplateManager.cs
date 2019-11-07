@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -206,20 +207,20 @@ namespace SiteServer.CMS.DataCache
             return dictionary;
         }
 
-        public static string GetTemplateFilePath(SiteInfo siteInfo, TemplateInfo templateInfo)
+        public static string GetTemplateFilePath(Site site, TemplateInfo templateInfo)
         {
             string filePath;
             if (templateInfo.TemplateType == TemplateType.IndexPageTemplate)
             {
-                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir, templateInfo.RelatedFileName);
             }
             else if (templateInfo.TemplateType == TemplateType.ContentTemplate)
             {
-                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir, DirectoryUtils.PublishmentSytem.Template, DirectoryUtils.PublishmentSytem.Content, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir, DirectoryUtils.PublishmentSytem.Template, DirectoryUtils.PublishmentSytem.Content, templateInfo.RelatedFileName);
             }
             else
             {
-                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir, DirectoryUtils.PublishmentSytem.Template, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir, DirectoryUtils.PublishmentSytem.Template, templateInfo.RelatedFileName);
             }
             return filePath;
         }
@@ -292,10 +293,10 @@ namespace SiteServer.CMS.DataCache
             return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.FileTemplate);
         }
 
-        public static void WriteContentToTemplateFile(SiteInfo siteInfo, TemplateInfo templateInfo, string content, string administratorName)
+        public static void WriteContentToTemplateFile(Site site, TemplateInfo templateInfo, string content, string administratorName)
         {
             if (content == null) content = string.Empty;
-            var filePath = GetTemplateFilePath(siteInfo, templateInfo);
+            var filePath = GetTemplateFilePath(site, templateInfo);
             FileUtils.WriteText(filePath, templateInfo.Charset, content);
 
             if (templateInfo.Id > 0)
@@ -346,15 +347,15 @@ namespace SiteServer.CMS.DataCache
             return templateId;
         }
 
-        public static string GetTemplateContent(SiteInfo siteInfo, TemplateInfo templateInfo)
+        public static string GetTemplateContent(Site site, TemplateInfo templateInfo)
         {
-            var filePath = GetTemplateFilePath(siteInfo, templateInfo);
+            var filePath = GetTemplateFilePath(site, templateInfo);
             return GetContentByFilePath(filePath, templateInfo.Charset);
         }
 
-        public static string GetIncludeContent(SiteInfo siteInfo, string file, ECharset charset)
+        public static string GetIncludeContent(Site site, string file, ECharset charset)
         {
-            var filePath = PathUtility.MapPath(siteInfo, PathUtility.AddVirtualToPath(file));
+            var filePath = PathUtility.MapPath(site, PathUtility.AddVirtualToPath(file));
             return GetContentByFilePath(filePath, charset);
         }
 

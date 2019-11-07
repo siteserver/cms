@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.Core
@@ -9,7 +9,7 @@ namespace SiteServer.CMS.Core
         public const int Preview = -99;     //预览
         public const int Default = 0;       //正常录入
 
-        public static string GetSourceName(int sourceId)
+        public static async Task<string> GetSourceNameAsync(int sourceId)
         {
             if (sourceId == Default)
             {
@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Core
             if (sourceId <= 0) return string.Empty;
 
             var sourceSiteId = DataProvider.ChannelDao.GetSiteId(sourceId);
-            var siteInfo = SiteManager.GetSiteInfo(sourceSiteId);
+            var siteInfo = await SiteManager.GetSiteAsync(sourceSiteId);
             if (siteInfo == null) return "内容转移";
 
             var nodeNames = ChannelManager.GetChannelNameNavigation(siteInfo.Id, sourceId);

@@ -196,7 +196,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (isFileType)
             {
-                var filePath = PathUtility.MapPath(pageInfo.SiteInfo, fileUrl);
+                var filePath = PathUtility.MapPath(pageInfo.Site, fileUrl);
                 parsedContent = PathUtils.GetExtension(filePath).Trim('.');
                 if (isLower)
                 {
@@ -209,7 +209,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (isFileSize)
             {
-                var filePath = PathUtility.MapPath(pageInfo.SiteInfo, fileUrl);
+                var filePath = PathUtility.MapPath(pageInfo.Site, fileUrl);
                 parsedContent = FileUtils.GetFileSizeByFilePath(filePath);
             }
             else if (isCount)
@@ -219,10 +219,10 @@ namespace SiteServer.CMS.StlParser.StlElement
             else
             {
                 parsedContent = contextInfo.ContentInfo != null
-                    ? InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contextInfo.ContentInfo.ChannelId,
+                    ? InputParserUtility.GetFileHtmlWithCount(pageInfo.Site, contextInfo.ContentInfo.ChannelId,
                         contextInfo.ContentInfo.Id, fileUrl, attributes, contextInfo.InnerHtml,
                         contextInfo.IsStlEntity, isLower, isUpper)
-                    : InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, attributes,
+                    : InputParserUtility.GetFileHtmlWithoutCount(pageInfo.Site, fileUrl, attributes,
                         contextInfo.InnerHtml, contextInfo.IsStlEntity, isLower, isUpper);
             }
 

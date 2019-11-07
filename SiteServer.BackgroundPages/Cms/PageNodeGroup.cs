@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -30,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
                     DataProvider.ChannelGroupDao.Delete(SiteId, groupName);
 
-                    AuthRequest.AddSiteLog(SiteId, "删除栏目组", $"栏目组:{groupName}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "删除栏目组", $"栏目组:{groupName}").GetAwaiter().GetResult();
 				}
 				catch(Exception ex)
 				{

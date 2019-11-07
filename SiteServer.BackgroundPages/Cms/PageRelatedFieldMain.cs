@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
                 for (var i = 2; i <= totalLevel; i++)
                 {
                     builder.Append($@"
-<frame name=""level{i}"" scrolling=""auto"" marginwidth=""0"" marginheight=""0"" src=""../pageBlank.html"">
+<frame name=""level{i}"" scrolling=""auto"" marginwidth=""0"" marginheight=""0"" src=""../blank.html"">
 ");
                 }
 

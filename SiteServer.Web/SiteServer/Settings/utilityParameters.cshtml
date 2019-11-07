@@ -1,0 +1,25 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+  <li class="nav-item">
+    <a class="nav-link" href="utilityCache.cshtml">系统缓存</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="utilityParameters.cshtml">系统参数</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="utilityEncrypt.cshtml">加密/解密字符串</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="utilityDbLogDelete.cshtml">清空数据库日志</a>
+  </li>
+}
+
+<table class="table table-bordered table-striped">
+  <tbody>
+    <tr v-for="parameter in parameters" :key="parameter.key">
+      <td width="35%"> {{ parameter.key }} </td>
+      <td width="65%">{{ parameter.value }}</td>
+    </tr>
+  </tbody>
+</table>
+
+@section Scripts{ <script src="utilityParameters.js" type="text/javascript"></script> }

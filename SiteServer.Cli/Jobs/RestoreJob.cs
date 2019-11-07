@@ -124,12 +124,12 @@ namespace SiteServer.Cli.Jobs
 
             var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName);
 
-            await Restore(_includes, _excludes, _dataOnly, tablesFilePath, treeInfo, errorLogFilePath);
+            await RestoreAsync(_includes, _excludes, _dataOnly, tablesFilePath, treeInfo, errorLogFilePath);
 
             await Console.Out.WriteLineAsync($"恭喜，成功从文件夹：{treeInfo.DirectoryPath} 恢复数据！");
         }
 
-        public static async Task Restore(List<string> includes, List<string> excludes, bool dataOnly, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
+        public static async Task RestoreAsync(List<string> includes, List<string> excludes, bool dataOnly, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
         {
             var tableNames =
                 TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
@@ -230,7 +230,7 @@ namespace SiteServer.Cli.Jobs
             if (!dataOnly)
             {
                 // 恢复后同步表，确保内容辅助表字段与系统一致
-                SystemManager.SyncContentTables();
+                await SystemManager.SyncContentTablesAsync();
                 SystemManager.UpdateConfigVersion();
             }
         }

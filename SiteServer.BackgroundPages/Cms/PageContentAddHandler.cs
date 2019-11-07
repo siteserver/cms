@@ -6,6 +6,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -29,14 +30,14 @@ namespace SiteServer.BackgroundPages.Cms
             var channelId = AuthRequest.ChannelId;
             var contentId = AuthRequest.ContentId;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-            var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
+            var tableName = ChannelManager.GetTableName(site, channelInfo);
+            var styleInfoList = TableStyleManager.GetContentStyleInfoList(site, channelInfo);
 
             var form = AuthRequest.HttpRequest.Form;
 
-            var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, form, ContentAttribute.AllAttributes.Value);
+            var dict = BackgroundInputTypeParser.SaveAttributesAsync(site, styleInfoList, form, ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
             var contentInfo = new ContentInfo(dict)
             {
                 ChannelId = channelId,
@@ -79,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            contentInfo.Id = DataProvider.ContentDao.InsertPreview(tableName, siteInfo, channelInfo, contentInfo);
+            contentInfo.Id = DataProvider.ContentDao.InsertPreview(tableName, site, channelInfo, contentInfo);
 
             return new
             {

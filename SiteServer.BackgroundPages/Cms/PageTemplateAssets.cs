@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = NameInclude;
                 _ext = ExtInclude;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsIncludeDir.Trim('/');
+                _assetsDir = Site.Additional.TemplatesAssetsIncludeDir.Trim('/');
                 
                 tips = $@"包含文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;stl:include file=""/{_assetsDir}/包含文件.html""&gt;&lt;/stl:include&gt; 引用。";
             }
@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = NameJs;
                 _ext = ExtJs;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = Site.Additional.TemplatesAssetsJsDir.Trim('/');
                 tips =
                     $@"脚本文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;script type=""text/javascript"" src=""{{stl.siteUrl}}/{_assetsDir}/脚本文件.js""&gt;&lt;/script&gt; 引用。";
             }
@@ -68,13 +68,13 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = NameCss;
                 _ext = ExtCss;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = Site.Additional.TemplatesAssetsCssDir.Trim('/');
                 tips = $@"样式文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;link rel=""stylesheet"" type=""text/css"" href=""{{stl.siteUrl}}/{_assetsDir}/样式文件.css"" /&gt; 引用。";
             }
 
             if (string.IsNullOrEmpty(_assetsDir)) return;
 
-            _directoryPath = PathUtility.MapPath(SiteInfo, "@/" + _assetsDir);
+            _directoryPath = PathUtility.MapPath(Site, "@/" + _assetsDir);
 
             if (AuthRequest.IsQueryExists("delete"))
             {
@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
                 try
                 {
                     FileUtils.DeleteFileIfExists(PathUtils.Combine(_directoryPath, fileName));
-                    AuthRequest.AddSiteLog(SiteId, $"删除{_name}", $"{_name}:{fileName}");
+                    AuthRequest.AddSiteLogAsync(SiteId, $"删除{_name}", $"{_name}:{fileName}").GetAwaiter().GetResult();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -135,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
             var charset = FileUtils.GetFileCharset(PathUtils.Combine(_directoryPath, fileName));
             ltlCharset.Text = ECharsetUtils.GetText(charset);
 
-            ltlView.Text = $@"<a href=""{PageUtility.GetSiteUrl(SiteInfo, $"{_assetsDir}/{fileName}", true)}"" target=""_blank"">查看</a>";
+            ltlView.Text = $@"<a href=""{PageUtility.GetSiteUrl(Site, $"{_assetsDir}/{fileName}", true)}"" target=""_blank"">查看</a>";
             ltlEdit.Text =
                 $@"<a href=""{PageTemplateAssetsAdd.GetRedirectUrlToEdit(SiteId, _type, fileName)}"">编辑</a>";
             ltlDelete.Text =

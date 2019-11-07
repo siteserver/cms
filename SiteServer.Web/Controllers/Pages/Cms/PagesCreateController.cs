@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -7,6 +8,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -19,7 +21,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         private const string RouteAll = "all";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetList()
+        public async Task<IHttpActionResult> GetList()
         {
             try
             {
@@ -32,10 +34,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.SiteId;
                 var parentId = request.GetQueryInt("parentId");
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = await SiteManager.GetSiteAsync(siteId);
                 var parent = ChannelManager.GetChannelInfo(siteId, parentId);
                 var countDict = new Dictionary<int, int>();
-                countDict[parent.Id] = ContentManager.GetCount(siteInfo, parent, true);
+                countDict[parent.Id] = ContentManager.GetCount(site, parent, true);
 
                 var channelInfoList = new List<ChannelInfo>();
 
@@ -53,7 +55,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     channelInfoList.Add(channelInfo);
-                    countDict[channelInfo.Id] = ContentManager.GetCount(siteInfo, channelInfo, true);
+                    countDict[channelInfo.Id] = ContentManager.GetCount(site, channelInfo, true);
                 }
 
                 return Ok(new
@@ -81,7 +83,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Create([FromBody] CreateParameter parameter)
+        public async Task<IHttpActionResult> Create([FromBody] CreateParameter parameter)
         {
             try
             {
@@ -126,8 +128,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 if (parameter.Scope == "1month" || parameter.Scope == "1day" || parameter.Scope == "2hours")
                 {
-                    var siteInfo = SiteManager.GetSiteInfo(parameter.SiteId);
-                    var tableName = siteInfo.TableName;
+                    var site = await SiteManager.GetSiteAsync(parameter.SiteId);
+                    var tableName = site.TableName;
 
                     if (parameter.Scope == "1month")
                     {

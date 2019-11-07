@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -85,7 +87,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -110,13 +112,13 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 if (styleInfoDatabase.Id == 0 && styleInfoDatabase.RelatedIdentity == 0 || styleInfoDatabase.RelatedIdentity != relatedIdentities[0])
                 {
                     isSuccess = InsertTableStyleInfo(tableName, relatedIdentities, body, isRapid, rapidValues, out errorMessage);
-                    request.AddAdminLog("添加表单显示样式", $"字段名:{body.AttributeName}");
+                    await request.AddAdminLogAsync("添加表单显示样式", $"字段名:{body.AttributeName}");
                 }
                 //数据库中有此项的表样式
                 else
                 {
                     isSuccess = UpdateTableStyleInfo(styleInfoDatabase, body, isRapid, rapidValues, out errorMessage);
-                    request.AddAdminLog("修改表单显示样式", $"字段名:{body.AttributeName}");
+                    await request.AddAdminLogAsync("修改表单显示样式", $"字段名:{body.AttributeName}");
                 }
 
                 if (!isSuccess)

@@ -7,6 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -97,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlPageTitle.Text = AuthRequest.GetQueryInt("TemplateID") > 0 ? "编辑模板" : "添加模板";
 
-            var isCodeMirror = SiteInfo.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = Site.Additional.ConfigTemplateIsCodeMirror;
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
 
@@ -109,7 +110,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (templateInfo == null) return;
 
-                TbContent.Text = TemplateManager.GetTemplateContent(SiteInfo, templateInfo);
+                TbContent.Text = TemplateManager.GetTemplateContent(Site, templateInfo);
 
                 if (_isCopy)
                 {
@@ -147,7 +148,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 TbRelatedFileName.Text = "T_";
                 TbCreatedFileFullName.Text = _templateType == TemplateType.ChannelTemplate ? "index" : "@/";
-                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, SiteInfo.Additional.Charset);
+                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, Site.Additional.Charset);
                 ControlUtils.SelectSingleItem(DdlCreatedFileExtName, EFileSystemTypeUtils.GetValue(EFileSystemType.Html));
                 HihTemplateType.Value = AuthRequest.GetQueryString("TemplateType");
             }
@@ -157,10 +158,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var isCodeMirror = SiteInfo.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = Site.Additional.ConfigTemplateIsCodeMirror;
             isCodeMirror = !isCodeMirror;
-            SiteInfo.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
-            DataProvider.SiteDao.Update(SiteInfo);
+            Site.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
+            DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
 
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
@@ -230,16 +231,16 @@ namespace SiteServer.BackgroundPages.Cms
 		        templateInfo.CreatedFileFullName = TbCreatedFileFullName.Text + DdlCreatedFileExtName.SelectedValue;
 		        templateInfo.Charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
 
-		        DataProvider.TemplateDao.Update(SiteInfo, templateInfo, TbContent.Text, AuthRequest.AdminName);
+		        DataProvider.TemplateDao.Update(Site, templateInfo, TbContent.Text, AuthRequest.AdminName);
 		        if (previousTemplateInfo != null)
 		        {
-		            FileUtils.DeleteFileIfExists(TemplateManager.GetTemplateFilePath(SiteInfo, previousTemplateInfo));
+		            FileUtils.DeleteFileIfExists(TemplateManager.GetTemplateFilePath(Site, previousTemplateInfo));
 		        }
 		        CreatePages(templateInfo);
 
-		        AuthRequest.AddSiteLog(SiteId,
+		        AuthRequest.AddSiteLogAsync(SiteId,
 		            $"修改{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
-		            $"模板名称:{templateInfo.TemplateName}");
+		            $"模板名称:{templateInfo.TemplateName}").GetAwaiter().GetResult();
 
 		        SuccessMessage("模板修改成功！");
 		    }
@@ -270,11 +271,11 @@ namespace SiteServer.BackgroundPages.Cms
 		            IsDefault = false
 		        };
 
-		        templateInfo.Id = DataProvider.TemplateDao.Insert(templateInfo, TbContent.Text, AuthRequest.AdminName);
+		        templateInfo.Id = DataProvider.TemplateDao.InsertAsync(templateInfo, TbContent.Text, AuthRequest.AdminName).GetAwaiter().GetResult();
 		        CreatePages(templateInfo);
-		        AuthRequest.AddSiteLog(SiteId,
+		        AuthRequest.AddSiteLogAsync(SiteId,
 		            $"添加{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
-		            $"模板名称:{templateInfo.TemplateName}");
+		            $"模板名称:{templateInfo.TemplateName}").GetAwaiter().GetResult();
 		        SuccessMessage("模板添加成功！");
 		        AddWaitAndRedirectScript(PageTemplate.GetRedirectUrl(SiteId, _templateType));
             }

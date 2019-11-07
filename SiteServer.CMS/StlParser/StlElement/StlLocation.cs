@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -63,10 +64,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, separator, target, linkClass, wordNum,isContainSelf);
+            return ParseImplAsync(pageInfo, contextInfo, separator, target, linkClass, wordNum,isContainSelf).GetAwaiter().GetResult();
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
         {
             if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
@@ -102,7 +103,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
-                        var url = PageUtility.GetIndexPageUrl(pageInfo.SiteInfo, pageInfo.IsLocal);
+                        var url = PageUtility.GetIndexPageUrl(pageInfo.Site, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
@@ -130,7 +131,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
-                        var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, currentNodeInfo, pageInfo.IsLocal);
+                        var url = await PageUtility.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
@@ -153,7 +154,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
-                        var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, currentNodeInfo, pageInfo.IsLocal);
+                        var url = await PageUtility.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;

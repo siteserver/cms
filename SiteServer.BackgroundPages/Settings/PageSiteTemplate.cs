@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     SiteTemplateManager.Instance.DeleteSiteTemplate(siteTemplateDir);
 
-                    AuthRequest.AddAdminLog("删除站点模板", $"站点模板:{siteTemplateDir}");
+                    AuthRequest.AddAdminLogAsync("删除站点模板", $"站点模板:{siteTemplateDir}").GetAwaiter().GetResult();
 
                     SuccessDeleteMessage();
                 }
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     SiteTemplateManager.Instance.DeleteZipSiteTemplate(fileName);
 
-                    AuthRequest.AddAdminLog("删除未解压站点模板", $"站点模板:{fileName}");
+                    AuthRequest.AddAdminLogAsync("删除未解压站点模板", $"站点模板:{fileName}").GetAwaiter().GetResult();
 
                     SuccessDeleteMessage();
                 }

@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
-            AuthRequest.AddAdminLog("设置日志阈值参数");
+            AuthRequest.AddAdminLogAsync("设置日志阈值参数").GetAwaiter().GetResult();
             SuccessMessage("日志设置成功");
         }
     }

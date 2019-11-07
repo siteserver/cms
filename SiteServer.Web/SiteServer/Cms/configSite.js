@@ -1,4 +1,4 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/configSite?siteId=' + pageUtils.getQueryStringByName("siteId"));
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/configSite?siteId=' + utils.getQueryString("siteId"));
 
 var data = {
   pageLoad: false,
@@ -50,14 +50,14 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post({
       siteName: $this.siteName,
       charset: $this.charset,
       pageSize: $this.pageSize,
       isCreateDoubleClick: $this.isCreateDoubleClick
     }, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',

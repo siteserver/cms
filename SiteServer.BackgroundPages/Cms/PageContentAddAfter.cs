@@ -6,6 +6,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -54,10 +55,10 @@ namespace SiteServer.BackgroundPages.Cms
             RblOperation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
             RblOperation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
 
-            var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTrans(SiteInfo, _channelInfo);
+            var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTransAsync(Site, _channelInfo).GetAwaiter().GetResult();
             var isAutomatic = CrossSiteTransUtility.IsAutomatic(_channelInfo);
 
-            var isTranslated = ContentUtility.AfterContentAdded(SiteInfo, _channelInfo, _contentId, isCrossSiteTrans, isAutomatic);
+            var isTranslated = ContentUtility.AfterContentAddedAsync(Site, _channelInfo, _contentId, isCrossSiteTrans, isAutomatic).GetAwaiter().GetResult();
             if (isCrossSiteTrans && !isAutomatic)
             {
                 RblOperation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
@@ -70,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void RblOperation_SelectedIndexChanged(object sender, EventArgs e)
 		{
-            var after = (EContentAddAfter)TranslateUtils.ToEnum(typeof(EContentAddAfter), RblOperation.SelectedValue, EContentAddAfter.ContinueAdd);
+            var after = TranslateUtils.ToEnum(RblOperation.SelectedValue, EContentAddAfter.ContinueAdd);
             if (after == EContentAddAfter.ContinueAdd)
             {
                 PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, AuthRequest.GetQueryString("ReturnUrl")));
@@ -85,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 		    if (after == EContentAddAfter.Contribute)
 		    {
-		        CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelInfo.Id);
+		        CrossSiteTransUtility.LoadSiteIdDropDownListAsync(DdlSiteId, Site, _channelInfo.Id).GetAwaiter().GetResult();
 
 		        if (DdlSiteId.Items.Count > 0)
 		        {
@@ -98,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, AuthRequest.AdminPermissionsImpl);
+            CrossSiteTransUtility.LoadChannelIdListBoxAsync(LbChannelId, Site, psId, _channelInfo, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -106,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (!Page.IsPostBack || !Page.IsValid) return;
 
             var targetSiteId = int.Parse(DdlSiteId.SelectedValue);
-            var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
+            var targetSite = SiteManager.GetSiteAsync(targetSiteId).GetAwaiter().GetResult();
             try
             {
                 foreach (ListItem listItem in LbChannelId.Items)
@@ -115,11 +116,11 @@ namespace SiteServer.BackgroundPages.Cms
                     var targetChannelId = TranslateUtils.ToInt(listItem.Value);
                     if (targetChannelId != 0)
                     {
-                        CrossSiteTransUtility.TransContentInfo(SiteInfo, _channelInfo, _contentId, targetSiteInfo, targetChannelId);
+                        CrossSiteTransUtility.TransContentInfo(Site, _channelInfo, _contentId, targetSite, targetChannelId);
                     }
                 }
 
-                AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, _contentId, "内容跨站转发", $"转发到站点:{targetSiteInfo.SiteName}");
+                AuthRequest.AddSiteLogAsync(SiteId, _channelInfo.Id, _contentId, "内容跨站转发", $"转发到站点:{targetSite.SiteName}").GetAwaiter().GetResult();
 
                 SuccessMessage("内容跨站转发成功，请选择后续操作。");
                 RblOperation.Items.Clear();

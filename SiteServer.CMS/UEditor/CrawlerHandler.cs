@@ -2,11 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.UEditor
@@ -37,9 +39,9 @@ namespace SiteServer.CMS.UEditor
                 });
                 return;
             }
-            var siteInfo = SiteManager.GetSiteInfo(SiteId);
+            var site = SiteManager.GetSiteAsync(SiteId).GetAwaiter().GetResult();
 
-            Crawlers = Sources.Select(x => new Crawler(x, siteInfo,Server).Fetch()).ToArray();
+            Crawlers = Sources.Select(x => new Crawler(x, site, Server).FetchAsync().GetAwaiter().GetResult()).ToArray();
             WriteJson(new
             {
                 state = "SUCCESS",
@@ -58,19 +60,19 @@ namespace SiteServer.CMS.UEditor
         public string SourceUrl { get; set; }
         public string ServerUrl { get; set; }
         public string State { get; set; }
-        public SiteInfo PubSystemInfo { get; private set; }
+        public Site PubSystemInfo { get; private set; }
 
         private HttpServerUtility Server { get; set; }
 
 
-        public Crawler(string sourceUrl, SiteInfo pubSystemInfo, HttpServerUtility server)
+        public Crawler(string sourceUrl, Site pubSystemInfo, HttpServerUtility server)
         {
             SourceUrl = sourceUrl;
             PubSystemInfo = pubSystemInfo;
             Server = server;
         }
 
-        public Crawler Fetch()
+        public async Task<Crawler> FetchAsync()
         {
             if (!IsExternalIPAddress(SourceUrl))
             {
@@ -128,7 +130,7 @@ namespace SiteServer.CMS.UEditor
                     File.WriteAllBytes(savePath, bytes);
                     State = "SUCCESS";
 
-                    ServerUrl = PageUtility.GetSiteUrlByPhysicalPath(PubSystemInfo, savePath, true);
+                    ServerUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(PubSystemInfo, savePath, true);
 
                 }
                 catch (Exception e)

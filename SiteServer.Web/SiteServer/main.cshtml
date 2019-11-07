@@ -59,7 +59,7 @@
                       <a class="text-primary" :href="newVersion.updatesUrl" target="_blank">查看发行说明</a>
                       <hr />
                       <div class="text-center">
-                        <button href="javascript:;" onclick="location.href = 'pageUpdateSystem.aspx'" class="btn btn-warning btn-block">立即升级</button>
+                        <button href="javascript:;" onclick="location.href = 'updateSystem.cshtml'" class="btn btn-warning btn-block">立即升级</button>
                       </div>
                     </p>
                   </div>
@@ -80,7 +80,7 @@
                   <li><a :href="'settings/adminView.cshtml?pageType=user&userId=' + local.userId" target="right">{{local.level}}：{{local.userName}}</a></li>
                   <li><a :href="'settings/adminProfile.cshtml?pageType=user&userId=' + local.userId" target="right">修改资料</a></li>
                   <li><a :href="'settings/adminPassword.cshtml?pageType=user&userId=' + local.userId" target="right">更改密码</a></li>
-                  <li><a href="pageLogout.cshtml">退出系统</a></li>
+                  <li><a href="logout.cshtml">退出系统</a></li>
                 </ul>
               </li>
               <li>
@@ -186,7 +186,6 @@
 <script src="assets/js/axios-0.17.1.min.js" type="text/javascript"></script>
 <script src="assets/js/vue-2.5.16.min.js" type="text/javascript"></script>
 <script src="assets/js/apiUtils.js" type="text/javascript"></script>
-<script src="assets/js/pageUtils.js" type="text/javascript"></script>
 <script src="assets/js/utils.js" type="text/javascript"></script>
 <script src="assets/js/compareversion.js" type="text/javascript"></script>
 <script type="text/javascript">

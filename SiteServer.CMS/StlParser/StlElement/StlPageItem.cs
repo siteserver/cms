@@ -7,8 +7,10 @@ using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using System.Threading.Tasks;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -157,11 +159,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (contextType == EContextType.Channel)
                 {
                     nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
-                    pageUrl = PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
+                    pageUrl = PagerUtility.GetUrlInChannelPageAsync(type, pageInfo.Site, nodeInfo, 0, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult();
                 }
                 else
                 {
-                    pageUrl = PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
+                    pageUrl = PagerUtility.GetUrlInContentPageAsync(type, pageInfo.Site, channelId, contentId, 0, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult();
                 }
 
                 var isActive = false;
@@ -350,7 +352,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
+                        pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPageAsync(type, pageInfo.Site, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult() : PagerUtility.GetUrlInContentPageAsync(type, pageInfo.Site, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult();
 
                         pageBuilder.Append(!string.IsNullOrEmpty(successTemplateString)
                             ? GetParsedContent(successTemplateString, pageUrl, listEllipsis, pageInfo)
@@ -361,7 +363,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
+                            pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPageAsync(type, pageInfo.Site, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult() : PagerUtility.GetUrlInContentPageAsync(type, pageInfo.Site, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult();
 
                             if (!string.IsNullOrEmpty(successTemplateString))
                             {
@@ -400,7 +402,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
+                        pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPageAsync(type, pageInfo.Site, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult() : PagerUtility.GetUrlInContentPageAsync(type, pageInfo.Site, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult();
 
                         pageBuilder.Append(!string.IsNullOrEmpty(successTemplateString)
                             ? GetParsedContent(successTemplateString, pageUrl, listEllipsis, pageInfo)
@@ -432,7 +434,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
+                            pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPageAsync(type, pageInfo.Site, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult() : PagerUtility.GetUrlInContentPageAsync(type, pageInfo.Site, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult();
 
                             var listitem = new ListItem(index.ToString(), pageUrl);
                             selectControl.Items.Add(listitem);
@@ -481,11 +483,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (contextType == EContextType.Channel)
                 {
                     var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
-                    pageUrl = PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
+                    pageUrl = PagerUtility.GetUrlInChannelPageAsync(type, pageInfo.Site, nodeInfo, 0, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult();
                 }
                 else
                 {
-                    pageUrl = PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
+                    pageUrl = PagerUtility.GetUrlInContentPageAsync(type, pageInfo.Site, channelId, contentId, 0, currentPageIndex, pageCount, pageInfo.IsLocal).GetAwaiter().GetResult();
                 }
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
@@ -1116,7 +1118,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
 
-                var jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                var jsMethod = PagerUtility.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal).GetAwaiter().GetResult();
 
                 var isActive = false;
                 var isAddSpan = false;
@@ -1303,7 +1305,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                        jsMethod = PagerUtility.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal).GetAwaiter().GetResult();
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
@@ -1321,7 +1323,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                            jsMethod = PagerUtility.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal).GetAwaiter().GetResult();
 
                             if (!string.IsNullOrEmpty(successTemplateString))
                             {
@@ -1359,7 +1361,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                        jsMethod = PagerUtility.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal).GetAwaiter().GetResult();
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
@@ -1429,7 +1431,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 var isHyperlink = false;
 
-                var jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                var jsMethod = PagerUtility.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal).GetAwaiter().GetResult();
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
                 {

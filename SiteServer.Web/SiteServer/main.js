@@ -71,7 +71,7 @@ var methods = {
       }
     }).catch(function (error) {
       if (error.response && error.response.status === 401) {
-        location.href = 'pageLogin.cshtml';
+        location.href = 'login.cshtml';
       } else if (error.response && error.response.status === 500) {
         $this.pageAlert = utils.getPageAlert(error);
       }
@@ -178,7 +178,7 @@ var methods = {
       $this.pageLoad = true;
     }).catch(function (error) {
       if (error.response && error.response.status === 401) {
-        location.href = 'pageLogin.cshtml';
+        location.href = 'login.cshtml';
       }
       $this.timeoutId = setTimeout($this.create, 1000);
     }).then(function () {

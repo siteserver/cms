@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -15,7 +16,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         private const string RouteRegenerate = "regenerate/{id:int}";
 
         [HttpGet, Route(RouteAccessTokens)]
-        public IHttpActionResult GetAccessToken(int id)
+        public async Task<IHttpActionResult> GetAccessToken(int id)
         {
             try
             {
@@ -26,7 +27,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                var tokenInfo = DataProvider.AccessTokenDao.GetAccessTokenInfo(id);
+                var tokenInfo = await DataProvider.AccessTokenDao.GetAsync(id);
                 var accessToken = TranslateUtils.DecryptStringBySecretKey(tokenInfo.Token);
 
                 return Ok(new
@@ -42,7 +43,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(RouteRegenerate)]
-        public IHttpActionResult Regenerate(int id)
+        public async Task<IHttpActionResult> Regenerate(int id)
         {
             try
             {
@@ -53,7 +54,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                var accessToken = TranslateUtils.DecryptStringBySecretKey(DataProvider.AccessTokenDao.Regenerate(id));
+                var accessTokenInfo = await DataProvider.AccessTokenDao.GetAsync(id);
+
+                var accessToken = TranslateUtils.DecryptStringBySecretKey(await DataProvider.AccessTokenDao.RegenerateAsync(accessTokenInfo));
 
                 return Ok(new
                 {

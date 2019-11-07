@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     ImportObject.ImportTableStyleByZipFile(_tableName, _relatedIdentity, localFilePath);
 
-                    AuthRequest.AddSiteLog(SiteId, "导入表单显示样式");
+                    AuthRequest.AddSiteLogAsync(SiteId, "导入表单显示样式").GetAwaiter().GetResult();
 
                     LayerUtils.Close(Page);
 				}

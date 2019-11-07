@@ -11,6 +11,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -53,9 +54,9 @@ namespace SiteServer.BackgroundPages.Settings
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = Site.Additional.PageSize;
 
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommandByHitsAnalysis(SiteInfo.TableName, SiteId);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommandByHitsAnalysis(Site.TableName, SiteId);
 
             SpContents.SortField = ContentAttribute.Hits;
             SpContents.SortMode = SortMode.DESC;
@@ -67,11 +68,11 @@ namespace SiteServer.BackgroundPages.Settings
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Chart);
 
             DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
-            var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
+            var siteIdList = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             foreach (var siteId in siteIdList)
             {
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                DdlSiteId.Items.Add(new ListItem(siteInfo.SiteName, siteId.ToString()));
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                DdlSiteId.Items.Add(new ListItem(site.SiteName, siteId.ToString()));
             }
             ControlUtils.SelectSingleItem(DdlSiteId, SiteId.ToString());
 
@@ -118,7 +119,7 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
 
             var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
 
-            ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, _pageUrl);
+            ltlItemTitle.Text = WebUtils.GetContentTitle(Site, contentInfo, _pageUrl);
 
             string nodeNameNavigation;
             if (!_nodeNameNavigations.ContainsKey(contentInfo.ChannelId))

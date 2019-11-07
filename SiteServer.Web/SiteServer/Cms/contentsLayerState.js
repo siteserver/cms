@@ -1,9 +1,9 @@
 ﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerState');
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
-  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
-  contentId: parseInt(pageUtils.getQueryStringByName('contentId')),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
+  contentId: parseInt(utils.getQueryString('contentId')),
   pageLoad: false,
   pageAlert: null,
   contentChecks: null,
@@ -31,7 +31,7 @@ var methods = {
   },
   btnSubmitClick: function () {
     window.parent.layer.closeAll()
-    window.parent.pageUtils.openLayer({
+    window.parent.utils.openLayer({
       title: "审核内容",
       url: "contentsLayerCheck.cshtml?siteId=" +
         this.siteId +

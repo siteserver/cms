@@ -2,7 +2,9 @@
 using System.Web;
 using System.Collections;
 using System.IO;
+using System.Threading.Tasks;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -10,7 +12,7 @@ namespace SiteServer.CMS.Core
 {
     public class UEditorUploader
     {
-        SiteInfo siteInfo = null;
+        Site site = null;
         EUploadType uploadType = EUploadType.Image;
 
         string state = "SUCCESS";
@@ -19,13 +21,13 @@ namespace SiteServer.CMS.Core
         string originalName = null;
         HttpPostedFile uploadFile = null;
 
-        public UEditorUploader(SiteInfo siteInfo, EUploadType uploadType)
+        public UEditorUploader(Site site, EUploadType uploadType)
         {
-            this.siteInfo = siteInfo;
+            this.site = site;
             this.uploadType = uploadType;
         }
 
-        public Hashtable upFile(HttpContext cxt)
+        public async Task<Hashtable> upFileAsync(HttpContext cxt)
         {
             try
             {
@@ -33,17 +35,17 @@ namespace SiteServer.CMS.Core
                 originalName = uploadFile.FileName;
                 currentType = PathUtils.GetExtension(originalName);
 
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, uploadType);
-                var localFileName = PathUtility.GetUploadFileName(siteInfo, originalName);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, uploadType);
+                var localFileName = PathUtility.GetUploadFileName(site, originalName);
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
                 //格式验证
-                if (!PathUtility.IsUploadExtenstionAllowed(uploadType, siteInfo, currentType))
+                if (!PathUtility.IsUploadExtenstionAllowed(uploadType, site, currentType))
                 {
                     state = "不允许的文件类型";
                 }
                 //大小验证
-                if (!PathUtility.IsUploadSizeAllowed(uploadType, siteInfo, uploadFile.ContentLength))
+                if (!PathUtility.IsUploadSizeAllowed(uploadType, site, uploadFile.ContentLength))
                 {
                     state = "文件大小超出网站限制";
                 }
@@ -51,11 +53,11 @@ namespace SiteServer.CMS.Core
                 if (state == "SUCCESS")
                 {
                     uploadFile.SaveAs(localFilePath);
-                    URL = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, localFilePath, true);
+                    URL = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, localFilePath, true);
                     //URL = pathbase + filename;
                     if (uploadType == EUploadType.Image)
                         //添加水印
-                        FileUtility.AddWaterMark(siteInfo, localFilePath);
+                        FileUtility.AddWaterMark(site, localFilePath);
                 }
             }
             catch (Exception e)
@@ -66,20 +68,20 @@ namespace SiteServer.CMS.Core
             return getUploadInfo();
         }
 
-        public Hashtable upScrawl(HttpContext cxt, string base64Data)
+        public async Task<Hashtable> upScrawlAsync(HttpContext cxt, string base64Data)
         {
             FileStream fs = null;
             try
             {
                 var fileExtension = ".png";
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, fileExtension);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, fileExtension);
                 var fileName = Guid.NewGuid() + fileExtension;
                 var localFilePath = PathUtils.Combine(localDirectoryPath, fileName);
                 fs = File.Create(localFilePath);
                 var bytes = Convert.FromBase64String(base64Data);
                 fs.Write(bytes, 0, bytes.Length);
 
-                URL = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, localFilePath, true);
+                URL = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, localFilePath, true);
             }
             catch
             {

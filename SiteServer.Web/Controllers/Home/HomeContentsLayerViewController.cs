@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -14,7 +15,7 @@ namespace SiteServer.API.Controllers.Home
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
@@ -31,24 +32,24 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
                 contentInfo.Load(new
                 {
                     CheckState =
-                        CheckManager.GetCheckState(siteInfo, contentInfo)
+                        CheckManager.GetCheckState(site, contentInfo)
                 });
 
                 var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId);
 
-                var attributes = ChannelManager.GetContentsColumns(siteInfo, channelInfo, true);
+                var attributes = ChannelManager.GetContentsColumns(site, channelInfo, true);
 
                 return Ok(new
                 {

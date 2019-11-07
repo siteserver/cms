@@ -7,6 +7,7 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 using SiteServer.Plugin;
 
@@ -210,11 +211,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (SiteId > 0)
                 {
-                    AuthRequest.AddSiteLog(SiteId, "批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}").GetAwaiter().GetResult();
                 }
                 else
                 {
-                    AuthRequest.AddAdminLog("批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
+                    AuthRequest.AddAdminLogAsync("批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}").GetAwaiter().GetResult();
                 }
 
                 isChanged = true;

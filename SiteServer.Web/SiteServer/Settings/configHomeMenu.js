@@ -67,11 +67,11 @@ var methods = {
   delete: function (id) {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.delete({
       id: id
     }, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err || !res || !res.value) return;
 
       $this.items = $this.getItems(res.value);
@@ -80,9 +80,9 @@ var methods = {
   reset: function () {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $apiReset.post(null, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err || !res || !res.value) return;
 
       $this.items = $this.getItems(res.value);
@@ -91,9 +91,9 @@ var methods = {
   submit: function (item) {
     var $this = this;
     item.groupIdCollection = item.isGroup ? item.groupIds.join(',') : '';
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post(item, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',
@@ -154,7 +154,7 @@ var methods = {
   btnResetClick: function () {
     var $this = this;
 
-    pageUtils.alertDelete({
+    utils.alertDelete({
       title: '重置用户菜单',
       text: '此操作将把用户菜单恢复为系统默认值，确定吗？',
       button: '确认重置',
@@ -172,7 +172,7 @@ var methods = {
   btnDeleteClick: function (item) {
     var $this = this;
 
-    pageUtils.alertDelete({
+    utils.alertDelete({
       title: '删除用户菜单',
       text: '此操作将删除用户菜单 ' + item.text + '，确定吗？',
       callback: function () {

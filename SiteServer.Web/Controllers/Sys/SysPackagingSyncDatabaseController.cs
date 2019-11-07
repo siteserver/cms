@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
@@ -11,7 +12,7 @@ namespace SiteServer.API.Controllers.Sys
     public class SysPackagesSyncDatabaseController : ApiController
     {
         [HttpPost, Route(ApiRouteSyncDatabase.Route)]
-        public IHttpActionResult Main()
+        public async Task<IHttpActionResult> Main()
         {
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{SystemManager.ProductVersion}";
             var packagePath = PathUtils.GetPackagesPath(idWithVersion);
@@ -21,7 +22,7 @@ namespace SiteServer.API.Controllers.Sys
                 DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), homeDirectory, true);
             }
 
-            SystemManager.SyncDatabase();
+            await SystemManager.SyncDatabaseAsync();
 
             return Ok(new
             {

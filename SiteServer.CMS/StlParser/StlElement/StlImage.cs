@@ -1,4 +1,5 @@
-﻿using System.Web.UI.HtmlControls;
+﻿using System.Threading.Tasks;
+using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -132,10 +133,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, stlImage, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, no, isOriginal, src, altSrc);
+            return ParseImplAsync(pageInfo, contextInfo, stlImage, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, no, isOriginal, src, altSrc).GetAwaiter().GetResult();
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlImage stlImage, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, int no, bool isOriginal, string src, string altSrc)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, HtmlImage stlImage, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, int no, bool isOriginal, string src, string altSrc)
         {
             var parsedContent = string.Empty;
 
@@ -170,11 +171,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var targetChannelId = contentInfo.SourceId;
                             //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
                             var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
-                            var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
+                            var targetSite = await SiteManager.GetSiteAsync(targetSiteId);
                             var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                            var targetContentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
+                            var targetContentInfo = ContentManager.GetContentInfo(targetSite, targetNodeInfo, contentInfo.ReferenceId);
                             if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                             {
                                 contentInfo = targetContentInfo;
@@ -184,7 +185,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo == null)
                     {
-                        contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, contentId);
+                        contentInfo = ContentManager.GetContentInfo(pageInfo.Site, contextInfo.ChannelId, contentId);
                     }
 
                     if (contentInfo != null)
@@ -247,7 +248,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    stlImage.Src = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, picUrl, pageInfo.IsLocal);
+                    stlImage.Src = PageUtility.ParseNavigationUrl(pageInfo.Site, picUrl, pageInfo.IsLocal);
                     parsedContent = ControlUtils.GetControlRenderHtml(stlImage);
                 }
             }

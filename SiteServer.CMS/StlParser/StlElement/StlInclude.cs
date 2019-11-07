@@ -49,7 +49,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var pageParameters = pageInfo.Parameters;
             pageInfo.Parameters = parameters;
 
-            var content = TemplateManager.GetIncludeContent(pageInfo.SiteInfo, file, pageInfo.TemplateInfo.Charset);
+            var content = TemplateManager.GetIncludeContent(pageInfo.Site, file, pageInfo.TemplateInfo.Charset);
             var contentBuilder = new StringBuilder(content);
             StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);
             var parsedContent = contentBuilder.ToString();

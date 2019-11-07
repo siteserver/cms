@@ -43,11 +43,11 @@ var methods = {
   delete: function (item) {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.delete({
       id: item.id
     }, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err || !res || !res.value) return;
 
       $this.items = res.value;
@@ -58,9 +58,9 @@ var methods = {
 
     this.item.scopes = this.item.scopeList ? this.item.scopeList.join(',') : '';
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post(item, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',
@@ -91,7 +91,7 @@ var methods = {
     this.pageType = 'list';
   },
   btnViewClick: function (item) {
-    pageUtils.openLayer({
+    utils.openLayer({
       title: '获取密钥',
       url: 'adminAccessTokensViewLayer.cshtml?id=' + item.id,
       height: 410
@@ -100,7 +100,7 @@ var methods = {
   btnDeleteClick: function (item) {
     var $this = this;
 
-    pageUtils.alertDelete({
+    utils.alertDelete({
       title: '删除API密钥',
       text: '此操作将删除API密钥 ' + item.title + '，确定吗？',
       callback: function () {

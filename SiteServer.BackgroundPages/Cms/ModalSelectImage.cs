@@ -34,17 +34,17 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-        public string SiteUrl => SiteInfo.Additional.WebUrl;
+        public string SiteUrl => Site.Additional.WebUrl;
 
         public string RootUrl => PageUtils.ApplicationPath;
 
-        public static string GetOpenWindowString(SiteInfo siteInfo, string textBoxClientId)
+        public static string GetOpenWindowString(Site site, string textBoxClientId)
         {
             return LayerUtils.GetOpenScript("选择图片",
-                PageUtils.GetCmsUrl(siteInfo.Id, nameof(ModalSelectImage), new NameValueCollection
+                PageUtils.GetCmsUrl(site.Id, nameof(ModalSelectImage), new NameValueCollection
                 {
                     {"RootPath", "@"},
-                    {"CurrentRootPath", siteInfo.Additional.ImageUploadDirectoryName},
+                    {"CurrentRootPath", site.Additional.ImageUploadDirectoryName},
                     {"TextBoxClientID", textBoxClientId}
                 }));
         }
@@ -61,16 +61,16 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = SiteInfo.Additional.ConfigSelectImageCurrentUrl.TrimEnd('/');
+                _currentRootPath = Site.Additional.ConfigSelectImageCurrentUrl.TrimEnd('/');
             }
             else
             {
-                SiteInfo.Additional.ConfigSelectImageCurrentUrl = _currentRootPath;
-                DataProvider.SiteDao.Update(SiteInfo);
+                Site.Additional.ConfigSelectImageCurrentUrl = _currentRootPath;
+                DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 
-            _directoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
+            _directoryPath = PathUtility.MapPath(Site, _currentRootPath);
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
 
             if (Page.IsPostBack) return;
@@ -108,7 +108,7 @@ namespace SiteServer.BackgroundPages.Cms
                 else if (directoryName.Equals("@"))
                 {
                     navigationBuilder.Append(
-                        $"<a href='{GetRedirectUrl(_rootPath)}'>{SiteInfo.SiteDir}</a>");
+                        $"<a href='{GetRedirectUrl(_rootPath)}'>{Site.SiteDir}</a>");
                 }
                 else
                 {
@@ -168,7 +168,7 @@ namespace SiteServer.BackgroundPages.Cms
             var builder = new StringBuilder();
             builder.Append(@"<table class=""table table-noborder table-hover"">");
 
-            var directoryUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, _directoryPath, true);
+            var directoryUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, _directoryPath, true).GetAwaiter().GetResult();
             var backgroundImageUrl = SiteServerAssets.GetIconUrl("filesystem/management/background.gif");
             var directoryImageUrl = SiteServerAssets.GetFileSystemIconUrl(EFileSystemType.Directory, true);
 
@@ -212,7 +212,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (FileSystemInfoExtend fileInfo in fileSystemInfoExtendCollection.Files)
             {
-                if (!PathUtility.IsImageExtenstionAllowed(SiteInfo, fileInfo.Type))
+                if (!PathUtility.IsImageExtenstionAllowed(Site, fileInfo.Type))
                 {
                     continue;
                 }
@@ -258,7 +258,7 @@ namespace SiteServer.BackgroundPages.Cms
                     fileImageUrl = SiteServerAssets.GetFileSystemIconUrl(fileSystemType, true);
                 }
 
-                var textBoxUrl = PageUtility.GetVirtualUrl(SiteInfo, linkUrl);
+                var textBoxUrl = PageUtility.GetVirtualUrl(Site, linkUrl);
 
                 builder.Append($@"
 <td onmouseover=""this.className='tdbg-dark';"" onmouseout=""this.className='';"">

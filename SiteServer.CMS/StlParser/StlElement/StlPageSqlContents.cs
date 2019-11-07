@@ -110,7 +110,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var maxPage = _listInfo.MaxPage;
                 if (maxPage == 0)
                 {
-                    maxPage = _pageInfo.SiteInfo.Additional.CreateStaticMaxPage;
+                    maxPage = _pageInfo.Site.Additional.CreateStaticMaxPage;
                 }
                 if (maxPage > 0 && currentPageIndex + 1 > maxPage)
                 {

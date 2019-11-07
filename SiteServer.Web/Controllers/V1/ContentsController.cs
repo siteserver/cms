@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.V1;
@@ -7,8 +8,8 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -23,7 +24,7 @@ namespace SiteServer.API.Controllers.V1
         private const string RouteContent = "{siteId:int}/{channelId:int}/{id:int}";
 
         [HttpPost, Route(RouteChannel)]
-        public IHttpActionResult Create(int siteId, int channelId)
+        public async Task<IHttpActionResult> Create(int siteId, int channelId)
         {
             try
             {
@@ -36,8 +37,8 @@ namespace SiteServer.API.Controllers.V1
                 }
                 else
                 {
-                    isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                    isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeContents) ||
                              request.IsUserLoggin &&
                              request.UserPermissions.HasChannelPermissions(siteId, channelId,
                                  ConfigManager.ChannelPermissions.ContentAdd) ||
@@ -47,8 +48,8 @@ namespace SiteServer.API.Controllers.V1
                 }
                 if (!isAuth) return Unauthorized();
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
@@ -59,10 +60,10 @@ namespace SiteServer.API.Controllers.V1
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
                 var checkedLevel = request.GetPostInt("checkedLevel");
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var tableName = ChannelManager.GetTableName(site, channelInfo);
                 var adminName = request.AdminName;
 
-                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                var isChecked = checkedLevel >= site.Additional.CheckContentLevel;
                 if (isChecked)
                 {
                     if (sourceId == SourceManager.User || request.IsUserLoggin)
@@ -91,7 +92,7 @@ namespace SiteServer.API.Controllers.V1
                     CheckedLevel = checkedLevel
                 };
 
-                contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
+                contentInfo.Id = DataProvider.ContentDao.Insert(tableName, site, channelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -111,7 +112,7 @@ namespace SiteServer.API.Controllers.V1
                     CreateManager.TriggerContentChangedEvent(siteId, channelId);
                 }
 
-                request.AddSiteLog(siteId, channelId, contentInfo.Id, "添加内容",
+                await request.AddSiteLogAsync(siteId, channelId, contentInfo.Id, "添加内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 return Ok(new
@@ -127,7 +128,7 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPut, Route(RouteContent)]
-        public IHttpActionResult Update(int siteId, int channelId, int id)
+        public async Task<IHttpActionResult> Update(int siteId, int channelId, int id)
         {
             try
             {
@@ -140,8 +141,8 @@ namespace SiteServer.API.Controllers.V1
                 }
                 else
                 {
-                    isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                    isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeContents) ||
                              request.IsUserLoggin &&
                              request.UserPermissions.HasChannelPermissions(siteId, channelId,
                                  ConfigManager.ChannelPermissions.ContentEdit) ||
@@ -151,8 +152,8 @@ namespace SiteServer.API.Controllers.V1
                 }
                 if (!isAuth) return Unauthorized();
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
@@ -162,7 +163,7 @@ namespace SiteServer.API.Controllers.V1
 
                 var adminName = request.AdminName;
 
-                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
+                var contentInfo = ContentManager.GetContentInfo(site, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
                 contentInfo.Load(attributes);
@@ -177,7 +178,7 @@ namespace SiteServer.API.Controllers.V1
                 });
 
                 var postCheckedLevel = request.GetPostInt(ContentAttribute.CheckedLevel.ToCamelCase());
-                var isChecked = postCheckedLevel >= siteInfo.Additional.CheckContentLevel;
+                var isChecked = postCheckedLevel >= site.Additional.CheckContentLevel;
                 var checkedLevel = postCheckedLevel;
 
                 contentInfo.Load(new
@@ -186,7 +187,7 @@ namespace SiteServer.API.Controllers.V1
                     CheckedLevel = checkedLevel
                 });
 
-                DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -206,7 +207,7 @@ namespace SiteServer.API.Controllers.V1
                     CreateManager.TriggerContentChangedEvent(siteId, channelId);
                 }
 
-                request.AddSiteLog(siteId, channelId, contentInfo.Id, "修改内容",
+                await request.AddSiteLogAsync(siteId, channelId, contentInfo.Id, "修改内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 return Ok(new
@@ -222,7 +223,7 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpDelete, Route(RouteContent)]
-        public IHttpActionResult Delete(int siteId, int channelId, int id)
+        public async Task<IHttpActionResult> Delete(int siteId, int channelId, int id)
         {
             try
             {
@@ -235,8 +236,8 @@ namespace SiteServer.API.Controllers.V1
                 }
                 else
                 {
-                    isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                    isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeContents) ||
                              request.IsUserLoggin &&
                              request.UserPermissions.HasChannelPermissions(siteId, channelId,
                                  ConfigManager.ChannelPermissions.ContentDelete) ||
@@ -246,8 +247,8 @@ namespace SiteServer.API.Controllers.V1
                 }
                 if (!isAuth) return Unauthorized();
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
@@ -255,14 +256,14 @@ namespace SiteServer.API.Controllers.V1
                 if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                     ConfigManager.ChannelPermissions.ContentDelete)) return Unauthorized();
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var tableName = ChannelManager.GetTableName(site, channelInfo);
 
-                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
+                var contentInfo = ContentManager.GetContentInfo(site, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
-                ContentUtility.Delete(tableName, siteInfo, channelId, id);
+                ContentUtility.Delete(tableName, site, channelId, id);
 
-                //DataProvider.ContentDao.DeleteContent(tableName, siteInfo, channelId, id);
+                //DataProvider.ContentDao.DeleteContent(tableName, site, channelId, id);
 
                 return Ok(new
                 {
@@ -277,7 +278,7 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpGet, Route(RouteContent)]
-        public IHttpActionResult Get(int siteId, int channelId, int id)
+        public async Task<IHttpActionResult> Get(int siteId, int channelId, int id)
         {
             try
             {
@@ -290,8 +291,8 @@ namespace SiteServer.API.Controllers.V1
                 }
                 else
                 {
-                    isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                    isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeContents) ||
                              request.IsUserLoggin &&
                              request.UserPermissions.HasChannelPermissions(siteId, channelId,
                                  ConfigManager.ChannelPermissions.ContentView) ||
@@ -301,8 +302,8 @@ namespace SiteServer.API.Controllers.V1
                 }
                 if (!isAuth) return Unauthorized();
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
@@ -310,7 +311,7 @@ namespace SiteServer.API.Controllers.V1
                 if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                     ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
-                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
+                var contentInfo = ContentManager.GetContentInfo(site, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
                 return Ok(new
@@ -327,7 +328,7 @@ namespace SiteServer.API.Controllers.V1
 
         [OpenApiOperation("获取站点内容API", "")]
         [HttpGet, Route(RouteSite)]
-        public IHttpActionResult GetSiteContents(int siteId)
+        public async Task<IHttpActionResult> GetSiteContents(int siteId)
         {
             try
             {
@@ -340,8 +341,8 @@ namespace SiteServer.API.Controllers.V1
                 }
                 else
                 {
-                    isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                    isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeContents) ||
                              request.IsUserLoggin &&
                              request.UserPermissions.HasChannelPermissions(siteId, siteId,
                                  ConfigManager.ChannelPermissions.ContentView) ||
@@ -351,13 +352,13 @@ namespace SiteServer.API.Controllers.V1
                 }
                 if (!isAuth) return Unauthorized();
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, siteId,
                     ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
-                var tableName = siteInfo.TableName;
+                var tableName = site.TableName;
 
                 var parameters = new ApiContentsParameters(request);
 
@@ -365,7 +366,7 @@ namespace SiteServer.API.Controllers.V1
                 var value = new List<Dictionary<string, object>>();
                 foreach (var tuple in tupleList)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, tuple.Item1, tuple.Item2);
+                    var contentInfo = ContentManager.GetContentInfo(site, tuple.Item1, tuple.Item2);
                     if (contentInfo != null)
                     {
                         value.Add(contentInfo.ToDictionary());
@@ -382,7 +383,7 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpGet, Route(RouteChannel)]
-        public IHttpActionResult GetChannelContents(int siteId, int channelId)
+        public async Task<IHttpActionResult> GetChannelContents(int siteId, int channelId)
         {
             try
             {
@@ -395,8 +396,8 @@ namespace SiteServer.API.Controllers.V1
                 }
                 else
                 {
-                    isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                    isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeContents) ||
                              request.IsUserLoggin &&
                              request.UserPermissions.HasChannelPermissions(siteId, channelId,
                                  ConfigManager.ChannelPermissions.ContentView) ||
@@ -406,8 +407,8 @@ namespace SiteServer.API.Controllers.V1
                 }
                 if (!isAuth) return Unauthorized();
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
@@ -415,7 +416,7 @@ namespace SiteServer.API.Controllers.V1
                 if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                     ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var tableName = ChannelManager.GetTableName(site, channelInfo);
 
                 var top = request.GetQueryInt("top", 20);
                 var skip = request.GetQueryInt("skip");
@@ -426,7 +427,7 @@ namespace SiteServer.API.Controllers.V1
                 var value = new List<Dictionary<string, object>>();
                 foreach(var (contentChannelId, contentId) in list)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelId, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(site, contentChannelId, contentId);
                     if (contentInfo != null)
                     {
                         value.Add(contentInfo.ToDictionary());

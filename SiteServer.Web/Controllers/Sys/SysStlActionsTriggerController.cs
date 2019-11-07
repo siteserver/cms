@@ -23,7 +23,7 @@ namespace SiteServer.API.Controllers.Sys
             var request = new AuthenticatedRequest();
 
             var siteId = request.GetQueryInt("siteId");
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = await SiteManager.GetSiteAsync(siteId);
 
             try
             {
@@ -65,24 +65,24 @@ namespace SiteServer.API.Controllers.Sys
                     var redirectUrl = string.Empty;
                     if (specialId != 0)
                     {
-                        redirectUrl = PageUtility.GetFileUrl(siteInfo, specialId, false);
+                        redirectUrl = PageUtility.GetFileUrl(site, specialId, false);
                     }
                     else if (fileTemplateId != 0)
                     {
-                        redirectUrl = PageUtility.GetFileUrl(siteInfo, fileTemplateId, false);
+                        redirectUrl = PageUtility.GetFileUrl(site, fileTemplateId, false);
                     }
                     else if (contentId != 0)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
-                        redirectUrl = PageUtility.GetContentUrl(siteInfo, contentInfo, false);
+                        var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+                        redirectUrl = await PageUtility.GetContentUrlAsync(site, contentInfo, false);
                     }
                     else if (channelId != 0)
                     {
-                        redirectUrl = PageUtility.GetChannelUrl(siteInfo, channelInfo, false);
+                        redirectUrl = await PageUtility.GetChannelUrlAsync(site, channelInfo, false);
                     }
                     else if (siteId != 0)
                     {
-                        redirectUrl = PageUtility.GetIndexPageUrl(siteInfo, false);
+                        redirectUrl = PageUtility.GetIndexPageUrl(site, false);
                     }
 
                     if (!string.IsNullOrEmpty(redirectUrl))
@@ -103,7 +103,7 @@ namespace SiteServer.API.Controllers.Sys
             }
             catch
             {
-                var redirectUrl = PageUtility.GetIndexPageUrl(siteInfo, false);
+                var redirectUrl = PageUtility.GetIndexPageUrl(site, false);
                 PageUtils.Redirect(redirectUrl);
                 return;
             }

@@ -151,8 +151,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contentInfo == null)
                     {
-                        var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.SiteInfo.Id, contextInfo.ChannelId);
-                        var tableName = ChannelManager.GetTableName(contextInfo.SiteInfo, nodeInfo);
+                        var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.Site.Id, contextInfo.ChannelId);
+                        var tableName = ChannelManager.GetTableName(contextInfo.Site, nodeInfo);
 
                         //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
                         flashUrl = StlContentCache.GetValue(tableName, contentId, type);
@@ -197,7 +197,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {                    
-                    flashUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, flashUrl, pageInfo.IsLocal);
+                    flashUrl = PageUtility.ParseNavigationUrl(pageInfo.Site, flashUrl, pageInfo.IsLocal);
 
                     parsedContent = $@"
 <embed src=""{flashUrl}"" allowfullscreen=""true"" width=""{width}"" height=""{height}"" align=""middle"" allowscriptaccess=""always"" type=""application/x-shockwave-flash"" />
@@ -345,8 +345,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                {
 //                    if (contentInfo == null)
 //                    {
-//                        var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.SiteInfo.Id, contextInfo.ChannelId);
-//                        var tableName = ChannelManager.GetTableName(contextInfo.SiteInfo, nodeInfo);
+//                        var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.Site.Id, contextInfo.ChannelId);
+//                        var tableName = ChannelManager.GetTableName(contextInfo.Site, nodeInfo);
 
 //                        //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
 //                        picUrl = Content.GetValue(tableName, contentId, type);
@@ -393,7 +393,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                {
 //                    pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcSwfObject);
 
-//                    picUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, picUrl, pageInfo.IsLocal);
+//                    picUrl = PageUtility.ParseNavigationUrl(pageInfo.Site, picUrl, pageInfo.IsLocal);
 
 //                    if (string.IsNullOrEmpty(contextInfo.Attributes["quality"]))
 //                    {

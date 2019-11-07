@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
             LtlScript.Text = $@"
 <script type=""text/javascript"">
     var rootUrl = '{PageUtils.GetRootUrl(string.Empty)}';
-    var siteUrl = '{PageUtils.ParseNavigationUrl($"~/{SiteInfo.SiteDir}")}';
+    var siteUrl = '{PageUtils.ParseNavigationUrl($"~/{Site.SiteDir}")}';
     var virtualUrl = {virtualUrl};
     var imageUrl = virtualUrl;
     if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png|\.webp$/i) != -1){{
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var fileUrl = Request.Form["fileUrl"];
                 if (string.IsNullOrEmpty(fileUrl)) return;
 
-                var filePath = PathUtility.MapPath(SiteInfo, fileUrl);
+                var filePath = PathUtility.MapPath(Site, fileUrl);
                 if (!FileUtils.IsFileExists(filePath)) return;
 
                 var destImagePath = filePath.Substring(0, filePath.LastIndexOf('.')) + "_c" + filePath.Substring(filePath.LastIndexOf('.'));
@@ -128,7 +128,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                var destUrl = PageUtility.GetVirtualUrl(SiteInfo, PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, destImagePath, true));
+                var destUrl = PageUtility.GetVirtualUrl(Site, PageUtility.GetSiteUrlByPhysicalPathAsync(Site, destImagePath, true).GetAwaiter().GetResult());
 
                 if (!string.IsNullOrEmpty(_textBoxClientId))
                 {

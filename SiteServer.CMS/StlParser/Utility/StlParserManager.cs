@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SiteServer.Utils;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -23,7 +25,7 @@ namespace SiteServer.CMS.StlParser.Utility
             contextInfo.IsInnerElement = isInnerElement;
         }
 
-        public static string ParseTemplatePreview(SiteInfo siteInfo, TemplateType templateType, int channelId, int contentId, string template)
+        public static string ParseTemplatePreview(Site site, TemplateType templateType, int channelId, int contentId, string template)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
@@ -31,7 +33,7 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 TemplateType = templateType
             };
-            var pageInfo = new PageInfo(channelId, contentId, siteInfo, templateInfo, new Dictionary<string, object>());
+            var pageInfo = new PageInfo(channelId, contentId, site, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
 
             var parsedBuilder = new StringBuilder(template);
@@ -52,18 +54,18 @@ namespace SiteServer.CMS.StlParser.Utility
             contextInfo.IsInnerElement = isInnerElement;
         }
 
-        public static string ParseInnerContent(string template, ParseContextImpl context)
+        public static async Task<string> ParseInnerContentAsync(string template, ParseContextImpl context)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
             var builder = new StringBuilder(template);
-            var siteInfo = SiteManager.GetSiteInfo(context.SiteId);
+            var site = await SiteManager.GetSiteAsync(context.SiteId);
             var templateInfo = new TemplateInfo
             {
                 Id = context.TemplateId,
                 TemplateType = context.TemplateType
             };
-            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo, context.PluginItems);
+            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, site, templateInfo, context.PluginItems);
             var contextInfo = new ContextInfo(pageInfo);
             ParseInnerContent(builder, pageInfo, contextInfo);
             return builder.ToString();
@@ -71,8 +73,8 @@ namespace SiteServer.CMS.StlParser.Utility
 
         //public static void ParseInnerContent(StringBuilder builder, int siteId, int channelId, int contentId)
         //{
-        //    var siteInfo = SiteManager.GetSiteInfo(siteId);
-        //    var pageInfo = new PageInfo(channelId, contentId, siteInfo, null, null);
+        //    var site = SiteManager.GetSite(siteId);
+        //    var pageInfo = new PageInfo(channelId, contentId, site, null, null);
         //    var contextInfo = new ContextInfo(pageInfo);
         //    ParseInnerContent(builder, pageInfo, contextInfo);
         //}

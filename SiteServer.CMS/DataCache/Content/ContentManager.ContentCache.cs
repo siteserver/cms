@@ -2,6 +2,7 @@
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.DataCache.Content
 {
@@ -42,7 +43,7 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static ContentInfo GetContent(SiteInfo siteInfo, int channelId, int contentId)
+            public static ContentInfo GetContent(Site site, int channelId, int contentId)
             {
                 lock (LockObject)
                 {
@@ -50,14 +51,14 @@ namespace SiteServer.CMS.DataCache.Content
                     dict.TryGetValue(contentId, out var contentInfo);
                     if (contentInfo != null && contentInfo.ChannelId == channelId && contentInfo.Id == contentId) return contentInfo;
 
-                    contentInfo = DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(siteInfo, channelId), channelId, contentId);
+                    contentInfo = DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(site, channelId), channelId, contentId);
                     dict[contentId] = contentInfo;
 
                     return new ContentInfo(contentInfo);
                 }
             }
 
-            public static ContentInfo GetContent(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)
+            public static ContentInfo GetContent(Site site, ChannelInfo channelInfo, int contentId)
             {
                 lock (LockObject)
                 {
@@ -65,7 +66,7 @@ namespace SiteServer.CMS.DataCache.Content
                     dict.TryGetValue(contentId, out var contentInfo);
                     if (contentInfo != null && contentInfo.ChannelId == channelInfo.Id && contentInfo.Id == contentId) return contentInfo;
 
-                    contentInfo = DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(siteInfo, channelInfo), channelInfo.Id, contentId);
+                    contentInfo = DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(site, channelInfo), channelInfo.Id, contentId);
                     dict[contentId] = contentInfo;
 
                     return new ContentInfo(contentInfo);
@@ -73,14 +74,14 @@ namespace SiteServer.CMS.DataCache.Content
             }
         }
 
-        public static ContentInfo GetContentInfo(SiteInfo siteInfo, int channelId, int contentId)
+        public static ContentInfo GetContentInfo(Site site, int channelId, int contentId)
         {
-            return ContentCache.GetContent(siteInfo, channelId, contentId);
+            return ContentCache.GetContent(site, channelId, contentId);
         }
 
-        public static ContentInfo GetContentInfo(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)
+        public static ContentInfo GetContentInfo(Site site, ChannelInfo channelInfo, int contentId)
         {
-            return ContentCache.GetContent(siteInfo, channelInfo, contentId);
+            return ContentCache.GetContent(site, channelInfo, contentId);
         }
     }
 }

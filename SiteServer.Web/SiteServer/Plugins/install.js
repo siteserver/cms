@@ -1,7 +1,7 @@
 ﻿var $url = '/pages/plugins/install';
 
-var $pluginIds = pageUtils.getQueryStringByName('pluginIds').split(',');
-var $pageType = pageUtils.getQueryStringByName('isUpdate') === 'true' ? '升级' : '安装';
+var $pluginIds = utils.getQueryString('pluginIds').split(',');
+var $pageType = utils.getQueryString('isUpdate') === 'true' ? '升级' : '安装';
 
 var data = {
   pluginIds: $pluginIds,

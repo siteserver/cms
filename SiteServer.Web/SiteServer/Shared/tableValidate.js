@@ -65,9 +65,9 @@ var data = {
     type: "regex",
     text: "字段必须匹配指定的正则表达式"
   }],
-  tableName: pageUtils.getQueryStringByName('tableName'),
-  attributeName: pageUtils.getQueryStringByName('attributeName'),
-  relatedIdentities: pageUtils.getQueryStringByName('relatedIdentities'),
+  tableName: utils.getQueryString('tableName'),
+  attributeName: utils.getQueryString('attributeName'),
+  relatedIdentities: utils.getQueryString('relatedIdentities'),
   pageLoad: false,
   pageAlert: null,
   pageType: 'list',
@@ -131,14 +131,14 @@ var methods = {
     var $this = this;
     this.$validator.validate().then(function (result) {
       if (result) {
-        pageUtils.loading(true);
+        utils.loading(true);
         $api.post({
           tableName: $this.tableName,
           attributeName: $this.attributeName,
           relatedIdentities: $this.relatedIdentities,
           value: $this.getValue()
         }, function (err, res) {
-          pageUtils.loading(false);
+          utils.loading(false);
           if (err || !res) {
             $this.pageAlert = {
               type: 'danger',
@@ -148,7 +148,7 @@ var methods = {
           }
 
           parent.reloadPage();
-          pageUtils.closeLayer();
+          utils.closeLayer();
         });
       }
     });

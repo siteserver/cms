@@ -106,7 +106,7 @@ namespace SiteServer.BackgroundPages.Cms
 					var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
                     importObject.ImportChannelsAndContentsByZipFile(TranslateUtils.ToInt(DdlParentChannelId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
-                    AuthRequest.AddSiteLog(SiteId, "导入栏目");
+                    AuthRequest.AddSiteLogAsync(SiteId, "导入栏目").GetAwaiter().GetResult();
 
                     LayerUtils.Close(Page);
 				}

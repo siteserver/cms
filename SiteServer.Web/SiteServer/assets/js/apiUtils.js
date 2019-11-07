@@ -1,6 +1,6 @@
 var apiUtils = {
   Api: function (apiUrl) {
-    this.getQueryStringByName = function (name) {
+    this.getQueryString = function (name) {
       var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
       if (!result || result.length < 1) {
         return "";

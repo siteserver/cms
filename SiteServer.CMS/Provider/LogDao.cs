@@ -7,6 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -176,17 +177,12 @@ namespace SiteServer.CMS.Provider
             return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_Log " + whereString;
         }
 
-        public DateTime GetLastRemoveLogDate(string userName)
+        public DateTime GetLastRemoveLogDate()
         {
             var retVal = DateTime.MinValue;
             var sqlString = SqlUtils.ToTopSqlString("siteserver_Log", "AddDate", "WHERE Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
 
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmUserName, DataType.VarChar, 50, userName)
-			};
-
-            using (var rdr = ExecuteReader(sqlString, parms))
+            using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
 
@@ -74,7 +76,7 @@ namespace SiteServer.CMS.Core
             var summary = string.Empty;
             if (pageInfo != null)
             {
-                summary = $@"站点名称：{pageInfo.SiteInfo.SiteName}，
+                summary = $@"站点名称：{pageInfo.Site.SiteName}，
 模板类型：{TemplateTypeUtils.GetText(pageInfo.TemplateInfo.TemplateType)}，
 模板名称：{pageInfo.TemplateInfo.TemplateName}
 <br />";
@@ -91,13 +93,13 @@ stl: {stlContent}
 -->";
         }
 
-        public static void AddSiteLog(int siteId, int channelId, int contentId, AdministratorInfo adminInfo, string action, string summary)
+        public static async Task AddSiteLogAsync(int siteId, int channelId, int contentId, Administrator adminInfo, string action, string summary)
         {
             if (!ConfigManager.SystemConfigInfo.IsLogSite) return;
 
             if (siteId <= 0)
             {
-                AddAdminLog(adminInfo, action, summary);
+                await AddAdminLogAsync(adminInfo, action, summary);
             }
             else
             {
@@ -121,7 +123,7 @@ stl: {stlContent}
 
                     DataProvider.SiteLogDao.Insert(siteLogInfo);
 
-                    DataProvider.AdministratorDao.UpdateLastActivityDate(adminInfo);
+                    await DataProvider.AdministratorDao.UpdateLastActivityDateAsync(adminInfo);
                 }
                 catch (Exception ex)
                 {
@@ -130,7 +132,7 @@ stl: {stlContent}
             }
         }
 
-        public static void AddAdminLog(AdministratorInfo adminInfo, string action, string summary = "")
+        public static async Task AddAdminLogAsync(Administrator adminInfo, string action, string summary = "")
         {
             if (!ConfigManager.SystemConfigInfo.IsLogAdmin) return;
 
@@ -150,7 +152,7 @@ stl: {stlContent}
 
                 DataProvider.LogDao.Insert(logInfo);
 
-                DataProvider.AdministratorDao.UpdateLastActivityDate(adminInfo);
+                await DataProvider.AdministratorDao.UpdateLastActivityDateAsync(adminInfo);
             }
             catch (Exception ex)
             {

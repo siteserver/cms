@@ -74,22 +74,22 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contextInfo.ContentInfo == null)
                     {
-                        //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, type);
-                        playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, type);
+                        //playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, type);
+                        playUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
                             {
-                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.VideoUrl);
-                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
+                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.VideoUrl);
+                                playUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, BackgroundContentAttribute.VideoUrl);
                             }
                         }
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
                             {
-                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
-                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.FileUrl);
+                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
+                                playUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, BackgroundContentAttribute.FileUrl);
                             }
                         }
                     }
@@ -110,7 +110,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
-            playUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, playUrl, pageInfo.IsLocal);
+            playUrl = PageUtility.ParseNavigationUrl(pageInfo.Site, playUrl, pageInfo.IsLocal);
 
             // 如果是实体标签，则只返回数字
             if (contextInfo.IsStlEntity)

@@ -5,6 +5,7 @@ using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using System.Text;
 using SiteServer.CMS.Api;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -16,7 +17,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public SortedDictionary<string, string> FootCodes { get; }
 
-        public SiteInfo SiteInfo { get; private set; }
+        public Site Site { get; private set; }
 
         public Dictionary<string, string> Parameters { get; set; }
 
@@ -24,7 +25,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public TemplateInfo TemplateInfo { get; }
 
-        public UserInfo UserInfo { get; set; }
+        public User User { get; set; }
 
         public int SiteId { get; private set; }
 
@@ -56,21 +57,21 @@ namespace SiteServer.CMS.StlParser.Model
 
         public PageInfo Clone()
         {
-            return new PageInfo(PageChannelId, PageContentId, SiteInfo, TemplateInfo, PluginItems);
+            return new PageInfo(PageChannelId, PageContentId, Site, TemplateInfo, PluginItems);
         }
 
-        public PageInfo(int pageChannelId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo, Dictionary<string, object> pluginItems)
+        public PageInfo(int pageChannelId, int pageContentId, Site site, TemplateInfo templateInfo, Dictionary<string, object> pluginItems)
         {
             TemplateInfo = templateInfo;
-            SiteId = siteInfo.Id;
+            SiteId = site.Id;
             PageChannelId = pageChannelId;
             PageContentId = pageContentId;
             IsLocal = false;
             HeadCodes = new SortedDictionary<string, string>();
             BodyCodes = new SortedDictionary<string, string>();
             FootCodes = new SortedDictionary<string, string>();
-            SiteInfo = siteInfo;
-            UserInfo = null;
+            Site = site;
+            User = null;
             _uniqueId = 1;
             ApiUrl = ApiManager.ApiUrl;
 
@@ -83,14 +84,14 @@ namespace SiteServer.CMS.StlParser.Model
             PluginItems = pluginItems;
         }
 
-        public void ChangeSite(SiteInfo siteInfo, int pageChannelId, int pageContentId, ContextInfo contextInfo)
+        public void ChangeSite(Site site, int pageChannelId, int pageContentId, ContextInfo contextInfo)
         {
-            SiteId = siteInfo.Id;
-            SiteInfo = siteInfo;
+            SiteId = site.Id;
+            Site = site;
             PageChannelId = pageChannelId;
             PageContentId = pageContentId;
 
-            contextInfo.SiteInfo = siteInfo;
+            contextInfo.Site = site;
             contextInfo.ChannelId = pageChannelId;
             contextInfo.ContentId = pageContentId;
         }
@@ -222,7 +223,7 @@ namespace SiteServer.CMS.StlParser.Model
 
             if (pageJsName == Const.Jquery)
             {
-                if (SiteInfo.Additional.IsCreateWithJQuery)
+                if (Site.Additional.IsCreateWithJQuery)
                 {
                     retVal =
                         $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}"" type=""text/javascript""></script>";
@@ -342,7 +343,7 @@ wnd_frame.src=url;}}
             {
                 retVal = $@"
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsPageScript)}""></script>
-<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{SiteInfo.Id}', {SiteInfo.Additional.WebUrl.TrimEnd('/')}');</script>
+<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{Site.Id}', {Site.Additional.WebUrl.TrimEnd('/')}');</script>
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsUserScript)}""></script>";
             }
             else if (pageJsName == Const.JsInnerCalendar)
@@ -369,7 +370,7 @@ wnd_frame.src=url;}}
                 var builder = new StringBuilder();
 
                 //builder.Append(
-                //$@"<script>var $pageInfo = {{siteId : {SiteId}, channelId : {PageChannelId}, contentId : {PageContentId}, siteUrl : ""{SiteInfo.Additional.WebUrl.TrimEnd('/')}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{ApiUrl.TrimEnd('/')}""}};</script>").AppendLine();
+                //$@"<script>var $pageInfo = {{siteId : {SiteId}, channelId : {PageChannelId}, contentId : {PageContentId}, siteUrl : ""{Site.Additional.WebUrl.TrimEnd('/')}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{ApiUrl.TrimEnd('/')}""}};</script>").AppendLine();
 
                 foreach (var key in HeadCodes.Keys)
                 {

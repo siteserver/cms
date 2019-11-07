@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -108,13 +110,13 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public void Delete(int siteId, int channelId)
         {
-            DataProvider.ChannelDao.Delete(siteId, channelId);
+            DataProvider.ChannelDao.DeleteAsync(siteId, channelId).GetAwaiter().GetResult();
         }
 
         public string GetChannelUrl(int siteId, int channelId)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            return PageUtility.GetChannelUrl(siteInfo, ChannelManager.GetChannelInfo(siteId, channelId), false);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+            return PageUtility.GetChannelUrlAsync(site, ChannelManager.GetChannelInfo(siteId, channelId), false).GetAwaiter().GetResult();
         }
     }
 }

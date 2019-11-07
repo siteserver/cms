@@ -54,27 +54,27 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = PageTemplateAssets.NameInclude;
                 _ext = PageTemplateAssets.ExtInclude;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsIncludeDir.Trim('/');
+                _assetsDir = Site.Additional.TemplatesAssetsIncludeDir.Trim('/');
                 PhCodeMirrorInclude.Visible = true;
             }
             else if (_type == PageTemplateAssets.TypeJs)
             {
                 _name = PageTemplateAssets.NameJs;
                 _ext = PageTemplateAssets.ExtJs;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = Site.Additional.TemplatesAssetsJsDir.Trim('/');
                 PhCodeMirrorJs.Visible = true;
             }
             else if (_type == PageTemplateAssets.TypeCss)
             {
                 _name = PageTemplateAssets.NameCss;
                 _ext = PageTemplateAssets.ExtCss;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = Site.Additional.TemplatesAssetsCssDir.Trim('/');
                 PhCodeMirrorCss.Visible = true;
             }
 
             if (string.IsNullOrEmpty(_assetsDir)) return;
 
-            _directoryPath = PathUtility.MapPath(SiteInfo, "@/" + _assetsDir);
+            _directoryPath = PathUtility.MapPath(Site, "@/" + _assetsDir);
 
             if (AuthRequest.IsQueryExists("fileName"))
             {
@@ -88,7 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_fileName) ? $"添加{_name}" : $"编辑{_name}";
 
-            var isCodeMirror = SiteInfo.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = Site.Additional.ConfigTemplateIsCodeMirror;
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
 
@@ -110,7 +110,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, SiteInfo.Additional.Charset);
+                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, Site.Additional.Charset);
             }
         }
 
@@ -118,10 +118,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var isCodeMirror = SiteInfo.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = Site.Additional.ConfigTemplateIsCodeMirror;
             isCodeMirror = !isCodeMirror;
-            SiteInfo.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
-            DataProvider.SiteDao.Update(SiteInfo);
+            Site.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
+            DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
 
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
@@ -167,7 +167,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     FileUtils.DeleteFileIfExists(PathUtils.Combine(_directoryPath, previousFileName));
                 }
-                AuthRequest.AddSiteLog(SiteId, $"修改{_name}", $"{_name}:{relatedFileName}");
+                AuthRequest.AddSiteLogAsync(SiteId, $"修改{_name}", $"{_name}:{relatedFileName}").GetAwaiter().GetResult();
                 SuccessMessage($"{_name}修改成功！");
                 AddWaitAndRedirectScript(PageTemplateAssets.GetRedirectUrl(SiteId, _type));
             }
@@ -185,7 +185,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
                 FileUtils.WriteText(PathUtils.Combine(_directoryPath, relatedFileName), charset, TbContent.Text);
-                AuthRequest.AddSiteLog(SiteId, $"添加{_name}", $"{_name}:{relatedFileName}");
+                AuthRequest.AddSiteLogAsync(SiteId, $"添加{_name}", $"{_name}:{relatedFileName}").GetAwaiter().GetResult();
                 SuccessMessage($"{_name}添加成功！");
                 AddWaitAndRedirectScript(PageTemplateAssets.GetRedirectUrl(SiteId, _type));
             }

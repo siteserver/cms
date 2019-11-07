@@ -55,11 +55,9 @@ namespace SiteServer.Utils
             return text.ToLower().IndexOf(inner.ToLower(), StringComparison.Ordinal) >= 0;
         }
 
-        public static bool ContainsIgnoreCase(List<string> list, string target)
+        public static bool ContainsIgnoreCase(IEnumerable<string> list, string target)
         {
-            if (list == null || list.Count == 0) return false;
-
-            return list.Any(element => EqualsIgnoreCase(element, target));
+            return list != null && list.Any(element => EqualsIgnoreCase(element, target));
         }
 
         public static string Trim(string text)
@@ -75,6 +73,11 @@ namespace SiteServer.Utils
         public static string TrimAndToLower(string text)
         {
             return string.IsNullOrEmpty(text) ? string.Empty : text.ToLower().Trim();
+        }
+
+        public static string ToLower(string text)
+        {
+            return string.IsNullOrEmpty(text) ? string.Empty : text.ToLower();
         }
 
         public static string Remove(string text, int startIndex)

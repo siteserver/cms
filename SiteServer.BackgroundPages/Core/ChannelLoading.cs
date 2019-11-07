@@ -6,6 +6,7 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
@@ -14,11 +15,11 @@ namespace SiteServer.BackgroundPages.Core
 {
     public static class ChannelLoading
     {
-        public static string GetChannelRowHtml(SiteInfo siteInfo, ChannelInfo nodeInfo, bool enabled, ELoadingType loadingType, NameValueCollection additional, PermissionsImpl permissionsImpl)
+        public static string GetChannelRowHtml(Site site, ChannelInfo nodeInfo, bool enabled, ELoadingType loadingType, NameValueCollection additional, PermissionsImpl permissionsImpl)
         {
-            var nodeTreeItem = ChannelTreeItem.CreateInstance(siteInfo, nodeInfo, enabled, permissionsImpl);
-            var adminId = permissionsImpl.GetAdminId(siteInfo.Id, nodeInfo.Id);
-            var title = nodeTreeItem.GetItemHtml(loadingType, PageChannel.GetRedirectUrl(siteInfo.Id, nodeInfo.Id), adminId, additional);
+            var nodeTreeItem = ChannelTreeItem.CreateInstance(site, nodeInfo, enabled, permissionsImpl);
+            var adminId = permissionsImpl.GetAdminId(site.Id, nodeInfo.Id);
+            var title = nodeTreeItem.GetItemHtml(loadingType, PageChannel.GetRedirectUrl(site.Id, nodeInfo.Id), adminId, additional);
 
             var rowHtml = string.Empty;
 
@@ -75,11 +76,11 @@ namespace SiteServer.BackgroundPages.Core
                 var startDate = TranslateUtils.ToDateTime(additional["StartDate"]);
                 var endDate = TranslateUtils.ToDateTime(additional["EndDate"]);
 
-                var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
-                var num = DataProvider.ContentDao.GetCountOfContentAdd(tableName, siteInfo.Id, nodeInfo.Id, EScopeType.All, startDate, endDate, string.Empty, ETriState.All);
+                var tableName = ChannelManager.GetTableName(site, nodeInfo);
+                var num = DataProvider.ContentDao.GetCountOfContentAdd(tableName, site.Id, nodeInfo.Id, EScopeType.All, startDate, endDate, string.Empty, ETriState.All);
                 var contentAddNum = num == 0 ? "0" : $"<strong>{num}</strong>";
 
-                num = DataProvider.ContentDao.GetCountOfContentUpdate(tableName, siteInfo.Id, nodeInfo.Id, EScopeType.All, startDate, endDate, string.Empty);
+                num = DataProvider.ContentDao.GetCountOfContentUpdate(tableName, site.Id, nodeInfo.Id, EScopeType.All, startDate, endDate, string.Empty);
                 var contentUpdateNum = num == 0 ? "0" : $"<strong>{num}</strong>";
 
                 rowHtml = $@"
@@ -99,7 +100,7 @@ namespace SiteServer.BackgroundPages.Core
                     var showPopWinString = ModalTemplateFilePathRule.GetOpenWindowString(nodeInfo.SiteId, nodeInfo.Id);
                     editLink = $"<a href=\"javascript:;\" onclick=\"{showPopWinString}\">更改</a>";
                 }
-                var filePath = PageUtility.GetInputChannelUrl(siteInfo, nodeInfo, false);
+                var filePath = PageUtility.GetInputChannelUrlAsync(site, nodeInfo, false).GetAwaiter().GetResult();
 
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
@@ -125,7 +126,7 @@ namespace SiteServer.BackgroundPages.Core
                 var channelIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIdsIfContentChanged);
                 foreach (var theChannelId in channelIdList)
                 {
-                    var theNodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, theChannelId);
+                    var theNodeInfo = ChannelManager.GetChannelInfo(site.Id, theChannelId);
                     if (theNodeInfo != null)
                     {
                         nodeNameBuilder.Append(theNodeInfo.ChannelName).Append(",");
@@ -155,7 +156,7 @@ namespace SiteServer.BackgroundPages.Core
                     editLink = $"<a href=\"javascript:;\" onclick=\"{showPopWinString}\">更改</a>";
                 }
 
-                var contribute = CrossSiteTransUtility.GetDescription(nodeInfo.SiteId, nodeInfo);
+                var contribute = CrossSiteTransUtility.GetDescriptionAsync(nodeInfo.SiteId, nodeInfo).GetAwaiter().GetResult();
 
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
@@ -177,9 +178,9 @@ namespace SiteServer.BackgroundPages.Core
             return rowHtml;
         }
 
-        public static string GetScript(SiteInfo siteInfo, string contentModelPluginId, ELoadingType loadingType, NameValueCollection additional)
+        public static string GetScript(Site site, string contentModelPluginId, ELoadingType loadingType, NameValueCollection additional)
         {
-            return ChannelTreeItem.GetScript(siteInfo, loadingType, contentModelPluginId, additional);
+            return ChannelTreeItem.GetScript(site, loadingType, contentModelPluginId, additional);
         }
 
         public static string GetScriptOnLoad(int siteId, int currentChannelId)

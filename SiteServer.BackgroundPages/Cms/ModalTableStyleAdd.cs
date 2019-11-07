@@ -7,6 +7,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;
 
@@ -355,11 +356,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (SiteId > 0)
                 {
-                    AuthRequest.AddSiteLog(SiteId, "修改表单显示样式", $"字段名:{_styleInfo.AttributeName}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "修改表单显示样式", $"字段名:{_styleInfo.AttributeName}").GetAwaiter().GetResult();
                 }
                 else
                 {
-                    AuthRequest.AddAdminLog("修改表单显示样式", $"字段名:{_styleInfo.AttributeName}");
+                    AuthRequest.AddAdminLogAsync("修改表单显示样式", $"字段名:{_styleInfo.AttributeName}").GetAwaiter().GetResult();
                 }
                 isChanged = true;
             }
@@ -451,11 +452,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (SiteId > 0)
                 {
-                    AuthRequest.AddSiteLog(SiteId, "添加表单显示样式", $"字段名:{_styleInfo.AttributeName}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "添加表单显示样式", $"字段名:{_styleInfo.AttributeName}").GetAwaiter().GetResult();
                 }
                 else
                 {
-                    AuthRequest.AddAdminLog("添加表单显示样式", $"字段名:{_styleInfo.AttributeName}");
+                    AuthRequest.AddAdminLogAsync("添加表单显示样式", $"字段名:{_styleInfo.AttributeName}").GetAwaiter().GetResult();
                 }
 
                 isChanged = true;

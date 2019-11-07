@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -23,7 +25,7 @@ namespace SiteServer.API.Controllers.Sys
     public class SysStlActionsSearchController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsSearch.Route)]
-        public IHttpActionResult Main()
+        public async Task<IHttpActionResult> Main()
         {
             PageInfo pageInfo = null;
             var template = string.Empty;
@@ -53,10 +55,10 @@ namespace SiteServer.API.Controllers.Sys
                 var pageIndex = request.GetPostInt("page", 1) - 1;
 
                 var templateInfo = new TemplateInfo(0, siteId, string.Empty, TemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, false);
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>())
+                var site = await SiteManager.GetSiteAsync(siteId);
+                pageInfo = new PageInfo(siteId, 0, site, templateInfo, new Dictionary<string, object>())
                 {
-                    UserInfo = request.UserInfo
+                    User = request.User
                 };
                 var contextInfo = new ContextInfo(pageInfo);
                 var contentBuilder = new StringBuilder(StlRequestEntities.ParseRequestEntities(form, template));
@@ -69,9 +71,9 @@ namespace SiteServer.API.Controllers.Sys
                     var stlPageContentsElement = stlElement;
                     var stlPageContentsElementReplaceString = stlElement;
 
-                    var whereString = DataProvider.ContentDao.GetWhereStringByStlSearch(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form);
+                    var whereString = await DataProvider.ContentDao.GetWhereStringByStlSearchAsync(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form);
 
-                    var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, pageNum, siteInfo.TableName, whereString);
+                    var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, pageNum, site.TableName, whereString);
                     var pageCount = stlPageContents.GetPageCount(out var totalNum);
                     if (totalNum == 0)
                     {

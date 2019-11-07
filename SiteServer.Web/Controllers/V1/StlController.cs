@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 
@@ -13,20 +15,23 @@ namespace SiteServer.API.Controllers.V1
         private const string Route = "{elementName}";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get(string elementName)
+        public async Task<IHttpActionResult> Get(string elementName)
         {
             try
             {
-                var stlRequest = new StlRequest();
+                var request = new AuthenticatedRequest();
+                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeStl);
+
+                var stlRequest = new StlRequest(request, isApiAuthorized);
 
                 if (!stlRequest.IsApiAuthorized)
                 {
                     return Unauthorized();
                 }
 
-                var siteInfo = stlRequest.SiteInfo;
+                var site = stlRequest.Site;
 
-                if (siteInfo == null)
+                if (site == null)
                 {
                     return NotFound();
                 }

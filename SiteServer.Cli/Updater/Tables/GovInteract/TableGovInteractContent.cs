@@ -4,6 +4,7 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater.Tables.GovInteract

@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            var siteList = SiteManager.GetSiteIdListOrderByLevel();
+            var siteList = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             RptContents.DataSource = siteList;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
             var siteId = (int)e.Item.DataItem;
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
 
             var ltlName = (Literal)e.Item.FindControl("ltlName");
             var ltlDir = (Literal)e.Item.FindControl("ltlDir");
@@ -41,11 +41,11 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlAssetsUrl = (Literal)e.Item.FindControl("ltlAssetsUrl");
             var ltlEditUrl = (Literal)e.Item.FindControl("ltlEditUrl");
 
-            ltlName.Text = SiteManager.GetSiteName(siteInfo);
-            ltlDir.Text = siteInfo.SiteDir;
+            ltlName.Text = SiteManager.GetSiteNameAsync(site).GetAwaiter().GetResult();
+            ltlDir.Text = site.SiteDir;
 
-            ltlAssetsDir.Text = siteInfo.Additional.AssetsDir;
-            ltlAssetsUrl.Text = $@"<a href=""{siteInfo.Additional.AssetsUrl}"" target=""_blank"">{siteInfo.Additional.AssetsUrl}</a>";
+            ltlAssetsDir.Text = site.Additional.AssetsDir;
+            ltlAssetsUrl.Text = $@"<a href=""{site.Additional.AssetsUrl}"" target=""_blank"">{site.Additional.AssetsUrl}</a>";
 
             ltlEditUrl.Text = $@"<a href=""{PageSiteUrlAssetsConfig.GetRedirectUrl(siteId)}"">修改</a>";
         }

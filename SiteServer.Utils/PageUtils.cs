@@ -966,12 +966,12 @@ namespace SiteServer.Utils
 
         public static string GetErrorPageUrl(int logId)
         {
-            return GetAdminUrl($"pageError.html?logId={logId}");
+            return GetAdminUrl($"error.html?logId={logId}");
         }
 
         public static string GetErrorPageUrl(string message)
         {
-            return GetAdminUrl($"pageError.html?message={HttpUtility.UrlPathEncode(message)}");
+            return GetAdminUrl($"error.html?message={HttpUtility.UrlPathEncode(message)}");
         }
 
         public static void CheckRequestParameter(params string[] parameters)
@@ -988,7 +988,7 @@ namespace SiteServer.Utils
 
         public static string GetLoginUrl()
         {
-            return GetAdminUrl("pageLogin.cshtml");
+            return GetAdminUrl("login.cshtml");
         }
 
         public static void RedirectToLoginPage()
@@ -1022,7 +1022,52 @@ namespace SiteServer.Utils
 
         public static string GetLoadingUrl(string url)
         {
-            return GetAdminUrl($"loading.aspx?redirectUrl={TranslateUtils.EncryptStringBySecretKey(url)}");
+            return GetAdminUrl($"loading.cshtml?redirectUrl={TranslateUtils.EncryptStringBySecretKey(url)}");
+        }
+
+        public static string GetRedirectUrl(int siteId)
+        {
+            return AddQueryString(GetAdminUrl("redirect.cshtml"), new NameValueCollection
+            {
+                {nameof(siteId), siteId.ToString()}
+            });
+        }
+
+        public static string GetRedirectUrlToChannel(int siteId, int channelId)
+        {
+            return AddQueryString(GetAdminUrl("redirect.cshtml"), new NameValueCollection
+            {
+                {nameof(siteId), siteId.ToString() },
+                {nameof(channelId), channelId.ToString() }
+            });
+        }
+
+        public static string GetRedirectUrlToContent(int siteId, int channelId, int contentId)
+        {
+            return AddQueryString(GetAdminUrl("redirect.cshtml"), new NameValueCollection
+            {
+                {nameof(siteId), siteId.ToString() },
+                {nameof(channelId), channelId.ToString() },
+                {nameof(contentId), contentId.ToString() }
+            });
+        }
+
+        public static string GetRedirectUrlToFile(int siteId, int fileTemplateId)
+        {
+            return AddQueryString(GetAdminUrl("redirect.cshtml"), new NameValueCollection
+            {
+                {nameof(siteId), siteId.ToString() },
+                {nameof(fileTemplateId), fileTemplateId.ToString() }
+            });
+        }
+
+        public static string GetRedirectUrlToSpecial(int siteId, int specialId)
+        {
+            return AddQueryString(GetAdminUrl("redirect.cshtml"), new NameValueCollection
+            {
+                {nameof(siteId), siteId.ToString() },
+                {nameof(specialId), specialId.ToString() }
+            });
         }
 
         public static string GetRedirectStringWithCheckBoxValue(string redirectUrl, string checkBoxServerId, string checkBoxClientId, string emptyAlertText)

@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
 
@@ -19,19 +20,19 @@ namespace SiteServer.BackgroundPages.Core
         private readonly string _iconMinusUrl;
         private readonly string _iconPlusUrl;
 
-        private readonly SiteInfo _siteInfo;
+        private readonly Site _site;
         private readonly ChannelInfo _channelInfo;
         private readonly bool _enabled;
         private readonly PermissionsImpl _permissionsImpl;
 
-        public static ChannelTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
+        public static ChannelTreeItem CreateInstance(Site site, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
         {
-            return new ChannelTreeItem(siteInfo, channelInfo, enabled, permissionsImpl);
+            return new ChannelTreeItem(site, channelInfo, enabled, permissionsImpl);
         }
 
-        private ChannelTreeItem(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
+        private ChannelTreeItem(Site site, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
         {
-            _siteInfo = siteInfo;
+            _site = site;
             _channelInfo = channelInfo;
             _enabled = enabled;
             _permissionsImpl = permissionsImpl;
@@ -75,7 +76,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_channelInfo.Id > 0)
             {
-                contentModelIconHtml = $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_channelInfo.SiteId, _channelInfo.Id)}"" target=""_blank"" title=""浏览页面"" onclick=""event.stopPropagation()"">{contentModelIconHtml}</a>";
+                contentModelIconHtml = $@"<a href=""{PageUtils.GetRedirectUrlToChannel(_channelInfo.SiteId, _channelInfo.Id)}"" target=""_blank"" title=""浏览页面"" onclick=""event.stopPropagation()"">{contentModelIconHtml}</a>";
             }
 
             htmlBuilder.Append(contentModelIconHtml);
@@ -142,9 +143,9 @@ namespace SiteServer.BackgroundPages.Core
             {
                 htmlBuilder.Append("&nbsp;");
 
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_siteInfo, _channelInfo));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_site, _channelInfo));
 
-                var count = ContentManager.GetCount(_siteInfo, _channelInfo, adminId);
+                var count = ContentManager.GetCount(_site, _channelInfo, adminId);
 
                 htmlBuilder.Append(
                     $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span>");
@@ -153,7 +154,7 @@ namespace SiteServer.BackgroundPages.Core
             return htmlBuilder.ToString();
         }
 
-        public static string GetScript(SiteInfo siteInfo, ELoadingType loadingType, string contentModelPluginId, NameValueCollection additional)
+        public static string GetScript(Site site, ELoadingType loadingType, string contentModelPluginId, NameValueCollection additional)
         {
             var script = @"
 <script language=""JavaScript"">
@@ -287,7 +288,7 @@ function displayChildren(img){
             script += $@"
 function loadingChannels(tr, img, div, channelId){{
     var url = '{AjaxOtherService.GetGetLoadingChannelsUrl()}';
-    var pars = '{AjaxOtherService.GetGetLoadingChannelsParameters(siteInfo.Id, contentModelPluginId, loadingType, additional)}&parentID=' + channelId;
+    var pars = '{AjaxOtherService.GetGetLoadingChannelsParameters(site.Id, contentModelPluginId, loadingType, additional)}&parentID=' + channelId;
 
     jQuery.post(url, pars, function(data, textStatus)
     {{

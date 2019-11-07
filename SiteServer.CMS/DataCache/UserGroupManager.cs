@@ -3,6 +3,7 @@ using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.DataCache
 {
@@ -62,7 +63,12 @@ namespace SiteServer.CMS.DataCache
 	        return list.FirstOrDefault(group => group.GroupName == groupName) ?? list[0];
         }
 
-	    public static List<UserGroupInfo> GetUserGroupInfoList()
+        public static string GetUserGroupName(int groupId)
+        {
+            return UserGroupManager.GetUserGroupInfo(groupId).GroupName;
+        }
+
+        public static List<UserGroupInfo> GetUserGroupInfoList()
 	    {
 	        return UserGroupManagerCache.GetAllUserGroups();
 	    }

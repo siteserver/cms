@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -21,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         private const string RouteUnLock = "actions/unLock";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
@@ -58,9 +59,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 var isSuperAdmin = request.AdminPermissions.IsSuperAdmin();
                 var creatorUserName = isSuperAdmin ? string.Empty : request.AdminName;
-                var count = DataProvider.AdministratorDao.GetCount(creatorUserName, role, order, lastActivityDate,
-                    keyword);
-                var administratorInfoList = DataProvider.AdministratorDao.GetAdministrators(creatorUserName, role, order, lastActivityDate, keyword, offset, limit);
+                var count = await DataProvider.AdministratorDao.GetCountAsync(creatorUserName, role, lastActivityDate, keyword);
+                var administratorInfoList = await DataProvider.AdministratorDao.GetAdministratorsAsync(creatorUserName, role, order, lastActivityDate, keyword, offset, limit);
                 var administrators = new List<object>();
                 foreach (var administratorInfo in administratorInfoList)
                 {
@@ -96,7 +96,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpGet, Route(RoutePermissions)]
-        public IHttpActionResult GetPermissions(int adminId)
+        public async Task<IHttpActionResult> GetPermissions(int adminId)
         {
             try
             {
@@ -113,9 +113,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 }
 
                 var roles = DataProvider.RoleDao.GetRoleNameList();
-                var allSites = SiteManager.GetSiteInfoList();
+                var allSites = await SiteManager.GetSiteListAsync();
 
-                var adminInfo = AdminManager.GetAdminInfoByUserId(adminId);
+                var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(adminId);
                 var adminRoles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(adminInfo.UserName);
                 string adminLevel;
                 var checkedSites = new List<int>();
@@ -158,7 +158,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(RoutePermissions)]
-        public IHttpActionResult SavePermissions(int adminId)
+        public async Task<IHttpActionResult> SavePermissions(int adminId)
         {
             try
             {
@@ -178,31 +178,31 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var checkedSites = request.GetPostObject<List<int>>("checkedSites");
                 var checkedRoles = request.GetPostObject<List<string>>("checkedRoles");
 
-                var adminInfo = AdminManager.GetAdminInfoByUserId(adminId);
+                var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(adminId);
 
                 DataProvider.AdministratorsInRolesDao.RemoveUser(adminInfo.UserName);
                 if (adminLevel == "SuperAdmin")
                 {
-                    DataProvider.AdministratorsInRolesDao.AddUserToRole(adminInfo.UserName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
+                    await DataProvider.AdministratorsInRolesDao.AddUserToRoleAsync(adminInfo.UserName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
                 }
                 else if (adminLevel == "SiteAdmin")
                 {
-                    DataProvider.AdministratorsInRolesDao.AddUserToRole(adminInfo.UserName, EPredefinedRoleUtils.GetValue(EPredefinedRole.SystemAdministrator));
+                    await DataProvider.AdministratorsInRolesDao.AddUserToRoleAsync(adminInfo.UserName, EPredefinedRoleUtils.GetValue(EPredefinedRole.SystemAdministrator));
                 }
                 else
                 {
-                    DataProvider.AdministratorsInRolesDao.AddUserToRole(adminInfo.UserName, EPredefinedRoleUtils.GetValue(EPredefinedRole.Administrator));
-                    DataProvider.AdministratorsInRolesDao.AddUserToRoles(adminInfo.UserName, checkedRoles.ToArray());
+                    await DataProvider.AdministratorsInRolesDao.AddUserToRoleAsync(adminInfo.UserName, EPredefinedRoleUtils.GetValue(EPredefinedRole.Administrator));
+                    await DataProvider.AdministratorsInRolesDao.AddUserToRolesAsync(adminInfo.UserName, checkedRoles.ToArray());
                 }
 
-                DataProvider.AdministratorDao.UpdateSiteIdCollection(adminInfo,
+                await DataProvider.AdministratorDao.UpdateSiteIdCollectionAsync(adminInfo,
                     adminLevel == "SiteAdmin"
                         ? TranslateUtils.ObjectCollectionToString(checkedSites)
                         : string.Empty);
 
                 PermissionsImpl.ClearAllCache();
 
-                request.AddAdminLog("设置管理员权限", $"管理员:{adminInfo.UserName}");
+                await request.AddAdminLogAsync("设置管理员权限", $"管理员:{adminInfo.UserName}");
 
                 return Ok(new
                 {
@@ -217,7 +217,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpDelete, Route(Route)]
-        public IHttpActionResult Delete()
+        public async Task<IHttpActionResult> Delete()
         {
             try
             {
@@ -230,11 +230,11 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 var id = request.GetPostInt("id");
 
-                var adminInfo = AdminManager.GetAdminInfoByUserId(id);
+                var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(id);
                 DataProvider.AdministratorsInRolesDao.RemoveUser(adminInfo.UserName);
-                DataProvider.AdministratorDao.Delete(adminInfo);
+                await DataProvider.AdministratorDao.DeleteAsync(adminInfo);
 
-                request.AddAdminLog("删除管理员", $"管理员:{adminInfo.UserName}");
+                await request.AddAdminLogAsync("删除管理员", $"管理员:{adminInfo.UserName}");
 
                 return Ok(new
                 {
@@ -248,7 +248,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(RouteLock)]
-        public IHttpActionResult Lock()
+        public async Task<IHttpActionResult> Lock()
         {
             try
             {
@@ -261,14 +261,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 var id = request.GetPostInt("id");
 
-                var adminInfo = AdminManager.GetAdminInfoByUserId(id);
+                var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(id);
 
-                DataProvider.AdministratorDao.Lock(new List<string>
+                await DataProvider.AdministratorDao.LockAsync(new List<string>
                 {
                     adminInfo.UserName
                 });
 
-                request.AddAdminLog("锁定管理员", $"管理员:{adminInfo.UserName}");
+                await request.AddAdminLogAsync("锁定管理员", $"管理员:{adminInfo.UserName}");
 
                 return Ok(new
                 {
@@ -282,7 +282,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(RouteUnLock)]
-        public IHttpActionResult UnLock()
+        public async Task<IHttpActionResult> UnLock()
         {
             try
             {
@@ -295,14 +295,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 var id = request.GetPostInt("id");
 
-                var adminInfo = AdminManager.GetAdminInfoByUserId(id);
+                var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(id);
 
-                DataProvider.AdministratorDao.UnLock(new List<string>
+                await DataProvider.AdministratorDao.UnLockAsync(new List<string>
                 {
                     adminInfo.UserName
                 });
 
-                request.AddAdminLog("解锁管理员", $"管理员:{adminInfo.UserName}");
+                await request.AddAdminLogAsync("解锁管理员", $"管理员:{adminInfo.UserName}");
 
                 return Ok(new
                 {

@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
             TemplateTypeUtils.AddListItems(DdlTemplateType);
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
+            ChannelManager.AddListItems(DdlChannelId.Items, Site, false, true, AuthRequest.AdminPermissionsImpl);
             if (AuthRequest.IsQueryExists("fromCache"))
             {
                 TbTemplate.Text = TranslateUtils.DecryptStringBySecretKey(CacheUtils.Get<string>("SiteServer.BackgroundPages.Cms.PageTemplatePreview"));
@@ -71,10 +71,10 @@ namespace SiteServer.BackgroundPages.Cms
                 if (templateType == TemplateType.ContentTemplate)
                 {
                     var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                    var count = ContentManager.GetCount(SiteInfo, channelInfo, true);
+                    var count = ContentManager.GetCount(Site, channelInfo, true);
                     if (count > 0)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
+                        var tableName = ChannelManager.GetTableName(Site, channelInfo);
                         contentId = DataProvider.ContentDao.GetFirstContentId(tableName, channelId);
                     }
 
@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            TbCode.Text = LtlPreview.Text = StlParserManager.ParseTemplatePreview(SiteInfo, templateType, channelId, contentId, TbTemplate.Text);
+            TbCode.Text = LtlPreview.Text = StlParserManager.ParseTemplatePreview(Site, templateType, channelId, contentId, TbTemplate.Text);
 
             LtlPreview.Text += "<script>$('#linkCode').click();</script>";
         }

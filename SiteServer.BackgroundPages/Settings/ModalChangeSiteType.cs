@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -26,8 +27,8 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(int siteId)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var title = siteInfo.IsRoot ? "转移到子目录" : "转移到根目录";
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+            var title = site.Root ? "转移到子目录" : "转移到根目录";
             return LayerUtils.GetOpenScript(title,
                 PageUtils.GetSettingsUrl(nameof(ModalChangeSiteType),
                     new NameValueCollection
@@ -42,7 +43,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             PageUtils.CheckRequestParameter("siteId");
 
-            _isHeadquarters = SiteInfo.IsRoot;
+            _isHeadquarters = Site.Root;
 
             var selectedList = new List<string>();
 
@@ -50,12 +51,12 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (_isHeadquarters)
             {
-                InfoMessage($"将站点{SiteInfo.SiteName}转移到子目录");
+                InfoMessage($"将站点{Site.SiteName}转移到子目录");
 
                 PhChangeToSite.Visible = true;
                 PhChangeToHeadquarters.Visible = false;
                 var fileSystems = FileManager.GetFileSystemInfoExtendCollection(WebConfigUtils.PhysicalApplicationPath, true);
-                var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRoot();
+                var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRootAsync().GetAwaiter().GetResult();
                 foreach (FileSystemInfoExtend fileSystem in fileSystems)
                 {
                     if (fileSystem.IsDirectory)
@@ -93,14 +94,14 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                InfoMessage($"将站点{SiteInfo.SiteName}转移到根目录");
+                InfoMessage($"将站点{Site.SiteName}转移到根目录");
 
                 var headquartersExists = false;
-                var siteIdList = SiteManager.GetSiteIdList();
+                var siteIdList = SiteManager.GetSiteIdListAsync().GetAwaiter().GetResult();
                 foreach (var psId in siteIdList)
                 {
-                    var psInfo = SiteManager.GetSiteInfo(psId);
-                    if (psInfo.IsRoot)
+                    var psInfo = SiteManager.GetSiteAsync(psId).GetAwaiter().GetResult();
+                    if (psInfo.Root)
                     {
                         headquartersExists = true;
                         break;
@@ -108,7 +109,7 @@ namespace SiteServer.BackgroundPages.Settings
                 }
                 if (headquartersExists)
                 {
-                    FailMessage($"根目录站点已经存在，站点{SiteInfo.SiteName}不能转移到根目录");
+                    FailMessage($"根目录站点已经存在，站点{Site.SiteName}不能转移到根目录");
                     BtnSubmit.Visible = false;
                     PhChangeToSite.Visible = false;
                     PhChangeToHeadquarters.Visible = false;
@@ -128,8 +129,8 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (_isHeadquarters)
             {
-                var list = DataProvider.SiteDao.GetLowerSiteDirList(SiteInfo.ParentId);
-                if (list.IndexOf(TbSiteDir.Text.Trim().ToLower()) != -1)
+                var list = DataProvider.SiteDao.GetLowerSiteDirListAsync(Site.ParentId).GetAwaiter().GetResult();
+                if (list.Contains(TbSiteDir.Text.Trim().ToLower()))
                 {
                     FailMessage("操作失败，已存在相同的发布路径");
                     return;
@@ -147,15 +148,15 @@ namespace SiteServer.BackgroundPages.Settings
                         filesToSite.Add(item.Value);
                     }
                 }
-                DirectoryUtility.ChangeToSubSite(SiteInfo, TbSiteDir.Text, filesToSite);
+                DirectoryUtility.ChangeToSubSiteAsync(Site, TbSiteDir.Text, filesToSite).GetAwaiter().GetResult();
             }
             else
             {
-                DirectoryUtility.ChangeToHeadquarters(SiteInfo, TranslateUtils.ToBool(DdlIsMoveFiles.SelectedValue));
+                DirectoryUtility.ChangeToHeadquartersAsync(Site, TranslateUtils.ToBool(DdlIsMoveFiles.SelectedValue)).GetAwaiter().GetResult();
             }
 
-            AuthRequest.AddAdminLog(_isHeadquarters ? "转移到子目录" : "转移到根目录",
-                $"站点:{SiteInfo.SiteName}");
+            AuthRequest.AddAdminLogAsync(_isHeadquarters ? "转移到子目录" : "转移到根目录",
+                $"站点:{Site.SiteName}").GetAwaiter().GetResult();
             LayerUtils.Close(Page);
         }
     }

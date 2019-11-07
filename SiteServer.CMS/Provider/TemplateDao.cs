@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -106,7 +108,7 @@ namespace SiteServer.CMS.Provider
         private const string ParmCharset = "@Charset";
         private const string ParmIsDefault = "@IsDefault";
 
-        public int Insert(TemplateInfo templateInfo, string templateContent, string administratorName)
+        public async Task<int> InsertAsync(TemplateInfo templateInfo, string templateContent, string administratorName)
         {
             if (templateInfo.IsDefault)
             {
@@ -129,19 +131,19 @@ namespace SiteServer.CMS.Provider
 
             var id = ExecuteNonQueryAndReturnId(TableName, nameof(TemplateInfo.Id), sqlInsertTemplate, insertParms);
 
-            var siteInfo = SiteManager.GetSiteInfo(templateInfo.SiteId);
-            TemplateManager.WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, administratorName);
+            var site = await SiteManager.GetSiteAsync(templateInfo.SiteId);
+            TemplateManager.WriteContentToTemplateFile(site, templateInfo, templateContent, administratorName);
 
             TemplateManager.RemoveCache(templateInfo.SiteId);
 
             return id;
         }
 
-        public void Update(SiteInfo siteInfo, TemplateInfo templateInfo, string templateContent, string administratorName)
+        public void Update(Site site, TemplateInfo templateInfo, string templateContent, string administratorName)
         {
             if (templateInfo.IsDefault)
             {
-                SetAllTemplateDefaultToFalse(siteInfo.Id, templateInfo.TemplateType);
+                SetAllTemplateDefaultToFalse(site.Id, templateInfo.TemplateType);
             }
 
             var updateParms = new IDataParameter[]
@@ -158,7 +160,7 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(SqlUpdateTemplate, updateParms);
 
-            TemplateManager.WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, administratorName);
+            TemplateManager.WriteContentToTemplateFile(site, templateInfo, templateContent, administratorName);
 
             TemplateManager.RemoveCache(templateInfo.SiteId);
         }
@@ -196,11 +198,11 @@ namespace SiteServer.CMS.Provider
             TemplateManager.RemoveCache(siteId);
         }
 
-        public void Delete(int siteId, int id)
+        public async Task DeleteAsync(int siteId, int id)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = await SiteManager.GetSiteAsync(siteId);
             var templateInfo = TemplateManager.GetTemplateInfo(siteId, id);
-            var filePath = TemplateManager.GetTemplateFilePath(siteInfo, templateInfo);
+            var filePath = TemplateManager.GetTemplateFilePath(site, templateInfo);
 
             var parms = new IDataParameter[]
 			{
@@ -451,25 +453,25 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public void CreateDefaultTemplateInfo(int siteId, string administratorName)
+        public async Task CreateDefaultTemplateInfoAsync(int siteId, string administratorName)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = await SiteManager.GetSiteAsync(siteId);
 
             var templateInfoList = new List<TemplateInfo>();
-            var charset = ECharsetUtils.GetEnumType(siteInfo.Additional.Charset);
+            var charset = ECharsetUtils.GetEnumType(site.Additional.Charset);
 
-            var templateInfo = new TemplateInfo(0, siteInfo.Id, "系统首页模板", TemplateType.IndexPageTemplate, "T_系统首页模板.html", "@/index.html", ".html", charset, true);
+            var templateInfo = new TemplateInfo(0, site.Id, "系统首页模板", TemplateType.IndexPageTemplate, "T_系统首页模板.html", "@/index.html", ".html", charset, true);
             templateInfoList.Add(templateInfo);
 
-            templateInfo = new TemplateInfo(0, siteInfo.Id, "系统栏目模板", TemplateType.ChannelTemplate, "T_系统栏目模板.html", "index.html", ".html", charset, true);
+            templateInfo = new TemplateInfo(0, site.Id, "系统栏目模板", TemplateType.ChannelTemplate, "T_系统栏目模板.html", "index.html", ".html", charset, true);
             templateInfoList.Add(templateInfo);
 
-            templateInfo = new TemplateInfo(0, siteInfo.Id, "系统内容模板", TemplateType.ContentTemplate, "T_系统内容模板.html", "index.html", ".html", charset, true);
+            templateInfo = new TemplateInfo(0, site.Id, "系统内容模板", TemplateType.ContentTemplate, "T_系统内容模板.html", "index.html", ".html", charset, true);
             templateInfoList.Add(templateInfo);
 
             foreach (var theTemplateInfo in templateInfoList)
             {
-                Insert(theTemplateInfo, theTemplateInfo.Content, administratorName);
+                await InsertAsync(theTemplateInfo, theTemplateInfo.Content, administratorName);
             }
         }
 

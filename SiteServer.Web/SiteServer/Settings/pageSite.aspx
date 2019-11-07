@@ -14,7 +14,7 @@
     <div class="card-box" style="padding: 10px; margin-bottom: 10px;">
       <ul class="nav nav-pills nav-justified">
         <li class="nav-item active">
-          <a class="nav-link" href="pageSite.aspx">系统站点管理</a>
+          <a class="nav-link" href="pageSite.aspx">站点管理</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="pageSiteUrlWeb.aspx">Web地址</a>

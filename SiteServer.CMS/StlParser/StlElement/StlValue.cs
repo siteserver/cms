@@ -156,11 +156,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (type.ToLower().Equals(TypeSiteName.ToLower()))
             {
-                parsedContent = pageInfo.SiteInfo.SiteName;
+                parsedContent = pageInfo.Site.SiteName;
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.SiteInfo.Additional.WebUrl;
+                parsedContent = pageInfo.Site.Additional.WebUrl;
             }
             else if (type.ToLower().Equals(TypeDate.ToLower()))
             {
@@ -189,9 +189,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else
             {
-                if (pageInfo.SiteInfo.Additional.GetString(type) != null)
+                if (pageInfo.Site.Additional.GetString(type) != null)
                 {
-                    parsedContent = pageInfo.SiteInfo.Additional.GetString(type);
+                    parsedContent = pageInfo.Site.Additional.GetString(type);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
                         var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
@@ -201,11 +201,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                             {
-                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
+                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                             }
                             else
                             {
-                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
                                 parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                             }
                         }

@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
             _channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
-            _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
+            _tableName = ChannelManager.GetTableName(Site, _channelId);
 
             if (IsPostBack) return;
 
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             CreateManager.TriggerContentChangedEvent(SiteId, _channelId);
-            AuthRequest.AddSiteLog(SiteId, _channelId, 0, "对内容排序", string.Empty);
+            AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "对内容排序", string.Empty).GetAwaiter().GetResult();
 
             LayerUtils.CloseAndRedirect(Page, _returnUrl);
         }

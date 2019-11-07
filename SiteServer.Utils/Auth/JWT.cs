@@ -20,11 +20,6 @@ namespace SiteServer.Utils.Auth
     {
         private static Dictionary<JwtHashAlgorithm, Func<byte[], byte[], byte[]>> HashAlgorithms;
 
-        /// <summary>
-        /// Pluggable JSON Serializer
-        /// </summary>
-        public static IJsonSerializer JsonSerializer = new DefaultJsonSerializer();
-
         static JsonWebToken()
         {
             HashAlgorithms = new Dictionary<JwtHashAlgorithm, Func<byte[], byte[], byte[]>>
@@ -52,8 +47,8 @@ namespace SiteServer.Utils.Auth
                 {"alg", algorithm.ToString()}
             };
 
-            var headerBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(header));
-            var payloadBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(payload));
+            var headerBytes = Encoding.UTF8.GetBytes(TranslateUtils.JsonSerialize(header));
+            var payloadBytes = Encoding.UTF8.GetBytes(TranslateUtils.JsonSerialize(payload));
 
             segments.Add(Base64UrlEncode(headerBytes));
             segments.Add(Base64UrlEncode(payloadBytes));
@@ -127,7 +122,7 @@ namespace SiteServer.Utils.Auth
             var headerJson = Encoding.UTF8.GetString(Base64UrlDecode(header));
             var payloadJson = Encoding.UTF8.GetString(Base64UrlDecode(payload));
 
-            var headerData = JsonSerializer.Deserialize<Dictionary<string, object>>(headerJson);
+            var headerData = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(headerJson);
 
             if (verify)
             {
@@ -145,7 +140,7 @@ namespace SiteServer.Utils.Auth
                 }
 
                 // verify exp claim https://tools.ietf.org/html/draft-ietf-oauth-json-web-token-32#section-4.1.4
-                var payloadData = JsonSerializer.Deserialize<Dictionary<string, object>>(payloadJson);
+                var payloadData = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(payloadJson);
                 if (payloadData.ContainsKey("exp") && payloadData["exp"] != null)
                 {
                     // safely unpack a boxed int 
@@ -191,7 +186,7 @@ namespace SiteServer.Utils.Auth
         public static object DecodeToObject(string token, byte[] key, bool verify = true)
         {
             var payloadJson = Decode(token, key, verify);
-            var payloadData = JsonSerializer.Deserialize<Dictionary<string, object>>(payloadJson);
+            var payloadData = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(payloadJson);
             return payloadData;
         }
 
@@ -220,7 +215,7 @@ namespace SiteServer.Utils.Auth
         public static T DecodeToObject<T>(string token, byte[] key, bool verify = true)
         {
             var payloadJson = Decode(token, key, verify);
-            var payloadData = JsonSerializer.Deserialize<T>(payloadJson);
+            var payloadData = TranslateUtils.JsonDeserialize<T>(payloadJson);
             return payloadData;
         }
 

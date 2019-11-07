@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                                 TagUtils.UpdateTags(string.Empty, TbTags.Text, SiteId, contentId);
 
-                                var tuple = DataProvider.ContentDao.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
+                                var tuple = DataProvider.ContentDao.GetValue(Site.TableName, contentId, ContentAttribute.Tags);
 
                                 if (tuple != null)
                                 {
@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
                                             contentTagList.Add(theTag);
                                         }
                                     }
-                                    DataProvider.ContentDao.Update(SiteInfo.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
+                                    DataProvider.ContentDao.Update(Site.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
                                 }
                             }
                         }
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    AuthRequest.AddSiteLog(SiteId, "修改内容标签", $"内容标签:{TbTags.Text}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "修改内容标签", $"内容标签:{TbTags.Text}").GetAwaiter().GetResult();
 
 					isChanged = true;
 				}
@@ -113,8 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
                 try
                 {
                     TagUtils.UpdateTags(string.Empty, TbTags.Text, SiteId, 0);
-                    AuthRequest.AddSiteLog(SiteId, "添加内容标签", $"内容标签:{TbTags.Text}");
-                    isChanged = true;
+                    AuthRequest.AddSiteLogAsync(SiteId, "添加内容标签", $"内容标签:{TbTags.Text}").GetAwaiter().GetResult();
                 }
                 catch(Exception ex)
                 {

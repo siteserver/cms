@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -16,19 +17,19 @@ namespace SiteServer.CMS.ImportExport
         public const string UploadFolderName = "upload"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件夹目录
         public const string UploadFileName = "upload.xml"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件名
 
-        public static void BackupTemplates(int siteId, string filePath, string adminName)
+        public static async Task BackupTemplatesAsync(int siteId, string filePath, string adminName)
         {
             var exportObject = new ExportObject(siteId, adminName);
-            exportObject.ExportTemplates(filePath);
+            await exportObject.ExportTemplatesAsync(filePath);
         }
 
-        public static void BackupChannelsAndContents(int siteId, string filePath, string adminName)
+        public static async Task BackupChannelsAndContentsAsync(int siteId, string filePath, string adminName)
         {
             var exportObject = new ExportObject(siteId, adminName);
 
             var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
 
-            exportObject.ExportChannels(channelIdList, filePath);  
+            await exportObject.ExportChannelsAsync(channelIdList, filePath);  
         }
 
         public static void BackupFiles(int siteId, string filePath, string adminName)
@@ -38,11 +39,10 @@ namespace SiteServer.CMS.ImportExport
             exportObject.ExportFiles(filePath);
         }
 
-
-        public static void BackupSite(int siteId, string filePath, string adminName)
+        public static async Task BackupSiteAsync(int siteId, string filePath, string adminName)
         {
             var exportObject = new ExportObject(siteId, adminName);
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var siteInfo = await SiteManager.GetSiteAsync(siteId);
 
             var siteTemplateDir = PathUtils.GetFileNameWithoutExtension(filePath);
             var siteTemplatePath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), siteTemplateDir);
@@ -50,28 +50,28 @@ namespace SiteServer.CMS.ImportExport
             FileUtils.DeleteFileIfExists(filePath);
             var metadataPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, string.Empty);
 
-            exportObject.ExportFilesToSite(siteTemplatePath, true, new ArrayList(), true);
+            await exportObject.ExportFilesToSiteAsync(siteTemplatePath, true, new ArrayList(), true);
 
             var siteContentDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.SiteContent);
-            exportObject.ExportSiteContent(siteContentDirectoryPath, true, true, new List<int>());
+            await exportObject.ExportSiteContentAsync(siteContentDirectoryPath, true, true, new List<int>());
 
             var templateFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileTemplate);
-            exportObject.ExportTemplates(templateFilePath);
+            await exportObject.ExportTemplatesAsync(templateFilePath);
             var tableDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.Table);
-            exportObject.ExportTablesAndStyles(tableDirectoryPath);
+            await exportObject.ExportTablesAndStylesAsync(tableDirectoryPath);
             var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
-            exportObject.ExportConfiguration(configurationFilePath);
+            await exportObject.ExportConfigurationAsync(configurationFilePath);
             exportObject.ExportMetadata(siteInfo.SiteName, siteInfo.Additional.WebUrl, string.Empty, string.Empty, metadataPath);
 
             ZipUtils.CreateZip(filePath, siteTemplatePath);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
         }
 
-        public static void RecoverySite(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string administratorName)
+        public static async Task RecoverySiteAsync(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string administratorName)
         {
             var importObject = new ImportObject(siteId, administratorName);
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var siteInfo = await SiteManager.GetSiteAsync(siteId);
 
             var siteTemplatePath = path;
             if (isZip)
@@ -90,7 +90,7 @@ namespace SiteServer.CMS.ImportExport
                 var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
                 foreach (var channelId in channelIdList)
                 {
-                    DataProvider.ChannelDao.Delete(siteId, channelId);
+                    await DataProvider.ChannelDao.DeleteAsync(siteId, channelId);
                 }
             }
             if (isDeleteTemplates)
@@ -101,28 +101,28 @@ namespace SiteServer.CMS.ImportExport
                 {
                     if (templateInfo.IsDefault == false)
                     {
-                        DataProvider.TemplateDao.Delete(siteId, templateInfo.Id);
+                        await DataProvider.TemplateDao.DeleteAsync(siteId, templateInfo.Id);
                     }
                 }
             }
             if (isDeleteFiles)
             {
-                DirectoryUtility.DeleteSiteFiles(siteInfo);
+                await DirectoryUtility.DeleteSiteFilesAsync(siteInfo);
             }
 
             //导入文件
-            importObject.ImportFiles(siteTemplatePath, isOverride);
+            await importObject.ImportFilesAsync(siteTemplatePath, isOverride);
 
             //导入模板
             var templateFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileTemplate);
-            importObject.ImportTemplates(templateFilePath, isOverride, administratorName);
+            await importObject.ImportTemplatesAsync(templateFilePath, isOverride, administratorName);
 
             //导入辅助表
             var tableDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.Table);
 
             //导入站点设置
             var configurationFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
-            importObject.ImportConfiguration(configurationFilePath);
+            await importObject.ImportConfigurationAsync(configurationFilePath);
 
             //导入栏目及内容
             var siteContentDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.SiteContent);

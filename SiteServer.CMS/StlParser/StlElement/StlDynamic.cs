@@ -8,6 +8,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;
+using System.Threading.Tasks;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -117,18 +118,18 @@ namespace SiteServer.CMS.StlParser.StlElement
             return ParseImpl(pageInfo, contextInfo, string.Empty, stlElement, string.Empty, string.Empty, string.Empty, string.Empty);
         }
 
-        public static string ParseDynamicContent(DynamicInfo dynamicInfo, string template)
+        public static async Task<string> ParseDynamicContentAsync(DynamicInfo dynamicInfo, string template)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
             StlCacheManager.ClearAll();
 
             var templateInfo = TemplateManager.GetTemplateInfo(dynamicInfo.SiteId, dynamicInfo.TemplateId);
-            var siteInfo = SiteManager.GetSiteInfo(dynamicInfo.SiteId);
+            var siteInfo = await SiteManager.GetSiteAsync(dynamicInfo.SiteId);
             var pageInfo = new PageInfo(dynamicInfo.ChannelId, dynamicInfo.ContentId, siteInfo, templateInfo, new Dictionary<string, object>())
             {
                 UniqueId = 1000,
-                UserInfo = dynamicInfo.UserInfo
+                User = dynamicInfo.User
             };
             var contextInfo = new ContextInfo(pageInfo);
 

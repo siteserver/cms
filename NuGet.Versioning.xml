@@ -1,0 +1,1209 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NuGet.Versioning</name>
+    </assembly>
+    <members>
+        <member name="T:NuGet.Versioning.FloatRange">
+            <summary>
+            The floating subset of a version range.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.FloatRange.#ctor(NuGet.Versioning.NuGetVersionFloatBehavior)">
+            <summary>
+            Create a floating range.
+            </summary>
+            <param name="floatBehavior">Section to float.</param>
+        </member>
+        <member name="M:NuGet.Versioning.FloatRange.#ctor(NuGet.Versioning.NuGetVersionFloatBehavior,NuGet.Versioning.NuGetVersion)">
+            <summary>
+            Create a floating range.
+            </summary>
+            <param name="floatBehavior">Section to float.</param>
+            <param name="minVersion">Min version of the range.</param>
+        </member>
+        <member name="M:NuGet.Versioning.FloatRange.#ctor(NuGet.Versioning.NuGetVersionFloatBehavior,NuGet.Versioning.NuGetVersion,System.String)">
+            <summary>
+            FloatRange
+            </summary>
+            <param name="floatBehavior">Section to float.</param>
+            <param name="minVersion">Min version of the range.</param>
+            <param name="releasePrefix">The original release label. Invalid labels are allowed here.</param>
+        </member>
+        <member name="P:NuGet.Versioning.FloatRange.HasMinVersion">
+            <summary>
+            True if a min range exists.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.FloatRange.MinVersion">
+            <summary>
+            The minimum version of the float range. This is null for cases such as *
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.FloatRange.FloatBehavior">
+            <summary>
+            Defined float behavior
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.FloatRange.OriginalReleasePrefix">
+            <summary>
+            The original release label. Invalid labels are allowed here.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.FloatRange.Satisfies(NuGet.Versioning.NuGetVersion)">
+            <summary>
+            True if the given version falls into the floating range.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.FloatRange.Parse(System.String)">
+            <summary>
+            Parse a floating version into a FloatRange
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.FloatRange.TryParse(System.String,NuGet.Versioning.FloatRange@)">
+            <summary>
+            Parse a floating version into a FloatRange
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.FloatRange.ToString">
+            <summary>
+            Create a floating version string in the format: 1.0.0-alpha-*
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.FloatRange.Equals(NuGet.Versioning.FloatRange)">
+            <summary>
+            Equals
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.FloatRange.Equals(System.Object)">
+            <summary>
+            Override Object.Equals
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NuGet.Versioning.FloatRange.GetHashCode">
+            <summary>
+            Hash code
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.INuGetVersionable">
+            <summary>
+            An item that exposes a NuGetVersion
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.INuGetVersionable.Version">
+            <summary>
+            NuGet semantic version
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.IVersionComparer">
+            <summary>
+            IVersionComparer represents a version comparer capable of sorting and determining the equality of
+            SemanticVersion objects.
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.IVersionRangeComparer">
+            <summary>
+            Version range comparer
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.NuGetVersion">
+            <summary>
+            A hybrid implementation of SemVer that supports semantic versioning as described at http://semver.org while
+            not strictly enforcing it to
+            allow older 4-digit versioning schemes to continue working.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.#ctor(System.String)">
+            <summary>
+            Creates a NuGetVersion using NuGetVersion.Parse(string)
+            </summary>
+            <param name="version">Version string</param>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.#ctor(NuGet.Versioning.NuGetVersion)">
+            <summary>
+            Creates a NuGetVersion from an existing NuGetVersion
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.#ctor(System.Version,System.String,System.String)">
+            <summary>
+            Creates a NuGetVersion from a .NET Version
+            </summary>
+            <param name="version">Version numbers</param>
+            <param name="releaseLabel">Prerelease label</param>
+            <param name="metadata">Build metadata</param>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.#ctor(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Creates a NuGetVersion X.Y.Z
+            </summary>
+            <param name="major">X.y.z</param>
+            <param name="minor">x.Y.z</param>
+            <param name="patch">x.y.Z</param>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.#ctor(System.Int32,System.Int32,System.Int32,System.String)">
+            <summary>
+            Creates a NuGetVersion X.Y.Z-alpha
+            </summary>
+            <param name="major">X.y.z</param>
+            <param name="minor">x.Y.z</param>
+            <param name="patch">x.y.Z</param>
+            <param name="releaseLabel">Prerelease label</param>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.#ctor(System.Int32,System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            Creates a NuGetVersion X.Y.Z-alpha#build01
+            </summary>
+            <param name="major">X.y.z</param>
+            <param name="minor">x.Y.z</param>
+            <param name="patch">x.y.Z</param>
+            <param name="releaseLabel">Prerelease label</param>
+            <param name="metadata">Build metadata</param>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.#ctor(System.Int32,System.Int32,System.Int32,System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Creates a NuGetVersion X.Y.Z-alpha.1.2#build01
+            </summary>
+            <param name="major">X.y.z</param>
+            <param name="minor">x.Y.z</param>
+            <param name="patch">x.y.Z</param>
+            <param name="releaseLabels">Prerelease labels</param>
+            <param name="metadata">Build metadata</param>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Creates a NuGetVersion W.X.Y.Z
+            </summary>
+            <param name="major">W.x.y.z</param>
+            <param name="minor">w.X.y.z</param>
+            <param name="patch">w.x.Y.z</param>
+            <param name="revision">w.x.y.Z</param>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            Creates a NuGetVersion W.X.Y.Z-alpha#build01
+            </summary>
+            <param name="major">W.x.y.z</param>
+            <param name="minor">w.X.y.z</param>
+            <param name="patch">w.x.Y.z</param>
+            <param name="revision">w.x.y.Z</param>
+            <param name="releaseLabel">Prerelease label</param>
+            <param name="metadata">Build metadata</param>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Creates a NuGetVersion W.X.Y.Z-alpha.1#build01
+            </summary>
+            <param name="major">W.x.y.z</param>
+            <param name="minor">w.X.y.z</param>
+            <param name="patch">w.x.Y.z</param>
+            <param name="revision">w.x.y.Z</param>
+            <param name="releaseLabels">Prerelease labels</param>
+            <param name="metadata">Build metadata</param>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.#ctor(System.Version,System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
+            <summary>
+            Creates a NuGetVersion from a .NET Version with additional release labels, build metadata, and a
+            non-normalized version string.
+            </summary>
+            <param name="version">Version numbers</param>
+            <param name="releaseLabels">prerelease labels</param>
+            <param name="metadata">Build metadata</param>
+            <param name="originalVersion">Non-normalized original version string</param>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.ToString">
+            <summary>
+            Returns the version string.
+            </summary>
+            <remarks>This method includes legacy behavior. Use ToNormalizedString() instead.</remarks>
+            <remarks>Versions with SemVer 2.0.0 components are automatically normalized.</remarks>
+        </member>
+        <member name="P:NuGet.Versioning.NuGetVersion.Version">
+            <summary>
+            A System.Version representation of the version without metadata or release labels.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.NuGetVersion.IsLegacyVersion">
+            <summary>
+            True if the NuGetVersion is using legacy behavior.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.NuGetVersion.Revision">
+            <summary>
+            Revision version R (x.y.z.R)
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.NuGetVersion.IsSemVer2">
+            <summary>
+            Returns true if version is a SemVer 2.0.0 version
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.NuGetVersion.OriginalVersion">
+            <summary>
+            Returns the original, non-normalized version string.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.Parse(System.String)">
+            <summary>
+            Creates a NuGetVersion from a string representing the semantic version.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.TryParse(System.String,NuGet.Versioning.NuGetVersion@)">
+            <summary>
+            Parses a version string using loose semantic versioning rules that allows 2-4 version components followed
+            by an optional special version.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.TryParseStrict(System.String,NuGet.Versioning.NuGetVersion@)">
+            <summary>
+            Parses a version string using strict SemVer rules.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.NuGetVersion.GetLegacyString(System.Version,System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Creates a legacy version string using System.Version
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.NuGetVersionFloatBehavior">
+            <summary>
+            Specifies the floating behavior type.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.NuGetVersionFloatBehavior.None">
+            <summary>
+            Lowest version, no float
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.NuGetVersionFloatBehavior.Prerelease">
+            <summary>
+            Highest matching pre-release label
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.NuGetVersionFloatBehavior.Revision">
+            <summary>
+            x.y.z.*
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.NuGetVersionFloatBehavior.Patch">
+            <summary>
+            x.y.*
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.NuGetVersionFloatBehavior.Minor">
+            <summary>
+            x.*
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.NuGetVersionFloatBehavior.Major">
+            <summary>
+            *
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.NuGetVersionFloatBehavior.AbsoluteLatest">
+            <summary>
+            Float major and pre-release
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.Resources.Argument_Cannot_Be_Null_Or_Empty">
+            <summary>
+              Looks up a localized string similar to Value cannot be null or an empty string..
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.Resources.Invalidvalue">
+            <summary>
+              Looks up a localized string similar to '{0}' is not a valid version string..
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.SemanticVersion">
+            <summary>
+            A strict SemVer implementation
+            </summary>
+            <summary>
+            A base version operations
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.#ctor(NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Creates a SemanticVersion from an existing SemanticVersion
+            </summary>
+            <param name="version">Version to clone.</param>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.#ctor(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Creates a SemanticVersion X.Y.Z
+            </summary>
+            <param name="major">X.y.z</param>
+            <param name="minor">x.Y.z</param>
+            <param name="patch">x.y.Z</param>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.#ctor(System.Int32,System.Int32,System.Int32,System.String)">
+            <summary>
+            Creates a NuGetVersion X.Y.Z-alpha
+            </summary>
+            <param name="major">X.y.z</param>
+            <param name="minor">x.Y.z</param>
+            <param name="patch">x.y.Z</param>
+            <param name="releaseLabel">Prerelease label</param>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.#ctor(System.Int32,System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            Creates a NuGetVersion X.Y.Z-alpha#build01
+            </summary>
+            <param name="major">X.y.z</param>
+            <param name="minor">x.Y.z</param>
+            <param name="patch">x.y.Z</param>
+            <param name="releaseLabel">Prerelease label</param>
+            <param name="metadata">Build metadata</param>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.#ctor(System.Int32,System.Int32,System.Int32,System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Creates a NuGetVersion X.Y.Z-alpha.1.2#build01
+            </summary>
+            <param name="major">X.y.z</param>
+            <param name="minor">x.Y.z</param>
+            <param name="patch">x.y.Z</param>
+            <param name="releaseLabels">Release labels that have been split by the dot separator</param>
+            <param name="metadata">Build metadata</param>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.#ctor(System.Version,System.String,System.String)">
+            <summary>
+            Internal constructor.
+            </summary>
+            <param name="version">Version</param>
+            <param name="releaseLabel">Full release label</param>
+            <param name="metadata">Build metadata</param>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.String)">
+            <summary>
+            Internal constructor.
+            </summary>
+            <param name="major">X.y.z</param>
+            <param name="minor">x.Y.z</param>
+            <param name="patch">x.y.Z</param>
+            <param name="revision">x.y.z.R</param>
+            <param name="releaseLabel">Prerelease label</param>
+            <param name="metadata">Build metadata</param>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Internal constructor.
+            </summary>
+            <param name="major"></param>
+            <param name="minor"></param>
+            <param name="patch"></param>
+            <param name="revision"></param>
+            <param name="releaseLabels"></param>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.#ctor(System.Version,System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Internal constructor.
+            </summary>
+            <param name="version">Version</param>
+            <param name="releaseLabels">Release labels</param>
+            <param name="metadata">Build metadata</param>
+        </member>
+        <member name="P:NuGet.Versioning.SemanticVersion.Major">
+            <summary>
+            Major version X (X.y.z)
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.SemanticVersion.Minor">
+            <summary>
+            Minor version Y (x.Y.z)
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.SemanticVersion.Patch">
+            <summary>
+            Patch version Z (x.y.Z)
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.SemanticVersion.ReleaseLabels">
+            <summary>
+            A collection of pre-release labels attached to the version.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.SemanticVersion.Release">
+            <summary>
+            The full pre-release label for the version.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.SemanticVersion.IsPrerelease">
+            <summary>
+            True if pre-release labels exist for the version.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.SemanticVersion.HasMetadata">
+            <summary>
+            True if metadata exists for the version.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.SemanticVersion.Metadata">
+            <summary>
+            Build metadata attached to the version.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.ToNormalizedString">
+            <summary>
+            Gives a normalized representation of the version.
+            This string is unique to the identity of the version and does not contain metadata.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.ToFullString">
+            <summary>
+            Gives a full representation of the version include metadata.
+            This string is not unique to the identity of the version. Other versions 
+            that differ on metadata will have a different full string representation.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.ToString">
+            <summary>
+            Get the normalized string.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.ToString(System.String,System.IFormatProvider)">
+            <summary>
+            Custom string format.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.TryFormatter(System.String,System.IFormatProvider,System.String@)">
+            <summary>
+            Internal string formatter.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.GetHashCode">
+            <summary>
+            Hash code
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.CompareTo(System.Object)">
+            <summary>
+            Object compare.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.CompareTo(NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Compare to another SemanticVersion.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.Equals(System.Object)">
+            <summary>
+            Equals
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.Equals(NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Equals
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.Equals(NuGet.Versioning.SemanticVersion,NuGet.Versioning.VersionComparison)">
+            <summary>
+            True if the VersionBase objects are equal based on the given comparison mode.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.CompareTo(NuGet.Versioning.SemanticVersion,NuGet.Versioning.VersionComparison)">
+            <summary>
+            Compares NuGetVersion objects using the given comparison mode.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.op_Equality(NuGet.Versioning.SemanticVersion,NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Equals
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.op_Inequality(NuGet.Versioning.SemanticVersion,NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Not equal
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.op_LessThan(NuGet.Versioning.SemanticVersion,NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Less than
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.op_LessThanOrEqual(NuGet.Versioning.SemanticVersion,NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Less than or equal
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.op_GreaterThan(NuGet.Versioning.SemanticVersion,NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Greater than
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.op_GreaterThanOrEqual(NuGet.Versioning.SemanticVersion,NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Greater than or equal
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.Parse(System.String)">
+            <summary>
+            Parses a SemVer string using strict SemVer rules.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.TryParse(System.String,NuGet.Versioning.SemanticVersion@)">
+            <summary>
+            Parse a version string
+            </summary>
+            <returns>false if the version is not a strict semver</returns>
+        </member>
+        <member name="M:NuGet.Versioning.SemanticVersion.ParseSections(System.String)">
+            <summary>
+            Parse the version string into version/release/build
+            The goal of this code is to take the most direct and optimized path
+            to parsing and validating a semver. Regex would be much cleaner, but
+            due to the number of versions created in NuGet Regex is too slow.
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.VersionComparer">
+            <summary>
+            An IVersionComparer for NuGetVersion and NuGetVersion types.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.#ctor">
+            <summary>
+            Creates a VersionComparer using the default mode.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.#ctor(NuGet.Versioning.VersionComparison)">
+            <summary>
+            Creates a VersionComparer that respects the given comparison mode.
+            </summary>
+            <param name="versionComparison">comparison mode</param>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.Equals(NuGet.Versioning.SemanticVersion,NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Determines if both versions are equal.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.Compare(NuGet.Versioning.SemanticVersion,NuGet.Versioning.SemanticVersion,NuGet.Versioning.VersionComparison)">
+            <summary>
+            Compares the given versions using the VersionComparison mode.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.GetHashCode(NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Gives a hash code based on the normalized version string.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.Compare(NuGet.Versioning.SemanticVersion,NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Compare versions.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.CompareLegacyVersion(NuGet.Versioning.NuGetVersion,NuGet.Versioning.NuGetVersion)">
+            <summary>
+            Compares the 4th digit of the version number.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionComparer.Default">
+            <summary>
+            A default comparer that compares metadata as strings.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionComparer.Version">
+            <summary>
+            A comparer that uses only the version numbers.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionComparer.VersionRelease">
+            <summary>
+            Compares versions without comparing the metadata.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionComparer.VersionReleaseMetadata">
+            <summary>
+            A version comparer that follows SemVer 2.0.0 rules.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.CompareReleaseLabels(System.String[],System.String[])">
+            <summary>
+            Compares sets of release labels.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.CompareRelease(System.String,System.String)">
+            <summary>
+            Release labels are compared as numbers if they are numeric, otherwise they will be compared
+            as strings.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.GetReleaseLabelsOrNull(NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Returns an array of release labels from the version, or null.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.AreReleaseLabelsEqual(NuGet.Versioning.SemanticVersion,NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Compare release labels
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionComparer.GetRevisionOrZero(NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Returns the fourth version number or zero.
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.VersionComparison">
+            <summary>
+            Version comparison modes.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionComparison.Default">
+            <summary>
+            Semantic version 2.0.1-rc comparison with additional compares for extra NuGetVersion fields.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionComparison.Version">
+            <summary>
+            Compares only the version numbers.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionComparison.VersionRelease">
+            <summary>
+            Include Version number and Release labels in the compare.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionComparison.VersionReleaseMetadata">
+            <summary>
+            Include all metadata during the compare.
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.VersionExtensions">
+            <summary>
+            Version extension methods.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionExtensions.FindBestMatch``1(System.Collections.Generic.IEnumerable{``0},NuGet.Versioning.VersionRange,System.Func{``0,NuGet.Versioning.NuGetVersion})">
+            <summary>
+            Find the version that best matches the VersionRange and the floating behavior.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionExtensions.FindBestMatch(System.Collections.Generic.IEnumerable{NuGet.Versioning.INuGetVersionable},NuGet.Versioning.VersionRange)">
+            <summary>
+            Find the version that best matches the VersionRange and the floating behavior.
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.VersionFormatter">
+            <summary>
+            Custom formatter for NuGet versions.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionFormatter.Instance">
+            <summary>
+            A static instance of the VersionFormatter class.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionFormatter.Format(System.String,System.Object,System.IFormatProvider)">
+            <summary>
+            Format a version string.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionFormatter.GetFormat(System.Type)">
+            <summary>
+            Get version format type.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionFormatter.GetNormalizedString(NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Create a normalized version string. This string is unique for each version 'identity' 
+            and does not include leading zeros or metadata.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionFormatter.GetFullString(NuGet.Versioning.SemanticVersion)">
+            <summary>
+            Create the full version string including metadata. This is primarily for display purposes.
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.VersionRange">
+            <summary>
+            Represents a range of versions and a preferred order.
+            </summary>
+            <summary>
+            Static factory methods for creating version range objects.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.#ctor(NuGet.Versioning.NuGetVersion)">
+            <summary>
+            Creates a range that is greater than or equal to the minVersion.
+            </summary>
+            <param name="minVersion">Lower bound of the version range.</param>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.#ctor(NuGet.Versioning.NuGetVersion,NuGet.Versioning.FloatRange)">
+            <summary>
+            Creates a range that is greater than or equal to the minVersion with the given float behavior.
+            </summary>
+            <param name="minVersion">Lower bound of the version range.</param>
+            <param name="floatRange">Floating behavior.</param>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.#ctor(NuGet.Versioning.VersionRange,NuGet.Versioning.FloatRange)">
+            <summary>
+            Clones a version range and applies a new float range.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.#ctor(NuGet.Versioning.NuGetVersion,System.Boolean,NuGet.Versioning.NuGetVersion,System.Boolean,NuGet.Versioning.FloatRange,System.String)">
+            <summary>
+            Creates a VersionRange with the given min and max.
+            </summary>
+            <param name="minVersion">Lower bound of the version range.</param>
+            <param name="includeMinVersion">True if minVersion satisfies the condition.</param>
+            <param name="maxVersion">Upper bound of the version range.</param>
+            <param name="includeMaxVersion">True if maxVersion satisfies the condition.</param>
+            <param name="floatRange">The floating range subset used to find the best version match.</param>
+            <param name="originalString">The original string being parsed to this object.</param>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRange.IsFloating">
+            <summary>
+            True if the range has a floating version above the min version.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRange.Float">
+            <summary>
+            Optional floating range used to determine the best version match.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRange.OriginalString">
+            <summary>
+            Original string being parsed to this object.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.ToString">
+            <summary>
+            Normalized range string.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.ToNormalizedString">
+            <summary>
+            Normalized range string.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.ToLegacyString">
+            <summary>
+            A legacy version range compatible with NuGet 2.8.3
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.ToLegacyShortString">
+            <summary>
+            A short legacy version range compatible with NuGet 2.8.3.
+            Ex: 1.0.0
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.ToString(System.String,System.IFormatProvider)">
+            <summary>
+            Format the version range with an IFormatProvider
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.TryFormatter(System.String,System.IFormatProvider,System.String@)">
+            <summary>
+            Format the range
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.PrettyPrint">
+            <summary>
+            Format the version range in Pretty Print format.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.FindBestMatch(System.Collections.Generic.IEnumerable{NuGet.Versioning.NuGetVersion})">
+            <summary>
+            Return the version that best matches the range.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.IsBetter(NuGet.Versioning.NuGetVersion,NuGet.Versioning.NuGetVersion)">
+            <summary>
+            Determines if a given version is better suited to the range than a current version.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.ToNonSnapshotRange">
+            <summary>
+            Removes the floating snapshot part of the minimum version if it exists.
+            Ex: 1.0.0-* -&gt; 1.0.0
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.GetNonSnapshotVersion(NuGet.Versioning.NuGetVersion)">
+            <summary>
+            Remove the snapshot version section of a version
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.ToShortString">
+            <summary>
+            ToLegacyShortString that also includes floating ranges
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.Equals(NuGet.Versioning.VersionRange)">
+            <summary>
+            Equals implementation for VersionRange.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.Equals(System.Object)">
+            <summary>
+            Compare the obj as VersionRange.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.GetHashCode">
+            <summary>
+            Returns the VersionRangeBase hashcode
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionRange.All">
+            <summary>
+            A range that accepts all versions, prerelease and stable.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionRange.AllFloating">
+            <summary>
+            A range that accepts all versions, prerelease and stable, and floats to the highest.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionRange.AllStable">
+            <summary>
+            A range that accepts all stable versions
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionRange.AllStableFloating">
+            <summary>
+            A range that accepts all versions, prerelease and stable, and floats to the highest.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionRange.None">
+            <summary>
+            A range that rejects all versions
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.Parse(System.String)">
+            <summary>
+            The version string is either a simple version or an arithmetic range
+            e.g.
+            1.0         --&gt; 1.0 ≤ x
+            (,1.0]      --&gt; x ≤ 1.0
+            (,1.0)      --&gt; x &lt; 1.0
+            [1.0]       --&gt; x == 1.0
+            (1.0,)      --&gt; 1.0 &lt; x
+            (1.0, 2.0)   --&gt; 1.0 &lt; x &lt; 2.0
+            [1.0, 2.0]   --&gt; 1.0 ≤ x ≤ 2.0
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.Parse(System.String,System.Boolean)">
+            <summary>
+            Direct parse
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.TryParse(System.String,NuGet.Versioning.VersionRange@)">
+            <summary>
+            Parses a VersionRange from its string representation.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.TryParse(System.String,System.Boolean,NuGet.Versioning.VersionRange@)">
+            <summary>
+            Parses a VersionRange from its string representation.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.Combine(System.Collections.Generic.IEnumerable{NuGet.Versioning.NuGetVersion})">
+            <summary>
+            Returns the smallest range that includes all given versions.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.Combine(System.Collections.Generic.IEnumerable{NuGet.Versioning.NuGetVersion},NuGet.Versioning.IVersionComparer)">
+            <summary>
+            Returns the smallest range that includes all given versions.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.Combine(System.Collections.Generic.IEnumerable{NuGet.Versioning.VersionRange})">
+            <summary>
+            Returns the smallest range that includes all given ranges.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.Combine(System.Collections.Generic.IEnumerable{NuGet.Versioning.VersionRange},NuGet.Versioning.IVersionComparer)">
+            <summary>
+            Returns the smallest range that includes all given ranges.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.CommonSubSet(System.Collections.Generic.IEnumerable{NuGet.Versioning.VersionRange})">
+            <summary>
+            Returns the greatest common range that satisfies all given ranges.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.CommonSubSet(System.Collections.Generic.IEnumerable{NuGet.Versioning.VersionRange},NuGet.Versioning.IVersionComparer)">
+            <summary>
+            Returns the greatest common range that satisfies all given ranges.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRange.HasValidRange(NuGet.Versioning.VersionRange)">
+            <summary>
+            Verify the range has an actual width.
+            Ex: no version can satisfy (3.0.0, 3.0.0)
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.VersionRangeBase">
+            <summary>
+            A base version range that handles ranges only and not any of the preferred version logic.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.#ctor(NuGet.Versioning.NuGetVersion,System.Boolean,NuGet.Versioning.NuGetVersion,System.Boolean)">
+            <summary>
+            Creates a VersionRange with the given min and max.
+            </summary>
+            <param name="minVersion">Lower bound of the version range.</param>
+            <param name="includeMinVersion">True if minVersion satisfies the condition.</param>
+            <param name="maxVersion">Upper bound of the version range.</param>
+            <param name="includeMaxVersion">True if maxVersion satisfies the condition.</param>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRangeBase.HasLowerBound">
+            <summary>
+            True if MinVersion exists;
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRangeBase.HasUpperBound">
+            <summary>
+            True if MaxVersion exists.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRangeBase.HasLowerAndUpperBounds">
+            <summary>
+            True if both MinVersion and MaxVersion exist.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRangeBase.IsMinInclusive">
+            <summary>
+            True if MinVersion exists and is included in the range.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRangeBase.IsMaxInclusive">
+            <summary>
+            True if MaxVersion exists and is included in the range.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRangeBase.MaxVersion">
+            <summary>
+            Maximum version allowed by this range.
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRangeBase.MinVersion">
+            <summary>
+            Minimum version allowed by this range.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.Satisfies(NuGet.Versioning.NuGetVersion)">
+            <summary>
+            Determines if an NuGetVersion meets the requirements.
+            </summary>
+            <param name="version">SemVer to compare</param>
+            <returns>True if the given version meets the version requirements.</returns>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.Satisfies(NuGet.Versioning.NuGetVersion,NuGet.Versioning.VersionComparison)">
+            <summary>
+            Determines if an NuGetVersion meets the requirements using the given mode.
+            </summary>
+            <param name="version">SemVer to compare</param>
+            <param name="versionComparison">VersionComparison mode used to determine the version range.</param>
+            <returns>True if the given version meets the version requirements.</returns>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.Satisfies(NuGet.Versioning.NuGetVersion,NuGet.Versioning.IVersionComparer)">
+            <summary>
+            Determines if an NuGetVersion meets the requirements using the version comparer.
+            </summary>
+            <param name="version">SemVer to compare.</param>
+            <param name="comparer">Version comparer used to determine if the version criteria is met.</param>
+            <returns>True if the given version meets the version requirements.</returns>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.Equals(System.Object)">
+            <summary>
+            Compares the object as a VersionRange with the default comparer
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.GetHashCode">
+            <summary>
+            Returns the hash code using the default comparer.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.Equals(NuGet.Versioning.VersionRangeBase)">
+            <summary>
+            Default compare
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.Equals(NuGet.Versioning.VersionRangeBase,NuGet.Versioning.IVersionRangeComparer)">
+            <summary>
+            Use the VersionRangeComparer for equality checks
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.Equals(NuGet.Versioning.VersionRangeBase,NuGet.Versioning.VersionComparison)">
+            <summary>
+            Use a specific VersionComparison for comparison
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.Equals(NuGet.Versioning.VersionRangeBase,NuGet.Versioning.IVersionComparer)">
+            <summary>
+            Use a specific IVersionComparer for comparison
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.IsSubSetOrEqualTo(NuGet.Versioning.VersionRangeBase)">
+            <summary>
+            SubSet check
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeBase.IsSubSetOrEqualTo(NuGet.Versioning.VersionRangeBase,NuGet.Versioning.IVersionComparer)">
+            <summary>
+            SubSet check
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRangeBase.HasPrereleaseBounds">
+            <summary>
+            Infer if the range should allow prerelease versions based on if the lower or upper bounds 
+            contain prerelease labels.
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.VersionRangeComparer">
+            <summary>
+            A version range comparer capable of using different VersionComparers to check if ranges are equivalent.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeComparer.#ctor">
+            <summary>
+            Default version range comparer.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeComparer.#ctor(NuGet.Versioning.VersionComparison)">
+            <summary>
+            Compare versions with a specific VersionComparison
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeComparer.#ctor(NuGet.Versioning.IVersionComparer)">
+            <summary>
+            Compare versions with a specific IVersionComparer
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRangeComparer.Default">
+            <summary>
+            Default Version comparer
+            </summary>
+        </member>
+        <member name="P:NuGet.Versioning.VersionRangeComparer.VersionRelease">
+            <summary>
+            Compare versions using the Version and Release
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeComparer.Equals(NuGet.Versioning.VersionRangeBase,NuGet.Versioning.VersionRangeBase)">
+            <summary>
+            Checks if two version ranges are equivalent. This follows the rules of the version comparer
+            when checking the bounds.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeComparer.GetHashCode(NuGet.Versioning.VersionRangeBase)">
+            <summary>
+            Creates a hash code based on all properties of the range. This follows the rules of the
+            version comparer when comparing the version bounds.
+            </summary>
+        </member>
+        <member name="T:NuGet.Versioning.VersionRangeFormatter">
+            <summary>
+            Custom formatter for NuGet <see cref="T:NuGet.Versioning.VersionRange" />.
+            </summary>
+        </member>
+        <member name="F:NuGet.Versioning.VersionRangeFormatter.Instance">
+            <summary>
+            A static instance of the <see cref="T:NuGet.Versioning.VersionRangeFormatter" /> class.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeFormatter.Format(System.String,System.Object,System.IFormatProvider)">
+            <summary>
+            Format a version range string.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeFormatter.GetFormat(System.Type)">
+            <summary>
+            Format type.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeFormatter.GetNormalizedString(NuGet.Versioning.VersionRange)">
+            <summary>
+            Builds a normalized string with no short hand
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeFormatter.GetToString(NuGet.Versioning.VersionRange)">
+            <summary>
+            Builds a string to represent the VersionRange. This string can include short hand notations.
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeFormatter.GetLegacyShortString(NuGet.Versioning.VersionRangeBase)">
+            <summary>
+            Creates a legacy short string that is compatible with NuGet 2.8.3
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeFormatter.GetLegacyString(NuGet.Versioning.VersionRangeBase)">
+            <summary>
+            Creates a legacy string that is compatible with NuGet 2.8.3
+            </summary>
+        </member>
+        <member name="M:NuGet.Versioning.VersionRangeFormatter.PrettyPrint(NuGet.Versioning.VersionRange,System.Boolean)">
+            <summary>
+            A pretty print representation of the VersionRange.
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.OrderedEquals``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Collections.Generic.IComparer{``1},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two enumberables for equality, ordered according to the specified key and optional comparer. Handles null values gracefully.
+            </summary>
+            <typeparam name="TSource">The type of the list</typeparam>
+            <typeparam name="TKey">The type of the sorting key</typeparam>
+            <param name="self">This list</param>
+            <param name="other">The other list</param>
+            <param name="keySelector">The function to extract the key from each item in the list</param>
+            <param name="orderComparer">An optional comparer for comparing keys</param>
+            <param name="sequenceComparer">An optional comparer for sequences</param>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.SequenceEqualWithNullCheck``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two sequence for equality, allowing either sequence to be null. If one is null, both have to be
+            null for equality.
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.SetEqualsWithNullCheck``1(System.Collections.Generic.ISet{``0},System.Collections.Generic.ISet{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two sets for equality, allowing either sequence to be null.
+            If one is null, both have to be null for equality.
+            </summary>
+        </member>
+        <member name="T:NuGet.Shared.HashCodeCombiner">
+            <summary>
+            Hash code creator, based on the original NuGet hash code combiner/ASP hash code combiner implementations
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.HashCodeCombiner.GetHashCode``2(``0,``1)">
+            <summary>
+            Create a unique hash code for the given set of items
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.HashCodeCombiner.GetHashCode``3(``0,``1,``2)">
+            <summary>
+            Create a unique hash code for the given set of items
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.Extensions.AsList``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Return the enumerable as a List of T, copying if required. Optimized for common case where it is an List of T.
+            Avoid mutating the return value.
+            </summary>
+            <remarks>https://aspnetwebstack.codeplex.com/SourceControl/latest#src/Common/CollectionExtensions.cs</remarks>
+        </member>
+        <member name="M:NuGet.Shared.Extensions.AsHashSet``1(System.Collections.Generic.ISet{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Return the ISet as a HashSet of T, copying if required. Optimized for common case where it is a HashSet of T.
+            Avoid mutating the return value.
+            </summary>
+        </member>
+    </members>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /><DigestValue>1bkPVaaXQXFJmjd1Hcf46dtswUg=</DigestValue></Reference></SignedInfo><SignatureValue>Txs5PUeq3JnTg00byoJMkdhIYCDUIrOiyS87OaHiwvHXOt2wgFCOruZgJjlDee9aOY5wYz0Wfi2cNLhpQtAAWeEwN87W1chBrHg9hDKR5TTaG6G83Or895wTG3XuXlmyzprEIqAmka66GS/mQcm5S7bjERohfBHub6oAHvhfwAvNg6xr3/afVxBTUGZ+VJBxISAHUAx6KZnH/vAz8kSfxMX+JyYjii+K/qC98nwGTe/5zVPr8FNdnChMVIHD+4ERIIh6sgRBFAWB0R+DKPwCyetqnBUasSTjfgRcn2Aag0niMrgP2zPZX2BfP1TLV6e9iNtZzUl2lqQJKyCxD7CjTQ==</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>saeJ0/an7vTtdIicnsGFx5TflhIe/TaKK/Z4TOnp1DWwm4V/b0vvHP93iFWs0mJ1QU6i81u8VjdWwnCLQ27BMyhBNgbMErp+yfcQmi8HBhyha/qllJc+4YfUXJo2EpDhjcmzn64I97JtA0raCvJY8BMlFXkXzB8fRP+wmvzhKtnFwU9y9H1Z5RJH2pd9dBBQiw6NgaxN+TRkYxvv552YqiqhIeZVjZN9yVfPyNHyHFCqyxJlBq79AoAu8NnI5mwYQSCftCs0p0lop4F6Jf94lHQQcuEEDR++u5GBrpyXmNPEYxzCIIyQnQKBDPtpl79aYWle4/jN3Tc2f3HbM96A3w==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>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</X509Certificate><X509Certificate>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</X509Certificate><X509Certificate>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</X509Certificate></X509Data></KeyInfo><Object Id="ts-countersig"><X509Data><X509Certificate>MIIE2jCCA8KgAwIBAgITMwAAARovLhXutoVHlQAAAAABGjANBgkqhkiG9w0BAQUFADB3MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSEwHwYDVQQDExhNaWNyb3NvZnQgVGltZS1TdGFtcCBQQ0EwHhcNMTgxMDI0MjEwNzMzWhcNMjAwMTEwMjEwNzMzWjCByjELMAkGA1UEBhMCVVMxEzARBgNVBAgTCldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jvc29mdCBDb3Jwb3JhdGlvbjElMCMGA1UECxMcTWljcm9zb2Z0IEFtZXJpY2EgT3BlcmF0aW9uczEmMCQGA1UECxMdVGhhbGVzIFRTUyBFU046M0U3QS1FMzU5LUEyNUQxJTAjBgNVBAMTHE1pY3Jvc29mdCBUaW1lLVN0YW1wIFNlcnZpY2UwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCo260oy3DBVj7UKKAP9MJCENFuDkXUuWbIt57M8AiNBMgnS0VXz+weaFYgM1RYYjjU7h94xu0D4zIKCmV/GxFF0FiL0qlKPHnBrGQyIvJjj73s2X+O92NOe9UhMvi+GLHOmkJkeMoZt8hw1SOoTUl5HLQNj6rULN96Jk37YrzA6PU4LlUk/D5VJOcMHpCsuu/hpCQjsv8V3Xex7OOOLz/tSa9wgwI3gKolraZ6bAeZpWi6extucTkhAlIhP+K/dnClKRTNIzskBdLtgAZwtSWlUKXy+3Ehw+hZfYMupDc+hoZQZp+kXnDUyQE5ds6qTVZKn8jhOUfQnpjt4HOo9uVnAgMBAAGjggEJMIIBBTAdBgNVHQ4EFgQUO6LChaGkpib6qx+dFwmtKdmPlKMwHwYDVR0jBBgwFoAUIzT42VJGcArtQPt2+7MrsMM1sw8wVAYDVR0fBE0wSzBJoEegRYZDaHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraS9jcmwvcHJvZHVjdHMvTWljcm9zb2Z0VGltZVN0YW1wUENBLmNybDBYBggrBgEFBQcBAQRMMEowSAYIKwYBBQUHMAKGPGh0dHA6Ly93d3cubWljcm9zb2Z0LmNvbS9wa2kvY2VydHMvTWljcm9zb2Z0VGltZVN0YW1wUENBLmNydDATBgNVHSUEDDAKBggrBgEFBQcDCDANBgkqhkiG9w0BAQUFAAOCAQEALgoIP7TecPNrB0ItAEuIOtdNIYsXPT/avwsD+OI9MYlestswFDnfThHv+mHOTZjPglWED/t9PTaVlHSwTlXUXWvDwQgnoF6L6srfvhDibR5Pn/MJ5L5IgOhxN+G8s88YD+K6n7K2rxwhuPZaiHAjzHLYPejZcMxLOMviVzPBB9xMjtuNGXFngURvR0XXwiC4ZXmljs03YEaCVE9+DUZUi3mTm500KvAXMqSbbS/iwal3eoY6uNpjsmbcyKIl2jNQ5y6WI/Jcdq0Xe9dDnAozIq+y2Vz+BSmHQU+FPu35xW55P397tp87UjP2AUAh2y+DThrTImTHoy1s6PVG56WAyQ==</X509Certificate><X509Certificate>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</X509Certificate></X509Data><CounterSignature ts-format="cms-timestamp-message" xmlns="http://schemas.microsoft.com/xmldsig/timestamp/2003">MIIRCwYJKoZIhvcNAQcCoIIQ/DCCEPgCAQMxCzAJBgUrDgMCGgUAMIIBEwYJKoZIhvcNAQcBoIIBBASCAQBPGzk9R6rcmdODTRvKgkyR2EhgINQis6LJLzs5oeLC8dc63bCAUI6u5mAmOUN571o5jnBjPRZ+LZw0uGlC0ABZ4TA3ztbVyEGseD2EMpHlNNobobzc6vz3nBMbde5eWbLOmsQioCaRrroZL+ZByblLtuMRGiF8Ee5vqgAe+F/AC82DrGvf9p9XEFNQZn5UkHEhIAdQDHopmcf+8DPyRJ/Exf4nJiOKL4r+oL3yfAZN7/nNU+vwU12cKExUgcP7gREgiHqyBEEUBYHRH4Mo/ALJ62qcFRqxJON+BFyfYBqDSeIyuA/bM9lfYF8/VMtXp72I21nNSXaWpAkrILEPsKNNoIINtDCCBNowggPCoAMCAQICEzMAAAEaLy4V7raFR5UAAAAAARowDQYJKoZIhvcNAQEFBQAwdzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jvc29mdCBDb3Jwb3JhdGlvbjEhMB8GA1UEAxMYTWljcm9zb2Z0IFRpbWUtU3RhbXAgUENBMB4XDTE4MTAyNDIxMDczM1oXDTIwMDExMDIxMDczM1owgcoxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpXYXNoaW5ndG9uMRAwDgYDVQQHEwdSZWRtb25kMR4wHAYDVQQKExVNaWNyb3NvZnQgQ29ycG9yYXRpb24xJTAjBgNVBAsTHE1pY3Jvc29mdCBBbWVyaWNhIE9wZXJhdGlvbnMxJjAkBgNVBAsTHVRoYWxlcyBUU1MgRVNOOjNFN0EtRTM1OS1BMjVEMSUwIwYDVQQDExxNaWNyb3NvZnQgVGltZS1TdGFtcCBTZXJ2aWNlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqNutKMtwwVY+1CigD/TCQhDRbg5F1LlmyLeezPAIjQTIJ0tFV8/sHmhWIDNUWGI41O4feMbtA+MyCgplfxsRRdBYi9KpSjx5waxkMiLyY4+97Nl/jvdjTnvVITL4vhixzppCZHjKGbfIcNUjqE1JeRy0DY+q1CzfeiZN+2K8wOj1OC5VJPw+VSTnDB6QrLrv4aQkI7L/Fd13sezjji8/7UmvcIMCN4CqJa2memwHmaVounsbbnE5IQJSIT/iv3ZwpSkUzSM7JAXS7YAGcLUlpVCl8vtxIcPoWX2DLqQ3PoaGUGafpF5w1MkBOXbOqk1WSp/I4TlH0J6Y7eBzqPblZwIDAQABo4IBCTCCAQUwHQYDVR0OBBYEFDuiwoWhpKYm+qsfnRcJrSnZj5SjMB8GA1UdIwQYMBaAFCM0+NlSRnAK7UD7dvuzK7DDNbMPMFQGA1UdHwRNMEswSaBHoEWGQ2h0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9wa2kvY3JsL3Byb2R1Y3RzL01pY3Jvc29mdFRpbWVTdGFtcFBDQS5jcmwwWAYIKwYBBQUHAQEETDBKMEgGCCsGAQUFBzAChjxodHRwOi8vd3d3Lm1pY3Jvc29mdC5jb20vcGtpL2NlcnRzL01pY3Jvc29mdFRpbWVTdGFtcFBDQS5jcnQwEwYDVR0lBAwwCgYIKwYBBQUHAwgwDQYJKoZIhvcNAQEFBQADggEBAC4KCD+03nDzawdCLQBLiDrXTSGLFz0/2r8LA/jiPTGJXrLbMBQ5304R7/phzk2Yz4JVhA/7fT02lZR0sE5V1F1rw8EIJ6Bei+rK374Q4m0eT5/zCeS+SIDocTfhvLPPGA/iup+ytq8cIbj2WohwI8xy2D3o2XDMSzjL4lczwQfcTI7bjRlxZ4FEb0dF18IguGV5pY7NN2BGglRPfg1GVIt5k5udNCrwFzKkm20v4sGpd3qGOrjaY7Jm3MiiJdozUOculiPyXHatF3vXQ5wKMyKvstlc/gUph0FPhT7t+cVueT9/e7afO1Iz9gFAIdsvg04a0yJkx6MtbOj1RuelgMkwggYHMIID76ADAgECAgphFmg0AAAAAAAcMA0GCSqGSIb3DQEBBQUAMF8xEzARBgoJkiaJk/IsZAEZFgNjb20xGTAXBgoJkiaJk/IsZAEZFgltaWNyb3NvZnQxLTArBgNVBAMTJE1pY3Jvc29mdCBSb290IENlcnRpZmljYXRlIEF1dGhvcml0eTAeFw0wNzA0MDMxMjUzMDlaFw0yMTA0MDMxMzAzMDlaMHcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpXYXNoaW5ndG9uMRAwDgYDVQQHEwdSZWRtb25kMR4wHAYDVQQKExVNaWNyb3NvZnQgQ29ycG9yYXRpb24xITAfBgNVBAMTGE1pY3Jvc29mdCBUaW1lLVN0YW1wIFBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJ+hbLHf20iSKnxrLhnhveLjxZlRI1Ctzt0YTiQP7tGn0UytdDAgEesH1VSVFUmUG0KSrphcMCbaAGvoe73siQcP9w4EmPCJzB/LMySHnfL0Zxws/HvniB3q506jocEjU8qN+kXPCdBer9CwQgSi+aZsk2fXKNxGU7CG0OUoRi4nrIZPVVIM5AMs+2qQkDBuh/NZMJ36ftaXs+ghl3740hPzCLdTbVK0RZCfSABKR2YRJylmqJfk0waBSqL5hKcRRxQJgp+E7VV4/gGaHVAIhQAQMEbtt94jRrvELVSfrx54QTF3zJvfO4OToWECtR0Nsfz3m7IBziJLVP/5BcPCIAsCAwEAAaOCAaswggGnMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFCM0+NlSRnAK7UD7dvuzK7DDNbMPMAsGA1UdDwQEAwIBhjAQBgkrBgEEAYI3FQEEAwIBADCBmAYDVR0jBIGQMIGNgBQOrIJgQFYnl+UlE/wq4QpTlVnkpKFjpGEwXzETMBEGCgmSJomT8ixkARkWA2NvbTEZMBcGCgmSJomT8ixkARkWCW1pY3Jvc29mdDEtMCsGA1UEAxMkTWljcm9zb2Z0IFJvb3QgQ2VydGlmaWNhdGUgQXV0aG9yaXR5ghB5rRahSqClrUxzWPQHEy5lMFAGA1UdHwRJMEcwRaBDoEGGP2h0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9wa2kvY3JsL3Byb2R1Y3RzL21pY3Jvc29mdHJvb3RjZXJ0LmNybDBUBggrBgEFBQcBAQRIMEYwRAYIKwYBBQUHMAKGOGh0dHA6Ly93d3cubWljcm9zb2Z0LmNvbS9wa2kvY2VydHMvTWljcm9zb2Z0Um9vdENlcnQuY3J0MBMGA1UdJQQMMAoGCCsGAQUFBwMIMA0GCSqGSIb3DQEBBQUAA4ICAQAQl4rDXANENt3ptK132855UU0BsS50cVttDBOrzr57j7gu1BKijG1iuFcCy04gE1CZ3XpA4le7r1iaHOEdAYasu3jyi9DsOwHu4r6PCgXIjUji8FMV3U+rkuTnjWrVgMHmlPIGL4UD6ZEqJCJw+/b85HiZLg33B+JwvBhOnY5rCnKVuKE5nGctxVEO6mJcPxaYiyA/4gcaMvnMMUp2MT0rcgvI6nA9/4UKE9/CCmGO8Ne4F+tOi3/FNSteo7/rvH0LQnvUU3Ih7jDKu3hlXFsBFwoUDtLaFJj1PLlmWLMtL+f5hYbMUVbonXCUbKw5TNT2eb+qGHpiKe+imyk0BncaYsk9Hm0fgvALxyy7z0Oz5fnsfbXjpKh0NbhOxXEjEiZ2CzxSjHFaRkMUvLOzsE1nyJ9C/4B5IYCeFTBm6EISXhrIniIh0EPpK+m79EjMLNTYMoBMJipIJF9a6lbvpt6Znco6b72BJ3QGEe52Ib+bgsEnVLaxaj2JoXZhtG6hE6a/qkfwEm/9ijJssv7fUciMI8lmvZ0dhxJkAj0tr1mPuOQh5bWwymO0eFQF1EEuUKyUsKV4q7OglnUa2ZKHE3UiLzKoCG6gW4wlv6DvhMoh1useT8ma7kng9wFlb4kLfchpyOZu6qeXzjEp/w7FW1zYTRuh2Povnj8uVRZryROj/aGCAscwggIwAgEBMIH4oYHQpIHNMIHKMQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSUwIwYDVQQLExxNaWNyb3NvZnQgQW1lcmljYSBPcGVyYXRpb25zMSYwJAYDVQQLEx1UaGFsZXMgVFNTIEVTTjozRTdBLUUzNTktQTI1RDElMCMGA1UEAxMcTWljcm9zb2Z0IFRpbWUtU3RhbXAgU2VydmljZaIjCgEBMAcGBSsOAwIaAxUAu6aXtLQxMfR/0/ccE4MhFtJKXfmgfTB7pHkwdzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jvc29mdCBDb3Jwb3JhdGlvbjEhMB8GA1UEAxMYTWljcm9zb2Z0IFRpbWUtU3RhbXAgUENBMA0GCSqGSIb3DQEBBQUAAgUA4VDt0jAiGA8yMDE5MTAxNjA5MTYwMloYDzIwMTkxMDE3MDkxNjAyWjB3MD0GCisGAQQBhFkKBAExLzAtMAoCBQDhUO3SAgEAMAoCAQACAgbYAgH/MAcCAQACAhF8MAoCBQDhUj9SAgEAMDYGCisGAQQBhFkKBAIxKDAmMAwGCisGAQQBhFkKAwKgCjAIAgEAAgMHoSChCjAIAgEAAgMBhqAwDQYJKoZIhvcNAQEFBQADgYEARYuKdUPm0vHD3yJEzI0k682qUbUjRqwjoe1w7/uKdSSLw3J0994V2Mxn7DeyLo29Ksso5fTZuFD3vTekL/TRjLJTM7RtrHEMyoSepx8/A7zQ9/1ciIlK4s3LldOEorfZTVYajMFzNgLhBPURp1WFEJC37P5BJ/bMYl7ZhlZZVSkxggIVMIICEQIBATCBjjB3MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSEwHwYDVQQDExhNaWNyb3NvZnQgVGltZS1TdGFtcCBQQ0ECEzMAAAEaLy4V7raFR5UAAAAAARowCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MTAxNjA1MzQyMVowIwYJKoZIhvcNAQkEMRYEFL4R4uk7WM8oVShnyhxX+EpkGnlpMA0GCSqGSIb3DQEBBQUABIIBAAbsTC/JIzruEb3V0er4xnnhb/guFNZIAiMC7daeb3wPMc8yOLyxZREGiCBgEKJ9TJ/k66gJbMtRpSr2LfwItkm/yJZ80hel4osT8AnD9opK59KD859JF5u0UMkUEXzaMewGmy0tP8f/3pr+jZIyFrP70J8O0oD6smBa6PXbnczwsGdkp6fNZJE+FNxa9GUKAR69Aeac9SErF4JQtufwXoqN4OI6kbXa03UyNqe6ZR5p4scOImfYspR+Ot4yDRIa0p6a+Me2YH3loAkUH8rDlvj5X7Lap5DHpkzUjt9Z3XHqlyHpbmjtKPS6glFe80FCRq4LcrUZ4BwiyFrPdXV3us4=</CounterSignature></Object></Signature></doc>

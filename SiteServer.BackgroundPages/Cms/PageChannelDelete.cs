@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                 var adminId = AuthRequest.AdminPermissionsImpl.GetAdminId(SiteId, channelId);
                 var displayName = channelInfo.ChannelName;
-                var count = ContentManager.GetCount(SiteInfo, channelInfo, adminId);
+                var count = ContentManager.GetCount(Site, channelInfo, adminId);
                 if (count > 0)
                 {
                     displayName += $"({count})";
@@ -119,19 +119,19 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in channelIdListToDelete)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                        var tableName = ChannelManager.GetTableName(Site, channelId);
                         var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
-                        DeleteManager.DeleteContents(SiteInfo, channelId, contentIdList);
+                        DeleteManager.DeleteContents(Site, channelId, contentIdList);
                         DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, tableName, contentIdList);
                     }
 
-                    AuthRequest.AddSiteLog(SiteId, "清空栏目下的内容", $"栏目:{builder}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "清空栏目下的内容", $"栏目:{builder}").GetAwaiter().GetResult();
                 }
                 else
                 {
                     if (bool.Parse(RblRetainFiles.SelectedValue) == false)
                     {
-                        DeleteManager.DeleteChannels(SiteInfo, channelIdListToDelete);
+                        DeleteManager.DeleteChannels(Site, channelIdListToDelete);
                         SuccessMessage("成功删除栏目以及相关生成页面！");
                     }
                     else
@@ -141,12 +141,12 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in channelIdListToDelete)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                        var tableName = ChannelManager.GetTableName(Site, channelId);
                         DataProvider.ContentDao.UpdateTrashContentsByChannelId(SiteId, channelId, tableName);
-                        DataProvider.ChannelDao.Delete(SiteId, channelId);
+                        DataProvider.ChannelDao.DeleteAsync(SiteId, channelId).GetAwaiter().GetResult();
                     }
 
-                    AuthRequest.AddSiteLog(SiteId, "删除栏目", $"栏目:{builder}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "删除栏目", $"栏目:{builder}").GetAwaiter().GetResult();
                 }
 
                 AddWaitAndRedirectScript(ReturnUrl);

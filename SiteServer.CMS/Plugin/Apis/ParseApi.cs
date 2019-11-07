@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -23,27 +24,27 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string Parse(string html, IParseContext context)
         {
-            return StlParserManager.ParseInnerContent(html, (ParseContextImpl)context);
+            return StlParserManager.ParseInnerContentAsync(html, (ParseContextImpl)context).GetAwaiter().GetResult();
         }
 
         public string ParseAttributeValue(string attributeValue, IParseContext context)
         {
-            var siteInfo = SiteManager.GetSiteInfo(context.SiteId);
+            var site = SiteManager.GetSiteAsync(context.SiteId).GetAwaiter().GetResult();
             var templateInfo = new TemplateInfo
             {
                 Id = context.TemplateId,
                 TemplateType = context.TemplateType
             };
-            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo, new Dictionary<string, object>());
+            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, site, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
             return StlEntityParser.ReplaceStlEntitiesForAttributeValue(attributeValue, pageInfo, contextInfo);
         }
 
         public string GetCurrentUrl(IParseContext context)
         {
-            var siteInfo = SiteManager.GetSiteInfo(context.SiteId);
-            return StlParserUtility.GetStlCurrentUrl(siteInfo, context.ChannelId, context.ContentId,
-                (ContentInfo)context.ContentInfo, context.TemplateType, context.TemplateId, false);
+            var site = SiteManager.GetSiteAsync(context.SiteId).GetAwaiter().GetResult();
+            return StlParserUtility.GetStlCurrentUrlAsync(site, context.ChannelId, context.ContentId,
+                (ContentInfo)context.ContentInfo, context.TemplateType, context.TemplateId, false).GetAwaiter().GetResult();
         }
     }
 }

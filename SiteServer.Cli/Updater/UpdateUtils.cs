@@ -7,6 +7,7 @@ using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater.Tables;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 using TableInfo = SiteServer.Cli.Core.TableInfo;

@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
@@ -16,7 +17,7 @@ namespace SiteServer.API.Controllers.Sys
     {
         [HttpGet]
         [Route(ApiRouteActionsDownload.Route)]
-        public void Main()
+        public async Task Main()
         {
             try
             {
@@ -33,8 +34,8 @@ namespace SiteServer.API.Controllers.Sys
                         return;
                     }
 
-                    var siteInfo = SiteManager.GetSiteInfo(siteId);
-                    var filePath = PathUtility.MapPath(siteInfo, fileUrl);
+                    var site = await SiteManager.GetSiteAsync(siteId);
+                    var filePath = PathUtility.MapPath(site, fileUrl);
                     var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
                     if (EFileSystemTypeUtils.IsDownload(fileType))
                     {
@@ -46,7 +47,7 @@ namespace SiteServer.API.Controllers.Sys
                     }
                     else
                     {
-                        PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                        PageUtils.Redirect(PageUtility.ParseNavigationUrl(site, fileUrl, false));
                         return;
                     }
                 }
@@ -75,11 +76,11 @@ namespace SiteServer.API.Controllers.Sys
                     var channelId = request.GetQueryInt("channelId");
                     var contentId = request.GetQueryInt("contentId");
                     var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
-                    var siteInfo = SiteManager.GetSiteInfo(siteId);
+                    var site = await SiteManager.GetSiteAsync(siteId);
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
 
-                    DataProvider.ContentDao.AddDownloads(ChannelManager.GetTableName(siteInfo, channelInfo), channelId, contentId);
+                    DataProvider.ContentDao.AddDownloads(ChannelManager.GetTableName(site, channelInfo), channelId, contentId);
 
                     if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
                     {
@@ -89,7 +90,7 @@ namespace SiteServer.API.Controllers.Sys
                             return;
                         }
 
-                        var filePath = PathUtility.MapPath(siteInfo, fileUrl, true);
+                        var filePath = PathUtility.MapPath(site, fileUrl, true);
                         var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
                         if (EFileSystemTypeUtils.IsDownload(fileType))
                         {
@@ -101,7 +102,7 @@ namespace SiteServer.API.Controllers.Sys
                         }
                         else
                         {
-                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(site, fileUrl, false));
                             return;
                         }
                     }

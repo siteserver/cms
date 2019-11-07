@@ -9,6 +9,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 
@@ -80,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
             var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList();
             foreach (var psId in siteIdList)
             {
-                var psInfo = SiteManager.GetSiteInfo(psId);
+                var psInfo = SiteManager.GetSiteAsync(psId).GetAwaiter().GetResult();
                 var listitem = new ListItem(psInfo.SiteName, psId.ToString());
                 if (psId == SiteId) listitem.Selected = true;
                 DdlSiteId.Items.Add(listitem);
@@ -141,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
 		    str = string.Concat(str, channelInfo.IsLastNode ? "└" : "├");
 		    str = string.Concat(str, channelInfo.ChannelName);
 		    var adminId = AuthRequest.AdminPermissionsImpl.GetAdminId(SiteId, channelInfo.Id);
-            var count = ContentManager.GetCount(SiteInfo, channelInfo, adminId);
+            var count = ContentManager.GetCount(Site, channelInfo, adminId);
             if (count != 0)
             {
                 str = $"{str} ({count})";
@@ -214,7 +215,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         try
                         {
-                            DataProvider.ChannelDao.Delete(SiteId, channelId);
+                            DataProvider.ChannelDao.DeleteAsync(SiteId, channelId).GetAwaiter().GetResult();
                         }
                         catch
                         {
@@ -236,7 +237,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 builder.Length = builder.Length - 1;
             }
-            AuthRequest.AddSiteLog(SiteId, "批量转移", $"栏目:{builder},转移后删除:{RblIsDeleteAfterTranslate.SelectedValue}");
+            AuthRequest.AddSiteLogAsync(SiteId, "批量转移", $"栏目:{builder},转移后删除:{RblIsDeleteAfterTranslate.SelectedValue}").GetAwaiter().GetResult();
 
             SuccessMessage("批量转移成功！");
 
@@ -327,7 +328,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 		private void TranslateContent(int channelId, int targetSiteId, int targetChannelId)
 		{
-            var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+            var tableName = ChannelManager.GetTableName(Site, channelId);
 
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxis);
 
@@ -339,7 +340,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var contentId in contentIdList)
 			{
-                ContentUtility.Translate(SiteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType);
+                ContentUtility.TranslateAsync(Site, channelId, contentId, targetSiteId, targetChannelId, translateType).GetAwaiter().GetResult();
 			}
 		}
 

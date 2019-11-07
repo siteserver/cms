@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Settings
                 _begin = TranslateUtils.ToDateTime(AuthRequest.GetQueryString("startDate"));
                 _end = TranslateUtils.ToDateTime(AuthRequest.GetQueryString("endDate"));
             }
-            var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
+            var siteIdList = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
 
             if (SiteId == 0 && siteIdList.Count > 0)
             {
@@ -74,21 +74,21 @@ namespace SiteServer.BackgroundPages.Settings
             
             foreach (var siteId in siteIdList)
             {
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                DdlSiteId.Items.Add(new ListItem(siteInfo.SiteName, siteId.ToString()));
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                DdlSiteId.Items.Add(new ListItem(site.SiteName, siteId.ToString()));
             }
             ControlUtils.SelectSingleItem(DdlSiteId, SiteId.ToString());
 
             TbStartDate.Text = DateUtils.GetDateAndTimeString(_begin);
             TbEndDate.Text = DateUtils.GetDateAndTimeString(_end);
 
-            if (SiteInfo == null)
+            if (Site == null)
             {
                 PhAnalysis.Visible = false;
                 return;
             }
 
-            var ds = DataProvider.ContentDao.GetDataSetOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
+            var ds = DataProvider.ContentDao.GetDataSetOfAdminExcludeRecycle(Site.TableName, SiteId, _begin, _end);
             if (ds == null || ds.Tables.Count <= 0) return;
 
             var dt = ds.Tables[0];
@@ -117,7 +117,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             SpContents.SortField = "UserName";
             SpContents.SortMode = SortMode.DESC;
 
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
+            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringOfAdminExcludeRecycle(Site.TableName, SiteId, _begin, _end);
 
             SpContents.DataBind();
         }
@@ -136,7 +136,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             var ltlContentUpdate = (Literal)e.Item.FindControl("ltlContentUpdate");
 
             ltlUserName.Text = userName;
-            ltlDisplayName.Text = AdminManager.GetDisplayName(userName);
+            ltlDisplayName.Text = AdminManager.GetDisplayNameAsync(userName).GetAwaiter().GetResult();
 
             ltlContentAdd.Text = addCount == 0 ? "0" : $"<strong>{addCount}</strong>";
             ltlContentUpdate.Text = updateCount == 0 ? "0" : $"<strong>{updateCount}</strong>";

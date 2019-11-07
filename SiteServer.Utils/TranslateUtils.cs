@@ -16,6 +16,16 @@ namespace SiteServer.Utils
 {
     public static class TranslateUtils
     {
+        public static T ToEnum<T>(string value, T defaultValue) where T : struct
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return defaultValue;
+            }
+
+            return Enum.TryParse<T>(value, true, out var result) ? result : defaultValue;
+        }
+
         public static T Cast<T>(object value, T defaultValue = default(T))
         {
             switch (value)
@@ -37,23 +47,6 @@ namespace SiteServer.Utils
         }
 
         //添加枚举：(fileAttributes | FileAttributes.ReadOnly)   判断枚举：((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)   去除枚举：(fileAttributes ^ FileAttributes.ReadOnly)
-
-        /// <summary>
-        /// 将字符串类型转换为对应的枚举类型
-        /// </summary>
-        public static object ToEnum(Type enumType, string value, object defaultType)
-        {
-            object retVal;
-            try
-            {
-                retVal = Enum.Parse(enumType, value, true);
-            }
-            catch
-            {
-                retVal = defaultType;
-            }
-            return retVal;
-        }
 
         public static List<int> ToIntList(int intValue)
         {
@@ -683,27 +676,27 @@ namespace SiteServer.Utils
 
         public static HorizontalAlign ToHorizontalAlign(string typeStr)
         {
-            return (HorizontalAlign)ToEnum(typeof(HorizontalAlign), typeStr, HorizontalAlign.Left);
+            return ToEnum(typeStr, HorizontalAlign.Left);
         }
 
         public static VerticalAlign ToVerticalAlign(string typeStr)
         {
-            return (VerticalAlign)ToEnum(typeof(VerticalAlign), typeStr, VerticalAlign.Middle);
+            return ToEnum(typeStr, VerticalAlign.Middle);
         }
 
         public static GridLines ToGridLines(string typeStr)
         {
-            return (GridLines)ToEnum(typeof(GridLines), typeStr, GridLines.None);
+            return ToEnum(typeStr, GridLines.None);
         }
 
         public static RepeatDirection ToRepeatDirection(string typeStr)
         {
-            return (RepeatDirection)ToEnum(typeof(RepeatDirection), typeStr, RepeatDirection.Vertical);
+            return ToEnum(typeStr, RepeatDirection.Vertical);
         }
 
         public static RepeatLayout ToRepeatLayout(string typeStr)
         {
-            return (RepeatLayout)ToEnum(typeof(RepeatLayout), typeStr, RepeatLayout.Table);
+            return ToEnum(typeStr, RepeatLayout.Table);
         }
 
         public static List<Dictionary<string, object>> DataTableToDictionaryList(DataTable dataTable)

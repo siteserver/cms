@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -18,7 +19,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         private const string Route = "";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -38,8 +39,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
@@ -57,8 +58,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                    var tableName = ChannelManager.GetTableName(siteInfo, contentChannelInfo);
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
+                    var tableName = ChannelManager.GetTableName(site, contentChannelInfo);
+                    var contentInfo = ContentManager.GetContentInfo(site, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var isTop = contentInfo.IsTop;
@@ -86,7 +87,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     CreateManager.TriggerContentChangedEvent(siteId, distinctChannelId);
                 }
 
-                request.AddSiteLog(siteId, channelId, 0, "对内容排序", string.Empty);
+                await request.AddSiteLogAsync(siteId, channelId, 0, "对内容排序", string.Empty);
 
                 return Ok(new
                 {

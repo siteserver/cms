@@ -79,11 +79,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelId, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(Site, channelId, contentId);
                         if (contentInfo != null)
                         {
                             builder.Append(
-                                $@"{WebUtils.GetContentTitle(SiteInfo, contentInfo, _returnUrl)}<br />");
+                                $@"{WebUtils.GetContentTitle(Site, contentInfo, _returnUrl)}<br />");
                         }
                     }
                 }
@@ -116,9 +116,9 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 foreach (var contentId in contentIdList)
                                 {
-                                    ContentUtility.Translate(SiteInfo, channelId, contentId, Request.Form["translateCollection"], translateType, AuthRequest.AdminName);
+                                    ContentUtility.TranslateAsync(Site, channelId, contentId, Request.Form["translateCollection"], translateType, AuthRequest.AdminName).GetAwaiter().GetResult();
 
-                                    AuthRequest.AddSiteLog(SiteInfo.Id, channelId, contentId, "转移内容", string.Empty);
+                                    AuthRequest.AddSiteLogAsync(Site.Id, channelId, contentId, "转移内容", string.Empty).GetAwaiter().GetResult();
                                 }
                             }
                         }

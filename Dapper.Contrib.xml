@@ -1,0 +1,575 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Dapper.Contrib</name>
+    </assembly>
+    <members>
+        <member name="T:Dapper.Contrib.Extensions.SqlMapperExtensions">
+            <summary>
+            The Dapper.Contrib extensions for Dapper
+            </summary>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.GetAsync``1(System.Data.IDbConnection,System.Object,System.Data.IDbTransaction,System.Nullable{System.Int32})">
+            <summary>
+            Returns a single entity by a single id from table "Ts" asynchronously using Task. T must be of interface type. 
+            Id must be marked with [Key] attribute.
+            Created entity is tracked/intercepted for changes and used by the Update() extension. 
+            </summary>
+            <typeparam name="T">Interface type to create and populate</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="id">Id of the entity to get, must be marked with [Key] attribute</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <returns>Entity of T</returns>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.GetAllAsync``1(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32})">
+            <summary>
+            Returns a list of entites from table "Ts".  
+            Id of T must be marked with [Key] attribute.
+            Entities created from interfaces are tracked/intercepted for changes and used by the Update() extension
+            for optimal performance. 
+            </summary>
+            <typeparam name="T">Interface or type to create and populate</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <returns>Entity of T</returns>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.InsertAsync``1(System.Data.IDbConnection,``0,System.Data.IDbTransaction,System.Nullable{System.Int32},ISqlAdapter)">
+            <summary>
+            Inserts an entity into table "Ts" asynchronously using Task and returns identity id.
+            </summary>
+            <typeparam name="T">The type being inserted.</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="entityToInsert">Entity to insert</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <param name="sqlAdapter">The specific ISqlAdapter to use, auto-detected based on connection if null</param>
+            <returns>Identity of inserted entity</returns>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.UpdateAsync``1(System.Data.IDbConnection,``0,System.Data.IDbTransaction,System.Nullable{System.Int32})">
+            <summary>
+            Updates entity in table "Ts" asynchronously using Task, checks if the entity is modified if the entity is tracked by the Get() extension.
+            </summary>
+            <typeparam name="T">Type to be updated</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="entityToUpdate">Entity to be updated</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <returns>true if updated, false if not found or not modified (tracked entities)</returns>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.DeleteAsync``1(System.Data.IDbConnection,``0,System.Data.IDbTransaction,System.Nullable{System.Int32})">
+            <summary>
+            Delete entity in table "Ts" asynchronously using Task.
+            </summary>
+            <typeparam name="T">Type of entity</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="entityToDelete">Entity to delete</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <returns>true if deleted, false if not found</returns>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.DeleteAllAsync``1(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32})">
+            <summary>
+            Delete all entities in the table related to the type T asynchronously using Task.
+            </summary>
+            <typeparam name="T">Type of entity</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <returns>true if deleted, false if none found</returns>
+        </member>
+        <member name="T:Dapper.Contrib.Extensions.SqlMapperExtensions.IProxy">
+            <summary>
+            Defined a proxy object with a possibly dirty state.
+            </summary>
+        </member>
+        <member name="P:Dapper.Contrib.Extensions.SqlMapperExtensions.IProxy.IsDirty">
+            <summary>
+            Whether the object has been changed.
+            </summary>
+        </member>
+        <member name="T:Dapper.Contrib.Extensions.SqlMapperExtensions.ITableNameMapper">
+            <summary>
+            Defines a table name mapper for getting table names from types.
+            </summary>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.ITableNameMapper.GetTableName(System.Type)">
+            <summary>
+            Gets a table name from a given <see cref="T:System.Type"/>.
+            </summary>
+            <param name="type">The <see cref="T:System.Type"/> to get a name from.</param>
+            <returns>The table name for the given <paramref name="type"/>.</returns>
+        </member>
+        <member name="T:Dapper.Contrib.Extensions.SqlMapperExtensions.GetDatabaseTypeDelegate">
+            <summary>
+            The function to get a database type from the given <see cref="T:System.Data.IDbConnection"/>.
+            </summary>
+            <param name="connection">The connection to get a database type name from.</param>
+        </member>
+        <member name="T:Dapper.Contrib.Extensions.SqlMapperExtensions.TableNameMapperDelegate">
+            <summary>
+            The function to get a a table name from a given <see cref="T:System.Type"/>
+            </summary>
+            <param name="type">The <see cref="T:System.Type"/> to get a table name for.</param>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.Get``1(System.Data.IDbConnection,System.Object,System.Data.IDbTransaction,System.Nullable{System.Int32})">
+            <summary>
+            Returns a single entity by a single id from table "Ts".  
+            Id must be marked with [Key] attribute.
+            Entities created from interfaces are tracked/intercepted for changes and used by the Update() extension
+            for optimal performance. 
+            </summary>
+            <typeparam name="T">Interface or type to create and populate</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="id">Id of the entity to get, must be marked with [Key] attribute</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <returns>Entity of T</returns>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.GetAll``1(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32})">
+            <summary>
+            Returns a list of entites from table "Ts".  
+            Id of T must be marked with [Key] attribute.
+            Entities created from interfaces are tracked/intercepted for changes and used by the Update() extension
+            for optimal performance. 
+            </summary>
+            <typeparam name="T">Interface or type to create and populate</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <returns>Entity of T</returns>
+        </member>
+        <member name="F:Dapper.Contrib.Extensions.SqlMapperExtensions.TableNameMapper">
+            <summary>
+            Specify a custom table name mapper based on the POCO type name
+            </summary>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.Insert``1(System.Data.IDbConnection,``0,System.Data.IDbTransaction,System.Nullable{System.Int32})">
+            <summary>
+            Inserts an entity into table "Ts" and returns identity id or number of inserted rows if inserting a list.
+            </summary>
+            <typeparam name="T">The type to insert.</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="entityToInsert">Entity to insert, can be list of entities</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <returns>Identity of inserted entity, or number of inserted rows if inserting a list</returns>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.Update``1(System.Data.IDbConnection,``0,System.Data.IDbTransaction,System.Nullable{System.Int32})">
+            <summary>
+            Updates entity in table "Ts", checks if the entity is modified if the entity is tracked by the Get() extension.
+            </summary>
+            <typeparam name="T">Type to be updated</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="entityToUpdate">Entity to be updated</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <returns>true if updated, false if not found or not modified (tracked entities)</returns>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.Delete``1(System.Data.IDbConnection,``0,System.Data.IDbTransaction,System.Nullable{System.Int32})">
+            <summary>
+            Delete entity in table "Ts".
+            </summary>
+            <typeparam name="T">Type of entity</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="entityToDelete">Entity to delete</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <returns>true if deleted, false if not found</returns>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.SqlMapperExtensions.DeleteAll``1(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32})">
+            <summary>
+            Delete all entities in the table related to the type T.
+            </summary>
+            <typeparam name="T">Type of entity</typeparam>
+            <param name="connection">Open SqlConnection</param>
+            <param name="transaction">The transaction to run under, null (the default) if none</param>
+            <param name="commandTimeout">Number of seconds before command execution timeout</param>
+            <returns>true if deleted, false if none found</returns>
+        </member>
+        <member name="F:Dapper.Contrib.Extensions.SqlMapperExtensions.GetDatabaseType">
+            <summary>
+            Specifies a custom callback that detects the database type instead of relying on the default strategy (the name of the connection type object).
+            Please note that this callback is global and will be used by all the calls that require a database specific adapter.
+            </summary>
+        </member>
+        <member name="T:Dapper.Contrib.Extensions.TableAttribute">
+            <summary>
+            Defines the name of a table to use in Dapper.Contrib commands.
+            </summary>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.TableAttribute.#ctor(System.String)">
+            <summary>
+            Creates a table mapping to a specific name for Dapper.Contrib commands
+            </summary>
+            <param name="tableName">The name of this table in the database.</param>
+        </member>
+        <member name="P:Dapper.Contrib.Extensions.TableAttribute.Name">
+            <summary>
+            The name of the table in the database
+            </summary>
+        </member>
+        <member name="T:Dapper.Contrib.Extensions.KeyAttribute">
+            <summary>
+            Specifies that this field is a primary key in the database
+            </summary>
+        </member>
+        <member name="T:Dapper.Contrib.Extensions.ExplicitKeyAttribute">
+            <summary>
+            Specifies that this field is a explicitly set primary key in the database
+            </summary>
+        </member>
+        <member name="T:Dapper.Contrib.Extensions.WriteAttribute">
+            <summary>
+            Specifies whether a field is writable in the database.
+            </summary>
+        </member>
+        <member name="M:Dapper.Contrib.Extensions.WriteAttribute.#ctor(System.Boolean)">
+            <summary>
+            Specifies whether a field is writable in the database.
+            </summary>
+            <param name="write">Whether a field is writable in the database.</param>
+        </member>
+        <member name="P:Dapper.Contrib.Extensions.WriteAttribute.Write">
+            <summary>
+            Whether a field is writable in the database.
+            </summary>
+        </member>
+        <member name="T:Dapper.Contrib.Extensions.ComputedAttribute">
+            <summary>
+            Specifies that this is a computed column.
+            </summary>
+        </member>
+        <member name="T:ISqlAdapter">
+            <summary>
+            The interface for all Dapper.Contrib database operations
+            Implementing this is each provider's model.
+            </summary>
+        </member>
+        <member name="M:ISqlAdapter.InsertAsync(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:ISqlAdapter.Insert(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:ISqlAdapter.AppendColumnName(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds the name of a column.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="M:ISqlAdapter.AppendColumnNameEqualsValue(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds a column equality to a parameter.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="T:SqlServerAdapter">
+            <summary>
+            The SQL Server database adapter.
+            </summary>
+        </member>
+        <member name="M:SqlServerAdapter.InsertAsync(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:SqlServerAdapter.Insert(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:SqlServerAdapter.AppendColumnName(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds the name of a column.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="M:SqlServerAdapter.AppendColumnNameEqualsValue(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds a column equality to a parameter.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="T:SqlCeServerAdapter">
+            <summary>
+            The SQL Server Compact Edition database adapter.
+            </summary>
+        </member>
+        <member name="M:SqlCeServerAdapter.InsertAsync(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:SqlCeServerAdapter.Insert(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:SqlCeServerAdapter.AppendColumnName(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds the name of a column.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="M:SqlCeServerAdapter.AppendColumnNameEqualsValue(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds a column equality to a parameter.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="T:MySqlAdapter">
+            <summary>
+            The MySQL database adapter.
+            </summary>
+        </member>
+        <member name="M:MySqlAdapter.InsertAsync(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:MySqlAdapter.Insert(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:MySqlAdapter.AppendColumnName(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds the name of a column.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="M:MySqlAdapter.AppendColumnNameEqualsValue(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds a column equality to a parameter.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="T:PostgresAdapter">
+            <summary>
+            The Postgres database adapter.
+            </summary>
+        </member>
+        <member name="M:PostgresAdapter.InsertAsync(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:PostgresAdapter.Insert(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:PostgresAdapter.AppendColumnName(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds the name of a column.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="M:PostgresAdapter.AppendColumnNameEqualsValue(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds a column equality to a parameter.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="T:SQLiteAdapter">
+            <summary>
+            The SQLite database adapter.
+            </summary>
+        </member>
+        <member name="M:SQLiteAdapter.InsertAsync(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:SQLiteAdapter.Insert(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:SQLiteAdapter.AppendColumnName(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds the name of a column.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="M:SQLiteAdapter.AppendColumnNameEqualsValue(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds a column equality to a parameter.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="T:FbAdapter">
+            <summary>
+            The Firebase SQL adapeter.
+            </summary>
+        </member>
+        <member name="M:FbAdapter.InsertAsync(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:FbAdapter.Insert(System.Data.IDbConnection,System.Data.IDbTransaction,System.Nullable{System.Int32},System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Object)">
+            <summary>
+            Inserts <paramref name="entityToInsert"/> into the database, returning the Id of the row created.
+            </summary>
+            <param name="connection">The connection to use.</param>
+            <param name="transaction">The transaction to use.</param>
+            <param name="commandTimeout">The command timeout to use.</param>
+            <param name="tableName">The table to insert into.</param>
+            <param name="columnList">The columns to set with this insert.</param>
+            <param name="parameterList">The parameters to set for this insert.</param>
+            <param name="keyProperties">The key columns in this table.</param>
+            <param name="entityToInsert">The entity to insert.</param>
+            <returns>The Id of the row created.</returns>
+        </member>
+        <member name="M:FbAdapter.AppendColumnName(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds the name of a column.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+        <member name="M:FbAdapter.AppendColumnNameEqualsValue(System.Text.StringBuilder,System.String)">
+            <summary>
+            Adds a column equality to a parameter.
+            </summary>
+            <param name="sb">The string builder  to append to.</param>
+            <param name="columnName">The column name.</param>
+        </member>
+    </members>
+</doc>

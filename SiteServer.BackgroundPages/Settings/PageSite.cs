@@ -27,9 +27,9 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            _hqSiteId = DataProvider.SiteDao.GetIdByIsRoot();
+            _hqSiteId = DataProvider.SiteDao.GetIdByIsRootAsync().GetAwaiter().GetResult();
 
-            RptContents.DataSource = SiteManager.GetSiteIdListOrderByLevel();
+            RptContents.DataSource = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -39,8 +39,8 @@ namespace SiteServer.BackgroundPages.Settings
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
             var siteId = (int)e.Item.DataItem;
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            if (siteInfo == null) return;
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+            if (site == null) return;
 
             var ltlSiteName = (Literal)e.Item.FindControl("ltlSiteName");
             var ltlSiteDir = (Literal)e.Item.FindControl("ltlSiteDir");
@@ -48,33 +48,27 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlTaxis = (Literal)e.Item.FindControl("ltlTaxis");
             var ltlActions = (Literal)e.Item.FindControl("ltlActions");
 
-            ltlSiteName.Text = GetSiteNameHtml(siteInfo);
-            ltlSiteDir.Text = siteInfo.SiteDir;
-            ltlTableName.Text = siteInfo.TableName;
-            ltlTaxis.Text = siteInfo.Taxis == 0 ? string.Empty : siteInfo.Taxis.ToString();
+            ltlSiteName.Text = GetSiteNameHtml(site);
+            ltlSiteDir.Text = site.SiteDir;
+            ltlTableName.Text = site.TableName;
+            ltlTaxis.Text = site.Taxis == 0 ? string.Empty : site.Taxis.ToString();
 
             var builder = new StringBuilder();
 
             builder.Append($@"<a href=""{PageSiteSave.GetRedirectUrl(siteId)}"" class=""m-r-5"">保存</a>");
-            builder.Append($@"<a href=""{PageSiteEdit.GetRedirectUrl(siteId)}"" class=""m-r-5"">修改</a>");
-            if (siteInfo.ParentId == 0 && (_hqSiteId == 0 || siteId == _hqSiteId))
+            if (site.ParentId == 0 && (_hqSiteId == 0 || siteId == _hqSiteId))
             {
-                builder.Append($@"<a href=""javascript:;"" onClick=""{ModalChangeSiteType.GetOpenWindowString(siteId)}"" class=""m-r-5"">{(siteInfo.IsRoot ? "转移到子目录" : "转移到根目录")}</a>");
-            }
-
-            if (siteInfo.IsRoot == false)
-            {
-                builder.Append($@"<a href=""{PageSiteDelete.GetRedirectUrl(siteId)}"" class=""m-r-5"">删除</a>");
+                builder.Append($@"<a href=""javascript:;"" onClick=""{ModalChangeSiteType.GetOpenWindowString(siteId)}"" class=""m-r-5"">{(site.Root ? "转移到子目录" : "转移到根目录")}</a>");
             }
 
             ltlActions.Text = builder.ToString();
         }
 
-        private static string GetSiteNameHtml(SiteInfo siteInfo)
+        private static string GetSiteNameHtml(Site site)
         {
-            var level = SiteManager.GetSiteLevel(siteInfo.Id);
+            var level = SiteManager.GetSiteLevelAsync(site.Id).GetAwaiter().GetResult();
             string psLogo;
-            if (siteInfo.IsRoot)
+            if (site.Root)
             {
                 psLogo = "siteHQ.gif";
             }
@@ -99,7 +93,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             return
-                $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;<a href='{siteInfo.Additional.WebUrl}' target='_blank' title='{siteInfo.SiteName}'>{StringUtils.MaxLengthText(siteInfo.SiteName, 20)}</a>";
+                $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;<a href='{site.Additional.WebUrl}' target='_blank' title='{site.SiteName}'>{StringUtils.MaxLengthText(site.SiteName, 20)}</a>";
         }
     }
 }

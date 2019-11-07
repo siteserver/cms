@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -18,7 +19,7 @@ namespace SiteServer.API.Controllers.Home
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
@@ -35,8 +36,8 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
@@ -44,12 +45,12 @@ namespace SiteServer.API.Controllers.Home
                 var retVal = new List<Dictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
                     dict["checkState"] =
-                        CheckManager.GetCheckState(siteInfo, contentInfo);
+                        CheckManager.GetCheckState(site, contentInfo);
                     retVal.Add(dict);
                 }
 
@@ -66,7 +67,7 @@ namespace SiteServer.API.Controllers.Home
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -84,29 +85,29 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 if (!isRetainFiles)
                 {
-                    DeleteManager.DeleteContents(siteInfo, channelId, contentIdList);
+                    DeleteManager.DeleteContents(site, channelId, contentIdList);
                 }
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var tableName = ChannelManager.GetTableName(site, channelInfo);
 
                 if (contentIdList.Count == 1)
                 {
                     var contentId = contentIdList[0];
                     var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
-                    request.AddSiteLog(siteId, channelId, contentId, "删除内容",
+                    await request.AddSiteLogAsync(siteId, channelId, contentId, "删除内容",
                         $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容标题:{contentTitle}");
                 }
                 else
                 {
-                    request.AddSiteLog(siteId, "批量删除内容",
+                    await request.AddSiteLogAsync(siteId, "批量删除内容",
                         $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容条数:{contentIdList.Count}");
                 }
 

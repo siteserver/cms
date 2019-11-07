@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -17,7 +18,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         private const string RouteTableActionsRemoveCache = "{tableName}/actions/removeCache";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetTables()
+        public async Task<IHttpActionResult> GetTables()
         {
             try
             {
@@ -30,16 +31,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 var nameDict = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
-                foreach (var siteInfo in SiteManager.GetSiteInfoList())
+                foreach (var site in await SiteManager.GetSiteListAsync())
                 {
-                    if (nameDict.ContainsKey(siteInfo.TableName))
+                    if (nameDict.ContainsKey(site.TableName))
                     {
-                        var list = nameDict[siteInfo.TableName];
-                        list.Add(siteInfo.SiteName);
+                        var list = nameDict[site.TableName];
+                        list.Add(site.SiteName);
                     }
                     else
                     {
-                        nameDict[siteInfo.TableName] = new List<string> { siteInfo.SiteName };
+                        nameDict[site.TableName] = new List<string> { site.SiteName };
                     }
                 }
 

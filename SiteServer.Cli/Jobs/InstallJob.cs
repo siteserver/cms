@@ -110,7 +110,7 @@ namespace SiteServer.Cli.Jobs
 
             DataProvider.Reset();
 
-            SystemManager.InstallDatabase(_userName, _password);
+            await SystemManager.InstallDatabaseAsync(_userName, _password);
 
             await Console.Out.WriteLineAsync("恭喜，系统安装成功！");
         }

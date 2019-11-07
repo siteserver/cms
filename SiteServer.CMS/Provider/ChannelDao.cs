@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -9,6 +10,7 @@ using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -218,7 +220,7 @@ namespace SiteServer.CMS.Provider
         private const string ParmDescription = "@Description";
         private const string ParmExtendValues = "@ExtendValues";
 
-        private void InsertChannelInfoWithTrans(ChannelInfo parentChannelInfo, ChannelInfo channelInfo, IDbTransaction trans)
+        private void InsertChannelInfo(ChannelInfo parentChannelInfo, ChannelInfo channelInfo)
         {
             if (parentChannelInfo != null)
             {
@@ -280,15 +282,15 @@ namespace SiteServer.CMS.Provider
             {
                 string sqlString =
                     $"UPDATE siteserver_Channel SET {SqlUtils.ToPlusSqlString("Taxis")} WHERE (Taxis >= {channelInfo.Taxis}) AND (SiteId = {channelInfo.SiteId})";
-                ExecuteNonQuery(trans, sqlString);
+                ExecuteNonQuery(sqlString);
             }
-            channelInfo.Id = ExecuteNonQueryAndReturnId(TableName, nameof(ChannelInfo.Id), trans, sqlInsertNode, insertParms);
+            channelInfo.Id = ExecuteNonQueryAndReturnId(TableName, nameof(ChannelInfo.Id), sqlInsertNode, insertParms);
 
             if (!string.IsNullOrEmpty(channelInfo.ParentsPath))
             {
                 var sqlString = $"UPDATE siteserver_Channel SET {SqlUtils.ToPlusSqlString("ChildrenCount")} WHERE Id IN ({channelInfo.ParentsPath})";
 
-                ExecuteNonQuery(trans, sqlString);
+                ExecuteNonQuery(sqlString);
             }
 
             var sqlUpdateIsLastNode = "UPDATE siteserver_Channel SET IsLastNode = @IsLastNode WHERE ParentId = @ParentId";
@@ -299,7 +301,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmParentId, DataType.Integer, channelInfo.ParentId)
             };
 
-            ExecuteNonQuery(trans, sqlUpdateIsLastNode, parms);
+            ExecuteNonQuery(sqlUpdateIsLastNode, parms);
 
             //sqlUpdateIsLastNode =
             //    $"UPDATE siteserver_Channel SET IsLastNode = '{true}' WHERE (Id IN (SELECT TOP 1 Id FROM siteserver_Channel WHERE ParentId = {channelInfo.ParentId} ORDER BY Taxis DESC))";
@@ -307,7 +309,7 @@ namespace SiteServer.CMS.Provider
                 $"UPDATE siteserver_Channel SET IsLastNode = '{true}' WHERE (Id IN ({SqlUtils.ToInTopSqlString(TableName, "Id", $"WHERE ParentId = {channelInfo.ParentId}", "ORDER BY Taxis DESC", 1)}))";
 
 
-            ExecuteNonQuery(trans, sqlUpdateIsLastNode);
+            ExecuteNonQuery(sqlUpdateIsLastNode);
 
             //OwningIdCache.IsChanged = true;
             ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
@@ -602,24 +604,7 @@ namespace SiteServer.CMS.Provider
 
             var parentChannelInfo = ChannelManager.GetChannelInfo(siteId, parentId);
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        InsertChannelInfoWithTrans(parentChannelInfo, channelInfo, trans);
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
+            InsertChannelInfo(parentChannelInfo, channelInfo);
 
             return channelInfo.Id;
 
@@ -629,26 +614,9 @@ namespace SiteServer.CMS.Provider
         {
             if (channelInfo.SiteId > 0 && channelInfo.ParentId == 0) return 0;
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        var parentChannelInfo = ChannelManager.GetChannelInfo(channelInfo.SiteId, channelInfo.ParentId);
+            var parentChannelInfo = ChannelManager.GetChannelInfo(channelInfo.SiteId, channelInfo.ParentId);
 
-                        InsertChannelInfoWithTrans(parentChannelInfo, channelInfo, trans);
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
+            InsertChannelInfo(parentChannelInfo, channelInfo);
 
             return channelInfo.Id;
         }
@@ -656,39 +624,22 @@ namespace SiteServer.CMS.Provider
         /// <summary>
         /// 添加后台发布节点
         /// </summary>
-        public int InsertSiteInfo(ChannelInfo channelInfo, SiteInfo siteInfo, string administratorName)
+        public async Task<int> InsertSiteAsync(ChannelInfo channelInfo, Site site, string administratorName)
         {
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        InsertChannelInfoWithTrans(null, channelInfo, trans);
+            InsertChannelInfo(null, channelInfo);
 
-                        siteInfo.Id = channelInfo.Id;
+            site.Id = channelInfo.Id;
 
-                        DataProvider.SiteDao.InsertWithTrans(siteInfo, trans);
+            await DataProvider.SiteDao.InsertAsync(site);
 
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-
-            var adminInfo = AdminManager.GetAdminInfoByUserName(administratorName);
-            DataProvider.AdministratorDao.UpdateSiteId(adminInfo, channelInfo.Id);
+            var adminInfo = await AdminManager.GetAdminInfoByUserNameAsync(administratorName);
+            await DataProvider.AdministratorDao.UpdateSiteIdAsync(adminInfo, channelInfo.Id);
 
             var sqlString =
                 $"UPDATE siteserver_Channel SET SiteId = {channelInfo.Id} WHERE Id = {channelInfo.Id}";
             ExecuteNonQuery(sqlString);
 
-            DataProvider.TemplateDao.CreateDefaultTemplateInfo(channelInfo.Id, administratorName);
+            await DataProvider.TemplateDao.CreateDefaultTemplateInfoAsync(channelInfo.Id, administratorName);
             return channelInfo.Id;
         }
 
@@ -804,13 +755,13 @@ namespace SiteServer.CMS.Provider
             ChannelManager.UpdateCache(siteId, channelInfo);
         }
 
-        public void Delete(int siteId, int channelId)
+        public async Task DeleteAsync(int siteId, int channelId)
         {
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             if (channelInfo == null) return;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var tableName = ChannelManager.GetTableName(site, channelInfo);
             var idList = new List<int>();
             if (channelInfo.ChildrenCount > 0)
             {
@@ -853,13 +804,13 @@ namespace SiteServer.CMS.Provider
 
             foreach (var channelIdDeleted in idList)
             {
-                DataProvider.ContentDao.UpdateTrashContentsByChannelId(siteInfo.Id, channelIdDeleted, tableName);
+                DataProvider.ContentDao.UpdateTrashContentsByChannelId(site.Id, channelIdDeleted, tableName);
             }
-            //DataProvider.ContentDao.DeleteContentsByDeletedChannelIdList(trans, siteInfo, idList);
+            //DataProvider.ContentDao.DeleteContentsByDeletedChannelIdList(trans, site, idList);
 
             if (channelInfo.ParentId == 0)
             {
-                DataProvider.SiteDao.Delete(channelInfo.Id);
+                await DataProvider.SiteDao.DeleteAsync(channelInfo.Id);
             }
             else
             {

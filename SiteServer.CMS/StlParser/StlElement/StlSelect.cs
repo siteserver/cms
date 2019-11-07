@@ -9,6 +9,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
+using System.Threading.Tasks;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -219,10 +220,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, selectControl, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, where, queryString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, displayTitle, openWin);
+            return ParseImplAsync(pageInfo, contextInfo, selectControl, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, where, queryString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, displayTitle, openWin).GetAwaiter().GetResult();
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlSelect selectControl, bool isChannel, string channelIndex, string channelName, int upLevel, int topLevel, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string order, int totalNum, int titleWordNum, string where, string queryString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string displayTitle, bool openWin)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, HtmlSelect selectControl, bool isChannel, string channelIndex, string channelName, int upLevel, int topLevel, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string order, int totalNum, int titleWordNum, string where, string queryString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string displayTitle, bool openWin)
         {
             EScopeType scopeType;
             if (!string.IsNullOrEmpty(scopeTypeString))
@@ -285,7 +286,7 @@ selObj.selectedIndex=0;
                         if (nodeInfo != null)
                         {
                             var title = StringUtils.MaxLengthText(nodeInfo.ChannelName, titleWordNum);
-                            var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal);
+                            var url = await PageUtility.GetChannelUrlAsync(pageInfo.Site, nodeInfo, pageInfo.IsLocal);
                             if (!string.IsNullOrEmpty(queryString))
                             {
                                 url = PageUtils.AddQueryString(url, queryString);
@@ -298,15 +299,15 @@ selObj.selectedIndex=0;
             }
             else
             {
-                var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
+                var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.Site, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
 
                 if (minContentInfoList != null)
                 {
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                         var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
-                        var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false);
+                        var url = await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, false);
                         if (!string.IsNullOrEmpty(queryString))
                         {
                             url = PageUtils.AddQueryString(url, queryString);
@@ -319,7 +320,7 @@ selObj.selectedIndex=0;
                     //    if (contentInfo != null)
                     //    {
                     //        var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
-                    //        var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo);
+                    //        var url = PageUtility.GetContentUrl(pageInfo.Site, contentInfo);
                     //        if (!string.IsNullOrEmpty(queryString))
                     //        {
                     //            url = PageUtils.AddQueryString(url, queryString);

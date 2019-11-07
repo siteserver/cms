@@ -6,22 +6,23 @@ using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
     public static class InputParserUtility
     {
-        public static string GetContentByTableStyle(string content, SiteInfo siteInfo, TableStyleInfo styleInfo)
+        public static string GetContentByTableStyle(string content, Site site, TableStyleInfo styleInfo)
         {
             if (!string.IsNullOrEmpty(content))
             {
-                return GetContentByTableStyle(content, ",", siteInfo, styleInfo, string.Empty, null, string.Empty, false);
+                return GetContentByTableStyle(content, ",", site, styleInfo, string.Empty, null, string.Empty, false);
             }
             return string.Empty;
         }
 
-        public static string GetContentByTableStyle(string content, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static string GetContentByTableStyle(string content, string separator, Site site, TableStyleInfo styleInfo, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var parsedContent = content;
 
@@ -83,25 +84,25 @@ namespace SiteServer.CMS.Core
             //}
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = ContentUtility.TextEditorContentDecode(siteInfo, parsedContent, true);
+                parsedContent = ContentUtility.TextEditorContentDecode(site, parsedContent, true);
             }
             else if (inputType == InputType.Image)
             {
-                parsedContent = GetImageOrFlashHtml(siteInfo, parsedContent, attributes, isStlEntity);
+                parsedContent = GetImageOrFlashHtml(site, parsedContent, attributes, isStlEntity);
             }
             else if (inputType == InputType.Video)
             {
-                parsedContent = GetVideoHtml(siteInfo, parsedContent, attributes, isStlEntity);
+                parsedContent = GetVideoHtml(site, parsedContent, attributes, isStlEntity);
             }
             else if (inputType == InputType.File)
             {
-                parsedContent = GetFileHtmlWithoutCount(siteInfo, parsedContent, attributes, innerHtml, isStlEntity, false, false);
+                parsedContent = GetFileHtmlWithoutCount(site, parsedContent, attributes, innerHtml, isStlEntity, false, false);
             }
 
             return parsedContent;
         }
 
-        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, Site site, TableStyleInfo styleInfo, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var value = contentInfo.GetString(styleInfo.AttributeName);
             var parsedContent = string.Empty;
@@ -152,13 +153,13 @@ namespace SiteServer.CMS.Core
             }
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = ContentUtility.TextEditorContentDecode(siteInfo, value, true);
+                parsedContent = ContentUtility.TextEditorContentDecode(site, value, true);
             }
             else if (inputType == InputType.Image)
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetImageOrFlashHtml(siteInfo, value, attributes, isStlEntity);
+                    parsedContent = GetImageOrFlashHtml(site, value, attributes, isStlEntity);
                 }
                 else
                 {
@@ -171,7 +172,7 @@ namespace SiteServer.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = GetImageOrFlashHtml(siteInfo, extendValue, attributes, isStlEntity);
+                                parsedContent = GetImageOrFlashHtml(site, extendValue, attributes, isStlEntity);
                                 break;
                             }
                             index++;
@@ -183,7 +184,7 @@ namespace SiteServer.CMS.Core
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetVideoHtml(siteInfo, value, attributes, isStlEntity);
+                    parsedContent = GetVideoHtml(site, value, attributes, isStlEntity);
                 }
                 else
                 {
@@ -196,7 +197,7 @@ namespace SiteServer.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = GetVideoHtml(siteInfo, extendValue, attributes, isStlEntity);
+                                parsedContent = GetVideoHtml(site, extendValue, attributes, isStlEntity);
                                 break;
                             }
                             index++;
@@ -208,7 +209,7 @@ namespace SiteServer.CMS.Core
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetFileHtmlWithoutCount(siteInfo, value, attributes, innerHtml, isStlEntity, false, false);
+                    parsedContent = GetFileHtmlWithoutCount(site, value, attributes, innerHtml, isStlEntity, false, false);
                 }
                 else
                 {
@@ -221,7 +222,7 @@ namespace SiteServer.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = GetFileHtmlWithoutCount(siteInfo, extendValue, attributes, innerHtml, isStlEntity, false, false);
+                                parsedContent = GetFileHtmlWithoutCount(site, extendValue, attributes, innerHtml, isStlEntity, false, false);
                                 break;
                             }
                             index++;
@@ -237,12 +238,12 @@ namespace SiteServer.CMS.Core
             return parsedContent;
         }
 
-        public static string GetImageOrFlashHtml(SiteInfo siteInfo, string imageUrl, NameValueCollection attributes, bool isStlEntity)
+        public static string GetImageOrFlashHtml(Site site, string imageUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(imageUrl))
             {
-                imageUrl = PageUtility.ParseNavigationUrl(siteInfo, imageUrl, false);
+                imageUrl = PageUtility.ParseNavigationUrl(site, imageUrl, false);
                 if (isStlEntity)
                 {
                     retVal = imageUrl;
@@ -298,12 +299,12 @@ namespace SiteServer.CMS.Core
             return retVal;
         }
 
-        public static string GetVideoHtml(SiteInfo siteInfo, string videoUrl, NameValueCollection attributes, bool isStlEntity)
+        public static string GetVideoHtml(Site site, string videoUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(videoUrl))
             {
-                videoUrl = PageUtility.ParseNavigationUrl(siteInfo, videoUrl, false);
+                videoUrl = PageUtility.ParseNavigationUrl(site, videoUrl, false);
                 if (isStlEntity)
                 {
                     retVal = videoUrl;
@@ -319,21 +320,21 @@ namespace SiteServer.CMS.Core
             return retVal;
         }
 
-        public static string GetFileHtmlWithCount(SiteInfo siteInfo, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public static string GetFileHtmlWithCount(Site site, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
-            if (siteInfo == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
+            if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId, contentId,
+                retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, site.Id, channelId, contentId,
                     fileUrl);
             }
             else
             {
                 var stlAnchor = new HtmlAnchor();
                 ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId,
+                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, site.Id, channelId,
                     contentId, fileUrl);
                 stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml)
                     ? PageUtils.GetFileNameFromUrl(fileUrl)
@@ -353,20 +354,20 @@ namespace SiteServer.CMS.Core
             return retVal;
         }
 
-        public static string GetFileHtmlWithoutCount(SiteInfo siteInfo, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public static string GetFileHtmlWithoutCount(Site site, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
-            if (siteInfo == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
+            if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
+                retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, site.Id, fileUrl);
             }
             else
             {
                 var stlAnchor = new HtmlAnchor();
                 ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
+                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, site.Id, fileUrl);
                 stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                 if (isLower)

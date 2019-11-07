@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -115,7 +117,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -129,7 +131,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var title = request.GetPostString("title");
                 var url = request.GetPostString("url");
                 var fileNames = TranslateUtils.StringCollectionToStringList(request.GetPostString("fileNames"));
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = await SiteManager.GetSiteAsync(siteId);
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(siteId,
@@ -155,8 +157,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             return BadRequest("专题修改失败，专题访问地址已存在！");
                         }
 
-                        oldDirectoryPath = SpecialManager.GetSpecialDirectoryPath(siteInfo, specialInfo.Url);
-                        newDirectoryPath = SpecialManager.GetSpecialDirectoryPath(siteInfo, url);
+                        oldDirectoryPath = SpecialManager.GetSpecialDirectoryPath(site, specialInfo.Url);
+                        newDirectoryPath = SpecialManager.GetSpecialDirectoryPath(site, url);
                     }
 
                     specialInfo.Title = title;
@@ -172,7 +174,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 {
                     var specialInfo = SpecialManager.GetSpecialInfo(siteId, specialId);
 
-                    var directoryPath = SpecialManager.GetSpecialDirectoryPath(siteInfo, specialInfo.Url);
+                    var directoryPath = SpecialManager.GetSpecialDirectoryPath(site, specialInfo.Url);
                     var srcDirectoryPath = SpecialManager.GetSpecialSrcDirectoryPath(directoryPath);
                     DirectoryUtils.CreateDirectoryIfNotExists(srcDirectoryPath);
 
@@ -205,7 +207,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         return BadRequest("专题添加失败，专题访问地址已存在！");
                     }
 
-                    var directoryPath = SpecialManager.GetSpecialDirectoryPath(siteInfo, url);
+                    var directoryPath = SpecialManager.GetSpecialDirectoryPath(site, url);
                     var srcDirectoryPath = SpecialManager.GetSpecialSrcDirectoryPath(directoryPath);
                     DirectoryUtils.CreateDirectoryIfNotExists(srcDirectoryPath);
 
@@ -236,7 +238,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         AddDate = DateTime.Now
                     });
 
-                    request.AddSiteLog(siteId, "新建专题", $"专题名称:{title}");
+                    await request.AddSiteLogAsync(siteId, "新建专题", $"专题名称:{title}");
                 }
 
                 CreateManager.CreateSpecial(siteId, specialId);

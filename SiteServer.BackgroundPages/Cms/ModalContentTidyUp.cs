@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var channelId = AuthRequest.GetQueryInt("channelId");
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-            _tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
+            _tableName = ChannelManager.GetTableName(Site, channelInfo);
 
             DataProvider.ContentDao.UpdateArrangeTaxis(_tableName, channelId, DdlAttributeName.SelectedValue, TranslateUtils.ToBool(DdlIsDesc.SelectedValue));
 

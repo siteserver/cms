@@ -2,6 +2,7 @@
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages
@@ -46,15 +47,15 @@ namespace SiteServer.BackgroundPages
             }
         }
 
-        private SiteInfo _siteInfo;
+        private Site _site;
 
-	    public SiteInfo SiteInfo
+	    public Site Site
 	    {
 	        get
 	        {
-	            if (_siteInfo != null) return _siteInfo;
-	            _siteInfo = SiteManager.GetSiteInfo(SiteId);
-	            return _siteInfo;
+	            if (_site != null) return _site;
+	            _site = SiteManager.GetSiteAsync(SiteId).GetAwaiter().GetResult();
+	            return _site;
 	        }
 	    }
 

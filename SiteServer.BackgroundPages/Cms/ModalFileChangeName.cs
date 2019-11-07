@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "RootPath");
 
             _rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
-            _directoryPath = PathUtility.MapPath(SiteInfo, _rootPath);
+            _directoryPath = PathUtility.MapPath(Site, _rootPath);
 
 			if (!Page.IsPostBack)
 			{
@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             FileUtils.MoveFile(pathSource, path, true);
             FileUtils.DeleteFileIfExists(pathSource);
 
-            AuthRequest.AddSiteLog(SiteId, "修改文件名", $"文件名:{TbFileName.Text}");
+            AuthRequest.AddSiteLogAsync(SiteId, "修改文件名", $"文件名:{TbFileName.Text}").GetAwaiter().GetResult();
             //JsUtils.SubModal.CloseModalPageWithoutRefresh(Page);
             LayerUtils.CloseAndRedirect(Page, RedirectUrl());
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -49,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         }
 
         [HttpDelete, Route(RoutePluginId)]
-        public IHttpActionResult Delete(string pluginId)
+        public async Task<IHttpActionResult> Delete(string pluginId)
         {
             try
             {
@@ -61,7 +62,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                 }
 
                 PluginManager.Delete(pluginId);
-                request.AddAdminLog("删除插件", $"插件:{pluginId}");
+                await request.AddAdminLogAsync("删除插件", $"插件:{pluginId}");
 
                 CacheUtils.ClearAll();
                 CacheDbUtils.Clear();
@@ -98,7 +99,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         }
 
         [HttpPost, Route(RoutePluginIdEnable)]
-        public IHttpActionResult Enable(string pluginId)
+        public async Task<IHttpActionResult> Enable(string pluginId)
         {
             try
             {
@@ -116,7 +117,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                     DataProvider.PluginDao.UpdateIsDisabled(pluginId, pluginInfo.IsDisabled);
                     PluginManager.ClearCache();
 
-                    request.AddAdminLog(!pluginInfo.IsDisabled ? "禁用插件" : "启用插件", $"插件:{pluginId}");
+                    await request.AddAdminLogAsync(!pluginInfo.IsDisabled ? "禁用插件" : "启用插件", $"插件:{pluginId}");
                 }
 
                 CacheUtils.ClearAll();

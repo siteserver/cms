@@ -67,22 +67,22 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(Site, fileExtName);
                 if (!string.IsNullOrEmpty(_currentRootPath))
                 {
-                    localDirectoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
+                    localDirectoryPath = PathUtility.MapPath(Site, _currentRootPath);
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
-                var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
+                var localFileName = PathUtility.GetUploadFileName(Site, filePath);
 
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-                if (!PathUtility.IsImageExtenstionAllowed(SiteInfo, fileExtName))
+                if (!PathUtility.IsImageExtenstionAllowed(Site, fileExtName))
                 {
                     FailMessage("上传失败，上传图片格式不正确！");
                     return;
                 }
-                if (!PathUtility.IsImageSizeAllowed(SiteInfo, HifUpload.PostedFile.ContentLength))
+                if (!PathUtility.IsImageSizeAllowed(Site, HifUpload.PostedFile.ContentLength))
                 {
                     FailMessage("上传失败，上传图片超出规定文件大小！");
                     return;
@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (isImage && _isNeedWaterMark)
                 {
-                    FileUtility.AddWaterMark(SiteInfo, localFilePath);
+                    FileUtility.AddWaterMark(Site, localFilePath);
                 }
 
                 if (string.IsNullOrEmpty(_textBoxClientId))
@@ -103,8 +103,8 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var imageUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
-                    var textBoxUrl = PageUtility.GetVirtualUrl(SiteInfo, imageUrl);
+                    var imageUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localFilePath, true).GetAwaiter().GetResult();
+                    var textBoxUrl = PageUtility.GetVirtualUrl(Site, imageUrl);
 
                     LtlScript.Text = $@"
 <script type=""text/javascript"" language=""javascript"">

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
@@ -18,7 +19,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         private const string RouteUpload = "upload";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
@@ -31,15 +32,15 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                AdministratorInfo adminInfo;
+                Administrator adminInfo;
                 if (userId > 0)
                 {
-                    adminInfo = AdminManager.GetAdminInfoByUserId(userId);
+                    adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(userId);
                     if (adminInfo == null) return NotFound();
                 }
                 else
                 {
-                    adminInfo = new AdministratorInfo();
+                    adminInfo = new Administrator();
                 }
 
                 return Ok(new
@@ -55,14 +56,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(RouteUpload)]
-        public IHttpActionResult Upload()
+        public async Task<IHttpActionResult> Upload()
         {
             try
             {
                 var request = new AuthenticatedRequest();
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
-                var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
+                var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
@@ -107,7 +108,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -120,15 +121,15 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                AdministratorInfo adminInfo;
+                Administrator adminInfo;
                 if (userId > 0)
                 {
-                    adminInfo = AdminManager.GetAdminInfoByUserId(userId);
+                    adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(userId);
                     if (adminInfo == null) return NotFound();
                 }
                 else
                 {
-                    adminInfo = new AdministratorInfo();
+                    adminInfo = new Administrator();
                 }
 
                 var userName = request.GetPostString("userName");
@@ -141,18 +142,17 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 if (adminInfo.Id == 0)
                 {
                     adminInfo.UserName = userName;
-                    adminInfo.Password = password;
                     adminInfo.CreatorUserName = request.AdminName;
                     adminInfo.CreationDate = DateTime.Now;
                 }
                 else
                 {
-                    if (adminInfo.Mobile != mobile && !string.IsNullOrEmpty(mobile) && DataProvider.AdministratorDao.IsMobileExists(mobile))
+                    if (adminInfo.Mobile != mobile && !string.IsNullOrEmpty(mobile) && await DataProvider.AdministratorDao.IsMobileExistsAsync(mobile))
                     {
                         return BadRequest("资料修改失败，手机号码已存在");
                     }
 
-                    if (adminInfo.Email != email && !string.IsNullOrEmpty(email) && DataProvider.AdministratorDao.IsEmailExists(email))
+                    if (adminInfo.Email != email && !string.IsNullOrEmpty(email) && await DataProvider.AdministratorDao.IsEmailExistsAsync(email))
                     {
                         return BadRequest("资料修改失败，邮箱地址已存在");
                     }
@@ -165,16 +165,21 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 if (adminInfo.Id == 0)
                 {
-                    if (!DataProvider.AdministratorDao.Insert(adminInfo, out var errorMessage))
+                    var valid = await DataProvider.AdministratorDao.InsertAsync(adminInfo, password);
+                    if (!valid.IsValid)
                     {
-                        return BadRequest($"管理员添加失败：{errorMessage}");
+                        return BadRequest($"管理员添加失败：{valid.ErrorMessage}");
                     }
-                    request.AddAdminLog("添加管理员", $"管理员:{adminInfo.UserName}");
+                    await request.AddAdminLogAsync("添加管理员", $"管理员:{adminInfo.UserName}");
                 }
                 else
                 {
-                    DataProvider.AdministratorDao.Update(adminInfo);
-                    request.AddAdminLog("修改管理员属性", $"管理员:{adminInfo.UserName}");
+                    var valid = await DataProvider.AdministratorDao.UpdateAsync(adminInfo);
+                    if (!valid.IsValid)
+                    {
+                        return BadRequest($"管理员修改失败：{valid.ErrorMessage}");
+                    }
+                    await request.AddAdminLogAsync("修改管理员属性", $"管理员:{adminInfo.UserName}");
                 }
 
                 return Ok(new

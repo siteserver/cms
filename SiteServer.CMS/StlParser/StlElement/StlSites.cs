@@ -3,10 +3,12 @@ using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using System.Threading.Tasks;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -27,11 +29,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             var siteName = listInfo.Others.Get(SiteName);
             var siteDir = listInfo.Others.Get(SiteDir);
 
-            var dataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString);
+            var dataSource = StlDataUtility.GetSitesDataSourceAsync(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString).GetAwaiter().GetResult();
 
             if (contextInfo.IsStlEntity)
             {
-                return ParseEntity(dataSource);
+                return ParseEntityAsync(dataSource).GetAwaiter().GetResult();
             }
 
             return ParseElement(pageInfo, contextInfo, listInfo, dataSource);
@@ -112,22 +114,22 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        private static List<SiteInfo> ParseEntity(IDataReader dataSource)
+        private static async Task<List<Site>> ParseEntityAsync(IDataReader dataSource)
         {
-            var siteInfoList = new List<SiteInfo>();
+            var siteList = new List<Site>();
 
             while (dataSource.Read())
             {
                 var siteId = dataSource.GetInt32(0);
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = await SiteManager.GetSiteAsync(siteId);
 
-                if (siteInfo != null)
+                if (site != null)
                 {
-                    siteInfoList.Add(siteInfo);
+                    siteList.Add(site);
                 }
             }
 
-            return siteInfoList;
+            return siteList;
         }
     }
 }

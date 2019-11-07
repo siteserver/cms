@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
-            AuthRequest.AddAdminLog("修改API访问地址");
+            AuthRequest.AddAdminLogAsync("修改API访问地址").GetAwaiter().GetResult();
             SuccessUpdateMessage();
         }
     }

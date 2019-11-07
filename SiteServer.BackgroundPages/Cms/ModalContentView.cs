@@ -8,6 +8,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -55,11 +56,11 @@ namespace SiteServer.BackgroundPages.Cms
             _contentId = AuthRequest.GetQueryInt("id");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            _contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, _contentId);
+            _contentInfo = ContentManager.GetContentInfo(Site, channelInfo, _contentId);
 
             if (IsPostBack) return;
 
-            var styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, channelInfo);
+            var styleInfoList = TableStyleManager.GetContentStyleInfoList(Site, channelInfo);
 
             RptContents.DataSource = styleInfoList;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
@@ -81,27 +82,27 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             LtlLastEditDate.Text = DateUtils.GetDateAndTimeString(_contentInfo.LastEditDate);
-            LtlAddUserName.Text = AdminManager.GetDisplayName(_contentInfo.AddUserName);
-            LtlLastEditUserName.Text = AdminManager.GetDisplayName(_contentInfo.LastEditUserName);
+            LtlAddUserName.Text = AdminManager.GetDisplayNameAsync(_contentInfo.AddUserName).GetAwaiter().GetResult();
+            LtlLastEditUserName.Text = AdminManager.GetDisplayNameAsync(_contentInfo.LastEditUserName).GetAwaiter().GetResult();
 
-            LtlContentLevel.Text = CheckManager.GetCheckState(SiteInfo, _contentInfo);
+            LtlContentLevel.Text = CheckManager.GetCheckState(Site, _contentInfo);
 
             if (_contentInfo.ReferenceId > 0 && _contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
                 var referenceSiteId = DataProvider.ChannelDao.GetSiteId(_contentInfo.SourceId);
-                var referenceSiteInfo = SiteManager.GetSiteInfo(referenceSiteId);
-                var referenceContentInfo = ContentManager.GetContentInfo(referenceSiteInfo, _contentInfo.SourceId, _contentInfo.ReferenceId);
+                var referenceSite = SiteManager.GetSiteAsync(referenceSiteId).GetAwaiter().GetResult();
+                var referenceContentInfo = ContentManager.GetContentInfo(referenceSite, _contentInfo.SourceId, _contentInfo.ReferenceId);
 
                 if (referenceContentInfo != null)
                 {
-                    var pageUrl = PageUtility.GetContentUrl(referenceSiteInfo, referenceContentInfo, true);
+                    var pageUrl = PageUtility.GetContentUrlAsync(referenceSite, referenceContentInfo, true).GetAwaiter().GetResult();
                     var referenceNodeInfo = ChannelManager.GetChannelInfo(referenceContentInfo.SiteId, referenceContentInfo.ChannelId);
                     var addEditUrl =
-                        WebUtils.GetContentAddEditUrl(referenceSiteInfo.Id,
+                        WebUtils.GetContentAddEditUrl(referenceSite.Id,
                             referenceNodeInfo.Id, _contentInfo.ReferenceId, AuthRequest.GetQueryString("ReturnUrl"));
 
                     LtlScripts.Text += $@"
-<div class=""tips"">此内容为对内容 （站点：{referenceSiteInfo.SiteName},栏目：{referenceNodeInfo.ChannelName}）“<a href=""{pageUrl}"" target=""_blank"">{_contentInfo.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";
+<div class=""tips"">此内容为对内容 （站点：{referenceSite.SiteName},栏目：{referenceNodeInfo.ChannelName}）“<a href=""{pageUrl}"" target=""_blank"">{_contentInfo.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";
                 }
             }
         }
@@ -112,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var styleInfo = (TableStyleInfo)e.Item.DataItem;
 
-            var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.GetString(styleInfo.AttributeName), SiteInfo, styleInfo);
+            var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.GetString(styleInfo.AttributeName), Site, styleInfo);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 

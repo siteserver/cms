@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -15,7 +16,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
@@ -31,7 +32,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = await SiteManager.GetSiteAsync(siteId);
                 var specialInfo = SpecialManager.GetSpecialInfo(siteId, specialId);
 
                 if (specialInfo == null)
@@ -39,8 +40,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return BadRequest("专题不存在！");
                 }
 
-                var specialUrl = PageUtility.ParseNavigationUrl(siteInfo, $"@/{StringUtils.TrimSlash(specialInfo.Url)}/", true);
-                var filePath = PathUtils.Combine(SpecialManager.GetSpecialDirectoryPath(siteInfo, specialInfo.Url), "index.html");
+                var specialUrl = PageUtility.ParseNavigationUrl(site, $"@/{StringUtils.TrimSlash(specialInfo.Url)}/", true);
+                var filePath = PathUtils.Combine(SpecialManager.GetSpecialDirectoryPath(site, specialInfo.Url), "index.html");
                 var html = FileUtils.ReadText(filePath, Encoding.UTF8);
 
                 return Ok(new

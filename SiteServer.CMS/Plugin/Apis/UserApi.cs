@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 using SiteServer.Plugin;
 
@@ -18,74 +18,79 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public IUserInfo NewInstance()
         {
-            return new UserInfo();
+            return new User();
         }
 
         public IUserInfo GetUserInfoByUserId(int userId)
         {
-            return UserManager.GetUserInfoByUserId(userId);
+            return UserManager.GetUserByUserIdAsync(userId).GetAwaiter().GetResult();
         }
 
         public IUserInfo GetUserInfoByUserName(string userName)
         {
-            return UserManager.GetUserInfoByUserName(userName);
+            return UserManager.GetUserByUserNameAsync(userName).GetAwaiter().GetResult();
         }
 
         public IUserInfo GetUserInfoByEmail(string email)
         {
-            return UserManager.GetUserInfoByEmail(email);
+            return UserManager.GetUserByEmailAsync(email).GetAwaiter().GetResult();
         }
 
         public IUserInfo GetUserInfoByMobile(string mobile)
         {
-            return UserManager.GetUserInfoByMobile(mobile);
+            return UserManager.GetUserByMobileAsync(mobile).GetAwaiter().GetResult();
         }
 
         public IUserInfo GetUserInfoByAccount(string account)
         {
-            return UserManager.GetUserInfoByAccount(account);
+            return UserManager.GetUserByAccountAsync(account).GetAwaiter().GetResult();
         }
 
         public bool IsUserNameExists(string userName)
         {
-            return DataProvider.UserDao.IsUserNameExists(userName);
+            return DataProvider.UserDao.IsUserNameExistsAsync(userName).GetAwaiter().GetResult();
         }
 
         public bool IsEmailExists(string email)
         {
-            return DataProvider.UserDao.IsEmailExists(email);
+            return DataProvider.UserDao.IsEmailExistsAsync(email).GetAwaiter().GetResult();
         }
 
         public bool IsMobileExists(string mobile)
         {
-            return DataProvider.UserDao.IsMobileExists(mobile);
+            return DataProvider.UserDao.IsMobileExistsAsync(mobile).GetAwaiter().GetResult();
         }
 
-        public bool Insert(IUserInfo userInfo, string password, out string errorMessage)
+        public bool Insert(IUserInfo user, string password, out string errorMessage)
         {
-            var userId = DataProvider.UserDao.Insert(userInfo as UserInfo, password, PageUtils.GetIpAddress(), out errorMessage);
-            return userId > 0;
+            var valid = DataProvider.UserDao.InsertAsync(user as User, password, PageUtils.GetIpAddress()).GetAwaiter().GetResult();
+            errorMessage = valid.ErrorMessage;
+            return valid.UserId > 0;
         }
 
         public bool Validate(string account, string password, out string userName, out string errorMessage)
         {
-            var userInfo = DataProvider.UserDao.Validate(account, password, false, out userName, out errorMessage);
-            return userInfo != null;
+            var valid = DataProvider.UserDao.ValidateAsync(account, password, false).GetAwaiter().GetResult();
+            userName = valid.UserName;
+            errorMessage = valid.ErrorMessage;
+            return valid.User != null;
         }
 
         public bool ChangePassword(string userName, string password, out string errorMessage)
         {
-            return DataProvider.UserDao.ChangePassword(userName, password, out errorMessage);
+            var valid = DataProvider.UserDao.ChangePasswordAsync(userName, password).GetAwaiter().GetResult();
+            errorMessage = valid.ErrorMessage;
+            return valid.IsValid;
         }
 
         public void Update(IUserInfo userInfo)
         {
-            DataProvider.UserDao.Update(userInfo as UserInfo);
+            DataProvider.UserDao.UpdateAsync(userInfo as User).GetAwaiter().GetResult();
         }
 
         public bool IsPasswordCorrect(string password, out string errorMessage)
         {
-            return DataProvider.UserDao.IsPasswordCorrect(password, out errorMessage);
+            return UserDao.IsPasswordCorrect(password, out errorMessage);
         }
 
         public void AddLog(string userName, string action, string summary)

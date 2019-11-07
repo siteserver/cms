@@ -1,8 +1,8 @@
 ﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/specialEditor');
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryString('siteId')),
-  specialId: parseInt(pageUtils.getQueryString('specialId')),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  specialId: parseInt(utils.getQueryString('specialId')),
   pageLoad: false,
   pageAlert: null,
   items: null,

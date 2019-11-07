@@ -7,6 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -39,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var channelId = AuthRequest.GetQueryInt("channelId", SiteId);
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-            _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
+            _tableName = ChannelManager.GetTableName(Site, _channelInfo);
             _redirectUrl = GetRedirectUrl(SiteId, channelId);
             _relatedIdentities = TableStyleManager.GetRelatedIdentities(_channelInfo);
 
@@ -56,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
                     try
                     {
                         DataProvider.TableStyleDao.Delete(_channelInfo.Id, _tableName, attributeName);
-                        AuthRequest.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
+                        AuthRequest.AddSiteLogAsync(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}").GetAwaiter().GetResult();
                         SuccessDeleteMessage();
                     }
                     catch (Exception ex)
@@ -68,10 +69,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             InfoMessage(
                 $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 内容表:{_tableName}");
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
+            ChannelManager.AddListItems(DdlChannelId.Items, Site, false, true, AuthRequest.AdminPermissionsImpl);
             ControlUtils.SelectSingleItem(DdlChannelId, channelId.ToString());
 
-            RptContents.DataSource = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
+            RptContents.DataSource = TableStyleManager.GetContentStyleInfoList(Site, _channelInfo);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 

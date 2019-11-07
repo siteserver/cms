@@ -8,6 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -38,17 +39,17 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var tuple = DataProvider.ContentDao.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
+                            var tuple = DataProvider.ContentDao.GetValue(Site.TableName, contentId, ContentAttribute.Tags);
                             if (tuple != null)
                             {
                                 var contentTagList = TranslateUtils.StringCollectionToStringList(tuple.Item2);
                                 contentTagList.Remove(tagName);
-                                DataProvider.ContentDao.Update(SiteInfo.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
+                                DataProvider.ContentDao.Update(Site.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
                             }
                         }
                     }
                     DataProvider.TagDao.DeleteTag(tagName, SiteId);
-                    AuthRequest.AddSiteLog(SiteId, "删除内容标签", $"内容标签:{tagName}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "删除内容标签", $"内容标签:{tagName}").GetAwaiter().GetResult();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -58,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = Site.Additional.PageSize;
 
             SpContents.SelectCommand = DataProvider.TagDao.GetSqlString(SiteId, 0, true, 0);
             SpContents.SortField = nameof(TagInfo.UseNum);

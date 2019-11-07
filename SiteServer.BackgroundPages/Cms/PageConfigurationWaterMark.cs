@@ -42,35 +42,35 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             EBooleanUtils.AddListItems(DdlIsWaterMark);
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsWaterMark, SiteInfo.Additional.IsWaterMark.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsWaterMark, Site.Additional.IsWaterMark.ToString());
 
-            LoadWaterMarkPosition(SiteInfo.Additional.WaterMarkPosition);
+            LoadWaterMarkPosition(Site.Additional.WaterMarkPosition);
 
             for (var i = 1; i <= 10; i++)
             {
                 DdlWaterMarkTransparency.Items.Add(new ListItem(i + "0%", i.ToString()));
             }
-            ControlUtils.SelectSingleItemIgnoreCase(DdlWaterMarkTransparency, SiteInfo.Additional.WaterMarkTransparency.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlWaterMarkTransparency, Site.Additional.WaterMarkTransparency.ToString());
 
-            TbWaterMarkMinWidth.Text = SiteInfo.Additional.WaterMarkMinWidth.ToString();
-            TbWaterMarkMinHeight.Text = SiteInfo.Additional.WaterMarkMinHeight.ToString();
+            TbWaterMarkMinWidth.Text = Site.Additional.WaterMarkMinWidth.ToString();
+            TbWaterMarkMinHeight.Text = Site.Additional.WaterMarkMinHeight.ToString();
 
             EBooleanUtils.AddListItems(DdlIsImageWaterMark, "图片型", "文字型");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsImageWaterMark, SiteInfo.Additional.IsImageWaterMark.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsImageWaterMark, Site.Additional.IsImageWaterMark.ToString());
 
-            TbWaterMarkFormatString.Text = SiteInfo.Additional.WaterMarkFormatString;
+            TbWaterMarkFormatString.Text = Site.Additional.WaterMarkFormatString;
 
             LoadSystemFont();
-            ControlUtils.SelectSingleItemIgnoreCase(DdlWaterMarkFontName, SiteInfo.Additional.WaterMarkFontName);
+            ControlUtils.SelectSingleItemIgnoreCase(DdlWaterMarkFontName, Site.Additional.WaterMarkFontName);
 
-            TbWaterMarkFontSize.Text = SiteInfo.Additional.WaterMarkFontSize.ToString();
+            TbWaterMarkFontSize.Text = Site.Additional.WaterMarkFontSize.ToString();
 
-            TbWaterMarkImagePath.Text = SiteInfo.Additional.WaterMarkImagePath;
+            TbWaterMarkImagePath.Text = Site.Additional.WaterMarkImagePath;
                
             DdlIsWaterMark_SelectedIndexChanged(null, null);
-            TbWaterMarkImagePath.Attributes.Add("onchange", GetShowImageScript("preview_WaterMarkImagePath", SiteInfo.Additional.WebUrl));
+            TbWaterMarkImagePath.Attributes.Add("onchange", GetShowImageScript("preview_WaterMarkImagePath", Site.Additional.WebUrl));
 
-            var showPopWinString = ModalSelectImage.GetOpenWindowString(SiteInfo, TbWaterMarkImagePath.ClientID);
+            var showPopWinString = ModalSelectImage.GetOpenWindowString(Site, TbWaterMarkImagePath.ClientID);
             BtnImageUrlSelect.Attributes.Add("onclick", showPopWinString);
 
             showPopWinString = ModalUploadImageSingle.GetOpenWindowStringToTextBox(SiteId, TbWaterMarkImagePath.ClientID);
@@ -117,21 +117,21 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    SiteInfo.Additional.IsWaterMark = TranslateUtils.ToBool(DdlIsWaterMark.SelectedValue);
-		    SiteInfo.Additional.WaterMarkPosition = TranslateUtils.ToInt(Request.Form["WaterMarkPosition"]);
-		    SiteInfo.Additional.WaterMarkTransparency = TranslateUtils.ToInt(DdlWaterMarkTransparency.SelectedValue);
-		    SiteInfo.Additional.WaterMarkMinWidth = TranslateUtils.ToInt(TbWaterMarkMinWidth.Text);
-		    SiteInfo.Additional.WaterMarkMinHeight = TranslateUtils.ToInt(TbWaterMarkMinHeight.Text);
-		    SiteInfo.Additional.IsImageWaterMark = TranslateUtils.ToBool(DdlIsImageWaterMark.SelectedValue);
-		    SiteInfo.Additional.WaterMarkFormatString = TbWaterMarkFormatString.Text;
-		    SiteInfo.Additional.WaterMarkFontName = DdlWaterMarkFontName.SelectedValue;
-		    SiteInfo.Additional.WaterMarkFontSize = TranslateUtils.ToInt(TbWaterMarkFontSize.Text);
-		    SiteInfo.Additional.WaterMarkImagePath = TbWaterMarkImagePath.Text;
+		    Site.Additional.IsWaterMark = TranslateUtils.ToBool(DdlIsWaterMark.SelectedValue);
+		    Site.Additional.WaterMarkPosition = TranslateUtils.ToInt(Request.Form["WaterMarkPosition"]);
+		    Site.Additional.WaterMarkTransparency = TranslateUtils.ToInt(DdlWaterMarkTransparency.SelectedValue);
+		    Site.Additional.WaterMarkMinWidth = TranslateUtils.ToInt(TbWaterMarkMinWidth.Text);
+		    Site.Additional.WaterMarkMinHeight = TranslateUtils.ToInt(TbWaterMarkMinHeight.Text);
+		    Site.Additional.IsImageWaterMark = TranslateUtils.ToBool(DdlIsImageWaterMark.SelectedValue);
+		    Site.Additional.WaterMarkFormatString = TbWaterMarkFormatString.Text;
+		    Site.Additional.WaterMarkFontName = DdlWaterMarkFontName.SelectedValue;
+		    Site.Additional.WaterMarkFontSize = TranslateUtils.ToInt(TbWaterMarkFontSize.Text);
+		    Site.Additional.WaterMarkImagePath = TbWaterMarkImagePath.Text;
 				
 		    try
 		    {
-		        DataProvider.SiteDao.Update(SiteInfo);
-		        AuthRequest.AddSiteLog(SiteId, "修改图片水印设置");
+		        DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+		        AuthRequest.AddSiteLogAsync(SiteId, "修改图片水印设置").GetAwaiter().GetResult();
 		        SuccessMessage("图片水印设置修改成功！");
 		    }
 		    catch(Exception ex)

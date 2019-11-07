@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
@@ -79,7 +80,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var siteId = TranslateUtils.ToInt(Request.Form["siteID"]);
                 var backupType = Request.Form["backupType"];
-                retVal = Backup(siteId, backupType, userKeyPrefix);
+                retVal = BackupAsync(siteId, backupType, userKeyPrefix).GetAwaiter().GetResult();
             }
             else if (type == TypeRecovery)
             {
@@ -91,7 +92,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var path = Request.Form["path"];
                 var isOverride = TranslateUtils.ToBool(Request.Form["isOverride"]);
                 var isUseTable = TranslateUtils.ToBool(Request.Form["isUseTable"]);
-                retVal = Recovery(siteId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, path, isOverride, isUseTable, userKeyPrefix, request);
+                retVal = RecoveryAsync(siteId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, path, isOverride, isUseTable, userKeyPrefix, request).GetAwaiter().GetResult();
             }
 
             var jsonString = TranslateUtils.NameValueCollectionToJsonString(retVal);
@@ -99,7 +100,7 @@ namespace SiteServer.BackgroundPages.Ajax
             Page.Response.End();
         }
 
-        public NameValueCollection Backup(int siteId, string backupType, string userKeyPrefix)
+        public async Task<NameValueCollection> BackupAsync(int siteId, string backupType, string userKeyPrefix)
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retVal;
@@ -109,18 +110,18 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var eBackupType = EBackupTypeUtils.GetEnumType(backupType);
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var filePath = PathUtility.GetBackupFilePath(siteInfo, eBackupType);
+                var site = await SiteManager.GetSiteAsync(siteId);
+                var filePath = PathUtility.GetBackupFilePath(site, eBackupType);
                 DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                 FileUtils.DeleteFileIfExists(filePath);
 
                 if (eBackupType == EBackupType.Templates)
                 {
-                    BackupUtility.BackupTemplates(siteId, filePath, request.AdminName);
+                    await BackupUtility.BackupTemplatesAsync(siteId, filePath, request.AdminName);
                 }
                 else if (eBackupType == EBackupType.ChannelsAndContents)
                 {
-                    BackupUtility.BackupChannelsAndContents(siteId, filePath, request.AdminName);
+                    await BackupUtility.BackupChannelsAndContentsAsync(siteId, filePath, request.AdminName);
                 }
                 else if (eBackupType == EBackupType.Files)
                 {
@@ -128,7 +129,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 }
                 else if (eBackupType == EBackupType.Site)
                 {
-                    BackupUtility.BackupSite(siteId, filePath, request.AdminName);
+                    await BackupUtility.BackupSiteAsync(siteId, filePath, request.AdminName);
                 }
 
                 string resultString =
@@ -145,16 +146,16 @@ namespace SiteServer.BackgroundPages.Ajax
             return retVal;
         }
 
-        public NameValueCollection Recovery(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, AuthenticatedRequest request)
+        public async Task<NameValueCollection> RecoveryAsync(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, AuthenticatedRequest request)
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retVal;
 
             try
             {
-                BackupUtility.RecoverySite(siteId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, PageUtils.UrlDecode(path), isOverride, isUseTable, request.AdminName);
+                await BackupUtility.RecoverySiteAsync(siteId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, PageUtils.UrlDecode(path), isOverride, isUseTable, request.AdminName);
 
-                request.AddSiteLog(siteId, "恢复备份数据", request.AdminName);
+                await request.AddSiteLogAsync(siteId, "恢复备份数据", request.AdminName);
 
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection("数据恢复成功!", string.Empty, string.Empty);
 

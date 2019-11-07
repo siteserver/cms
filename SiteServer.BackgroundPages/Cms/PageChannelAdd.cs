@@ -10,6 +10,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
@@ -81,12 +82,12 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-            CacAttributes.SiteInfo = SiteInfo;
+            CacAttributes.Site = Site;
             CacAttributes.ChannelId = _channelId;
 
             if (!IsPostBack)
             {
-                ChannelManager.AddListItems(DdlParentChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissionsImpl);
+                ChannelManager.AddListItems(DdlParentChannelId.Items, Site, true, true, AuthRequest.AdminPermissionsImpl);
                 ControlUtils.SelectSingleItem(DdlParentChannelId, _channelId.ToString());
 
                 DdlContentModelPluginId.Items.Add(new ListItem("<默认>", string.Empty));
@@ -112,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 CacAttributes.Attributes = new AttributesImpl();
 
-                TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", SiteInfo.Additional.WebUrl));
+                TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", Site.Additional.WebUrl));
 
                 var showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, true, TbChannelFilePathRule.ClientID);
                 BtnCreateChannelRule.Attributes.Add("onclick", showPopWinString);
@@ -120,7 +121,7 @@ namespace SiteServer.BackgroundPages.Cms
                 showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, false, TbContentFilePathRule.ClientID);
                 BtnCreateContentRule.Attributes.Add("onclick", showPopWinString);
 
-                showPopWinString = ModalSelectImage.GetOpenWindowString(SiteInfo, TbImageUrl.ClientID);
+                showPopWinString = ModalSelectImage.GetOpenWindowString(Site, TbImageUrl.ClientID);
                 BtnSelectImage.Attributes.Add("onclick", showPopWinString);
 
                 showPopWinString = ModalUploadImage.GetOpenWindowString(SiteId, TbImageUrl.ClientID);
@@ -144,7 +145,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 DdlContentTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));
                 DdlContentTemplateId.Items[0].Selected = true;
-                TbContent.SetParameters(SiteInfo, ChannelAttribute.Content, string.Empty);
+                TbContent.SetParameters(Site, ChannelAttribute.Content, string.Empty);
             }
             else
             {
@@ -171,7 +172,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var extension = PathUtils.GetExtension(TbImageUrl.Text);
                 if (EFileSystemTypeUtils.IsImage(extension))
                 {
-                    return PageUtility.ParseNavigationUrl(SiteInfo, TbImageUrl.Text, true);
+                    return PageUtility.ParseNavigationUrl(Site, TbImageUrl.Text, true);
                 }
                 if (EFileSystemTypeUtils.IsFlash(extension))
                 {
@@ -204,7 +205,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentFilePathRule = TbContentFilePathRule.Text;
                 var groupNameCollection = TranslateUtils.ObjectCollectionToString(ControlUtils.GetSelectedListControlValueStringList(CblNodeGroupNameCollection));
                 var imageUrl = TbImageUrl.Text;
-                var content = ContentUtility.TextEditorContentEncode(SiteInfo, Request.Form[ChannelAttribute.Content]);
+                var content = ContentUtility.TextEditorContentEncodeAsync(Site, Request.Form[ChannelAttribute.Content]).GetAwaiter().GetResult();
                 var keywords = TbKeywords.Text;
                 var description = TbDescription.Text;
                 var isChannelAddable = TranslateUtils.ToBool(RblIsChannelAddable.SelectedValue);
@@ -284,7 +285,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var parentChannelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
                 var styleInfoList = TableStyleManager.GetChannelStyleInfoList(parentChannelInfo);
-                var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, Request.Form, null);
+                var extendedAttributes = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleInfoList, Request.Form, null).GetAwaiter().GetResult();
                 channelInfo.Additional.Load(extendedAttributes);
                 //foreach (string key in attributes)
                 //{
@@ -323,7 +324,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             CreateManager.CreateChannel(SiteId, insertChannelId);
 
-            AuthRequest.AddSiteLog(SiteId, "添加栏目", $"栏目:{TbNodeName.Text}");
+            AuthRequest.AddSiteLogAsync(SiteId, "添加栏目", $"栏目:{TbNodeName.Text}").GetAwaiter().GetResult();
 
             SuccessMessage("栏目添加成功！");
             AddWaitAndRedirectScript(ReturnUrl);

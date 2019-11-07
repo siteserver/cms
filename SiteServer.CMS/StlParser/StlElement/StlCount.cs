@@ -112,7 +112,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scope, string.Empty, string.Empty, string.Empty);
                 foreach (var theChannelId in channelIdList)
                 {
-                    var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, theChannelId);
+                    var tableName = ChannelManager.GetTableName(pageInfo.Site, theChannelId);
                     count += StlContentCache.GetCountOfContentAdd(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, ETriState.True);
                 }
             }

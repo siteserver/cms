@@ -4,10 +4,12 @@ using System.Text;
 using SiteServer.Utils;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -16,7 +18,7 @@ namespace SiteServer.BackgroundPages.Core
 {
     public static class TextUtility
     {
-        private static string GetColumnValue(Dictionary<string, string> nameValueCacheDict, SiteInfo siteInfo, ContentInfo contentInfo, TableStyleInfo styleInfo)
+        private static async Task<string> GetColumnValueAsync(Dictionary<string, string> nameValueCacheDict, Site site, ContentInfo contentInfo, TableStyleInfo styleInfo)
         {
             var value = string.Empty;
             if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.AddUserName))
@@ -26,7 +28,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.AddUserName + ":" + contentInfo.AddUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = AdminManager.GetDisplayName(contentInfo.AddUserName);
+                        value = await AdminManager.GetDisplayNameAsync(contentInfo.AddUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
@@ -38,7 +40,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.LastEditUserName + ":" + contentInfo.LastEditUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = AdminManager.GetDisplayName(contentInfo.LastEditUserName);
+                        value = await AdminManager.GetDisplayNameAsync(contentInfo.LastEditUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
@@ -51,7 +53,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.CheckUserName + ":" + checkUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = AdminManager.GetDisplayName(checkUserName);
+                        value = await AdminManager.GetDisplayNameAsync(checkUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
@@ -78,7 +80,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.SourceId))
             {
-                value = SourceManager.GetSourceName(contentInfo.SourceId);
+                value = await SourceManager.GetSourceNameAsync(contentInfo.SourceId);
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Tags))
             {
@@ -118,19 +120,19 @@ namespace SiteServer.BackgroundPages.Core
             }
             else
             {
-                value = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), siteInfo, styleInfo);
+                value = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), site, styleInfo);
             }
             return value;
         }
 
-        public static bool IsEdit(SiteInfo siteInfo, int channelId, PermissionsImpl permissionsImpl)
+        public static bool IsEdit(Site site, int channelId, PermissionsImpl permissionsImpl)
         {
-            return permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentEdit);
+            return permissionsImpl.HasChannelPermissions(site.Id, channelId, ConfigManager.ChannelPermissions.ContentEdit);
         }
 
-        //public static bool IsComment(SiteInfo siteInfo, int channelId, string administratorName)
+        //public static bool IsComment(Site site, int channelId, string administratorName)
         //{
-        //    return siteInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete);
+        //    return site.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, site.Id, channelId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete);
         //}
 
         public static string GetColumnsHeadHtml(List<TableStyleInfo> tableStyleInfoList, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns, StringCollection attributesOfDisplay)
@@ -165,7 +167,7 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetColumnsHtml(Dictionary<string, string> nameValueCacheDict, SiteInfo siteInfo, ContentInfo contentInfo, StringCollection attributesOfDisplay, List<TableStyleInfo> displayStyleInfoList, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
+        public static async Task<string> GetColumnsHtmlAsync(Dictionary<string, string> nameValueCacheDict, Site site, ContentInfo contentInfo, StringCollection attributesOfDisplay, List<TableStyleInfo> displayStyleInfoList, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
         {
             var builder = new StringBuilder();
 
@@ -173,7 +175,7 @@ namespace SiteServer.BackgroundPages.Core
             {
                 if (!attributesOfDisplay.Contains(styleInfo.AttributeName) || styleInfo.AttributeName == ContentAttribute.Title) continue;
 
-                var value = GetColumnValue(nameValueCacheDict, siteInfo, contentInfo, styleInfo);
+                var value = await GetColumnValueAsync(nameValueCacheDict, site, contentInfo, styleInfo);
                 builder.Append($@"<td class=""text-nowrap"">{value}</td>");
             }
 
@@ -211,13 +213,13 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandsHtml(SiteInfo siteInfo, List<PluginMenu> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
+        public static string GetCommandsHtml(Site site, List<PluginMenu> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
         {
             var builder = new StringBuilder();
 
             if (isEdit || administratorName == contentInfo.AddUserName)
             {
-                builder.Append($@"<a href=""{PageContentAdd.GetRedirectUrlOfEdit(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl)}"">编辑</a>");
+                builder.Append($@"<a href=""{PageContentAdd.GetRedirectUrlOfEdit(site.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl)}"">编辑</a>");
             }
 
             if (pluginMenus != null)

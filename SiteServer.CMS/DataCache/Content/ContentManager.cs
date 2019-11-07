@@ -1,6 +1,5 @@
 ﻿using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
@@ -10,6 +9,9 @@ using SiteServer.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.DataCache.Content
 {
@@ -29,26 +31,26 @@ namespace SiteServer.CMS.DataCache.Content
             StlContentCache.ClearCache();
         }
 
-        public static void InsertCache(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        public static void InsertCache(Site site, ChannelInfo channelInfo, ContentInfo contentInfo)
         {
             if (contentInfo.SourceId == SourceManager.Preview) return;
 
             var dict = ContentCache.GetContentDict(contentInfo.ChannelId);
             dict[contentInfo.Id] = contentInfo;
 
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            var tableName = ChannelManager.GetTableName(site, channelInfo);
             CountCache.Add(tableName, contentInfo);
 
             StlContentCache.ClearCache();
         }
 
-        public static void UpdateCache(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        public static void UpdateCache(Site site, ChannelInfo channelInfo, ContentInfo contentInfo)
         {
             var dict = ContentCache.GetContentDict(channelInfo.Id);
 
             ListCache.Remove(channelInfo.Id);
 
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            var tableName = ChannelManager.GetTableName(site, channelInfo);
             CountCache.Remove(tableName, contentInfo);
             CountCache.Add(tableName, contentInfo);
 
@@ -57,7 +59,7 @@ namespace SiteServer.CMS.DataCache.Content
             StlContentCache.ClearCache();
         }
 
-        public static List<ContentColumn> GetContentColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
+        public static List<ContentColumn> GetContentColumns(Site site, ChannelInfo channelInfo, bool includeAll)
         {
             var columns = new List<ContentColumn>();
 
@@ -65,7 +67,7 @@ namespace SiteServer.CMS.DataCache.Content
             var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
             var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(site, channelInfo));
 
             styleInfoList.Insert(0, new TableStyleInfo
             {
@@ -140,7 +142,7 @@ namespace SiteServer.CMS.DataCache.Content
             return columns;
         }
 
-        public static ContentInfo Calculate(int sequence, ContentInfo contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
+        public static async Task<ContentInfo> CalculateAsync(int sequence, ContentInfo contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
         {
             if (contentInfo == null) return null;
 
@@ -159,7 +161,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var value = string.Empty;
                     if (contentInfo.AdminId > 0)
                     {
-                        var adminInfo = AdminManager.GetAdminInfoByUserId(contentInfo.AdminId);
+                        var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(contentInfo.AdminId);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
@@ -172,7 +174,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var value = string.Empty;
                     if (contentInfo.UserId > 0)
                     {
-                        var userInfo = UserManager.GetUserInfoByUserId(contentInfo.UserId);
+                        var userInfo = await UserManager.GetUserByUserIdAsync(contentInfo.UserId);
                         if (userInfo != null)
                         {
                             value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;
@@ -182,14 +184,14 @@ namespace SiteServer.CMS.DataCache.Content
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.SourceId))
                 {
-                    retVal.Set(ContentAttribute.SourceId, SourceManager.GetSourceName(contentInfo.SourceId));
+                    retVal.Set(ContentAttribute.SourceId, SourceManager.GetSourceNameAsync(contentInfo.SourceId));
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.AddUserName))
                 {
                     var value = string.Empty;
                     if (!string.IsNullOrEmpty(contentInfo.AddUserName))
                     {
-                        var adminInfo = AdminManager.GetAdminInfoByUserName(contentInfo.AddUserName);
+                        var adminInfo = await AdminManager.GetAdminInfoByUserNameAsync(contentInfo.AddUserName);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
@@ -202,7 +204,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var value = string.Empty;
                     if (!string.IsNullOrEmpty(contentInfo.LastEditUserName))
                     {
-                        var adminInfo = AdminManager.GetAdminInfoByUserName(contentInfo.LastEditUserName);
+                        var adminInfo = await AdminManager.GetAdminInfoByUserNameAsync(contentInfo.LastEditUserName);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;

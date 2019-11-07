@@ -3,15 +3,18 @@ using SiteServer.CMS.Model;
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
     public static class ExcelObject
     {
-        public static void CreateExcelFileForContents(string filePath, SiteInfo siteInfo,
+        public static void CreateExcelFileForContents(string filePath, Site site,
             ChannelInfo channelInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, ETriState checkedState)
         {
@@ -21,8 +24,8 @@ namespace SiteServer.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo));
+            var tableName = ChannelManager.GetTableName(site, channelInfo);
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(site, channelInfo));
 
             foreach (var styleInfo in styleInfoList)
             {
@@ -40,7 +43,7 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
                 if (contentInfo != null)
                 {
                     var row = new List<string>();
@@ -61,7 +64,7 @@ namespace SiteServer.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static void CreateExcelFileForContents(string filePath, SiteInfo siteInfo,
+        public static void CreateExcelFileForContents(string filePath, Site site,
             ChannelInfo channelInfo, List<ContentInfo> contentInfoList, List<string> columnNames)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -70,7 +73,7 @@ namespace SiteServer.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
+            var columns = ContentManager.GetContentColumns(site, channelInfo, true);
 
             foreach (var column in columns)
             {
@@ -99,7 +102,7 @@ namespace SiteServer.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static void CreateExcelFileForUsers(string filePath, ETriState checkedState)
+        public static async Task CreateExcelFileForUsersAsync(string filePath, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
             FileUtils.DeleteFileIfExists(filePath);
@@ -115,15 +118,15 @@ namespace SiteServer.CMS.Core.Office
             };
             var rows = new List<List<string>>();
 
-            List<int> userIdList = DataProvider.UserDao.GetIdList(checkedState != ETriState.False);
+            var userIdList = (await DataProvider.UserDao.GetIdListAsync(checkedState != ETriState.False)).ToList();
             if (checkedState == ETriState.All)
             {
-                userIdList.AddRange(DataProvider.UserDao.GetIdList(false));
+                userIdList.AddRange(await DataProvider.UserDao.GetIdListAsync(false));
             }
 
             foreach (var userId in userIdList)
             {
-                var userInfo = UserManager.GetUserInfoByUserId(userId);
+                var userInfo = await UserManager.GetUserByUserIdAsync(userId);
 
                 rows.Add(new List<string>
                 {
@@ -139,7 +142,7 @@ namespace SiteServer.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static List<ContentInfo> GetContentsByCsvFile(string filePath, SiteInfo siteInfo,
+        public static List<ContentInfo> GetContentsByCsvFile(string filePath, Site site,
             ChannelInfo nodeInfo)
         {
             var contentInfoList = new List<ContentInfo>();
@@ -148,7 +151,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (rows.Count <= 0) return contentInfoList;
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, nodeInfo));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(site, nodeInfo));
             var nameValueCollection = new NameValueCollection();
             foreach (var styleInfo in styleInfoList)
             {
@@ -182,7 +185,7 @@ namespace SiteServer.CMS.Core.Office
 
                 if (!string.IsNullOrEmpty(contentInfo.Title))
                 {
-                    contentInfo.SiteId = siteInfo.Id;
+                    contentInfo.SiteId = site.Id;
                     contentInfo.ChannelId = nodeInfo.Id;
                     contentInfo.LastEditDate = DateTime.Now;
 

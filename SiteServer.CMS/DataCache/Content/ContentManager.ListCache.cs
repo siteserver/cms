@@ -3,6 +3,7 @@ using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -58,9 +59,9 @@ namespace SiteServer.CMS.DataCache.Content
             }
         }
 
-        public static List<(int ChannelId, int ContentId)> GetChannelContentIdList(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents, int offset, int limit)
+        public static List<(int ChannelId, int ContentId)> GetChannelContentIdList(Site site, ChannelInfo channelInfo, int adminId, bool isAllContents, int offset, int limit)
         {
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            var tableName = ChannelManager.GetTableName(site, channelInfo);
 
             var channelContentIdList = new List<(int ChannelId, int ContentId)>();
             foreach (var contentId in ListCache.GetContentIdList(channelInfo.Id, adminId))
@@ -72,8 +73,8 @@ namespace SiteServer.CMS.DataCache.Content
                 var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant);
                 foreach (var contentChannelId in channelIdList)
                 {
-                    var contentChannelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, contentChannelId);
-                    var channelTableName = ChannelManager.GetTableName(siteInfo, contentChannelInfo);
+                    var contentChannelInfo = ChannelManager.GetChannelInfo(site.Id, contentChannelId);
+                    var channelTableName = ChannelManager.GetTableName(site, contentChannelInfo);
                     if (!StringUtils.EqualsIgnoreCase(tableName, channelTableName)) continue;
 
                     foreach (var contentId in ListCache.GetContentIdList(contentChannelId, adminId))
@@ -92,7 +93,7 @@ namespace SiteServer.CMS.DataCache.Content
             {
                 var dict = ContentCache.GetContentDict(channelInfo.Id);
 
-                var pageContentInfoList = DataProvider.ContentDao.GetContentInfoList(tableName, DataProvider.ContentDao.GetCacheWhereString(siteInfo, channelInfo, adminId, isAllContents),
+                var pageContentInfoList = DataProvider.ContentDao.GetContentInfoList(tableName, DataProvider.ContentDao.GetCacheWhereString(site, channelInfo, adminId, isAllContents),
                     DataProvider.ContentDao.GetOrderString(channelInfo, string.Empty, isAllContents), offset, limit);
 
                 foreach (var contentInfo in pageContentInfoList)
@@ -106,7 +107,7 @@ namespace SiteServer.CMS.DataCache.Content
                 return pageContentIdList;
             }
 
-            return DataProvider.ContentDao.GetCacheChannelContentIdList(tableName, DataProvider.ContentDao.GetCacheWhereString(siteInfo, channelInfo, adminId, isAllContents),
+            return DataProvider.ContentDao.GetCacheChannelContentIdList(tableName, DataProvider.ContentDao.GetCacheWhereString(site, channelInfo, adminId, isAllContents),
                 DataProvider.ContentDao.GetOrderString(channelInfo, string.Empty, isAllContents), offset, limit);
         }
     }

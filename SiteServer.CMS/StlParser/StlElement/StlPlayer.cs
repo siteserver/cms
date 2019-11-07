@@ -104,12 +104,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contextInfo.ContentInfo == null)
                     {
-                        playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, type);
+                        playUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
                             {
-                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
+                                playUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, BackgroundContentAttribute.VideoUrl);
                             }
                         }
                     }
@@ -126,8 +126,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
-            playUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, playUrl, pageInfo.IsLocal);
-            imageUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal);
+            playUrl = PageUtility.ParseNavigationUrl(pageInfo.Site, playUrl, pageInfo.IsLocal);
+            imageUrl = PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal);
 
             var extension = PathUtils.GetExtension(playUrl);
             var uniqueId = pageInfo.UniqueId;

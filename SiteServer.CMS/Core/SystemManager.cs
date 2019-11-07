@@ -3,9 +3,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -54,20 +56,19 @@ namespace SiteServer.CMS.Core
 
         public static string EnvironmentVersion { get; }
 
-        public static void InstallDatabase(string adminName, string adminPassword)
+        public static async Task InstallDatabaseAsync(string adminName, string adminPassword)
         {
-            SyncDatabase();
+            await SyncDatabaseAsync();
 
             if (!string.IsNullOrEmpty(adminName) && !string.IsNullOrEmpty(adminPassword))
             {
-                var administratorInfo = new AdministratorInfo
+                var administrator = new Administrator
                 {
                     UserName = adminName,
-                    Password = adminPassword
                 };
 
-                DataProvider.AdministratorDao.Insert(administratorInfo, out _);
-                DataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
+                await DataProvider.AdministratorDao.InsertAsync(administrator, adminPassword);
+                await DataProvider.AdministratorsInRolesDao.AddUserToRoleAsync(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
             }
         }
 
@@ -88,9 +89,9 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void SyncContentTables()
+        public static async Task SyncContentTablesAsync()
         {
-            var tableNameList = SiteManager.GetAllTableNameList();
+            var tableNameList = await SiteManager.GetAllTableNameListAsync();
             foreach (var tableName in tableNameList)
             {
                 if (!DataProvider.DatabaseDao.IsTableExists(tableName))
@@ -121,13 +122,13 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void SyncDatabase()
+        public static async Task SyncDatabaseAsync()
         {
             CacheUtils.ClearAll();
 
             CreateSiteServerTables();
 
-            SyncContentTables();
+            await SyncContentTablesAsync();
 
             UpdateConfigVersion();
         }

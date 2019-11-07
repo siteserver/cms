@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in _idsDictionary.Keys)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                        var tableName = ChannelManager.GetTableName(Site, channelId);
                         var contentIdArrayList = _idsDictionary[channelId];
                         if (contentIdArrayList != null)
                         {
@@ -123,7 +123,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    AuthRequest.AddSiteLog(SiteId, "添加内容到内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "添加内容到内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNameList)}").GetAwaiter().GetResult();
 
                     isChanged = true;
                 }
@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.ChannelDao.AddGroupNameList(SiteId, channelId, groupNameList);
                     }
 
-                    AuthRequest.AddSiteLog(SiteId, "添加栏目到栏目组", $"栏目组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "添加栏目到栏目组", $"栏目组:{TranslateUtils.ObjectCollectionToString(groupNameList)}").GetAwaiter().GetResult();
 
                     isChanged = true;
                 }

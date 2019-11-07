@@ -153,7 +153,7 @@ namespace SiteServer.BackgroundPages.Core
                 if (_channelId > 0)
                 {
                     htmlBuilder.Append(
-                        $"<a href=\"{PageRedirect.GetRedirectUrlToChannel(_siteId, _channelId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
+                        $"<a href=\"{PageUtils.GetRedirectUrlToChannel(_siteId, _channelId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
                 }
                 else
                 {
@@ -190,10 +190,10 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_isNodeTree && _siteId != 0)
             {
-                var siteInfo = SiteManager.GetSiteInfo(_siteId);
+                var site = SiteManager.GetSiteAsync(_siteId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append("&nbsp;");
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(siteInfo, ChannelManager.GetChannelInfo(_siteId, _channelId)));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(site, ChannelManager.GetChannelInfo(_siteId, _channelId)));
 
                 if (_contentNum >= 0)
                 {
@@ -252,7 +252,7 @@ namespace SiteServer.BackgroundPages.Core
                 if (_channelId > 0)
                 {
                     htmlBuilder.Append(
-                        $"<a href=\"{PageRedirect.GetRedirectUrlToChannel(_siteId, _channelId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
+                        $"<a href=\"{PageUtils.GetRedirectUrlToChannel(_siteId, _channelId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
                 }
                 else
                 {
@@ -289,10 +289,10 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_isNodeTree && _siteId != 0)
             {
-                var siteInfo = SiteManager.GetSiteInfo(_siteId);
+                var site = SiteManager.GetSiteAsync(_siteId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append("&nbsp;");
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(siteInfo, ChannelManager.GetChannelInfo(_siteId, _channelId)));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(site, ChannelManager.GetChannelInfo(_siteId, _channelId)));
 
                 if (_contentNum >= 0)
                 {

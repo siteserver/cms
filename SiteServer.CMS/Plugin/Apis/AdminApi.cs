@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
@@ -16,52 +17,53 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public IAdministratorInfo GetAdminInfoByUserId(int userId)
         {
-            return AdminManager.GetAdminInfoByUserId(userId);
+            return AdminManager.GetAdminInfoByUserIdAsync(userId).GetAwaiter().GetResult();
         }
 
         public IAdministratorInfo GetAdminInfoByUserName(string userName)
         {
-            return AdminManager.GetAdminInfoByUserName(userName);
+            return AdminManager.GetAdminInfoByUserNameAsync(userName).GetAwaiter().GetResult();
         }
 
         public IAdministratorInfo GetAdminInfoByEmail(string email)
         {
-            return AdminManager.GetAdminInfoByEmail(email);
+            return AdminManager.GetAdminInfoByEmailAsync(email).GetAwaiter().GetResult();
         }
 
         public IAdministratorInfo GetAdminInfoByMobile(string mobile)
         {
-            return AdminManager.GetAdminInfoByMobile(mobile);
+            return AdminManager.GetAdminInfoByMobileAsync(mobile).GetAwaiter().GetResult();
         }
 
         public IAdministratorInfo GetAdminInfoByAccount(string account)
         {
-            return AdminManager.GetAdminInfoByAccount(account);
+            return AdminManager.GetAdminInfoByAccountAsync(account).GetAwaiter().GetResult();
         }
 
         public List<string> GetUserNameList()
         {
-            return DataProvider.AdministratorDao.GetUserNameList();
+            return DataProvider.AdministratorDao.GetUserNameListAsync().GetAwaiter().GetResult().ToList();
         }
 
         public IPermissions GetPermissions(string userName)
         {
-            return new PermissionsImpl(AdminManager.GetAdminInfoByUserName(userName));
+            var adminInfo = AdminManager.GetAdminInfoByUserNameAsync(userName).GetAwaiter().GetResult();
+            return new PermissionsImpl(adminInfo);
         }
 
         public bool IsUserNameExists(string userName)
         {
-            return DataProvider.AdministratorDao.IsUserNameExists(userName);
+            return DataProvider.AdministratorDao.IsUserNameExistsAsync(userName).GetAwaiter().GetResult();
         }
 
         public bool IsEmailExists(string email)
         {
-            return DataProvider.AdministratorDao.IsEmailExists(email);
+            return DataProvider.AdministratorDao.IsEmailExistsAsync(email).GetAwaiter().GetResult();
         }
 
         public bool IsMobileExists(string mobile)
         {
-            return DataProvider.AdministratorDao.IsMobileExists(mobile);
+            return DataProvider.AdministratorDao.IsMobileExistsAsync(mobile).GetAwaiter().GetResult();
         }
 
         public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)

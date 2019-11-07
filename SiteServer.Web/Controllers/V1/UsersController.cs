@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -25,27 +25,27 @@ namespace SiteServer.API.Controllers.V1
         private const string RouteUserResetPassword = "{id:int}/actions/resetPassword";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Create()
+        public async Task<IHttpActionResult> Create()
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var userInfo = new UserInfo(request.GetPostObject<Dictionary<string, object>>());
+                var user = new User(request.GetPostObject<Dictionary<string, object>>());
                 if (!ConfigManager.SystemConfigInfo.IsUserRegistrationGroup)
                 {
-                    userInfo.GroupId = 0;
+                    user.GroupId = 0;
                 }
                 var password = request.GetPostString("password");
 
-                var userId = DataProvider.UserDao.Insert(userInfo, password, PageUtils.GetIpAddress(), out var errorMessage);
-                if (userId == 0)
+                var valid = await DataProvider.UserDao.InsertAsync(user, password, PageUtils.GetIpAddress());
+                if (valid.UserId == 0)
                 {
-                    return BadRequest(errorMessage);
+                    return BadRequest(valid.ErrorMessage);
                 }
 
                 return Ok(new
                 {
-                    Value = UserManager.GetUserInfoByUserId(userId)
+                    Value = await UserManager.GetUserByUserIdAsync(valid.UserId)
                 });
             }
             catch (Exception ex)
@@ -56,13 +56,13 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPut, Route(RouteUser)]
-        public IHttpActionResult Update(int id)
+        public async Task<IHttpActionResult> Update(int id)
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
@@ -73,18 +73,18 @@ namespace SiteServer.API.Controllers.V1
 
                 if (body == null) return BadRequest("Could not read user from body");
 
-                var userInfo = UserManager.GetUserInfoByUserId(id);
-                if (userInfo == null) return NotFound();
+                var user = await UserManager.GetUserByUserIdAsync(id);
+                if (user == null) return NotFound();
 
-                var retVal = DataProvider.UserDao.Update(userInfo, body, out var errorMessage);
-                if (retVal == null)
+                var valid = await DataProvider.UserDao.UpdateAsync(user, body);
+                if (valid.User == null)
                 {
-                    return BadRequest(errorMessage);
+                    return BadRequest(valid.ErrorMessage);
                 }
 
                 return Ok(new
                 {
-                    Value = retVal
+                    Value = valid.User
                 });
             }
             catch (Exception ex)
@@ -95,28 +95,28 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpDelete, Route(RouteUser)]
-        public IHttpActionResult Delete(int id)
+        public async Task<IHttpActionResult> Delete(int id)
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
                              request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var userInfo = UserManager.GetUserInfoByUserId(id);
-                if (userInfo == null) return NotFound();
+                var user = await UserManager.GetUserByUserIdAsync(id);
+                if (user == null) return NotFound();
 
                 request.UserLogout();
-                DataProvider.UserDao.Delete(userInfo);
+                await DataProvider.UserDao.DeleteAsync(user);
 
                 return Ok(new
                 {
-                    Value = userInfo
+                    Value = user
                 });
             }
             catch (Exception ex)
@@ -127,22 +127,22 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpGet, Route(RouteUser)]
-        public IHttpActionResult Get(int id)
+        public async Task<IHttpActionResult> Get(int id)
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
                              request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                if (!DataProvider.UserDao.IsExists(id)) return NotFound();
+                if (!await DataProvider.UserDao.IsExistsAsync(id)) return NotFound();
 
-                var user = UserManager.GetUserInfoByUserId(id);
+                var user = await UserManager.GetUserByUserIdAsync(id);
 
                 return Ok(new
                 {
@@ -157,11 +157,11 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpGet, Route(RouteUserAvatar)]
-        public IHttpActionResult GetAvatar(int id)
+        public async Task<IHttpActionResult> GetAvatar(int id)
         {
-            var userInfo = UserManager.GetUserInfoByUserId(id);
+            var user = await UserManager.GetUserByUserIdAsync(id);
 
-            var avatarUrl = !string.IsNullOrEmpty(userInfo?.AvatarUrl) ? userInfo.AvatarUrl : UserManager.DefaultAvatarUrl;
+            var avatarUrl = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : UserManager.DefaultAvatarUrl;
             avatarUrl = PageUtils.AddProtocolToUrl(avatarUrl);
 
             return Ok(new
@@ -171,21 +171,21 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(RouteUserAvatar)]
-        public IHttpActionResult UploadAvatar(int id)
+        public async Task<IHttpActionResult> UploadAvatar(int id)
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
                              request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var userInfo = UserManager.GetUserInfoByUserId(id);
-                if (userInfo == null) return NotFound();
+                var user = await UserManager.GetUserByUserIdAsync(id);
+                if (user == null) return NotFound();
 
                 foreach (string name in HttpContext.Current.Request.Files)
                 {
@@ -197,7 +197,7 @@ namespace SiteServer.API.Controllers.V1
                     }
 
                     var fileName = UserManager.GetUserUploadFileName(postFile.FileName);
-                    var filePath = UserManager.GetUserUploadPath(userInfo.Id, fileName);
+                    var filePath = UserManager.GetUserUploadPath(user.Id, fileName);
                     
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
@@ -207,14 +207,14 @@ namespace SiteServer.API.Controllers.V1
                     DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                     postFile.SaveAs(filePath);
 
-                    userInfo.AvatarUrl = UserManager.GetUserUploadUrl(userInfo.Id, fileName);
+                    user.AvatarUrl = UserManager.GetUserUploadUrl(user.Id, fileName);
 
-                    DataProvider.UserDao.Update(userInfo);
+                    await DataProvider.UserDao.UpdateAsync(user);
                 }
 
                 return Ok(new
                 {
-                    Value = userInfo
+                    Value = user
                 });
             }
             catch (Exception ex)
@@ -225,13 +225,13 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult List()
+        public async Task<IHttpActionResult> List()
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsAdminLoggin &&
                              request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
@@ -239,8 +239,8 @@ namespace SiteServer.API.Controllers.V1
                 var top = request.GetQueryInt("top", 20);
                 var skip = request.GetQueryInt("skip");
 
-                var users = DataProvider.UserDao.GetUsers(skip, top);
-                var count = DataProvider.UserDao.GetCount();
+                var users = await DataProvider.UserDao.GetUsersAsync( ETriState.All, 0, 0, null, null, skip, top);
+                var count = await DataProvider.UserDao.GetCountAsync();
 
                 return Ok(new PageResponse(users, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
             }
@@ -252,7 +252,7 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(RouteActionsLogin)]
-        public IHttpActionResult Login()
+        public async Task<IHttpActionResult> Login()
         {
             try
             {
@@ -262,18 +262,18 @@ namespace SiteServer.API.Controllers.V1
                 var password = request.GetPostString("password");
                 var isAutoLogin = request.GetPostBool("isAutoLogin");
 
-                var userInfo = DataProvider.UserDao.Validate(account, password, true, out var _, out var errorMessage);
-                if (userInfo == null)
+                var valid = await DataProvider.UserDao.ValidateAsync(account, password, true);
+                if (valid.User == null)
                 {
-                    return BadRequest(errorMessage);
+                    return BadRequest(valid.ErrorMessage);
                 }
 
-                var accessToken = request.UserLogin(userInfo.UserName, isAutoLogin);
+                var accessToken = request.UserLogin(valid.UserName, isAutoLogin);
                 var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
                 return Ok(new
                 {
-                    Value = userInfo,
+                    Value = valid.User,
                     AccessToken = accessToken,
                     ExpiresAt = expiresAt
                 });
@@ -291,12 +291,12 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var request = new AuthenticatedRequest();
-                var userInfo = request.IsUserLoggin ? request.UserInfo : null;
+                var user = request.IsUserLoggin ? request.User : null;
                 request.UserLogout();
 
                 return Ok(new
                 {
-                    Value = userInfo
+                    Value = user
                 });
             }
             catch (Exception ex)
@@ -307,23 +307,23 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(RouteUserLogs)]
-        public IHttpActionResult CreateLog(int id, [FromBody] UserLogInfo logInfo)
+        public async Task<IHttpActionResult> CreateLog(int id, [FromBody] UserLogInfo logInfo)
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
                              request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var userInfo = UserManager.GetUserInfoByUserId(id);
-                if (userInfo == null) return NotFound();
+                var user = await UserManager.GetUserByUserIdAsync(id);
+                if (user == null) return NotFound();
 
-                var retVal = DataProvider.UserLogDao.ApiInsert(userInfo.UserName, logInfo);
+                var retVal = DataProvider.UserLogDao.ApiInsert(user.UserName, logInfo);
 
                 return Ok(new
                 {
@@ -338,28 +338,29 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpGet, Route(RouteUserLogs)]
-        public IHttpActionResult GetLogs(int id)
+        public async Task<IHttpActionResult> GetLogs(int id)
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
                              request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var userInfo = UserManager.GetUserInfoByUserId(id);
-                if (userInfo == null) return NotFound();
+                var user = await UserManager.GetUserByUserIdAsync(id);
+                if (user == null) return NotFound();
 
                 var top = request.GetQueryInt("top", 20);
                 var skip = request.GetQueryInt("skip");
 
-                var logs = DataProvider.UserLogDao.ApiGetLogs(userInfo.UserName, skip, top);
+                var logs = DataProvider.UserLogDao.ApiGetLogs(user.UserName, skip, top);
 
-                return Ok(new PageResponse(logs, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = DataProvider.UserDao.GetCount() });
+                return Ok(new PageResponse(logs, top, skip, request.HttpRequest.Url.AbsoluteUri)
+                    {Count = await DataProvider.UserDao.GetCountAsync()});
             }
             catch (Exception ex)
             {
@@ -369,38 +370,39 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(RouteUserResetPassword)]
-        public IHttpActionResult ResetPassword(int id)
+        public async Task<IHttpActionResult> ResetPassword(int id)
         {
             try
             {
                 var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var isAuth = request.IsApiAuthenticated && await 
+                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
                              request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var userInfo = UserManager.GetUserInfoByUserId(id);
-                if (userInfo == null) return NotFound();
+                var user = await UserManager.GetUserByUserIdAsync(id);
+                if (user == null) return NotFound();
 
                 var password = request.GetPostString("password");
                 var newPassword = request.GetPostString("newPassword");
 
-                if (!DataProvider.UserDao.CheckPassword(password, false, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
+                if (!DataProvider.UserDao.CheckPassword(password, false, user.Password, EPasswordFormatUtils.GetEnumType(user.PasswordFormat), user.PasswordSalt))
                 {
                     return BadRequest("原密码不正确，请重新输入");
                 }
 
-                if (!DataProvider.UserDao.ChangePassword(userInfo.UserName, newPassword, out string errorMessage))
+                var valid = await DataProvider.UserDao.ChangePasswordAsync(user.UserName, newPassword);
+                if (!valid.IsValid)
                 {
-                    return BadRequest(errorMessage);
+                    return BadRequest(valid.ErrorMessage);
                 }
                 
                 return Ok(new
                 {
-                    Value = userInfo
+                    Value = user
                 });
             }
             catch (Exception ex)

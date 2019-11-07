@@ -1,0 +1,879 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NuGet.Frameworks</name>
+    </assembly>
+    <members>
+        <member name="T:NuGet.Frameworks.AssetTargetFallbackFramework">
+            <summary>
+            AssetTargetFallbackFramework only fallback when zero assets are selected. These do not 
+            auto fallback during GetNearest as FallbackFramework would.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.AssetTargetFallbackFramework.Fallback">
+            <summary>
+            List framework to fall back to.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.AssetTargetFallbackFramework.RootFramework">
+            <summary>
+            Root project framework.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.AssetTargetFallbackFramework.AsFallbackFramework">
+            <summary>
+            Create a FallbackFramework from the current AssetTargetFallbackFramework.
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.FrameworkPrecedenceSorter">
+            <summary>
+            Sorts frameworks according to the framework mappings
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.NuGetFrameworkFullComparer">
+            <summary>
+            A case insensitive compare of the framework, version, and profile
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.NuGetFrameworkNameComparer">
+            <summary>
+            A case insensitive compare of the framework name only
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.NuGetFrameworkSorter">
+            <summary>
+            Sorts NuGet Frameworks in a consistent way for package readers.
+            The order is not particularly useful here beyond making things deterministic
+            since it compares completely different frameworks.
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.CompatibilityCacheKey">
+            <summary>
+            Internal cache key used to store framework compatibility.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.CompatibilityProvider.IsCompatible(NuGet.Frameworks.NuGetFramework,NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Check if the frameworks are compatible.
+            </summary>
+            <param name="target">Project framework</param>
+            <param name="candidate">Other framework to check against the project framework</param>
+            <returns>True if framework supports other</returns>
+        </member>
+        <member name="M:NuGet.Frameworks.CompatibilityProvider.IsCompatibleCore(NuGet.Frameworks.NuGetFramework,NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Actual compatibility check without caching
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.CompatibilityProvider.GetEquivalentFrameworksClosure(NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Find all equivalent frameworks, and their equivalent frameworks.
+            Example:
+            Mappings:
+            A &lt;‒&gt; B
+            B &lt;‒&gt; C
+            C &lt;‒&gt; D
+            For A we need to find B, C, and D so we must retrieve equivalent frameworks for A, B, and C
+            also as we discover them.
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.CompatibilityTable">
+            <summary>
+            Creates a table of compatible frameworks.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.CompatibilityTable.HasFramework(NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            True if the framework is in the table.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.CompatibilityTable.GetNearest(NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Gives the smallest set of frameworks from the table that cover everything the given framework would cover.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.CompatibilityTable.TryGetCompatible(NuGet.Frameworks.NuGetFramework,System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework}@)">
+            <summary>
+            Returns the list of all frameworks compatible with the given framework
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.DefaultFrameworkMappings.Instance">
+            <summary>
+            Singleton instance of the default framework mappings.
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.DefaultPortableFrameworkMappings">
+            <summary>
+            Contains the standard portable framework mappings
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.DefaultPortableFrameworkMappings.Instance">
+            <summary>
+            Static instance of the portable framework mappings
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkCompatibilityListProvider.GetFrameworksSupporting(NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Get a list of frameworks supporting the provided framework. This list
+            is not meant to be exhaustive but is instead meant to be human-readable.
+            Ex: netstandard1.5 -&gt; netstandardapp1.5, net462, dnxcore50, ...
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkCompatibilityProvider.IsCompatible(NuGet.Frameworks.NuGetFramework,NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Ex: IsCompatible(net45, net40) -&gt; true
+            Ex: IsCompatible(net40, net45) -&gt; false
+            </summary>
+            <param name="framework">Project target framework</param>
+            <param name="other">Library framework that is going to be installed</param>
+            <returns>True if framework supports other</returns>
+        </member>
+        <member name="T:NuGet.Frameworks.IFrameworkMappings">
+            <summary>
+            A raw list of framework mappings. These are indexed by the framework name provider and in most cases all
+            mappings are
+            mirrored so that the IFrameworkMappings implementation only needs to provide the minimum amount of
+            mappings.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.IdentifierSynonyms">
+            <summary>
+            Synonym ‒&gt; Identifier
+            Ex: NET Framework ‒&gt; .NET Framework
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.IdentifierShortNames">
+            <summary>
+            Ex: .NET Framework ‒&gt; net
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.ProfileShortNames">
+            <summary>
+            Ex: WindowsPhone ‒&gt; wp
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.EquivalentFrameworks">
+            <summary>
+            Equal frameworks. Used for legacy conversions.
+            ex: Framework: Win8 &lt;‒&gt; Framework: NetCore45 Platform: Win8
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.EquivalentProfiles">
+            <summary>
+            Framework, EquivalentProfile1, EquivalentProfile2
+            Ex: Silverlight, WindowsPhone71, WindowsPhone
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.SubSetFrameworks">
+            <summary>
+            Frameworks which are subsets of others.
+            Ex: .NETCore ‒&gt; .NET
+            Everything in .NETCore maps to .NET and is one way compatible. Version numbers follow the same format.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.CompatibilityMappings">
+            <summary>
+            Additional framework compatibility rules beyond name and version matching.
+            Ex: .NETFramework supports ‒&gt; Native
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.NonPackageBasedFrameworkPrecedence">
+            <summary>
+            Ordered list of framework identifiers. The first framework in the list will be preferred over other 
+            framework identifiers. This is enable better tie breaking in scenarios where legacy frameworks are 
+            equivalently compatible to a new framework.
+            Example: UAP10.0 ‒&gt; win81, wpa81
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.PackageBasedFrameworkPrecedence">
+            <summary>
+            Same as <see cref="P:NuGet.Frameworks.IFrameworkMappings.NonPackageBasedFrameworkPrecedence" /> but is only referred to if all of the packages
+            in consideration are package based (determined by <see cref="P:NuGet.Frameworks.NuGetFramework.IsPackageBased" />).
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.EquivalentFrameworkPrecedence">
+            <summary>
+            Only used to choose between frameworks that are equivalent. This favors more human-readable target
+            frameworks identifiers.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.ShortNameReplacements">
+            <summary>
+            Rewrite folder short names to the given value.
+            Ex: dotnet50 ‒&gt; dotnet
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkMappings.FullNameReplacements">
+            <summary>
+            Rewrite full framework names to the given value.
+            Ex: .NETPlatform,Version=v0.0 ‒&gt; .NETPlatform,Version=v5.0
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetIdentifier(System.String,System.String@)">
+            <summary>
+            Returns the official framework identifier for an alias or short name.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetShortIdentifier(System.String,System.String@)">
+            <summary>
+            Gives the short name used for folders in NuGet
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetProfile(System.String,System.String,System.String@)">
+            <summary>
+            Get the official profile name from the short name.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetShortProfile(System.String,System.String,System.String@)">
+            <summary>
+            Returns the shortened version of the profile name.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetVersion(System.String,System.Version@)">
+            <summary>
+            Parses a version string using single digit rules if no dots exist
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.GetVersionString(System.String,System.Version)">
+            <summary>
+            Returns a shortened version. If all digits are single digits no dots will be used.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetPortableProfileNumber(System.String,System.Int32@)">
+            <summary>
+            Tries to parse the portable profile number out of a profile.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetPortableProfile(System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework},System.Int32@)">
+            <summary>
+            Looks up the portable profile number based on the framework list.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetPortableFrameworks(System.Int32,System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework}@)">
+            <summary>
+            Returns the frameworks based on a portable profile number.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetPortableFrameworks(System.Int32,System.Boolean,System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework}@)">
+            <summary>
+            Returns the frameworks based on a portable profile number.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetPortableFrameworks(System.String,System.Boolean,System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework}@)">
+            <summary>
+            Returns the frameworks based on a profile string.
+            Profile can be either the number in format: Profile=7, or the shortened NuGet version: net45+win8
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetPortableFrameworks(System.String,System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework}@)">
+            <summary>
+            Parses a shortened portable framework profile list.
+            Ex: net45+win8
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetPortableCompatibilityMappings(System.Int32,System.Collections.Generic.IEnumerable{NuGet.Frameworks.FrameworkRange}@)">
+            <summary>
+            Returns ranges of frameworks that are known to be supported by the given portable profile number.
+            Ex: Profile7 -&gt; netstandard1.1
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetEquivalentFrameworks(NuGet.Frameworks.NuGetFramework,System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework}@)">
+            <summary>
+            Returns a list of all possible substitutions where the framework name
+            have equivalents.
+            Ex: sl3 -&gt; wp8
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetEquivalentFrameworks(NuGet.Frameworks.FrameworkRange,System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework}@)">
+            <summary>
+            Gives all substitutions for a framework range.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetCompatibilityMappings(NuGet.Frameworks.NuGetFramework,System.Collections.Generic.IEnumerable{NuGet.Frameworks.FrameworkRange}@)">
+            <summary>
+            Returns ranges of frameworks that are known to be supported by the given framework.
+            Ex: net45 -&gt; native
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetSubSetFrameworks(System.String,System.Collections.Generic.IEnumerable{System.String}@)">
+            <summary>
+            Returns all sub sets of the given framework.
+            Ex: .NETFramework -&gt; .NETCore
+            These will have the same version, but a different framework
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.CompareFrameworks(NuGet.Frameworks.NuGetFramework,NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            The ascending order of frameworks should be based on the following ordered groups:
+            
+            1. Non-package-based frameworks in <see cref="P:NuGet.Frameworks.IFrameworkMappings.NonPackageBasedFrameworkPrecedence" />.
+            2. Other non-package-based frameworks.
+            3. Package-based frameworks in <see cref="P:NuGet.Frameworks.IFrameworkMappings.PackageBasedFrameworkPrecedence" />.
+            4. Other package-based frameworks.
+            
+            For group #1 and #3, the order within the group is based on the order of the respective precedence list.
+            For group #2 and #4, the order is the original order in the incoming list. This should later be made
+            consistent between different input orderings by using the <see cref="T:NuGet.Frameworks.NuGetFrameworkSorter" />.
+            </summary>
+            <remarks>netcore50 is a special case since netcore451 is not packages based, but netcore50 is.
+            This sort will treat all versions of netcore as non-packages based.</remarks>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.CompareEquivalentFrameworks(NuGet.Frameworks.NuGetFramework,NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Used to pick between two equivalent frameworks. This is meant to favor the more human-readable
+            framework. Note that this comparison does not validate that the provided frameworks are indeed
+            equivalent (e.g. with
+            <see cref="M:NuGet.Frameworks.IFrameworkNameProvider.TryGetEquivalentFrameworks(NuGet.Frameworks.NuGetFramework,System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework}@)" />).
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.GetShortNameReplacement(NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Returns folder short names rewrites.
+            Ex: dotnet50 -&gt; dotnet
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.GetFullNameReplacement(NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Returns full name rewrites.
+            Ex: .NETPlatform,Version=v0.0 -&gt; .NETPlatform,Version=v5.0
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.GetNetStandardVersions">
+            <summary>
+            Returns all versions of .NETStandard in ascending order.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.IFrameworkNameProvider.GetCompatibleCandidates">
+            <summary>
+            Returns a list of frameworks that could be compatible with .NETStandard.
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.IFrameworkSpecific">
+            <summary>
+            A group or object that is specific to a single target framework
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkSpecific.TargetFramework">
+            <summary>
+            Target framework
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.IFrameworkTargetable">
+            <summary>
+            Use this to expose the list of target frameworks an object can be used for.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IFrameworkTargetable.SupportedFrameworks">
+            <summary>
+            All frameworks supported by the parent
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IPortableFrameworkMappings.ProfileFrameworks">
+            <summary>
+            Ex: 5 -&gt; net4, win8
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IPortableFrameworkMappings.ProfileOptionalFrameworks">
+            <summary>
+            Additional optional frameworks supported in a portable profile.
+            Ex: 5 -&gt; MonoAndroid1+MonoTouch1
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.IPortableFrameworkMappings.CompatibilityMappings">
+            <summary>
+            Compatibility mapping for portable profiles. This is a separate compatibility from that in
+            <see cref="P:NuGet.Frameworks.IFrameworkMappings.CompatibilityMappings" />.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.FallbackFramework.Fallback">
+            <summary>
+            List framework to fall back to.
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.FrameworkConstants.CommonFrameworks">
+            <summary>
+            Interned frameworks that are commonly used in NuGet
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.FrameworkExpander">
+            <summary>
+            FrameworkExpander finds all equivalent and compatible frameworks for a NuGetFramework
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkExpander.Expand(NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Return all possible equivalent, subset, and known compatible frameworks.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkExpander.ExpandInternal(NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Finds all expansions using the mapping provider
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFrameworkExtensions.IsDesktop(NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            True if the Framework is .NETFramework
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFrameworkExtensions.GetNearest``1(System.Collections.Generic.IEnumerable{``0},NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Return the item with the target framework nearest the project framework
+            </summary>
+        </member>
+        <member name="F:NuGet.Frameworks.FrameworkNameProvider._identifierSynonyms">
+            <summary>
+            Contains identifier -&gt; identifier
+            Ex: .NET Framework -&gt; .NET Framework
+            Ex: NET Framework -&gt; .NET Framework
+            This includes self mappings.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkNameProvider.TryConvertOrNormalize(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Collections.Generic.IDictionary{System.String,System.String},System.String@)">
+            <summary>
+            Converts a key using the mappings, or if the key is already converted, finds the normalized form.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkNameProvider.GetAllEquivalentFrameworks(NuGet.Frameworks.NuGetFramework)">
+            <summary>  
+            Get all equivalent frameworks including the given framework  
+            </summary>  
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkNameProvider.AddEquivalentProfiles(System.Collections.Generic.IEnumerable{NuGet.Frameworks.FrameworkSpecificMapping})">
+            <summary>
+            2 way per framework profile equivalence
+            </summary>
+            <param name="mappings"></param>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkNameProvider.AddEquivalentFrameworks(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{NuGet.Frameworks.NuGetFramework,NuGet.Frameworks.NuGetFramework}})">
+            <summary>
+            2 way framework equivalence
+            </summary>
+            <param name="mappings"></param>
+        </member>
+        <member name="T:NuGet.Frameworks.FrameworkRange">
+            <summary>
+            An inclusive range of frameworks
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.FrameworkRange.Min">
+            <summary>
+            Minimum Framework
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.FrameworkRange.Max">
+            <summary>
+            Maximum Framework
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.FrameworkRange.IncludeMin">
+            <summary>
+            Minimum version inclusiveness.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.FrameworkRange.IncludeMax">
+            <summary>
+            Maximum version inclusiveness.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.FrameworkRange.FrameworkIdentifier">
+            <summary>
+            Framework Identifier of both the Min and Max
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkRange.Satisfies(NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            True if the framework version falls between the min and max
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.FrameworkReducer">
+            <summary>
+            Reduces a list of frameworks into the smallest set of frameworks required.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkReducer.#ctor">
+            <summary>
+            Creates a FrameworkReducer using the default framework mappings.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkReducer.#ctor(NuGet.Frameworks.IFrameworkNameProvider,NuGet.Frameworks.IFrameworkCompatibilityProvider)">
+            <summary>
+            Creates a FrameworkReducer using custom framework mappings.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkReducer.GetNearest(NuGet.Frameworks.NuGetFramework,System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework})">
+            <summary>
+            Returns the nearest matching framework that is compatible.
+            </summary>
+            <param name="framework">Project target framework</param>
+            <param name="possibleFrameworks">Possible frameworks to narrow down</param>
+            <returns>Nearest compatible framework. If no frameworks are compatible null is returned.</returns>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkReducer.ReduceEquivalent(System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework})">
+            <summary>
+            Remove duplicates found in the equivalence mappings.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkReducer.ReduceUpwards(System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework})">
+            <summary>
+            Reduce to the highest framework
+            Ex: net45, net403, net40 -&gt; net45
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkReducer.ReduceDownwards(System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework})">
+            <summary>
+            Reduce to the lowest framework
+            Ex: net45, net403, net40 -&gt; net40
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkReducer.ExplodePortableFrameworks(System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework},System.Boolean)">
+            <summary>
+            Create lookup of the given PCLs to their actual frameworks
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkReducer.ExplodePortableFramework(NuGet.Frameworks.NuGetFramework,System.Boolean)">
+            <summary>
+            portable-net45+win8 -&gt; net45, win8
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkReducer.GetBestPCL(System.Collections.Generic.IEnumerable{NuGet.Frameworks.NuGetFramework})">
+            <summary>
+            Order PCLs when there is no other way to decide.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.FrameworkReducer.IsBetterPCL(NuGet.Frameworks.NuGetFramework,NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Sort PCLs using these criteria
+            1. Lowest number of frameworks (highest surface area) wins first
+            2. Profile with the highest version numbers wins next
+            3. String compare is used as a last resort
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.FrameworkSpecificMapping">
+            <summary>
+            A keyvalue pair specific to a framework identifier
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.NuGetFramework">
+            <summary>
+            A portable implementation of the .NET FrameworkName type with added support for NuGet folder names.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.Framework">
+            <summary>
+            Target framework
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.Version">
+            <summary>
+            Target framework version
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.HasProfile">
+            <summary>
+            True if the profile is non-empty
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.Profile">
+            <summary>
+            Target framework profile
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.DotNetFrameworkName">
+            <summary>
+            Formatted to a System.Versioning.FrameworkName
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFramework.GetDotNetFrameworkName(NuGet.Frameworks.IFrameworkNameProvider)">
+            <summary>
+            Formatted to a System.Versioning.FrameworkName
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFramework.GetShortFolderName">
+            <summary>
+            Creates the shortened version of the framework using the default mappings.
+            Ex: net45
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFramework.GetShortFolderName(NuGet.Frameworks.IFrameworkNameProvider)">
+            <summary>
+            Creates the shortened version of the framework using the given mappings.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.IsPCL">
+            <summary>
+            Portable class library check
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.IsPackageBased">
+            <summary>
+            True if the framework is packages based.
+            Ex: dotnet, dnxcore, netcoreapp, netstandard, uap, netcore50
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.AllFrameworkVersions">
+            <summary>
+            True if this framework matches for all versions.
+            Ex: net
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.IsUnsupported">
+            <summary>
+            True if this framework was invalid or unknown. This framework is only compatible with Any and Agnostic.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.IsAgnostic">
+            <summary>
+            True if this framework is non-specific. Always compatible.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.IsAny">
+            <summary>
+            True if this is the any framework. Always compatible.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.NuGetFramework.IsSpecificFramework">
+            <summary>
+            True if this framework is real and not one of the special identifiers.
+            </summary>
+        </member>
+        <member name="F:NuGet.Frameworks.NuGetFramework.Comparer">
+            <summary>
+            Full framework comparison of the identifier, version, profile, platform, and platform version
+            </summary>
+        </member>
+        <member name="F:NuGet.Frameworks.NuGetFramework.FrameworkNameComparer">
+            <summary>
+            Framework name only comparison.
+            </summary>
+        </member>
+        <member name="F:NuGet.Frameworks.NuGetFramework._packagesBased">
+            <summary>
+            Frameworks that are packages based across all versions.
+            </summary>
+        </member>
+        <member name="F:NuGet.Frameworks.NuGetFramework.UnsupportedFramework">
+            <summary>
+            An unknown or invalid framework
+            </summary>
+        </member>
+        <member name="F:NuGet.Frameworks.NuGetFramework.AgnosticFramework">
+            <summary>
+            A framework with no specific target framework. This can be used for content only packages.
+            </summary>
+        </member>
+        <member name="F:NuGet.Frameworks.NuGetFramework.AnyFramework">
+            <summary>
+            A wildcard matching all frameworks
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFramework.Parse(System.String)">
+            <summary>
+            Creates a NuGetFramework from a folder name using the default mappings.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFramework.Parse(System.String,NuGet.Frameworks.IFrameworkNameProvider)">
+            <summary>
+            Creates a NuGetFramework from a folder name using the given mappings.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFramework.ParseFrameworkName(System.String,NuGet.Frameworks.IFrameworkNameProvider)">
+            <summary>
+            Creates a NuGetFramework from a .NET FrameworkName
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFramework.ParseFolder(System.String)">
+            <summary>
+            Creates a NuGetFramework from a folder name using the default mappings.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFramework.ParseFolder(System.String,NuGet.Frameworks.IFrameworkNameProvider)">
+            <summary>
+            Creates a NuGetFramework from a folder name using the given mappings.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFramework.TryParseDeprecatedFramework(System.String,NuGet.Frameworks.NuGetFramework@)">
+            <summary>
+            Attempt to parse a common but deprecated framework using an exact string match
+            Support for these should be dropped as soon as possible.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFramework.TryParseCommonFramework(System.String,NuGet.Frameworks.NuGetFramework@)">
+            <summary>
+            A set of special and common frameworks that can be returned from the list of constants without parsing
+            Using the interned frameworks here optimizes comparisons since they can be checked by reference.
+            This is designed to optimize
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFrameworkUtility.GetNearest``1(System.Collections.Generic.IEnumerable{``0},NuGet.Frameworks.NuGetFramework,System.Func{``0,NuGet.Frameworks.NuGetFramework})">
+            <summary>
+            Find the most compatible group based on target framework
+            </summary>
+            <param name="items">framework specific groups or items</param>
+            <param name="framework">project target framework</param>
+            <param name="selector">retrieves the framework from the group</param>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFrameworkUtility.GetNearest``1(System.Collections.Generic.IEnumerable{``0},NuGet.Frameworks.NuGetFramework,NuGet.Frameworks.IFrameworkNameProvider,NuGet.Frameworks.IFrameworkCompatibilityProvider,System.Func{``0,NuGet.Frameworks.NuGetFramework})">
+            <summary>
+            Find the most compatible group based on target framework
+            </summary>
+            <param name="items">framework specific groups or items</param>
+            <param name="framework">project target framework</param>
+            <param name="selector">retrieves the framework from the group</param>
+            <param name="frameworkMappings">framework mappings</param>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFrameworkUtility.GetNearest``1(System.Collections.Generic.IEnumerable{``0},NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Find the most compatible group based on target framework
+            </summary>
+            <param name="items">framework specific groups or items</param>
+            <param name="framework">project target framework</param>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFrameworkUtility.GetNearest``1(System.Collections.Generic.IEnumerable{``0},NuGet.Frameworks.NuGetFramework,NuGet.Frameworks.IFrameworkNameProvider,NuGet.Frameworks.IFrameworkCompatibilityProvider)">
+            <summary>
+            Find the most compatible group based on target framework
+            </summary>
+            <param name="items">framework specific groups or items</param>
+            <param name="framework">project target framework</param>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFrameworkUtility.IsCompatibleWithFallbackCheck(NuGet.Frameworks.NuGetFramework,NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            Check compatibility with additional checks for the fallback framework.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.NuGetFrameworkUtility.IsNetCore50AndUp(NuGet.Frameworks.NuGetFramework)">
+            <summary>
+            True if the framework is netcore50 or higher. This is where the framework
+            becomes packages based.
+            </summary>
+        </member>
+        <member name="M:NuGet.Frameworks.OneWayCompatibilityMappingEntry.#ctor(NuGet.Frameworks.FrameworkRange,NuGet.Frameworks.FrameworkRange)">
+            <summary>
+            Creates a one way compatibility mapping.
+            Ex: net -supports-&gt; native
+            </summary>
+            <param name="targetFramework">Project framework</param>
+            <param name="supportedFramework">Framework that is supported by the project framework</param>
+        </member>
+        <member name="P:NuGet.Frameworks.OneWayCompatibilityMappingEntry.TargetFrameworkRange">
+            <summary>
+            Primary framework range or project target framework that supports the SuppportedFrameworkRange
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.OneWayCompatibilityMappingEntry.SupportedFrameworkRange">
+            <summary>
+            Framework range that is supported by the TargetFrameworkRange
+            </summary>
+        </member>
+        <member name="T:NuGet.Frameworks.Strings">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.Strings.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.Strings.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.Strings.FrameworkMismatch">
+            <summary>
+              Looks up a localized string similar to Frameworks must have the same identifier, profile, and platform..
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.Strings.InvalidFrameworkIdentifier">
+            <summary>
+              Looks up a localized string similar to Invalid framework identifier '{0}'..
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.Strings.InvalidFrameworkVersion">
+            <summary>
+              Looks up a localized string similar to Invalid framework version '{0}'..
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.Strings.InvalidPortableFrameworksDueToHyphen">
+            <summary>
+              Looks up a localized string similar to Invalid portable frameworks '{0}'. A hyphen may not be in any of the portable framework names..
+            </summary>
+        </member>
+        <member name="P:NuGet.Frameworks.Strings.MissingPortableFrameworks">
+            <summary>
+              Looks up a localized string similar to Invalid portable frameworks for '{0}'. A portable framework must have at least one framework in the profile..
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.OrderedEquals``2(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Collections.Generic.IComparer{``1},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two enumberables for equality, ordered according to the specified key and optional comparer. Handles null values gracefully.
+            </summary>
+            <typeparam name="TSource">The type of the list</typeparam>
+            <typeparam name="TKey">The type of the sorting key</typeparam>
+            <param name="self">This list</param>
+            <param name="other">The other list</param>
+            <param name="keySelector">The function to extract the key from each item in the list</param>
+            <param name="orderComparer">An optional comparer for comparing keys</param>
+            <param name="sequenceComparer">An optional comparer for sequences</param>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.SequenceEqualWithNullCheck``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two sequence for equality, allowing either sequence to be null. If one is null, both have to be
+            null for equality.
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.EqualityUtility.SetEqualsWithNullCheck``1(System.Collections.Generic.ISet{``0},System.Collections.Generic.ISet{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Compares two sets for equality, allowing either sequence to be null.
+            If one is null, both have to be null for equality.
+            </summary>
+        </member>
+        <member name="T:NuGet.Shared.HashCodeCombiner">
+            <summary>
+            Hash code creator, based on the original NuGet hash code combiner/ASP hash code combiner implementations
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.HashCodeCombiner.GetHashCode``2(``0,``1)">
+            <summary>
+            Create a unique hash code for the given set of items
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.HashCodeCombiner.GetHashCode``3(``0,``1,``2)">
+            <summary>
+            Create a unique hash code for the given set of items
+            </summary>
+        </member>
+        <member name="M:NuGet.Shared.Extensions.AsList``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Return the enumerable as a List of T, copying if required. Optimized for common case where it is an List of T.
+            Avoid mutating the return value.
+            </summary>
+            <remarks>https://aspnetwebstack.codeplex.com/SourceControl/latest#src/Common/CollectionExtensions.cs</remarks>
+        </member>
+        <member name="M:NuGet.Shared.Extensions.AsHashSet``1(System.Collections.Generic.ISet{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Return the ISet as a HashSet of T, copying if required. Optimized for common case where it is a HashSet of T.
+            Avoid mutating the return value.
+            </summary>
+        </member>
+        <member name="T:NuGet.Shared.TypeInfo">
+            <summary>
+            A minimal implementation of TypeInfo for net40-client.
+            </summary>
+        </member>
+        <member name="T:System.Reflection.TypeExtensions">
+            <summary>
+            Extension methods for the <see cref="T:System.Type" /> type.
+            </summary>
+        </member>
+        <member name="M:System.Reflection.TypeExtensions.GetTypeInfo(System.Type)">
+            <summary>
+            Expose the type itself as the type info. This is to make TypeInfo available on
+            .NET Framework 4 Client Profile. This method is used in the automatically generated
+            resource C# files. To avoid manual changes to an automatically generated file, expose
+            this method as an extension method in an used namespace.
+            </summary>
+        </member>
+    </members>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /><DigestValue>EGg+5TUrF8RMt7kKDhScFLXDQEU=</DigestValue></Reference></SignedInfo><SignatureValue>D7RpKWOiQVSzD6gzRP1PJulc4LWB+TWvuKykX0eHz+xtkh3ebqybAekLc40kqKBlsW3EhnclZesmmz1S1ycYiO/rNvMpxoGugfqM2bfzHjl17EW8QWo+VKx3ufFZRtVU/nviImH4pzttk8DY/CwbfPGtpxpTTcoM6iN5hIg0epgLCaz9S/3JYf9sQKES5vju5EQFJQW3TJQn5N+QdodY5CV+g3wKQBz+tBsii+ry6TEuBA0cS3F8+MJcFgvfRDeWPU/Q0QQQCYwrs+nUG+g9iCdKhv+fqolv4akqpT//LN9/Fg+iQVOTT6+GD0IFeoyi7FbGuhWjVcyWaCwak4IBiA==</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>saeJ0/an7vTtdIicnsGFx5TflhIe/TaKK/Z4TOnp1DWwm4V/b0vvHP93iFWs0mJ1QU6i81u8VjdWwnCLQ27BMyhBNgbMErp+yfcQmi8HBhyha/qllJc+4YfUXJo2EpDhjcmzn64I97JtA0raCvJY8BMlFXkXzB8fRP+wmvzhKtnFwU9y9H1Z5RJH2pd9dBBQiw6NgaxN+TRkYxvv552YqiqhIeZVjZN9yVfPyNHyHFCqyxJlBq79AoAu8NnI5mwYQSCftCs0p0lop4F6Jf94lHQQcuEEDR++u5GBrpyXmNPEYxzCIIyQnQKBDPtpl79aYWle4/jN3Tc2f3HbM96A3w==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>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</X509Certificate><X509Certificate>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</X509Certificate><X509Certificate>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</X509Certificate></X509Data></KeyInfo><Object Id="ts-countersig"><X509Data><X509Certificate>MIIE2jCCA8KgAwIBAgITMwAAARovLhXutoVHlQAAAAABGjANBgkqhkiG9w0BAQUFADB3MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSEwHwYDVQQDExhNaWNyb3NvZnQgVGltZS1TdGFtcCBQQ0EwHhcNMTgxMDI0MjEwNzMzWhcNMjAwMTEwMjEwNzMzWjCByjELMAkGA1UEBhMCVVMxEzARBgNVBAgTCldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jvc29mdCBDb3Jwb3JhdGlvbjElMCMGA1UECxMcTWljcm9zb2Z0IEFtZXJpY2EgT3BlcmF0aW9uczEmMCQGA1UECxMdVGhhbGVzIFRTUyBFU046M0U3QS1FMzU5LUEyNUQxJTAjBgNVBAMTHE1pY3Jvc29mdCBUaW1lLVN0YW1wIFNlcnZpY2UwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCo260oy3DBVj7UKKAP9MJCENFuDkXUuWbIt57M8AiNBMgnS0VXz+weaFYgM1RYYjjU7h94xu0D4zIKCmV/GxFF0FiL0qlKPHnBrGQyIvJjj73s2X+O92NOe9UhMvi+GLHOmkJkeMoZt8hw1SOoTUl5HLQNj6rULN96Jk37YrzA6PU4LlUk/D5VJOcMHpCsuu/hpCQjsv8V3Xex7OOOLz/tSa9wgwI3gKolraZ6bAeZpWi6extucTkhAlIhP+K/dnClKRTNIzskBdLtgAZwtSWlUKXy+3Ehw+hZfYMupDc+hoZQZp+kXnDUyQE5ds6qTVZKn8jhOUfQnpjt4HOo9uVnAgMBAAGjggEJMIIBBTAdBgNVHQ4EFgQUO6LChaGkpib6qx+dFwmtKdmPlKMwHwYDVR0jBBgwFoAUIzT42VJGcArtQPt2+7MrsMM1sw8wVAYDVR0fBE0wSzBJoEegRYZDaHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraS9jcmwvcHJvZHVjdHMvTWljcm9zb2Z0VGltZVN0YW1wUENBLmNybDBYBggrBgEFBQcBAQRMMEowSAYIKwYBBQUHMAKGPGh0dHA6Ly93d3cubWljcm9zb2Z0LmNvbS9wa2kvY2VydHMvTWljcm9zb2Z0VGltZVN0YW1wUENBLmNydDATBgNVHSUEDDAKBggrBgEFBQcDCDANBgkqhkiG9w0BAQUFAAOCAQEALgoIP7TecPNrB0ItAEuIOtdNIYsXPT/avwsD+OI9MYlestswFDnfThHv+mHOTZjPglWED/t9PTaVlHSwTlXUXWvDwQgnoF6L6srfvhDibR5Pn/MJ5L5IgOhxN+G8s88YD+K6n7K2rxwhuPZaiHAjzHLYPejZcMxLOMviVzPBB9xMjtuNGXFngURvR0XXwiC4ZXmljs03YEaCVE9+DUZUi3mTm500KvAXMqSbbS/iwal3eoY6uNpjsmbcyKIl2jNQ5y6WI/Jcdq0Xe9dDnAozIq+y2Vz+BSmHQU+FPu35xW55P397tp87UjP2AUAh2y+DThrTImTHoy1s6PVG56WAyQ==</X509Certificate><X509Certificate>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</X509Certificate></X509Data><CounterSignature ts-format="cms-timestamp-message" xmlns="http://schemas.microsoft.com/xmldsig/timestamp/2003">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</CounterSignature></Object></Signature></doc>

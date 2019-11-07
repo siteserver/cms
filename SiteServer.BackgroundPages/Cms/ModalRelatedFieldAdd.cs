@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -137,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
                     relatedFieldInfo.Id = AuthRequest.GetQueryInt("RelatedFieldID");
                     DataProvider.RelatedFieldDao.Update(relatedFieldInfo);
-                    AuthRequest.AddSiteLog(SiteId, "修改联动字段", $"联动字段:{relatedFieldInfo.Title}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "修改联动字段", $"联动字段:{relatedFieldInfo.Title}").GetAwaiter().GetResult();
 					isChanged = true;
 				}
 				catch(Exception ex)
@@ -157,7 +158,7 @@ namespace SiteServer.BackgroundPages.Cms
 					try
 					{
                         DataProvider.RelatedFieldDao.Insert(relatedFieldInfo);
-                        AuthRequest.AddSiteLog(SiteId, "添加联动字段", $"联动字段:{relatedFieldInfo.Title}");
+                        AuthRequest.AddSiteLogAsync(SiteId, "添加联动字段", $"联动字段:{relatedFieldInfo.Title}").GetAwaiter().GetResult();
 						isChanged = true;
 					}
 					catch(Exception ex)

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
@@ -162,7 +164,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var parentId = TranslateUtils.ToInt(Request["parentId"]);
                 var loadingType = Request["loadingType"];
                 var additional = Request["additional"];
-                retString = GetLoadingChannels(siteId, contentModelPluginId, parentId, loadingType, additional, request);
+                retString = GetLoadingChannelsAsync(siteId, contentModelPluginId, parentId, loadingType, additional, request).GetAwaiter().GetResult();
             }
             else if (type == TypePluginDownload)
             {
@@ -394,7 +396,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retVal;
         }
 
-        public string GetLoadingChannels(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, AuthenticatedRequest request)
+        public async Task<string> GetLoadingChannelsAsync(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, AuthenticatedRequest request)
         {
             var list = new List<string>();
 
@@ -405,7 +407,7 @@ namespace SiteServer.BackgroundPages.Ajax
                     ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children,
                     string.Empty, string.Empty, string.Empty);
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = await SiteManager.GetSiteAsync(siteId);
 
             var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
 
@@ -425,7 +427,7 @@ namespace SiteServer.BackgroundPages.Ajax
                     if (!IsDesendantContentModelPluginIdExists(channelInfo, contentModelPluginId)) continue;
                 }
 
-                list.Add(ChannelLoading.GetChannelRowHtml(siteInfo, channelInfo, enabled, eLoadingType, nameValueCollection, request.AdminPermissionsImpl));
+                list.Add(ChannelLoading.GetChannelRowHtml(site, channelInfo, enabled, eLoadingType, nameValueCollection, request.AdminPermissionsImpl));
             }
 
             //arraylist.Reverse();

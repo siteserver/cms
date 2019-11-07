@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -73,10 +74,10 @@ namespace SiteServer.BackgroundPages.Settings
 
             DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
 
-            var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
+            var siteIdList = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             foreach (var psId in siteIdList)
             {
-                DdlSiteId.Items.Add(new ListItem(SiteManager.GetSiteInfo(psId).SiteName, psId.ToString())); 
+                DdlSiteId.Items.Add(new ListItem(SiteManager.GetSiteAsync(psId).GetAwaiter().GetResult().SiteName, psId.ToString())); 
             }
 
             DdlLogType.Items.Add(new ListItem("全部记录", "All"));
@@ -145,12 +146,12 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (SiteId == 0)
             {
-                var siteInfo = SiteManager.GetSiteInfo(SqlUtils.EvalInt(e.Item.DataItem, nameof(SiteLogInfo.SiteId)));
+                var site = SiteManager.GetSiteAsync(SqlUtils.EvalInt(e.Item.DataItem, nameof(SiteLogInfo.SiteId))).GetAwaiter().GetResult();
                 var siteName = string.Empty;
-                if (siteInfo != null)
+                if (site != null)
                 {
                     siteName =
-                        $"<a href='{siteInfo.Additional.WebUrl}' target='_blank'>{siteInfo.SiteName}</a>";
+                        $"<a href='{site.Additional.WebUrl}' target='_blank'>{site.SiteName}</a>";
                 }
                 ltlSite.Text = $@"<td align=""text-center text-nowrap"">{siteName}</td>";
             }

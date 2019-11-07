@@ -2,8 +2,8 @@
 var $uploadUrl = apiUrl + '/pages/cms/contentsLayerImport';
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryString('siteId')),
-  channelId: parseInt(pageUtils.getQueryString('channelId')),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
   pageLoad: false,
   pageAlert: null,
   checkedLevels: null,
@@ -124,7 +124,7 @@ var methods = {
       });
     }
 
-    parent.pageUtils.loading(true);
+    parent.utils.loading(true);
     $api.post({
         siteId: $this.siteId,
         channelId: $this.channelId,
@@ -134,7 +134,7 @@ var methods = {
         isOverride: $this.isOverride
       },
       function (err, res) {
-        parent.pageUtils.loading(false);
+        parent.utils.loading(false);
 
         if (err) {
           return $this.pageAlert = {

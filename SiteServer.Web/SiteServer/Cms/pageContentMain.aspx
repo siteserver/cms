@@ -7,7 +7,7 @@
   </head>
   <frameset id="frame" framespacing="0" border="false" cols="180,*" frameborder="0" scrolling="yes">
     <frame name="tree" scrolling="auto" marginwidth="0" marginheight="0" src="pageContentTree.aspx?siteId=<%=SiteId%>&RightPageURL=pageContent.aspx">
-      <frame name="content" scrolling="auto" marginwidth="0" marginheight="0" src="../pageBlank.html">
+      <frame name="content" scrolling="auto" marginwidth="0" marginheight="0" src="../blank.html">
   </frameset>
   <noframes>
 

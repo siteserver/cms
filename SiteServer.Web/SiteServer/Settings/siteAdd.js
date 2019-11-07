@@ -6,7 +6,7 @@ var data = {
   pageType: utils.getQueryString('type') || 'selectType',
 
   siteTemplates: null,
-  isRootExists: null,
+  rootExists: null,
   siteList: null,
   tableNameList: null,
 
@@ -23,10 +23,10 @@ var data = {
   createType: utils.getQueryString('createType'),
   createTemplateId: utils.getQueryString('createTemplateId'),
   siteName: '',
-  isRoot: false,
+  root: false,
   parentId: 0,
   siteDir: '',
-  tableRule: 'Choose',
+  tableRule: 'Create',
   tableChoose: '',
   tableHandWrite: '',
   isImportContents: true,
@@ -41,7 +41,7 @@ var methods = {
       var res = response.data;
 
       $this.siteTemplates = res.value;
-      $this.isRootExists = res.isRootExists;
+      $this.rootExists = res.rootExists;
       $this.siteList = res.siteList;
       $this.tableNameList = res.tableNameList;
     }).catch(function (error) {
@@ -177,7 +177,7 @@ var methods = {
           createType: $this.createType,
           createTemplateId: $this.createTemplateId,
           siteName: $this.siteName,
-          isRoot: $this.isRoot,
+          root: $this.root,
           parentId: $this.parentId,
           siteDir: $this.siteDir,
           tableRule: $this.tableRule,

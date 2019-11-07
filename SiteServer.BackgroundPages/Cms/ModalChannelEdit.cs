@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             _channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
-            CacAttributes.SiteInfo = SiteInfo;
+            CacAttributes.Site = Site;
             CacAttributes.ChannelId = _channelId;
 
             if (!IsPostBack)
@@ -148,8 +148,8 @@ namespace SiteServer.BackgroundPages.Cms
                 ControlUtils.SelectSingleItem(DdlTaxisType, nodeInfo.Additional.DefaultTaxisType);
 
                 TbImageUrl.Text = nodeInfo.ImageUrl;
-                LtlImageUrlButtonGroup.Text = WebUtils.GetImageUrlButtonGroupHtml(SiteInfo, TbImageUrl.ClientID);
-                TbContent.SetParameters(SiteInfo, ChannelAttribute.Content, nodeInfo.Content);
+                LtlImageUrlButtonGroup.Text = WebUtils.GetImageUrlButtonGroupHtml(Site, TbImageUrl.ClientID);
+                TbContent.SetParameters(Site, ChannelAttribute.Content, nodeInfo.Content);
                 if (TbKeywords.Visible)
                 {
                     TbKeywords.Text = nodeInfo.Keywords;
@@ -212,7 +212,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var styleInfoList = TableStyleManager.GetChannelStyleInfoList(nodeInfo);
 
-                var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, Request.Form, null);
+                var extendedAttributes = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleInfoList, Request.Form, null).GetAwaiter().GetResult();
                 if (extendedAttributes.Count > 0)
                 {
                     nodeInfo.Additional.Load(extendedAttributes);
@@ -235,7 +235,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 nodeInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
                 nodeInfo.ImageUrl = TbImageUrl.Text;
-                nodeInfo.Content = ContentUtility.TextEditorContentEncode(SiteInfo, Request.Form[ChannelAttribute.Content]);
+                nodeInfo.Content = ContentUtility.TextEditorContentEncodeAsync(Site, Request.Form[ChannelAttribute.Content]).GetAwaiter().GetResult();
                 if (TbKeywords.Visible)
                 {
                     nodeInfo.Keywords = TbKeywords.Text;
@@ -262,7 +262,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 DataProvider.ChannelDao.Update(nodeInfo);
 
-                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "修改栏目", $"栏目:{nodeInfo.ChannelName}");
+                AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "修改栏目", $"栏目:{nodeInfo.ChannelName}").GetAwaiter().GetResult();
 
                 isChanged = true;
             }

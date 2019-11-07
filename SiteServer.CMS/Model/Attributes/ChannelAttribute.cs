@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.StlParser.Model;
+﻿using SiteServer.CMS.Model.Db;
+using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.Model.Attributes
 {

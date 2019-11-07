@@ -5,6 +5,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Apis
@@ -20,19 +21,19 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-            //return ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
-            return DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(siteInfo, channelInfo), channelInfo.Id, contentId);
+            //return ContentManager.GetContentInfo(site, channelInfo, contentId);
+            return DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(site, channelInfo), channelInfo.Id, contentId);
         }
 
         public List<IContentInfo> GetContentInfoList(int siteId, int channelId, string whereString, string orderString, int limit, int offset)
         {
             if (siteId <= 0 || channelId <= 0) return null;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+            var tableName = ChannelManager.GetTableName(site, channelId);
 
             var list = DataProvider.ContentDao.GetContentInfoList(tableName, whereString, orderString, offset, limit);
             var retVal = new List<IContentInfo>();
@@ -47,8 +48,8 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             if (siteId <= 0 || channelId <= 0) return 0;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+            var tableName = ChannelManager.GetTableName(site, channelId);
 
             return DataProvider.ContentDao.GetCount(tableName, whereString);
         }
@@ -57,18 +58,18 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             if (siteId <= 0 || channelId <= 0) return string.Empty;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
             var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            return ChannelManager.GetTableName(siteInfo, nodeInfo);
+            return ChannelManager.GetTableName(site, nodeInfo);
         }
 
         public List<TableColumn> GetTableColumns(int siteId, int channelId)
         {
             if (siteId <= 0 || channelId <= 0) return null;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
             var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableStyleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, nodeInfo);
+            var tableStyleInfoList = TableStyleManager.GetContentStyleInfoList(site, nodeInfo);
             var tableColumnList = new List<TableColumn>
             {
                 new TableColumn
@@ -124,18 +125,18 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public List<InputStyle> GetInputStyles(int siteId, int channelId)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-            return ChannelManager.GetInputStyles(siteInfo, channelInfo);
+            return ChannelManager.GetInputStyles(site, channelInfo);
         }
 
         public string GetContentValue(int siteId, int channelId, int contentId, string attributeName)
         {
             if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+            var tableName = ChannelManager.GetTableName(site, channelId);
 
             var tuple = DataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
             return tuple?.Item2;
@@ -153,10 +154,10 @@ namespace SiteServer.CMS.Plugin.Apis
 
         //public void SetValuesToContentInfo(int siteId, int channelId, NameValueCollection form, IContentInfo contentInfo)
         //{
-        //    var siteInfo = SiteManager.GetSiteInfo(siteId);
+        //    var site = SiteManager.GetSite(siteId);
         //    var nodeInfo = NodeManager.GetChannelInfo(siteId, channelId);
-        //    var tableName = NodeManager.GetTableName(siteInfo, nodeInfo);
-        //    var tableStyle = NodeManager.GetTableStyle(siteInfo, nodeInfo);
+        //    var tableName = NodeManager.GetTableName(site, nodeInfo);
+        //    var tableStyle = NodeManager.GetTableStyle(site, nodeInfo);
         //    var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteId, channelId);
 
         //    var extendImageUrl = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl);
@@ -165,45 +166,45 @@ namespace SiteServer.CMS.Plugin.Apis
         //        form[extendImageUrl] = form[StringUtils.LowerFirst(extendImageUrl)];
         //    }
 
-        //    InputTypeParser.AddValuesToAttributes(tableStyle, tableName, siteInfo, relatedIdentities, form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes);
+        //    InputTypeParser.AddValuesToAttributes(tableStyle, tableName, site, relatedIdentities, form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes);
         //}
 
         public int Insert(int siteId, int channelId, IContentInfo contentInfo)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            var tableName = ChannelManager.GetTableName(site, channelInfo);
 
-            return DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, (ContentInfo)contentInfo);
+            return DataProvider.ContentDao.Insert(tableName, site, channelInfo, (ContentInfo)contentInfo);
         }
 
         public void Update(int siteId, int channelId, IContentInfo contentInfo)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            DataProvider.ContentDao.Update(siteInfo, channelInfo, (ContentInfo)contentInfo);
+            DataProvider.ContentDao.Update(site, channelInfo, (ContentInfo)contentInfo);
         }
 
         public void Delete(int siteId, int channelId, int contentId)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
             var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+            var tableName = ChannelManager.GetTableName(site, nodeInfo);
             var contentIdList = new List<int> { contentId };
             DataProvider.ContentDao.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
         }
 
         public IList<int> GetContentIdList(int siteId, int channelId)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+            var tableName = ChannelManager.GetTableName(site, channelId);
             return DataProvider.ContentDao.GetContentIdListCheckedByChannelId(tableName, siteId, channelId);
         }
 
         public string GetContentUrl(int siteId, int channelId, int contentId)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            return PageUtility.GetContentUrl(siteInfo, ChannelManager.GetChannelInfo(siteId, channelId), contentId, false);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+            return PageUtility.GetContentUrlAsync(site, ChannelManager.GetChannelInfo(siteId, channelId), contentId, false).GetAwaiter().GetResult();
         }
     }
 }

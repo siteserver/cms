@@ -26,30 +26,30 @@ var methods = {
   delete: function (attributeName) {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.delete({
       attributeName: attributeName
     }, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err || !res || !res.value) return;
 
       $this.items = res.value;
     });
   },
   btnEditClick: function (attributeName) {
-    parent.pageUtils.openLayer({
+    parent.utils.openLayer({
       title: '编辑字段',
       url: 'Shared/tableStyle.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
     });
   },
   btnValidateClick: function (attributeName) {
-    parent.pageUtils.openLayer({
+    parent.utils.openLayer({
       title: '设置验证规则',
       url: 'Shared/tableValidate.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
     });
   },
   btnAddClick: function () {
-    parent.pageUtils.openLayer({
+    parent.utils.openLayer({
       title: '新增字段',
       url: 'Shared/tableStyle.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities
     });
@@ -57,7 +57,7 @@ var methods = {
   btnDeleteClick: function (attributeName) {
     var $this = this;
 
-    pageUtils.alertDelete({
+    utils.alertDelete({
       title: '删除字段',
       text: '此操作将删除字段 ' + attributeName + '，确定吗？',
       callback: function () {

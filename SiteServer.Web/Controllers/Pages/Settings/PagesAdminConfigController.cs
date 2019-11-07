@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -36,7 +37,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -69,7 +70,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
-                request.AddAdminLog("修改管理员设置");
+                await request.AddAdminLogAsync("修改管理员设置");
 
                 return Ok(new
                 {

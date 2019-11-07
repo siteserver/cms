@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -64,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
 				try
 				{
                     DataProvider.ContentGroupDao.Update(contentGroupInfo);
-                    AuthRequest.AddSiteLog(SiteId, "修改内容组", $"内容组:{contentGroupInfo.GroupName}");
+                    AuthRequest.AddSiteLogAsync(SiteId, "修改内容组", $"内容组:{contentGroupInfo.GroupName}").GetAwaiter().GetResult();
 					isChanged = true;
 				}
                 catch (Exception ex)
@@ -83,8 +84,8 @@ namespace SiteServer.BackgroundPages.Cms
 					try
 					{
                         DataProvider.ContentGroupDao.Insert(contentGroupInfo);
-                        AuthRequest.AddSiteLog(SiteId, "添加内容组",
-                            $"内容组:{contentGroupInfo.GroupName}");
+                        AuthRequest.AddSiteLogAsync(SiteId, "添加内容组",
+                            $"内容组:{contentGroupInfo.GroupName}").GetAwaiter().GetResult();
 						isChanged = true;
 					}
 					catch(Exception ex)

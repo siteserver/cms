@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelId);
+            CrossSiteTransUtility.LoadSiteIdDropDownListAsync(DdlSiteId, Site, _channelId).GetAwaiter().GetResult();
 
             if (DdlSiteId.Items.Count > 0)
             {
@@ -47,13 +47,13 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, ChannelManager.GetChannelInfo(SiteId, _channelId), AuthRequest.AdminPermissionsImpl);
+            CrossSiteTransUtility.LoadChannelIdListBoxAsync(LbChannelId, Site, psId, ChannelManager.GetChannelInfo(SiteId, _channelId), AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             var targetSiteId = int.Parse(DdlSiteId.SelectedValue);
-            var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
+            var targetSite = SiteManager.GetSiteAsync(targetSiteId).GetAwaiter().GetResult();
             try
             {
                 foreach (ListItem listItem in LbChannelId.Items)
@@ -64,25 +64,25 @@ namespace SiteServer.BackgroundPages.Cms
                         if (targetChannelId != 0)
                         {
                             var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
-                            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
+                            var targetTableName = ChannelManager.GetTableName(targetSite, targetChannelId);
                             foreach (var contentId in _contentIdList)
                             {
-                                var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelId, contentId);
-                                FileUtility.MoveFileByContentInfo(SiteInfo, targetSiteInfo, contentInfo);
+                                var contentInfo = ContentManager.GetContentInfo(Site, _channelId, contentId);
+                                FileUtility.MoveFileByContentInfo(Site, targetSite, contentInfo);
                                 contentInfo.SiteId = targetSiteId;
                                 contentInfo.SourceId = contentInfo.ChannelId;
                                 contentInfo.ChannelId = targetChannelId;
                                 
-                                contentInfo.IsChecked = targetSiteInfo.Additional.IsCrossSiteTransChecked;
+                                contentInfo.IsChecked = targetSite.Additional.IsCrossSiteTransChecked;
                                 contentInfo.CheckedLevel = 0;
 
-                                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                                DataProvider.ContentDao.Insert(targetTableName, targetSite, targetChannelInfo, contentInfo);
                             }
                         }
                     }
                 }
 
-                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "跨站转发", string.Empty);
+                AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "跨站转发", string.Empty).GetAwaiter().GetResult();
 
                 SuccessMessage("内容转发成功，请选择后续操作。");
             }

@@ -2,9 +2,9 @@
 var $apiChannels = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerCut/actions/getChannels');
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryString('siteId')),
-  channelId: parseInt(pageUtils.getQueryString('channelId')),
-  channelContentIds: pageUtils.getQueryString('channelContentIds'),
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
+  channelContentIds: utils.getQueryString('channelContentIds'),
   pageLoad: false,
   pageAlert: null,
   contents: null,
@@ -48,12 +48,12 @@ var methods = {
     this.site = site;
     var $this = this;
 
-    parent.pageUtils.loading(true);
+    parent.utils.loading(true);
     $apiChannels.get({
         siteId: this.site.id
       },
       function (err, res) {
-        parent.pageUtils.loading(false);
+        parent.utils.loading(false);
         if (err || !res || !res.value) return;
 
         $this.channels = res.value;
@@ -71,7 +71,7 @@ var methods = {
     this.isSubmit = true;
     if (!this.channel) return;
 
-    parent.pageUtils.loading(true);
+    parent.utils.loading(true);
     $api.post({
         siteId: $this.siteId,
         channelId: $this.channelId,

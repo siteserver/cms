@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.BackgroundPages.Core;
@@ -10,6 +11,7 @@ using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -22,7 +24,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         private const string RouteUpload = "actions/upload";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
@@ -38,14 +40,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
-                var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, false);
+                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, site, siteId, out var checkedLevel);
+                var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, false);
 
                 return Ok(new
                 {
@@ -126,7 +128,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -151,15 +153,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
-                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                var tableName = ChannelManager.GetTableName(site, channelInfo);
+                var styleInfoList = TableStyleManager.GetContentStyleInfoList(site, channelInfo);
+                var isChecked = checkedLevel >= site.Additional.CheckContentLevel;
 
                 var contentIdList = new List<int>();
 
@@ -167,11 +169,11 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 {
                     if (string.IsNullOrEmpty(fileName)) continue;
 
-                    var formCollection = WordUtils.GetWordNameValueCollection(siteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
+                    var formCollection = await WordUtils.GetWordNameValueCollectionAsync(siteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
 
                     if (string.IsNullOrEmpty(formCollection[ContentAttribute.Title])) continue;
 
-                    var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value);
+                    var dict = await BackgroundInputTypeParser.SaveAttributesAsync(site, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value);
 
                     var contentInfo = new ContentInfo(dict)
                     {
@@ -188,7 +190,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     contentInfo.Title = formCollection[ContentAttribute.Title];
 
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, site, channelInfo, contentInfo);
 
                     contentIdList.Add(contentInfo.Id);
                 }

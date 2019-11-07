@@ -39,7 +39,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             channelId = ChannelManager.GetChannelId(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
-            return StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
+            return StlDataUtility.GetContentsDataSource(pageInfo.Site, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         }
 
         private static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, DataSet dataSource)
@@ -128,7 +128,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var contentId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
                 var channelId = Convert.ToInt32(row[nameof(ContentAttribute.ChannelId)]);
 
-                var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelId, contentId);
+                var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, channelId, contentId);
 
                 if (contentInfo != null)
                 {

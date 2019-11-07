@@ -11,6 +11,7 @@ using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
+using System.Threading.Tasks;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -162,10 +163,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 testOperate = OperateNotEmpty;
             }
 
-            return ParseImpl(pageInfo, contextInfo, testTypeStr, testOperate, testValue, onBeforeSend, onSuccess, onComplete, onError);
+            return ParseImplAsync(pageInfo, contextInfo, testTypeStr, testOperate, testValue, onBeforeSend, onSuccess, onComplete, onError).GetAwaiter().GetResult();
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testOperate, string testValue, string onBeforeSend, string onSuccess, string onComplete, string onError)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testOperate, string testValue, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
             string loading;
             string yes;
@@ -228,7 +229,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (contextInfo.ContextType == EContextType.Content)
                 {
-                    var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
+                    var tableName = ChannelManager.GetTableName(pageInfo.Site, contextInfo.ChannelId);
                     //var groupContents = TranslateUtils.StringCollectionToStringList(DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
                     var groupContents = TranslateUtils.StringCollectionToStringList(StlContentCache.GetValue(tableName, contextInfo.ContentId, ContentAttribute.GroupNameCollection));
                     isSuccess = TestTypeValues(testOperate, testValue, groupContents);
@@ -256,7 +257,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else
             {
-                isSuccess = TestTypeDefault(pageInfo, contextInfo, testType, testOperate, testValue);
+                isSuccess = await TestTypeDefaultAsync(pageInfo, contextInfo, testType, testOperate, testValue);
             }
 
             var parsedContent = isSuccess ? yes : no;
@@ -271,12 +272,12 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        private static bool TestTypeDefault(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testOperate,
+        private static async Task<bool> TestTypeDefaultAsync(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testOperate,
             string testValue)
         {
             var isSuccess = false;
 
-            var theValue = GetAttributeValueByContext(pageInfo, contextInfo, testType);
+            var theValue = await GetAttributeValueByContextAsync(pageInfo, contextInfo, testType);
 
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEmpty))
             {
@@ -705,7 +706,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return isSuccess;
         }
 
-        private static string GetAttributeValueByContext(PageInfo pageInfo, ContextInfo contextInfo, string testTypeStr)
+        private static async Task<string> GetAttributeValueByContextAsync(PageInfo pageInfo, ContextInfo contextInfo, string testTypeStr)
         {
             string theValue = null;
             if (contextInfo.ContextType == EContextType.Content)
@@ -714,7 +715,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (contextInfo.ContextType == EContextType.Channel)
             {
-                theValue = GetValueFromChannel(pageInfo, contextInfo, testTypeStr);
+                theValue = await GetValueFromChannelAsync(pageInfo, contextInfo, testTypeStr);
             }
             else if (contextInfo.ContextType == EContextType.SqlContent)
             {
@@ -757,14 +758,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (contextInfo.ChannelId != 0)//获取栏目
                 {
-                    theValue = GetValueFromChannel(pageInfo, contextInfo, testTypeStr);
+                    theValue = await GetValueFromChannelAsync(pageInfo, contextInfo, testTypeStr);
                 }
             }
 
             return theValue ?? string.Empty;
         }
 
-        private static string GetValueFromChannel(PageInfo pageInfo, ContextInfo contextInfo, string testTypeStr)
+        private static async Task<string> GetValueFromChannelAsync(PageInfo pageInfo, ContextInfo contextInfo, string testTypeStr)
         {
             string theValue;
 
@@ -792,13 +793,13 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CountOfContents, testTypeStr))
             {
-                var count = ContentManager.GetCount(pageInfo.SiteInfo, channel, true);
+                var count = ContentManager.GetCount(pageInfo.Site, channel, true);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CountOfImageContents, testTypeStr))
             {
                 //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.SiteId, channel.ChannelId);
-                var count = StlContentCache.GetCountCheckedImage(pageInfo.SiteId, channel.Id);
+                var count = await StlContentCache.GetCountCheckedImageAsync(pageInfo.SiteId, channel.Id);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.LinkUrl, testTypeStr))
@@ -818,7 +819,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (contextInfo.ContentInfo == null)
             {
-                var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
+                var tableName = ChannelManager.GetTableName(pageInfo.Site, contextInfo.ChannelId);
                 //theValue = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, testTypeStr);
                 theValue = StlContentCache.GetValue(tableName, contextInfo.ContentId, testTypeStr);
             }

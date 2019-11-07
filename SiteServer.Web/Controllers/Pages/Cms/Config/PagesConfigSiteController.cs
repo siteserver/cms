@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
@@ -17,7 +18,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         private const string RouteUpload = "upload";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
@@ -30,12 +31,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = await SiteManager.GetSiteAsync(siteId);
 
                 return Ok(new
                 {
-                    Value = siteInfo,
-                    Config = siteInfo.Additional,
+                    Value = site,
+                    Config = site.Additional,
                     request.AdminToken
                 });
             }
@@ -46,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -59,17 +60,17 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = await SiteManager.GetSiteAsync(siteId);
 
                 var siteName = request.GetPostString("siteName");
                 var charset = ECharsetUtils.GetEnumType(request.GetPostString("charset"));
-                var pageSize = request.GetPostInt("pageSize", siteInfo.Additional.PageSize);
+                var pageSize = request.GetPostInt("pageSize", site.Additional.PageSize);
                 var isCreateDoubleClick = request.GetPostBool("isCreateDoubleClick");
 
-                siteInfo.SiteName = siteName;
-                siteInfo.Additional.Charset = ECharsetUtils.GetValue(charset);
-                siteInfo.Additional.PageSize = pageSize;
-                siteInfo.Additional.IsCreateDoubleClick = isCreateDoubleClick;
+                site.SiteName = siteName;
+                site.Additional.Charset = ECharsetUtils.GetValue(charset);
+                site.Additional.PageSize = pageSize;
+                site.Additional.IsCreateDoubleClick = isCreateDoubleClick;
 
                 //修改所有模板编码
                 var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListBySiteId(siteId);
@@ -77,19 +78,19 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 {
                     if (templateInfo.Charset == charset) continue;
 
-                    var templateContent = TemplateManager.GetTemplateContent(siteInfo, templateInfo);
+                    var templateContent = TemplateManager.GetTemplateContent(site, templateInfo);
                     templateInfo.Charset = charset;
-                    DataProvider.TemplateDao.Update(siteInfo, templateInfo, templateContent, request.AdminName);
+                    DataProvider.TemplateDao.Update(site, templateInfo, templateContent, request.AdminName);
                 }
 
-                DataProvider.SiteDao.Update(siteInfo);
+                await DataProvider.SiteDao.UpdateAsync(site);
 
-                request.AddSiteLog(siteId, "修改站点设置");
+                await request.AddSiteLogAsync(siteId, "修改站点设置");
 
                 return Ok(new
                 {
-                    Value = siteInfo,
-                    Config = siteInfo.Additional,
+                    Value = site,
+                    Config = site.Additional,
                 });
             }
             catch (Exception ex)

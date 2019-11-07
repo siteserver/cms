@@ -48,9 +48,9 @@ var methods = {
   btnPermissionsClick: function(row) {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.getAt('permissions/' + row.id, null, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err || !res || !res.value) return;
 
       var allRoles = [];
@@ -102,15 +102,15 @@ var methods = {
   btnDeleteClick: function (item) {
     var $this = this;
 
-    pageUtils.alertDelete({
+    utils.alertDelete({
       title: '删除管理员',
       text: '此操作将删除管理员 ' + item.userName + '，确定吗？',
       callback: function () {
-        pageUtils.loading(true);
+        utils.loading(true);
         $api.delete({
           id: item.id
         }, function (err, res) {
-          pageUtils.loading(false);
+          utils.loading(false);
           if (err || !res || !res.value) return;
 
           $this.items.splice($this.items.indexOf(item), 1);
@@ -122,15 +122,15 @@ var methods = {
   btnLockClick: function(item) {
     var $this = this;
 
-    pageUtils.alertWarning({
+    utils.alertWarning({
       title: '锁定管理员',
       text: '此操作将锁定管理员 ' + item.userName + '，确定吗？',
       callback: function () {
-        pageUtils.loading(true);
+        utils.loading(true);
         $api.postAt('actions/lock', {
           id: item.id
         }, function (err, res) {
-          pageUtils.loading(false);
+          utils.loading(false);
           if (err || !res || !res.value) return;
 
           item.locked = true;
@@ -142,15 +142,15 @@ var methods = {
   btnUnLockClick: function(item) {
     var $this = this;
 
-    pageUtils.alertWarning({
+    utils.alertWarning({
       title: '解锁管理员',
       text: '此操作将解锁管理员 ' + item.userName + '，确定吗？',
       callback: function () {
-        pageUtils.loading(true);
+        utils.loading(true);
         $api.postAt('actions/unLock', {
           id: item.id
         }, function (err, res) {
-          pageUtils.loading(false);
+          utils.loading(false);
           if (err || !res || !res.value) return;
 
           item.locked = false;
@@ -162,9 +162,9 @@ var methods = {
   btnSearchClick() {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.get(this.formInline, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err || !res || !res.value) return;
 
       $this.items = res.value;

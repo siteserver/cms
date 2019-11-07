@@ -44,7 +44,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(_pageInfo.SiteId, channelId, ListInfo.ChannelIndex, ListInfo.ChannelName);
 
-            SqlString = StlDataUtility.GetStlPageContentsSqlString(_pageInfo.SiteInfo, channelId, ListInfo);
+            SqlString = StlDataUtility.GetStlPageContentsSqlString(_pageInfo.Site, channelId, ListInfo);
         }
 
         //API StlActionsSearchController调用
@@ -100,7 +100,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var maxPage = ListInfo.MaxPage;
                 if (maxPage == 0)
                 {
-                    maxPage = _pageInfo.SiteInfo.Additional.CreateStaticMaxPage;
+                    maxPage = _pageInfo.Site.Additional.CreateStaticMaxPage;
                 }
                 if (maxPage > 0 && currentPageIndex + 1 > maxPage)
                 {

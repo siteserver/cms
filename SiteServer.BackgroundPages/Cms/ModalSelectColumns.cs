@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(SiteInfo, channelInfo));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(Site, channelInfo));
             foreach (var styleInfo in styleInfoList)
             {
                 if (styleInfo.InputType == InputType.TextEditor) continue;
@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             DataProvider.ChannelDao.Update(channelInfo);
 
-            AuthRequest.AddSiteLog(SiteId, "设置内容显示项", $"显示项:{attributesOfDisplay}");
+            AuthRequest.AddSiteLogAsync(SiteId, "设置内容显示项", $"显示项:{attributesOfDisplay}").GetAwaiter().GetResult();
 
             LayerUtils.Close(Page);
         }

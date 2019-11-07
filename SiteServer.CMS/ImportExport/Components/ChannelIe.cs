@@ -6,27 +6,28 @@ using Atom.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
     internal class ChannelIe
     {
-        private readonly SiteInfo _siteInfo;
+        private readonly Site _site;
 
         //保存除内容表本身字段外的属性
         private const string ChannelTemplateName = "ChannelTemplateName";
         private const string ContentTemplateName = "ContentTemplateName";
 
-        public ChannelIe(SiteInfo siteInfo)
+        public ChannelIe(Site site)
         {
-            _siteInfo = siteInfo;
+            _site = site;
         }
 
         public void ImportNodeInfo(ChannelInfo nodeInfo, ScopedElementCollection additionalElements, int parentId, IList indexNameList)
         {
             nodeInfo.ChannelName = AtomUtility.GetDcElementContent(additionalElements, new List<string>{ ChannelAttribute.ChannelName, "NodeName" });
-            nodeInfo.SiteId = _siteInfo.Id;
+            nodeInfo.SiteId = _site.Id;
             var contentModelPluginId = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.ContentModelPluginId);
             if (!string.IsNullOrEmpty(contentModelPluginId))
             {
@@ -58,12 +59,12 @@ namespace SiteServer.CMS.ImportExport.Components
             var channelTemplateName = AtomUtility.GetDcElementContent(additionalElements, ChannelTemplateName);
             if (!string.IsNullOrEmpty(channelTemplateName))
             {
-                nodeInfo.ChannelTemplateId = TemplateManager.GetTemplateIdByTemplateName(_siteInfo.Id, TemplateType.ChannelTemplate, channelTemplateName);
+                nodeInfo.ChannelTemplateId = TemplateManager.GetTemplateIdByTemplateName(_site.Id, TemplateType.ChannelTemplate, channelTemplateName);
             }
             var contentTemplateName = AtomUtility.GetDcElementContent(additionalElements, ContentTemplateName);
             if (!string.IsNullOrEmpty(contentTemplateName))
             {
-                nodeInfo.ContentTemplateId = TemplateManager.GetTemplateIdByTemplateName(_siteInfo.Id, TemplateType.ContentTemplate, contentTemplateName);
+                nodeInfo.ContentTemplateId = TemplateManager.GetTemplateIdByTemplateName(_site.Id, TemplateType.ContentTemplate, contentTemplateName);
             }
 
             nodeInfo.Keywords = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.Keywords);

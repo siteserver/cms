@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Content;
@@ -8,6 +9,7 @@ using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
@@ -329,9 +331,9 @@ namespace SiteServer.CMS.DataCache
             return nodeInfo != null;
         }
 
-        public static bool IsExists(int channelId)
+        public static async Task<bool> IsExistsAsync(int channelId)
         {
-            var list = SiteManager.GetSiteIdList();
+            var list = await SiteManager.GetSiteIdListAsync();
             foreach (var siteId in list)
             {
                 var nodeInfo = GetChannelInfo(siteId, channelId);
@@ -354,19 +356,19 @@ namespace SiteServer.CMS.DataCache
             return siteId;
         }
 
-        public static string GetTableName(SiteInfo siteInfo, int channelId)
+        public static string GetTableName(Site site, int channelId)
         {
-            return GetTableName(siteInfo, GetChannelInfo(siteInfo.Id, channelId));
+            return GetTableName(site, GetChannelInfo(site.Id, channelId));
         }
 
-        public static string GetTableName(SiteInfo siteInfo, ChannelInfo channelInfo)
+        public static string GetTableName(Site site, ChannelInfo channelInfo)
         {
-            return channelInfo != null ? GetTableName(siteInfo, channelInfo.ContentModelPluginId) : string.Empty;
+            return channelInfo != null ? GetTableName(site, channelInfo.ContentModelPluginId) : string.Empty;
         }
 
-        public static string GetTableName(SiteInfo siteInfo, string pluginId)
+        public static string GetTableName(Site site, string pluginId)
         {
-            var tableName = siteInfo.TableName;
+            var tableName = site.TableName;
 
             if (string.IsNullOrEmpty(pluginId)) return tableName;
 
@@ -379,12 +381,12 @@ namespace SiteServer.CMS.DataCache
             return tableName;
         }
 
-        //public static ETableStyle GetTableStyle(SiteInfo siteInfo, int channelId)
+        //public static ETableStyle GetTableStyle(Site site, int channelId)
         //{
-        //    return GetTableStyle(siteInfo, GetChannelInfo(siteInfo.Id, channelId));
+        //    return GetTableStyle(site, GetChannelInfo(site.Id, channelId));
         //}
 
-        //public static ETableStyle GetTableStyle(SiteInfo siteInfo, NodeInfo nodeInfo)
+        //public static ETableStyle GetTableStyle(Site site, NodeInfo nodeInfo)
         //{
         //    var tableStyle = ETableStyle.BackgroundContent;
 
@@ -399,7 +401,7 @@ namespace SiteServer.CMS.DataCache
         //    return tableStyle;
         //}
 
-        public static bool IsContentModelPlugin(SiteInfo siteInfo, ChannelInfo nodeInfo)
+        public static bool IsContentModelPlugin(Site site, ChannelInfo nodeInfo)
         {
             if (string.IsNullOrEmpty(nodeInfo.ContentModelPluginId)) return false;
 
@@ -407,7 +409,7 @@ namespace SiteServer.CMS.DataCache
             return !string.IsNullOrEmpty(contentTable);
         }
 
-        public static string GetNodeTreeLastImageHtml(SiteInfo siteInfo, ChannelInfo nodeInfo)
+        public static string GetNodeTreeLastImageHtml(Site site, ChannelInfo nodeInfo)
         {
             var imageHtml = string.Empty;
             if (!string.IsNullOrEmpty(nodeInfo.ContentModelPluginId) || !string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds))
@@ -514,9 +516,9 @@ namespace SiteServer.CMS.DataCache
             return TranslateUtils.ObjectCollectionToString(nodeNameList, " > ");
         }
 
-        public static void AddListItems(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, bool isShowContentNum, PermissionsImpl permissionsImpl)
+        public static void AddListItems(ListItemCollection listItemCollection, Site site, bool isSeeOwning, bool isShowContentNum, PermissionsImpl permissionsImpl)
         {
-            var list = GetChannelIdList(siteInfo.Id);
+            var list = GetChannelIdList(site.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
             foreach (var channelId in list)
@@ -527,12 +529,12 @@ namespace SiteServer.CMS.DataCache
                     enabled = permissionsImpl.IsOwningChannelId(channelId);
                     if (!enabled)
                     {
-                        if (!permissionsImpl.IsDescendantOwningChannelId(siteInfo.Id, channelId)) continue;
+                        if (!permissionsImpl.IsDescendantOwningChannelId(site.Id, channelId)) continue;
                     }
                 }
-                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
+                var nodeInfo = GetChannelInfo(site.Id, channelId);
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(site, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
                 {
                     listitem.Attributes.Add("style", "color:gray;");
@@ -541,9 +543,9 @@ namespace SiteServer.CMS.DataCache
             }
         }
 
-        public static void AddListItems(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, bool isShowContentNum, string contentModelId, PermissionsImpl permissionsImpl)
+        public static void AddListItems(ListItemCollection listItemCollection, Site site, bool isSeeOwning, bool isShowContentNum, string contentModelId, PermissionsImpl permissionsImpl)
         {
-            var list = GetChannelIdList(siteInfo.Id);
+            var list = GetChannelIdList(site.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
             foreach (var channelId in list)
@@ -554,12 +556,12 @@ namespace SiteServer.CMS.DataCache
                     enabled = permissionsImpl.IsOwningChannelId(channelId);
                     if (!enabled)
                     {
-                        if (!permissionsImpl.IsDescendantOwningChannelId(siteInfo.Id, channelId)) continue;
+                        if (!permissionsImpl.IsDescendantOwningChannelId(site.Id, channelId)) continue;
                     }
                 }
-                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
+                var nodeInfo = GetChannelInfo(site.Id, channelId);
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(site, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
                 {
                     listitem.Attributes.Add("style", "color:gray;");
@@ -572,9 +574,9 @@ namespace SiteServer.CMS.DataCache
             }
         }
 
-        public static void AddListItemsForAddContent(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, PermissionsImpl permissionsImpl)
+        public static void AddListItemsForAddContent(ListItemCollection listItemCollection, Site site, bool isSeeOwning, PermissionsImpl permissionsImpl)
         {
-            var list = GetChannelIdList(siteInfo.Id);
+            var list = GetChannelIdList(site.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
             foreach (var channelId in list)
@@ -585,7 +587,7 @@ namespace SiteServer.CMS.DataCache
                     enabled = permissionsImpl.IsOwningChannelId(channelId);
                 }
 
-                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
+                var nodeInfo = GetChannelInfo(site.Id, channelId);
                 if (enabled)
                 {
                     if (nodeInfo.Additional.IsContentAddable == false) enabled = false;
@@ -596,7 +598,7 @@ namespace SiteServer.CMS.DataCache
                     continue;
                 }
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(site, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
                 listItemCollection.Add(listitem);
             }
         }
@@ -606,9 +608,9 @@ namespace SiteServer.CMS.DataCache
         /// 提供给触发器页面使用
         /// 使用场景：其他栏目的内容变动之后，设置某个栏目（此栏目不能添加内容）触发生成
         /// </summary>
-        public static void AddListItemsForCreateChannel(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, PermissionsImpl permissionsImpl)
+        public static void AddListItemsForCreateChannel(ListItemCollection listItemCollection, Site site, bool isSeeOwning, PermissionsImpl permissionsImpl)
         {
-            var list = GetChannelIdList(siteInfo.Id);
+            var list = GetChannelIdList(site.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
             foreach (var channelId in list)
@@ -619,19 +621,19 @@ namespace SiteServer.CMS.DataCache
                     enabled = permissionsImpl.IsOwningChannelId(channelId);
                 }
 
-                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
+                var nodeInfo = GetChannelInfo(site.Id, channelId);
 
                 if (!enabled)
                 {
                     continue;
                 }
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(site, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
                 listItemCollection.Add(listitem);
             }
         }
 
-        public static string GetSelectText(SiteInfo siteInfo, ChannelInfo channelInfo, PermissionsImpl adminPermissions, bool[] isLastNodeArray, bool isShowContentNum)
+        public static string GetSelectText(Site site, ChannelInfo channelInfo, PermissionsImpl adminPermissions, bool[] isLastNodeArray, bool isShowContentNum)
         {
             var retVal = string.Empty;
             if (channelInfo.Id == channelInfo.SiteId)
@@ -655,8 +657,8 @@ namespace SiteServer.CMS.DataCache
 
             if (isShowContentNum)
             {
-                var adminId = adminPermissions.GetAdminId(siteInfo.Id, channelInfo.Id);
-                var count = ContentManager.GetCount(siteInfo, channelInfo, adminId);
+                var adminId = adminPermissions.GetAdminId(site.Id, channelInfo.Id);
+                var count = ContentManager.GetCount(site, channelInfo, adminId);
                 retVal = string.Concat(retVal, " (", count, ")");
             }
 
@@ -674,7 +676,7 @@ namespace SiteServer.CMS.DataCache
             return nodeInfo.Additional.ContentAttributesOfDisplay;
         }
 
-        public static List<InputListItem> GetContentsColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
+        public static List<InputListItem> GetContentsColumns(Site site, ChannelInfo channelInfo, bool includeAll)
         {
             var items = new List<InputListItem>();
 
@@ -682,7 +684,7 @@ namespace SiteServer.CMS.DataCache
             var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
             var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(site, channelInfo));
 
             styleInfoList.Insert(0, new TableStyleInfo
             {
@@ -749,11 +751,11 @@ namespace SiteServer.CMS.DataCache
             return items;
         }
 
-        public static List<InputStyle> GetInputStyles(SiteInfo siteInfo, ChannelInfo channelInfo)
+        public static List<InputStyle> GetInputStyles(Site site, ChannelInfo channelInfo)
         {
             var items = new List<InputStyle>();
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(site, channelInfo));
 
             foreach (var styleInfo in styleInfoList)
             {
@@ -812,9 +814,9 @@ namespace SiteServer.CMS.DataCache
             return options;
         }
 
-        public static bool IsCreatable(SiteInfo siteInfo, ChannelInfo channelInfo)
+        public static bool IsCreatable(Site site, ChannelInfo channelInfo)
         {
-            if (siteInfo == null || channelInfo == null) return false;
+            if (site == null || channelInfo == null) return false;
 
             if (!channelInfo.Additional.IsChannelCreatable || !string.IsNullOrEmpty(channelInfo.LinkUrl)) return false;
 
@@ -828,17 +830,17 @@ namespace SiteServer.CMS.DataCache
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExists)
             {
-                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                var count = ContentManager.GetCount(site, channelInfo, true);
                 isCreatable = count != 0;
             }
             else if (linkType == ELinkType.LinkToOnlyOneContent)
             {
-                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                var count = ContentManager.GetCount(site, channelInfo, true);
                 isCreatable = count != 1;
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
             {
-                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                var count = ContentManager.GetCount(site, channelInfo, true);
                 if (count != 0 && count != 1)
                 {
                     isCreatable = true;
@@ -846,7 +848,7 @@ namespace SiteServer.CMS.DataCache
             }
             else if (linkType == ELinkType.LinkToFirstContent)
             {
-                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                var count = ContentManager.GetCount(site, channelInfo, true);
                 isCreatable = count < 1;
             }
             else if (linkType == ELinkType.NoLinkIfChannelNotExists)

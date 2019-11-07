@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -8,6 +9,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -19,7 +21,7 @@ namespace SiteServer.API.Controllers.Home
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
@@ -36,8 +38,8 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
@@ -45,17 +47,17 @@ namespace SiteServer.API.Controllers.Home
                 var retVal = new List<Dictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
                     dict["checkState"] =
-                        CheckManager.GetCheckState(siteInfo, contentInfo);
+                        CheckManager.GetCheckState(site, contentInfo);
                     retVal.Add(dict);
                 }
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, channelId, out var checkedLevel);
-                var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, true);
+                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, site, channelId, out var checkedLevel);
+                var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
                 var allChannels =
                     ChannelManager.GetChannels(siteId, request.AdminPermissionsImpl, ConfigManager.ChannelPermissions.ContentAdd);
@@ -76,7 +78,7 @@ namespace SiteServer.API.Controllers.Home
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -97,23 +99,23 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                var isChecked = checkedLevel >= site.Additional.CheckContentLevel;
                 if (isChecked)
                 {
                     checkedLevel = 0;
                 }
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var tableName = ChannelManager.GetTableName(site, channelInfo);
 
                 var contentInfoList = new List<ContentInfo>();
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
                     contentInfo.Set(ContentAttribute.CheckUserName, request.AdminName);
@@ -127,11 +129,11 @@ namespace SiteServer.API.Controllers.Home
                     {
                         var translateChannelInfo = ChannelManager.GetChannelInfo(siteId, translateChannelId);
                         contentInfo.ChannelId = translateChannelInfo.Id;
-                        DataProvider.ContentDao.Update(siteInfo, translateChannelInfo, contentInfo);
+                        DataProvider.ContentDao.Update(site, translateChannelInfo, contentInfo);
                     }
                     else
                     {
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
                     }
 
                     contentInfoList.Add(contentInfo);
@@ -143,11 +145,11 @@ namespace SiteServer.API.Controllers.Home
                 if (isTranslate && translateChannelId > 0)
                 {
                     ContentManager.RemoveCache(tableName, channelId);
-                    var translateTableName = ChannelManager.GetTableName(siteInfo, translateChannelId);
+                    var translateTableName = ChannelManager.GetTableName(site, translateChannelId);
                     ContentManager.RemoveCache(translateTableName, translateChannelId);
                 }
 
-                request.AddSiteLog(siteId, "批量审核内容");
+                await request.AddSiteLogAsync(siteId, "批量审核内容");
 
                 foreach (var contentInfo in contentInfoList)
                 {

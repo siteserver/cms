@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -29,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var relatedFieldName = DataProvider.RelatedFieldDao.GetTitle(relatedFieldId);
                 DataProvider.RelatedFieldDao.Delete(relatedFieldId);
-                AuthRequest.AddSiteLog(SiteId, "删除联动字段", $"联动字段:{relatedFieldName}");
+                AuthRequest.AddSiteLogAsync(SiteId, "删除联动字段", $"联动字段:{relatedFieldName}").GetAwaiter().GetResult();
                 SuccessDeleteMessage();
             }
 

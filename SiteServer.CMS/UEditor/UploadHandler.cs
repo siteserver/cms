@@ -75,7 +75,7 @@ namespace SiteServer.CMS.UEditor
             //var localPath = Server.MapPath(savePath);
 
             var currentType = PathUtils.GetExtension(Result.OriginFileName);
-            var siteInfo = SiteManager.GetSiteInfo(SiteId);
+            var siteInfo = SiteManager.GetSiteAsync(SiteId).GetAwaiter().GetResult();
             var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, UploadType);
             var localFileName = PathUtility.GetUploadFileName(siteInfo, uploadFileName);
             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
@@ -100,7 +100,7 @@ namespace SiteServer.CMS.UEditor
                         //添加水印
                         FileUtility.AddWaterMark(siteInfo, localFilePath);
                     }
-                    Result.Url = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, localFilePath, true);
+                    Result.Url = PageUtility.GetSiteUrlByPhysicalPathAsync(siteInfo, localFilePath, true).GetAwaiter().GetResult();
                     Result.State = UploadState.Success;
                 }
             }

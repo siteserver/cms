@@ -53,8 +53,8 @@ namespace SiteServer.BackgroundPages.Cms
             var mod = 0;
             var count = 0;
             var entitiesDictionary = _isChannel
-                ? PathUtility.ChannelFilePathRules.GetDictionary(SiteInfo, _channelId)
-                : PathUtility.ContentFilePathRules.GetDictionary(SiteInfo, _channelId);
+                ? PathUtility.ChannelFilePathRules.GetDictionary(Site, _channelId)
+                : PathUtility.ContentFilePathRules.GetDictionary(Site, _channelId);
             
             foreach (string label in entitiesDictionary.Keys)
             {

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
@@ -10,8 +12,6 @@ namespace SiteServer.CMS.DataCache
 	{
 	    private static class AccessTokenManagerCache
 	    {
-	        private static readonly object LockObject = new object();
-
 	        private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(AccessTokenManager));
 
 	        public static void Clear()
@@ -19,23 +19,20 @@ namespace SiteServer.CMS.DataCache
 	            DataCacheManager.Remove(CacheKey);
 	        }
 
-	        public static Dictionary<string, AccessTokenInfo> GetAccessTokenDictionary()
+	        public static async Task<Dictionary<string, AccessTokenInfo>> GetAccessTokenDictionaryAsync()
 	        {
 	            var retVal = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
 	            if (retVal != null) return retVal;
 
-	            lock (LockObject)
-	            {
-	                retVal = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
-	                if (retVal == null)
-	                {
-	                    retVal = DataProvider.AccessTokenDao.GetAccessTokenInfoDictionary();
+                retVal = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
+                if (retVal == null)
+                {
+                    retVal = await DataProvider.AccessTokenDao.GetAccessTokenInfoDictionaryAsync();
 
-	                    DataCacheManager.Insert(CacheKey, retVal);
-	                }
-	            }
+                    DataCacheManager.Insert(CacheKey, retVal);
+                }
 
-	            return retVal;
+                return retVal;
 	        }
 	    }
 
@@ -59,20 +56,20 @@ namespace SiteServer.CMS.DataCache
 	        AccessTokenManagerCache.Clear();
 	    }
 
-	    public static bool IsScope(string token, string scope)
+	    public static async Task<bool> IsScopeAsync(string token, string scope)
 	    {
 	        if (string.IsNullOrEmpty(token)) return false;
 
-	        var tokenInfo = GetAccessTokenInfo(token);
+	        var tokenInfo = await GetAccessTokenInfoAsync(token);
 	        if (tokenInfo == null) return false;
 
 	        return StringUtils.ContainsIgnoreCase(TranslateUtils.StringCollectionToStringList(tokenInfo.Scopes), scope);
 	    }
 
-        public static AccessTokenInfo GetAccessTokenInfo(string token)
+        public static async Task<AccessTokenInfo> GetAccessTokenInfoAsync(string token)
         {
             AccessTokenInfo tokenInfo = null;
-            var dict = AccessTokenManagerCache.GetAccessTokenDictionary();
+            var dict = await AccessTokenManagerCache.GetAccessTokenDictionaryAsync();
 
             if (dict != null && dict.ContainsKey(token))
             {

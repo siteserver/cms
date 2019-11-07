@@ -1,4 +1,5 @@
-﻿using SiteServer.Plugin;
+﻿using SiteServer.CMS.Model.Db;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Model.Attributes
 {

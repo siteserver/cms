@@ -1,4 +1,4 @@
-﻿var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
+﻿var $siteId = parseInt(utils.getQueryString('siteId'));
 
 var $api = new apiUtils.Api(apiUrl + '/pages/cms/createStatus');
 var $apiCancel = new apiUtils.Api(apiUrl + '/pages/cms/createStatus/actions/cancel');
@@ -39,7 +39,7 @@ var methods = {
   },
 
   getRedirectUrl: function (task) {
-    var url = '../pageRedirect.aspx?siteId=' + task.siteId;
+    var url = '../redirect.cshtml?siteId=' + task.siteId;
     if (task.channelId) {
       url += '&channelId=' + task.channelId;
     }

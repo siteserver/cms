@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
@@ -12,18 +13,18 @@ namespace SiteServer.API.Controllers.Sys
     public class SysStlActionsDynamicController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsDynamic.Route)]
-        public IHttpActionResult Main()
+        public async Task<IHttpActionResult> Main()
         {
             try
             {
                 var request = new AuthenticatedRequest();
 
-                var dynamicInfo = DynamicInfo.GetDynamicInfo(request, request.UserInfo);
+                var dynamicInfo = DynamicInfo.GetDynamicInfo(request, request.User);
 
                 return Ok(new
                 {
                     Value = true,
-                    Html = StlDynamic.ParseDynamicContent(dynamicInfo, dynamicInfo.SuccessTemplate)
+                    Html = await StlDynamic.ParseDynamicContentAsync(dynamicInfo, dynamicInfo.SuccessTemplate)
                 });
             }
             catch(Exception ex)

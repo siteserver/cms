@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.Utils;
@@ -102,21 +103,18 @@ namespace SiteServer.CMS.DataCache.Stl
             return retVal;
         }
 
-        public static int GetCountCheckedImage(int siteId, int channelId)
+        public static async Task<int> GetCountCheckedImageAsync(int siteId, int channelId)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetCountCheckedImage),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetCountCheckedImageAsync),
                     siteId.ToString(), channelId.ToString());
             var retVal = StlCacheManager.GetInt(cacheKey);
             if (retVal != -1) return retVal;
 
-            lock (LockObject)
+            retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal == -1)
             {
-                retVal = StlCacheManager.GetInt(cacheKey);
-                if (retVal == -1)
-                {
-                    retVal = DataProvider.ContentDao.GetCountCheckedImage(siteId, channelId);
-                    StlCacheManager.Set(cacheKey, retVal);
-                }
+                retVal = await DataProvider.ContentDao.GetCountCheckedImageAsync(siteId, channelId);
+                StlCacheManager.Set(cacheKey, retVal);
             }
 
             return retVal;

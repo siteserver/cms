@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
+using SiteServer.CMS.Model.Mappings;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
@@ -14,92 +18,38 @@ namespace SiteServer.CMS.Provider
 {
     public class SiteDao : DataProviderBase
     {
-        public override string TableName => "siteserver_Site";
+        private readonly Repository<SiteInfo> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public SiteDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(SiteInfo.Id),
-                DataType = DataType.Integer,
-                IsPrimaryKey = true,
-                IsIdentity = false
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SiteInfo.SiteName),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SiteInfo.SiteDir),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SiteInfo.TableName),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SiteInfo.IsRoot),
-                DataType = DataType.VarChar,
-                DataLength = 18
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SiteInfo.ParentId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SiteInfo.Taxis),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SiteInfo.SettingsXml),
-                DataType = DataType.Text
-            }
-        };
-
-        private const string ParmId = "@Id";
-        private const string ParmSiteName = "@SiteName";
-        private const string ParmSiteDir = "@SiteDir";
-        private const string ParmTableName = "@TableName";
-        private const string ParmIsRoot = "@IsRoot";
-        private const string ParmParentId = "@ParentId";
-        private const string ParmTaxis = "@Taxis";
-        private const string ParmSettingsXml = "@SettingsXML";
-
-        public void InsertWithTrans(SiteInfo info, IDbTransaction trans)
-        {
-            var sqlString = $"INSERT INTO {TableName} (Id, SiteName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML) VALUES (@Id, @SiteName, @SiteDir, @TableName, @IsRoot, @ParentId, @Taxis, @SettingsXML)";
-
-            //获取排序值
-            var taxis = GetMaxTaxis() + 1;
-            var insertParms = new IDataParameter[]
-			{
-				GetParameter(ParmId, DataType.Integer, info.Id),
-				GetParameter(ParmSiteName, DataType.VarChar, 50, info.SiteName),
-                GetParameter(ParmSiteDir, DataType.VarChar, 50, info.SiteDir),
-                GetParameter(ParmTableName, DataType.VarChar, 50, info.TableName),
-				GetParameter(ParmIsRoot, DataType.VarChar, 18, info.IsRoot.ToString()),
-                GetParameter(ParmParentId, DataType.Integer, info.ParentId),
-                GetParameter(ParmTaxis, DataType.Integer, taxis),
-				GetParameter(ParmSettingsXml, DataType.Text, info.Additional.ToString())
-			};
-
-            ExecuteNonQuery(trans, sqlString, insertParms);
-            SiteManager.ClearCache();
+            _repository = new Repository<SiteInfo>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public void Delete(int siteId)
+        public override string TableName => _repository.TableName;
+        public override List<TableColumn> TableColumns => _repository.TableColumns;
+
+        private static Site ToDto(SiteInfo siteInfo)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            return MapperManager.MapTo<Site>(siteInfo);
+        }
+
+        private static SiteInfo ToDb(Site site)
+        {
+            return MapperManager.MapTo<SiteInfo>(site);
+        }
+
+        public async Task<int> InsertAsync(Site site)
+        {
+            var siteInfo = ToDb(site);
+            siteInfo.Taxis = await GetMaxTaxisAsync() + 1;
+            site.Id = await _repository.InsertAsync(siteInfo);
+            SiteManager.ClearCache();
+            return site.Id;
+        }
+
+        public async Task DeleteAsync(int siteId)
+        {
+            var siteInfo = await SiteManager.GetSiteAsync(siteId);
             var list = ChannelManager.GetChannelIdList(siteId);
             DataProvider.TableStyleDao.Delete(list, siteInfo.TableName);
 
@@ -107,141 +57,89 @@ namespace SiteServer.CMS.Provider
 
             DataProvider.ChannelDao.DeleteAll(siteId);
 
-            UpdateParentIdToZero(siteId);
+            await UpdateParentIdToZeroAsync(siteId);
 
-            ExecuteNonQuery($"DELETE FROM siteserver_Site WHERE Id  = {siteId}");
+            await _repository.DeleteAsync(siteId);
 
             SiteManager.ClearCache();
             ChannelManager.RemoveCacheBySiteId(siteId);
             PermissionsImpl.ClearAllCache();
         }
 
-        public void Update(SiteInfo info)
+        public async Task UpdateAsync(Site site)
         {
-            var sqlString = $"UPDATE {TableName} SET SiteName = @SiteName, SiteDir = @SiteDir, TableName = @TableName, IsRoot = @IsRoot, ParentId = @ParentId, Taxis = @Taxis, SettingsXML = @SettingsXML WHERE  Id = @Id";
-
-            var updateParms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteName, DataType.VarChar, 50, info.SiteName),
-                GetParameter(ParmSiteDir, DataType.VarChar, 50, info.SiteDir),
-                GetParameter(ParmTableName, DataType.VarChar, 50, info.TableName),
-				GetParameter(ParmIsRoot, DataType.VarChar, 18, info.IsRoot.ToString()),
-                GetParameter(ParmParentId, DataType.Integer, info.ParentId),
-                GetParameter(ParmTaxis, DataType.Integer, info.Taxis),
-				GetParameter(ParmSettingsXml, DataType.Text, info.Additional.ToString()),
-				GetParameter(ParmId, DataType.Integer, info.Id)
-			};
-
-            if (info.IsRoot)
+            if (site.Root)
             {
-                UpdateAllIsRoot();
+                await UpdateAllIsRootAsync();
             }
 
-            ExecuteNonQuery(sqlString, updateParms);
+            var siteInfo = ToDb(site);
+
+            await _repository.UpdateAsync(siteInfo);
             SiteManager.ClearCache();
         }
 
-        public void UpdateTableName(int siteId, string tableName)
+        public async Task UpdateTableNameAsync(int siteId, string tableName)
         {
-            var sqlString = $"UPDATE {TableName} SET TableName = @TableName WHERE Id = @Id";
+            await _repository.UpdateAsync(Q
+                .Set(nameof(SiteInfo.TableName), tableName)
+                .Where(nameof(SiteInfo.Id), siteId)
+            );
+            SiteManager.ClearCache();
+        }
 
-            var updateParms = new IDataParameter[]
+        public async Task UpdateParentIdToZeroAsync(int parentId)
+        {
+            await _repository.UpdateAsync(Q
+                .Set(nameof(SiteInfo.ParentId), 0)
+                .Where(nameof(SiteInfo.ParentId), parentId)
+            );
+            SiteManager.ClearCache();
+        }
+
+        public async Task<IList<string>> GetLowerSiteDirListThatNotIsRootAsync()
+        {
+            var list = await _repository.GetAllAsync<string>(Q
+                .Select(nameof(SiteInfo.SiteDir))
+                .Where(nameof(SiteInfo.IsRoot), false.ToString())
+            );
+            return list.Select(StringUtils.ToLower).ToList();
+        }
+
+        private async Task UpdateAllIsRootAsync()
+        {
+            await _repository.UpdateAsync(Q
+                .Set(nameof(SiteInfo.IsRoot), false.ToString())
+            );
+            SiteManager.ClearCache();
+        }
+
+        public async Task<List<KeyValuePair<int, Site>>> GetSiteKeyValuePairListAsync()
+        {
+            var list = new List<KeyValuePair<int, Site>>();
+
+            var siteList = await GetSiteListAsync();
+            foreach (var site in siteList)
             {
-                GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
-                GetParameter(ParmId, DataType.Integer, siteId)
-            };
-
-            ExecuteNonQuery(sqlString, updateParms);
-            SiteManager.ClearCache();
-        }
-
-        public void UpdateParentIdToZero(int parentId)
-        {
-            var sqlString = "UPDATE siteserver_Site SET ParentId = 0 WHERE ParentId = " + parentId;
-
-            ExecuteNonQuery(sqlString);
-            SiteManager.ClearCache();
-        }
-
-        public List<string> GetLowerSiteDirListThatNotIsRoot()
-        {
-            var list = new List<string>();
-
-            var sqlString = $"SELECT SiteDir FROM {TableName} WHERE IsRoot = @IsRoot";
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmIsRoot, DataType.VarChar, 18, false.ToString())
-			};
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetString(rdr, 0).ToLower());
-                }
-                rdr.Close();
-            }
-            return list;
-        }
-
-        private void UpdateAllIsRoot()
-        {
-            var sqlString = $"UPDATE {TableName} SET IsRoot = @IsRoot";
-
-            var updateParms = new IDataParameter[]
-			{
-				GetParameter(ParmIsRoot, DataType.VarChar, 18, false.ToString())
-			};
-
-            ExecuteNonQuery(sqlString, updateParms);
-            SiteManager.ClearCache();
-        }
-
-        public List<KeyValuePair<int, SiteInfo>> GetSiteInfoKeyValuePairList()
-        {
-            var list = new List<KeyValuePair<int, SiteInfo>>();
-
-            var siteInfoList = GetSiteInfoList();
-            foreach (var siteInfo in siteInfoList)
-            {
-                var entry = new KeyValuePair<int, SiteInfo>(siteInfo.Id, siteInfo);
+                var entry = new KeyValuePair<int, Site>(site.Id, site);
                 list.Add(entry);
             }
 
             return list;
         }
 
-        private List<SiteInfo> GetSiteInfoList()
+        private async Task<IEnumerable<Site>> GetSiteListAsync()
         {
-            var list = new List<SiteInfo>();
-
-            var sqlString = $"SELECT Id, SiteName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML FROM {TableName} ORDER BY Taxis, Id";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var siteInfo = new SiteInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i));
-                    list.Add(siteInfo);
-                }
-                rdr.Close();
-            }
-            return list;
+            var list = await _repository.GetAllAsync(Q
+                .OrderBy(nameof(SiteInfo.Taxis), nameof(SiteInfo.Id))
+            );
+            return list.Select(ToDto);
         }
 
-        public bool IsTableUsed(string tableName)
+        public async Task<bool> IsTableUsedAsync(string tableName)
         {
-            var parameters = new IDataParameter[]
-            {
-                GetParameter(ParmTableName, DataType.VarChar, 50, tableName)
-            };
-
-            const string sqlString = "SELECT COUNT(*) FROM siteserver_Site WHERE TableName = @TableName";
-            var count = DataProvider.DatabaseDao.GetIntResult(sqlString, parameters);
-
-            if (count > 0) return true;
+            var exists = await _repository.ExistsAsync(Q.Where(nameof(SiteInfo.TableName), tableName));
+            if (exists) return true;
 
             var contentModelPluginIdList = DataProvider.ChannelDao.GetContentModelPluginIdList();
             foreach (var pluginId in contentModelPluginIdList)
@@ -256,89 +154,55 @@ namespace SiteServer.CMS.Provider
             return false;
         }
 
-        public int GetIdByIsRoot()
+        public async Task<int> GetIdByIsRootAsync()
         {
-            var siteId = 0;
+            var siteId = await _repository.GetAsync<int?>(Q.Select(nameof(SiteInfo.Id))
+                .Where(nameof(SiteInfo.IsRoot), true.ToString()));
 
-            var sqlString = $"SELECT Id FROM {TableName} WHERE IsRoot = @IsRoot";
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmIsRoot, DataType.VarChar, 18, true.ToString())
-			};
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    siteId = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return siteId;
+            return siteId ?? 0;
         }
 
-        public int GetIdBySiteDir(string siteDir)
+        public async Task<int> GetIdBySiteDirAsync(string siteDir)
         {
-            var siteId = 0;
+            var siteId = await _repository.GetAsync<int?>(Q
+                .Select(nameof(SiteInfo.Id))
+                .Where(nameof(SiteInfo.SiteDir), siteDir)
+            );
 
-            var sqlString = $"SELECT Id FROM {TableName} WHERE SiteDir = @SiteDir";
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteDir, DataType.VarChar, 50, siteDir)
-			};
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    siteId = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return siteId;
+            return siteId ?? 0;
         }
 
         /// <summary>
         /// 得到所有系统文件夹的列表，以小写表示。
         /// </summary>
-        public List<string> GetLowerSiteDirList(int parentId)
+        public async Task<IEnumerable<string>> GetLowerSiteDirListAsync(int parentId)
         {
-            var list = new List<string>();
-            var sqlString = "SELECT SiteDir FROM siteserver_Site WHERE ParentId = " + parentId;
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetString(rdr, 0).ToLower());
-                }
-                rdr.Close();
-            }
-
-            return list;
+            var list = await _repository.GetAllAsync<string>(Q
+                .Select(nameof(SiteInfo.SiteDir))
+                .Where(nameof(SiteInfo.ParentId), parentId)
+            );
+            return list.Select(StringUtils.ToLower);
         }
 
-        public IDataReader GetStlDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
+        public async Task<IDataReader> GetStlDataSourceAsync(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
         {
             IDataReader ie = null;
 
             var sqlWhereString = string.Empty;
 
-            SiteInfo siteInfo = null;
+            Site site = null;
             if (!string.IsNullOrEmpty(siteName))
             {
-                siteInfo = SiteManager.GetSiteInfoBySiteName(siteName);
+                site = await SiteManager.GetSiteBySiteNameAsync(siteName);
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                siteInfo = SiteManager.GetSiteInfoByDirectory(siteDir);
+                site = await SiteManager.GetSiteByDirectoryAsync(siteDir);
             }
 
-            if (siteInfo != null)
+            if (site != null)
             {
-                sqlWhereString = $"WHERE (ParentId = {siteInfo.Id})";
+                sqlWhereString = $"WHERE (ParentId = {site.Id})";
             }
             else
             {
@@ -370,10 +234,9 @@ namespace SiteServer.CMS.Provider
             return ie;
         }
 
-        private static int GetMaxTaxis()
+        private async Task<int> GetMaxTaxisAsync()
         {
-            const string sqlString = "SELECT MAX(Taxis) FROM siteserver_Site";
-            return DataProvider.DatabaseDao.GetIntResult(sqlString);
+            return await _repository.MaxAsync(nameof(SiteInfo.Taxis)) ?? 0;
         }
     }
 }

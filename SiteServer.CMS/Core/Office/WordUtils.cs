@@ -2,6 +2,7 @@
 using SiteServer.Utils;
 using Word.Plugin;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 
@@ -9,7 +10,7 @@ namespace SiteServer.CMS.Core.Office
 {
     public static class WordUtils
     {
-        public static string Parse(int siteId, string filePath, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages)
+        public static async Task<string> ParseAsync(int siteId, string filePath, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages)
         {
             if (string.IsNullOrEmpty(filePath)) return string.Empty;
 
@@ -57,7 +58,7 @@ namespace SiteServer.CMS.Core.Office
                 }
                 else
                 {
-                    var siteInfo = SiteManager.GetSiteInfo(siteId);
+                    var site = await SiteManager.GetSiteAsync(siteId);
                     var imageFileNameArrayList = RegexUtils.GetOriginalImageSrcs(parsedContent);
                     if (imageFileNameArrayList != null && imageFileNameArrayList.Count > 0)
                     {
@@ -65,11 +66,11 @@ namespace SiteServer.CMS.Core.Office
                         {
                             var imageFilePath = PathUtils.GetTemporaryFilesPath(imageFileName);
                             var fileExtension = PathUtils.GetExtension(imageFilePath);
-                            var uploadDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, fileExtension);
-                            var uploadDirectoryUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, uploadDirectoryPath, true);
+                            var uploadDirectoryPath = PathUtility.GetUploadDirectoryPath(site, fileExtension);
+                            var uploadDirectoryUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, uploadDirectoryPath, true);
                             if (!FileUtils.IsFileExists(imageFilePath)) continue;
 
-                            var uploadFileName = PathUtility.GetUploadFileName(siteInfo, imageFilePath);
+                            var uploadFileName = PathUtility.GetUploadFileName(site, imageFilePath);
                             var destFilePath = PathUtils.Combine(uploadDirectoryPath, uploadFileName);
                             FileUtils.MoveFile(imageFilePath, destFilePath, false);
                             parsedContent = parsedContent.Replace(imageFileName, PageUtils.Combine(uploadDirectoryUrl, uploadFileName));
@@ -90,10 +91,10 @@ namespace SiteServer.CMS.Core.Office
             }
         }
 
-        public static NameValueCollection GetWordNameValueCollection(int siteId, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string fileName)
+        public static async Task<NameValueCollection> GetWordNameValueCollectionAsync(int siteId, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string fileName)
         {
             var formCollection = new NameValueCollection();
-            var wordContent = Parse(siteId, PathUtils.GetTemporaryFilesPath(fileName), isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages);
+            var wordContent = await ParseAsync(siteId, PathUtils.GetTemporaryFilesPath(fileName), isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages);
             if (!string.IsNullOrEmpty(wordContent))
             {
                 var title = string.Empty;

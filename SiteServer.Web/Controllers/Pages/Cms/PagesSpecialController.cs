@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -15,7 +16,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         private const string RouteDownload = "actions/download";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult List()
+        public async Task<IHttpActionResult> List()
         {
             try
             {
@@ -30,13 +31,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = await SiteManager.GetSiteAsync(siteId);
                 var specialInfoList = DataProvider.SpecialDao.GetSpecialInfoList(siteId);
 
                 return Ok(new
                 {
                     Value = specialInfoList,
-                    SiteUrl = PageUtility.GetSiteUrl(siteInfo, true)
+                    SiteUrl = PageUtility.GetSiteUrl(site, true)
                 });
             }
             catch (Exception ex)
@@ -46,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         }
 
         [HttpDelete, Route(Route)]
-        public IHttpActionResult Delete()
+        public async Task<IHttpActionResult> Delete()
         {
             try
             {
@@ -61,10 +62,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var specialInfo = SpecialManager.DeleteSpecialInfo(siteInfo, specialId);
+                var site = await SiteManager.GetSiteAsync(siteId);
+                var specialInfo = SpecialManager.DeleteSpecialInfo(site, specialId);
 
-                request.AddSiteLog(siteId,
+                await request.AddSiteLogAsync(siteId,
                     "删除专题",
                     $"专题名称:{specialInfo.Title}");
 
@@ -82,7 +83,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         }
 
         [HttpPost, Route(RouteDownload)]
-        public IHttpActionResult Download()
+        public async Task<IHttpActionResult> Download()
         {
             try
             {
@@ -98,16 +99,16 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = await SiteManager.GetSiteAsync(siteId);
                 var specialInfo = SpecialManager.GetSpecialInfo(siteId, specialId);
 
-                var directoryPath = SpecialManager.GetSpecialDirectoryPath(siteInfo, specialInfo.Url);
+                var directoryPath = SpecialManager.GetSpecialDirectoryPath(site, specialInfo.Url);
                 var srcDirectoryPath = SpecialManager.GetSpecialSrcDirectoryPath(directoryPath);
                 var zipFilePath = SpecialManager.GetSpecialZipFilePath(specialInfo.Title, directoryPath);
 
                 FileUtils.DeleteFileIfExists(zipFilePath);
                 ZipUtils.CreateZip(zipFilePath, srcDirectoryPath);
-                var url = SpecialManager.GetSpecialZipFileUrl(siteInfo, specialInfo);
+                var url = SpecialManager.GetSpecialZipFileUrl(site, specialInfo);
 
                 return Ok(new
                 {

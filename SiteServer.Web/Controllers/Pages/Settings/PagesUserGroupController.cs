@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -14,7 +17,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
@@ -25,7 +28,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                var adminNames = DataProvider.AdministratorDao.GetUserNameList();
+                var adminNames = (await DataProvider.AdministratorDao.GetUserNameListAsync()).ToList();
                 adminNames.Insert(0, string.Empty);
 
                 return Ok(new
@@ -68,7 +71,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit([FromBody] UserGroupInfo itemObj)
+        public async Task<IHttpActionResult> Submit([FromBody] UserGroupInfo itemObj)
         {
             try
             {
@@ -94,7 +97,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     DataProvider.UserGroupDao.Insert(groupInfo);
 
-                    request.AddAdminLog("新增用户组", $"用户组:{groupInfo.GroupName}");
+                    await request.AddAdminLogAsync("新增用户组", $"用户组:{groupInfo.GroupName}");
                 }
                 else if (itemObj.Id == 0)
                 {
@@ -104,7 +107,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     UserGroupManager.ClearCache();
 
-                    request.AddAdminLog("修改用户组", "用户组:默认用户组");
+                    await request.AddAdminLogAsync("修改用户组", "用户组:默认用户组");
                 }
                 else if (itemObj.Id > 0)
                 {
@@ -120,7 +123,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     DataProvider.UserGroupDao.Update(groupInfo);
 
-                    request.AddAdminLog("修改用户组", $"用户组:{groupInfo.GroupName}");
+                    await request.AddAdminLogAsync("修改用户组", $"用户组:{groupInfo.GroupName}");
                 }
 
                 return Ok(new

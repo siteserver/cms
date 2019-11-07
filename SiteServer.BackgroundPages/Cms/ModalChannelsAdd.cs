@@ -175,7 +175,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                AuthRequest.AddSiteLog(SiteId, parentChannelId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelName(SiteId, parentChannelId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}");
+                AuthRequest.AddSiteLogAsync(SiteId, parentChannelId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelName(SiteId, parentChannelId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}").GetAwaiter().GetResult();
 
                 isChanged = true;
             }

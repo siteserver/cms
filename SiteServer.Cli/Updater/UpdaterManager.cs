@@ -10,8 +10,10 @@ using SiteServer.Cli.Updater.Tables.GovInteract;
 using SiteServer.Cli.Updater.Tables.GovPublic;
 using SiteServer.Cli.Updater.Tables.Jobs;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Provider;
 using SiteServer.Utils;
+using TableInfo = SiteServer.Cli.Core.TableInfo;
 
 namespace SiteServer.Cli.Updater
 {
@@ -136,9 +138,9 @@ namespace SiteServer.Cli.Updater
 
                         foreach (var newRow in newRows)
                         {
-                            if (newRow.ContainsKey(nameof(CMS.Model.ContentInfo.SiteId)))
+                            if (newRow.ContainsKey(nameof(ContentInfo.SiteId)))
                             {
-                                var siteId = Convert.ToInt32(newRow[nameof(CMS.Model.ContentInfo.SiteId)]);
+                                var siteId = Convert.ToInt32(newRow[nameof(ContentInfo.SiteId)]);
                                 if (siteIdList.Contains(siteId))
                                 {
                                     var rows = siteIdWithRows[siteId];

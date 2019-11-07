@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
-            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.ConfigurationCrossSiteTrans, null));
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(Site, string.Empty, ELoadingType.ConfigurationCrossSiteTrans, null));
 
             if (AuthRequest.IsQueryExists("CurrentChannelId"))
             {
@@ -47,20 +47,20 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             EBooleanUtils.AddListItems(RblIsCrossSiteTransChecked, "无需审核", "需要审核");
-            ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, SiteInfo.Additional.IsCrossSiteTransChecked.ToString());
+            ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, Site.Additional.IsCrossSiteTransChecked.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    SiteInfo.Additional.IsCrossSiteTransChecked = TranslateUtils.ToBool(RblIsCrossSiteTransChecked.SelectedValue);
+		    Site.Additional.IsCrossSiteTransChecked = TranslateUtils.ToBool(RblIsCrossSiteTransChecked.SelectedValue);
 				
 		    try
 		    {
-		        DataProvider.SiteDao.Update(SiteInfo);
+		        DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
 
-		        AuthRequest.AddSiteLog(SiteId, "修改默认跨站转发设置");
+		        AuthRequest.AddSiteLogAsync(SiteId, "修改默认跨站转发设置").GetAwaiter().GetResult();
 
 		        SuccessMessage("默认跨站转发设置修改成功！");
 		    }

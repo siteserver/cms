@@ -12,8 +12,8 @@ Object.defineProperty(Object.prototype, "getProp", {
 });
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName("siteId")),
-  channelId: parseInt(pageUtils.getQueryStringByName("channelId")),
+  siteId: parseInt(utils.getQueryString("siteId")),
+  channelId: parseInt(utils.getQueryString("channelId")),
   pageLoad: false,
   pageAlert: null,
   pageType: null,
@@ -45,13 +45,13 @@ var methods = {
     this.pageAlert = null;
     if (!this.isContentChecked) return;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.postAt('actions/create', {
       siteId: $this.siteId,
       channelContentIds: this.channelContentIds
     }, function (err, res) {
       if (err || !res || !res.value) return;
-      pageUtils.loading(false);
+      utils.loading(false);
       $this.pageAlert = {
         type: "success",
         html: "内容已添加至生成列队！<a href='createStatus.cshtml?siteId=" + $this.siteId + "'>生成进度查看</a>"
@@ -86,7 +86,7 @@ var methods = {
     }
     url += '&returnUrl=' + encodeURIComponent(location.href);
 
-    pageUtils.openLayer({
+    utils.openLayer({
       title: options.title,
       url: url,
       full: options.full,
@@ -98,7 +98,7 @@ var methods = {
   btnContentViewClick: function (contentId, e) {
     e.stopPropagation();
 
-    pageUtils.openLayer({
+    utils.openLayer({
       title: "查看内容",
       url: "contentsLayerView.cshtml?siteId=" +
         this.siteId +
@@ -113,7 +113,7 @@ var methods = {
   btnContentStateClick: function (contentId, e) {
     e.stopPropagation();
 
-    pageUtils.openLayer({
+    utils.openLayer({
       title: "查看审核状态",
       url: "contentsLayerState.cshtml?siteId=" +
         this.siteId +
@@ -175,7 +175,7 @@ var methods = {
     e.stopPropagation();
 
     if (pluginMenu.target === '_layer') {
-      pageUtils.openLayer({
+      utils.openLayer({
         title: pluginMenu.text,
         url: this.getPluginMenuUrl(pluginMenu),
         full: true
@@ -187,7 +187,7 @@ var methods = {
     var $this = this;
 
     if ($this.pageLoad) {
-      pageUtils.loading(true);
+      utils.loading(true);
     }
 
     $api.get({
@@ -219,7 +219,7 @@ var methods = {
         }
 
         if ($this.pageLoad) {
-          pageUtils.loading(false);
+          utils.loading(false);
           $this.scrollToTop();
         } else {
           $this.pageLoad = true;

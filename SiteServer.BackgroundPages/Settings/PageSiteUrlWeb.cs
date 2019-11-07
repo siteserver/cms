@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            var siteList = SiteManager.GetSiteIdListOrderByLevel();
+            var siteList = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             RptContents.DataSource = siteList;
             RptContents.ItemDataBound += DgContents_ItemDataBound;
             RptContents.DataBind();
@@ -33,17 +33,17 @@ namespace SiteServer.BackgroundPages.Settings
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
             var siteId = (int)e.Item.DataItem;
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
 
             var ltlName = (Literal)e.Item.FindControl("ltlName");
             var ltlDir = (Literal)e.Item.FindControl("ltlDir");
             var ltlWebUrl = (Literal)e.Item.FindControl("ltlWebUrl");
             var ltlEditUrl = (Literal)e.Item.FindControl("ltlEditUrl");
 
-            ltlName.Text = SiteManager.GetSiteName(siteInfo);
-            ltlDir.Text = siteInfo.SiteDir;
+            ltlName.Text = SiteManager.GetSiteNameAsync(site).GetAwaiter().GetResult();
+            ltlDir.Text = site.SiteDir;
 
-            ltlWebUrl.Text = $@"<a href=""{siteInfo.Additional.WebUrl}"" target=""_blank"">{siteInfo.Additional.WebUrl}</a>";
+            ltlWebUrl.Text = $@"<a href=""{site.Additional.WebUrl}"" target=""_blank"">{site.Additional.WebUrl}</a>";
 
             ltlEditUrl.Text = $@"<a href=""{PageSiteUrlWebConfig.GetRedirectUrl(siteId)}"">修改</a>";
         }

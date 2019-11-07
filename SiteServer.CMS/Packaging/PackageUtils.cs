@@ -117,6 +117,34 @@ namespace SiteServer.CMS.Packaging
             //    directoryPath, ".nuspec");
         }
 
+        public static bool IsPackageDownload(string packageId, string version)
+        {
+            var packagesPath = PathUtils.GetPackagesPath();
+            var idWithVersion = $"{packageId}.{version}";
+            var directoryPath = PathUtils.Combine(packagesPath, idWithVersion);
+
+            if (!DirectoryUtils.IsDirectoryExists(directoryPath))
+            {
+                return false;
+            }
+
+            if (!FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{idWithVersion}.nupkg")) || !FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{packageId}.nuspec")))
+            {
+                return false;
+            }
+
+            if (StringUtils.EqualsIgnoreCase(packageId, PackageIdSsCms))
+            {
+                var packageWebConfigPath = PathUtils.Combine(directoryPath, WebConfigUtils.WebConfigFileName);
+                if (!FileUtils.IsFileExists(packageWebConfigPath))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static Dictionary<string, string> GetDependencyPackages(PackageMetadata metadata)
         {
             var dict = new Dictionary<string, string>();

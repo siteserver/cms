@@ -26,7 +26,7 @@ var methods = {
   btnDeleteClick: function (item) {
     var $this = this;
 
-    pageUtils.alertDelete({
+    utils.alertDelete({
       title: '删除角色',
       text: '此操作将删除角色 ' + item.roleName + '，确定吗？',
       callback: function () {
@@ -39,11 +39,11 @@ var methods = {
   apiDelete: function (item) {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.delete({
       id: item.id
     }, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err || !res || !res.value) return;
 
       $this.items = res.value;

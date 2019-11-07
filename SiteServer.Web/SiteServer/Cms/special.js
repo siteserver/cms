@@ -1,5 +1,5 @@
 ﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/special');
-var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
+var $siteId = parseInt(utils.getQueryString('siteId'));
 
 var data = {
   pageLoad: false,
@@ -24,12 +24,12 @@ var methods = {
   delete: function (specialId) {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.delete({
       siteId: $siteId,
       specialId: specialId
     }, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err || !res || !res.value) return;
 
       $this.items = res.value;
@@ -39,9 +39,9 @@ var methods = {
   submit: function (item) {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post(item, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',
@@ -81,12 +81,12 @@ var methods = {
   btnDownloadClick: function(item){
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.postAt('actions/download', {
       siteId: $siteId,
       specialId: item.id
     }, function (err, res) {
-      pageUtils.loading(false);
+      utils.loading(false);
       if (err || !res || !res.value) return;
 
       window.location.href = res.value;
@@ -105,7 +105,7 @@ var methods = {
   btnDeleteClick: function (item) {
     var $this = this;
 
-    pageUtils.alertDelete({
+    utils.alertDelete({
       title: '删除专题',
       text: '此操作将删除专题 ' + item.title + '，确定吗？',
       callback: function () {

@@ -9,6 +9,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
@@ -39,9 +40,9 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
-                TbSiteName.Text = SiteInfo.SiteName;
+                TbSiteName.Text = Site.SiteName;
 
-			    var nameValueCollection = TranslateUtils.DictionaryToNameValueCollection(SiteInfo.Additional.ToDictionary());
+			    var nameValueCollection = TranslateUtils.DictionaryToNameValueCollection(Site.Additional.ToDictionary());
 
                 LtlAttributes.Text = GetAttributesHtml(nameValueCollection);
 
@@ -70,12 +71,12 @@ namespace SiteServer.BackgroundPages.Cms
             foreach (var styleInfo in _styleInfoList)
             {
                 string extra;
-                var value = BackgroundInputTypeParser.Parse(SiteInfo, 0, styleInfo, attributes, pageScripts, out extra);
+                var value = BackgroundInputTypeParser.Parse(Site, 0, styleInfo, attributes, pageScripts, out extra);
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
                 if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
                 {
-                    var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
+                    var commands = WebUtils.GetTextEditorCommands(Site, styleInfo.AttributeName);
                     builder.Append($@"
 <div class=""form-group"">
     <label class=""control-label"">{styleInfo.DisplayName}</label>
@@ -108,15 +109,15 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    SiteInfo.SiteName = TbSiteName.Text;
+		    Site.SiteName = TbSiteName.Text;
 
-            var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Page.Request.Form, null);
+            var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, _styleInfoList, Page.Request.Form, null).GetAwaiter().GetResult();
 
-		    SiteInfo.Additional.Load(dict);
+		    Site.Additional.Load(dict);
 
-            DataProvider.SiteDao.Update(SiteInfo);
+            DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
 
-            AuthRequest.AddSiteLog(SiteId, "修改站点设置");
+            AuthRequest.AddSiteLogAsync(SiteId, "修改站点设置").GetAwaiter().GetResult();
 
             SuccessMessage("站点设置修改成功！");
         }

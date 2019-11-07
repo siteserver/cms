@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -81,7 +82,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var siteId = TranslateUtils.ToInt(Request["siteId"]);
                 var channelId = TranslateUtils.ToInt(Request["channelId"]);
                 var title = Request["title"];
-                var titles = GetTitles(siteId, channelId, title);
+                var titles = GetTitlesAsync(siteId, channelId, title).GetAwaiter().GetResult();
 
                 Page.Response.Write(titles);
                 Page.Response.End();
@@ -143,12 +144,12 @@ namespace SiteServer.BackgroundPages.Ajax
             Page.Response.End();
         }
 
-        public string GetTitles(int siteId, int channelId, string title)
+        public async Task<string> GetTitlesAsync(int siteId, int channelId, string title)
         {
             var retVal = new StringBuilder();
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var tableName = ChannelManager.GetTableName(site, channelId);
 
             var titleList = DataProvider.ContentDao.GetValueListByStartString(tableName, channelId, ContentAttribute.Title, title, 10);
             if (titleList.Count > 0)

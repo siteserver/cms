@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -16,14 +17,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
                 var request = new AuthenticatedRequest();
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
-                var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
+                var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
@@ -40,7 +41,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     var siteIdListWithPermissions = permissions.GetSiteIdList();
                     foreach (var siteId in siteIdListWithPermissions)
                     {
-                        siteNames.Add(SiteManager.GetSiteName(SiteManager.GetSiteInfo(siteId)));
+                        siteNames.Add(await SiteManager.GetSiteNameAsync(await SiteManager.GetSiteAsync(siteId)));
                     }
                 }
                 var isOrdinaryAdmin = !permissions.IsSystemAdministrator;

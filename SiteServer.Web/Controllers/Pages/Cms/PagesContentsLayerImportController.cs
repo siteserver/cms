@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -20,7 +21,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         private const string RouteUpload = "actions/upload";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
@@ -36,14 +37,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
-                var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, true);
+                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, site, siteId, out var checkedLevel);
+                var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
                 return Ok(new
                 {
@@ -124,7 +125,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -144,13 +145,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                var isChecked = checkedLevel >= site.Additional.CheckContentLevel;
 
                 var contentIdList = new List<int>();
 
@@ -199,7 +200,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 }
                 CreateManager.CreateChannel(siteId, channelInfo.Id);
 
-                request.AddSiteLog(siteId, channelId, 0, "导入内容", string.Empty);
+                await request.AddSiteLogAsync(siteId, channelId, 0, "导入内容", string.Empty);
 
                 return Ok(new
                 {

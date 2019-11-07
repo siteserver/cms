@@ -126,7 +126,7 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            await RestoreJob.Restore(_includes, _excludes, true, treeInfo.DirectoryPath, treeInfo, errorLogFilePath);
+            await RestoreJob.RestoreAsync(_includes, _excludes, true, treeInfo.DirectoryPath, treeInfo, errorLogFilePath);
 
             await CliUtils.PrintRowLineAsync();
             await Console.Out.WriteLineAsync("恭喜，成功同步数据！");

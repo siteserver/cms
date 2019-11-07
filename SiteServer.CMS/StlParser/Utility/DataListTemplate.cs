@@ -57,7 +57,7 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 var contentItem = new ContentItemInfo(SqlUtils.EvalInt(container.DataItem, ContentAttribute.ChannelId), SqlUtils.EvalInt(container.DataItem, ContentAttribute.Id), container.ItemIndex);
                 _pageInfo.ContentItems.Push(contentItem);
-                literal.Text = TemplateUtility.GetContentsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
+                literal.Text = TemplateUtility.GetContentsItemTemplateStringAsync(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo).GetAwaiter().GetResult();
             }
             else if (_contextType == EContextType.SqlContent)
             {
@@ -67,7 +67,7 @@ namespace SiteServer.CMS.StlParser.Utility
             else if (_contextType == EContextType.Site)
             {
                 _pageInfo.SiteItems.Push(itemInfo);
-                literal.Text = TemplateUtility.GetSitesTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
+                literal.Text = TemplateUtility.GetSitesTemplateStringAsync(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo).GetAwaiter().GetResult();
             }
             else if (_contextType == EContextType.Each)
             {

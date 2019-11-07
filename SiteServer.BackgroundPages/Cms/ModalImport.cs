@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
                         importObject.ImportRelatedFieldByZipFile(localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
-                        AuthRequest.AddSiteLog(SiteId, "导入联动字段");
+                        AuthRequest.AddSiteLogAsync(SiteId, "导入联动字段").GetAwaiter().GetResult();
 
                         LayerUtils.Close(Page);
                     }

@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             EBooleanUtils.AddListItems(DdlIsFileUploadChangeFileName, "采用系统生成文件名", "采用原有文件名");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, SiteInfo.Additional.IsFileUploadChangeFileName.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, Site.Additional.IsFileUploadChangeFileName.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -60,10 +60,10 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(Site, fileExtName);
                 if (!string.IsNullOrEmpty(_realtedPath))
                 {
-                    localDirectoryPath = PathUtility.MapPath(SiteInfo, _realtedPath);
+                    localDirectoryPath = PathUtility.MapPath(Site, _realtedPath);
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
                 var localFileName = PathUtility.GetUploadFileName(filePath, TranslateUtils.ToBool(DdlIsFileUploadChangeFileName.SelectedValue));
@@ -80,13 +80,13 @@ namespace SiteServer.BackgroundPages.Cms
                     FailMessage("此格式不允许上传，此文件夹只允许上传图片以及音视频文件！");
                     return;
                 }
-                if (_uploadType == EUploadType.File && !PathUtility.IsFileExtenstionAllowed(SiteInfo, fileExtName))
+                if (_uploadType == EUploadType.File && !PathUtility.IsFileExtenstionAllowed(Site, fileExtName))
                 {
                     FailMessage("此格式不允许上传，请选择有效的文件！");
                     return;
                 }
                     
-                if (!PathUtility.IsFileSizeAllowed(SiteInfo, HifUpload.PostedFile.ContentLength))
+                if (!PathUtility.IsFileSizeAllowed(Site, HifUpload.PostedFile.ContentLength))
                 {
                     FailMessage("上传失败，上传文件超出规定文件大小！");
                     return;
@@ -94,10 +94,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                 HifUpload.PostedFile.SaveAs(localFilePath);
 
-                FileUtility.AddWaterMark(SiteInfo, localFilePath);
+                FileUtility.AddWaterMark(Site, localFilePath);
 
-                var fileUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
-                var textBoxUrl = PageUtility.GetVirtualUrl(SiteInfo, fileUrl);
+                var fileUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localFilePath, true).GetAwaiter().GetResult();
+                var textBoxUrl = PageUtility.GetVirtualUrl(Site, fileUrl);
 
                 if (string.IsNullOrEmpty(_textBoxClientId))
                 {

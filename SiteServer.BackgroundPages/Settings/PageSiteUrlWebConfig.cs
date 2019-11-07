@@ -33,12 +33,12 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            LtlSiteName.Text = SiteInfo.SiteName;
+            LtlSiteName.Text = Site.SiteName;
 
             EBooleanUtils.AddListItems(RblIsSeparatedWeb, "Web独立部署", "Web与CMS部署在一起");
-            ControlUtils.SelectSingleItem(RblIsSeparatedWeb, SiteInfo.Additional.IsSeparatedWeb.ToString());
-            PhSeparatedWeb.Visible = SiteInfo.Additional.IsSeparatedWeb;
-            TbSeparatedWebUrl.Text = SiteInfo.Additional.SeparatedWebUrl;
+            ControlUtils.SelectSingleItem(RblIsSeparatedWeb, Site.Additional.IsSeparatedWeb.ToString());
+            PhSeparatedWeb.Visible = Site.Additional.IsSeparatedWeb;
+            TbSeparatedWebUrl.Text = Site.Additional.SeparatedWebUrl;
         }
 
         public void RblIsSeparatedWeb_SelectedIndexChanged(object sender, EventArgs e)
@@ -48,15 +48,15 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            SiteInfo.Additional.IsSeparatedWeb = TranslateUtils.ToBool(RblIsSeparatedWeb.SelectedValue);
-            SiteInfo.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
-            if (!string.IsNullOrEmpty(SiteInfo.Additional.SeparatedWebUrl) && !SiteInfo.Additional.SeparatedWebUrl.EndsWith("/"))
+            Site.Additional.IsSeparatedWeb = TranslateUtils.ToBool(RblIsSeparatedWeb.SelectedValue);
+            Site.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
+            if (!string.IsNullOrEmpty(Site.Additional.SeparatedWebUrl) && !Site.Additional.SeparatedWebUrl.EndsWith("/"))
             {
-                SiteInfo.Additional.SeparatedWebUrl = SiteInfo.Additional.SeparatedWebUrl + "/";
+                Site.Additional.SeparatedWebUrl = Site.Additional.SeparatedWebUrl + "/";
             }
 
-            DataProvider.SiteDao.Update(SiteInfo);
-            AuthRequest.AddSiteLog(SiteId, "修改Web访问地址");
+            DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+            AuthRequest.AddSiteLogAsync(SiteId, "修改Web访问地址").GetAwaiter().GetResult();
 
             SuccessMessage("Web访问地址修改成功！");
             AddWaitAndRedirectScript(PageSiteUrlWeb.GetRedirectUrl());

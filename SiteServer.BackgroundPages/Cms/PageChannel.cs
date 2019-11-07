@@ -45,8 +45,8 @@ namespace SiteServer.BackgroundPages.Cms
                     var isSubtract = AuthRequest.IsQueryExists("Subtract");
                     DataProvider.ChannelDao.UpdateTaxis(SiteId, channelId, isSubtract);
 
-                    AuthRequest.AddSiteLog(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
-                        $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}");
+                    AuthRequest.AddSiteLogAsync(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
+                        $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}").GetAwaiter().GetResult();
 
                     PageUtils.Redirect(GetRedirectUrl(SiteId, channelId));
                     return;
@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.Channel, null));
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(Site, string.Empty, ELoadingType.Channel, null));
 
             if (AuthRequest.IsQueryExists("CurrentChannelId"))
             {
@@ -150,7 +150,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.Channel, null, AuthRequest.AdminPermissionsImpl);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(Site, nodeInfo, enabled, ELoadingType.Channel, null, AuthRequest.AdminPermissionsImpl);
         }
     }
 }

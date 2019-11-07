@@ -5,6 +5,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
@@ -25,8 +26,8 @@ namespace SiteServer.BackgroundPages.Controls
 
             if (siteId > 0)
             {
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo != null)
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                if (site != null)
                 {
                     var contentModelPluginId = Page.Request.QueryString["contentModelPluginId"];
                     var linkUrl = Page.Request.QueryString["linkUrl"];
@@ -36,13 +37,13 @@ namespace SiteServer.BackgroundPages.Controls
                         additional["linkUrl"] = linkUrl;
                     }
 
-                    var scripts = ChannelLoading.GetScript(siteInfo, contentModelPluginId, ELoadingType.ContentTree, additional);
+                    var scripts = ChannelLoading.GetScript(site, contentModelPluginId, ELoadingType.ContentTree, additional);
                     builder.Append(scripts);
 
-                    var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteInfo.Id, siteInfo.Id), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty);
+                    var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(site.Id, site.Id), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty);
                     foreach (var channelId in channelIdList)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                        var channelInfo = ChannelManager.GetChannelInfo(site.Id, channelId);
                         var enabled = request.AdminPermissionsImpl.IsOwningChannelId(channelInfo.Id);
                         if (!string.IsNullOrEmpty(contentModelPluginId) &&
                             !StringUtils.EqualsIgnoreCase(channelInfo.ContentModelPluginId, contentModelPluginId))
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages.Controls
                             if (!IsDesendantContentModelPluginIdExists(channelInfo, contentModelPluginId)) continue;
                         }
 
-                        builder.Append(ChannelLoading.GetChannelRowHtml(siteInfo, channelInfo, enabled, ELoadingType.ContentTree, additional, request.AdminPermissionsImpl));
+                        builder.Append(ChannelLoading.GetChannelRowHtml(site, channelInfo, enabled, ELoadingType.ContentTree, additional, request.AdminPermissionsImpl));
                     }
                 }
             }

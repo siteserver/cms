@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
@@ -15,14 +16,14 @@ namespace SiteServer.API.Controllers.Sys
     public class SysStlActionsPageContentsController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsPageContents.Route)]
-        public IHttpActionResult Main()
+        public async Task<IHttpActionResult> Main()
         {
             try
             {
                 var request = new AuthenticatedRequest();
 
                 var siteId = request.GetPostInt("siteId");
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = await SiteManager.GetSiteAsync(siteId);
                 var pageChannelId = request.GetPostInt("pageChannelId");
                 var templateId = request.GetPostInt("templateId");
                 var totalNum = request.GetPostInt("totalNum");
@@ -32,9 +33,9 @@ namespace SiteServer.API.Controllers.Sys
 
                 var nodeInfo = ChannelManager.GetChannelInfo(siteId, pageChannelId);
                 var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
-                var pageInfo = new PageInfo(nodeInfo.Id, 0, siteInfo, templateInfo, new Dictionary<string, object>())
+                var pageInfo = new PageInfo(nodeInfo.Id, 0, site, templateInfo, new Dictionary<string, object>())
                 {
-                    UserInfo = request.UserInfo
+                    User = request.User
                 };
                 var contextInfo = new ContextInfo(pageInfo);
 

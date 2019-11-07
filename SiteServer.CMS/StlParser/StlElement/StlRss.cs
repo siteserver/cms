@@ -10,6 +10,7 @@ using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
+using System.Threading.Tasks;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -173,10 +174,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, title, description, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, channelIndex, channelName, totalNum, startNum, orderByString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists);
+            return ParseImplAsync(pageInfo, contextInfo, title, description, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, channelIndex, channelName, totalNum, startNum, orderByString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists).GetAwaiter().GetResult();
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string title, string description, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string channelIndex, string channelName, int totalNum, int startNum, string orderByString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string title, string description, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string channelIndex, string channelName, int totalNum, int startNum, string orderByString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists)
         {
             var feed = new RssFeed
             {
@@ -204,9 +205,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 channel.Description = nodeInfo.Content;
                 channel.Description = string.IsNullOrEmpty(channel.Description) ? nodeInfo.ChannelName : StringUtils.MaxLengthText(channel.Description, 200);
             }
-            channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal)));
+            channel.Link = new Uri(PageUtils.AddProtocolToUrl(await PageUtility.GetChannelUrlAsync(pageInfo.Site, nodeInfo, pageInfo.IsLocal)));
 
-            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
 
             if (minContentInfoList != null)
             {
@@ -214,7 +215,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var item = new RssItem();
 
-                    var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                    var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                     item.Title = StringUtils.Replace("&", contentInfo.Title, "&amp;");
                     item.Description = contentInfo.Summary;
                     if (string.IsNullOrEmpty(item.Description))
@@ -224,7 +225,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     item.Description = StringUtils.Replace("&", item.Description, "&amp;");
                     item.PubDate = contentInfo.AddDate.Value;
-                    item.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false)));
+                    item.Link = new Uri(PageUtils.AddProtocolToUrl(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, false)));
 
                     channel.Items.Add(item);
                 }

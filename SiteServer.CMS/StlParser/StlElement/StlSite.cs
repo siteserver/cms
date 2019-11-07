@@ -4,10 +4,12 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
+using System.Threading.Tasks;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -156,44 +158,44 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-		    var siteInfo = contextInfo.SiteInfo;
+		    var site = contextInfo.Site;
 
 		    if (!string.IsNullOrEmpty(siteName))
 		    {
-		        siteInfo = SiteManager.GetSiteInfoBySiteName(siteName);
+		        site = SiteManager.GetSiteBySiteNameAsync(siteName).GetAwaiter().GetResult();
 		    }
 		    else if (!string.IsNullOrEmpty(siteDir))
 		    {
-		        siteInfo = SiteManager.GetSiteInfoByDirectory(siteDir);
+		        site = SiteManager.GetSiteByDirectoryAsync(siteDir).GetAwaiter().GetResult();
 		    }
 
 		    if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
 		    {
-		        return siteInfo;
+		        return site;
 		    }
 
-            return ParseImpl(pageInfo, contextInfo, siteInfo, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return ParseImpl(pageInfo, contextInfo, site, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, SiteInfo siteInfo, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, Site site, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
-            if (siteInfo == null) return string.Empty;
+            if (site == null) return string.Empty;
 
             var parsedContent = string.Empty;
 
             if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
-                var preSiteInfo = pageInfo.SiteInfo;
+                var preSite = pageInfo.Site;
                 var prePageChannelId = pageInfo.PageChannelId;
                 var prePageContentId = pageInfo.PageContentId;
 
-                pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
+                pageInfo.ChangeSite(site, site.Id, 0, contextInfo);
 
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                 parsedContent = innerBuilder.ToString();
 
-                pageInfo.ChangeSite(preSiteInfo, prePageChannelId, prePageContentId, contextInfo);
+                pageInfo.ChangeSite(preSite, prePageChannelId, prePageContentId, contextInfo);
 
                 return parsedContent;
             }
@@ -202,15 +204,15 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (type.ToLower().Equals(TypeSiteName.ToLower()))
             {
-                parsedContent = pageInfo.SiteInfo.SiteName;
+                parsedContent = pageInfo.Site.SiteName;
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.SiteInfo.Additional.WebUrl;
+                parsedContent = pageInfo.Site.Additional.WebUrl;
             }
-            else if (pageInfo.SiteInfo.Additional.GetString(type) != null)
+            else if (pageInfo.Site.Additional.GetString(type) != null)
             {
-                parsedContent = pageInfo.SiteInfo.Additional.GetString(type);
+                parsedContent = pageInfo.Site.Additional.GetString(type);
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
                     var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
@@ -220,11 +222,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                         {
-                            parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
+                            parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                         else
                         {
-                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
 
                             inputType = styleInfo.InputType;
 

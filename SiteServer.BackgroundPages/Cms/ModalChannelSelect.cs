@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else
                     {
-                        var pageUrl = PageUtility.GetChannelUrl(SiteInfo, ChannelManager.GetChannelInfo(SiteId, channelId), false);
+                        var pageUrl = PageUtility.GetChannelUrlAsync(Site, ChannelManager.GetChannelInfo(SiteId, channelId), false).GetAwaiter().GetResult();
                         if (_isProtocol)
                         {
                             pageUrl = PageUtils.AddProtocolToUrl(pageUrl);
@@ -100,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {"itemIndex", _itemIndex.ToString()}
                     });
                     LtlSite.Text = $"<a href='{linkUrl}'>{nodeInfo.ChannelName}</a>";
-                    ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.ChannelClickSelect, null));
+                    ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(Site, string.Empty, ELoadingType.ChannelClickSelect, null));
                     BindGrid();
                 }
 			}
@@ -126,7 +126,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelClickSelect, _additional, AuthRequest.AdminPermissionsImpl);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(Site, nodeInfo, enabled, ELoadingType.ChannelClickSelect, _additional, AuthRequest.AdminPermissionsImpl);
         }
 	}
 }

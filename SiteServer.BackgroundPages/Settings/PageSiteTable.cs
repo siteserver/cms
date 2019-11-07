@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            RptContents.DataSource = SiteManager.GetSiteTableNames();
+            RptContents.DataSource = SiteManager.GetSiteTableNamesAsync().GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             var tableName = (string)e.Item.DataItem;
             //var isHighlight = !collectionInfo.IsCreatedInDb || collectionInfo.IsChangedAfterCreatedInDb;
-            var isTableUsed = DataProvider.SiteDao.IsTableUsed(tableName);
+            var isTableUsed = DataProvider.SiteDao.IsTableUsedAsync(tableName).GetAwaiter().GetResult();
 
             //if (isHighlight) e.Item.Attributes.Add("style", "color: red");
 

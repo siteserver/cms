@@ -75,11 +75,11 @@ namespace SiteServer.BackgroundPages.Settings
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Chart);
 
             DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
-            var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
+            var siteIdList = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             foreach (var siteId in siteIdList)
             {
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                DdlSiteId.Items.Add(new ListItem(siteInfo.SiteName, siteId.ToString()));
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                DdlSiteId.Items.Add(new ListItem(site.SiteName, siteId.ToString()));
             }
             ControlUtils.SelectSingleItem(DdlSiteId, SiteId.ToString());
 
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Settings
                 ["EndDate"] = TbEndDate.Text
             };
 
-            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.SiteAnalysis, _additional));
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(Site, string.Empty, ELoadingType.SiteAnalysis, _additional));
 
             BindGrid();
 
@@ -114,7 +114,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             foreach (var channelId in channelIdList)
             {
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                var tableName = ChannelManager.GetTableName(Site, channelId);
 
                 SetXHashtable(channelId, nodeInfo.ChannelName);
 
@@ -141,7 +141,7 @@ yArrayUpdate.push('{yValueUpdate}');";
 
             var ltlRow = (Literal)e.Item.FindControl("ltlRow");
 
-            ltlRow.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, AuthRequest.AdminPermissionsImpl);
+            ltlRow.Text = ChannelLoading.GetChannelRowHtml(Site, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, AuthRequest.AdminPermissionsImpl);
         }
 
         public void Analysis_OnClick(object sender, EventArgs e)

@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Provider;
 using SiteServer.Utils;
@@ -20,7 +24,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
@@ -38,43 +42,40 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     new KeyValuePair<int, string>(0, "<无上级站点>")
                 };
 
-                var siteIdList = SiteManager.GetSiteIdList();
-                var siteInfoList = new List<SiteInfo>();
-                var parentWithChildren = new Dictionary<int, List<SiteInfo>>();
+                var siteIdList = await SiteManager.GetSiteIdListAsync();
+                var siteInfoList = new List<Site>();
+                var parentWithChildren = new Dictionary<int, List<Site>>();
                 foreach (var siteId in siteIdList)
                 {
-                    var siteInfo = SiteManager.GetSiteInfo(siteId);
-                    if (siteInfo.IsRoot == false)
+                    var site = await SiteManager.GetSiteAsync(siteId);
+                    if (site.ParentId == 0)
                     {
-                        if (siteInfo.ParentId == 0)
+                        siteInfoList.Add(site);
+                    }
+                    else
+                    {
+                        var children = new List<Site>();
+                        if (parentWithChildren.ContainsKey(site.ParentId))
                         {
-                            siteInfoList.Add(siteInfo);
+                            children = parentWithChildren[site.ParentId];
                         }
-                        else
-                        {
-                            var children = new List<SiteInfo>();
-                            if (parentWithChildren.ContainsKey(siteInfo.ParentId))
-                            {
-                                children = parentWithChildren[siteInfo.ParentId];
-                            }
-                            children.Add(siteInfo);
-                            parentWithChildren[siteInfo.ParentId] = children;
-                        }
+                        children.Add(site);
+                        parentWithChildren[site.ParentId] = children;
                     }
                 }
-                foreach (SiteInfo siteInfo in siteInfoList)
+                foreach (Site site in siteInfoList)
                 {
-                    AddSite(siteList, siteInfo, parentWithChildren, 0);
+                    AddSite(siteList, site, parentWithChildren, 0);
                 }
 
-                var tableNameList = SiteManager.GetSiteTableNames();
+                var tableNameList = await SiteManager.GetSiteTableNamesAsync();
 
-                var isRootExists = SiteManager.GetSiteInfoByIsRoot() != null;
+                var rootExists = await SiteManager.GetSiteByIsRootAsync() != null;
 
                 return Ok(new
                 {
                     Value = siteTemplates.Values,
-                    IsRootExists = isRootExists,
+                    RootExists = rootExists,
                     SiteList = siteList,
                     TableNameList = tableNameList
                 });
@@ -85,7 +86,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
             }
         }
 
-        private static void AddSite(List<KeyValuePair<int, string>> siteList, SiteInfo siteInfo, Dictionary<int, List<SiteInfo>> parentWithChildren, int level)
+        private static void AddSite(List<KeyValuePair<int, string>> siteList, Site site, Dictionary<int, List<Site>> parentWithChildren, int level)
         {
             if (level > 1) return;
             var padding = string.Empty;
@@ -98,24 +99,24 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 padding += "└ ";
             }
 
-            if (parentWithChildren.ContainsKey(siteInfo.Id))
+            if (parentWithChildren.ContainsKey(site.Id))
             {
-                var children = parentWithChildren[siteInfo.Id];
-                siteList.Add(new KeyValuePair<int, string>(siteInfo.Id, padding + siteInfo.SiteName + $"({children.Count})"));
+                var children = parentWithChildren[site.Id];
+                siteList.Add(new KeyValuePair<int, string>(site.Id, padding + site.SiteName + $"({children.Count})"));
                 level++;
-                foreach (var subSiteInfo in children)
+                foreach (var subSite in children)
                 {
-                    AddSite(siteList, subSiteInfo, parentWithChildren, level);
+                    AddSite(siteList, subSite, parentWithChildren, level);
                 }
             }
             else
             {
-                siteList.Add(new KeyValuePair<int, string>(siteInfo.Id, padding + siteInfo.SiteName));
+                siteList.Add(new KeyValuePair<int, string>(site.Id, padding + site.SiteName));
             }
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -129,7 +130,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var createType = request.GetPostString("createType");
                 var createTemplateId = request.GetPostString("createTemplateId");
                 var siteName = request.GetPostString("siteName");
-                var isRoot = request.GetPostBool("isRoot");
+                var root = request.GetPostBool("root");
                 var parentId = request.GetPostInt("parentId");
                 var siteDir = request.GetPostString("siteDir");
                 var tableRule = ETableRuleUtils.GetEnumType(request.GetPostString("tableRule"));
@@ -138,7 +139,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var isImportContents = request.GetPostBool("isImportContents");
                 var isImportTableStyles = request.GetPostBool("isImportTableStyles");
 
-                if (!isRoot)
+                if (!root)
                 {
                     if (DirectoryUtils.IsSystemDirectory(siteDir))
                     {
@@ -148,8 +149,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     {
                         return BadRequest("文件夹名称不符合系统要求，请更改文件夹名称！");
                     }
-                    var list = DataProvider.SiteDao.GetLowerSiteDirList(parentId);
-                    if (list.IndexOf(siteDir.ToLower()) != -1)
+                    var list = await DataProvider.SiteDao.GetLowerSiteDirListAsync(parentId);
+                    if (list.Contains(siteDir.ToLower()))
                     {
                         return BadRequest("已存在相同的发布路径，请更改文件夹名称！");
                     }
@@ -179,33 +180,33 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     }
                 }
 
-                var siteInfo = new SiteInfo
+                var site = new Site
                 {
-                    SiteName = AttackUtils.FilterXss(siteName),
+                    SiteName = siteName,
                     SiteDir = siteDir,
                     TableName = tableName,
                     ParentId = parentId,
-                    IsRoot = isRoot
+                    Root = root,
+                    Additional = new SiteInfoExtend(siteDir, string.Empty)
                 };
+                site.Additional.IsCheckContentLevel = false;
+                site.Additional.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
 
-                siteInfo.Additional.IsCheckContentLevel = false;
-                siteInfo.Additional.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
-
-                var siteId = DataProvider.ChannelDao.InsertSiteInfo(channelInfo, siteInfo, request.AdminName);
+                var siteId = await DataProvider.ChannelDao.InsertSiteAsync(channelInfo, site, request.AdminName);
 
                 if (string.IsNullOrEmpty(tableName))
                 {
                     tableName = ContentDao.GetContentTableName(siteId);
                     DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
-                    DataProvider.SiteDao.UpdateTableName(siteId, tableName);
+                    await DataProvider.SiteDao.UpdateTableNameAsync(siteId, tableName);
                 }
 
                 if (request.AdminPermissionsImpl.IsSystemAdministrator && !request.AdminPermissionsImpl.IsConsoleAdministrator)
                 {
                     var siteIdList = request.AdminPermissionsImpl.GetSiteIdList() ?? new List<int>();
                     siteIdList.Add(siteId);
-                    var adminInfo = AdminManager.GetAdminInfoByUserId(request.AdminId);
-                    DataProvider.AdministratorDao.UpdateSiteIdCollection(adminInfo, TranslateUtils.ObjectCollectionToString(siteIdList));
+                    var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(request.AdminId);
+                    await DataProvider.AdministratorDao.UpdateSiteIdCollectionAsync(adminInfo, TranslateUtils.ObjectCollectionToString(siteIdList));
                 }
 
                 var siteTemplateDir = string.Empty;

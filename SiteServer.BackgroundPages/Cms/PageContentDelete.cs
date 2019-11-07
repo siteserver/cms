@@ -65,8 +65,8 @@ namespace SiteServer.BackgroundPages.Cms
             //}
             //if (this.nodeInfo != null)
             //{
-            //    this.tableStyle = NodeManager.GetTableStyle(base.SiteInfo, nodeInfo);
-            //    this.tableName = NodeManager.GetTableName(base.SiteInfo, nodeInfo);
+            //    this.tableStyle = NodeManager.GetTableStyle(base.Site, nodeInfo);
+            //    this.tableName = NodeManager.GetTableName(base.Site, nodeInfo);
             //}
 
             //if (this.contentID == 0)
@@ -99,11 +99,11 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelId, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(Site, channelId, contentId);
                     if (contentInfo != null)
                     {
                         builder.Append(
-                            $@"{WebUtils.GetContentTitle(SiteInfo, contentInfo, _returnUrl)}<br />");
+                            $@"{WebUtils.GetContentTitle(Site, contentInfo, _returnUrl)}<br />");
                     }
                 }
             }
@@ -129,14 +129,14 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 foreach (var channelId in _idsDictionary.Keys)
                 {
-                    var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                    var tableName = ChannelManager.GetTableName(Site, channelId);
                     var contentIdList = _idsDictionary[channelId];
 
                     if (!_isDeleteFromTrash)
                     {
                         if (bool.Parse(RblRetainFiles.SelectedValue) == false)
                         {
-                            DeleteManager.DeleteContents(SiteInfo, channelId, contentIdList);
+                            DeleteManager.DeleteContents(Site, channelId, contentIdList);
                             SuccessMessage("成功删除内容以及生成页面！");
                         }
                         else
@@ -148,13 +148,13 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             var contentId = contentIdList[0];
                             var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
-                            AuthRequest.AddSiteLog(SiteId, channelId, contentId, "删除内容",
-                                $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容标题:{contentTitle}");
+                            AuthRequest.AddSiteLogAsync(SiteId, channelId, contentId, "删除内容",
+                                $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容标题:{contentTitle}").GetAwaiter().GetResult();
                         }
                         else
                         {
-                            AuthRequest.AddSiteLog(SiteId, "批量删除内容",
-                                $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容条数:{contentIdList.Count}");
+                            AuthRequest.AddSiteLogAsync(SiteId, "批量删除内容",
+                                $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容条数:{contentIdList.Count}").GetAwaiter().GetResult();
                         }
 
                         DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, tableName, contentIdList);
@@ -180,10 +180,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                         foreach (var contentId in contentIdList)
                         {
-                            ContentUtility.Delete(tableName, SiteInfo, channelId, contentId);
+                            ContentUtility.Delete(tableName, Site, channelId, contentId);
                         }
 
-                        AuthRequest.AddSiteLog(SiteId, "从回收站清空内容", $"内容条数:{contentIdList.Count}");
+                        AuthRequest.AddSiteLogAsync(SiteId, "从回收站清空内容", $"内容条数:{contentIdList.Count}").GetAwaiter().GetResult();
                     }
                 }
 

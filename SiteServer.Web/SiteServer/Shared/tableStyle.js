@@ -1,9 +1,9 @@
 ﻿var $api = new apiUtils.Api(apiUrl + '/pages/shared/tableStyle');
 
 var data = {
-  tableName: pageUtils.getQueryStringByName('tableName'),
-  attributeName: pageUtils.getQueryStringByName('attributeName'),
-  relatedIdentities: pageUtils.getQueryStringByName('relatedIdentities'),
+  tableName: utils.getQueryString('tableName'),
+  attributeName: utils.getQueryString('attributeName'),
+  relatedIdentities: utils.getQueryString('relatedIdentities'),
   pageLoad: false,
   pageAlert: null,
   styleInfo: null,
@@ -34,14 +34,14 @@ var methods = {
     var $this = this;
     this.$validator.validate().then(function (result) {
       if (result) {
-        pageUtils.loading(true);
+        utils.loading(true);
         $api.post({
           tableName: $this.tableName,
           attributeName: $this.attributeName,
           relatedIdentities: $this.relatedIdentities,
           styleInfo: $this.styleInfo
         }, function (err, res) {
-          pageUtils.loading(false);
+          utils.loading(false);
           if (err || !res) {
             $this.pageAlert = {
               type: 'danger',
@@ -51,7 +51,7 @@ var methods = {
           }
 
           parent.reloadPage();
-          pageUtils.closeLayer();
+          utils.closeLayer();
         });
       }
     });

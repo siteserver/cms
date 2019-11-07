@@ -3,13 +3,14 @@ using SiteServer.CMS.Model;
 using System;
 using System.Collections.Generic;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
 	public static class TxtObject
 	{
-        public static List<ContentInfo> GetContentListByTxtFile(string directoryPath, SiteInfo siteInfo, ChannelInfo nodeInfo)
+        public static List<ContentInfo> GetContentListByTxtFile(string directoryPath, Site site, ChannelInfo nodeInfo)
         {
             var contentInfoList = new List<ContentInfo>();
 
@@ -30,7 +31,7 @@ namespace SiteServer.CMS.Core.Office
                             var dict = new Dictionary<string, object>
                             {
                                 {ContentAttribute.Title, title.Trim()},
-                                {ContentAttribute.SiteId, siteInfo.Id},
+                                {ContentAttribute.SiteId, site.Id},
                                 {ContentAttribute.ChannelId, nodeInfo.Id},
                                 {ContentAttribute.LastEditDate, DateTime.Now}
                             };

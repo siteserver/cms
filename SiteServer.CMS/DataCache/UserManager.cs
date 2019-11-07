@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
@@ -20,45 +20,45 @@ namespace SiteServer.CMS.DataCache
                 DataCacheManager.Remove(CacheKey);
             }
 
-            public static void Update(UserInfo userInfo)
+            public static void Update(User user)
             {
-                if (userInfo == null) return;
+                if (user == null) return;
 
                 var dict = GetDict();
 
                 lock (LockObject)
                 {
-                    dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
-                    dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
-                    if (!string.IsNullOrEmpty(userInfo.Mobile))
+                    dict[GetDictKeyByUserId(user.Id)] = user;
+                    dict[GetDictKeyByUserName(user.UserName)] = user;
+                    if (!string.IsNullOrEmpty(user.Mobile))
                     {
-                        dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
+                        dict[GetDictKeyByMobile(user.Mobile)] = user;
                     }
-                    if (!string.IsNullOrEmpty(userInfo.Email))
+                    if (!string.IsNullOrEmpty(user.Email))
                     {
-                        dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
+                        dict[GetDictKeyByEmail(user.Email)] = user;
                     }
                 }
             }
 
-            public static void Remove(UserInfo userInfo)
+            public static void Remove(User user)
             {
-                if (userInfo == null) return;
+                if (user == null) return;
 
                 var dict = GetDict();
 
                 lock (LockObject)
                 {
-                    dict.Remove(GetDictKeyByUserId(userInfo.Id));
-                    dict.Remove(GetDictKeyByUserName(userInfo.UserName));
-                    if (!string.IsNullOrEmpty(userInfo.Mobile))
+                    dict.Remove(GetDictKeyByUserId(user.Id));
+                    dict.Remove(GetDictKeyByUserName(user.UserName));
+                    if (!string.IsNullOrEmpty(user.Mobile))
                     {
-                        dict.Remove(GetDictKeyByMobile(userInfo.Mobile));
+                        dict.Remove(GetDictKeyByMobile(user.Mobile));
                     }
 
-                    if (!string.IsNullOrEmpty(userInfo.Email))
+                    if (!string.IsNullOrEmpty(user.Email))
                     {
-                        dict.Remove(GetDictKeyByEmail(userInfo.Email));
+                        dict.Remove(GetDictKeyByEmail(user.Email));
                     }
                 }
             }
@@ -83,157 +83,145 @@ namespace SiteServer.CMS.DataCache
                 return $"email:{email}";
             }
 
-            public static UserInfo GetCacheByUserId(int userId)
+            public static async Task<User> GetCacheByUserIdAsync(int userId)
             {
                 if (userId <= 0) return null;
 
                 var dict = GetDict();
 
-                dict.TryGetValue(GetDictKeyByUserId(userId), out UserInfo userInfo);
-                if (userInfo != null) return userInfo;
+                dict.TryGetValue(GetDictKeyByUserId(userId), out User user);
+                if (user != null) return user;
 
-                lock (LockObject)
+                dict.TryGetValue(GetDictKeyByUserId(userId), out user);
+
+                if (user == null)
                 {
-                    dict.TryGetValue(GetDictKeyByUserId(userId), out userInfo);
-
-                    if (userInfo == null)
+                    user = await DataProvider.UserDao.GetByUserIdAsync(userId);
+                    if (user != null)
                     {
-                        userInfo = DataProvider.UserDao.GetByUserId(userId);
-                        if (userInfo != null)
+                        dict[GetDictKeyByUserId(user.Id)] = user;
+                        dict[GetDictKeyByUserName(user.UserName)] = user;
+                        if (!string.IsNullOrEmpty(user.Mobile))
                         {
-                            dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
-                            dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
-                            if (!string.IsNullOrEmpty(userInfo.Mobile))
-                            {
-                                dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
-                            }
-                            if (!string.IsNullOrEmpty(userInfo.Email))
-                            {
-                                dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
-                            }
+                            dict[GetDictKeyByMobile(user.Mobile)] = user;
+                        }
+                        if (!string.IsNullOrEmpty(user.Email))
+                        {
+                            dict[GetDictKeyByEmail(user.Email)] = user;
                         }
                     }
                 }
 
-                return userInfo;
+                return user;
             }
 
-            public static UserInfo GetCacheByUserName(string userName)
+            public static async Task<User> GetCacheByUserNameAsync(string userName)
             {
                 if (string.IsNullOrEmpty(userName)) return null;
 
                 var dict = GetDict();
 
-                dict.TryGetValue(GetDictKeyByUserName(userName), out UserInfo userInfo);
-                if (userInfo != null) return userInfo;
+                dict.TryGetValue(GetDictKeyByUserName(userName), out User user);
+                if (user != null) return user;
 
-                lock (LockObject)
+                dict.TryGetValue(GetDictKeyByUserName(userName), out user);
+
+                if (user == null)
                 {
-                    dict.TryGetValue(GetDictKeyByUserName(userName), out userInfo);
-
-                    if (userInfo == null)
+                    user = await DataProvider.UserDao.GetByUserNameAsync(userName);
+                    if (user != null)
                     {
-                        userInfo = DataProvider.UserDao.GetByUserName(userName);
-                        if (userInfo != null)
+                        dict[GetDictKeyByUserId(user.Id)] = user;
+                        dict[GetDictKeyByUserName(user.UserName)] = user;
+                        if (!string.IsNullOrEmpty(user.Mobile))
                         {
-                            dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
-                            dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
-                            if (!string.IsNullOrEmpty(userInfo.Mobile))
-                            {
-                                dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
-                            }
-                            if (!string.IsNullOrEmpty(userInfo.Email))
-                            {
-                                dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
-                            }
+                            dict[GetDictKeyByMobile(user.Mobile)] = user;
+                        }
+                        if (!string.IsNullOrEmpty(user.Email))
+                        {
+                            dict[GetDictKeyByEmail(user.Email)] = user;
                         }
                     }
                 }
 
-                return userInfo;
+                return user;
             }
 
-            public static UserInfo GetCacheByMobile(string mobile)
+            public static async Task<User> GetCacheByMobileAsync(string mobile)
             {
                 if (string.IsNullOrEmpty(mobile)) return null;
 
                 var dict = GetDict();
 
-                dict.TryGetValue(GetDictKeyByMobile(mobile), out UserInfo userInfo);
-                if (userInfo != null) return userInfo;
+                dict.TryGetValue(GetDictKeyByMobile(mobile), out User user);
+                if (user != null) return user;
 
-                lock (LockObject)
+                dict.TryGetValue(GetDictKeyByMobile(mobile), out user);
+
+                if (user == null)
                 {
-                    dict.TryGetValue(GetDictKeyByMobile(mobile), out userInfo);
-
-                    if (userInfo == null)
+                    user = await DataProvider.UserDao.GetByMobileAsync(mobile);
+                    if (user != null)
                     {
-                        userInfo = DataProvider.UserDao.GetByMobile(mobile);
-                        if (userInfo != null)
+                        dict[GetDictKeyByUserId(user.Id)] = user;
+                        dict[GetDictKeyByUserName(user.UserName)] = user;
+                        if (!string.IsNullOrEmpty(user.Mobile))
                         {
-                            dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
-                            dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
-                            if (!string.IsNullOrEmpty(userInfo.Mobile))
-                            {
-                                dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
-                            }
-                            if (!string.IsNullOrEmpty(userInfo.Email))
-                            {
-                                dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
-                            }
+                            dict[GetDictKeyByMobile(user.Mobile)] = user;
+                        }
+                        if (!string.IsNullOrEmpty(user.Email))
+                        {
+                            dict[GetDictKeyByEmail(user.Email)] = user;
                         }
                     }
                 }
 
-                return userInfo;
+                return user;
             }
 
-            public static UserInfo GetCacheByEmail(string email)
+            public static async Task<User> GetCacheByEmailAsync(string email)
             {
                 if (string.IsNullOrEmpty(email)) return null;
 
                 var dict = GetDict();
 
-                dict.TryGetValue(GetDictKeyByEmail(email), out UserInfo userInfo);
-                if (userInfo != null) return userInfo;
+                dict.TryGetValue(GetDictKeyByEmail(email), out User user);
+                if (user != null) return user;
 
-                lock (LockObject)
+                dict.TryGetValue(GetDictKeyByEmail(email), out user);
+
+                if (user == null)
                 {
-                    dict.TryGetValue(GetDictKeyByEmail(email), out userInfo);
-
-                    if (userInfo == null)
+                    user = await DataProvider.UserDao.GetByEmailAsync(email);
+                    if (user != null)
                     {
-                        userInfo = DataProvider.UserDao.GetByEmail(email);
-                        if (userInfo != null)
+                        dict[GetDictKeyByUserId(user.Id)] = user;
+                        dict[GetDictKeyByUserName(user.UserName)] = user;
+                        if (!string.IsNullOrEmpty(user.Mobile))
                         {
-                            dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
-                            dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
-                            if (!string.IsNullOrEmpty(userInfo.Mobile))
-                            {
-                                dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
-                            }
-                            if (!string.IsNullOrEmpty(userInfo.Email))
-                            {
-                                dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
-                            }
+                            dict[GetDictKeyByMobile(user.Mobile)] = user;
+                        }
+                        if (!string.IsNullOrEmpty(user.Email))
+                        {
+                            dict[GetDictKeyByEmail(user.Email)] = user;
                         }
                     }
                 }
 
-                return userInfo;
+                return user;
             }
 
-            private static Dictionary<string, UserInfo> GetDict()
+            private static Dictionary<string, User> GetDict()
             {
-                var dict = DataCacheManager.Get<Dictionary<string, UserInfo>>(CacheKey);
+                var dict = DataCacheManager.Get<Dictionary<string, User>>(CacheKey);
                 if (dict != null) return dict;
 
                 lock (LockObject)
                 {
-                    dict = DataCacheManager.Get<Dictionary<string, UserInfo>>(CacheKey);
+                    dict = DataCacheManager.Get<Dictionary<string, User>>(CacheKey);
                     if (dict == null)
                     {
-                        dict = new Dictionary<string, UserInfo>();
+                        dict = new Dictionary<string, User>();
                         DataCacheManager.Insert(CacheKey, dict);
                     }
                 }
@@ -247,50 +235,50 @@ namespace SiteServer.CMS.DataCache
             UserManagerCache.Clear();
         }
 
-        public static void UpdateCache(UserInfo userInfo)
+        public static void UpdateCache(User user)
         {
-            UserManagerCache.Update(userInfo);
+            UserManagerCache.Update(user);
         }
 
-        public static void RemoveCache(UserInfo userInfo)
+        public static void RemoveCache(User user)
         {
-            UserManagerCache.Remove(userInfo);
+            UserManagerCache.Remove(user);
         }
 
-        public static UserInfo GetUserInfoByUserId(int userId)
+        public static async Task<User> GetUserByUserIdAsync(int userId)
         {
-            return UserManagerCache.GetCacheByUserId(userId);
+            return await UserManagerCache.GetCacheByUserIdAsync(userId);
         }
 
-        public static UserInfo GetUserInfoByUserName(string userName)
+        public static async Task<User> GetUserByUserNameAsync(string userName)
         {
-            return UserManagerCache.GetCacheByUserName(userName);
+            return await UserManagerCache.GetCacheByUserNameAsync(userName);
         }
 
-        public static UserInfo GetUserInfoByMobile(string mobile)
+        public static async Task<User> GetUserByMobileAsync(string mobile)
         {
-            return UserManagerCache.GetCacheByMobile(mobile);
+            return await UserManagerCache.GetCacheByMobileAsync(mobile);
         }
 
-        public static UserInfo GetUserInfoByEmail(string email)
+        public static async Task<User> GetUserByEmailAsync(string email)
         {
-            return UserManagerCache.GetCacheByEmail(email);
+            return await UserManagerCache.GetCacheByEmailAsync(email);
         }
 
-        public static UserInfo GetUserInfoByAccount(string account)
+        public static async Task<User> GetUserByAccountAsync(string account)
         {
             if (string.IsNullOrEmpty(account)) return null;
 
             if (StringUtils.IsMobile(account))
             {
-                return GetUserInfoByMobile(account);
+                return await GetUserByMobileAsync(account);
             }
             if (StringUtils.IsEmail(account))
             {
-                return GetUserInfoByEmail(account);
+                return await GetUserByEmailAsync(account);
             }
 
-            return GetUserInfoByUserName(account);
+            return await GetUserByUserNameAsync(account);
         }
 
         public static bool IsIpAddressCached(string ipAddress)
@@ -342,13 +330,13 @@ namespace SiteServer.CMS.DataCache
             return GetHomeUploadUrl(userId.ToString(), relatedUrl);
         }
 
-        public static string GetUserAvatarUrl(IUserInfo userInfo)
+        public static string GetUserAvatarUrl(User user)
         {
-            var imageUrl = userInfo?.AvatarUrl;
+            var imageUrl = user?.AvatarUrl;
 
             if (!string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.IsProtocolUrl(imageUrl) ? imageUrl : GetUserUploadUrl(userInfo.Id, imageUrl);
+                return PageUtils.IsProtocolUrl(imageUrl) ? imageUrl : GetUserUploadUrl(user.Id, imageUrl);
             }
 
             return DefaultAvatarUrl;

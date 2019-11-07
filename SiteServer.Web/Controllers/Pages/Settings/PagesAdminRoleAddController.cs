@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.API.Results.Pages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -21,7 +23,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         private const string RouteRoleId = "{roleId:int}";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
@@ -67,7 +69,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     }
                 }
 
-                var siteInfoList = new List<SiteInfo>();
+                var siteList = new List<Site>();
                 var checkedSiteIdList = new List<int>();
                 foreach (var permissionSiteId in request.AdminPermissionsImpl.GetSiteIdList())
                 {
@@ -79,7 +81,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                         var listTwo = request.AdminPermissionsImpl.GetSitePermissions(permissionSiteId);
                         if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                         {
-                            siteInfoList.Add(SiteManager.GetSiteInfo(permissionSiteId));
+                            siteList.Add(await SiteManager.GetSiteAsync(permissionSiteId));
                         }
                     }
                 }
@@ -92,7 +94,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var sitePermissionsList = new List<object>();
                 foreach (var siteId in checkedSiteIdList)
                 {
-                    sitePermissionsList.Add(GetSitePermissionsObject(roleId, siteId, request));
+                    sitePermissionsList.Add(await GetSitePermissionsObjectAsync(roleId, siteId, request));
                 }
 
                 return Ok(new
@@ -100,7 +102,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     Value = true,
                     RoleInfo = roleInfo,
                     Permissions = permissions,
-                    SiteInfoList = siteInfoList,
+                    SiteList = siteList,
                     CheckedSiteIdList = checkedSiteIdList,
                     SitePermissionsList = sitePermissionsList
                 });
@@ -112,7 +114,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpGet, Route(RouteSiteId)]
-        public IHttpActionResult GetSitePermissions(int siteId)
+        public async Task<IHttpActionResult> GetSitePermissions(int siteId)
         {
             try
             {
@@ -125,7 +127,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 var roleId = request.GetQueryInt("roleId");
 
-                return Ok(GetSitePermissionsObject(roleId, siteId, request));
+                return Ok(await GetSitePermissionsObjectAsync(roleId, siteId, request));
             }
             catch (Exception ex)
             {
@@ -133,7 +135,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
             }
         }
 
-        private object GetSitePermissionsObject(int roleId, int siteId, AuthenticatedRequest request)
+        private async Task<object> GetSitePermissionsObjectAsync(int roleId, int siteId, AuthenticatedRequest request)
         {
             SitePermissionsInfo sitePermissionsInfo = null;
             if (roleId > 0)
@@ -143,7 +145,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
             }
             if (sitePermissionsInfo == null) sitePermissionsInfo = new SitePermissionsInfo();
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var site = await SiteManager.GetSiteAsync(siteId);
             var sitePermissions = new List<Permission>();
             var pluginPermissions = new List<Permission>();
             var channelPermissions = new List<Permission>();
@@ -174,9 +176,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 {
                     if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel1)
                     {
-                        if (siteInfo.Additional.IsCheckContentLevel)
+                        if (site.Additional.IsCheckContentLevel)
                         {
-                            if (siteInfo.Additional.CheckContentLevel < 1)
+                            if (site.Additional.CheckContentLevel < 1)
                             {
                                 continue;
                             }
@@ -188,9 +190,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     }
                     else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel2)
                     {
-                        if (siteInfo.Additional.IsCheckContentLevel)
+                        if (site.Additional.IsCheckContentLevel)
                         {
-                            if (siteInfo.Additional.CheckContentLevel < 2)
+                            if (site.Additional.CheckContentLevel < 2)
                             {
                                 continue;
                             }
@@ -202,9 +204,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     }
                     else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel3)
                     {
-                        if (siteInfo.Additional.IsCheckContentLevel)
+                        if (site.Additional.IsCheckContentLevel)
                         {
-                            if (siteInfo.Additional.CheckContentLevel < 3)
+                            if (site.Additional.CheckContentLevel < 3)
                             {
                                 continue;
                             }
@@ -216,9 +218,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     }
                     else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel4)
                     {
-                        if (siteInfo.Additional.IsCheckContentLevel)
+                        if (site.Additional.IsCheckContentLevel)
                         {
-                            if (siteInfo.Additional.CheckContentLevel < 4)
+                            if (site.Additional.CheckContentLevel < 4)
                             {
                                 continue;
                             }
@@ -230,9 +232,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     }
                     else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel5)
                     {
-                        if (siteInfo.Additional.IsCheckContentLevel)
+                        if (site.Additional.IsCheckContentLevel)
                         {
-                            if (siteInfo.Additional.CheckContentLevel < 5)
+                            if (site.Additional.CheckContentLevel < 5)
                             {
                                 continue;
                             }
@@ -295,27 +297,27 @@ namespace SiteServer.API.Controllers.Pages.Settings
                         {
                             if (channelPermission == ConfigManager.ChannelPermissions.ContentCheck)
                             {
-                                if (siteInfo.Additional.IsCheckContentLevel) continue;
+                                if (site.Additional.IsCheckContentLevel) continue;
                             }
                             else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel1)
                             {
-                                if (siteInfo.Additional.IsCheckContentLevel == false || siteInfo.Additional.CheckContentLevel < 1) continue;
+                                if (site.Additional.IsCheckContentLevel == false || site.Additional.CheckContentLevel < 1) continue;
                             }
                             else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel2)
                             {
-                                if (siteInfo.Additional.IsCheckContentLevel == false || siteInfo.Additional.CheckContentLevel < 2) continue;
+                                if (site.Additional.IsCheckContentLevel == false || site.Additional.CheckContentLevel < 2) continue;
                             }
                             else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel3)
                             {
-                                if (siteInfo.Additional.IsCheckContentLevel == false || siteInfo.Additional.CheckContentLevel < 3) continue;
+                                if (site.Additional.IsCheckContentLevel == false || site.Additional.CheckContentLevel < 3) continue;
                             }
                             else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel4)
                             {
-                                if (siteInfo.Additional.IsCheckContentLevel == false || siteInfo.Additional.CheckContentLevel < 4) continue;
+                                if (site.Additional.IsCheckContentLevel == false || site.Additional.CheckContentLevel < 4) continue;
                             }
                             else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel5)
                             {
-                                if (siteInfo.Additional.IsCheckContentLevel == false || siteInfo.Additional.CheckContentLevel < 5) continue;
+                                if (site.Additional.IsCheckContentLevel == false || site.Additional.CheckContentLevel < 5) continue;
                             }
 
                             channelPermissions.Add(new Permission
@@ -352,7 +354,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult InsertRole()
+        public async Task<IHttpActionResult> InsertRole()
         {
             try
             {
@@ -403,7 +405,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 PermissionsImpl.ClearAllCache();
 
-                request.AddAdminLog("新增管理员角色", $"角色名称:{roleName}");
+                await request.AddAdminLogAsync("新增管理员角色", $"角色名称:{roleName}");
 
                 return Ok(new
                 {
@@ -417,7 +419,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPut, Route(RouteRoleId)]
-        public IHttpActionResult UpdateRole(int roleId)
+        public async Task<IHttpActionResult> UpdateRole(int roleId)
         {
             try
             {
@@ -473,7 +475,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 PermissionsImpl.ClearAllCache();
 
-                request.AddAdminLog("修改管理员角色", $"角色名称:{roleName}");
+                await request.AddAdminLogAsync("修改管理员角色", $"角色名称:{roleName}");
 
                 return Ok(new
                 {

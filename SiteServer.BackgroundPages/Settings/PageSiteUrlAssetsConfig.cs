@@ -34,13 +34,13 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            LtlSiteName.Text = SiteInfo.SiteName;
+            LtlSiteName.Text = Site.SiteName;
 
             EBooleanUtils.AddListItems(RblIsSeparatedAssets, "资源文件独立部署", "资源文件与Web部署在一起");
-            ControlUtils.SelectSingleItem(RblIsSeparatedAssets, SiteInfo.Additional.IsSeparatedAssets.ToString());
-            PhSeparatedAssets.Visible = SiteInfo.Additional.IsSeparatedAssets;
-            TbSeparatedAssetsUrl.Text = SiteInfo.Additional.SeparatedAssetsUrl;
-            TbAssetsDir.Text = SiteInfo.Additional.AssetsDir;
+            ControlUtils.SelectSingleItem(RblIsSeparatedAssets, Site.Additional.IsSeparatedAssets.ToString());
+            PhSeparatedAssets.Visible = Site.Additional.IsSeparatedAssets;
+            TbSeparatedAssetsUrl.Text = Site.Additional.SeparatedAssetsUrl;
+            TbAssetsDir.Text = Site.Additional.AssetsDir;
         }
 
         public void RblIsSeparatedAssets_SelectedIndexChanged(object sender, EventArgs e)
@@ -50,12 +50,12 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            SiteInfo.Additional.IsSeparatedAssets = TranslateUtils.ToBool(RblIsSeparatedAssets.SelectedValue);
-            SiteInfo.Additional.SeparatedAssetsUrl = TbSeparatedAssetsUrl.Text;
-            SiteInfo.Additional.AssetsDir = TbAssetsDir.Text;
+            Site.Additional.IsSeparatedAssets = TranslateUtils.ToBool(RblIsSeparatedAssets.SelectedValue);
+            Site.Additional.SeparatedAssetsUrl = TbSeparatedAssetsUrl.Text;
+            Site.Additional.AssetsDir = TbAssetsDir.Text;
 
-            DataProvider.SiteDao.Update(SiteInfo);
-            AuthRequest.AddSiteLog(SiteId, "修改资源文件访问地址");
+            DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+            AuthRequest.AddSiteLogAsync(SiteId, "修改资源文件访问地址").GetAwaiter().GetResult();
 
             SuccessMessage("资源文件访问地址修改成功！");
             AddWaitAndRedirectScript(PageSiteUrlAssets.GetRedirectUrl());

@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -53,7 +54,7 @@ namespace SiteServer.BackgroundPages.Settings
                 if (TableStyleManager.IsExists(0, _tableName, attributeName))
                 {
                     DataProvider.TableStyleDao.Delete(0, _tableName, attributeName);
-                    AuthRequest.AddAdminLog("删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
+                    AuthRequest.AddAdminLogAsync("删除数据表单样式", $"表单:{_tableName},字段:{attributeName}").GetAwaiter().GetResult();
                     SuccessDeleteMessage();
                 }
             }

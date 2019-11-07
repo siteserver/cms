@@ -9,6 +9,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -63,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
+                            var contentInfo = ContentManager.GetContentInfo(Site, _channelInfo, contentId);
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -82,11 +83,11 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.IsTop = true;
                                 }
-                                DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                                DataProvider.ContentDao.Update(Site, _channelInfo, contentInfo);
                             }
                         }
 
-                        AuthRequest.AddSiteLog(SiteId, "设置内容属性");
+                        AuthRequest.AddSiteLogAsync(SiteId, "设置内容属性").GetAwaiter().GetResult();
 
                         isChanged = true;
                     }
@@ -98,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
+                            var contentInfo = ContentManager.GetContentInfo(Site, _channelInfo, contentId);
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -117,11 +118,11 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.IsTop = false;
                                 }
-                                DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                                DataProvider.ContentDao.Update(Site, _channelInfo, contentInfo);
                             }
                         }
 
-                        AuthRequest.AddSiteLog(SiteId, "取消内容属性");
+                        AuthRequest.AddSiteLogAsync(SiteId, "取消内容属性").GetAwaiter().GetResult();
 
                         isChanged = true;
                     }
@@ -133,15 +134,15 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(Site, _channelInfo, contentId);
                         if (contentInfo != null)
                         {
                             contentInfo.Hits = hits;
-                            DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                            DataProvider.ContentDao.Update(Site, _channelInfo, contentInfo);
                         }
                     }
 
-                    AuthRequest.AddSiteLog(SiteId, "设置内容点击量");
+                    AuthRequest.AddSiteLogAsync(SiteId, "设置内容点击量").GetAwaiter().GetResult();
 
                     isChanged = true;
                     break;
@@ -151,15 +152,15 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(Site, _channelInfo, contentId);
                         if (contentInfo != null)
                         {
                             contentInfo.Downloads = downloads;
-                            DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                            DataProvider.ContentDao.Update(Site, _channelInfo, contentInfo);
                         }
                     }
 
-                    AuthRequest.AddSiteLog(SiteId, "设置内容下载量");
+                    AuthRequest.AddSiteLogAsync(SiteId, "设置内容下载量").GetAwaiter().GetResult();
 
                     isChanged = true;
                     break;

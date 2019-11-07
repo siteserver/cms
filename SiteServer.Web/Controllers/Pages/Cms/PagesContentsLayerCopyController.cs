@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -19,7 +20,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         private const string RouteGetChannels = "actions/getChannels";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
@@ -37,8 +38,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
@@ -47,12 +48,12 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = ContentManager.GetContentInfo(site, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
                     dict["checkState"] =
-                        CheckManager.GetCheckState(siteInfo, contentInfo);
+                        CheckManager.GetCheckState(site, contentInfo);
                     retVal.Add(dict);
                 }
 
@@ -62,23 +63,23 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var siteIdList = request.AdminPermissionsImpl.GetSiteIdList();
                 foreach (var permissionSiteId in siteIdList)
                 {
-                    var permissionSiteInfo = SiteManager.GetSiteInfo(permissionSiteId);
+                    var permissionSite = await SiteManager.GetSiteAsync(permissionSiteId);
                     sites.Add(new
                     {
-                        permissionSiteInfo.Id,
-                        permissionSiteInfo.SiteName
+                        permissionSite.Id,
+                        permissionSite.SiteName
                     });
                 }
 
-                var channelIdList = request.AdminPermissionsImpl.GetChannelIdList(siteInfo.Id,
+                var channelIdList = request.AdminPermissionsImpl.GetChannelIdList(site.Id,
                     ConfigManager.ChannelPermissions.ContentAdd);
                 foreach (var permissionChannelId in channelIdList)
                 {
-                    var permissionChannelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, permissionChannelId);
+                    var permissionChannelInfo = ChannelManager.GetChannelInfo(site.Id, permissionChannelId);
                     channels.Add(new
                     {
                         permissionChannelInfo.Id,
-                        ChannelName = ChannelManager.GetChannelNameNavigation(siteInfo.Id, permissionChannelId)
+                        ChannelName = ChannelManager.GetChannelNameNavigation(site.Id, permissionChannelId)
                     });
                 }
 
@@ -87,7 +88,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     Value = retVal,
                     Sites = sites,
                     Channels = channels,
-                    Site = siteInfo
+                    Site = site
                 });
             }
             catch (Exception ex)
@@ -132,7 +133,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -153,18 +154,18 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     return Unauthorized();
                 }
 
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+                var site = await SiteManager.GetSiteAsync(siteId);
+                if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 foreach (var channelContentId in channelContentIds)
                 {
-                    ContentUtility.Translate(siteInfo, channelContentId.ChannelId, channelContentId.Id, targetSiteId, targetChannelId, ETranslateContentTypeUtils.GetEnumType(copyType));
+                    await ContentUtility.TranslateAsync(site, channelContentId.ChannelId, channelContentId.Id, targetSiteId, targetChannelId, ETranslateContentTypeUtils.GetEnumType(copyType));
                 }
 
-                request.AddSiteLog(siteId, channelId, "复制内容", string.Empty);
+                await request.AddSiteLogAsync(siteId, channelId, "复制内容", string.Empty);
 
                 CreateManager.TriggerContentChangedEvent(siteId, channelId);
 

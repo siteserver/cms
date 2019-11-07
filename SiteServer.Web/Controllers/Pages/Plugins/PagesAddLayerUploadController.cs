@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -101,7 +102,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
@@ -122,7 +123,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                     //importObject.ImportContentsByZipFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
                 }
 
-                request.AddAdminLog("安装离线插件", string.Empty);
+                await request.AddAdminLogAsync("安装离线插件", string.Empty);
 
                 return Ok(new
                 {

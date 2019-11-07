@@ -26,42 +26,42 @@ namespace SiteServer.CMS.Core
             return "UE";
         }
 
-        public static string GetInsertVideoScript(string attributeName, string playUrl, string imageUrl, SiteInfo siteInfo)
+        public static string GetInsertVideoScript(string attributeName, string playUrl, string imageUrl, Site site)
         {
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
             var dict = new Dictionary<string, string>
             {
                 {StlPlayer.PlayUrl, playUrl},
-                {StlPlayer.IsAutoPlay, siteInfo.Additional.ConfigUEditorVideoIsAutoPlay.ToString()},
-                {StlPlayer.PlayBy, siteInfo.Additional.ConfigUEditorVideoPlayBy},
+                {StlPlayer.IsAutoPlay, site.Additional.ConfigUEditorVideoIsAutoPlay.ToString()},
+                {StlPlayer.PlayBy, site.Additional.ConfigUEditorVideoPlayBy},
                 {"style", "width: 333px; height: 333px;" }
             };
-            if (siteInfo.Additional.ConfigUEditorVideoIsImageUrl && !string.IsNullOrEmpty(imageUrl))
+            if (site.Additional.ConfigUEditorVideoIsImageUrl && !string.IsNullOrEmpty(imageUrl))
             {
                 dict.Add(StlPlayer.ImageUrl, imageUrl);
             }
-            if (siteInfo.Additional.ConfigUEditorVideoIsWidth)
+            if (site.Additional.ConfigUEditorVideoIsWidth)
             {
-                dict.Add(StlPlayer.Width, siteInfo.Additional.ConfigUEditorVideoWidth.ToString());
+                dict.Add(StlPlayer.Width, site.Additional.ConfigUEditorVideoWidth.ToString());
             }
-            if (siteInfo.Additional.ConfigUEditorVideoIsHeight)
+            if (site.Additional.ConfigUEditorVideoIsHeight)
             {
-                dict.Add(StlPlayer.Height, siteInfo.Additional.ConfigUEditorVideoHeight.ToString());
+                dict.Add(StlPlayer.Height, site.Additional.ConfigUEditorVideoHeight.ToString());
             }
 
             return GetInsertHtmlScript(attributeName,
                 $@"<img class=""siteserver-stl-player"" src=""{SiteServerAssets.GetUrl("ueditor/video-clip.png")}"" {TranslateUtils.ToAttributesString(dict)} />");
         }
 
-        public static string GetInsertAudioScript(string attributeName, string playUrl, SiteInfo siteInfo)
+        public static string GetInsertAudioScript(string attributeName, string playUrl, Site site)
         {
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
             var dict = new Dictionary<string, string>
             {
                 {StlPlayer.PlayUrl, playUrl},
-                {StlPlayer.IsAutoPlay, siteInfo.Additional.ConfigUEditorAudioIsAutoPlay.ToString()},
+                {StlPlayer.IsAutoPlay, site.Additional.ConfigUEditorAudioIsAutoPlay.ToString()},
                 {"style", "width: 400px; height: 40px;" }
             };
 

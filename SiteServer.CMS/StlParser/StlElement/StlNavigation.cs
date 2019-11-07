@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -84,10 +85,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, stlAnchor, type, emptyText, tipText, wordNum, isKeyboard);
+            return ParseImplAsync(pageInfo, contextInfo, stlAnchor, type, emptyText, tipText, wordNum, isKeyboard).GetAwaiter().GetResult();
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string type, string emptyText, string tipText, int wordNum, bool isKeyboard)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string type, string emptyText, string tipText, int wordNum, bool isKeyboard)
         {
             string parsedContent;
 
@@ -108,7 +109,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (siblingChannelId != 0)
                     {
                         var siblingNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, siblingChannelId);
-                        var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, siblingNodeInfo, pageInfo.IsLocal);
+                        var url = await PageUtility.GetChannelUrlAsync(pageInfo.Site, siblingNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
@@ -138,14 +139,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var taxis = contextInfo.ContentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
-                        var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
+                        var tableName = ChannelManager.GetTableName(pageInfo.Site, contextInfo.ChannelId);
                         //var siblingContentId = DataProvider.ContentDao.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
-                            var siblingContentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, siblingContentId);
-                            var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, siblingContentInfo, pageInfo.IsLocal);
+                            var siblingContentInfo = ContentManager.GetContentInfo(pageInfo.Site, contextInfo.ChannelId, siblingContentId);
+                            var url = await PageUtility.GetContentUrlAsync(pageInfo.Site, siblingContentInfo, pageInfo.IsLocal);
                             if (url.Equals(PageUtils.UnclickedUrl))
                             {
                                 stlAnchor.Target = string.Empty;
@@ -215,7 +216,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var taxis = contextInfo.ContentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
-                        var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
+                        var tableName = ChannelManager.GetTableName(pageInfo.Site, contextInfo.ChannelId);
                         //var siblingContentId = DataProvider.ContentDao.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)

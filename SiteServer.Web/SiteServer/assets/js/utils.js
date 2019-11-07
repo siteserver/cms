@@ -1,3 +1,33 @@
+if (window.swal && swal.mixin) {
+  var alert = swal.mixin({
+    confirmButtonClass: 'btn btn-primary',
+    cancelButtonClass: 'btn btn-default ml-3',
+    buttonsStyling: false,
+  });
+}
+
+if (window.Vue && window.VeeValidate) {
+  VeeValidate.Validator.localize('zh_CN');
+  Vue.use(VeeValidate);
+  VeeValidate.Validator.localize({
+    zh_CN: {
+      messages: {
+        required: function (name) {
+          return name + '不能为空'
+        },
+      }
+    }
+  });
+  VeeValidate.Validator.extend('mobile', {
+    getMessage: function () {
+      return " 请输入正确的手机号码"
+    },
+    validate: function (value, args) {
+      return value.length == 11 && /^((13|14|15|16|17|18|19)[0-9]{1}\d{8})$/.test(value)
+    }
+  });
+}
+
 var $api = axios.create({
   baseURL: window.apiUrl || '../api',
   withCredentials: true
@@ -18,6 +48,64 @@ var utils = {
     return decodeURIComponent(result[1]);
   },
 
+  getQueryBoolean: function (name) {
+    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+    if (!result || result.length < 1) {
+      return false;
+    }
+    return result[1] === 'true' || result[1] === 'True';
+  },
+
+  getQueryInt: function (name) {
+    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+    if (!result || result.length < 1) {
+      return 0;
+    }
+    return parseInt(result[1]);
+  },
+
+  alertDelete: function (config) {
+    if (!config) return false;
+
+    alert({
+        title: config.title,
+        text: config.text,
+        type: 'warning',
+        confirmButtonText: config.button || '删 除',
+        confirmButtonClass: 'btn btn-danger',
+        showCancelButton: true,
+        cancelButtonText: '取 消'
+      })
+      .then(function (result) {
+        if (result.value) {
+          config.callback();
+        }
+      });
+
+    return false;
+  },
+
+  alertWarning: function (config) {
+    if (!config) return false;
+
+    alert({
+        title: config.title,
+        text: config.text,
+        type: 'question',
+        confirmButtonText: config.button || '确 定',
+        confirmButtonClass: 'btn btn-primary',
+        showCancelButton: true,
+        cancelButtonText: '取 消'
+      })
+      .then(function (result) {
+        if (result.value) {
+          config.callback();
+        }
+      });
+
+    return false;
+  },
+
   getPageAlert: function (error) {
     var message = error.message;
     if (error.response && error.response.data) {
@@ -31,6 +119,22 @@ var utils = {
     return {
       type: "danger",
       html: message
+    };
+  },
+
+  getPanelAlert: function (error) {
+    var message = error.message;
+    if (error.response && error.response.data) {
+      if (error.response.data.exceptionMessage) {
+        message = error.response.data.exceptionMessage;
+      } else if (error.response.data.message) {
+        message = error.response.data.message;
+      }
+    }
+
+    return {
+      type: "error",
+      title: message
     };
   },
 
@@ -64,7 +168,7 @@ var utils = {
       config.height = $(window).height() - 50;
     }
 
-    layer.open({
+    var index = layer.open({
       type: 2,
       btn: null,
       title: config.title,

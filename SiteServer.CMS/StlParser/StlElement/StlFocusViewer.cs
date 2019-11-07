@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -206,16 +207,16 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, genericControl, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, where, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
+            return ParseImplAsync(pageInfo, contextInfo, genericControl, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, where, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor).GetAwaiter().GetResult();
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlGenericControl genericControl, string channelIndex, string channelName, EScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, string where, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, HtmlGenericControl genericControl, string channelIndex, string channelName, EScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, string where, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
         {
             var parsedContent = string.Empty;
 
             var channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
 
-            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
 
             if (minContentInfoList != null)
             {
@@ -229,7 +230,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -237,8 +238,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                                navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal)));
+                                navigationUrls.Add(PageUtils.UrlEncode(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -251,8 +252,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
                     //        {
                     //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo)));
-                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl)));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.Site, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, contentInfo.ImageUrl)));
                     //        }
                     //    }
                     //}
@@ -316,7 +317,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -324,8 +325,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                                navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal)));
+                                navigationUrls.Add(PageUtils.UrlEncode(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -338,8 +339,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
                     //        {
                     //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo)));
-                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl)));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.Site, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, contentInfo.ImageUrl)));
                     //        }
                     //    }
                     //}
@@ -377,13 +378,13 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
-                            navigationUrls.Add(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal));
-                            imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal));
+                            navigationUrls.Add(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal));
+                            imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal));
                         }
                     }
 
@@ -392,8 +393,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     //    var contentInfo = new BackgroundContentInfo(dataItem);
                     //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
                     //    {
-                    //        navigationUrls.Add(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo));
-                    //        imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl));
+                    //        navigationUrls.Add(PageUtility.GetContentUrl(pageInfo.Site, contentInfo));
+                    //        imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.Site, contentInfo.ImageUrl));
                     //    }
                     //}
 
@@ -428,7 +429,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         }
                     }
 
-                    var bgUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo,
+                    var bgUrl = PageUtility.ParseNavigationUrl(pageInfo.Site,
                         "@/images/focusviewerbg.png", pageInfo.IsLocal);
                     string scriptHtml = $@"
 <style type=""text/css"">
@@ -496,7 +497,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -506,8 +507,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                                navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal)));
+                                navigationUrls.Add(PageUtils.UrlEncode(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -522,8 +523,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg"))
                     //        {
                     //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo)));
-                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl)));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.Site, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, contentInfo.ImageUrl)));
                     //        }
                     //    }
                     //}

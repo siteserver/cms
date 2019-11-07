@@ -24,12 +24,12 @@ namespace SiteServer.CMS.Core.Create
             }
             else if (createType == ECreateType.AllContent)
             {
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 
                 if (channelInfo != null)
                 {
-                    var count = ContentManager.GetCount(siteInfo, channelInfo, true);
+                    var count = ContentManager.GetCount(site, channelInfo, true);
                     if (count > 0)
                     {
                         pageCount = count;
@@ -40,7 +40,7 @@ namespace SiteServer.CMS.Core.Create
             else if (createType == ECreateType.Content)
             {
                 var tuple = DataProvider.ContentDao.GetValue(ChannelManager.GetTableName(
-                    SiteManager.GetSiteInfo(siteId), channelId), contentId, ContentAttribute.Title);
+                    SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult(), channelId), contentId, ContentAttribute.Title);
                 if (tuple != null)
                 {
                     name = tuple.Item2;

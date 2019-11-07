@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Datory;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.Model.Attributes
 {

@@ -4,6 +4,7 @@ using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
@@ -13,7 +14,7 @@ namespace SiteServer.BackgroundPages.Controls
 	{
         public AttributesImpl Attributes { get; set; }
 
-        public SiteInfo SiteInfo { get; set; }
+        public Site Site { get; set; }
 
         public int ChannelId { get; set; }
 
@@ -23,7 +24,7 @@ namespace SiteServer.BackgroundPages.Controls
 		{
             if (Attributes == null) return;
 
-		    var channelInfo = ChannelManager.GetChannelInfo(SiteInfo.Id, ChannelId);
+		    var channelInfo = ChannelManager.GetChannelInfo(Site.Id, ChannelId);
             var styleInfoList = TableStyleManager.GetChannelStyleInfoList(channelInfo);
 
 		    if (styleInfoList == null) return;
@@ -32,7 +33,7 @@ namespace SiteServer.BackgroundPages.Controls
 		    var pageScripts = new NameValueCollection();
 		    foreach (var styleInfo in styleInfoList)
 		    {
-		        var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out var extra);
+		        var value = BackgroundInputTypeParser.Parse(Site, ChannelId, styleInfo, Attributes, pageScripts, out var extra);
 
 		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 

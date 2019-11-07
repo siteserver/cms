@@ -6,6 +6,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -57,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
                     try
                     {
                         DataProvider.TableStyleDao.Delete(SiteId, _tableName, attributeName);
-                        AuthRequest.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
+                        AuthRequest.AddSiteLogAsync(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}").GetAwaiter().GetResult();
                         SuccessDeleteMessage();
                     }
                     catch (Exception ex)

@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ExcelDataReader.DataSet</name>
+    </assembly>
+    <members>
+        <member name="T:ExcelDataReader.ExcelDataReaderExtensions">
+            <summary>
+            ExcelDataReader DataSet extensions
+            </summary>
+        </member>
+        <member name="M:ExcelDataReader.ExcelDataReaderExtensions.AsDataSet(ExcelDataReader.IExcelDataReader,ExcelDataReader.ExcelDataSetConfiguration)">
+            <summary>
+            Converts all sheets to a DataSet
+            </summary>
+            <param name="self">The IExcelDataReader instance</param>
+            <param name="configuration">An optional configuration object to modify the behavior of the conversion</param>
+            <returns>A dataset with all workbook contents</returns>
+        </member>
+        <member name="T:ExcelDataReader.ExcelDataSetConfiguration">
+            <summary>
+            Processing configuration options and callbacks for IExcelDataReader.AsDataSet().
+            </summary>
+        </member>
+        <member name="P:ExcelDataReader.ExcelDataSetConfiguration.UseColumnDataType">
+            <summary>
+            Gets or sets a value indicating whether to set the DataColumn.DataType property in a second pass.
+            </summary>
+        </member>
+        <member name="P:ExcelDataReader.ExcelDataSetConfiguration.ConfigureDataTable">
+            <summary>
+            Gets or sets a callback to obtain configuration options for a DataTable. 
+            </summary>
+        </member>
+        <member name="P:ExcelDataReader.ExcelDataSetConfiguration.FilterSheet">
+            <summary>
+            Gets or sets a callback to determine whether to include the current sheet in the DataSet. Called once per sheet before ConfigureDataTable.
+            </summary>
+        </member>
+        <member name="T:ExcelDataReader.ExcelDataTableConfiguration">
+            <summary>
+            Processing configuration options and callbacks for AsDataTable().
+            </summary>
+        </member>
+        <member name="P:ExcelDataReader.ExcelDataTableConfiguration.EmptyColumnNamePrefix">
+            <summary>
+            Gets or sets a value indicating the prefix of generated column names.
+            </summary>
+        </member>
+        <member name="P:ExcelDataReader.ExcelDataTableConfiguration.UseHeaderRow">
+            <summary>
+            Gets or sets a value indicating whether to use a row from the data as column names.
+            </summary>
+        </member>
+        <member name="P:ExcelDataReader.ExcelDataTableConfiguration.ReadHeaderRow">
+            <summary>
+            Gets or sets a callback to determine which row is the header row. Only called when UseHeaderRow = true.
+            </summary>
+        </member>
+        <member name="P:ExcelDataReader.ExcelDataTableConfiguration.FilterRow">
+            <summary>
+            Gets or sets a callback to determine whether to include the current row in the DataTable.
+            </summary>
+        </member>
+        <member name="P:ExcelDataReader.ExcelDataTableConfiguration.FilterColumn">
+            <summary>
+            Gets or sets a callback to determine whether to include the specific column in the DataTable. Called once per column after reading the headers.
+            </summary>
+        </member>
+    </members>
+</doc>

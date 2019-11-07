@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Atom.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -26,50 +28,50 @@ namespace SiteServer.CMS.ImportExport.Components
 			_filePath = filePath;
 		}
 
-		public void Export()
+		public async Task ExportAsync()
 		{
-			var siteInfo = SiteManager.GetSiteInfo(_siteId);
+			var site = await SiteManager.GetSiteAsync(_siteId);
 
 			var feed = AtomUtility.GetEmptyFeed();
 
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.Id, "PublishmentSystemId" }, siteInfo.Id.ToString());
-			AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.SiteName, "PublishmentSystemName" }, siteInfo.SiteName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.SiteDir, "PublishmentSystemDir" }, siteInfo.SiteDir);
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.TableName, "AuxiliaryTableForContent" }, siteInfo.TableName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.IsRoot, "IsHeadquarters" }, siteInfo.IsRoot.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.ParentId, "ParentPublishmentSystemId" }, siteInfo.ParentId.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.Taxis, siteInfo.Taxis.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.SettingsXml, siteInfo.Additional.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.Id, "PublishmentSystemId" }, site.Id.ToString());
+			AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.SiteName, "PublishmentSystemName" }, site.SiteName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.SiteDir, "PublishmentSystemDir" }, site.SiteDir);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.TableName, "AuxiliaryTableForContent" }, site.TableName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.IsRoot, "IsHeadquarters" }, site.Root.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.ParentId, "ParentPublishmentSystemId" }, site.ParentId.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.Taxis, site.Taxis.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.SettingsXml, site.Additional.ToString());
 
-            var indexTemplateId = TemplateManager.GetDefaultTemplateId(siteInfo.Id, TemplateType.IndexPageTemplate);
+            var indexTemplateId = TemplateManager.GetDefaultTemplateId(site.Id, TemplateType.IndexPageTemplate);
 			if (indexTemplateId != 0)
 			{
                 var indexTemplateName = TemplateManager.GetTemplateName(_siteId, indexTemplateId);
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultIndexTemplateName, indexTemplateName);
 			}
 
-            var channelTemplateId = TemplateManager.GetDefaultTemplateId(siteInfo.Id, TemplateType.ChannelTemplate);
+            var channelTemplateId = TemplateManager.GetDefaultTemplateId(site.Id, TemplateType.ChannelTemplate);
 			if (channelTemplateId != 0)
 			{
                 var channelTemplateName = TemplateManager.GetTemplateName(_siteId, channelTemplateId);
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultChannelTemplateName, channelTemplateName);
 			}
 
-            var contentTemplateId = TemplateManager.GetDefaultTemplateId(siteInfo.Id, TemplateType.ContentTemplate);
+            var contentTemplateId = TemplateManager.GetDefaultTemplateId(site.Id, TemplateType.ContentTemplate);
 			if (contentTemplateId != 0)
 			{
                 var contentTemplateName = TemplateManager.GetTemplateName(_siteId, contentTemplateId);
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultContentTemplateName, contentTemplateName);
 			}
 
-            var fileTemplateId = TemplateManager.GetDefaultTemplateId(siteInfo.Id, TemplateType.FileTemplate);
+            var fileTemplateId = TemplateManager.GetDefaultTemplateId(site.Id, TemplateType.FileTemplate);
 			if (fileTemplateId != 0)
 			{
-                var fileTemplateName = TemplateManager.GetTemplateName(siteInfo.Id, fileTemplateId);
+                var fileTemplateName = TemplateManager.GetTemplateName(site.Id, fileTemplateId);
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultFileTemplateName, fileTemplateName);
 			}
 
-			var channelGroupInfoList = ChannelGroupManager.GetChannelGroupInfoList(siteInfo.Id);
+			var channelGroupInfoList = ChannelGroupManager.GetChannelGroupInfoList(site.Id);
             channelGroupInfoList.Reverse();
 
 			foreach (var channelGroupInfo in channelGroupInfoList)
@@ -78,7 +80,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 feed.Entries.Add(entry);
 			}
 
-			var contentGroupInfoList = ContentGroupManager.GetContentGroupInfoList(siteInfo.Id);
+			var contentGroupInfoList = ContentGroupManager.GetContentGroupInfoList(site.Id);
             contentGroupInfoList.Reverse();
 
 			foreach (var contentGroupInfo in contentGroupInfoList)
@@ -90,84 +92,88 @@ namespace SiteServer.CMS.ImportExport.Components
 			feed.Save(_filePath);
 		}
 
-        public static SiteInfo GetSiteInfo(string filePath)
+        public static Site GetSite(string filePath)
         {
-            var siteInfo = new SiteInfo();
-            if (!FileUtils.IsFileExists(filePath)) return siteInfo;
+            var site = new Site();
+            if (!FileUtils.IsFileExists(filePath)) return site;
 
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-            siteInfo.SiteName = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { SiteAttribute.SiteName, "PublishmentSystemName" });
-            siteInfo.SiteDir = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { SiteAttribute.SiteDir, "PublishmentSystemDir" });
-            if (siteInfo.SiteDir != null && siteInfo.SiteDir.IndexOf("\\", StringComparison.Ordinal) != -1)
+            site.SiteName = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { SiteAttribute.SiteName, "PublishmentSystemName" });
+            site.SiteDir = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { SiteAttribute.SiteDir, "PublishmentSystemDir" });
+            if (site.SiteDir != null && site.SiteDir.IndexOf("\\", StringComparison.Ordinal) != -1)
             {
-                siteInfo.SiteDir = siteInfo.SiteDir.Substring(siteInfo.SiteDir.LastIndexOf("\\", StringComparison.Ordinal) + 1);
+                site.SiteDir = site.SiteDir.Substring(site.SiteDir.LastIndexOf("\\", StringComparison.Ordinal) + 1);
             }
-            siteInfo.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SettingsXml);
-            siteInfo.Additional.IsCreateDoubleClick = false;
-            return siteInfo;
+
+            site.Additional = new SiteInfoExtend(site.SiteDir,
+                AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SettingsXml))
+            {
+                IsCreateDoubleClick = false
+            };
+            return site;
         }
 
-		public void Import()
+		public async Task ImportAsync()
 		{
 			if (!FileUtils.IsFileExists(_filePath)) return;
 
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
-			var siteInfo = SiteManager.GetSiteInfo(_siteId);
+			var site = await SiteManager.GetSiteAsync(_siteId);
 
-            siteInfo.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SettingsXml, siteInfo.SettingsXml);
+            site.Additional = new SiteInfoExtend(site.SiteDir, AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SettingsXml, site.Additional.ToString()));
 
-            siteInfo.Additional.IsSeparatedWeb = false;
-            siteInfo.Additional.IsCreateDoubleClick = false;
+            site.Additional.IsSeparatedWeb = false;
+            site.Additional.IsCreateDoubleClick = false;
 
-            DataProvider.SiteDao.Update(siteInfo);
+            await DataProvider.SiteDao.UpdateAsync(site);
 
 			var indexTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultIndexTemplateName);
 			if (!string.IsNullOrEmpty(indexTemplateName))
 			{
-				var indexTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.IndexPageTemplate, indexTemplateName);
+				var indexTemplateId = TemplateManager.GetTemplateIdByTemplateName(site.Id, TemplateType.IndexPageTemplate, indexTemplateName);
 				if (indexTemplateId != 0)
 				{
-					DataProvider.TemplateDao.SetDefault(siteInfo.Id, indexTemplateId);
+					DataProvider.TemplateDao.SetDefault(site.Id, indexTemplateId);
 				}
 			}
 
 			var channelTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultChannelTemplateName);
 			if (!string.IsNullOrEmpty(channelTemplateName))
 			{
-                var channelTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.ChannelTemplate, channelTemplateName);
+                var channelTemplateId = TemplateManager.GetTemplateIdByTemplateName(site.Id, TemplateType.ChannelTemplate, channelTemplateName);
 				if (channelTemplateId != 0)
 				{
-					DataProvider.TemplateDao.SetDefault(siteInfo.Id, channelTemplateId);
+					DataProvider.TemplateDao.SetDefault(site.Id, channelTemplateId);
 				}
 			}
 
 			var contentTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultContentTemplateName);
 			if (!string.IsNullOrEmpty(contentTemplateName))
 			{
-                var contentTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.ContentTemplate, contentTemplateName);
+                var contentTemplateId = TemplateManager.GetTemplateIdByTemplateName(site.Id, TemplateType.ContentTemplate, contentTemplateName);
 				if (contentTemplateId != 0)
 				{
-					DataProvider.TemplateDao.SetDefault(siteInfo.Id, contentTemplateId);
+					DataProvider.TemplateDao.SetDefault(site.Id, contentTemplateId);
 				}
 			}
 
 			var fileTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultFileTemplateName);
 			if (!string.IsNullOrEmpty(fileTemplateName))
 			{
-                var fileTemplateId = TemplateManager.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.FileTemplate, fileTemplateName);
+                var fileTemplateId = TemplateManager.GetTemplateIdByTemplateName(site.Id, TemplateType.FileTemplate, fileTemplateName);
 				if (fileTemplateId != 0)
 				{
-					DataProvider.TemplateDao.SetDefault(siteInfo.Id, fileTemplateId);
+					DataProvider.TemplateDao.SetDefault(site.Id, fileTemplateId);
 				}
 			}
 
 			foreach (AtomEntry entry in feed.Entries)
 			{
-			    if (!ChannelGroupIe.Import(entry, siteInfo.Id))
+			    if (!ChannelGroupIe.Import(entry, site.Id))
 			    {
-                    ContentGroupIe.Import(entry, siteInfo.Id);
+                    ContentGroupIe.Import(entry, site.Id);
                 }
 			}
 		}
