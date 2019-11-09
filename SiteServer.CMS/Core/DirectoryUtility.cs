@@ -1,11 +1,9 @@
 ﻿using System;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using System.Collections;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.Core
 {
@@ -47,13 +45,13 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                var siteDirList = await DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRootAsync();
+                var siteDirList = await DataProvider.SiteDao.GetSiteDirListAsync(0);
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(sitePath);
                 foreach (var subDirectoryPath in directoryPaths)
                 {
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!DirectoryUtils.IsSystemDirectory(directoryName) && !siteDirList.Contains(directoryName.ToLower()))
+                    if (!DirectoryUtils.IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
                     {
                         DirectoryUtils.DeleteDirectoryIfExists(subDirectoryPath);
                     }
@@ -83,13 +81,13 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                var siteDirList = await DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRootAsync();
+                var siteDirList = await DataProvider.SiteDao.GetSiteDirListAsync(0);
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(siteTemplatePath);
                 foreach (var subDirectoryPath in directoryPaths)
                 {
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!DirectoryUtils.IsSystemDirectory(directoryName) && !siteDirList.Contains(directoryName.ToLower()))
+                    if (!DirectoryUtils.IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
                     {
                         var destDirectoryPath = PathUtils.Combine(sitePath, directoryName);
                         DirectoryUtils.MoveDirectory(subDirectoryPath, destDirectoryPath, isOverride);
@@ -147,7 +145,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static async Task ChangeToHeadquartersAsync(Site site, bool isMoveFiles)
+        public static async Task ChangeToRootAsync(Site site, bool isMoveFiles)
         {
             if (site.Root == false)
             {
@@ -167,20 +165,20 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static async Task ChangeToSubSiteAsync(Site site, string psDir, ArrayList fileSystemNameArrayList)
+        public static async Task ChangeToSubSiteAsync(Site site, string siteDir, IList<string> directories, IList<string> files)
         {
             if (site.Root)
             {
                 site.Root = false;
-                site.SiteDir = psDir.Trim();
+                site.SiteDir = siteDir;
 
                 await DataProvider.SiteDao.UpdateAsync(site);
 
-                var psPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, psDir);
+                var psPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteDir);
                 DirectoryUtils.CreateDirectoryIfNotExists(psPath);
-                if (fileSystemNameArrayList != null && fileSystemNameArrayList.Count > 0)
+                if (directories != null)
                 {
-                    foreach (string fileSystemName in fileSystemNameArrayList)
+                    foreach (var fileSystemName in directories)
                     {
                         var srcPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, fileSystemName);
                         if (DirectoryUtils.IsDirectoryExists(srcPath))
@@ -190,7 +188,15 @@ namespace SiteServer.CMS.Core
                             DirectoryUtils.MoveDirectory(srcPath, destDirectoryPath, false);
                             DirectoryUtils.DeleteDirectoryIfExists(srcPath);
                         }
-                        else if (FileUtils.IsFileExists(srcPath))
+                    }
+                }
+
+                if (files != null)
+                {
+                    foreach (var fileSystemName in files)
+                    {
+                        var srcPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, fileSystemName);
+                        if (FileUtils.IsFileExists(srcPath))
                         {
                             FileUtils.CopyFile(srcPath, PathUtils.Combine(psPath, fileSystemName));
                             FileUtils.DeleteFileIfExists(srcPath);

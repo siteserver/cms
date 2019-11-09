@@ -19,6 +19,33 @@
     .editable, .editable a, .editable span {
       border-bottom: dashed 1px #0056b3 !important;
     }
+    .drawer__content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    .drawer__content form {
+        flex: 1;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+    .drawer__footer {
+        display: flex;
+        padding: 10px;
+    }
+    .drawer__footer button {
+        flex: 1;
+    }
+    form .tips {
+      color: rgb(144, 147, 153);
+      font-size: 12px;
+      margin: 5px 0;
+      padding: 0;
+      line-height: 18px;
+    }
+    .el-upload, .el-upload-dragger {
+      width: 100%;
+    }
   </style>
   @if (IsSectionDefined("Styles")){ @RenderSection("Styles") }
 </head>

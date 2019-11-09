@@ -35,7 +35,7 @@ namespace SiteServer.CMS.Core
                     {
                         if (!string.IsNullOrEmpty(tokenInfo.AdminName))
                         {
-                            var adminInfo = AdminManager.GetAdminInfoByUserNameAsync(tokenInfo.AdminName).GetAwaiter().GetResult();
+                            var adminInfo = AdminManager.GetByUserNameAsync(tokenInfo.AdminName).GetAwaiter().GetResult();
                             if (adminInfo != null && !adminInfo.Locked)
                             {
                                 Administrator = adminInfo;
@@ -68,7 +68,7 @@ namespace SiteServer.CMS.Core
                     var tokenImpl = AdminApi.Instance.ParseAccessToken(adminToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
-                        var adminInfo = AdminManager.GetAdminInfoByUserIdAsync(tokenImpl.UserId).GetAwaiter().GetResult();
+                        var adminInfo = AdminManager.GetByUserIdAsync(tokenImpl.UserId).GetAwaiter().GetResult();
                         if (adminInfo != null && !adminInfo.Locked && adminInfo.UserName == tokenImpl.UserName)
                         {
                             Administrator = adminInfo;
@@ -378,7 +378,7 @@ namespace SiteServer.CMS.Core
                     var groupInfo = UserGroupManager.GetUserGroupInfo(User.GroupId);
                     if (groupInfo != null)
                     {
-                        Administrator = AdminManager.GetAdminInfoByUserNameAsync(groupInfo.AdminName).GetAwaiter().GetResult();
+                        Administrator = AdminManager.GetByUserNameAsync(groupInfo.AdminName).GetAwaiter().GetResult();
                     }
                 }
 
@@ -437,7 +437,7 @@ namespace SiteServer.CMS.Core
         public string AdminLogin(string userName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(userName)) return null;
-            var adminInfo = AdminManager.GetAdminInfoByUserNameAsync(userName).GetAwaiter().GetResult();
+            var adminInfo = AdminManager.GetByUserNameAsync(userName).GetAwaiter().GetResult();
             if (adminInfo == null || adminInfo.Locked) return null;
 
             Administrator = adminInfo;

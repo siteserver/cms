@@ -1,28 +1,35 @@
 @{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
 <li class="nav-item">
-  <a class="nav-link active" href="pageSite.aspx">站点管理</a>
+  <a class="nav-link active" href="site.cshtml">站点管理</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="pageSiteUrlWeb.aspx">Web地址</a>
+  <a class="nav-link" href="siteUrl.cshtml">站点访问地址</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="pageSiteUrlAssets.aspx">文件地址</a>
+  <a class="nav-link" href="siteTables.cshtml">站点内容表</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="pageSiteUrlApi.aspx">API地址</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="siteTables.cshtml">内容表管理</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
+  <a class="nav-link" href="siteTemplates.cshtml">站点模板管理</a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="siteTemplateOnline.cshtml">在线站点模板</a>
 </li>
+}
+
+@section Styles{
+<style>
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
+.el-tree .el-checkbox__input {
+    margin-top: 8px;
+}
+</style>
 }
 
 <div class="header-title mt-3 mb-4"> 保存站点模板 </div>
@@ -30,8 +37,8 @@
 <el-steps :active="active" finish-status="success">
   <el-step title="基础设置"></el-step>
   <el-step title="保存文件"></el-step>
-  <el-step title="保存内容"></el-step>
   <el-step title="保存数据"></el-step>
+  <el-step title="完成"></el-step>
 </el-steps>
 
 <el-divider></el-divider>
@@ -125,11 +132,32 @@
       </el-radio-group>
     </div>
   </div>
-  <div v-if="!isSaveAllChannels" class="form-group">
+  <div v-if="!isSaveAllChannels && channelInfo" class="form-group">
     <label> 指定保存的栏目 </label>
     <small class="form-text text-muted">从下边选择需要保存的栏目，所选栏目的下级栏目将自动保存到站点模板中</small>
     <hr />
+
+      <el-tree
+        :data="[channelInfo]"
+        ref="tree"
+        show-checkbox
+        node-key="id"
+        :check-on-click-node="true"
+        :default-expanded-keys="[channelInfo.id]"
+        :default-checked-keys="checkedChannelIds"
+        :expand-on-click-node="true"
+        v-on:check-change="handleTreeChanged">
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          {{ data.channelName }}
+        </span>
+      </el-tree>
     
+  </div>
+</template>
+
+<template v-else-if="active === 3">
+  <div class="alert alert-success mt-3 mb-3">
+    <h4>保存成功，站点模版保存在"SiteFiles\SiteTemplates\{{ templateDir }}"文件夹中</h4>
   </div>
 </template>
 

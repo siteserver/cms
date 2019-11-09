@@ -151,7 +151,7 @@ namespace SiteServer.BackgroundPages.Settings
                 if (site != null)
                 {
                     siteName =
-                        $"<a href='{site.Additional.WebUrl}' target='_blank'>{site.SiteName}</a>";
+                        $"<a href='{site.WebUrl}' target='_blank'>{site.SiteName}</a>";
                 }
                 ltlSite.Text = $@"<td align=""text-center text-nowrap"">{siteName}</td>";
             }

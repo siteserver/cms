@@ -12,25 +12,6 @@
   <a class="nav-link" href="adminAccessTokens.cshtml">API密钥管理</a>
 </li>
 }
-@section Styles {
-  <style>
-    .drawer__content {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
-    .drawer__content form {
-        flex: 1;
-    }
-    .drawer__footer {
-        display: flex;
-        padding: 10px;
-    }
-    .drawer__footer button {
-        flex: 1;
-    }
-  </style>
-}
 
 <el-form :inline="true" :model="formInline" size="mini">
   <el-form-item label="角色">
@@ -161,6 +142,8 @@
 <hr />
 
 <a href="adminProfile.cshtml?pageType=admin" class="btn btn-primary btn-sm m-r-5">新 增</a>
+<a href="javascript:;" v-on:click="btnImportClick" class="btn btn-sm m-r-5">导 入</a>
+<a href="javascript:;" v-on:click="btnExportClick" class="btn btn-sm m-r-5">导 出</a>
 
 <el-drawer
   title="权限设置"
@@ -191,7 +174,40 @@
       <el-button v-on:click="drawer = false">取 消</el-button>
     </div>
   </div>
-  
+</el-drawer>
+
+<el-drawer
+  title="导入管理员"
+  ref="uploadPanel"
+  :visible.sync="uploadPanel"
+  direction="rtl"
+  size="50%">
+  <div class="drawer__content">
+    <br />
+    <el-form ref="uploadForm" label-width="200px">
+      <el-upload
+        :drag="true"
+        :limit="1"
+        :action="$urlUpload"
+        :auto-upload="true"
+        :with-credentials="true"
+        :file-list="uploadList"
+        :before-upload="uploadBefore"
+        :on-progress="uploadProgress"
+        :on-success="uploadSuccess"
+        :on-error="uploadError"
+        :multiple="false">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">
+          <a href="../assets/upload-templates/管理员导入模版.xlsx" target="_blank">
+            <i class="el-icon-download"></i>
+            下载导入模版
+          </a>
+        </div>
+      </el-upload>
+    </el-form>
+  </div>
 </el-drawer>
 
 @section Scripts{

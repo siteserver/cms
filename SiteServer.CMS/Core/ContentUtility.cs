@@ -33,7 +33,7 @@ namespace SiteServer.CMS.Core
 
             var builder = new StringBuilder(content);
 
-            var url = site.Additional.WebUrl;
+            var url = site.WebUrl;
             if (!string.IsNullOrEmpty(url) && url != "/")
             {
                 StringUtils.ReplaceHrefOrSrc(builder, url, "@");
@@ -67,11 +67,11 @@ namespace SiteServer.CMS.Core
             }
             else
             {
-                assetsUrl = site.Additional.AssetsUrl;
+                assetsUrl = site.AssetsUrl;
             }
             StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@/", site.Additional.WebUrl + "/");
-            StringUtils.ReplaceHrefOrSrc(builder, "@", site.Additional.WebUrl + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@/", site.WebUrl + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@", site.WebUrl + "/");
             StringUtils.ReplaceHrefOrSrc(builder, "//", "/");
 
             builder.Replace("&#xa0;", "&nbsp;");

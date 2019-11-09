@@ -8,6 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Mappings;
 using SiteServer.CMS.Plugin;
@@ -27,11 +28,6 @@ namespace SiteServer.CMS.Provider
 
         public override string TableName => _repository.TableName;
         public override List<TableColumn> TableColumns => _repository.TableColumns;
-
-        private static Site ToDto(SiteInfo siteInfo)
-        {
-            return MapperManager.MapTo<Site>(siteInfo);
-        }
 
         private static SiteInfo ToDb(Site site)
         {
@@ -97,15 +93,6 @@ namespace SiteServer.CMS.Provider
             SiteManager.ClearCache();
         }
 
-        public async Task<IList<string>> GetLowerSiteDirListThatNotIsRootAsync()
-        {
-            var list = await _repository.GetAllAsync<string>(Q
-                .Select(nameof(SiteInfo.SiteDir))
-                .Where(nameof(SiteInfo.IsRoot), false.ToString())
-            );
-            return list.Select(StringUtils.ToLower).ToList();
-        }
-
         private async Task UpdateAllIsRootAsync()
         {
             await _repository.UpdateAsync(Q
@@ -118,22 +105,46 @@ namespace SiteServer.CMS.Provider
         {
             var list = new List<KeyValuePair<int, Site>>();
 
-            var siteList = await GetSiteListAsync();
-            foreach (var site in siteList)
+            var siteInfoList = (await _repository.GetAllAsync(Q
+                .OrderBy(nameof(SiteInfo.Taxis), nameof(SiteInfo.Id))
+            )).ToList();
+
+            foreach (var siteInfo in siteInfoList)
             {
+                var site = MapperManager.MapTo<Site>(siteInfo);
+
+                site.SiteDir = GetSiteDir(siteInfoList, siteInfo);
+                site.Additional = new SiteInfoExtend(siteInfo.SettingsXml);
+
                 var entry = new KeyValuePair<int, Site>(site.Id, site);
                 list.Add(entry);
+            }
+
+            foreach (var pair in list)
+            {
+                var site = pair.Value;
+                if (site == null) continue;
+
+                site.Children = list.Where(x => x.Value.ParentId == site.Id).Select(x => x.Value).ToList();
             }
 
             return list;
         }
 
-        private async Task<IEnumerable<Site>> GetSiteListAsync()
+        private static string GetSiteDir(List<SiteInfo> siteInfoList, SiteInfo siteInfo)
         {
-            var list = await _repository.GetAllAsync(Q
-                .OrderBy(nameof(SiteInfo.Taxis), nameof(SiteInfo.Id))
-            );
-            return list.Select(ToDto);
+            if (TranslateUtils.ToBool(siteInfo.IsRoot)) return string.Empty;
+            if (siteInfo.ParentId <= 0) return PathUtils.GetDirectoryName(siteInfo.SiteDir, false);
+
+            SiteInfo parent = null;
+            foreach (var current in siteInfoList)
+            {
+                if (current.Id != siteInfo.ParentId) continue;
+                parent = current;
+                break;
+            }
+
+            return PathUtils.Combine(GetSiteDir(siteInfoList, parent), PathUtils.GetDirectoryName(siteInfo.SiteDir, false));
         }
 
         public async Task<bool> IsTableUsedAsync(string tableName)
@@ -182,6 +193,16 @@ namespace SiteServer.CMS.Provider
                 .Where(nameof(SiteInfo.ParentId), parentId)
             );
             return list.Select(StringUtils.ToLower);
+        }
+
+        public async Task<IList<string>> GetSiteDirListAsync(int parentId)
+        {
+            var list = await _repository.GetAllAsync<string>(Q
+                .Select(nameof(SiteInfo.SiteDir))
+                .Where(nameof(SiteInfo.ParentId), parentId)
+                .Where(nameof(SiteInfo.IsRoot), false.ToString())
+            );
+            return list.ToList();
         }
 
         public async Task<IDataReader> GetStlDataSourceAsync(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)

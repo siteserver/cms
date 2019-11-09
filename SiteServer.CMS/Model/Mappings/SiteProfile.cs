@@ -19,7 +19,6 @@ namespace SiteServer.CMS.Model.Mappings
             public void Process(SiteInfo source, Site destination, ResolutionContext context)
             {
                 destination.Root = TranslateUtils.ToBool(source.IsRoot);
-                destination.Additional = new SiteInfoExtend(source.SiteDir, source.SettingsXml);
             }
         }
 

@@ -20,40 +20,40 @@ namespace SiteServer.CMS.DataCache
                 DataCacheManager.Remove(CacheKey);
             }
 
-            public static void Update(Administrator adminInfo)
+            public static void Update(Administrator administrator)
             {
-                if (adminInfo == null) return;
+                if (administrator == null) return;
 
                 var dict = GetDict();
 
-                dict[GetDictKeyByUserId(adminInfo.Id)] = adminInfo;
-                dict[GetDictKeyByUserName(adminInfo.UserName)] = adminInfo;
-                if (!string.IsNullOrEmpty(adminInfo.Mobile))
+                dict[GetDictKeyByUserId(administrator.Id)] = administrator;
+                dict[GetDictKeyByUserName(administrator.UserName)] = administrator;
+                if (!string.IsNullOrEmpty(administrator.Mobile))
                 {
-                    dict[GetDictKeyByMobile(adminInfo.Mobile)] = adminInfo;
+                    dict[GetDictKeyByMobile(administrator.Mobile)] = administrator;
                 }
-                if (!string.IsNullOrEmpty(adminInfo.Email))
+                if (!string.IsNullOrEmpty(administrator.Email))
                 {
-                    dict[GetDictKeyByEmail(adminInfo.Email)] = adminInfo;
+                    dict[GetDictKeyByEmail(administrator.Email)] = administrator;
                 }
             }
 
-            public static void Remove(Administrator adminInfo)
+            public static void Remove(Administrator administrator)
             {
-                if (adminInfo == null) return;
+                if (administrator == null) return;
 
                 var dict = GetDict();
 
-                dict.Remove(GetDictKeyByUserId(adminInfo.Id));
-                dict.Remove(GetDictKeyByUserName(adminInfo.UserName));
-                if (!string.IsNullOrEmpty(adminInfo.Mobile))
+                dict.Remove(GetDictKeyByUserId(administrator.Id));
+                dict.Remove(GetDictKeyByUserName(administrator.UserName));
+                if (!string.IsNullOrEmpty(administrator.Mobile))
                 {
-                    dict.Remove(GetDictKeyByMobile(adminInfo.Mobile));
+                    dict.Remove(GetDictKeyByMobile(administrator.Mobile));
                 }
 
-                if (!string.IsNullOrEmpty(adminInfo.Email))
+                if (!string.IsNullOrEmpty(administrator.Email))
                 {
-                    dict.Remove(GetDictKeyByEmail(adminInfo.Email));
+                    dict.Remove(GetDictKeyByEmail(administrator.Email));
                 }
             }
 
@@ -83,30 +83,30 @@ namespace SiteServer.CMS.DataCache
 
                 var dict = GetDict();
 
-                dict.TryGetValue(GetDictKeyByUserId(userId), out Administrator adminInfo);
-                if (adminInfo != null) return adminInfo;
+                dict.TryGetValue(GetDictKeyByUserId(userId), out var administrator);
+                if (administrator != null) return administrator;
 
-                dict.TryGetValue(GetDictKeyByUserId(userId), out adminInfo);
+                dict.TryGetValue(GetDictKeyByUserId(userId), out administrator);
 
-                if (adminInfo == null)
+                if (administrator == null)
                 {
-                    adminInfo = await DataProvider.AdministratorDao.GetByIdAsync(userId);
-                    if (adminInfo != null)
+                    administrator = await DataProvider.AdministratorDao.GetByIdAsync(userId);
+                    if (administrator != null)
                     {
-                        dict[GetDictKeyByUserId(adminInfo.Id)] = adminInfo;
-                        dict[GetDictKeyByUserName(adminInfo.UserName)] = adminInfo;
-                        if (!string.IsNullOrEmpty(adminInfo.Mobile))
+                        dict[GetDictKeyByUserId(administrator.Id)] = administrator;
+                        dict[GetDictKeyByUserName(administrator.UserName)] = administrator;
+                        if (!string.IsNullOrEmpty(administrator.Mobile))
                         {
-                            dict[GetDictKeyByMobile(adminInfo.Mobile)] = adminInfo;
+                            dict[GetDictKeyByMobile(administrator.Mobile)] = administrator;
                         }
-                        if (!string.IsNullOrEmpty(adminInfo.Email))
+                        if (!string.IsNullOrEmpty(administrator.Email))
                         {
-                            dict[GetDictKeyByEmail(adminInfo.Email)] = adminInfo;
+                            dict[GetDictKeyByEmail(administrator.Email)] = administrator;
                         }
                     }
                 }
 
-                return adminInfo;
+                return administrator;
             }
 
             public static async Task<Administrator> GetCacheByUserNameAsync(string userName)
@@ -115,30 +115,30 @@ namespace SiteServer.CMS.DataCache
 
                 var dict = GetDict();
 
-                dict.TryGetValue(GetDictKeyByUserName(userName), out Administrator adminInfo);
-                if (adminInfo != null) return adminInfo;
+                dict.TryGetValue(GetDictKeyByUserName(userName), out Administrator administrator);
+                if (administrator != null) return administrator;
 
-                dict.TryGetValue(GetDictKeyByUserName(userName), out adminInfo);
+                dict.TryGetValue(GetDictKeyByUserName(userName), out administrator);
 
-                if (adminInfo == null)
+                if (administrator == null)
                 {
-                    adminInfo = await DataProvider.AdministratorDao.GetByUserNameAsync(userName);
-                    if (adminInfo != null)
+                    administrator = await DataProvider.AdministratorDao.GetByUserNameAsync(userName);
+                    if (administrator != null)
                     {
-                        dict[GetDictKeyByUserId(adminInfo.Id)] = adminInfo;
-                        dict[GetDictKeyByUserName(adminInfo.UserName)] = adminInfo;
-                        if (!string.IsNullOrEmpty(adminInfo.Mobile))
+                        dict[GetDictKeyByUserId(administrator.Id)] = administrator;
+                        dict[GetDictKeyByUserName(administrator.UserName)] = administrator;
+                        if (!string.IsNullOrEmpty(administrator.Mobile))
                         {
-                            dict[GetDictKeyByMobile(adminInfo.Mobile)] = adminInfo;
+                            dict[GetDictKeyByMobile(administrator.Mobile)] = administrator;
                         }
-                        if (!string.IsNullOrEmpty(adminInfo.Email))
+                        if (!string.IsNullOrEmpty(administrator.Email))
                         {
-                            dict[GetDictKeyByEmail(adminInfo.Email)] = adminInfo;
+                            dict[GetDictKeyByEmail(administrator.Email)] = administrator;
                         }
                     }
                 }
 
-                return adminInfo;
+                return administrator;
             }
 
             public static async Task<Administrator> GetCacheByMobileAsync(string mobile)
@@ -147,30 +147,30 @@ namespace SiteServer.CMS.DataCache
 
                 var dict = GetDict();
 
-                dict.TryGetValue(GetDictKeyByMobile(mobile), out Administrator adminInfo);
-                if (adminInfo != null) return adminInfo;
+                dict.TryGetValue(GetDictKeyByMobile(mobile), out Administrator administrator);
+                if (administrator != null) return administrator;
 
-                dict.TryGetValue(GetDictKeyByMobile(mobile), out adminInfo);
+                dict.TryGetValue(GetDictKeyByMobile(mobile), out administrator);
 
-                if (adminInfo == null)
+                if (administrator == null)
                 {
-                    adminInfo = await DataProvider.AdministratorDao.GetByMobileAsync(mobile);
-                    if (adminInfo != null)
+                    administrator = await DataProvider.AdministratorDao.GetByMobileAsync(mobile);
+                    if (administrator != null)
                     {
-                        dict[GetDictKeyByUserId(adminInfo.Id)] = adminInfo;
-                        dict[GetDictKeyByUserName(adminInfo.UserName)] = adminInfo;
-                        if (!string.IsNullOrEmpty(adminInfo.Mobile))
+                        dict[GetDictKeyByUserId(administrator.Id)] = administrator;
+                        dict[GetDictKeyByUserName(administrator.UserName)] = administrator;
+                        if (!string.IsNullOrEmpty(administrator.Mobile))
                         {
-                            dict[GetDictKeyByMobile(adminInfo.Mobile)] = adminInfo;
+                            dict[GetDictKeyByMobile(administrator.Mobile)] = administrator;
                         }
-                        if (!string.IsNullOrEmpty(adminInfo.Email))
+                        if (!string.IsNullOrEmpty(administrator.Email))
                         {
-                            dict[GetDictKeyByEmail(adminInfo.Email)] = adminInfo;
+                            dict[GetDictKeyByEmail(administrator.Email)] = administrator;
                         }
                     }
                 }
 
-                return adminInfo;
+                return administrator;
             }
 
             public static async Task<Administrator> GetCacheByEmailAsync(string email)
@@ -179,30 +179,30 @@ namespace SiteServer.CMS.DataCache
 
                 var dict = GetDict();
 
-                dict.TryGetValue(GetDictKeyByEmail(email), out Administrator adminInfo);
-                if (adminInfo != null) return adminInfo;
+                dict.TryGetValue(GetDictKeyByEmail(email), out Administrator administrator);
+                if (administrator != null) return administrator;
 
-                dict.TryGetValue(GetDictKeyByEmail(email), out adminInfo);
+                dict.TryGetValue(GetDictKeyByEmail(email), out administrator);
 
-                if (adminInfo == null)
+                if (administrator == null)
                 {
-                    adminInfo = await DataProvider.AdministratorDao.GetByEmailAsync(email);
-                    if (adminInfo != null)
+                    administrator = await DataProvider.AdministratorDao.GetByEmailAsync(email);
+                    if (administrator != null)
                     {
-                        dict[GetDictKeyByUserId(adminInfo.Id)] = adminInfo;
-                        dict[GetDictKeyByUserName(adminInfo.UserName)] = adminInfo;
-                        if (!string.IsNullOrEmpty(adminInfo.Mobile))
+                        dict[GetDictKeyByUserId(administrator.Id)] = administrator;
+                        dict[GetDictKeyByUserName(administrator.UserName)] = administrator;
+                        if (!string.IsNullOrEmpty(administrator.Mobile))
                         {
-                            dict[GetDictKeyByMobile(adminInfo.Mobile)] = adminInfo;
+                            dict[GetDictKeyByMobile(administrator.Mobile)] = administrator;
                         }
-                        if (!string.IsNullOrEmpty(adminInfo.Email))
+                        if (!string.IsNullOrEmpty(administrator.Email))
                         {
-                            dict[GetDictKeyByEmail(adminInfo.Email)] = adminInfo;
+                            dict[GetDictKeyByEmail(administrator.Email)] = administrator;
                         }
                     }
                 }
 
-                return adminInfo;
+                return administrator;
             }
 
             private static Dictionary<string, Administrator> GetDict()
@@ -226,50 +226,50 @@ namespace SiteServer.CMS.DataCache
             AdminManagerCache.Clear();
         }
 
-        public static void UpdateCache(Administrator adminInfo)
+        public static void UpdateCache(Administrator administrator)
         {
-            AdminManagerCache.Update(adminInfo);
+            AdminManagerCache.Update(administrator);
         }
 
-        public static void RemoveCache(Administrator adminInfo)
+        public static void RemoveCache(Administrator administrator)
         {
-            AdminManagerCache.Remove(adminInfo);
+            AdminManagerCache.Remove(administrator);
         }
 
-        public static async Task<Administrator> GetAdminInfoByUserIdAsync(int userId)
+        public static async Task<Administrator> GetByUserIdAsync(int userId)
         {
             return await AdminManagerCache.GetCacheByUserIdAsync(userId);
         }
 
-        public static async Task<Administrator> GetAdminInfoByUserNameAsync(string userName)
+        public static async Task<Administrator> GetByUserNameAsync(string userName)
         {
             return await AdminManagerCache.GetCacheByUserNameAsync(userName);
         }
 
-        public static async Task<Administrator> GetAdminInfoByMobileAsync(string mobile)
+        public static async Task<Administrator> GetByMobileAsync(string mobile)
         {
             return await AdminManagerCache.GetCacheByMobileAsync(mobile);
         }
 
-        public static async Task<Administrator> GetAdminInfoByEmailAsync(string email)
+        public static async Task<Administrator> GetByEmailAsync(string email)
         {
             return await AdminManagerCache.GetCacheByEmailAsync(email);
         }
 
-        public static async Task<Administrator> GetAdminInfoByAccountAsync(string account)
+        public static async Task<Administrator> GetByAccountAsync(string account)
         {
             if (string.IsNullOrEmpty(account)) return null;
 
             if (StringUtils.IsMobile(account))
             {
-                return await GetAdminInfoByMobileAsync(account);
+                return await GetByMobileAsync(account);
             }
             if (StringUtils.IsEmail(account))
             {
-                return await GetAdminInfoByEmailAsync(account);
+                return await GetByEmailAsync(account);
             }
 
-            return await GetAdminInfoByUserNameAsync(account);
+            return await GetByUserNameAsync(account);
         }
 
         public static async Task<List<int>> GetLatestTop10SiteIdListAsync(List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
@@ -303,8 +303,8 @@ namespace SiteServer.CMS.DataCache
 
         public static async Task<string> GetDisplayNameAsync(string userName)
         {
-            var adminInfo = await GetAdminInfoByUserNameAsync(userName);
-            return adminInfo == null ? userName : adminInfo.DisplayName;
+            var administrator = await GetByUserNameAsync(userName);
+            return administrator == null ? userName : administrator.DisplayName;
         }
 
         public static string GetRoles(string userName)
@@ -351,7 +351,7 @@ namespace SiteServer.CMS.DataCache
             return roleNames;
         }
 
-        public static string GetUploadPath(params string[] paths)
+        private static string GetUploadPath(params string[] paths)
         {
             var path = PathUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Administrators, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(path);
@@ -369,7 +369,7 @@ namespace SiteServer.CMS.DataCache
             return $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}{PathUtils.GetExtension(filePath)}";
         }
 
-        public static string GetUploadUrl(params string[] paths)
+        private static string GetUploadUrl(params string[] paths)
         {
             return PageUtils.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Administrators, PageUtils.Combine(paths)));
         }

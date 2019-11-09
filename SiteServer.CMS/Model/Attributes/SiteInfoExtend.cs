@@ -9,11 +9,8 @@ namespace SiteServer.CMS.Model.Attributes
     [Serializable]
     public class SiteInfoExtend : AttributesImpl
     {
-        private readonly string _siteDir;
-
-        public SiteInfoExtend(string siteDir, string settingsXml)
+        public SiteInfoExtend(string settingsXml)
         {
-            _siteDir = siteDir;
             Load(settingsXml);
         }
 
@@ -173,8 +170,6 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set(nameof(SeparatedWebUrl), PageUtils.AddEndSlashToUrl(value));
         }
 
-        public string WebUrl => IsSeparatedWeb ? SeparatedWebUrl : PageUtils.ParseNavigationUrl($"~/{_siteDir}");
-
         public bool IsSeparatedAssets
         {
             get => GetBool(nameof(IsSeparatedAssets));
@@ -192,8 +187,6 @@ namespace SiteServer.CMS.Model.Attributes
             get => GetString(nameof(AssetsDir), "upload");
             set => Set(nameof(AssetsDir), value);
         }
-
-        public string AssetsUrl => IsSeparatedAssets ? SeparatedAssetsUrl : PageUtils.Combine(WebUrl, AssetsDir);
 
         public string ChannelFilePathRule
         {

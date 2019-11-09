@@ -250,27 +250,6 @@ function getWordSpliter(){{
         }}
 	}});	
 }}
-function detection_{attributeName}(){{
-    var pureText = {UEditorUtils.GetPureTextScript(attributeName)}
-    var htmlContent = {UEditorUtils.GetContentScript(attributeName)}
-    var keyword = '';
-	$.post('{AjaxCmsService.GetDetectionUrl(site.Id)}&r=' + Math.random(), {{content:pureText}}, function(data) {{
-		if(data){{
-			var arr = data.split(',');
-            var i=0;
-			for(;i<arr.length;i++)
-			{{
-                var reg = new RegExp(arr[i], 'gi');
-				htmlContent = htmlContent.replace(reg,'<span style=""background-color:#ffff00;"">' + arr[i] + '</span>');
-			}}
-            keyword=data;
-			{UEditorUtils.GetSetContentScript(attributeName, "htmlContent")}
-            {AlertUtils.Warning("敏感词检测", "共检测到' + i + '个敏感词，内容已用黄色背景标明", "取 消", string.Empty, string.Empty)}
-		}} else {{
-            {AlertUtils.Success("敏感词检测", "检测成功，没有检测到任何敏感词")}
-        }}
-	}});	
-}}
 </script>
 <div class=""btn-group btn-group-sm"">
     <button class=""btn"" onclick=""{ModalTextEditorImportWord.GetOpenWindowString(site.Id, attributeName)}"">导入Word</button>
@@ -278,74 +257,8 @@ function detection_{attributeName}(){{
     <button class=""btn"" onclick=""{ModalTextEditorInsertVideo.GetOpenWindowString(site.Id, attributeName)}"">插入视频</button>
     <button class=""btn"" onclick=""{ModalTextEditorInsertAudio.GetOpenWindowString(site.Id, attributeName)}"">插入音频</button>
     <button class=""btn"" onclick=""getWordSpliter();return false;"">提取关键字</button>
-    <button class=""btn"" onclick=""detection_{attributeName}();return false;"">敏感词检测</button>
 </div>
 ";
-        }
-
-        public static string GetAutoCheckKeywordsScript(Site site)
-        {
-            var isAutoCheckKeywords = site.Additional.IsAutoCheckKeywords.ToString().ToLower();
-            var url = AjaxCmsService.GetDetectionReplaceUrl(site.Id);
-            var getPureText = UEditorUtils.GetPureTextScript(BackgroundContentAttribute.Content);
-            var getContent = UEditorUtils.GetContentScript(BackgroundContentAttribute.Content);
-            var setContent = UEditorUtils.GetSetContentScript(BackgroundContentAttribute.Content, "htmlContent");
-            var tipsWarn = AlertUtils.Warning("敏感词检测", "内容中共检测到' + i + '个敏感词，已用黄色背景标明", "取 消", "自动替换并保存",
-                "autoReplaceKeywords");
-
-            var command = $@"
-<script type=""text/javascript"">
-var bairongKeywordArray;
-function autoCheckKeywords() {{
-    if({isAutoCheckKeywords}) {{
-        var pureText = {getPureText}
-        var htmlContent = {getContent}
-	    $.post('{url}&r=' + Math.random(), {{content:pureText}}, function(data) {{
-		    if(data) {{
-                bairongKeywordArray = data;
-			    var arr = data.split(',');
-                var i=0;
-			    for(;i<arr.length;i++)
-			    {{
-                    var tmpArr = arr[i].split('|');
-                    var keyword = tmpArr[0];
-                    var replace = tmpArr.length==2?tmpArr[1]:'';
-                    var reg = new RegExp(keyword, 'gi');
-				    htmlContent = htmlContent.replace(reg,'<span style=""background-color:#ffff00;"">' + keyword + '</span>');
-			    }}
-			    {setContent}
-                {tipsWarn}
-		    }} else {{
-                $('#BtnSubmit').attr('onclick', '').click();
-            }}
-	    }});
-        return false;	
-    }}
-}}
-function autoReplaceKeywords() {{
-    var arr = bairongKeywordArray.split(',');
-    var i=0;
-    var htmlContent = {getContent}
-	for(;i<arr.length;i++)
-	{{
-        var tmpArr = arr[i].split('|');
-        var keyword = tmpArr[0];
-        var replace = tmpArr.length==2?tmpArr[1]:'';
-        var reg = new RegExp('<span style=""background-color:#ffff00;"">' + keyword + '</span>', 'gi');
-		htmlContent = htmlContent.replace(reg, replace);
-        //IE8
-        reg = new RegExp('<span style=""background-color:#ffff00"">' + keyword + '</span>', 'gi');
-		htmlContent = htmlContent.replace(reg, replace);
-	}}
-    {setContent}
-    $('#BtnSubmit').attr('onclick', '').click();
-}}
-</script>
-";
-            
-
-
-            return command;
         }
 
         public static string GetImageUrlButtonGroupHtml(Site site, string attributeName)

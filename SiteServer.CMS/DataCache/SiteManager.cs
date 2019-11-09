@@ -44,17 +44,16 @@ namespace SiteServer.CMS.DataCache
                 retVal = DataCacheManager.Get<List<KeyValuePair<int, Site>>>(CacheKey);
                 if (retVal == null)
                 {
-                    var list = await DataProvider.SiteDao.GetSiteKeyValuePairListAsync();
-                    retVal = new List<KeyValuePair<int, Site>>();
-                    foreach (var pair in list)
-                    {
-                        var site = pair.Value;
-                        if (site == null) continue;
+                    retVal = await DataProvider.SiteDao.GetSiteKeyValuePairListAsync();
+                    //retVal = new List<KeyValuePair<int, Site>>();
+                    //foreach (var pair in list)
+                    //{
+                    //    var site = pair.Value;
+                    //    if (site == null) continue;
 
-                        site.SiteDir = GetSiteDir(list, site);
-                        site.Children = GetChildren(list, site.Id);
-                        retVal.Add(pair);
-                    }
+                    //    site.Children = GetChildren(list, site.Id);
+                    //    retVal.Add(pair);
+                    //}
 
                     DataCacheManager.Insert(CacheKey, retVal);
                 }
@@ -74,10 +73,10 @@ namespace SiteServer.CMS.DataCache
             return pairList.Select(pair => pair.Value).ToList();
         }
 
-        private static List<Site> GetChildren(List<KeyValuePair<int, Site>> siteKeyValuePairListAsync, int parentId)
-        {
-            return siteKeyValuePairListAsync.Where(pair => pair.Value.ParentId == parentId).Select(pair => pair.Value).ToList();
-        }
+        //private static List<Site> GetChildren(List<KeyValuePair<int, Site>> siteKeyValuePairListAsync, int parentId)
+        //{
+        //    return siteKeyValuePairListAsync.Where(pair => pair.Value.ParentId == parentId).Select(pair => pair.Value).ToList();
+        //}
 
         public static async Task<Site> GetSiteAsync(int siteId)
         {
@@ -125,6 +124,23 @@ namespace SiteServer.CMS.DataCache
                 }
             }
             return null;
+        }
+
+        public static async Task<bool> IsRootExistsAsync()
+        {
+            var list = await SiteManagerCache.GetSiteKeyValuePairListAsync();
+
+            foreach (var pair in list)
+            {
+                var site = pair.Value;
+                if (site == null) continue;
+
+                if (site.Root)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static async Task<Site> GetSiteByDirectoryAsync(string siteDir)
@@ -430,24 +446,6 @@ namespace SiteServer.CMS.DataCache
                 }
             }
             return parentSiteId;
-        }
-
-        private static string GetSiteDir(List<KeyValuePair<int, Site>> listFromDb, Site site)
-        {
-            if (site == null || site.Root) return string.Empty;
-            if (site.ParentId > 0)
-            {
-                Site parent = null;
-                foreach (var pair in listFromDb)
-                {
-                    var theSiteId = pair.Key;
-                    if (theSiteId != site.ParentId) continue;
-                    parent = pair.Value;
-                    break;
-                }
-                return PathUtils.Combine(GetSiteDir(listFromDb, parent), PathUtils.GetDirectoryName(site.SiteDir, false));
-            }
-            return PathUtils.GetDirectoryName(site.SiteDir, false);
         }
 
         //public static List<int> GetWritingSiteIdList(PermissionsImpl permissionsImpl)

@@ -17,27 +17,27 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public IAdministratorInfo GetAdminInfoByUserId(int userId)
         {
-            return AdminManager.GetAdminInfoByUserIdAsync(userId).GetAwaiter().GetResult();
+            return AdminManager.GetByUserIdAsync(userId).GetAwaiter().GetResult();
         }
 
         public IAdministratorInfo GetAdminInfoByUserName(string userName)
         {
-            return AdminManager.GetAdminInfoByUserNameAsync(userName).GetAwaiter().GetResult();
+            return AdminManager.GetByUserNameAsync(userName).GetAwaiter().GetResult();
         }
 
         public IAdministratorInfo GetAdminInfoByEmail(string email)
         {
-            return AdminManager.GetAdminInfoByEmailAsync(email).GetAwaiter().GetResult();
+            return AdminManager.GetByEmailAsync(email).GetAwaiter().GetResult();
         }
 
         public IAdministratorInfo GetAdminInfoByMobile(string mobile)
         {
-            return AdminManager.GetAdminInfoByMobileAsync(mobile).GetAwaiter().GetResult();
+            return AdminManager.GetByMobileAsync(mobile).GetAwaiter().GetResult();
         }
 
         public IAdministratorInfo GetAdminInfoByAccount(string account)
         {
-            return AdminManager.GetAdminInfoByAccountAsync(account).GetAwaiter().GetResult();
+            return AdminManager.GetByAccountAsync(account).GetAwaiter().GetResult();
         }
 
         public List<string> GetUserNameList()
@@ -47,7 +47,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public IPermissions GetPermissions(string userName)
         {
-            var adminInfo = AdminManager.GetAdminInfoByUserNameAsync(userName).GetAwaiter().GetResult();
+            var adminInfo = AdminManager.GetByUserNameAsync(userName).GetAwaiter().GetResult();
             return new PermissionsImpl(adminInfo);
         }
 

@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-        public string SiteUrl => Site.Additional.WebUrl;
+        public string SiteUrl => Site.WebUrl;
 
         public string RootUrl => PageUtils.ApplicationPath;
 

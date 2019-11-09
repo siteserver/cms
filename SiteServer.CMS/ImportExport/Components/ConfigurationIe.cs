@@ -7,7 +7,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -106,7 +105,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 site.SiteDir = site.SiteDir.Substring(site.SiteDir.LastIndexOf("\\", StringComparison.Ordinal) + 1);
             }
 
-            site.Additional = new SiteInfoExtend(site.SiteDir,
+            site.Additional = new SiteInfoExtend(
                 AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SettingsXml))
             {
                 IsCreateDoubleClick = false
@@ -122,10 +121,12 @@ namespace SiteServer.CMS.ImportExport.Components
 
 			var site = await SiteManager.GetSiteAsync(_siteId);
 
-            site.Additional = new SiteInfoExtend(site.SiteDir, AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SettingsXml, site.Additional.ToString()));
-
-            site.Additional.IsSeparatedWeb = false;
-            site.Additional.IsCreateDoubleClick = false;
+            site.Additional = new SiteInfoExtend(AtomUtility.GetDcElementContent(feed.AdditionalElements,
+                SiteAttribute.SettingsXml, site.Additional.ToString()))
+            {
+                IsSeparatedWeb = false,
+                IsCreateDoubleClick = false
+            };
 
             await DataProvider.SiteDao.UpdateAsync(site);
 

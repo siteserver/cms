@@ -208,7 +208,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.Site.Additional.WebUrl;
+                parsedContent = pageInfo.Site.WebUrl;
             }
             else if (pageInfo.Site.Additional.GetString(type) != null)
             {

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
@@ -42,46 +41,32 @@ namespace SiteServer.CMS.Core
             return DirectoryUtils.IsDirectoryExists(siteTemplatePath);
         }
 
-        public bool IsSiteTemplateExists
-        {
-            get
-            {
-                var directoryPaths = DirectoryUtils.GetDirectoryPaths(_rootPath);
-                foreach (var siteTemplatePath in directoryPaths)
-                {
-                    var metadataXmlFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMetadata);
-                    if (FileUtils.IsFileExists(metadataXmlFilePath))
-                    {
-                        var siteTemplateInfo = Serializer.ConvertFileToObject(metadataXmlFilePath, typeof(SiteTemplateInfo)) as SiteTemplateInfo;
-                        if (siteTemplateInfo != null)
-                        {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-        }
-
         public SortedList GetSiteTemplateSortedList()
         {
-            var sortedlist = new SortedList();
+            var sortedList = new SortedList();
             var directoryPaths = DirectoryUtils.GetDirectoryPaths(_rootPath);
             foreach (var siteTemplatePath in directoryPaths)
             {
+                var directoryName = PathUtils.GetDirectoryName(siteTemplatePath, false);
+                SiteTemplateInfo siteTemplateInfo = null;
                 var metadataXmlFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMetadata);
                 if (FileUtils.IsFileExists(metadataXmlFilePath))
                 {
-                    var siteTemplateInfo = Serializer.ConvertFileToObject(metadataXmlFilePath, typeof(SiteTemplateInfo)) as SiteTemplateInfo;
-                    if (siteTemplateInfo != null)
-                    {
-                        var directoryName = PathUtils.GetDirectoryName(siteTemplatePath, false);
-                        siteTemplateInfo.DirectoryName = directoryName;
-                        sortedlist.Add(directoryName, siteTemplateInfo);
-                    }
+                    siteTemplateInfo = Serializer.ConvertFileToObject<SiteTemplateInfo>(metadataXmlFilePath);
                 }
+
+                if (siteTemplateInfo == null)
+                {
+                    siteTemplateInfo = new SiteTemplateInfo
+                    {
+                        SiteTemplateName = directoryName
+                    };
+                }
+
+                siteTemplateInfo.DirectoryName = directoryName;
+                sortedList.Add(directoryName, siteTemplateInfo);
             }
-            return sortedlist;
+            return sortedList;
         }
 
         public List<string> GetZipSiteTemplateList()

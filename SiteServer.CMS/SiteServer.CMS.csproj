@@ -342,7 +342,6 @@
     <Compile Include="Model\Db\UserMenuInfo.cs" />
     <Compile Include="Plugin\Impl\AttributesImpl.cs" />
     <Compile Include="Model\Db\AccessTokenInfo.cs" />
-    <Compile Include="Model\Db\KeywordInfo.cs" />
     <Compile Include="Model\Db\LogInfo.cs" />
     <Compile Include="Model\Db\PermissionsInRolesInfo.cs" />
     <Compile Include="Model\Db\AdministratorsInRolesInfo.cs" />
@@ -412,7 +411,6 @@
     <Compile Include="Provider\DatabaseDao.cs" />
     <Compile Include="Provider\DbCacheDao.cs" />
     <Compile Include="Provider\ErrorLogDao.cs" />
-    <Compile Include="Provider\KeywordDao.cs" />
     <Compile Include="Provider\LogDao.cs" />
     <Compile Include="Provider\PermissionsInRolesDao.cs" />
     <Compile Include="Provider\PluginConfigDao.cs" />

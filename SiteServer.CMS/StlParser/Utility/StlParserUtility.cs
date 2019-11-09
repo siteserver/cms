@@ -397,7 +397,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var currentUrl = string.Empty;
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                currentUrl = site.Additional.WebUrl;
+                currentUrl = site.WebUrl;
             }
             else if (templateType == TemplateType.ContentTemplate)
             {

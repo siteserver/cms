@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageUtils.GetMainUrl(site.Id))}"" target=""_top"">{SiteManager.GetSiteNameAsync(site).GetAwaiter().GetResult()}</a>";
             ltlDir.Text = site.SiteDir;
 
-            ltlWebUrl.Text = $@"<a href=""{site.Additional.WebUrl}"" target=""_blank"">{site.Additional.WebUrl}</a>";
+            ltlWebUrl.Text = $@"<a href=""{site.WebUrl}"" target=""_blank"">{site.WebUrl}</a>";
         }
     }
 }

@@ -160,7 +160,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.Site.Additional.WebUrl;
+                parsedContent = pageInfo.Site.WebUrl;
             }
             else if (type.ToLower().Equals(TypeDate.ToLower()))
             {

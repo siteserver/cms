@@ -4,7 +4,7 @@
       - netfx-master
 
   version: 6.13.{build}
-  image: Visual Studio 2017
+  image: Visual Studio 2019
 
   assembly_info:
     patch: true
@@ -82,7 +82,7 @@
       - netfx-staging
 
   version: 6.13.{build}-beta
-  image: Visual Studio 2017
+  image: Visual Studio 2019
 
   assembly_info:
     patch: true

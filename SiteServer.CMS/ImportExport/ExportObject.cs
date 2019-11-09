@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -27,65 +26,11 @@ namespace SiteServer.CMS.ImportExport
             _adminName = adminName;
         }
 
-        /// <summary>
-        /// 将发布系统文件保存到站点模板中
-        /// </summary>
-        public async Task ExportFilesToSiteAsync(string siteTemplatePath, bool isSaveAll, ArrayList lowerFileSystemArrayList, bool isCreateMetadataDirectory)
-        {
-            DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
-
-            var siteDirList = await DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRootAsync();
-
-            var fileSystems = FileManager.GetFileSystemInfoExtendCollection(PathUtility.GetSitePath(_site), true);
-            foreach (FileSystemInfoExtend fileSystem in fileSystems)
-            {
-                if (isSaveAll || lowerFileSystemArrayList.Contains(fileSystem.Name.ToLower()))
-                {
-                    var srcPath = PathUtils.Combine(_sitePath, fileSystem.Name);
-                    var destPath = PathUtils.Combine(siteTemplatePath, fileSystem.Name);
-
-                    if (fileSystem.IsDirectory)
-                    {
-                        var isSiteDirectory = false;
-
-                        if (_site.Root)
-                        {
-                            foreach (var siteDir in siteDirList)
-                            {
-                                if (StringUtils.EqualsIgnoreCase(siteDir, fileSystem.Name))
-                                {
-                                    isSiteDirectory = true;
-                                }
-                            }
-                        }
-                        if (!isSiteDirectory && !DirectoryUtils.IsSystemDirectory(fileSystem.Name))
-                        {
-                            DirectoryUtils.CreateDirectoryIfNotExists(destPath);
-                            DirectoryUtils.MoveDirectory(srcPath, destPath, false);
-                        }
-                    }
-                    else
-                    {
-                        if (!PathUtility.IsSystemFile(fileSystem.Name))
-                        {
-                            FileUtils.CopyFile(srcPath, destPath);
-                        }
-                    }
-                }
-            }
-
-            if (isCreateMetadataDirectory)
-            {
-                var siteTemplateMetadataPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, string.Empty);
-                DirectoryUtils.CreateDirectoryIfNotExists(siteTemplateMetadataPath);
-            }
-        }
-
         public async Task ExportFilesToSiteAsync(string siteTemplatePath, bool isAllFiles, IList<string> directories, IList<string> files, bool isCreateMetadataDirectory)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 
-            var siteDirList = await DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRootAsync();
+            var siteDirList = await DataProvider.SiteDao.GetSiteDirListAsync(0);
 
             var fileSystems = FileManager.GetFileSystemInfoExtendCollection(PathUtility.GetSitePath(_site), true);
             foreach (FileSystemInfoExtend fileSystem in fileSystems)
@@ -187,12 +132,6 @@ namespace SiteServer.CMS.ImportExport
             await templateIe.ExportTemplatesAsync();
         }
 
-        public async Task ExportTemplatesAsync(string filePath, List<int> templateIdList)
-        {
-            var templateIe = new TemplateIe(_site.Id, filePath);
-            await templateIe.ExportTemplatesAsync(templateIdList);
-        }
-
         public void ExportRelatedField(string relatedFieldDirectoryPath)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(relatedFieldDirectoryPath);
@@ -249,7 +188,7 @@ namespace SiteServer.CMS.ImportExport
         /// <summary>
         /// 导出网站内容至默认的临时文件地址
         /// </summary>
-        public async Task ExportSiteContentAsync(string siteContentDirectoryPath, bool isSaveContents, bool isSaveAllChannels, List<int> channelIdArrayList)
+        public async Task ExportSiteContentAsync(string siteContentDirectoryPath, bool isSaveContents, bool isSaveAllChannels, IList<int> channelIdArrayList)
         {
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
@@ -296,9 +235,8 @@ namespace SiteServer.CMS.ImportExport
             };
 
             var xmlPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileMetadata);
-            Serializer.SaveAsXML(siteTemplateInfo, xmlPath);
+            Serializer.SaveAsXml(siteTemplateInfo, xmlPath);
         }
-
 
         public async Task<string> ExportChannelsAsync(List<int> channelIdList)
         {

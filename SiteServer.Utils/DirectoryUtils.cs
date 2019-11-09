@@ -361,6 +361,7 @@ namespace SiteServer.Utils
         {
             if (StringUtils.EqualsIgnoreCase(directoryName, AspnetClient.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, Bin.DirectoryName)
+                || StringUtils.EqualsIgnoreCase(directoryName, Home.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, SiteFiles.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, WebConfigUtils.AdminDirectory))
             {

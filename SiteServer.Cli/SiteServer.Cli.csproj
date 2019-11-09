@@ -203,7 +203,6 @@
     <Compile Include="Updater\Tables\GovPublic\TableGovPublicCategoryClass.cs" />
     <Compile Include="Updater\Tables\GovPublic\TableGovPublicIdentifierRule.cs" />
     <Compile Include="Updater\Tables\GovPublic\TableGovPublicIdentifierSeq.cs" />
-    <Compile Include="Updater\Tables\TableKeyword.cs" />
     <Compile Include="Updater\Tables\TableSiteLog.cs" />
     <Compile Include="Updater\Tables\TableChannel.cs" />
     <Compile Include="Updater\Tables\TableChannelGroup.cs" />

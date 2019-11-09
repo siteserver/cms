@@ -161,7 +161,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var value = string.Empty;
                     if (contentInfo.AdminId > 0)
                     {
-                        var adminInfo = await AdminManager.GetAdminInfoByUserIdAsync(contentInfo.AdminId);
+                        var adminInfo = await AdminManager.GetByUserIdAsync(contentInfo.AdminId);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
@@ -191,7 +191,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var value = string.Empty;
                     if (!string.IsNullOrEmpty(contentInfo.AddUserName))
                     {
-                        var adminInfo = await AdminManager.GetAdminInfoByUserNameAsync(contentInfo.AddUserName);
+                        var adminInfo = await AdminManager.GetByUserNameAsync(contentInfo.AddUserName);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
@@ -204,7 +204,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var value = string.Empty;
                     if (!string.IsNullOrEmpty(contentInfo.LastEditUserName))
                     {
-                        var adminInfo = await AdminManager.GetAdminInfoByUserNameAsync(contentInfo.LastEditUserName);
+                        var adminInfo = await AdminManager.GetByUserNameAsync(contentInfo.LastEditUserName);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;

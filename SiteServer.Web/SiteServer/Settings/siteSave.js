@@ -9,6 +9,8 @@ var data = {
   templateDir: null,
   directories: null,
   files: null,
+  channelInfo: null,
+
   templateName: null,
   webSiteUrl: null,
   description: null,
@@ -19,7 +21,8 @@ var data = {
   checkAllFiles: false,
 
   isSaveContents: true,
-  isSaveAllChannels: true
+  isSaveAllChannels: true,
+  checkedChannelIds: []
 };
 
 var methods = {
@@ -77,6 +80,8 @@ var methods = {
       });
     } else if ($this.active === 1) {
       $this.apiSaveFiles();
+    } else if ($this.active === 2) {
+      $this.apiSaveData();
     }
   },
 
@@ -114,14 +119,44 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.channels = res.channels;
+      $this.channelInfo = res.channelInfo;
       $this.active = 2;
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
       utils.loading(false);
     });
-  }
+  },
+
+  apiSaveData: function () {
+    var $this = this;
+    utils.loading(true);
+    $api.post($url + '/actions/data', {
+      siteId: this.siteId,
+      templateName:  this.templateName,
+      templateDir: this.templateDir,
+      webSiteUrl: this.webSiteUrl,
+      description: this.description,
+      isSaveContents: this.isSaveContents,
+      isSaveAllChannels: this.isSaveAllChannels,
+      checkedChannelIds: this.checkedChannelIds
+    }).then(function (response) {
+      var res = response.data;
+      $this.active = 3;
+
+      setTimeout(function () {
+        location.href = 'siteTemplates.cshtml';
+      }, 3000);
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
+    });
+  },
+
+  handleTreeChanged: function() {
+    this.checkedChannelIds = this.$refs.tree.getCheckedKeys();
+  },
 };
 
 new Vue({

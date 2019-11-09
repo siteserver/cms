@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
@@ -21,7 +22,19 @@ namespace SiteServer.CMS.Model
 
         public int Taxis { get; set; }
 
-        public string Url => Additional.WebUrl;
+        public bool IsSeparatedWeb => Additional.IsSeparatedWeb;
+
+        public string SeparatedWebUrl => Additional.SeparatedWebUrl;
+
+        public string WebUrl => Additional.IsSeparatedWeb ? Additional.SeparatedWebUrl : PageUtils.ParseNavigationUrl($"~/{ SiteDir}");
+
+        public string AssetsDir => Additional.AssetsDir;
+
+        public bool IsSeparatedAssets => Additional.IsSeparatedAssets;
+
+        public string SeparatedAssetsUrl => Additional.SeparatedAssetsUrl;
+
+        public string AssetsUrl => Additional.IsSeparatedAssets ? Additional.SeparatedAssetsUrl : PageUtils.Combine(WebUrl, Additional.AssetsDir);
 
         public IList<Site> Children { get; set; }
 

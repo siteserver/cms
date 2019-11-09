@@ -76,9 +76,6 @@ namespace SiteServer.CMS.Core
         private static ErrorLogDao _errorLogDao;
         public static ErrorLogDao ErrorLogDao => _errorLogDao ?? (_errorLogDao = new ErrorLogDao());
 
-        private static KeywordDao _keywordDao;
-        public static KeywordDao KeywordDao => _keywordDao ?? (_keywordDao = new KeywordDao());
-
         private static LogDao _logDao;
         public static LogDao LogDao => _logDao ?? (_logDao = new LogDao());
 
@@ -158,7 +155,6 @@ namespace SiteServer.CMS.Core
             _databaseDao = null;
             _dbCacheDao = null;
             _errorLogDao = null;
-            _keywordDao = null;
             _logDao = null;
             _permissionsInRolesDao = null;
             _pluginConfigDao = null;
@@ -193,11 +189,9 @@ namespace SiteServer.CMS.Core
             ContentCheckDao,
             ContentDao,
             ContentGroupDao,
-            //ContentTagDao,
             DatabaseDao,
             DbCacheDao,
             ErrorLogDao,
-            KeywordDao,
             LogDao,
             PermissionsInRolesDao,
             PluginConfigDao,

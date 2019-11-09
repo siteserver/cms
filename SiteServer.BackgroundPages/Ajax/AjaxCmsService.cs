@@ -14,8 +14,6 @@ namespace SiteServer.BackgroundPages.Ajax
     {
         private const string TypeGetTitles = "GetTitles";
         private const string TypeGetWordSpliter = "GetWordSpliter";
-        private const string TypeGetDetection = "GetDetection";
-        private const string TypeGetDetectionReplace = "GetDetectionReplace";
         private const string TypeGetTags = "GetTags";
 
         public static string GetRedirectUrl(string type)
@@ -41,24 +39,6 @@ namespace SiteServer.BackgroundPages.Ajax
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetWordSpliter},
-                {"siteId", siteId.ToString()}
-            });
-        }
-
-        public static string GetDetectionUrl(int siteId)
-        {
-            return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
-            {
-                {"type", TypeGetDetection},
-                {"siteId", siteId.ToString()}
-            });
-        }
-
-        public static string GetDetectionReplaceUrl(int siteId)
-        {
-            return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
-            {
-                {"type", TypeGetDetectionReplace},
                 {"siteId", siteId.ToString()}
             });
         }
@@ -111,33 +91,6 @@ namespace SiteServer.BackgroundPages.Ajax
                 Page.Response.End();
 
                 return;
-            }
-
-            if (type == TypeGetDetection)
-            {
-                var content = Request.Form["content"];
-                var arraylist = DataProvider.KeywordDao.GetKeywordListByContent(content);
-                var keywords = TranslateUtils.ObjectCollectionToString(arraylist);
-
-                Page.Response.Write(keywords);
-                Page.Response.End();
-            }
-            else if (type == TypeGetDetectionReplace)
-            {
-                var content = Request.Form["content"];
-                var keywordList = DataProvider.KeywordDao.GetKeywordListByContent(content);
-                var keywords = string.Empty;
-                if (keywordList.Count > 0)
-                {
-                    var list = DataProvider.KeywordDao.GetKeywordInfoList(keywordList);
-                    foreach (var keywordInfo in list)
-                    {
-                        keywords += keywordInfo.Keyword + "|" + keywordInfo.Alternative + ",";
-                    }
-                    keywords = keywords.TrimEnd(',');
-                }
-                Page.Response.Write(keywords);
-                Page.Response.End();
             }
 
             Page.Response.Write(retString);

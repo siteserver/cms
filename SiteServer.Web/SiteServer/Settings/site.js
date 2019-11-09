@@ -52,7 +52,7 @@ var methods = {
   },
 
   btnChangeClick: function(row) {
-    location.href = 'siteChange.cshtml?siteId=' + row.id;
+    location.href = 'siteChangeRoot.cshtml?siteId=' + row.id;
   },
 
   btnEditClick: function(row) {

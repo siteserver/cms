@@ -632,7 +632,7 @@ namespace SiteServer.CMS.Provider
 
             await DataProvider.SiteDao.InsertAsync(site);
 
-            var adminInfo = await AdminManager.GetAdminInfoByUserNameAsync(administratorName);
+            var adminInfo = await AdminManager.GetByUserNameAsync(administratorName);
             await DataProvider.AdministratorDao.UpdateSiteIdAsync(adminInfo, channelInfo.Id);
 
             var sqlString =

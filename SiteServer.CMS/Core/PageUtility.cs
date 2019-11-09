@@ -35,7 +35,7 @@ namespace SiteServer.CMS.Core
                 var siteId = await PathUtility.GetCurrentSiteIdAsync();
                 site = await SiteManager.GetSiteAsync(siteId);
             }
-            if (string.IsNullOrEmpty(physicalPath)) return site.Additional.WebUrl;
+            if (string.IsNullOrEmpty(physicalPath)) return site.WebUrl;
 
             var sitePath = PathUtility.GetSitePath(site);
             var requestPath = StringUtils.StartsWithIgnoreCase(physicalPath, sitePath)
@@ -47,7 +47,7 @@ namespace SiteServer.CMS.Core
 
         private static string GetRemoteSiteUrl(Site site, string requestPath)
         {
-            var url = site.Additional.WebUrl;
+            var url = site.WebUrl;
 
             if (string.IsNullOrEmpty(url))
             {
@@ -74,11 +74,11 @@ namespace SiteServer.CMS.Core
 
             if (!site.Additional.IsSeparatedAssets) return url;
 
-            var assetsUrl = PageUtils.Combine(site.Additional.WebUrl,
+            var assetsUrl = PageUtils.Combine(site.WebUrl,
                 site.Additional.AssetsDir);
             if (StringUtils.StartsWithIgnoreCase(url, assetsUrl))
             {
-                url = StringUtils.ReplaceStartsWithIgnoreCase(url, assetsUrl, site.Additional.AssetsUrl);
+                url = StringUtils.ReplaceStartsWithIgnoreCase(url, assetsUrl, site.AssetsUrl);
             }
 
             return url;
@@ -434,7 +434,7 @@ namespace SiteServer.CMS.Core
             var channelUrl = await GetChannelUrlAsync(site, nodeInfo, isLocal);
             if (string.IsNullOrEmpty(channelUrl)) return channelUrl;
 
-            channelUrl = StringUtils.ReplaceStartsWith(channelUrl, site.Additional.WebUrl, string.Empty);
+            channelUrl = StringUtils.ReplaceStartsWith(channelUrl, site.WebUrl, string.Empty);
             channelUrl = channelUrl.Trim('/');
             if (channelUrl != PageUtils.UnclickedUrl)
             {

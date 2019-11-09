@@ -11,7 +11,6 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Model.Enumerations;
@@ -157,10 +156,6 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     PhStatus.Visible = false;
                 }
-
-                BtnSubmit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm", true, "autoCheckKeywords()"));
-                //自动检测敏感词
-                ClientScriptRegisterStartupScript("autoCheckKeywords", WebUtils.GetAutoCheckKeywordsScript(Site));
 
                 if (contentId == 0)
                 {

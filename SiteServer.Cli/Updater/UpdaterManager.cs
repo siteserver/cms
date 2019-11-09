@@ -217,10 +217,6 @@ namespace SiteServer.Cli.Updater
             {
                 converter = TableErrorLog.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(TableKeyword.OldTableNames, oldTableName))
-            {
-                converter = TableKeyword.Converter;
-            }
             else if (StringUtils.EqualsIgnoreCase(TableLog.OldTableName, oldTableName))
             {
                 converter = TableLog.Converter;

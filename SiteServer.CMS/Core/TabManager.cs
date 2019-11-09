@@ -18,7 +18,7 @@ namespace SiteServer.CMS.Core
 	        var tc = CacheUtils.Get(filePath) as TabCollection;
 	        if (tc != null) return tc;
 
-	        tc = (TabCollection)Serializer.ConvertFileToObject(filePath, typeof(TabCollection));
+	        tc = Serializer.ConvertFileToObject<TabCollection>(filePath);
 	        CacheUtils.Insert(filePath, tc, filePath);
 	        return tc;
 	    }

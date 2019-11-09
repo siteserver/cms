@@ -1,29 +1,19 @@
-﻿@{ Layout = "../Shared/_Layout.cshtml"; }
-@section Navs{
-  <li class="nav-item">
-  <a class="nav-link" href="pageSite.aspx">站点管理</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="pageSiteUrlWeb.aspx">Web地址</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="pageSiteUrlAssets.aspx">文件地址</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="pageSiteUrlApi.aspx">API地址</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="siteTables.cshtml">内容表管理</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link active" href="siteTemplateOnline.cshtml">在线站点模板</a>
-  </li>
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+<li class="nav-item">
+  <a class="nav-link" href="site.cshtml">站点管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="siteUrl.cshtml">站点访问地址</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="siteTables.cshtml">站点内容表</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="siteTemplates.cshtml">站点模板管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link active" href="siteTemplateOnline.cshtml">在线站点模板</a>
+</li>
 }
 
 <div class="row">

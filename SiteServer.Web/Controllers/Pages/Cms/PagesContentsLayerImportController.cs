@@ -77,7 +77,6 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 }
 
                 var fileName = request.HttpRequest["fileName"];
-
                 var fileCount = request.HttpRequest.Files.Count;
 
                 string filePath = null;

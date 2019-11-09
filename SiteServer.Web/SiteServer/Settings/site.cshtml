@@ -1,57 +1,19 @@
 ﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
 <li class="nav-item">
-  <a class="nav-link active" href="pageSite.aspx">站点管理</a>
+  <a class="nav-link active" href="site.cshtml">站点管理</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="pageSiteUrlWeb.aspx">Web地址</a>
+  <a class="nav-link" href="siteUrl.cshtml">站点访问地址</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="pageSiteUrlAssets.aspx">文件地址</a>
+  <a class="nav-link" href="siteTables.cshtml">站点内容表</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="pageSiteUrlApi.aspx">API地址</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="siteTables.cshtml">内容表管理</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
+  <a class="nav-link" href="siteTemplates.cshtml">站点模板管理</a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="siteTemplateOnline.cshtml">在线站点模板</a>
 </li>
-}
-
-@section Styles {
-  <style>
-    .drawer__content {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
-    .drawer__content form {
-        flex: 1;
-        margin-left: 20px;
-        margin-right: 20px;
-    }
-    .drawer__footer {
-        display: flex;
-        padding: 10px;
-    }
-    .drawer__footer button {
-        flex: 1;
-    }
-    form .tips {
-      color: rgb(144, 147, 153);
-      font-size: 12px;
-      margin: 5px 0;
-      padding: 0;
-      line-height: 18px;
-    }
-  </style>
 }
 
 <el-table
@@ -63,16 +25,20 @@
   <el-table-column prop="siteName" label="站点名称" :sortable="true">
     <template slot-scope="scope">
       <el-badge v-if="scope.row.root" style="margin-top: 10px;" value="根目录">
-        <a :href="scope.row.url" target="_blank">{{scope.row.siteName}}</a>
+        <a :href="scope.row.webUrl" target="_blank">{{scope.row.siteName}}</a>
       </el-badge>
-      <a v-else :href="scope.row.url" target="_blank">{{scope.row.siteName}}</a>
+      <a v-else :href="scope.row.webUrl" target="_blank">{{scope.row.siteName}}</a>
     </template>
   </el-table-column>
   <el-table-column prop="id" label="站点Id" :sortable="true" align="center" width="90"></el-table-column>
   <el-table-column prop="taxis" label="排序" :sortable="true" align="center" width="90"></el-table-column>
   <el-table-column prop="siteDir" label="站点文件夹" :sortable="true"></el-table-column>
-  <el-table-column prop="tableName" label="默认内容表" :sortable="true"></el-table-column>
-  <el-table-column align="center" label="操作" width="240">
+  <el-table-column prop="webUrl" label="站点地址" :sortable="true">
+    <template slot-scope="scope">
+      <a :href="scope.row.webUrl" target="_blank">{{scope.row.webUrl}}</a>
+    </template>
+  </el-table-column>
+  <el-table-column align="center" label="操作" width="290">
     <template slot-scope="scope">
       <el-button-group>
         <el-button

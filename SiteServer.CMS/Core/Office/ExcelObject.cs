@@ -142,6 +142,42 @@ namespace SiteServer.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
+        public static async Task CreateExcelFileForAdministratorsAsync(string filePath)
+        {
+            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
+            FileUtils.DeleteFileIfExists(filePath);
+
+            var head = new List<string>
+            {
+                "用户名",
+                "姓名",
+                "邮箱",
+                "手机",
+                "注册时间",
+                "最后一次活动时间"
+            };
+            var rows = new List<List<string>>();
+
+            var userIdList = await DataProvider.AdministratorDao.GetUserIdListAsync();
+
+            foreach (var userId in userIdList)
+            {
+                var administrator = await AdminManager.GetByUserIdAsync(userId);
+
+                rows.Add(new List<string>
+                {
+                    administrator.UserName,
+                    administrator.DisplayName,
+                    administrator.Email,
+                    administrator.Mobile,
+                    DateUtils.GetDateAndTimeString(administrator.CreationDate),
+                    DateUtils.GetDateAndTimeString(administrator.LastActivityDate)
+                });
+            }
+
+            CsvUtils.Export(filePath, head, rows);
+        }
+
         public static List<ContentInfo> GetContentsByCsvFile(string filePath, Site site,
             ChannelInfo nodeInfo)
         {

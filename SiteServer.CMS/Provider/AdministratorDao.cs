@@ -333,6 +333,14 @@ namespace SiteServer.CMS.Provider
             );
         }
 
+        public async Task<IEnumerable<int>> GetUserIdListAsync()
+        {
+            return await _repository.GetAllAsync<int>(Q
+                .Select(nameof(AdministratorInfo.Id))
+                .OrderByDesc(nameof(AdministratorInfo.Id))
+            );
+        }
+
         private string EncodePassword(string password, EPasswordFormat passwordFormat, out string passwordSalt)
         {
             var retVal = string.Empty;

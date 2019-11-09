@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -9,11 +8,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.ImportExport
 {
-	public class BackupUtility
+	public static class BackupUtility
 	{
-        public const string CacheTotalCount = "_TotalCount";
-        public const string CacheCurrentCount = "_CurrentCount";
-        public const string CacheMessage = "_Message";
         public const string UploadFolderName = "upload"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件夹目录
         public const string UploadFileName = "upload.xml"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件名
 
@@ -50,7 +46,7 @@ namespace SiteServer.CMS.ImportExport
             FileUtils.DeleteFileIfExists(filePath);
             var metadataPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, string.Empty);
 
-            await exportObject.ExportFilesToSiteAsync(siteTemplatePath, true, new ArrayList(), true);
+            await exportObject.ExportFilesToSiteAsync(siteTemplatePath, true, null, null, true);
 
             var siteContentDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.SiteContent);
             await exportObject.ExportSiteContentAsync(siteContentDirectoryPath, true, true, new List<int>());
@@ -61,7 +57,7 @@ namespace SiteServer.CMS.ImportExport
             await exportObject.ExportTablesAndStylesAsync(tableDirectoryPath);
             var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
             await exportObject.ExportConfigurationAsync(configurationFilePath);
-            exportObject.ExportMetadata(siteInfo.SiteName, siteInfo.Additional.WebUrl, string.Empty, string.Empty, metadataPath);
+            exportObject.ExportMetadata(siteInfo.SiteName, siteInfo.WebUrl, string.Empty, string.Empty, metadataPath);
 
             ZipUtils.CreateZip(filePath, siteTemplatePath);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
