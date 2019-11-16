@@ -1,107 +1,56 @@
 using System.Collections.Generic;
-using System.Data;
+using System.Threading.Tasks;
 using Datory;
-using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class PermissionsInRolesDao : DataProviderBase
-	{
-        public override string TableName => "siteserver_PermissionsInRoles";
+    public class PermissionsInRolesDao : IRepository
+    {
+        private readonly Repository<PermissionsInRoles> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public PermissionsInRolesDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(PermissionsInRolesInfo.Id),
-                DataType = DataType.Integer,
-                IsPrimaryKey = true,
-                IsIdentity = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(PermissionsInRolesInfo.RoleName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(PermissionsInRolesInfo.GeneralPermissions),
-                DataType = DataType.Text
-            }
-        };
-
-        private const string SqlSelect = "SELECT Id, RoleName, GeneralPermissions FROM siteserver_PermissionsInRoles WHERE RoleName = @RoleName";
-
-		private const string SqlInsert = "INSERT INTO siteserver_PermissionsInRoles (RoleName, GeneralPermissions) VALUES (@RoleName, @GeneralPermissions)";
-		private const string SqlDelete = "DELETE FROM siteserver_PermissionsInRoles WHERE RoleName = @RoleName";
-
-		private const string ParamRoleRoleName = "@RoleName";
-		private const string ParamGeneralPermissions = "@GeneralPermissions";
-
-        public void Insert(PermissionsInRolesInfo info) 
-		{
-			var parameters = new IDataParameter[]
-			{
-				GetParameter(ParamRoleRoleName, DataType.VarChar, 255, info.RoleName),
-				GetParameter(ParamGeneralPermissions, DataType.Text, info.GeneralPermissions)
-			};
-							
-			ExecuteNonQuery(SqlInsert, parameters);
-		}
-
-        public void Delete(string roleName)
-        {
-            var parameters = new IDataParameter[]
-			{
-				GetParameter(ParamRoleRoleName, DataType.VarChar, 255, roleName)
-			};
-
-            ExecuteNonQuery(SqlDelete, parameters);
+            _repository = new Repository<PermissionsInRoles>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        private PermissionsInRolesInfo GetPermissionsInRolesInfo(string roleName)
-		{
-            PermissionsInRolesInfo info = null;
-			
-			var parameters = new IDataParameter[]
-			{
-				GetParameter(ParamRoleRoleName, DataType.VarChar, 255, roleName)
-			};
-			
-			using (var rdr = ExecuteReader(SqlSelect, parameters)) 
-			{
-				if (rdr.Read())
-				{
-				    var i = 0;
-                    info = new PermissionsInRolesInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i)); 					
-				}
-				rdr.Close();
-			}
-			return info;
-		}
+        public IDatabase Database => _repository.Database;
 
+        public string TableName => _repository.TableName;
 
-		public List<string> GetGeneralPermissionList(IEnumerable<string> roles)
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task InsertAsync(PermissionsInRoles pr)
+        {
+            await _repository.InsertAsync(pr);
+        }
+
+        public async Task DeleteAsync(string roleName)
+        {
+            await _repository.DeleteAsync(Q.Where(nameof(PermissionsInRoles.RoleName), roleName));
+        }
+
+        private async Task<PermissionsInRoles> GetPermissionsInRolesAsync(string roleName)
+        {
+            return await _repository.GetAsync(Q.Where(nameof(PermissionsInRoles.RoleName), roleName));
+        }
+
+		public async Task<List<string>> GetGeneralPermissionListAsync(IEnumerable<string> roles)
 		{
             var list = new List<string>();
 		    if (roles == null) return list;
-            
-			foreach (var roleName in roles)
+
+            foreach (var roleName in roles)
 			{
-                var permissionsInRolesInfo = GetPermissionsInRolesInfo(roleName);
-                if (permissionsInRolesInfo != null)
-				{
-                    var permissionList = TranslateUtils.StringCollectionToStringList(permissionsInRolesInfo.GeneralPermissions);
-                    foreach (var permission in permissionList)
-					{
-                        if (!list.Contains(permission)) list.Add(permission);
-					}
-				}
-			}
+                var pr = await GetPermissionsInRolesAsync(roleName);
+                if (pr?.GeneralPermissions == null) continue;
+
+                foreach (var permission in pr.GeneralPermissionList)
+                {
+                    if (!list.Contains(permission)) list.Add(permission);
+                }
+            }
 
 			return list;
 		}

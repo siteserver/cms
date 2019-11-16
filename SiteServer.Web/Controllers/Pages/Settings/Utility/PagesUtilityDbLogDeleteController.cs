@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Utility
 {
@@ -15,18 +15,18 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }
 
-                var dt = DataProvider.LogDao.GetLastRemoveLogDate();
+                var dt = await DataProvider.LogDao.GetLastRemoveLogDateAsync();
                 var lastExecuteDate = dt == DateTime.MinValue ? "无记录" : DateUtils.GetDateAndTimeString(dt);
 
                 return Ok(new
@@ -45,9 +45,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }
@@ -56,7 +56,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
 
                 await request.AddAdminLogAsync("清空数据库日志");
 
-                var dt = DataProvider.LogDao.GetLastRemoveLogDate();
+                var dt = await DataProvider.LogDao.GetLastRemoveLogDateAsync();
                 var lastExecuteDate = dt == DateTime.MinValue ? "无记录" : DateUtils.GetDateAndTimeString(dt);
 
                 return Ok(new

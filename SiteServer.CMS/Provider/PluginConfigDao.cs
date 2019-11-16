@@ -1,169 +1,68 @@
 using System.Collections.Generic;
-using System.Data;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class PluginConfigDao : DataProviderBase
+    public class PluginConfigDao : IRepository
     {
-        public override string TableName => "siteserver_PluginConfig";
+        private readonly Repository<PluginConfig> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public PluginConfigDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(PluginConfigInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(PluginConfigInfo.PluginId),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(PluginConfigInfo.SiteId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(PluginConfigInfo.ConfigName),
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(PluginConfigInfo.ConfigValue),
-                DataType = DataType.Text
-            }
-        };
-
-        private const string ParmPluginId = "@PluginId";
-        private const string ParmSiteId = "@SiteId";
-        private const string ParmConfigName = "@ConfigName";
-        private const string ParmConfigValue = "@ConfigValue";
-
-        public void Insert(PluginConfigInfo configInfo)
-        {
-            const string sqlString = "INSERT INTO siteserver_PluginConfig(PluginId, SiteId, ConfigName, ConfigValue) VALUES (@PluginId, @SiteId, @ConfigName, @ConfigValue)";
-
-            var parms = new IDataParameter[]
-			{
-                GetParameter(ParmPluginId, DataType.VarChar, 50, configInfo.PluginId),
-                GetParameter(ParmSiteId, DataType.Integer, configInfo.SiteId),
-                GetParameter(ParmConfigName, DataType.VarChar, 200, configInfo.ConfigName),
-                GetParameter(ParmConfigValue, DataType.Text, configInfo.ConfigValue)
-			};
-
-            ExecuteNonQuery(sqlString, parms);
+            _repository = new Repository<PluginConfig>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public void Delete(string pluginId, int siteId, string configName)
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task InsertAsync(PluginConfig config)
         {
-            const string sqlString = "DELETE FROM siteserver_PluginConfig WHERE PluginId = @PluginId AND SiteId = @SiteId AND ConfigName = @ConfigName";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmPluginId, DataType.VarChar, 50, pluginId),
-                GetParameter(ParmSiteId, DataType.Integer, siteId),
-                GetParameter(ParmConfigName, DataType.VarChar, 200, configName)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
+            await _repository.InsertAsync(config);
         }
 
-        public void DeleteAll(string pluginId)
+        public async Task DeleteAsync(string pluginId, int siteId, string configName)
         {
-            const string sqlString = "DELETE FROM siteserver_PluginConfig WHERE PluginId = @PluginId";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmPluginId, DataType.VarChar, 50, pluginId)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
+            await _repository.DeleteAsync(Q
+                .Where(nameof(PluginConfig.SiteId), siteId)
+                .Where(nameof(PluginConfig.PluginId), pluginId)
+                .Where(nameof(PluginConfig.ConfigName), configName)
+            );
         }
 
-        public void DeleteAll(int siteId)
+        public async Task UpdateAsync(PluginConfig configInfo)
         {
-            const string sqlString = "DELETE FROM siteserver_PluginConfig WHERE SiteId = @SiteId";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmSiteId, DataType.Integer, siteId)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
+            await _repository.UpdateAsync(Q
+                .Set(nameof(PluginConfig.ConfigValue), configInfo.ConfigValue)
+                .Where(nameof(PluginConfig.PluginId), configInfo.PluginId)
+                .Where(nameof(PluginConfig.SiteId), configInfo.SiteId)
+                .Where(nameof(PluginConfig.ConfigName), configInfo.ConfigName)
+            );
         }
 
-        public void Update(PluginConfigInfo configInfo)
+        public async Task<string> GetValueAsync(string pluginId, int siteId, string configName)
         {
-            const string sqlString = "UPDATE siteserver_PluginConfig SET ConfigValue = @ConfigValue WHERE PluginId = @PluginId AND SiteId = @SiteId AND ConfigName = @ConfigName";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmConfigValue, DataType.Text, configInfo.ConfigValue),
-                GetParameter(ParmPluginId, DataType.VarChar, 50, configInfo.PluginId),
-                GetParameter(ParmSiteId, DataType.Integer, configInfo.SiteId),
-                GetParameter(ParmConfigName, DataType.VarChar, 200, configInfo.ConfigName)
-            };
-            ExecuteNonQuery(sqlString, parms);
+            return await _repository.GetAsync<string>(Q
+                .Select(nameof(PluginConfig.ConfigValue))
+                .Where(nameof(PluginConfig.SiteId), siteId)
+                .Where(nameof(PluginConfig.PluginId), pluginId)
+                .Where(nameof(PluginConfig.ConfigName), configName)
+            );
         }
 
-        public string GetValue(string pluginId, int siteId, string configName)
+        public async Task<bool> IsExistsAsync(string pluginId, int siteId, string configName)
         {
-            var value = string.Empty;
-
-            const string sqlString = "SELECT ConfigValue FROM siteserver_PluginConfig WHERE PluginId = @PluginId AND SiteId = @SiteId AND ConfigName = @ConfigName";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmPluginId, DataType.VarChar, 50, pluginId),
-                GetParameter(ParmSiteId, DataType.Integer, siteId),
-                GetParameter(ParmConfigName, DataType.VarChar, 200, configName)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read() && !rdr.IsDBNull(0))
-                {
-                    value = rdr.GetString(0);
-                }
-                rdr.Close();
-            }
-
-            return value;
-        }
-
-        public bool IsExists(string pluginId, int siteId, string configName)
-        {
-            var exists = false;
-
-            const string sqlString = "SELECT Id FROM siteserver_PluginConfig WHERE PluginId = @PluginId AND SiteId = @SiteId AND ConfigName = @ConfigName";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmPluginId, DataType.VarChar, 50, pluginId),
-                GetParameter(ParmSiteId, DataType.Integer, siteId),
-                GetParameter(ParmConfigName, DataType.VarChar, 200, configName)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read() && !rdr.IsDBNull(0))
-                {
-                    exists = true;
-                }
-                rdr.Close();
-            }
-
-            return exists;
+            return await _repository.ExistsAsync(Q
+                .Where(nameof(PluginConfig.SiteId), siteId)
+                .Where(nameof(PluginConfig.PluginId), pluginId)
+                .Where(nameof(PluginConfig.ConfigName), configName)
+            );
         }
     }
 }

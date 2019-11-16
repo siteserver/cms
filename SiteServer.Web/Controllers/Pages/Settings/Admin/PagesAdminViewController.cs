@@ -5,6 +5,7 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
@@ -21,39 +22,51 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var userId = request.GetQueryInt("userId");
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin) return Unauthorized();
-                var adminInfo = await AdminManager.GetByUserIdAsync(userId);
-                if (adminInfo == null) return NotFound();
-                if (request.AdminId != userId &&
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+
+                var userId = request.GetQueryInt("userId");
+                var userName = request.GetQueryString("userName");
+
+                Administrator admin = null;
+                if (userId > 0)
+                {
+                    admin = await AdminManager.GetByUserIdAsync(userId);
+                }
+                else if (!string.IsNullOrEmpty(userName))
+                {
+                    admin = await AdminManager.GetByUserNameAsync(userName);
+                }
+
+                if (admin == null) return NotFound();
+                if (request.AdminId != admin.Id &&
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var permissions = new PermissionsImpl(adminInfo);
-                var level = permissions.GetAdminLevel();
-                var isSuperAdmin = permissions.IsConsoleAdministrator;
+                var permissions = new PermissionsImpl(admin);
+                var level = await permissions.GetAdminLevelAsync();
+                var isSuperAdmin = await permissions.IsSuperAdminAsync();
                 var siteNames = new List<string>();
                 if (!isSuperAdmin)
                 {
-                    var siteIdListWithPermissions = permissions.GetSiteIdList();
+                    var siteIdListWithPermissions = await permissions.GetSiteIdListAsync();
                     foreach (var siteId in siteIdListWithPermissions)
                     {
                         siteNames.Add(await SiteManager.GetSiteNameAsync(await SiteManager.GetSiteAsync(siteId)));
                     }
                 }
-                var isOrdinaryAdmin = !permissions.IsSystemAdministrator;
+                var isOrdinaryAdmin = !await permissions.IsSuperAdminAsync();
                 var roleNames = string.Empty;
                 if (isOrdinaryAdmin)
                 {
-                    roleNames = AdminManager.GetRoles(adminInfo.UserName);
+                    roleNames = await AdminManager.GetRolesAsync(admin.UserName);
                 }
                 
                 return Ok(new
                 {
-                    Value = adminInfo,
+                    Value = admin,
                     Level = level,
                     IsSuperAdmin = isSuperAdmin,
                     SiteNames = TranslateUtils.ObjectCollectionToString(siteNames, "<br />"),

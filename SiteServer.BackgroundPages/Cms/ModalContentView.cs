@@ -2,14 +2,15 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Model.Enumerations;
+using Content = SiteServer.CMS.Model.Content;
+using TableStyle = SiteServer.CMS.Model.TableStyle;
+using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -31,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
         private int _channelId;
         private int _contentId;
         private string _returnUrl;
-        private ContentInfo _contentInfo;
+        private Content _content;
 
         public static string GetOpenWindowString(int siteId, int channelId, int contentId, string returnUrl)
         {
@@ -52,57 +53,57 @@ namespace SiteServer.BackgroundPages.Cms
             _channelId = AuthRequest.GetQueryInt("channelId");
             if (_channelId < 0) _channelId = -_channelId;
 
-            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            var channelInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
             _contentId = AuthRequest.GetQueryInt("id");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            _contentInfo = ContentManager.GetContentInfo(Site, channelInfo, _contentId);
+            _content = ContentManager.GetContentInfoAsync(Site, channelInfo, _contentId).GetAwaiter().GetResult();
 
             if (IsPostBack) return;
 
-            var styleInfoList = TableStyleManager.GetContentStyleInfoList(Site, channelInfo);
+            var styleList = TableStyleManager.GetContentStyleListAsync(Site, channelInfo).GetAwaiter().GetResult();
 
-            RptContents.DataSource = styleInfoList;
+            RptContents.DataSource = styleList;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            LtlTitle.Text = _contentInfo.Title;
+            LtlTitle.Text = _content.Title;
             LtlChannelName.Text = channelInfo.ChannelName;
 
-            LtlTags.Text = _contentInfo.Tags;
+            LtlTags.Text = _content.Tags;
             if (string.IsNullOrEmpty(LtlTags.Text))
             {
                 PhTags.Visible = false;
             }
 
-            LtlContentGroup.Text = _contentInfo.GroupNameCollection;
+            LtlContentGroup.Text = _content.GroupNameCollection;
             if (string.IsNullOrEmpty(LtlContentGroup.Text))
             {
                 PhContentGroup.Visible = false;
             }
 
-            LtlLastEditDate.Text = DateUtils.GetDateAndTimeString(_contentInfo.LastEditDate);
-            LtlAddUserName.Text = AdminManager.GetDisplayNameAsync(_contentInfo.AddUserName).GetAwaiter().GetResult();
-            LtlLastEditUserName.Text = AdminManager.GetDisplayNameAsync(_contentInfo.LastEditUserName).GetAwaiter().GetResult();
+            LtlLastEditDate.Text = DateUtils.GetDateAndTimeString(_content.LastEditDate);
+            LtlAddUserName.Text = AdminManager.GetDisplayNameAsync(_content.AddUserName).GetAwaiter().GetResult();
+            LtlLastEditUserName.Text = AdminManager.GetDisplayNameAsync(_content.LastEditUserName).GetAwaiter().GetResult();
 
-            LtlContentLevel.Text = CheckManager.GetCheckState(Site, _contentInfo);
+            LtlContentLevel.Text = CheckManager.GetCheckState(Site, _content);
 
-            if (_contentInfo.ReferenceId > 0 && _contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+            if (_content.ReferenceId > 0 && _content.Get<string>(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
-                var referenceSiteId = DataProvider.ChannelDao.GetSiteId(_contentInfo.SourceId);
+                var referenceSiteId = DataProvider.ChannelDao.GetSiteIdAsync(_content.SourceId).GetAwaiter().GetResult();
                 var referenceSite = SiteManager.GetSiteAsync(referenceSiteId).GetAwaiter().GetResult();
-                var referenceContentInfo = ContentManager.GetContentInfo(referenceSite, _contentInfo.SourceId, _contentInfo.ReferenceId);
+                var referenceContentInfo = ContentManager.GetContentInfoAsync(referenceSite, _content.SourceId, _content.ReferenceId).GetAwaiter().GetResult();
 
                 if (referenceContentInfo != null)
                 {
                     var pageUrl = PageUtility.GetContentUrlAsync(referenceSite, referenceContentInfo, true).GetAwaiter().GetResult();
-                    var referenceNodeInfo = ChannelManager.GetChannelInfo(referenceContentInfo.SiteId, referenceContentInfo.ChannelId);
+                    var referenceNodeInfo = ChannelManager.GetChannelAsync(referenceContentInfo.SiteId, referenceContentInfo.ChannelId).GetAwaiter().GetResult();
                     var addEditUrl =
                         WebUtils.GetContentAddEditUrl(referenceSite.Id,
-                            referenceNodeInfo.Id, _contentInfo.ReferenceId, AuthRequest.GetQueryString("ReturnUrl"));
+                            referenceNodeInfo.Id, _content.ReferenceId, AuthRequest.GetQueryString("ReturnUrl"));
 
                     LtlScripts.Text += $@"
-<div class=""tips"">此内容为对内容 （站点：{referenceSite.SiteName},栏目：{referenceNodeInfo.ChannelName}）“<a href=""{pageUrl}"" target=""_blank"">{_contentInfo.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";
+<div class=""tips"">此内容为对内容 （站点：{referenceSite.SiteName},栏目：{referenceNodeInfo.ChannelName}）“<a href=""{pageUrl}"" target=""_blank"">{_content.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";
                 }
             }
         }
@@ -111,15 +112,15 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var styleInfo = (TableStyleInfo)e.Item.DataItem;
+            var style = (TableStyle)e.Item.DataItem;
 
-            var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.GetString(styleInfo.AttributeName), Site, styleInfo);
+            var inputHtml = InputParserUtility.GetContentByTableStyleAsync(_content.Get<string>(style.AttributeName), Site, style).GetAwaiter().GetResult();
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
             ltlHtml.Text = $@"
 <div class=""form-group form-row"">
-    <label class=""col-sm-2 col-form-label"">{styleInfo.DisplayName}</label>
+    <label class=""col-sm-2 col-form-label"">{style.DisplayName}</label>
     <div class=""col-sm-9 form-control-plaintext"">
         {inputHtml}
     </div>

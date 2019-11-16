@@ -2,9 +2,10 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -48,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             EBooleanUtils.AddListItems(DdlIsFileUploadChangeFileName, "采用系统生成文件名", "采用原有文件名");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, Site.Additional.IsFileUploadChangeFileName.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, Site.IsFileUploadChangeFileName.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

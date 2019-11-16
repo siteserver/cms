@@ -2,9 +2,10 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Images;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.Utils.Images;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -47,34 +48,34 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (isLoad)
             {
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageIsLinkToOriginal))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageIsLinkToOriginal))
                 {
-                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(Site.Additional.ConfigUploadImageIsLinkToOriginal);
+                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(Site.ConfigUploadImageIsLinkToOriginal);
                 }
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageIsSmallImage))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageIsSmallImage))
                 {
-                    CbIsSmallImage.Checked = TranslateUtils.ToBool(Site.Additional.ConfigUploadImageIsSmallImage);
+                    CbIsSmallImage.Checked = TranslateUtils.ToBool(Site.ConfigUploadImageIsSmallImage);
                 }
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageSmallImageWidth))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageSmallImageWidth))
                 {
-                    TbSmallImageWidth.Text = Site.Additional.ConfigUploadImageSmallImageWidth;
+                    TbSmallImageWidth.Text = Site.ConfigUploadImageSmallImageWidth;
                 }
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageSmallImageHeight))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageSmallImageHeight))
                 {
-                    TbSmallImageHeight.Text = Site.Additional.ConfigUploadImageSmallImageHeight;
+                    TbSmallImageHeight.Text = Site.ConfigUploadImageSmallImageHeight;
                 }
             }
             else
             {
-                if (Site.Additional.ConfigUploadImageIsLinkToOriginal != CbIsLinkToOriginal.Checked.ToString()
-                     || Site.Additional.ConfigUploadImageIsSmallImage != CbIsSmallImage.Checked.ToString()
-                     || Site.Additional.ConfigUploadImageSmallImageWidth != TbSmallImageWidth.Text
-                     || Site.Additional.ConfigUploadImageSmallImageHeight != TbSmallImageHeight.Text)
+                if (Site.ConfigUploadImageIsLinkToOriginal != CbIsLinkToOriginal.Checked.ToString()
+                     || Site.ConfigUploadImageIsSmallImage != CbIsSmallImage.Checked.ToString()
+                     || Site.ConfigUploadImageSmallImageWidth != TbSmallImageWidth.Text
+                     || Site.ConfigUploadImageSmallImageHeight != TbSmallImageHeight.Text)
                 {
-                    Site.Additional.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
-                    Site.Additional.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
-                    Site.Additional.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
-                    Site.Additional.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
+                    Site.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
+                    Site.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
+                    Site.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
+                    Site.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
 
                     DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
                 }
@@ -124,14 +125,14 @@ namespace SiteServer.BackgroundPages.Cms
                             : $@"<img src=""{smallImageUrl}"" border=""0"" />";
 
                         scripts += "if(parent." + UEditorUtils.GetEditorInstanceScript() + ") parent." +
-                                   UEditorUtils.GetInsertHtmlScript("Content", insertHtml);
+                                   UEditorUtils.GetInsertHtmlScript("Body", insertHtml);
                     }
                     else
                     {
                         var insertHtml = $@"<img src=""{imageUrl}"" border=""0"" />";
 
                         scripts += "if(parent." + UEditorUtils.GetEditorInstanceScript() + ") parent." +
-                                      UEditorUtils.GetInsertHtmlScript("Content", insertHtml);
+                                      UEditorUtils.GetInsertHtmlScript("Body", insertHtml);
                     }
                 }
             }

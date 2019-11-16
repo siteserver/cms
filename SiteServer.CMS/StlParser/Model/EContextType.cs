@@ -19,7 +19,7 @@ namespace SiteServer.CMS.StlParser.Model
 		{
 		    if (type == EContextType.Content)
             {
-                return "Content";
+                return "Body";
             }
 		    if (type == EContextType.Channel)
 		    {

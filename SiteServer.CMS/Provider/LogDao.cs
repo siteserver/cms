@@ -1,132 +1,117 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Text;
+using System.Threading.Tasks;
 using Datory;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
+using SqlKata;
 
 namespace SiteServer.CMS.Provider
 {
-    public class LogDao : DataProviderBase
+    public class LogDao : DataProviderBase, IRepository
     {
-        public override string TableName => "siteserver_Log";
+        private readonly Repository<Log> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public LogDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(LogInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(LogInfo.UserName),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(LogInfo.IpAddress),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(LogInfo.AddDate),
-                DataType = DataType.DateTime
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(LogInfo.Action),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(LogInfo.Summary),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            }
-        };
-
-        private const string ParmUserName = "@UserName";
-        private const string ParmIpAddress = "@IPAddress";
-        private const string ParmAddDate = "@AddDate";
-        private const string ParmAction = "@Action";
-        private const string ParmSummary = "@Summary";
-
-        public void Insert(LogInfo log)
-        {
-            var sqlString = "INSERT INTO siteserver_Log(UserName, IPAddress, AddDate, Action, Summary) VALUES (@UserName, @IPAddress, @AddDate, @Action, @Summary)";
-            
-            var parms = new IDataParameter[]
-            {
-                    GetParameter(ParmUserName, DataType.VarChar, 50, log.UserName),
-                    GetParameter(ParmIpAddress, DataType.VarChar, 50, log.IpAddress),
-                    GetParameter(ParmAddDate, DataType.DateTime, log.AddDate),
-                    GetParameter(ParmAction, DataType.VarChar, 255, log.Action),
-                    GetParameter(ParmSummary, DataType.VarChar, 255, log.Summary)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
+            _repository = new Repository<Log>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public void Delete(List<int> idList)
-        {
-            if (idList != null && idList.Count > 0)
-            {
-                string sqlString =
-                    $"DELETE FROM siteserver_Log WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+        public IDatabase Database => _repository.Database;
 
-                ExecuteNonQuery(sqlString);
-            }
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task InsertAsync(Log log)
+        {
+            await _repository.InsertAsync(log);
         }
 
-        public void DeleteIfThreshold()
+        public async Task DeleteAsync(List<int> idList)
         {
-            if (!ConfigManager.SystemConfigInfo.IsTimeThreshold) return;
+            if (idList == null || idList.Count <= 0) return;
 
-            var days = ConfigManager.SystemConfigInfo.TimeThreshold;
+            await _repository.DeleteAsync(Q
+                .WhereIn(nameof(Log.Id), idList)
+            );
+        }
+
+        public async Task DeleteIfThresholdAsync()
+        {
+            var config = await ConfigManager.GetInstanceAsync();
+            if (!config.IsTimeThreshold) return;
+
+            var days = config.TimeThreshold;
             if (days <= 0) return;
 
-            ExecuteNonQuery($@"DELETE FROM siteserver_Log WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
+            await _repository.DeleteAsync(Q
+                .Where(nameof(Log.CreatedDate), "<", DateTime.Now.AddDays(-days))
+            );
         }
 
-        public void DeleteAll()
+        public async Task DeleteAllAsync()
         {
-            const string sqlString = "DELETE FROM siteserver_Log";
-
-            ExecuteNonQuery(sqlString);
+            await _repository.DeleteAsync();
         }
 
-        public int GetCount()
+        private Query GetQuery(string userName, string keyword, string dateFrom, string dateTo)
         {
-            var count = 0;
-            const string sqlString = "SELECT Count(*) FROM siteserver_Log";
-
-            using (var rdr = ExecuteReader(sqlString))
+            var query = Q.NewQuery();
+            if (string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
             {
-                if (rdr.Read() && !rdr.IsDBNull(0))
-                {
-                    count = GetInt(rdr, 0);
-                }
-                rdr.Close();
+                return query;
             }
 
-            return count;
+            if (!string.IsNullOrEmpty(userName))
+            {
+                query.Where(nameof(Log.UserName), userName);
+            }
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                var like = $"%{keyword}%";
+                query.Where(q =>
+                    q.WhereLike(nameof(Log.Action), like).OrWhereLike(nameof(Log.Summary), like)
+                );
+            }
+
+            if (!string.IsNullOrEmpty(dateFrom))
+            {
+                query.WhereDate(nameof(Log.AddDate), ">=", TranslateUtils.ToDateTime(dateFrom));
+            }
+            if (!string.IsNullOrEmpty(dateTo))
+            {
+                query.WhereDate(nameof(Log.AddDate), "<=", TranslateUtils.ToDateTime(dateTo));
+            }
+
+            return query;
+        }
+
+        public async Task<int> GetCountAsync(string userName, string keyword, string dateFrom, string dateTo)
+        {
+            return await _repository.CountAsync(GetQuery(userName, keyword, dateFrom, dateTo));
+        }
+
+        public async Task<IEnumerable<Log>> GetAllAsync(string userName, string keyword, string dateFrom, string dateTo, int offset, int limit)
+        {
+            var query = GetQuery(userName, keyword, dateFrom, dateTo);
+            query.Offset(offset).Limit(limit).OrderByDesc(nameof(Log.Id));
+            return await _repository.GetAllAsync(query);
+        }
+
+        public async Task<int> GetCountAsync()
+        {
+            return await _repository.CountAsync();
         }
 
         public string GetSelectCommend()
         {
-            return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_Log";
+            return GetSelectCommend(string.Empty, string.Empty, string.Empty, string.Empty);
         }
 
         public string GetSelectCommend(string userName, string keyword, string dateFrom, string dateTo)
@@ -177,20 +162,15 @@ namespace SiteServer.CMS.Provider
             return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_Log " + whereString;
         }
 
-        public DateTime GetLastRemoveLogDate()
+        public async Task<DateTimeOffset> GetLastRemoveLogDateAsync()
         {
-            var retVal = DateTime.MinValue;
-            var sqlString = SqlUtils.ToTopSqlString("siteserver_Log", "AddDate", "WHERE Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
+            var addDate = await _repository.GetAsync<DateTime?>(Q
+                .Select(nameof(Log.CreatedDate))
+                .Where(nameof(Log.Action), "清空数据库日志")
+                .OrderByDesc(nameof(Log.Id))
+            );
 
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    retVal = GetDateTime(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return retVal;
+            return addDate ?? DateTime.MinValue;
         }
 
         /// <summary>
@@ -210,11 +190,11 @@ namespace SiteServer.CMS.Provider
             }
 
             var builder = new StringBuilder();
-            if (dateFrom > DateUtils.SqlMinValue)
+            if (dateFrom > Constants.SqlMinValue)
             {
                 builder.Append($" AND AddDate >= {SqlUtils.GetComparableDate(dateFrom)}");
             }
-            if (dateTo != DateUtils.SqlMinValue)
+            if (dateTo != Constants.SqlMinValue)
             {
                 builder.Append($" AND AddDate < {SqlUtils.GetComparableDate(dateTo)}");
             }
@@ -287,11 +267,11 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             var dict = new Dictionary<string, int>();
 
             var builder = new StringBuilder();
-            if (dateFrom > DateUtils.SqlMinValue)
+            if (dateFrom > Constants.SqlMinValue)
             {
                 builder.Append($" AND AddDate >= {SqlUtils.GetComparableDate(dateFrom)}");
             }
-            if (dateTo != DateUtils.SqlMinValue)
+            if (dateTo != Constants.SqlMinValue)
             {
                 builder.Append($" AND AddDate < {SqlUtils.GetComparableDate(dateTo)}");
             }

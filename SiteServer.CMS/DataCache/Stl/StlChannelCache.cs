@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache.Stl
@@ -17,41 +17,35 @@ namespace SiteServer.CMS.DataCache.Stl
             StlCacheManager.Clear(nameof(StlChannelCache));
         }
 
-        public static int GetSiteId(int channelId)
+        public static async Task<int> GetSiteIdAsync(int channelId)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetSiteId),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetSiteIdAsync),
                     channelId.ToString());
             var retVal = StlCacheManager.GetInt(cacheKey);
             if (retVal != -1) return retVal;
 
-            lock (LockObject)
+            retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal == -1)
             {
-                retVal = StlCacheManager.GetInt(cacheKey);
-                if (retVal == -1)
-                {
-                    retVal = DataProvider.ChannelDao.GetSiteId(channelId);
-                    StlCacheManager.Set(cacheKey, retVal);
-                }
+                retVal = await DataProvider.ChannelDao.GetSiteIdAsync(channelId);
+                StlCacheManager.Set(cacheKey, retVal);
             }
 
             return retVal;
         }
 
-        public static int GetSequence(int siteId, int channelId)
+        public static async Task<int> GetSequenceAsync(int siteId, int channelId)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetSequence),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetSequenceAsync),
                 siteId.ToString(), channelId.ToString());
             var retVal = StlCacheManager.GetInt(cacheKey);
             if (retVal != -1) return retVal;
 
-            lock (LockObject)
+            retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal == -1)
             {
-                retVal = StlCacheManager.GetInt(cacheKey);
-                if (retVal == -1)
-                {
-                    retVal = DataProvider.ChannelDao.GetSequence(siteId, channelId);
-                    StlCacheManager.Set(cacheKey, retVal);
-                }
+                retVal = await DataProvider.ChannelDao.GetSequenceAsync(siteId, channelId);
+                StlCacheManager.Set(cacheKey, retVal);
             }
 
             return retVal;
@@ -117,21 +111,18 @@ namespace SiteServer.CMS.DataCache.Stl
         //    return retVal;
         //}
 
-        public static int GetIdByParentIdAndTaxis(int parentId, int taxis, bool isNextChannel)
+        public static async Task<int> GetIdByParentIdAndTaxisAsync(int parentId, int taxis, bool isNextChannel)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetIdByParentIdAndTaxis),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetIdByParentIdAndTaxisAsync),
                        parentId.ToString(), taxis.ToString(), isNextChannel.ToString());
             var retVal = StlCacheManager.GetInt(cacheKey);
             if (retVal != -1) return retVal;
 
-            lock (LockObject)
+            retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal == -1)
             {
-                retVal = StlCacheManager.GetInt(cacheKey);
-                if (retVal == -1)
-                {
-                    retVal = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(parentId, taxis, isNextChannel);
-                    StlCacheManager.Set(cacheKey, retVal);
-                }
+                retVal = await DataProvider.ChannelDao.GetIdByParentIdAndTaxisAsync(parentId, taxis, isNextChannel);
+                StlCacheManager.Set(cacheKey, retVal);
             }
 
             return retVal;
@@ -159,61 +150,52 @@ namespace SiteServer.CMS.DataCache.Stl
             return retVal;
         }
 
-        public static List<int> GetIdListByTotalNum(List<int> channelIdList, int totalNum, string orderByString, string whereString)
+        public static async Task<IEnumerable<int>> GetIdListByTotalNumAsync(List<int> channelIdList, int totalNum, string orderByString, string whereString)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetIdListByTotalNum),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetIdListByTotalNumAsync),
                        TranslateUtils.ObjectCollectionToString(channelIdList), totalNum.ToString(), orderByString, whereString);
-            var retVal = StlCacheManager.Get<List<int>>(cacheKey);
+            var retVal = StlCacheManager.Get<IEnumerable<int>>(cacheKey);
             if (retVal != null) return retVal;
 
-            lock (LockObject)
+            retVal = StlCacheManager.Get<List<int>>(cacheKey);
+            if (retVal == null)
             {
-                retVal = StlCacheManager.Get<List<int>>(cacheKey);
-                if (retVal == null)
-                {
-                    retVal = DataProvider.ChannelDao.GetIdListByTotalNum(channelIdList, totalNum, orderByString, whereString);
-                    StlCacheManager.Set(cacheKey, retVal);
-                }
+                retVal = await DataProvider.ChannelDao.GetIdListByTotalNumAsync(channelIdList, totalNum, orderByString, whereString);
+                StlCacheManager.Set(cacheKey, retVal);
             }
 
             return retVal;
         }
 
-        public static ChannelInfo GetChannelInfoByLastAddDate(int channelId)
+        public static async Task<Channel> GetChannelInfoByLastAddDateAsync(int channelId)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetChannelInfoByLastAddDate),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetChannelInfoByLastAddDateAsync),
                     channelId.ToString());
-            var retVal = StlCacheManager.Get<ChannelInfo>(cacheKey);
+            var retVal = StlCacheManager.Get<Channel>(cacheKey);
             if (retVal != null) return retVal;
 
-            lock (LockObject)
+            retVal = StlCacheManager.Get<Channel>(cacheKey);
+            if (retVal == null)
             {
-                retVal = StlCacheManager.Get<ChannelInfo>(cacheKey);
-                if (retVal == null)
-                {
-                    retVal = DataProvider.ChannelDao.GetChannelInfoByLastAddDate(channelId);
-                    StlCacheManager.Set(cacheKey, retVal);
-                }
+                retVal = await DataProvider.ChannelDao.GetChannelByLastAddDateAsyncTask(channelId);
+                StlCacheManager.Set(cacheKey, retVal);
             }
 
             return retVal;
         }
 
-        public static ChannelInfo GetChannelInfoByTaxis(int channelId)
+        public static async Task<Channel> GetChannelInfoByTaxisAsync(int channelId)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetChannelInfoByTaxis),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetChannelInfoByTaxisAsync),
                     channelId.ToString());
-            var retVal = StlCacheManager.Get<ChannelInfo>(cacheKey);
+            var retVal = StlCacheManager.Get<Channel>(cacheKey);
             if (retVal != null) return retVal;
 
-            lock (LockObject)
+            retVal = StlCacheManager.Get<Channel>(cacheKey);
+            if (retVal == null)
             {
-                retVal = StlCacheManager.Get<ChannelInfo>(cacheKey);
-                if (retVal == null)
-                {
-                    retVal = DataProvider.ChannelDao.GetChannelInfoByTaxis(channelId);
-                    StlCacheManager.Set(cacheKey, retVal);
-                }
+                retVal = await DataProvider.ChannelDao.GetChannelByTaxisAsync(channelId);
+                StlCacheManager.Set(cacheKey, retVal);
             }
 
             return retVal;

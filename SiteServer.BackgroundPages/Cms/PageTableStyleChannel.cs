@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
+using TableStyle = SiteServer.CMS.Model.TableStyle;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
         public Button BtnExport;
 
         private string _tableName;
-        private ChannelInfo _channelInfo;
+        private Channel _channel;
         private List<int> _relatedIdentities;
         private string _redirectUrl;
 
@@ -39,9 +40,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             _tableName = DataProvider.ChannelDao.TableName;
             var channelId = AuthRequest.GetQueryInt("channelId", SiteId);
-            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
             _redirectUrl = GetRedirectUrl(SiteId, channelId);
-            _relatedIdentities = TableStyleManager.GetRelatedIdentities(_channelInfo);
+            _relatedIdentities = TableStyleManager.GetRelatedIdentities(_channel);
 
             if (IsPostBack) return;
 
@@ -51,11 +52,11 @@ namespace SiteServer.BackgroundPages.Cms
             if (AuthRequest.IsQueryExists("DeleteStyle"))
             {
                 var attributeName = AuthRequest.GetQueryString("AttributeName");
-                if (TableStyleManager.IsExists(_channelInfo.Id, _tableName, attributeName))
+                if (TableStyleManager.IsExistsAsync(_channel.Id, _tableName, attributeName).GetAwaiter().GetResult())
                 {
                     try
                     {
-                        DataProvider.TableStyleDao.Delete(_channelInfo.Id, _tableName, attributeName);
+                        DataProvider.TableStyleDao.DeleteAsync(_channel.Id, _tableName, attributeName).GetAwaiter().GetResult();
                         AuthRequest.AddSiteLogAsync(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}").GetAwaiter().GetResult();
                         SuccessDeleteMessage();
                     }
@@ -66,10 +67,10 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            ChannelManager.AddListItems(DdlChannelId.Items, Site, false, true, AuthRequest.AdminPermissionsImpl);
+            ChannelManager.AddListItemsAsync(DdlChannelId.Items, Site, false, true, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
             ControlUtils.SelectSingleItem(DdlChannelId, channelId.ToString());
 
-            RptContents.DataSource = TableStyleManager.GetChannelStyleInfoList(_channelInfo);
+            RptContents.DataSource = TableStyleManager.GetChannelStyleListAsync(_channel).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -88,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var styleInfo = (TableStyleInfo)e.Item.DataItem;
+            var style = (TableStyle)e.Item.DataItem;
 
             var ltlAttributeName = (Literal)e.Item.FindControl("ltlAttributeName");
             var ltlDisplayName = (Literal)e.Item.FindControl("ltlDisplayName");
@@ -98,30 +99,30 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlEditStyle = (Literal)e.Item.FindControl("ltlEditStyle");
             var ltlEditValidate = (Literal)e.Item.FindControl("ltlEditValidate");
 
-            ltlAttributeName.Text = styleInfo.AttributeName;
+            ltlAttributeName.Text = style.AttributeName;
 
-            ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
+            ltlDisplayName.Text = style.DisplayName;
+            ltlInputType.Text = InputTypeUtils.GetText(style.Type);
 
-            ltlValidate.Text = TableStyleManager.GetValidateInfo(styleInfo);
+            ltlValidate.Text = TableStyleManager.GetValidateInfo(style);
 
-            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(SiteId, styleInfo.Id, _relatedIdentities, _tableName, styleInfo.AttributeName, _redirectUrl);
-            var editText = styleInfo.RelatedIdentity == _channelInfo.Id ? "修改" : "添加";
+            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(SiteId, style.Id, _relatedIdentities, _tableName, style.AttributeName, _redirectUrl);
+            var editText = style.RelatedIdentity == _channel.Id ? "修改" : "添加";
             ltlEditStyle.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">{editText}</a>";
 
-            showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(SiteId, styleInfo.Id, _relatedIdentities, _tableName, styleInfo.AttributeName, _redirectUrl);
+            showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(SiteId, style.Id, _relatedIdentities, _tableName, style.AttributeName, _redirectUrl);
             ltlEditValidate.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">设置</a>";
 
-            ltlTaxis.Text = styleInfo.Taxis.ToString();
+            ltlTaxis.Text = style.Taxis.ToString();
 
-            if (styleInfo.RelatedIdentity != _channelInfo.Id) return;
+            if (style.RelatedIdentity != _channel.Id) return;
 
             var urlStyle = PageUtils.GetCmsUrl(SiteId, nameof(PageTableStyleChannel), new NameValueCollection
             {
-                {"channelId", _channelInfo.Id.ToString()},
+                {"channelId", _channel.Id.ToString()},
                 {"DeleteStyle", true.ToString()},
                 {"TableName", _tableName},
-                {"AttributeName", styleInfo.AttributeName}
+                {"AttributeName", style.AttributeName}
             });
             ltlEditStyle.Text +=
                 $@"&nbsp;&nbsp;<a href=""{urlStyle}"" onClick=""javascript:return confirm('此操作将删除对应显示样式，确认吗？');"">删除</a>";

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
@@ -13,9 +14,10 @@ namespace SiteServer.CMS.UEditor
     public static class Config
     {
         private static bool noCache = true;
-        private static JObject BuildItems()
+        private static async Task<JObject> BuildItemsAsync()
         {
-            var request = new AuthenticatedRequest();
+            var request = await AuthenticatedRequest.GetRequestAsync();
+
             if (!request.IsAdminLoggin) return new JObject();
 
                 var json = @"/* 前后端通信相关的配置,注释只允许使用多行方式 */
@@ -121,7 +123,7 @@ namespace SiteServer.CMS.UEditor
             {
                 if (noCache || _Items == null)
                 {
-                    _Items = BuildItems();
+                    _Items = BuildItemsAsync().GetAwaiter().GetResult();
                 }
                 return _Items;
             }

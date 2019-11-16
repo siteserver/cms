@@ -2,8 +2,8 @@
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Editors;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.UEditor;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {

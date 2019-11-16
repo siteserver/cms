@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -46,12 +46,12 @@ namespace SiteServer.BackgroundPages.Cms
             _relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
             _parentId = AuthRequest.GetQueryInt("ParentID");
             _level = AuthRequest.GetQueryInt("Level");
-            _totalLevel = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(_relatedFieldId).TotalLevel;
+            _totalLevel = DataProvider.RelatedFieldDao.GetRelatedFieldAsync(_relatedFieldId).GetAwaiter().GetResult().TotalLevel;
 
             if (AuthRequest.IsQueryExists("Delete") && AuthRequest.IsQueryExists("ID"))
             {
                 var id = AuthRequest.GetQueryInt("ID");
-                DataProvider.RelatedFieldItemDao.Delete(id);
+                DataProvider.RelatedFieldItemDao.DeleteAsync(id).GetAwaiter().GetResult();
                 if (_level != _totalLevel)
                 {
                     AddScript($@"parent.location.href = '{PageRelatedFieldMain.GetRedirectUrl(SiteId, _relatedFieldId, _totalLevel)}';");
@@ -63,11 +63,11 @@ namespace SiteServer.BackgroundPages.Cms
                 var isDown = AuthRequest.IsQueryExists("Down");
                 if (isDown)
                 {
-                    DataProvider.RelatedFieldItemDao.UpdateTaxisToUp(id, _parentId);
+                    DataProvider.RelatedFieldItemDao.UpdateTaxisToUpAsync(id, _parentId).GetAwaiter().GetResult();
                 }
                 else
                 {
-                    DataProvider.RelatedFieldItemDao.UpdateTaxisToDown(id, _parentId);
+                    DataProvider.RelatedFieldItemDao.UpdateTaxisToDownAsync(id, _parentId).GetAwaiter().GetResult();
                 }
             }
             else if (_level != _totalLevel)
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
             //    RptContents.Columns[1].Visible = false;
             //}
 
-            RptContents.DataSource = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(_relatedFieldId, _parentId);
+            RptContents.DataSource = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoListAsync(_relatedFieldId, _parentId).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var itemInfo = (RelatedFieldItemInfo)e.Item.DataItem;
+            var itemInfo = (RelatedFieldItem)e.Item.DataItem;
 
             var ltlItemName = (Literal)e.Item.FindControl("ltlItemName");
             var ltlItemValue = (Literal)e.Item.FindControl("ltlItemValue");

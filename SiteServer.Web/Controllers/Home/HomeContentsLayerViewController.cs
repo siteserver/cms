@@ -5,6 +5,7 @@ using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -19,14 +20,14 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
                 var contentId = request.GetQueryInt("contentId");
 
                 if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();
@@ -35,21 +36,17 @@ namespace SiteServer.API.Controllers.Home
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+                var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
-                contentInfo.Load(new
-                {
-                    CheckState =
-                        CheckManager.GetCheckState(site, contentInfo)
-                });
+                contentInfo.Set(ContentAttribute.CheckState, CheckManager.GetCheckState(site, contentInfo));
 
-                var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId);
+                var channelName = await ChannelManager.GetChannelNameNavigationAsync(siteId, channelId);
 
-                var attributes = ChannelManager.GetContentsColumns(site, channelInfo, true);
+                var attributes = await ChannelManager.GetContentsColumnsAsync(site, channelInfo, true);
 
                 return Ok(new
                 {
@@ -60,7 +57,7 @@ namespace SiteServer.API.Controllers.Home
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

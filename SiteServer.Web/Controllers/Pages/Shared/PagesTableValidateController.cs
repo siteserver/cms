@@ -15,23 +15,23 @@ namespace SiteServer.API.Controllers.Pages.Shared
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetQueryString("tableName");
                 var attributeName = request.GetQueryString("attributeName");
                 var relatedIdentities = TranslateUtils.StringCollectionToIntList(request.GetQueryString("relatedIdentities"));
 
-                var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities);
+                var style = await TableStyleManager.GetTableStyleAsync(tableName, attributeName, relatedIdentities);
 
                 var veeValidate = string.Empty;
-                if (styleInfo != null)
+                if (style != null)
                 {
-                    veeValidate = styleInfo.Additional.VeeValidate;
+                    veeValidate = style.VeeValidate;
                 }
 
                 return Ok(new
@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetPostString("tableName");
@@ -58,21 +58,21 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 var relatedIdentities = TranslateUtils.StringCollectionToIntList(request.GetPostString("relatedIdentities"));
                 var value = request.GetPostString("value");
 
-                var styleInfo =
-                    TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities);
-                styleInfo.Additional.VeeValidate = value;
+                var style =
+                    await TableStyleManager.GetTableStyleAsync(tableName, attributeName, relatedIdentities);
+                style.VeeValidate = value;
 
                 //数据库中没有此项及父项的表样式 or 数据库中没有此项的表样式，但是有父项的表样式
-                if (styleInfo.Id == 0 && styleInfo.RelatedIdentity == 0 || styleInfo.RelatedIdentity != relatedIdentities[0])
+                if (style.Id == 0 && style.RelatedIdentity == 0 || style.RelatedIdentity != relatedIdentities[0])
                 {
-                    DataProvider.TableStyleDao.Insert(styleInfo);
-                    await request.AddAdminLogAsync("添加表单显示样式", $"字段名:{styleInfo.AttributeName}");
+                    await DataProvider.TableStyleDao.InsertAsync(style);
+                    await request.AddAdminLogAsync("添加表单显示样式", $"字段名:{style.AttributeName}");
                 }
                 //数据库中有此项的表样式
                 else
                 {
-                    DataProvider.TableStyleDao.Update(styleInfo, false);
-                    await request.AddAdminLogAsync("修改表单显示样式", $"字段名:{styleInfo.AttributeName}");
+                    await DataProvider.TableStyleDao.UpdateAsync(style, false);
+                    await request.AddAdminLogAsync("修改表单显示样式", $"字段名:{style.AttributeName}");
                 }
 
                 return Ok(new{});

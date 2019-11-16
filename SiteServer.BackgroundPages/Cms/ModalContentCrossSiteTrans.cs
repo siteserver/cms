@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -47,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBoxAsync(LbChannelId, Site, psId, ChannelManager.GetChannelInfo(SiteId, _channelId), AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
+            CrossSiteTransUtility.LoadChannelIdListBoxAsync(LbChannelId, Site, psId, ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult(), AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -63,20 +64,20 @@ namespace SiteServer.BackgroundPages.Cms
                         var targetChannelId = TranslateUtils.ToInt(listItem.Value);
                         if (targetChannelId != 0)
                         {
-                            var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
-                            var targetTableName = ChannelManager.GetTableName(targetSite, targetChannelId);
+                            var targetChannelInfo = ChannelManager.GetChannelAsync(targetSiteId, targetChannelId).GetAwaiter().GetResult();
+                            var targetTableName = ChannelManager.GetTableNameAsync(targetSite, targetChannelId).GetAwaiter().GetResult();
                             foreach (var contentId in _contentIdList)
                             {
-                                var contentInfo = ContentManager.GetContentInfo(Site, _channelId, contentId);
+                                var contentInfo = ContentManager.GetContentInfoAsync(Site, _channelId, contentId).GetAwaiter().GetResult();
                                 FileUtility.MoveFileByContentInfo(Site, targetSite, contentInfo);
                                 contentInfo.SiteId = targetSiteId;
                                 contentInfo.SourceId = contentInfo.ChannelId;
                                 contentInfo.ChannelId = targetChannelId;
                                 
-                                contentInfo.IsChecked = targetSite.Additional.IsCrossSiteTransChecked;
+                                contentInfo.Checked = targetSite.IsCrossSiteTransChecked;
                                 contentInfo.CheckedLevel = 0;
 
-                                DataProvider.ContentDao.Insert(targetTableName, targetSite, targetChannelInfo, contentInfo);
+                                DataProvider.ContentDao.InsertAsync(targetTableName, targetSite, targetChannelInfo, contentInfo).GetAwaiter().GetResult();
                             }
                         }
                     }

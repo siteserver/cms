@@ -1,273 +1,114 @@
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class TableStyleDao : DataProviderBase
+    public class TableStyleDao : IRepository
     {
-        public override string TableName => "siteserver_TableStyle";
+        private readonly Repository<TableStyle> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public TableStyleDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.RelatedIdentity),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.TableName),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.AttributeName),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.Taxis),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.DisplayName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.HelpText),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.IsVisibleInList),
-                DataType = DataType.VarChar,
-                DataLength = 18
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.InputType),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.DefaultValue),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.IsHorizontal),
-                DataType = DataType.VarChar,
-                DataLength = 18
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TableStyleInfo.ExtendValues),
-                DataType = DataType.Text
-            }
-        };
+            _repository = new Repository<TableStyle>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+        }
 
-        private const string SqlSelectAllTableStyle = "SELECT Id, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM siteserver_TableStyle ORDER BY Taxis DESC, Id DESC";
+        public IDatabase Database => _repository.Database;
 
-        private const string SqlUpdateTableStyle = "UPDATE siteserver_TableStyle SET AttributeName = @AttributeName, Taxis = @Taxis, DisplayName = @DisplayName, HelpText = @HelpText, IsVisibleInList = @IsVisibleInList, InputType = @InputType, DefaultValue = @DefaultValue, IsHorizontal = @IsHorizontal, ExtendValues = @ExtendValues WHERE Id = @Id";
+        public string TableName => _repository.TableName;
 
-        private const string SqlDeleteTableStyle = "DELETE FROM siteserver_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
+        public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private const string SqlInsertTableStyle = "INSERT INTO siteserver_TableStyle (RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues) VALUES (@RelatedIdentity, @TableName, @AttributeName, @Taxis, @DisplayName, @HelpText, @IsVisibleInList, @InputType, @DefaultValue, @IsHorizontal, @ExtendValues)";
-
-        private const string ParmId = "@Id";
-        private const string ParmRelatedIdentity = "@RelatedIdentity";
-        private const string ParmTableName = "@TableName";
-        private const string ParmAttributeName = "@AttributeName";
-        private const string ParmTaxis = "@Taxis";
-        private const string ParmDisplayName = "@DisplayName";
-        private const string ParmHelpText = "@HelpText";
-        private const string ParmIsVisibleInList = "@IsVisibleInList";
-        private const string ParmInputType = "@InputType";
-        private const string ParmDefaultValue = "@DefaultValue";
-        private const string ParmIsHorizontal = "@IsHorizontal";
-        private const string ParmExtendValues = "@ExtendValues";
-
-        public int Insert(TableStyleInfo styleInfo)
+        public async Task<int> InsertAsync(TableStyle style)
         {
-            int id;
+            var styleId = await _repository.InsertAsync(style);
 
-            var insertParms = new IDataParameter[]
-			{
-				GetParameter(ParmRelatedIdentity, DataType.Integer, styleInfo.RelatedIdentity),
-                GetParameter(ParmTableName, DataType.VarChar, 50, styleInfo.TableName),
-				GetParameter(ParmAttributeName, DataType.VarChar, 50, styleInfo.AttributeName),
-                GetParameter(ParmTaxis, DataType.Integer, styleInfo.Taxis),
-                GetParameter(ParmDisplayName, DataType.VarChar, 255, styleInfo.DisplayName),
-                GetParameter(ParmHelpText, DataType.VarChar, 255, styleInfo.HelpText),
-                GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, styleInfo.IsVisibleInList.ToString()),
-				GetParameter(ParmInputType, DataType.VarChar, 50, styleInfo.InputType.Value),
-                GetParameter(ParmDefaultValue, DataType.VarChar, 255, styleInfo.DefaultValue),
-                GetParameter(ParmIsHorizontal, DataType.VarChar, 18, styleInfo.IsHorizontal.ToString()),
-                GetParameter(ParmExtendValues, DataType.Text, styleInfo.Additional.ToString())
-			};
-
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        id = ExecuteNonQueryAndReturnId(TableName, nameof(TableStyleInfo.Id), trans, SqlInsertTableStyle, insertParms);
-
-                        DataProvider.TableStyleItemDao.Insert(trans, id, styleInfo.StyleItems);
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
+            await DataProvider.TableStyleItemDao.InsertAsync(styleId, style.StyleItems);
 
             TableStyleManager.ClearCache();
 
-            return id;
+            return styleId;
         }
 
-        public void Update(TableStyleInfo info, bool deleteAndInsertStyleItems = true)
+        public async Task UpdateAsync(TableStyle style, bool deleteAndInsertStyleItems = true)
         {
-            var updateParms = new IDataParameter[]
-			{
-				GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
-                GetParameter(ParmTaxis, DataType.Integer, info.Taxis),
-                GetParameter(ParmDisplayName, DataType.VarChar, 255, info.DisplayName),
-                GetParameter(ParmHelpText, DataType.VarChar, 255, info.HelpText),
-	            GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, info.IsVisibleInList.ToString()),
-				GetParameter(ParmInputType, DataType.VarChar, 50, info.InputType.Value),
-                GetParameter(ParmDefaultValue, DataType.VarChar, 255, info.DefaultValue),
-                GetParameter(ParmIsHorizontal, DataType.VarChar, 18, info.IsHorizontal.ToString()),
-                GetParameter(ParmExtendValues, DataType.Text, info.Additional.ToString()),
-                GetParameter(ParmId, DataType.Integer, info.Id)
-			};
+            await _repository.UpdateAsync(style);
 
-            using (var conn = GetConnection())
+            if (deleteAndInsertStyleItems)
             {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        ExecuteNonQuery(trans, SqlUpdateTableStyle, updateParms);
-
-                        if (deleteAndInsertStyleItems)
-                        {
-                            DataProvider.TableStyleItemDao.DeleteAndInsertStyleItems(trans, info.Id, info.StyleItems);
-                        }
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
+                await DataProvider.TableStyleItemDao.DeleteAndInsertStyleItemsAsync(style.Id, style.StyleItems);
             }
 
             TableStyleManager.ClearCache();
         }
 
-        public void Delete(int relatedIdentity, string tableName, string attributeName)
+        public async Task DeleteAsync(int relatedIdentity, string tableName, string attributeName)
         {
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity),
-                GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
-                GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
-            };
+            var styleId = await _repository.GetAsync<int>(Q
+                .Select(nameof(TableStyle.Id))
+                .Where(nameof(TableStyle.RelatedIdentity), relatedIdentity)
+                .Where(nameof(TableStyle.TableName), tableName)
+                .Where(nameof(TableStyle.AttributeName), attributeName)
+            );
 
-            ExecuteNonQuery(SqlDeleteTableStyle, parms);
+            if (styleId > 0)
+            {
+                await _repository.DeleteAsync(styleId);
+                await DataProvider.TableStyleItemDao.DeleteAllAsync(styleId);
+            }
 
             TableStyleManager.ClearCache();
         }
 
-        public void Delete(List<int> relatedIdentities, string tableName)
+        public async Task DeleteAsync(List<int> relatedIdentities, string tableName)
         {
             if (relatedIdentities == null || relatedIdentities.Count <= 0) return;
 
-            var sqlString =
-                $"DELETE FROM siteserver_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{AttackUtils.FilterSql(tableName)}'";
-            ExecuteNonQuery(sqlString);
+            var styleIdList = await _repository.GetAllAsync<int>(Q
+                .Select(nameof(TableStyle.Id))
+                .WhereIn(nameof(TableStyle.RelatedIdentity), relatedIdentities)
+                .Where(nameof(TableStyle.TableName), tableName)
+            );
+
+            if (styleIdList != null)
+            {
+                foreach (var styleId in styleIdList)
+                {
+                    await _repository.DeleteAsync(styleId);
+                    await DataProvider.TableStyleItemDao.DeleteAllAsync(styleId);
+                }
+            }
 
             TableStyleManager.ClearCache();
         }
 
-        private TableStyleInfo GetTableStyleInfoByReader(IDataReader rdr)
+        public async Task<List<KeyValuePair<string, TableStyle>>> GetAllTableStylesAsync()
         {
-            var i = 0;
-            var id = GetInt(rdr, i++);
-            var relatedIdentity = GetInt(rdr, i++);
-            var tableName = GetString(rdr, i++);
-            var attributeName = GetString(rdr, i++);
-            var taxis = GetInt(rdr, i++);
-            var displayName = GetString(rdr, i++);
-            var helpText = GetString(rdr, i++);
-            var isVisibleInList = GetBool(rdr, i++);
-            var inputType = GetString(rdr, i++);
-            var defaultValue = GetString(rdr, i++);
-            var isHorizontal = GetBool(rdr, i++);
-            var extendValues = GetString(rdr, i);
+            var pairs = new List<KeyValuePair<string, TableStyle>>();
 
-            var styleInfo = new TableStyleInfo(id, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisibleInList, InputTypeUtils.GetEnumType(inputType), defaultValue, isHorizontal, extendValues);
+            var allItemsDict = await DataProvider.TableStyleItemDao.GetAllTableStyleItemsAsync();
 
-            return styleInfo;
-        }
+            var list = await _repository.GetAllAsync(Q
+                .OrderByDesc(nameof(TableStyle.Taxis), nameof(TableStyle.Id))
+            );
 
-        public List<KeyValuePair<string, TableStyleInfo>> GetAllTableStyles()
-        {
-            var pairs = new List<KeyValuePair<string, TableStyleInfo>>();
-
-            var allItemsDict = DataProvider.TableStyleItemDao.GetAllTableStyleItems();
-
-            using (var rdr = ExecuteReader(SqlSelectAllTableStyle))
+            foreach (var style in list)
             {
-                while (rdr.Read())
+                allItemsDict.TryGetValue(style.Id, out var items);
+                style.StyleItems = items;
+
+                var key = TableStyleManager.GetKey(style.RelatedIdentity, style.TableName, style.AttributeName);
+
+                if (pairs.All(pair => pair.Key != key))
                 {
-                    var styleInfo = GetTableStyleInfoByReader(rdr);
-
-                    allItemsDict.TryGetValue(styleInfo.Id, out var items);
-                    styleInfo.StyleItems = items;
-
-                    var key = TableStyleManager.GetKey(styleInfo.RelatedIdentity, styleInfo.TableName, styleInfo.AttributeName);
-
-                    if (pairs.All(pair => pair.Key != key))
-                    {
-                        var pair = new KeyValuePair<string, TableStyleInfo>(key, styleInfo);
-                        pairs.Add(pair);
-                    }
+                    var pair = new KeyValuePair<string, TableStyle>(key, style);
+                    pairs.Add(pair);
                 }
-                rdr.Close();
             }
 
             return pairs;

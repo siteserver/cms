@@ -1407,7 +1407,7 @@ SELECT * FROM (
             var o = Eval(dataItem, name);
             if (o == null)
             {
-                return DateUtils.SqlMinValue;
+                return Constants.SqlMinValue;
             }
             return (DateTime)o;
         }

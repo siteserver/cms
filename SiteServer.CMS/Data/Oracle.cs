@@ -34,11 +34,6 @@ namespace SiteServer.CMS.Data
             return new OracleConnection(connectionString);
         }
 
-        public IDbCommand GetCommand()
-        {
-            return new OracleCommand();
-        }
-
 
         /// <summary>
         /// Returns a SqlDataAdapter object
@@ -104,9 +99,9 @@ namespace SiteServer.CMS.Data
             {
                 parameter.DbType = DbType.DateTime;
                 var dbValue = (DateTime) value;
-                if (dbValue < DateUtils.SqlMinValue)
+                if (dbValue < Constants.SqlMinValue)
                 {
-                    dbValue = DateUtils.SqlMinValue;
+                    dbValue = Constants.SqlMinValue;
                 }
                 parameter.Value = dbValue;
             }
@@ -276,70 +271,5 @@ namespace SiteServer.CMS.Data
             return p;
         }
         #endregion
-
-        public string GetString(IDataReader rdr, int i)
-        {
-            if (i < 0 || i >= rdr.FieldCount) return string.Empty;
-            var retVal = rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
-            if (retVal == SqlUtils.OracleEmptyValue)
-            {
-                retVal = string.Empty;
-            }
-            return retVal;
-        }
-
-        public bool GetBoolean(IDataReader rdr, int i)
-        {
-            if (i < 0 || i >= rdr.FieldCount) return false;
-            return GetInt(rdr, i) == 1;
-        }
-
-        public int GetInt(IDataReader rdr, int i)
-        {
-            if (i < 0 || i >= rdr.FieldCount) return 0;
-            return rdr.IsDBNull(i) ? 0 : rdr.GetInt32(i);
-        }
-
-        public decimal GetDecimal(IDataReader rdr, int i)
-        {
-            if (i < 0 || i >= rdr.FieldCount) return 0;
-            return rdr.IsDBNull(i) ? 0 : rdr.GetDecimal(i);
-        }
-
-        public DateTime GetDateTime(IDataReader rdr, int i)
-        {
-            if (i < 0 || i >= rdr.FieldCount) return DateTime.MinValue;
-            return rdr.IsDBNull(i) ? DateTime.MinValue : rdr.GetDateTime(i);
-        }
-
-        public string GetString(IDataReader rdr, string name)
-        {
-            var i = rdr.GetOrdinal(name);
-            return GetString(rdr, i);
-        }
-
-        public bool GetBoolean(IDataReader rdr, string name)
-        {
-            var i = rdr.GetOrdinal(name);
-            return GetBoolean(rdr, i);
-        }
-
-        public int GetInt(IDataReader rdr, string name)
-        {
-            var i = rdr.GetOrdinal(name);
-            return GetInt(rdr, i);
-        }
-
-        public decimal GetDecimal(IDataReader rdr, string name)
-        {
-            var i = rdr.GetOrdinal(name);
-            return GetDecimal(rdr, i);
-        }
-
-        public DateTime GetDateTime(IDataReader rdr, string name)
-        {
-            var i = rdr.GetOrdinal(name);
-            return GetDateTime(rdr, i);
-        }
     }
 }

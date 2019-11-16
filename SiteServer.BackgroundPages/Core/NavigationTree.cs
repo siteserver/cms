@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
@@ -8,9 +10,9 @@ namespace SiteServer.BackgroundPages.Core
 {
     public static class NavigationTree
     {
-        public static string BuildNavigationTree(int siteId, string topId, List<string> permissionList)
+        public static async Task<string> BuildNavigationTreeAsync(int siteId, string topId, List<string> permissionList)
         {
-            var tabs = TabManager.GetTabList(topId, siteId);
+            var tabs = await TabManager.GetTabListAsync(topId, siteId);
             if (tabs == null || tabs.Count == 0) return string.Empty;
 
             var builder = new StringBuilder();

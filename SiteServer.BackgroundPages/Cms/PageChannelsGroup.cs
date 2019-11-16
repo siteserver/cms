@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -34,8 +35,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlChannelGroupName.Text = "栏目组：" + _nodeGroupName;
 
-            var channelInfo = ChannelManager.GetChannelInfo(SiteId, SiteId);
-            RptContents.DataSource = ChannelManager.GetChannelIdList(channelInfo, EScopeType.All, _nodeGroupName, string.Empty, string.Empty);
+            var channelInfo = ChannelManager.GetChannelAsync(SiteId, SiteId).GetAwaiter().GetResult();
+            RptContents.DataSource = ChannelManager.GetChannelIdListAsync(channelInfo, EScopeType.All, _nodeGroupName, string.Empty, string.Empty).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
             var channelId = (int)e.Item.DataItem;
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            var nodeInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
 
             if (nodeInfo == null)
             {
@@ -57,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlItemChannelIndex = (Literal)e.Item.FindControl("ltlItemChannelIndex");
             var ltlItemAddDate = (Literal)e.Item.FindControl("ltlItemAddDate");
 
-            ltlItemChannelName.Text = ChannelManager.GetChannelNameNavigation(SiteId, channelId);
+            ltlItemChannelName.Text = ChannelManager.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult();
             ltlItemChannelIndex.Text = nodeInfo.IndexName;
             ltlItemAddDate.Text = DateUtils.GetDateString(nodeInfo.AddDate);
 

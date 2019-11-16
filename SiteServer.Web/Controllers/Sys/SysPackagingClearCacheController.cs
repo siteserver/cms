@@ -1,7 +1,8 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -11,9 +12,9 @@ namespace SiteServer.API.Controllers.Sys
         private const string Route = "sys/packaging/clear/cache";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Main()
+        public async Task<IHttpActionResult> Main()
         {
-            var request = new AuthenticatedRequest();
+            var request = await AuthenticatedRequest.GetRequestAsync();
 
             if (!request.IsAdminLoggin)
             {
@@ -21,7 +22,7 @@ namespace SiteServer.API.Controllers.Sys
             }
 
             CacheUtils.ClearAll();
-            CacheDbUtils.Clear();
+            await DataProvider.DbCacheDao.ClearAsync();
 
             return Ok(new {});
         }

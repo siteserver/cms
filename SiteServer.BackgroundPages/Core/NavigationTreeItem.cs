@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Core

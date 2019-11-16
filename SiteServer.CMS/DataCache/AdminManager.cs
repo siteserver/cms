@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.DataCache
 {
@@ -307,12 +308,12 @@ namespace SiteServer.CMS.DataCache
             return administrator == null ? userName : administrator.DisplayName;
         }
 
-        public static string GetRoles(string userName)
+        public static async Task<string> GetRolesAsync(string userName)
         {
             var isConsoleAdministrator = false;
             var isSystemAdministrator = false;
             var roleNameList = new List<string>();
-            var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(userName);
+            var roles = await DataProvider.AdministratorsInRolesDao.GetRolesForUserAsync(userName);
             foreach (var role in roles)
             {
                 if (!EPredefinedRoleUtils.IsPredefinedRole(role))
@@ -353,7 +354,7 @@ namespace SiteServer.CMS.DataCache
 
         private static string GetUploadPath(params string[] paths)
         {
-            var path = PathUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Administrators, PathUtils.Combine(paths));
+            var path = WebUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Administrators, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }

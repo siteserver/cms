@@ -3,13 +3,12 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -21,31 +20,31 @@ namespace SiteServer.API.Controllers.Pages.Cms
         private const string RouteUpload = "actions/upload";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var specialId = request.GetQueryInt("specialId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId,
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
                         ConfigManager.WebSitePermissions.Template))
                 {
                     return Unauthorized();
                 }
 
-                SpecialInfo specialInfo = null;
+                Special special = null;
                 if (specialId > 0)
                 {
-                    specialInfo = SpecialManager.GetSpecialInfo(siteId, specialId);
+                    special = await SpecialManager.GetSpecialAsync(siteId, specialId);
                 }
 
                 return Ok(new
                 {
-                    Value = specialInfo,
+                    Value = special,
                     Guid = StringUtils.GetShortGuid(false),
                 });
             }
@@ -56,17 +55,17 @@ namespace SiteServer.API.Controllers.Pages.Cms
         }
 
         [HttpPost, Route(RouteUpload)]
-        public IHttpActionResult Upload()
+        public async Task<IHttpActionResult> Upload()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var guid = request.GetQueryString("guid");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId,
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
                         ConfigManager.WebSitePermissions.Template))
                 {
                     return Unauthorized();
@@ -111,7 +110,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -121,7 +120,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var guid = request.GetPostString("guid");
@@ -134,7 +133,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var site = await SiteManager.GetSiteAsync(siteId);
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId,
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
                         ConfigManager.WebSitePermissions.Template))
                 {
                     return Unauthorized();
@@ -142,17 +141,17 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 if (specialId > 0 && isEditOnly)
                 {
-                    var specialInfo = SpecialManager.GetSpecialInfo(siteId, specialId);
+                    var specialInfo = await SpecialManager.GetSpecialAsync(siteId, specialId);
                     var oldDirectoryPath = string.Empty;
                     var newDirectoryPath = string.Empty;
 
-                    if (specialInfo.Title != title && DataProvider.SpecialDao.IsTitleExists(siteId, title))
+                    if (specialInfo.Title != title && await DataProvider.SpecialDao.IsTitleExistsAsync(siteId, title))
                     {
                         return BadRequest("专题修改失败，专题名称已存在！");
                     }
                     if (specialInfo.Url != url)
                     {
-                        if (DataProvider.SpecialDao.IsUrlExists(siteId, url))
+                        if (await DataProvider.SpecialDao.IsUrlExistsAsync(siteId, url))
                         {
                             return BadRequest("专题修改失败，专题访问地址已存在！");
                         }
@@ -163,7 +162,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     specialInfo.Title = title;
                     specialInfo.Url = url;
-                    DataProvider.SpecialDao.Update(specialInfo);
+                    await DataProvider.SpecialDao.UpdateAsync(specialInfo);
 
                     if (oldDirectoryPath != newDirectoryPath)
                     {
@@ -172,7 +171,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 }
                 else if (specialId > 0 && isUploadOnly)
                 {
-                    var specialInfo = SpecialManager.GetSpecialInfo(siteId, specialId);
+                    var specialInfo = await SpecialManager.GetSpecialAsync(siteId, specialId);
 
                     var directoryPath = SpecialManager.GetSpecialDirectoryPath(site, specialInfo.Url);
                     var srcDirectoryPath = SpecialManager.GetSpecialSrcDirectoryPath(directoryPath);
@@ -198,11 +197,11 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 }
                 else if (specialId == 0)
                 {
-                    if (DataProvider.SpecialDao.IsTitleExists(siteId, title))
+                    if (await DataProvider.SpecialDao.IsTitleExistsAsync(siteId, title))
                     {
                         return BadRequest("专题添加失败，专题名称已存在！");
                     }
-                    if (DataProvider.SpecialDao.IsUrlExists(siteId, url))
+                    if (await DataProvider.SpecialDao.IsUrlExistsAsync(siteId, url))
                     {
                         return BadRequest("专题添加失败，专题访问地址已存在！");
                     }
@@ -229,7 +228,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     DirectoryUtils.Copy(srcDirectoryPath, directoryPath);
 
-                    specialId = DataProvider.SpecialDao.Insert(new SpecialInfo
+                    specialId = await DataProvider.SpecialDao.InsertAsync(new Special
                     {
                         Id = 0,
                         SiteId = siteId,
@@ -241,7 +240,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     await request.AddSiteLogAsync(siteId, "新建专题", $"专题名称:{title}");
                 }
 
-                CreateManager.CreateSpecial(siteId, specialId);
+                await CreateManager.CreateSpecialAsync(siteId, specialId);
 
                 return Ok(new
                 {

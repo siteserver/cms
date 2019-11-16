@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -43,10 +44,10 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 for (var num = 0; num < taxisNum; num++)
                 {
-                    DataProvider.ChannelDao.UpdateTaxis(SiteId, channelId, isSubtract);
+                    DataProvider.ChannelDao.UpdateTaxisAsync(SiteId, channelId, isSubtract).GetAwaiter().GetResult();
                 }
 
-                AuthRequest.AddSiteLogAsync(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"), $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}").GetAwaiter().GetResult();
+                AuthRequest.AddSiteLogAsync(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"), $"栏目:{ChannelManager.GetChannelNameAsync(SiteId, channelId).GetAwaiter().GetResult()}").GetAwaiter().GetResult();
             }
             LayerUtils.Close(Page);
         }

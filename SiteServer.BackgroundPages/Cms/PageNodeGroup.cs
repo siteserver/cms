@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 			
 				try
 				{
-                    DataProvider.ChannelGroupDao.Delete(SiteId, groupName);
+                    DataProvider.ChannelGroupDao.DeleteAsync(SiteId, groupName).GetAwaiter().GetResult();
 
                     AuthRequest.AddSiteLogAsync(SiteId, "删除栏目组", $"栏目组:{groupName}").GetAwaiter().GetResult();
 				}
@@ -46,10 +46,10 @@ namespace SiteServer.BackgroundPages.Cms
                 switch (direction.ToUpper())
                 {
                     case "UP":
-                        DataProvider.ChannelGroupDao.UpdateTaxisToUp(SiteId, groupName);
+                        DataProvider.ChannelGroupDao.UpdateTaxisToUpAsync(SiteId, groupName).GetAwaiter().GetResult();
                         break;
                     case "DOWN":
-                        DataProvider.ChannelGroupDao.UpdateTaxisToDown(SiteId, groupName);
+                        DataProvider.ChannelGroupDao.UpdateTaxisToDownAsync(SiteId, groupName).GetAwaiter().GetResult();
                         break;
                 }
                 AddWaitAndRedirectScript(GetRedirectUrl(SiteId));
@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);    
 
-            RptContents.DataSource = ChannelGroupManager.GetChannelGroupInfoList(SiteId);
+            RptContents.DataSource = ChannelGroupManager.GetChannelGroupListAsync(SiteId).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var groupInfo = (ChannelGroupInfo)e.Item.DataItem;
+            var groupInfo = (ChannelGroup)e.Item.DataItem;
 
             var ltlNodeGroupName = (Literal)e.Item.FindControl("ltlNodeGroupName");
             var ltlDescription = (Literal)e.Item.FindControl("ltlDescription");

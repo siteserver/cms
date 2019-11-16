@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
@@ -12,28 +14,28 @@ namespace SiteServer.API.Controllers.Sys
     public class SysStlActionsRelatedFieldController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsRelatedField.Route)]
-        public void Main(int siteId)
+        public async Task Main(int siteId)
         {
-            var request = new AuthenticatedRequest();
+            var request = await AuthenticatedRequest.GetRequestAsync();
 
             var callback = request.GetQueryString("callback");
             var relatedFieldId = request.GetQueryInt("relatedFieldId");
             var parentId = request.GetQueryInt("parentId");
-            var jsonString = GetRelatedField(relatedFieldId, parentId);
+            var jsonString = await GetRelatedFieldAsync(relatedFieldId, parentId);
             var call = callback + "(" + jsonString + ")";
 
             HttpContext.Current.Response.Write(call);
             HttpContext.Current.Response.End();
         }
 
-        private string GetRelatedField(int relatedFieldId, int parentId)
+        private async Task<string> GetRelatedFieldAsync(int relatedFieldId, int parentId)
         {
             var jsonString = new StringBuilder();
 
             jsonString.Append("[");
 
-            var list = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(relatedFieldId, parentId);
-            if (list.Count > 0)
+            var list = await DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoListAsync(relatedFieldId, parentId);
+            if (list.Any())
             {
                 foreach (var itemInfo in list)
                 {

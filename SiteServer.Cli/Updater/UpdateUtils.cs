@@ -7,7 +7,6 @@ using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater.Tables;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 using TableInfo = SiteServer.Cli.Core.TableInfo;
@@ -139,10 +138,10 @@ namespace SiteServer.Cli.Updater
                     foreach (var row in oldRows)
                     {
                         var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
-                        if (dict.ContainsKey(nameof(SiteInfo.Id)))
+                        if (dict.ContainsKey(nameof(Site.Id)))
                         {
-                            var siteId = Convert.ToInt32(dict[nameof(SiteInfo.Id)]);
-                            dict[nameof(SiteInfo.TableName)] = ContentDao.GetContentTableName(siteId);
+                            var siteId = Convert.ToInt32(dict[nameof(Site.Id)]);
+                            dict[nameof(Site.TableName)] = ContentDao.GetContentTableName(siteId);
                         }
 
                         newRows.Add(dict);

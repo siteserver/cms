@@ -108,14 +108,14 @@ namespace SiteServer.Cli.Jobs
 
             if (!_dataOnly)
             {
-                if (!SystemManager.IsNeedInstall())
+                if (!await SystemManager.IsNeedInstallAsync())
                 {
                     await CliUtils.PrintErrorAsync("数据无法在已安装系统的数据库中恢复，命令执行失败");
                     return;
                 }
 
                 // 恢复前先创建表，确保系统在恢复的数据库中能够使用
-                SystemManager.CreateSiteServerTables();
+                await SystemManager.CreateSiteServerTablesAsync();
             }
 
             await CliUtils.PrintRowLineAsync();
@@ -163,7 +163,9 @@ namespace SiteServer.Cli.Jobs
                         DataProvider.DatabaseDao.DropTable(tableName);
                     }
 
-                    if (!DataProvider.DatabaseDao.CreateTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
+                    var (success, ex, sqlString) =
+                        await DataProvider.DatabaseDao.CreateTableAsync(tableName, tableInfo.Columns);
+                    if (!success)
                     {
                         await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                         {
@@ -231,7 +233,7 @@ namespace SiteServer.Cli.Jobs
             {
                 // 恢复后同步表，确保内容辅助表字段与系统一致
                 await SystemManager.SyncContentTablesAsync();
-                SystemManager.UpdateConfigVersion();
+                await SystemManager.UpdateConfigVersionAsync();
             }
         }
     }

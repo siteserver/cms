@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
@@ -27,7 +29,7 @@ namespace SiteServer.CMS.Core
         {
             var list = new List<Tab>();
 
-            var menuPath = PathUtils.GetMenusPath("Top.config");
+            var menuPath = WebUtils.GetMenusPath("Top.config");
             if (!FileUtils.IsFileExists(menuPath)) return list;
 
             var tabs = GetTabs(menuPath);
@@ -43,7 +45,7 @@ namespace SiteServer.CMS.Core
 	    {
 	        var list = new List<Tab>();
 
-	        var menuPath = PathUtils.GetMenusPath("Top.config");
+	        var menuPath = WebUtils.GetMenusPath("Top.config");
 	        if (!FileUtils.IsFileExists(menuPath)) return list;
 
 	        var tabs = GetTabs(menuPath);
@@ -104,13 +106,13 @@ namespace SiteServer.CMS.Core
             return tab;
         }
 
-        public static List<Tab> GetTabList(string topId, int siteId)
+        public static async Task<List<Tab>> GetTabListAsync(string topId, int siteId)
         {
             var tabs = new List<Tab>();
 
             if (!string.IsNullOrEmpty(topId))
             {
-                var filePath = PathUtils.GetMenusPath($"{topId}.config");
+                var filePath = WebUtils.GetMenusPath($"{topId}.config");
                 var tabCollection = GetTabs(filePath);
                 if (tabCollection?.Tabs != null)
                 {
@@ -124,7 +126,7 @@ namespace SiteServer.CMS.Core
             var menus = new List<PluginMenu>();
             if (siteId > 0 && topId == string.Empty)
             {
-                var siteMenus = PluginMenuManager.GetSiteMenus(siteId);
+                var siteMenus = await PluginMenuManager.GetSiteMenusAsync(siteId);
                 if (siteMenus != null)
                 {
                     menus.AddRange(siteMenus);
@@ -132,7 +134,7 @@ namespace SiteServer.CMS.Core
             }
             else if (topId == "Plugins")
             {
-                var topMenus = PluginMenuManager.GetTopMenus();
+                var topMenus = await PluginMenuManager.GetTopMenusAsync();
                 if (topMenus != null)
                 {
                     menus.AddRange(topMenus);

@@ -2,16 +2,17 @@
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Utils.Enumerations;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -53,7 +54,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string ThemeStyle4 = "Style4";
 
         //对“flash滚动焦点图”（stl:focusViewer）元素进行解析
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
         {
             // 如果是实体标签则返回空
             if (contextInfo.IsStlEntity)
@@ -111,23 +112,23 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannel))
                 {
-                    groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupChannel = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannelNot))
                 {
-                    groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupChannelNot = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContent))
                 {
-                    groupContent = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupContent = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContentNot))
                 {
-                    groupContentNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupContentNot = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeTags))
                 {
-                    tags = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    tags = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
                 {
@@ -207,16 +208,16 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImplAsync(pageInfo, contextInfo, genericControl, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, where, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor).GetAwaiter().GetResult();
+            return await ParseImplAsync(pageInfo, contextInfo, genericControl, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, where, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
         }
 
         private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, HtmlGenericControl genericControl, string channelIndex, string channelName, EScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, string where, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
         {
             var parsedContent = string.Empty;
 
-            var channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
+            var channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
 
-            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = await StlDataUtility.GetMinContentInfoListAsync(pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
 
             if (minContentInfoList != null)
             {
@@ -230,14 +231,14 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.ImageUrl;
+                        var contentInfo = await ContentManager.GetContentInfoAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
+                        var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
                             {
-                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(WebUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
                                 imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
@@ -317,14 +318,14 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+                        var contentInfo = await ContentManager.GetContentInfoAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
+                        var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
                             {
-                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(WebUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
                                 imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
@@ -378,8 +379,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+                        var contentInfo = await ContentManager.GetContentInfoAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
+                        var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
@@ -497,8 +498,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.ImageUrl;
+                        var contentInfo = await ContentManager.GetContentInfoAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
+                        var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
@@ -506,7 +507,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             //||contentInfo.ImageUrl.ToLower().EndsWith(".png")||contentInfo.ImageUrl.ToLower().EndsWith(".pneg")
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg"))
                             {
-                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(WebUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
                                 imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }

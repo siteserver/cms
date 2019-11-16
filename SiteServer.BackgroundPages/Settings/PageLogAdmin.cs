@@ -4,10 +4,10 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -33,11 +33,13 @@ namespace SiteServer.BackgroundPages.Settings
 
             SpContents.SelectCommand = !AuthRequest.IsQueryExists("Keyword") ? DataProvider.LogDao.GetSelectCommend() : DataProvider.LogDao.GetSelectCommend(AuthRequest.GetQueryString("UserName"), AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"));
 
-            SpContents.SortField = nameof(LogInfo.Id);
+            SpContents.SortField = nameof(Log.Id);
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             if (IsPostBack) return;
+
+            var config = ConfigManager.GetInstanceAsync().GetAwaiter().GetResult();
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Log);
 
@@ -54,7 +56,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var arraylist = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("IDCollection"));
                 try
                 {
-                    DataProvider.LogDao.Delete(arraylist);
+                    DataProvider.LogDao.DeleteAsync(arraylist).GetAwaiter().GetResult();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -64,14 +66,14 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else if (AuthRequest.IsQueryExists("DeleteAll"))
             {
-                DataProvider.LogDao.DeleteAll();
+                DataProvider.LogDao.DeleteAllAsync().GetAwaiter().GetResult();
                 SuccessDeleteMessage();
             }
             else if (AuthRequest.IsQueryExists("Setting"))
             {
-                ConfigManager.SystemConfigInfo.IsLogAdmin = !ConfigManager.SystemConfigInfo.IsLogAdmin;
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
-                SuccessMessage($"成功{(ConfigManager.SystemConfigInfo.IsLogAdmin ? "启用" : "禁用")}日志记录");
+                config.IsLogAdmin = !config.IsLogAdmin;
+                DataProvider.ConfigDao.UpdateAsync(config).GetAwaiter().GetResult();
+                SuccessMessage($"成功{(config.IsLogAdmin ? "启用" : "禁用")}日志记录");
             }
 
             BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
@@ -86,7 +88,7 @@ namespace SiteServer.BackgroundPages.Settings
                         {"DeleteAll", "True"}
                     })));
 
-            if (ConfigManager.SystemConfigInfo.IsLogAdmin)
+            if (config.IsLogAdmin)
             {
                 BtnSetting.Text = "禁用管理员日志";
                 BtnSetting.Attributes.Add("onclick",
@@ -121,11 +123,11 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlAction = (Literal)e.Item.FindControl("ltlAction");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
-            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.UserName));
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(LogInfo.AddDate)));
-            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.IpAddress));
-            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.Action));
-            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.Summary));
+            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(Log.UserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(Log.AddDate)));
+            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(Log.IpAddress));
+            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(Log.Action));
+            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(Log.Summary));
         }
 
         public void Search_OnClick(object sender, EventArgs e)

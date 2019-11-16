@@ -4,58 +4,48 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Auth;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Model.Mappings;
 using SqlKata;
 
 namespace SiteServer.CMS.Provider
 {
-    public class UserDao : DataProviderBase
+    public class UserDao : DataProviderBase, IRepository
     {
-        private readonly Repository<UserInfo> _repository;
+        private readonly Repository<User> _repository;
 
         public UserDao()
         {
-            _repository = new Repository<UserInfo>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            _repository = new Repository<User>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public override string TableName => _repository.TableName;
-        public override List<TableColumn> TableColumns => _repository.TableColumns;
+        public IDatabase Database => _repository.Database;
 
-        private static User ToDto(UserInfo userInfo)
-        {
-            return MapperManager.MapTo<User>(userInfo);
-        }
-
-        private static UserInfo ToDb(User user)
-        {
-            return MapperManager.MapTo<UserInfo>(user);
-        }
+        public string TableName => _repository.TableName;
+        public List<TableColumn> TableColumns => _repository.TableColumns;
 
         private async Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string email, string mobile, string password, string ipAddress)
         {
-            if (!UserManager.IsIpAddressCached(ipAddress))
+            var config = await ConfigManager.GetInstanceAsync();
+            if (!await UserManager.IsIpAddressCachedAsync(ipAddress))
             {
-                return (false, $"同一IP在{ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes}分钟内只能注册一次");
+                return (false, $"同一IP在{config.UserRegistrationMinMinutes}分钟内只能注册一次");
             }
             if (string.IsNullOrEmpty(password))
             {
                 return (false, "密码不能为空");
             }
-            if (password.Length < ConfigManager.SystemConfigInfo.UserPasswordMinLength)
+            if (password.Length < config.UserPasswordMinLength)
             {
-                return (false, $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.UserPasswordMinLength}");
+                return (false, $"密码长度必须大于等于{config.UserPasswordMinLength}");
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.UserPasswordRestriction))
+            if (!EUserPasswordRestrictionUtils.IsValid(password, config.UserPasswordRestriction))
             {
-                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}");
+                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(config.UserPasswordRestriction))}");
             }
             if (string.IsNullOrEmpty(userName))
             {
@@ -135,14 +125,15 @@ namespace SiteServer.CMS.Provider
 
         public async Task<(int UserId, string ErrorMessage)> InsertAsync(User user, string password, string ipAddress)
         {
-            if (!ConfigManager.SystemConfigInfo.IsUserRegistrationAllowed)
+            var config = await ConfigManager.GetInstanceAsync();
+            if (!config.IsUserRegistrationAllowed)
             {
                 return (0, "对不起，系统已禁止新用户注册！");
             }
 
             try
             {
-                user.Checked = ConfigManager.SystemConfigInfo.IsUserRegistrationChecked;
+                user.Checked = config.IsUserRegistrationChecked;
                 if (StringUtils.IsMobile(user.UserName) && string.IsNullOrEmpty(user.Mobile))
                 {
                     user.Mobile = user.UserName;
@@ -162,7 +153,7 @@ namespace SiteServer.CMS.Provider
 
                 user.Id = await InsertWithoutValidationAsync(user, password, EPasswordFormat.Encrypted, passwordSalt);
 
-                UserManager.CacheIpAddress(ipAddress);
+                await UserManager.CacheIpAddressAsync(ipAddress);
 
                 return (user.Id, string.Empty);
             }
@@ -178,36 +169,31 @@ namespace SiteServer.CMS.Provider
             user.LastActivityDate = DateTime.Now;
             user.LastResetPasswordDate = DateTime.Now;
 
-            var userInfo = ToDb(user);
-            userInfo.Password = password;
-            userInfo.PasswordFormat = EPasswordFormatUtils.GetValue(passwordFormat);
-            userInfo.PasswordSalt = passwordSalt;
+            user.Password = password;
+            user.PasswordFormat = EPasswordFormatUtils.GetValue(passwordFormat);
+            user.PasswordSalt = passwordSalt;
 
-            user.Id = await _repository.InsertAsync(ToDb(user));
+            user.Id = await _repository.InsertAsync(user);
 
             return user.Id;
         }
 
-        public static bool IsPasswordCorrect(string password, out string errorMessage)
+        public static async Task<(bool Valid, string ErrorMessage)> IsPasswordCorrectAsync(string password)
         {
-            errorMessage = null;
+            var config = await ConfigManager.GetInstanceAsync();
             if (string.IsNullOrEmpty(password))
             {
-                errorMessage = "密码不能为空";
-                return false;
+                return (false, "密码不能为空");
             }
-            if (password.Length < ConfigManager.SystemConfigInfo.UserPasswordMinLength)
+            if (password.Length < config.UserPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.UserPasswordMinLength}";
-                return false;
+                return (false, $"密码长度必须大于等于{config.UserPasswordMinLength}");
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.UserPasswordRestriction))
+            if (!EUserPasswordRestrictionUtils.IsValid(password, config.UserPasswordRestriction))
             {
-                errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}";
-                return false;
+                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(config.UserPasswordRestriction))}");
             }
-            return true;
+            return (true, string.Empty);
         }
 
         public async Task<(User User, string ErrorMessage)> UpdateAsync(User user, Dictionary<string, object> body)
@@ -218,7 +204,10 @@ namespace SiteServer.CMS.Provider
                 return (null, valid.ErrorMessage);
             }
 
-            user.Load(body);
+            foreach (var o in body)
+            {
+                user.Set(o.Key, o.Value);
+            }
 
             await UpdateAsync(user);
 
@@ -229,13 +218,13 @@ namespace SiteServer.CMS.Provider
         {
             if (user == null) return;
 
-            var userInfoDb = await _repository.GetAsync(user.Id);
-            var userInfo = ToDb(user);
-            userInfo.Password = userInfoDb.Password;
-            userInfo.PasswordFormat = userInfoDb.PasswordFormat;
-            userInfo.PasswordSalt = userInfoDb.PasswordSalt;
+            var userEntityDb = await _repository.GetAsync(user.Id);
 
-            await _repository.UpdateAsync(userInfo);
+            user.Password = userEntityDb.Password;
+            user.PasswordFormat = userEntityDb.PasswordFormat;
+            user.PasswordSalt = userEntityDb.PasswordSalt;
+
+            await _repository.UpdateAsync(user);
 
             UserManager.UpdateCache(user);
         }
@@ -248,9 +237,9 @@ namespace SiteServer.CMS.Provider
             user.CountOfFailedLogin += 1;
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(UserInfo.LastActivityDate), user.LastActivityDate)
-                .Set(nameof(UserInfo.CountOfFailedLogin), user.CountOfFailedLogin)
-                .Where(nameof(UserInfo.Id), user.Id)
+                .Set(nameof(User.LastActivityDate), user.LastActivityDate)
+                .Set(nameof(User.CountOfFailedLogin), user.CountOfFailedLogin)
+                .Where(nameof(User.Id), user.Id)
             );
 
             UserManager.UpdateCache(user);
@@ -265,10 +254,10 @@ namespace SiteServer.CMS.Provider
             user.CountOfFailedLogin = 0;
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(UserInfo.LastActivityDate), user.LastActivityDate)
-                .Set(nameof(UserInfo.CountOfLogin), user.CountOfLogin)
-                .Set(nameof(UserInfo.CountOfFailedLogin), user.CountOfFailedLogin)
-                .Where(nameof(UserInfo.Id), user.Id)
+                .Set(nameof(User.LastActivityDate), user.LastActivityDate)
+                .Set(nameof(User.CountOfLogin), user.CountOfLogin)
+                .Set(nameof(User.CountOfFailedLogin), user.CountOfFailedLogin)
+                .Where(nameof(User.Id), user.Id)
             );
 
             UserManager.UpdateCache(user);
@@ -343,13 +332,14 @@ namespace SiteServer.CMS.Provider
 
         public async Task<(bool IsValid, string ErrorMessage)> ChangePasswordAsync(string userName, string password)
         {
-            if (password.Length < ConfigManager.SystemConfigInfo.UserPasswordMinLength)
+            var config = await ConfigManager.GetInstanceAsync();
+            if (password.Length < config.UserPasswordMinLength)
             {
-                return (false, $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.UserPasswordMinLength}");
+                return (false, $"密码长度必须大于等于{config.UserPasswordMinLength}");
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.UserPasswordRestriction))
+            if (!EUserPasswordRestrictionUtils.IsValid(password, config.UserPasswordRestriction))
             {
-                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}");
+                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(config.UserPasswordRestriction))}");
             }
 
             var passwordSalt = GenerateSalt();
@@ -366,14 +356,14 @@ namespace SiteServer.CMS.Provider
             user.LastResetPasswordDate = DateTime.Now;
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(UserInfo.Password), password)
-                .Set(nameof(UserInfo.PasswordFormat), EPasswordFormatUtils.GetValue(passwordFormat))
-                .Set(nameof(UserInfo.PasswordSalt), passwordSalt)
-                .Set(nameof(UserInfo.LastResetPasswordDate), user.LastResetPasswordDate)
-                .Where(nameof(UserInfo.Id), user.Id)
+                .Set(nameof(User.Password), password)
+                .Set(nameof(User.PasswordFormat), EPasswordFormatUtils.GetValue(passwordFormat))
+                .Set(nameof(User.PasswordSalt), passwordSalt)
+                .Set(nameof(User.LastResetPasswordDate), user.LastResetPasswordDate)
+                .Where(nameof(User.Id), user.Id)
             );
 
-            LogUtils.AddUserLog(userName, "修改密码", string.Empty);
+            await LogUtils.AddUserLogAsync(userName, "修改密码", string.Empty);
 
             UserManager.UpdateCache(user);
         }
@@ -381,8 +371,8 @@ namespace SiteServer.CMS.Provider
         public async Task CheckAsync(List<int> idList)
         {
             await _repository.UpdateAsync(Q
-                .Set(nameof(UserInfo.IsChecked), true.ToString())
-                .WhereIn(nameof(UserInfo.Id), idList)
+                .Set(nameof(User.IsChecked), true.ToString())
+                .WhereIn(nameof(User.Id), idList)
             );
 
             UserManager.ClearCache();
@@ -391,8 +381,8 @@ namespace SiteServer.CMS.Provider
         public async Task LockAsync(List<int> idList)
         {
             await _repository.UpdateAsync(Q
-                .Set(nameof(UserInfo.IsLockedOut), true.ToString())
-                .WhereIn(nameof(UserInfo.Id), idList)
+                .Set(nameof(User.IsLockedOut), true.ToString())
+                .WhereIn(nameof(User.Id), idList)
             );
 
             UserManager.ClearCache();
@@ -401,9 +391,9 @@ namespace SiteServer.CMS.Provider
         public async Task UnLockAsync(List<int> idList)
         {
             await _repository.UpdateAsync(Q
-                .Set(nameof(UserInfo.IsLockedOut), false.ToString())
-                .Set(nameof(UserInfo.CountOfFailedLogin), 0)
-                .WhereIn(nameof(UserInfo.Id), idList)
+                .Set(nameof(User.IsLockedOut), false.ToString())
+                .Set(nameof(User.CountOfFailedLogin), 0)
+                .WhereIn(nameof(User.Id), idList)
             );
 
             UserManager.ClearCache();
@@ -411,8 +401,8 @@ namespace SiteServer.CMS.Provider
 
         private async Task<User> GetByAccountAsync(string account)
         {
-            var userInfo = await GetByUserNameAsync(account);
-            if (userInfo != null) return userInfo;
+            var userEntity = await GetByUserNameAsync(account);
+            if (userEntity != null) return userEntity;
             if (StringUtils.IsMobile(account)) return await GetByMobileAsync(account);
             if (StringUtils.IsEmail(account)) return await GetByEmailAsync(account);
 
@@ -423,10 +413,8 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(userName)) return null;
 
-            var userInfo = await _repository.GetAsync(Q.Where(nameof(User.UserName), userName));
-            if (userInfo == null) return null;
-
-            var user = ToDto(userInfo);
+            var user = await _repository.GetAsync(Q.Where(nameof(User.UserName), userName));
+            if (user == null) return null;
 
             UserManager.UpdateCache(user);
 
@@ -437,10 +425,8 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(email)) return null;
 
-            var userInfo = await _repository.GetAsync(Q.Where(nameof(User.Email), email));
-            if (userInfo == null) return null;
-
-            var user = ToDto(userInfo);
+            var user = await _repository.GetAsync(Q.Where(nameof(User.Email), email));
+            if (user == null) return null;
 
             UserManager.UpdateCache(user);
 
@@ -451,10 +437,8 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(mobile)) return null;
 
-            var userInfo = await _repository.GetAsync(Q.Where(nameof(User.Mobile), mobile));
-            if (userInfo == null) return null;
-
-            var user = ToDto(userInfo);
+            var user = await _repository.GetAsync(Q.Where(nameof(User.Mobile), mobile));
+            if (user == null) return null;
 
             UserManager.UpdateCache(user);
 
@@ -465,10 +449,8 @@ namespace SiteServer.CMS.Provider
         {
             if (id <= 0) return null;
 
-            var userInfo = await _repository.GetAsync(id);
-            if (userInfo == null) return null;
-
-            var user = ToDto(userInfo);
+            var user = await _repository.GetAsync(id);
+            if (user == null) return null;
 
             UserManager.UpdateCache(user);
 
@@ -479,7 +461,7 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(userName)) return false;
 
-            return await _repository.ExistsAsync(Q.Where(nameof(UserInfo.UserName), userName));
+            return await _repository.ExistsAsync(Q.Where(nameof(User.UserName), userName));
         }
 
         private static bool IsUserNameCompliant(string userName)
@@ -498,7 +480,7 @@ namespace SiteServer.CMS.Provider
             var exists = await IsUserNameExistsAsync(email);
             if (exists) return true;
 
-            return await _repository.ExistsAsync(Q.Where(nameof(UserInfo.Email), email));
+            return await _repository.ExistsAsync(Q.Where(nameof(User.Email), email));
         }
 
         public async Task<bool> IsMobileExistsAsync(string mobile)
@@ -508,14 +490,14 @@ namespace SiteServer.CMS.Provider
             var exists = await IsUserNameExistsAsync(mobile);
             if (exists) return true;
 
-            return await _repository.ExistsAsync(Q.Where(nameof(UserInfo.Mobile), mobile));
+            return await _repository.ExistsAsync(Q.Where(nameof(User.Mobile), mobile));
         }
 
         public async Task<IEnumerable<int>> GetIdListAsync(bool isChecked)
         {
             return await _repository.GetAllAsync<int>(Q
-                .Where(nameof(UserInfo.IsChecked), isChecked.ToString())
-                .OrderByDesc(nameof(UserInfo.Id))
+                .Where(nameof(User.IsChecked), isChecked.ToString())
+                .OrderByDesc(nameof(User.Id))
             );
         }
 
@@ -557,11 +539,13 @@ namespace SiteServer.CMS.Provider
                 return (null, user.UserName, "此账号被锁定，无法登录");
             }
 
-            if (ConfigManager.SystemConfigInfo.IsUserLockLogin)
+            var config = await ConfigManager.GetInstanceAsync();
+
+            if (config.IsUserLockLogin)
             {
-                if (user.CountOfFailedLogin > 0 && user.CountOfFailedLogin >= ConfigManager.SystemConfigInfo.UserLockLoginCount)
+                if (user.CountOfFailedLogin > 0 && user.CountOfFailedLogin >= config.UserLockLoginCount)
                 {
-                    var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserLockLoginType);
+                    var lockType = EUserLockTypeUtils.GetEnumType(config.UserLockLoginType);
                     if (lockType == EUserLockType.Forever)
                     {
                         return (null, user.UserName, "此账号错误登录次数过多，已被永久锁定");
@@ -569,7 +553,7 @@ namespace SiteServer.CMS.Provider
                     if (lockType == EUserLockType.Hours && user.LastActivityDate.HasValue)
                     {
                         var ts = new TimeSpan(DateTime.Now.Ticks - user.LastActivityDate.Value.Ticks);
-                        var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.UserLockLoginHours - ts.TotalHours);
+                        var hours = Convert.ToInt32(config.UserLockLoginHours - ts.TotalHours);
                         if (hours > 0)
                         {
                             return (null, user.UserName, $"此账号错误登录次数过多，已被锁定，请等待{hours}小时后重试");
@@ -578,12 +562,12 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            var userInfo = await _repository.GetAsync(user.Id);
+            var userEntity = await _repository.GetAsync(user.Id);
 
-            if (!CheckPassword(password, isPasswordMd5, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
+            if (!CheckPassword(password, isPasswordMd5, userEntity.Password, EPasswordFormatUtils.GetEnumType(userEntity.PasswordFormat), userEntity.PasswordSalt))
             {
                 await DataProvider.UserDao.UpdateLastActivityDateAndCountOfFailedLoginAsync(user);
-                LogUtils.AddUserLog(userInfo.UserName, "用户登录失败", "帐号或密码错误");
+                await LogUtils.AddUserLogAsync(userEntity.UserName, "用户登录失败", "帐号或密码错误");
                 return (null, user.UserName, "帐号或密码错误");
             }
 
@@ -675,26 +659,26 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
             if (state != ETriState.All)
             {
-                query.Where(nameof(UserInfo.IsChecked), state.ToString());
+                query.Where(nameof(User.IsChecked), state.ToString());
             }
 
             if (dayOfLastActivity > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
-                query.WhereDate(nameof(UserInfo.LastActivityDate), ">=", dateTime);
+                query.WhereDate(nameof(User.LastActivityDate), ">=", dateTime);
             }
 
             if (groupId > -1)
             {
                 if (groupId > 0)
                 {
-                    query.Where(nameof(UserInfo.GroupId), groupId);
+                    query.Where(nameof(User.GroupId), groupId);
                 }
                 else
                 {
                     query.Where(q => q
-                        .Where(nameof(UserInfo.GroupId), 0)
-                        .OrWhereNull(nameof(UserInfo.GroupId))
+                        .Where(nameof(User.GroupId), 0)
+                        .OrWhereNull(nameof(User.GroupId))
                     );
                 }
             }
@@ -703,18 +687,18 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             {
                 var like = $"%{keyword}%";
                 query.Where(q => q
-                    .WhereLike(nameof(UserInfo.UserName), like)
-                    .OrWhereLike(nameof(UserInfo.Email), like)
-                    .OrWhereLike(nameof(UserInfo.Mobile), like)
-                    .OrWhereLike(nameof(UserInfo.DisplayName), like)
+                    .WhereLike(nameof(User.UserName), like)
+                    .OrWhereLike(nameof(User.Email), like)
+                    .OrWhereLike(nameof(User.Mobile), like)
+                    .OrWhereLike(nameof(User.DisplayName), like)
                 );
             }
 
             if (!string.IsNullOrEmpty(order))
             {
-                if (StringUtils.EqualsIgnoreCase(order, nameof(UserInfo.UserName)))
+                if (StringUtils.EqualsIgnoreCase(order, nameof(User.UserName)))
                 {
-                    query.OrderBy(nameof(UserInfo.UserName));
+                    query.OrderBy(nameof(User.UserName));
                 }
                 else
                 {
@@ -723,7 +707,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             }
             else
             {
-                query.OrderByDesc(nameof(UserInfo.Id));
+                query.OrderByDesc(nameof(User.Id));
             }
 
             return query;

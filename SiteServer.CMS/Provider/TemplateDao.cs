@@ -1,199 +1,91 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
-    public class TemplateDao : DataProviderBase
+    public class TemplateDao : DataProviderBase, IRepository
     {
-        public override string TableName => "siteserver_Template";
+        private readonly Repository<Template> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public TemplateDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateInfo.SiteId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateInfo.TemplateName),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateInfo.TemplateType),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateInfo.RelatedFileName),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateInfo.CreatedFileFullName),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateInfo.CreatedFileExtName),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateInfo.Charset),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateInfo.IsDefault),
-                DataType = DataType.VarChar,
-                DataLength = 18
-            }
-        };
+            _repository = new Repository<Template>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+        }
 
-        private const string SqlSelectTemplateByTemplateName = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType AND TemplateName = @TemplateName";
+        public IDatabase Database => _repository.Database;
 
-        private const string SqlSelectAllTemplateByType = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType ORDER BY RelatedFileName";
+        public string TableName => _repository.TableName;
 
-        private const string SqlSelectAllIdByType = "SELECT Id FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType ORDER BY RelatedFileName";
+        public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private const string SqlSelectAllTemplateBySiteId = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = @SiteId ORDER BY TemplateType, RelatedFileName";
 
-        private const string SqlSelectTemplateNames = "SELECT TemplateName FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType";
+        private const string SqlSelectAllTemplateByType = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, Default FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType ORDER BY RelatedFileName";
 
-        private const string SqlSelectTemplateCount = "SELECT TemplateType, COUNT(*) FROM siteserver_Template WHERE SiteId = @SiteId GROUP BY TemplateType";
+        private const string SqlSelectAllTemplateBySiteId = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, Default FROM siteserver_Template WHERE SiteId = @SiteId ORDER BY TemplateType, RelatedFileName";
 
-        private const string SqlSelectRelatedFileNameByTemplateType = "SELECT RelatedFileName FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType";
-
-        private const string SqlUpdateTemplate = "UPDATE siteserver_Template SET TemplateName = @TemplateName, TemplateType = @TemplateType, RelatedFileName = @RelatedFileName, CreatedFileFullName = @CreatedFileFullName, CreatedFileExtName = @CreatedFileExtName, Charset = @Charset, IsDefault = @IsDefault WHERE  Id = @Id";
-
-        private const string SqlDeleteTemplate = "DELETE FROM siteserver_Template WHERE  Id = @Id";
-
-        //by 20151106 sofuny
-        private const string SqlSelectTemplateByUrlType = "SELECT * FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType and CreatedFileFullName=@CreatedFileFullName ";
-        private const string SqlSelectTemplateById = "SELECT * FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType and Id = @Id ";
-
-        private const string ParmId = "@Id";
         private const string ParmSiteId = "@SiteId";
-        private const string ParmTemplateName = "@TemplateName";
         private const string ParmTemplateType = "@TemplateType";
-        private const string ParmRelatedFileName = "@RelatedFileName";
-        private const string ParmCreatedFileFullName = "@CreatedFileFullName";
-        private const string ParmCreatedFileExtName = "@CreatedFileExtName";
-        private const string ParmCharset = "@Charset";
-        private const string ParmIsDefault = "@IsDefault";
 
-        public async Task<int> InsertAsync(TemplateInfo templateInfo, string templateContent, string administratorName)
+        public async Task<int> InsertAsync(Template template, string templateContent, string administratorName)
         {
-            if (templateInfo.IsDefault)
+            if (template.Default)
             {
-                SetAllTemplateDefaultToFalse(templateInfo.SiteId, templateInfo.TemplateType);
+                await SetAllTemplateDefaultToFalseAsync(template.SiteId, template.Type);
             }
 
-            var sqlInsertTemplate = "INSERT INTO siteserver_Template (SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault) VALUES (@SiteId, @TemplateName, @TemplateType, @RelatedFileName, @CreatedFileFullName, @CreatedFileExtName, @Charset, @IsDefault)";
-            
-            var insertParms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, templateInfo.SiteId),
-				GetParameter(ParmTemplateName, DataType.VarChar, 50, templateInfo.TemplateName),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateInfo.TemplateType.Value),
-				GetParameter(ParmRelatedFileName, DataType.VarChar, 50, templateInfo.RelatedFileName),
-				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, templateInfo.CreatedFileFullName),
-				GetParameter(ParmCreatedFileExtName, DataType.VarChar, 50, templateInfo.CreatedFileExtName),
-                GetParameter(ParmCharset, DataType.VarChar, 50, ECharsetUtils.GetValue(templateInfo.Charset)),
-				GetParameter(ParmIsDefault, DataType.VarChar, 18, templateInfo.IsDefault.ToString())
-			};
+            template.Id = await _repository.InsertAsync(template);
 
-            var id = ExecuteNonQueryAndReturnId(TableName, nameof(TemplateInfo.Id), sqlInsertTemplate, insertParms);
+            var site = await SiteManager.GetSiteAsync(template.SiteId);
+            await TemplateManager.WriteContentToTemplateFileAsync(site, template, templateContent, administratorName);
 
-            var site = await SiteManager.GetSiteAsync(templateInfo.SiteId);
-            TemplateManager.WriteContentToTemplateFile(site, templateInfo, templateContent, administratorName);
+            TemplateManager.RemoveCache(template.SiteId);
 
-            TemplateManager.RemoveCache(templateInfo.SiteId);
-
-            return id;
+            return template.Id;
         }
 
-        public void Update(Site site, TemplateInfo templateInfo, string templateContent, string administratorName)
+        public async Task UpdateAsync(Site site, Template template, string templateContent, string administratorName)
         {
-            if (templateInfo.IsDefault)
+            if (template.Default)
             {
-                SetAllTemplateDefaultToFalse(site.Id, templateInfo.TemplateType);
+                await SetAllTemplateDefaultToFalseAsync(site.Id, template.Type);
             }
 
-            var updateParms = new IDataParameter[]
-			{
-				GetParameter(ParmTemplateName, DataType.VarChar, 50, templateInfo.TemplateName),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateInfo.TemplateType.Value),
-				GetParameter(ParmRelatedFileName, DataType.VarChar, 50, templateInfo.RelatedFileName),
-				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, templateInfo.CreatedFileFullName),
-				GetParameter(ParmCreatedFileExtName, DataType.VarChar, 50, templateInfo.CreatedFileExtName),
-				GetParameter(ParmCharset, DataType.VarChar, 50, ECharsetUtils.GetValue(templateInfo.Charset)),
-				GetParameter(ParmIsDefault, DataType.VarChar, 18, templateInfo.IsDefault.ToString()),
-				GetParameter(ParmId, DataType.Integer, templateInfo.Id)
-			};
+            await _repository.UpdateAsync(template);
 
-            ExecuteNonQuery(SqlUpdateTemplate, updateParms);
+            await TemplateManager.WriteContentToTemplateFileAsync(site, template, templateContent, administratorName);
 
-            TemplateManager.WriteContentToTemplateFile(site, templateInfo, templateContent, administratorName);
-
-            TemplateManager.RemoveCache(templateInfo.SiteId);
+            TemplateManager.RemoveCache(template.SiteId);
         }
 
-        private void SetAllTemplateDefaultToFalse(int siteId, TemplateType templateType)
+        private async Task SetAllTemplateDefaultToFalseAsync(int siteId, TemplateType templateType)
         {
-            var sqlString = "UPDATE siteserver_Template SET IsDefault = @IsDefault WHERE SiteId = @SiteId AND TemplateType = @TemplateType";
-
-            var updateParms = new IDataParameter[]
-			{
-				GetParameter(ParmIsDefault, DataType.VarChar, 18, false.ToString()),
-				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateType.Value)
-			};
-
-            ExecuteNonQuery(sqlString, updateParms);
-
+            await _repository.UpdateAsync(Q
+                .Set(nameof(Template.IsDefault), false.ToString())
+                .Where(nameof(Template.SiteId), siteId)
+                .Where(nameof(Template.TemplateType), templateType.Value)
+            );
         }
 
-        public void SetDefault(int siteId, int id)
+        public async Task SetDefaultAsync(int siteId, int templateId)
         {
-            var info = TemplateManager.GetTemplateInfo(siteId, id);
-            SetAllTemplateDefaultToFalse(info.SiteId, info.TemplateType);
+            var template = await TemplateManager.GetTemplateAsync(siteId, templateId);
+            await SetAllTemplateDefaultToFalseAsync(template.SiteId, template.Type);
 
-            var sqlString = "UPDATE siteserver_Template SET IsDefault = @IsDefault WHERE Id = @Id";
-
-            var updateParms = new IDataParameter[]
-			{
-				GetParameter(ParmIsDefault, DataType.VarChar, 18, true.ToString()),
-				GetParameter(ParmId, DataType.Integer, id)
-			};
-
-            ExecuteNonQuery(sqlString, updateParms);
+            await _repository.UpdateAsync(Q
+                .Set(nameof(Template.IsDefault), true.ToString())
+                .Where(nameof(Template.Id), templateId)
+            );
 
             TemplateManager.RemoveCache(siteId);
         }
@@ -201,21 +93,16 @@ namespace SiteServer.CMS.Provider
         public async Task DeleteAsync(int siteId, int id)
         {
             var site = await SiteManager.GetSiteAsync(siteId);
-            var templateInfo = TemplateManager.GetTemplateInfo(siteId, id);
-            var filePath = TemplateManager.GetTemplateFilePath(site, templateInfo);
+            var template = await TemplateManager.GetTemplateAsync(siteId, id);
+            var filePath = TemplateManager.GetTemplateFilePath(site, template);
 
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmId, DataType.Integer, id)
-			};
-
-            ExecuteNonQuery(SqlDeleteTemplate, parms);
+            await _repository.DeleteAsync(id);
             FileUtils.DeleteFileIfExists(filePath);
 
             TemplateManager.RemoveCache(siteId);
         }
 
-        public string GetImportTemplateName(int siteId, string templateName)
+        public async Task<string> GetImportTemplateNameAsync(int siteId, string templateName)
         {
             string importTemplateName;
             if (templateName.IndexOf("_", StringComparison.Ordinal) != -1)
@@ -239,43 +126,40 @@ namespace SiteServer.CMS.Provider
                 importTemplateName = templateName + "_1";
             }
 
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateName, DataType.VarChar, 50, importTemplateName)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectTemplateByTemplateName, parms))
+            var exists = await _repository.ExistsAsync(Q
+                .Where(nameof(Template.SiteId), siteId)
+                .Where(nameof(Template.TemplateName), importTemplateName)
+            );
+            if (exists)
             {
-                if (rdr.Read())
-                {
-                    importTemplateName = GetImportTemplateName(siteId, importTemplateName);
-                }
-                rdr.Close();
+                importTemplateName = await GetImportTemplateNameAsync(siteId, importTemplateName);
             }
 
             return importTemplateName;
         }
 
-        public Dictionary<TemplateType, int> GetCountDictionary(int siteId)
+        public async Task<Dictionary<TemplateType, int>> GetCountDictionaryAsync(int siteId)
         {
             var dictionary = new Dictionary<TemplateType, int>();
 
-            var parameters = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, siteId)
-			};
+            var dataList = await _repository.GetAllAsync<(string Type, int Count)>(Q
+                .Select(nameof(Template.TemplateType))
+                .SelectRaw("COUNT(*) as Count")
+                .Where(nameof(Template.SiteId), siteId)
+                .GroupBy(nameof(Template.TemplateType)));
 
-            using (var rdr = ExecuteReader(SqlSelectTemplateCount, parameters))
+            foreach (var (type, count) in dataList)
             {
-                while (rdr.Read())
-                {
-                    var templateType = TemplateTypeUtils.GetEnumType(GetString(rdr, 0));
-                    var count = GetInt(rdr, 1);
+                var templateType = TemplateTypeUtils.GetEnumType(type);
 
+                if (dictionary.ContainsKey(templateType))
+                {
+                    dictionary[templateType] += count;
+                }
+                else
+                {
                     dictionary[templateType] = count;
                 }
-                rdr.Close();
             }
 
             return dictionary;
@@ -313,7 +197,7 @@ namespace SiteServer.CMS.Provider
                 whereString +=
                     $"AND (TemplateName LIKE '%{searchText}%' OR RelatedFileName LIKE '%{searchText}%' OR CreatedFileFullName LIKE '%{searchText}%' OR CreatedFileExtName LIKE '%{searchText}%')";
                 string sqlString =
-                    $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = {siteId} {whereString} ORDER BY TemplateType, RelatedFileName";
+                    $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, Default FROM siteserver_Template WHERE SiteId = {siteId} {whereString} ORDER BY TemplateType, RelatedFileName";
 
                 var enumerable = ExecuteReader(sqlString);
                 return enumerable;
@@ -322,226 +206,136 @@ namespace SiteServer.CMS.Provider
             return GetDataSourceByType(siteId, TemplateTypeUtils.GetEnumType(templateTypeString));
         }
 
-        public List<int> GetIdListByType(int siteId, TemplateType type)
+        public async Task<List<int>> GetIdListByTypeAsync(int siteId, TemplateType templateType)
         {
-            var list = new List<int>();
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectAllIdByType, parms))
-            {
-                while (rdr.Read())
-                {
-                    var id = GetInt(rdr, 0);
-                    list.Add(id);
-                }
-                rdr.Close();
-            }
-            return list;
+            var list = await GetTemplateListByTypeAsync(siteId, templateType);
+            return list.Select(x => x.Id).ToList();
         }
 
-        public List<TemplateInfo> GetTemplateInfoListByType(int siteId, TemplateType type)
+        public async Task<List<Template>> GetTemplateListByTypeAsync(int siteId, TemplateType templateType)
         {
-            var list = new List<TemplateInfo>();
+            var templateEntityList = await _repository.GetAllAsync(Q
+                .Where(nameof(Template.SiteId), siteId)
+                .Where(nameof(Template.TemplateType), templateType.Value)
+                .OrderBy(nameof(Template.RelatedFileName))
+            );
 
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectAllTemplateByType, parms))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
-                    list.Add(info);
-                }
-                rdr.Close();
-            }
-            return list;
+            return templateEntityList.ToList();
         }
 
-        public List<TemplateInfo> GetTemplateInfoListOfFile(int siteId)
+        public async Task<List<Template>> GetTemplateListBySiteIdAsync(int siteId)
         {
-            var list = new List<TemplateInfo>();
+            var templateEntityList = await _repository.GetAllAsync(Q
+                .Where(nameof(Template.SiteId), siteId)
+                .OrderBy(nameof(Template.TemplateType), nameof(Template.RelatedFileName))
+            );
 
-            string sqlString =
-                $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = {siteId} AND TemplateType = '{TemplateType.FileTemplate.Value}' ORDER BY RelatedFileName";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
-                    list.Add(info);
-                }
-                rdr.Close();
-            }
-            return list;
+            return templateEntityList.ToList();
         }
 
-        public List<TemplateInfo> GetTemplateInfoListBySiteId(int siteId)
+        public async Task<IEnumerable<string>> GetTemplateNameListAsync(int siteId, TemplateType templateType)
         {
-            var list = new List<TemplateInfo>();
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, siteId)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectAllTemplateBySiteId, parms))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
-                    list.Add(info);
-                }
-                rdr.Close();
-            }
-            return list;
+            return await _repository.GetAllAsync<string>(Q
+                .Select(nameof(Template.TemplateName))
+                .Where(nameof(Template.SiteId), siteId)
+                .Where(nameof(Template.TemplateType), templateType.Value)
+            );
         }
 
-        public List<string> GetTemplateNameList(int siteId, TemplateType templateType)
+        public async Task<IEnumerable<string>> GetRelatedFileNameListAsync(int siteId, TemplateType templateType)
         {
-            var list = new List<string>();
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateType.Value)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectTemplateNames, parms))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetString(rdr, 0));
-                }
-                rdr.Close();
-            }
-
-            return list;
+            return await _repository.GetAllAsync<string>(Q
+                .Select(nameof(Template.RelatedFileName))
+                .Where(nameof(Template.SiteId), siteId)
+                .Where(nameof(Template.TemplateType), templateType.Value)
+            );
         }
 
-        public List<string> GetLowerRelatedFileNameList(int siteId, TemplateType templateType)
-        {
-            var list = new List<string>();
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, templateType.Value)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectRelatedFileNameByTemplateType, parms))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetString(rdr, 0).ToLower());
-                }
-                rdr.Close();
-            }
-
-            return list;
-        }
-
-        public async Task CreateDefaultTemplateInfoAsync(int siteId, string administratorName)
+        public async Task CreateDefaultTemplateAsync(int siteId, string administratorName)
         {
             var site = await SiteManager.GetSiteAsync(siteId);
 
-            var templateInfoList = new List<TemplateInfo>();
-            var charset = ECharsetUtils.GetEnumType(site.Additional.Charset);
+            var templateList = new List<Template>();
+            var charset = ECharsetUtils.GetEnumType(site.Charset);
 
-            var templateInfo = new TemplateInfo(0, site.Id, "系统首页模板", TemplateType.IndexPageTemplate, "T_系统首页模板.html", "@/index.html", ".html", charset, true);
-            templateInfoList.Add(templateInfo);
-
-            templateInfo = new TemplateInfo(0, site.Id, "系统栏目模板", TemplateType.ChannelTemplate, "T_系统栏目模板.html", "index.html", ".html", charset, true);
-            templateInfoList.Add(templateInfo);
-
-            templateInfo = new TemplateInfo(0, site.Id, "系统内容模板", TemplateType.ContentTemplate, "T_系统内容模板.html", "index.html", ".html", charset, true);
-            templateInfoList.Add(templateInfo);
-
-            foreach (var theTemplateInfo in templateInfoList)
+            var template = new Template
             {
-                await InsertAsync(theTemplateInfo, theTemplateInfo.Content, administratorName);
+                Id = 0,
+                SiteId = site.Id,
+                TemplateName = "系统首页模板",
+                Type = TemplateType.IndexPageTemplate,
+                RelatedFileName = "T_系统首页模板.html",
+                CreatedFileFullName = "@/index.html",
+                CreatedFileExtName = ".html",
+                CharsetType = charset,
+                Default = true
+            };
+            templateList.Add(template);
+
+            template = new Template
+            {
+                Id = 0,
+                SiteId = site.Id,
+                TemplateName = "系统栏目模板",
+                Type = TemplateType.ChannelTemplate,
+                RelatedFileName = "T_系统栏目模板.html",
+                CreatedFileFullName = "index.html",
+                CreatedFileExtName = ".html",
+                CharsetType = charset,
+                Default = true
+            };
+            templateList.Add(template);
+
+            template = new Template
+            {
+                Id = 0,
+                SiteId = site.Id,
+                TemplateName = "系统内容模板",
+                Type = TemplateType.ContentTemplate,
+                RelatedFileName = "T_系统内容模板.html",
+                CreatedFileFullName = "index.html",
+                CreatedFileExtName = ".html",
+                CharsetType = charset,
+                Default = true
+            };
+            templateList.Add(template);
+
+            foreach (var theTemplate in templateList)
+            {
+                await InsertAsync(theTemplate, theTemplate.Content, administratorName);
             }
         }
 
-        public Dictionary<int, TemplateInfo> GetTemplateInfoDictionaryBySiteId(int siteId)
+        public async Task<Dictionary<int, Template>> GetTemplateDictionaryBySiteIdAsync(int siteId)
         {
-            var dictionary = new Dictionary<int, TemplateInfo>();
+            var dictionary = new Dictionary<int, Template>();
 
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, siteId)
-			};
+            var list = await _repository.GetAllAsync(Q
+                .Where(nameof(Template.SiteId), siteId)
+                .OrderBy(nameof(Template.TemplateType), nameof(Template.RelatedFileName))
+            );
 
-            using (var rdr = ExecuteReader(SqlSelectAllTemplateBySiteId, parms))
+            foreach (var template in list)
             {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
-                    dictionary[info.Id] = info;
-                }
-                rdr.Close();
+                dictionary[template.Id] = template;
             }
 
             return dictionary;
         }
 
 
-        public TemplateInfo GetTemplateByUrlType(int siteId, TemplateType type, string createdFileFullName)
+        public async Task<Template> GetTemplateByUrlTypeAsync(int siteId, TemplateType templateType, string createdFileFullName)
         {
-            TemplateInfo info = null;
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value),
-				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, createdFileFullName)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectTemplateByUrlType, parms))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
-                }
-                rdr.Close();
-            }
-            return info;
+            return await _repository.GetAsync(Q
+                .Where(nameof(Template.SiteId), siteId)
+                .Where(nameof(Template.TemplateType), templateType.Value)
+                .Where(nameof(Template.CreatedFileFullName), createdFileFullName)
+            );
         }
 
-        public TemplateInfo GetTemplateById(int siteId, TemplateType type, string tId)
+        public async Task<Template> GetAsync(int templateId)
         {
-            TemplateInfo info = null;
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value),
-				GetParameter(ParmId, DataType.Integer, tId)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectTemplateById, parms))
-            {
-                if (rdr.Read())
-                {
-                    var i = 0;
-                    info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
-                }
-                rdr.Close();
-            }
-            return info;
+            return await _repository.GetAsync(templateId);
         }
-
     }
 }

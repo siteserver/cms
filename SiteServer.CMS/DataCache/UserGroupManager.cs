@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.DataCache
 {
@@ -11,32 +11,27 @@ namespace SiteServer.CMS.DataCache
 	{
 	    private static class UserGroupManagerCache
         {
-	        private static readonly object LockObject = new object();
-
-	        private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(UserGroupManager));
+            private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(UserGroupManager));
 
 	        public static void Clear()
 	        {
 	            DataCacheManager.Remove(CacheKey);
 	        }
 
-	        public static List<UserGroupInfo> GetAllUserGroups()
+	        public static async Task<List<UserGroup>> GetAllUserGroupsAsync()
 	        {
-	            var retVal = DataCacheManager.Get<List<UserGroupInfo>>(CacheKey);
+	            var retVal = DataCacheManager.Get<List<UserGroup>>(CacheKey);
 	            if (retVal != null) return retVal;
 
-	            lock (LockObject)
-	            {
-	                retVal = DataCacheManager.Get<List<UserGroupInfo>>(CacheKey);
-	                if (retVal == null)
-	                {
-	                    retVal = DataProvider.UserGroupDao.GetUserGroupInfoList() ?? new List<UserGroupInfo>();
+                retVal = DataCacheManager.Get<List<UserGroup>>(CacheKey);
+                if (retVal == null)
+                {
+                    retVal = await DataProvider.UserGroupDao.GetUserGroupListAsync() ?? new List<UserGroup>();
 
-	                    DataCacheManager.Insert(CacheKey, retVal);
-	                }
-	            }
+                    DataCacheManager.Insert(CacheKey, retVal);
+                }
 
-	            return retVal;
+                return retVal;
 	        }
 	    }
 
@@ -45,32 +40,32 @@ namespace SiteServer.CMS.DataCache
 	        UserGroupManagerCache.Clear();
 	    }
 
-	    public static bool IsExists(string groupName)
+	    public static async Task<bool> IsExistsAsync(string groupName)
 	    {
-	        var list = UserGroupManagerCache.GetAllUserGroups();
+	        var list = await UserGroupManagerCache.GetAllUserGroupsAsync();
 	        return list.Any(group => group.GroupName == groupName);
 	    }
 
-        public static UserGroupInfo GetUserGroupInfo(int groupId)
+        public static async Task<UserGroup> GetUserGroupAsync(int groupId)
 	    {
-	        var list = UserGroupManagerCache.GetAllUserGroups();
+	        var list = await UserGroupManagerCache.GetAllUserGroupsAsync();
 	        return list.FirstOrDefault(group => group.Id == groupId) ?? list[0];
 	    }
 
-	    public static UserGroupInfo GetUserGroupInfo(string groupName)
+	    public static async Task<UserGroup> GetUserGroupAsync(string groupName)
 	    {
-	        var list = UserGroupManagerCache.GetAllUserGroups();
+	        var list = await UserGroupManagerCache.GetAllUserGroupsAsync();
 	        return list.FirstOrDefault(group => group.GroupName == groupName) ?? list[0];
         }
 
-        public static string GetUserGroupName(int groupId)
+        public static async Task<string> GetUserGroupNameAsync(int groupId)
         {
-            return UserGroupManager.GetUserGroupInfo(groupId).GroupName;
+            return (await GetUserGroupAsync(groupId)).GroupName;
         }
 
-        public static List<UserGroupInfo> GetUserGroupInfoList()
+        public static async Task<List<UserGroup>> GetUserGroupListAsync()
 	    {
-	        return UserGroupManagerCache.GetAllUserGroups();
+	        return await UserGroupManagerCache.GetAllUserGroupsAsync();
 	    }
     }
 }

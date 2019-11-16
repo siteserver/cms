@@ -1,6 +1,7 @@
 using System.Collections.Specialized;
 using System.Drawing;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
@@ -283,7 +284,7 @@ namespace SiteServer.CMS.StlParser.Model
 			}
 			else if (attributeName.Equals("borderwidth") || attributeName.Equals("border"))
 			{
-				BorderWidth = TranslateUtils.ToUnit(attributeValue);
+				BorderWidth = WebUtils.ToUnit(attributeValue);
 			}
 			else if (attributeName.Equals("cellpadding"))
 			{
@@ -307,11 +308,11 @@ namespace SiteServer.CMS.StlParser.Model
 			}
 			else if (attributeName.Equals("gridlines"))
 			{
-				GridLines = TranslateUtils.ToGridLines(attributeValue);
+				GridLines = WebUtils.ToGridLines(attributeValue);
 			}
 			else if (attributeName.Equals("horizontalalign"))
 			{
-				HorizontalAlign = TranslateUtils.ToHorizontalAlign(attributeValue);
+				HorizontalAlign = WebUtils.ToHorizontalAlign(attributeValue);
 			}
 			else if (attributeName.Equals("repeatcolumns") || attributeName.Equals("columns"))
 			{
@@ -319,11 +320,11 @@ namespace SiteServer.CMS.StlParser.Model
 			}
 			else if (attributeName.Equals("repeatdirection") || attributeName.Equals("direction"))
 			{
-				RepeatDirection = TranslateUtils.ToRepeatDirection(attributeValue);
+				RepeatDirection = WebUtils.ToRepeatDirection(attributeValue);
 			}
 			else if (attributeName.Equals("repeatlayout"))
 			{
-				RepeatLayout = TranslateUtils.ToRepeatLayout(attributeValue);
+				RepeatLayout = WebUtils.ToRepeatLayout(attributeValue);
 			}
 			else if (attributeName.Equals("tooltip"))
 			{

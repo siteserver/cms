@@ -1,7 +1,5 @@
 ﻿using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -10,8 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.DataCache.Content
 {
@@ -31,73 +29,73 @@ namespace SiteServer.CMS.DataCache.Content
             StlContentCache.ClearCache();
         }
 
-        public static void InsertCache(Site site, ChannelInfo channelInfo, ContentInfo contentInfo)
+        public static async Task InsertCacheAsync(Site site, Channel channel, Model.Content content)
         {
-            if (contentInfo.SourceId == SourceManager.Preview) return;
+            if (content.SourceId == SourceManager.Preview) return;
 
-            var dict = ContentCache.GetContentDict(contentInfo.ChannelId);
-            dict[contentInfo.Id] = contentInfo;
+            var dict = ContentCache.GetContentDict(content.ChannelId);
+            dict[content.Id] = content;
 
-            var tableName = ChannelManager.GetTableName(site, channelInfo);
-            CountCache.Add(tableName, contentInfo);
+            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
+            CountCache.Add(tableName, content);
 
             StlContentCache.ClearCache();
         }
 
-        public static void UpdateCache(Site site, ChannelInfo channelInfo, ContentInfo contentInfo)
+        public static async Task UpdateCacheAsync(Site site, Channel channel, Model.Content content)
         {
-            var dict = ContentCache.GetContentDict(channelInfo.Id);
+            var dict = ContentCache.GetContentDict(channel.Id);
 
-            ListCache.Remove(channelInfo.Id);
+            ListCache.Remove(channel.Id);
 
-            var tableName = ChannelManager.GetTableName(site, channelInfo);
-            CountCache.Remove(tableName, contentInfo);
-            CountCache.Add(tableName, contentInfo);
+            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
+            CountCache.Remove(tableName, content);
+            CountCache.Add(tableName, content);
 
-            dict[contentInfo.Id] = contentInfo;
+            dict[content.Id] = content;
 
             StlContentCache.ClearCache();
         }
 
-        public static List<ContentColumn> GetContentColumns(Site site, ChannelInfo channelInfo, bool includeAll)
+        public static async Task<List<ContentColumn>> GetContentColumnsAsync(Site site, Channel channel, bool includeAll)
         {
             var columns = new List<ContentColumn>();
 
-            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
-            var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
-            var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
+            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channel.ContentAttributesOfDisplay);
+            var pluginIds = PluginContentManager.GetContentPluginIds(channel);
+            var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(site, channelInfo));
+            var styleList = ContentUtility.GetAllTableStyleList(await TableStyleManager.GetContentStyleListAsync(site, channel));
 
-            styleInfoList.Insert(0, new TableStyleInfo
+            styleList.Insert(0, new TableStyle
             {
                 AttributeName = ContentAttribute.Sequence,
                 DisplayName = "序号"
             });
 
-            foreach (var styleInfo in styleInfoList)
+            foreach (var style in styleList)
             {
-                if (!includeAll && styleInfo.InputType == InputType.TextEditor) continue;
+                if (!includeAll && style.Type == InputType.TextEditor) continue;
 
                 var column = new ContentColumn
                 {
-                    AttributeName = styleInfo.AttributeName,
-                    DisplayName = styleInfo.DisplayName,
-                    InputType = styleInfo.InputType
+                    AttributeName = style.AttributeName,
+                    DisplayName = style.DisplayName,
+                    InputType = style.Type
                 };
-                if (styleInfo.AttributeName == ContentAttribute.Title)
+                if (style.AttributeName == ContentAttribute.Title)
                 {
                     column.IsList = true;
                 }
                 else
                 {
-                    if (attributesOfDisplay.Contains(styleInfo.AttributeName))
+                    if (attributesOfDisplay.Contains(style.AttributeName))
                     {
                         column.IsList = true;
                     }
                 }
 
-                if (StringUtils.ContainsIgnoreCase(ContentAttribute.CalculateAttributes.Value, styleInfo.AttributeName))
+                if (StringUtils.ContainsIgnoreCase(ContentAttribute.CalculateAttributes.Value, style.AttributeName))
                 {
                     column.IsCalculate = true;
                 }
@@ -142,11 +140,11 @@ namespace SiteServer.CMS.DataCache.Content
             return columns;
         }
 
-        public static async Task<ContentInfo> CalculateAsync(int sequence, ContentInfo contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
+        public static async Task<Model.Content> CalculateAsync(int sequence, Model.Content content, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
         {
-            if (contentInfo == null) return null;
+            if (content == null) return null;
 
-            var retVal = new ContentInfo(contentInfo.ToDictionary());
+            var retVal = new Model.Content(content.ToDictionary());
 
             foreach (var column in columns)
             {
@@ -159,9 +157,9 @@ namespace SiteServer.CMS.DataCache.Content
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.AdminId))
                 {
                     var value = string.Empty;
-                    if (contentInfo.AdminId > 0)
+                    if (content.AdminId > 0)
                     {
-                        var adminInfo = await AdminManager.GetByUserIdAsync(contentInfo.AdminId);
+                        var adminInfo = await AdminManager.GetByUserIdAsync(content.AdminId);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
@@ -172,9 +170,9 @@ namespace SiteServer.CMS.DataCache.Content
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.UserId))
                 {
                     var value = string.Empty;
-                    if (contentInfo.UserId > 0)
+                    if (content.UserId > 0)
                     {
-                        var userInfo = await UserManager.GetUserByUserIdAsync(contentInfo.UserId);
+                        var userInfo = await UserManager.GetUserByUserIdAsync(content.UserId);
                         if (userInfo != null)
                         {
                             value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;
@@ -184,14 +182,14 @@ namespace SiteServer.CMS.DataCache.Content
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.SourceId))
                 {
-                    retVal.Set(ContentAttribute.SourceId, SourceManager.GetSourceNameAsync(contentInfo.SourceId));
+                    retVal.Set(ContentAttribute.SourceId, SourceManager.GetSourceNameAsync(content.SourceId));
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.AddUserName))
                 {
                     var value = string.Empty;
-                    if (!string.IsNullOrEmpty(contentInfo.AddUserName))
+                    if (!string.IsNullOrEmpty(content.AddUserName))
                     {
-                        var adminInfo = await AdminManager.GetByUserNameAsync(contentInfo.AddUserName);
+                        var adminInfo = await AdminManager.GetByUserNameAsync(content.AddUserName);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
@@ -202,9 +200,9 @@ namespace SiteServer.CMS.DataCache.Content
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.LastEditUserName))
                 {
                     var value = string.Empty;
-                    if (!string.IsNullOrEmpty(contentInfo.LastEditUserName))
+                    if (!string.IsNullOrEmpty(content.LastEditUserName))
                     {
-                        var adminInfo = await AdminManager.GetByUserNameAsync(contentInfo.LastEditUserName);
+                        var adminInfo = await AdminManager.GetByUserNameAsync(content.LastEditUserName);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
@@ -231,16 +229,16 @@ namespace SiteServer.CMS.DataCache.Content
                             var func = contentColumns[columnName];
                             var value = func(new ContentContextImpl
                             {
-                                SiteId = contentInfo.SiteId,
-                                ChannelId = contentInfo.ChannelId,
-                                ContentId = contentInfo.Id
+                                SiteId = content.SiteId,
+                                ChannelId = content.ChannelId,
+                                ContentId = content.Id
                             });
 
                             retVal.Set(attributeName, value);
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddErrorLog(pluginId, ex);
+                            await LogUtils.AddErrorLogAsync(pluginId, ex);
                         }
                     }
                 }
@@ -249,19 +247,19 @@ namespace SiteServer.CMS.DataCache.Content
             return retVal;
         }
 
-        public static bool IsCreatable(ChannelInfo channelInfo, ContentInfo contentInfo)
+        public static bool IsCreatable(Channel channel, Model.Content content)
         {
-            if (channelInfo == null || contentInfo == null) return false;
+            if (channel == null || content == null) return false;
 
             //引用链接，不需要生成内容页；引用内容，需要生成内容页；
-            if (contentInfo.ReferenceId > 0 &&
-                ETranslateContentTypeUtils.GetEnumType(contentInfo.GetString(ContentAttribute.TranslateContentType)) !=
+            if (content.ReferenceId > 0 &&
+                ETranslateContentTypeUtils.GetEnumType(content.Get<string>(ContentAttribute.TranslateContentType)) !=
                 ETranslateContentType.ReferenceContent)
             {
                 return false;
             }
 
-            return channelInfo.Additional.IsContentCreatable && string.IsNullOrEmpty(contentInfo.LinkUrl) && contentInfo.IsChecked && contentInfo.SourceId != SourceManager.Preview && contentInfo.ChannelId > 0;
+            return channel.IsContentCreatable && string.IsNullOrEmpty(content.LinkUrl) && content.Checked && content.SourceId != SourceManager.Preview && content.ChannelId > 0;
         }
     }
 }

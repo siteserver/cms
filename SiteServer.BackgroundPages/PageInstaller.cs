@@ -4,10 +4,11 @@ using System.Security.Permissions;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using Datory;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages
 {
@@ -69,7 +70,7 @@ namespace SiteServer.BackgroundPages
         {
             if (IsPostBack) return;
 
-            if (!SystemManager.IsNeedInstall())
+            if (!SystemManager.IsNeedInstallAsync().GetAwaiter().GetResult())
             {
                 Page.Response.Write("系统已安装成功，向导被禁用");
                 Page.Response.End();
@@ -124,7 +125,7 @@ namespace SiteServer.BackgroundPages
                 try
                 {
                     var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "version.txt");
-                    FileUtils.WriteText(filePath, ECharset.utf_8, SystemManager.ProductVersion);
+                    FileUtils.WriteText(filePath, SystemManager.ProductVersion);
 
                     var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, WebConfigUtils.PhysicalApplicationPath);
                     ioPermission.Demand();
@@ -140,7 +141,7 @@ namespace SiteServer.BackgroundPages
                 try
                 {
                     var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, "index.htm");
-                    FileUtils.WriteText(filePath, ECharset.utf_8, Constants.Html5Empty);
+                    FileUtils.WriteText(filePath, Constants.Html5Empty);
 
                     var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName));
                     ioPermission.Demand();
@@ -324,7 +325,7 @@ namespace SiteServer.BackgroundPages
             {
                 databaseName = databaseType == DatabaseType.Oracle ? TbOracleDatabase.Text : DdlSqlDatabaseName.SelectedValue;
             }
-            return WebConfigUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName, TranslateUtils.ToBool(DdlIsOracleSid.SelectedValue), DdlOraclePrivilege.SelectedValue);
+            return WebUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName, TranslateUtils.ToBool(DdlIsOracleSid.SelectedValue), DdlOraclePrivilege.SelectedValue);
         }
 
         private bool CheckLoginValid(out string errorMessage)

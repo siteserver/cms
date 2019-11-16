@@ -4,88 +4,91 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Auth;
 
 namespace SiteServer.CMS.Core
 {
     public class AuthenticatedRequest : IAuthenticatedRequest
     {
-        public AuthenticatedRequest(): this(HttpContext.Current.Request)
+        private AuthenticatedRequest()
         {
             
         }
 
-        public AuthenticatedRequest(HttpRequest request)
+        public static async Task<AuthenticatedRequest> GetRequestAsync()
         {
+            var authRequest = new AuthenticatedRequest();
             try
             {
-                HttpRequest = request;
+                authRequest.HttpRequest = HttpContext.Current.Request;
 
-                var apiToken = ApiToken;
+                var apiToken = authRequest.ApiToken;
                 if (!string.IsNullOrEmpty(apiToken))
                 {
-                    var tokenInfo = AccessTokenManager.GetAccessTokenInfoAsync(apiToken).GetAwaiter().GetResult();
+                    var tokenInfo = await AccessTokenManager.GetAccessTokenInfoAsync(apiToken);
                     if (tokenInfo != null)
                     {
                         if (!string.IsNullOrEmpty(tokenInfo.AdminName))
                         {
-                            var adminInfo = AdminManager.GetByUserNameAsync(tokenInfo.AdminName).GetAwaiter().GetResult();
+                            var adminInfo = await AdminManager.GetByUserNameAsync(tokenInfo.AdminName);
                             if (adminInfo != null && !adminInfo.Locked)
                             {
-                                Administrator = adminInfo;
-                                IsAdminLoggin = true;
+                                authRequest.Administrator = adminInfo;
+                                authRequest.IsAdminLoggin = true;
                             }
                         }
 
-                        IsApiAuthenticated = true;
+                        authRequest.IsApiAuthenticated = true;
                     }
                 }
 
-                var userToken = UserToken;
+                var userToken = authRequest.UserToken;
                 if (!string.IsNullOrEmpty(userToken))
                 {
                     var tokenImpl = UserApi.Instance.ParseAccessToken(userToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
-                        var user = UserManager.GetUserByUserIdAsync(tokenImpl.UserId).GetAwaiter().GetResult();
+                        var user = await UserManager.GetUserByUserIdAsync(tokenImpl.UserId);
                         if (user != null && !user.Locked && user.Checked && user.UserName == tokenImpl.UserName)
                         {
-                            User = user;
-                            IsUserLoggin = true;
+                            authRequest.User = user;
+                            authRequest.IsUserLoggin = true;
                         }
                     }
                 }
 
-                var adminToken = AdminToken;
+                var adminToken = authRequest.AdminToken;
                 if (!string.IsNullOrEmpty(adminToken))
                 {
                     var tokenImpl = AdminApi.Instance.ParseAccessToken(adminToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
-                        var adminInfo = AdminManager.GetByUserIdAsync(tokenImpl.UserId).GetAwaiter().GetResult();
+                        var adminInfo = await AdminManager.GetByUserIdAsync(tokenImpl.UserId);
                         if (adminInfo != null && !adminInfo.Locked && adminInfo.UserName == tokenImpl.UserName)
                         {
-                            Administrator = adminInfo;
-                            IsAdminLoggin = true;
+                            authRequest.Administrator = adminInfo;
+                            authRequest.IsAdminLoggin = true;
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
             }
+
+            return authRequest;
         }
 
-        public bool IsApiAuthenticated { get; }
+        public bool IsApiAuthenticated { get; private set; }
 
-        public bool IsUserLoggin { get; }
+        public bool IsUserLoggin { get; private set; }
 
         public bool IsAdminLoggin { get; private set; }
 
@@ -107,9 +110,9 @@ namespace SiteServer.CMS.Core
                     accessTokenStr = CookieUtils.GetCookie(Constants.AuthKeyApiCookie);
                 }
 
-                if (StringUtils.EndsWith(accessTokenStr, TranslateUtils.EncryptStingIndicator))
+                if (StringUtils.EndsWith(accessTokenStr, WebConfigUtils.EncryptStingIndicator))
                 {
-                    accessTokenStr = TranslateUtils.DecryptStringBySecretKey(accessTokenStr);
+                    accessTokenStr = WebConfigUtils.DecryptStringBySecretKey(accessTokenStr);
                 }
 
                 return accessTokenStr;
@@ -134,9 +137,9 @@ namespace SiteServer.CMS.Core
                     accessTokenStr = HttpRequest.QueryString[Constants.AuthKeyUserQuery];
                 }
 
-                if (StringUtils.EndsWith(accessTokenStr, TranslateUtils.EncryptStingIndicator))
+                if (StringUtils.EndsWith(accessTokenStr, WebConfigUtils.EncryptStingIndicator))
                 {
-                    accessTokenStr = TranslateUtils.DecryptStringBySecretKey(accessTokenStr);
+                    accessTokenStr = WebConfigUtils.DecryptStringBySecretKey(accessTokenStr);
                 }
 
                 return accessTokenStr;
@@ -161,9 +164,9 @@ namespace SiteServer.CMS.Core
                     accessTokenStr = HttpRequest.QueryString[Constants.AuthKeyAdminQuery];
                 }
 
-                if (StringUtils.EndsWith(accessTokenStr, TranslateUtils.EncryptStingIndicator))
+                if (StringUtils.EndsWith(accessTokenStr, WebConfigUtils.EncryptStingIndicator))
                 {
-                    accessTokenStr = TranslateUtils.DecryptStringBySecretKey(accessTokenStr);
+                    accessTokenStr = WebConfigUtils.DecryptStringBySecretKey(accessTokenStr);
                 }
 
                 return accessTokenStr;
@@ -196,7 +199,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public HttpRequest HttpRequest { get; }
+        public HttpRequest HttpRequest { get; private set; }
 
         public NameValueCollection QueryString => HttpRequest.QueryString;
 
@@ -375,7 +378,7 @@ namespace SiteServer.CMS.Core
 
                 if (User != null)
                 {
-                    var groupInfo = UserGroupManager.GetUserGroupInfo(User.GroupId);
+                    var groupInfo = UserGroupManager.GetUserGroupAsync(User.GroupId).GetAwaiter().GetResult();
                     if (groupInfo != null)
                     {
                         Administrator = AdminManager.GetByUserNameAsync(groupInfo.AdminName).GetAwaiter().GetResult();
@@ -421,7 +424,7 @@ namespace SiteServer.CMS.Core
 
                 if (User != null)
                 {
-                    var groupInfo = UserGroupManager.GetUserGroupInfo(User.GroupId);
+                    var groupInfo = UserGroupManager.GetUserGroupAsync(User.GroupId).GetAwaiter().GetResult();
                     if (groupInfo != null)
                     {
                         return groupInfo.AdminName;
@@ -434,10 +437,10 @@ namespace SiteServer.CMS.Core
 
         public Administrator Administrator { get; private set; }
 
-        public string AdminLogin(string userName, bool isAutoLogin)
+        public async Task<string> AdminLoginAsync(string userName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(userName)) return null;
-            var adminInfo = AdminManager.GetByUserNameAsync(userName).GetAwaiter().GetResult();
+            var adminInfo = await AdminManager.GetByUserNameAsync(userName);
             if (adminInfo == null || adminInfo.Locked) return null;
 
             Administrator = adminInfo;
@@ -446,7 +449,7 @@ namespace SiteServer.CMS.Core
             var expiresAt = TimeSpan.FromDays(Constants.AccessTokenExpireDays);
             var accessToken = AdminApi.Instance.GetAccessToken(adminInfo.Id, adminInfo.UserName, expiresAt);
 
-            LogUtils.AddAdminLogAsync(adminInfo, "管理员登录").GetAwaiter().GetResult();
+            await LogUtils.AddAdminLogAsync(adminInfo, "管理员登录");
 
             if (isAutoLogin)
             {
@@ -475,11 +478,11 @@ namespace SiteServer.CMS.Core
 
         public User User { get; private set; }
 
-        public string UserLogin(string userName, bool isAutoLogin)
+        public async Task<string> UserLoginAsync(string userName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(userName)) return null;
 
-            var user = UserManager.GetUserByUserNameAsync(userName).GetAwaiter().GetResult();
+            var user = await UserManager.GetUserByUserNameAsync(userName);
             if (user == null || user.Locked || !user.Checked) return null;
 
             User = user;
@@ -487,8 +490,8 @@ namespace SiteServer.CMS.Core
             var expiresAt = TimeSpan.FromDays(Constants.AccessTokenExpireDays);
             var accessToken = UserApi.Instance.GetAccessToken(UserId, UserName, expiresAt);
 
-            DataProvider.UserDao.UpdateLastActivityDateAndCountOfLoginAsync(User).GetAwaiter().GetResult();
-            LogUtils.AddUserLoginLog(userName);
+            await DataProvider.UserDao.UpdateLastActivityDateAndCountOfLoginAsync(User);
+            await LogUtils.AddUserLoginLogAsync(userName);
 
             if (isAutoLogin)
             {
@@ -510,19 +513,21 @@ namespace SiteServer.CMS.Core
 
         #endregion
 
-        public object AdminRedirectCheck(bool checkInstall = false, bool checkDatabaseVersion = false,
+        public async Task<object> AdminRedirectCheckAsync(bool checkInstall = false, bool checkDatabaseVersion = false,
             bool checkLogin = false)
         {
             var redirect = false;
             var redirectUrl = string.Empty;
+
+            var config = await ConfigManager.GetInstanceAsync();
 
             if (checkInstall && string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
                 redirect = true;
                 redirectUrl = PageUtils.GetAdminUrl("Installer/");
             }
-            else if (checkDatabaseVersion && ConfigManager.Instance.IsInitialized &&
-                     ConfigManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
+            else if (checkDatabaseVersion && config.Initialized &&
+                     config.DatabaseVersion != SystemManager.ProductVersion)
             {
                 redirect = true;
                 redirectUrl = PageUtils.GetAdminUrl("syncDatabase.cshtml");

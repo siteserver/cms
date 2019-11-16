@@ -5,22 +5,24 @@ using Datory;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class AccessTokenDao : DataProviderBase
+    public class AccessTokenDao : IRepository
     {
-        private readonly Repository<AccessTokenInfo> _repository;
+        private readonly Repository<AccessToken> _repository;
 
         public AccessTokenDao()
         {
-            _repository = new Repository<AccessTokenInfo>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            _repository = new Repository<AccessToken>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public override string TableName => _repository.TableName;
-        public override List<TableColumn> TableColumns => _repository.TableColumns;
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
 
         //public override string TableName => "siteserver_AccessToken";
 
@@ -74,9 +76,9 @@ namespace SiteServer.CMS.Provider
         //    }
         //};
 
-        public async Task<int> InsertAsync(AccessTokenInfo accessTokenInfo)
+        public async Task<int> InsertAsync(AccessToken accessTokenInfo)
         {
-            var token = TranslateUtils.EncryptStringBySecretKey(StringUtils.Guid());
+            var token = WebConfigUtils.EncryptStringBySecretKey(StringUtils.Guid());
             accessTokenInfo.Token = token;
             accessTokenInfo.AddDate = DateTime.Now;
             accessTokenInfo.UpdatedDate = DateTime.Now;
@@ -146,7 +148,7 @@ namespace SiteServer.CMS.Provider
         //    AccessTokenManager.ClearCache();
         //}
 
-        public async Task<bool> UpdateAsync(AccessTokenInfo accessTokenInfo)
+        public async Task<bool> UpdateAsync(AccessToken accessTokenInfo)
         {
             var updated = await _repository.UpdateAsync(accessTokenInfo);
             if (updated)
@@ -199,9 +201,9 @@ namespace SiteServer.CMS.Provider
         //    return token;
         //}
 
-        public async Task<string> RegenerateAsync(AccessTokenInfo accessTokenInfo)
+        public async Task<string> RegenerateAsync(AccessToken accessTokenInfo)
         {
-            accessTokenInfo.Token = TranslateUtils.EncryptStringBySecretKey(StringUtils.Guid());
+            accessTokenInfo.Token = WebConfigUtils.EncryptStringBySecretKey(StringUtils.Guid());
 
             await UpdateAsync(accessTokenInfo);
 
@@ -210,7 +212,7 @@ namespace SiteServer.CMS.Provider
 
         public async Task<bool> IsTitleExistsAsync(string title)
         {
-            return await _repository.ExistsAsync(Q.Where(nameof(AccessTokenInfo.Title), title));
+            return await _repository.ExistsAsync(Q.Where(nameof(AccessToken.Title), title));
 
             //var exists = false;
 
@@ -233,9 +235,9 @@ namespace SiteServer.CMS.Provider
             //return exists;
         }
 
-        public async Task<IEnumerable<AccessTokenInfo>> GetAccessTokenInfoListAsync()
+        public async Task<IEnumerable<AccessToken>> GetAccessTokenInfoListAsync()
         {
-            return await _repository.GetAllAsync(Q.OrderBy(nameof(AccessTokenInfo.Id)));
+            return await _repository.GetAllAsync(Q.OrderBy(nameof(AccessToken.Id)));
 
             //var list = new List<AccessTokenInfo>();
 
@@ -261,7 +263,7 @@ namespace SiteServer.CMS.Provider
             //return list;
         }
 
-        public async Task<AccessTokenInfo> GetAsync(int id)
+        public async Task<AccessToken> GetAsync(int id)
         {
             return await _repository.GetAsync(id);
 
@@ -289,13 +291,13 @@ namespace SiteServer.CMS.Provider
             //return accessTokenInfo;
         }
 
-        public async Task<Dictionary<string, AccessTokenInfo>> GetAccessTokenInfoDictionaryAsync()
+        public async Task<Dictionary<string, AccessToken>> GetAccessTokenInfoDictionaryAsync()
         {
-            var dictionary = new Dictionary<string, AccessTokenInfo>();
+            var dictionary = new Dictionary<string, AccessToken>();
 
             foreach (var accessTokenInfo in await _repository.GetAllAsync())
             {
-                var token = TranslateUtils.DecryptStringBySecretKey(accessTokenInfo.Token);
+                var token = WebConfigUtils.DecryptStringBySecretKey(accessTokenInfo.Token);
                 if (!string.IsNullOrEmpty(token))
                 {
                     dictionary[token] = accessTokenInfo;

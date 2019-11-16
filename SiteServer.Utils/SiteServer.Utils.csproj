@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>SiteServer.Utils</PackageId>
@@ -21,19 +21,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Datory" Version="1.0.1" />
     <PackageReference Include="HtmlSanitizer" Version="4.0.217" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
-    <PackageReference Include="SiteServer.Plugin" Version="2.4.0" />
     <PackageReference Include="System.Runtime.Caching" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Web" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
+    <ProjectReference Include="..\..\SiteServer.Plugin\SiteServer.Plugin.csproj" />
   </ItemGroup>
 
 </Project>

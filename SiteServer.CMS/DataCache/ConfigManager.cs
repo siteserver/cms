@@ -1,16 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.DataCache
 {
     public static class ConfigManager
     {
         private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(ConfigManager));
-        private static readonly object LockObject = new object();
 
         public static class PluginsPermissions
         {
@@ -68,7 +66,7 @@ namespace SiteServer.CMS.DataCache
 
         public static class LeftMenu
         {
-            public const string IdContent = "Content";
+            public const string IdContent = "Body";
             public const string IdTemplate = "Template";
             public const string IdConfigration = "Configration";
             public const string IdCreate = "Create";
@@ -114,32 +112,31 @@ namespace SiteServer.CMS.DataCache
             return retVal;
         }
 
-        public static ConfigInfo Instance
+        public static async Task<Config> GetInstanceAsync()
         {
-            get
+            var retVal = DataCacheManager.Get<Config>(CacheKey);
+            if (retVal != null) return retVal;
+
+            retVal = DataCacheManager.Get<Config>(CacheKey);
+            if (retVal == null)
             {
-                var retVal = DataCacheManager.Get<ConfigInfo>(CacheKey);
-                if (retVal != null) return retVal;
-
-                lock (LockObject)
+                try
                 {
-                    retVal = DataCacheManager.Get<ConfigInfo>(CacheKey);
-                    if (retVal == null)
-                    {
-                        try
-                        {
-                            retVal = DataProvider.ConfigDao.GetConfigInfo();
-                            DataCacheManager.Insert(CacheKey, retVal);
-                        }
-                        catch
-                        {
-                            return new ConfigInfo(0, false, string.Empty, DateTime.Now, string.Empty);
-                        }
-                    }
+                    retVal = await DataProvider.ConfigDao.GetConfigAsync();
+                    DataCacheManager.Insert(CacheKey, retVal);
                 }
-
-                return retVal;
+                catch
+                {
+                    return new Config
+                    {
+                        Id = 0,
+                        DatabaseVersion = string.Empty,
+                        UpdateDate = DateTime.Now
+                    };
+                }
             }
+
+            return retVal;
         }
 
         public static bool IsChanged
@@ -153,6 +150,6 @@ namespace SiteServer.CMS.DataCache
             }
         }
 
-        public static SystemConfigInfo SystemConfigInfo => Instance.SystemConfigInfo;
+        //public static ConfigExtend ConfigExtend => Instance.ConfigExtend;
     }
 }

@@ -3,7 +3,6 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
@@ -41,15 +40,15 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.TagDao.TableName;
+        private static readonly string NewTableName = DataProvider.ContentTagDao.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.TagDao.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.ContentTagDao.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(TagInfo.Id), nameof(TagId)},
-                {nameof(TagInfo.SiteId), nameof(PublishmentSystemId)}
+                {nameof(ContentTag.Id), nameof(TagId)},
+                {nameof(ContentTag.SiteId), nameof(PublishmentSystemId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

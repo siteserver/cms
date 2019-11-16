@@ -1,155 +1,67 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Text;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class ErrorLogDao : DataProviderBase
+    public class ErrorLogDao : IRepository
     {
-        public override string TableName => "siteserver_ErrorLog";
+        private readonly Repository<ErrorLog> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public ErrorLogDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(ErrorLogInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ErrorLogInfo.Category),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ErrorLogInfo.PluginId),
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ErrorLogInfo.Message),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ErrorLogInfo.Stacktrace),
-                DataType = DataType.Text
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ErrorLogInfo.Summary),
-                DataType = DataType.Text
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ErrorLogInfo.AddDate),
-                DataType = DataType.DateTime
-            }
-        };
-
-        private const string ParmCategory = "@Category";
-        private const string ParmPluginId = "@PluginId";
-        private const string ParmMessage = "@Message";
-        private const string ParmStacktrace = "@Stacktrace";
-        private const string ParmSummary = "@Summary";
-        private const string ParmAddDate = "@AddDate";
-
-        public int Insert(ErrorLogInfo logInfo)
-        {
-            var sqlString = $"INSERT INTO {TableName} (Category, PluginId, Message, Stacktrace, Summary, AddDate) VALUES (@Category, @PluginId, @Message, @Stacktrace, @Summary, @AddDate)";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmCategory, DataType.VarChar, 50, logInfo.Category),
-                GetParameter(ParmPluginId, DataType.VarChar, 200, logInfo.PluginId),
-                GetParameter(ParmMessage, DataType.VarChar, 255, logInfo.Message),
-                GetParameter(ParmStacktrace, DataType.Text, logInfo.Stacktrace),
-                GetParameter(ParmSummary, DataType.Text, logInfo.Summary),
-                GetParameter(ParmAddDate, DataType.DateTime, logInfo.AddDate),
-            };
-
-            return ExecuteNonQueryAndReturnId(TableName, nameof(ErrorLogInfo.Id), sqlString, parms);
+            _repository = new Repository<ErrorLog>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public void Delete(List<int> idList)
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task<int> InsertAsync(ErrorLog logInfo)
+        {
+            logInfo.Id = await _repository.InsertAsync(logInfo);
+
+            return logInfo.Id;
+        }
+
+        public async Task DeleteAsync(List<int> idList)
         {
             if (idList == null || idList.Count <= 0) return;
 
-            var sqlString =
-                $"DELETE FROM {TableName} WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
-
-            ExecuteNonQuery(sqlString);
+            await _repository.DeleteAsync(Q
+                .WhereIn(nameof(ErrorLog.Id), idList)
+            );
         }
 
-        public void DeleteIfThreshold()
+        public async Task DeleteIfThresholdAsync()
         {
-            if (!ConfigManager.SystemConfigInfo.IsTimeThreshold) return;
+            var config = await ConfigManager.GetInstanceAsync();
+            if (!config.IsTimeThreshold) return;
 
-            var days = ConfigManager.SystemConfigInfo.TimeThreshold;
+            var days = config.TimeThreshold;
             if (days <= 0) return;
 
-            ExecuteNonQuery($@"DELETE FROM {TableName} WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
+            await _repository.DeleteAsync(Q
+                .Where(nameof(ErrorLog.CreatedDate), "<", DateTime.Now.AddDays(-days))
+            );
         }
 
-        public void DeleteAll()
+        public async Task DeleteAllAsync()
         {
-            var sqlString = $"DELETE FROM {TableName}";
-
-            ExecuteNonQuery(sqlString);
+            await _repository.DeleteAsync();
         }
 
-        public ErrorLogInfo GetErrorLogInfo(int logId)
+        public async Task<ErrorLog> GetErrorLogAsync(int logId)
         {
-            ErrorLogInfo logInfo = null;
-
-            var sqlString = $"SELECT Id, Category, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName} WHERE Id = @Id";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@Id", DataType.Integer, logId)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    var i = 0;
-                    logInfo = new ErrorLogInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i));
-                }
-                rdr.Close();
-            }
-
-            return logInfo;
-        }
-
-        public KeyValuePair<string, string> GetMessageAndStacktrace(int logId)
-        {
-            var pair = new KeyValuePair<string, string>();
-
-            var sqlString = $"SELECT Message, Stacktrace FROM {TableName} WHERE Id = {logId}";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    pair = new KeyValuePair<string, string>(GetString(rdr, 0), GetString(rdr, 1));
-                }
-                rdr.Close();
-            }
-
-            return pair;
+            return await _repository.GetAsync(logId);
         }
 
         public string GetSelectCommend(string category, string pluginId, string keyword, string dateFrom, string dateTo)

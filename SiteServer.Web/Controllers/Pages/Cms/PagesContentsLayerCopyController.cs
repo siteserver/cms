@@ -7,7 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -24,7 +24,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -32,7 +32,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     MinContentInfo.ParseMinContentInfoList(request.GetQueryString("channelContentIds"));
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentTranslate))
                 {
                     return Unauthorized();
@@ -41,14 +41,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var retVal = new List<Dictionary<string, object>>();
+                var retVal = new List<IDictionary<string, object>>();
                 foreach (var channelContentId in channelContentIds)
                 {
-                    var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                    var contentInfo = ContentManager.GetContentInfo(site, contentChannelInfo, channelContentId.Id);
+                    var contentChannelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
+                    var contentInfo = await ContentManager.GetContentInfoAsync(site, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -60,7 +60,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var sites = new List<object>();
                 var channels = new List<object>();
 
-                var siteIdList = request.AdminPermissionsImpl.GetSiteIdList();
+                var siteIdList = await request.AdminPermissionsImpl.GetSiteIdListAsync();
                 foreach (var permissionSiteId in siteIdList)
                 {
                     var permissionSite = await SiteManager.GetSiteAsync(permissionSiteId);
@@ -71,15 +71,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     });
                 }
 
-                var channelIdList = request.AdminPermissionsImpl.GetChannelIdList(site.Id,
+                var channelIdList = await request.AdminPermissionsImpl.GetChannelIdListAsync(site.Id,
                     ConfigManager.ChannelPermissions.ContentAdd);
                 foreach (var permissionChannelId in channelIdList)
                 {
-                    var permissionChannelInfo = ChannelManager.GetChannelInfo(site.Id, permissionChannelId);
+                    var permissionChannelInfo = await ChannelManager.GetChannelAsync(site.Id, permissionChannelId);
                     channels.Add(new
                     {
                         permissionChannelInfo.Id,
-                        ChannelName = ChannelManager.GetChannelNameNavigation(site.Id, permissionChannelId)
+                        ChannelName = await ChannelManager.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
                     });
                 }
 
@@ -93,30 +93,30 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
 
         [HttpGet, Route(RouteGetChannels)]
-        public IHttpActionResult GetChannels()
+        public async Task<IHttpActionResult> GetChannels()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
 
                 var channels = new List<object>();
-                var channelIdList = request.AdminPermissionsImpl.GetChannelIdList(siteId,
+                var channelIdList = await request.AdminPermissionsImpl.GetChannelIdListAsync(siteId,
                     ConfigManager.ChannelPermissions.ContentAdd);
                 foreach (var permissionChannelId in channelIdList)
                 {
-                    var permissionChannelInfo = ChannelManager.GetChannelInfo(siteId, permissionChannelId);
+                    var permissionChannelInfo = await ChannelManager.GetChannelAsync(siteId, permissionChannelId);
                     channels.Add(new
                     {
                         permissionChannelInfo.Id,
-                        ChannelName = ChannelManager.GetChannelNameNavigation(siteId, permissionChannelId)
+                        ChannelName = await ChannelManager.GetChannelNameNavigationAsync(siteId, permissionChannelId)
                     });
                 }
 
@@ -127,7 +127,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -137,7 +137,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -148,7 +148,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var copyType = request.GetPostString("copyType");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentTranslate))
                 {
                     return Unauthorized();
@@ -157,7 +157,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 foreach (var channelContentId in channelContentIds)
@@ -167,7 +167,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 await request.AddSiteLogAsync(siteId, channelId, "复制内容", string.Empty);
 
-                CreateManager.TriggerContentChangedEvent(siteId, channelId);
+                await CreateManager.TriggerContentChangedEventAsync(siteId, channelId);
 
                 return Ok(new
                 {
@@ -176,7 +176,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

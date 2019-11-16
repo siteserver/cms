@@ -4,11 +4,10 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -34,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 try
                 {
-                    var contentIdList = DataProvider.TagDao.GetContentIdListByTag(tagName, SiteId);
+                    var contentIdList = DataProvider.ContentTagDao.GetContentIdListByTagAsync(tagName, SiteId).GetAwaiter().GetResult();
                     if (contentIdList.Count > 0)
                     {
                         foreach (var contentId in contentIdList)
@@ -48,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
                             }
                         }
                     }
-                    DataProvider.TagDao.DeleteTag(tagName, SiteId);
+                    DataProvider.ContentTagDao.DeleteTagAsync(tagName, SiteId).GetAwaiter().GetResult();
                     AuthRequest.AddSiteLogAsync(SiteId, "删除内容标签", $"内容标签:{tagName}").GetAwaiter().GetResult();
                     SuccessDeleteMessage();
                 }
@@ -59,10 +58,10 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = Site.Additional.PageSize;
+            SpContents.ItemsPerPage = Site.PageSize;
 
-            SpContents.SelectCommand = DataProvider.TagDao.GetSqlString(SiteId, 0, true, 0);
-            SpContents.SortField = nameof(TagInfo.UseNum);
+            SpContents.SelectCommand = DataProvider.ContentTagDao.GetSqlString(SiteId, 0, true, 0);
+            SpContents.SortField = nameof(ContentTag.UseNum);
             SpContents.SortMode = SortMode.DESC;
 
             RptContents.ItemDataBound += RptContents_ItemDataBound;
@@ -81,9 +80,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var tag = SqlUtils.EvalString(e.Item.DataItem, nameof(TagInfo.Tag));
-            var level = SqlUtils.EvalInt(e.Item.DataItem, nameof(TagInfo.Level));
-            var useNum = SqlUtils.EvalInt(e.Item.DataItem, nameof(TagInfo.UseNum));
+            var tag = SqlUtils.EvalString(e.Item.DataItem, nameof(ContentTag.Tag));
+            var level = SqlUtils.EvalInt(e.Item.DataItem, nameof(ContentTag.Level));
+            var useNum = SqlUtils.EvalInt(e.Item.DataItem, nameof(ContentTag.UseNum));
 
             var ltlTagName = (Literal)e.Item.FindControl("ltlTagName");
             var ltlCount = (Literal)e.Item.FindControl("ltlCount");

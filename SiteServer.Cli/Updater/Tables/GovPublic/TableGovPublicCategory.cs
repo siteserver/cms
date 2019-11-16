@@ -120,7 +120,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             },
             new TableColumn
             {
-                AttributeName = "IsLastNode",
+                AttributeName = "LastNode",
                 DataType = DataType.Boolean
             },
             new TableColumn

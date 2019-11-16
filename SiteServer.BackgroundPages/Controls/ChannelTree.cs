@@ -2,15 +2,14 @@
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -20,7 +19,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             var builder = new StringBuilder();
 
-            var request = new AuthenticatedRequest();
+            var request = AuthenticatedRequest.GetRequestAsync().GetAwaiter().GetResult();
 
             var siteId = TranslateUtils.ToInt(Page.Request.QueryString["siteId"]);
 
@@ -40,11 +39,11 @@ namespace SiteServer.BackgroundPages.Controls
                     var scripts = ChannelLoading.GetScript(site, contentModelPluginId, ELoadingType.ContentTree, additional);
                     builder.Append(scripts);
 
-                    var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(site.Id, site.Id), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty);
+                    var channelIdList = ChannelManager.GetChannelIdListAsync(ChannelManager.GetChannelAsync(site.Id, site.Id).GetAwaiter().GetResult(), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
                     foreach (var channelId in channelIdList)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(site.Id, channelId);
-                        var enabled = request.AdminPermissionsImpl.IsOwningChannelId(channelInfo.Id);
+                        var channelInfo = ChannelManager.GetChannelAsync(site.Id, channelId).GetAwaiter().GetResult();
+                        var enabled = request.AdminPermissionsImpl.IsOwningChannelIdAsync(channelInfo.Id).GetAwaiter().GetResult();
                         if (!string.IsNullOrEmpty(contentModelPluginId) &&
                             !StringUtils.EqualsIgnoreCase(channelInfo.ContentModelPluginId, contentModelPluginId))
                         {
@@ -52,22 +51,22 @@ namespace SiteServer.BackgroundPages.Controls
                         }
                         if (!enabled)
                         {
-                            if (!request.AdminPermissionsImpl.IsDescendantOwningChannelId(channelInfo.SiteId, channelInfo.Id)) continue;
+                            if (!request.AdminPermissionsImpl.IsDescendantOwningChannelIdAsync(channelInfo.SiteId, channelInfo.Id).GetAwaiter().GetResult()) continue;
                             if (!IsDesendantContentModelPluginIdExists(channelInfo, contentModelPluginId)) continue;
                         }
 
-                        builder.Append(ChannelLoading.GetChannelRowHtml(site, channelInfo, enabled, ELoadingType.ContentTree, additional, request.AdminPermissionsImpl));
+                        builder.Append(ChannelLoading.GetChannelRowHtmlAsync(site, channelInfo, enabled, ELoadingType.ContentTree, additional, request.AdminPermissionsImpl).GetAwaiter().GetResult());
                     }
                 }
             }
             writer.Write(builder);
         }
 
-        private bool IsDesendantContentModelPluginIdExists(ChannelInfo channelInfo, string contentModelPluginId)
+        private bool IsDesendantContentModelPluginIdExists(Channel channel, string contentModelPluginId)
         {
             if (string.IsNullOrEmpty(contentModelPluginId)) return true;
 
-            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, contentModelPluginId);
+            var channelIdList = ChannelManager.GetChannelIdListAsync(channel, EScopeType.Descendant, string.Empty, string.Empty, contentModelPluginId).GetAwaiter().GetResult();
             return channelIdList.Count > 0;
         }
     }

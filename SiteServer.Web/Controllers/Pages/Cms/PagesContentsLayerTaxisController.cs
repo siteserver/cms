@@ -7,7 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -23,7 +23,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -33,7 +33,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var taxis = request.GetPostInt("taxis");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     return Unauthorized();
@@ -42,10 +42,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                if (ETaxisTypeUtils.Equals(channelInfo.Additional.DefaultTaxisType, ETaxisType.OrderByTaxis))
+                if (ETaxisTypeUtils.Equals(channelInfo.DefaultTaxisType, ETaxisType.OrderByTaxis))
                 {
                     isUp = !isUp;
                 }
@@ -57,12 +57,12 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 foreach (var channelContentId in channelContentIds)
                 {
-                    var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                    var tableName = ChannelManager.GetTableName(site, contentChannelInfo);
-                    var contentInfo = ContentManager.GetContentInfo(site, contentChannelInfo, channelContentId.Id);
+                    var contentChannelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
+                    var tableName = await ChannelManager.GetTableNameAsync(site, contentChannelInfo);
+                    var contentInfo = await ContentManager.GetContentInfoAsync(site, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
-                    var isTop = contentInfo.IsTop;
+                    var isTop = contentInfo.Top;
                     for (var i = 1; i <= taxis; i++)
                     {
                         if (isUp)
@@ -84,7 +84,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 foreach (var distinctChannelId in channelContentIds.Select(x => x.ChannelId).Distinct())
                 {
-                    CreateManager.TriggerContentChangedEvent(siteId, distinctChannelId);
+                    await CreateManager.TriggerContentChangedEventAsync(siteId, distinctChannelId);
                 }
 
                 await request.AddSiteLogAsync(siteId, channelId, 0, "对内容排序", string.Empty);
@@ -96,7 +96,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

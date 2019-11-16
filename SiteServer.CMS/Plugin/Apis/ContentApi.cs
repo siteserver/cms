@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Apis
@@ -17,59 +16,59 @@ namespace SiteServer.CMS.Plugin.Apis
         private static ContentApi _instance;
         public static ContentApi Instance => _instance ?? (_instance = new ContentApi());
 
-        public IContentInfo GetContentInfo(int siteId, int channelId, int contentId)
+        public async Task<IContent> GetContentInfoAsync(int siteId, int channelId, int contentId)
         {
             if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
 
-            //return ContentManager.GetContentInfo(site, channelInfo, contentId);
-            return DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(site, channelInfo), channelInfo.Id, contentId);
+            //return ContentManager.GetContentInfo(site, channel, contentId);
+            return await DataProvider.ContentDao.GetContentAsync(await ChannelManager.GetTableNameAsync(site, channelInfo), contentId);
         }
 
-        public List<IContentInfo> GetContentInfoList(int siteId, int channelId, string whereString, string orderString, int limit, int offset)
-        {
-            if (siteId <= 0 || channelId <= 0) return null;
+        //public async Task<List<IContent>> GetContentInfoListAsync(int siteId, int channelId, string whereString, string orderString, int limit, int offset)
+        //{
+        //    if (siteId <= 0 || channelId <= 0) return null;
 
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var tableName = ChannelManager.GetTableName(site, channelId);
+        //    var site = await SiteManager.GetSiteAsync(siteId);
+        //    var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
 
-            var list = DataProvider.ContentDao.GetContentInfoList(tableName, whereString, orderString, offset, limit);
-            var retVal = new List<IContentInfo>();
-            foreach (var contentInfo in list)
-            {
-                retVal.Add(contentInfo);
-            }
-            return retVal;
-        }
+        //    var list = await DataProvider.ContentDao.GetContentInfoListAsync(tableName, whereString, orderString, offset, limit);
+        //    var retVal = new List<IContent>();
+        //    foreach (var contentInfo in list)
+        //    {
+        //        retVal.Add(contentInfo);
+        //    }
+        //    return retVal;
+        //}
 
-        public int GetCount(int siteId, int channelId, string whereString)
+        public async Task<int> GetCountAsync(int siteId, int channelId, string whereString)
         {
             if (siteId <= 0 || channelId <= 0) return 0;
 
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var tableName = ChannelManager.GetTableName(site, channelId);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
 
             return DataProvider.ContentDao.GetCount(tableName, whereString);
         }
 
-        public string GetTableName(int siteId, int channelId)
+        public async Task<string> GetTableNameAsync(int siteId, int channelId)
         {
             if (siteId <= 0 || channelId <= 0) return string.Empty;
 
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            return ChannelManager.GetTableName(site, nodeInfo);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var nodeInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            return await ChannelManager.GetTableNameAsync(site, nodeInfo);
         }
 
-        public List<TableColumn> GetTableColumns(int siteId, int channelId)
+        public async Task<List<TableColumn>> GetTableColumnsAsync(int siteId, int channelId)
         {
             if (siteId <= 0 || channelId <= 0) return null;
 
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableStyleInfoList = TableStyleManager.GetContentStyleInfoList(site, nodeInfo);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var nodeInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var tableStyleInfoList = await TableStyleManager.GetContentStyleListAsync(site, nodeInfo);
             var tableColumnList = new List<TableColumn>
             {
                 new TableColumn
@@ -123,28 +122,28 @@ namespace SiteServer.CMS.Plugin.Apis
             return tableColumnList;
         }
 
-        public List<InputStyle> GetInputStyles(int siteId, int channelId)
+        public async Task<List<InputStyle>> GetInputStylesAsync(int siteId, int channelId)
         {
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
 
-            return ChannelManager.GetInputStyles(site, channelInfo);
+            return await ChannelManager.GetInputStylesAsync(site, channelInfo);
         }
 
-        public string GetContentValue(int siteId, int channelId, int contentId, string attributeName)
+        public async Task<string> GetContentValueAsync(int siteId, int channelId, int contentId, string attributeName)
         {
             if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var tableName = ChannelManager.GetTableName(site, channelId);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
 
             var tuple = DataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
             return tuple?.Item2;
         }
 
-        public IContentInfo NewInstance(int siteId, int channelId)
+        public IContent NewInstance(int siteId, int channelId)
         {
-            return new ContentInfo(new Dictionary<string, object>
+            return new Content(new Dictionary<string, object>
             {
                 {ContentAttribute.SiteId, siteId},
                 {ContentAttribute.ChannelId, channelId},
@@ -155,9 +154,9 @@ namespace SiteServer.CMS.Plugin.Apis
         //public void SetValuesToContentInfo(int siteId, int channelId, NameValueCollection form, IContentInfo contentInfo)
         //{
         //    var site = SiteManager.GetSite(siteId);
-        //    var nodeInfo = NodeManager.GetChannelInfo(siteId, channelId);
-        //    var tableName = NodeManager.GetTableName(site, nodeInfo);
-        //    var tableStyle = NodeManager.GetTableStyle(site, nodeInfo);
+        //    var node = NodeManager.GetChannelInfo(siteId, channelId);
+        //    var tableName = NodeManager.GetTableName(site, node);
+        //    var tableStyle = NodeManager.GetTableStyle(site, node);
         //    var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteId, channelId);
 
         //    var extendImageUrl = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl);
@@ -169,42 +168,42 @@ namespace SiteServer.CMS.Plugin.Apis
         //    InputTypeParser.AddValuesToAttributes(tableStyle, tableName, site, relatedIdentities, form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes);
         //}
 
-        public int Insert(int siteId, int channelId, IContentInfo contentInfo)
+        public async Task<int> InsertAsync(int siteId, int channelId, IContent contentInfo)
         {
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(site, channelInfo);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
 
-            return DataProvider.ContentDao.Insert(tableName, site, channelInfo, (ContentInfo)contentInfo);
+            return await DataProvider.ContentDao.InsertAsync(tableName, site, channelInfo, (Content)contentInfo);
         }
 
-        public void Update(int siteId, int channelId, IContentInfo contentInfo)
+        public async Task UpdateAsync(int siteId, int channelId, IContent contentInfo)
         {
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            DataProvider.ContentDao.Update(site, channelInfo, (ContentInfo)contentInfo);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            await DataProvider.ContentDao.UpdateAsync(site, channelInfo, (Content)contentInfo);
         }
 
-        public void Delete(int siteId, int channelId, int contentId)
+        public async Task DeleteAsync(int siteId, int channelId, int contentId)
         {
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(site, nodeInfo);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var nodeInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var tableName = await ChannelManager.GetTableNameAsync(site, nodeInfo);
             var contentIdList = new List<int> { contentId };
-            DataProvider.ContentDao.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
+            await DataProvider.ContentDao.UpdateTrashContentsAsync(siteId, channelId, tableName, contentIdList);
         }
 
-        public IList<int> GetContentIdList(int siteId, int channelId)
+        public async Task<IList<int>> GetContentIdListAsync(int siteId, int channelId)
         {
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var tableName = ChannelManager.GetTableName(site, channelId);
+            var site = await SiteManager.GetSiteAsync(siteId);
+            var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
             return DataProvider.ContentDao.GetContentIdListCheckedByChannelId(tableName, siteId, channelId);
         }
 
-        public string GetContentUrl(int siteId, int channelId, int contentId)
+        public async Task<string> GetContentUrlAsync(int siteId, int channelId, int contentId)
         {
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            return PageUtility.GetContentUrlAsync(site, ChannelManager.GetChannelInfo(siteId, channelId), contentId, false).GetAwaiter().GetResult();
+            var site = await SiteManager.GetSiteAsync(siteId);
+            return await PageUtility.GetContentUrlAsync(site, await ChannelManager.GetChannelAsync(siteId, channelId), contentId, false);
         }
     }
 }

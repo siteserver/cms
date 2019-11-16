@@ -1,15 +1,17 @@
-﻿using System.Web.UI.HtmlControls;
+﻿using System.Linq;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Utils.Enumerations;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -85,7 +87,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "选择是否新窗口打开链接")]
         private const string OpenWin = nameof(OpenWin);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var selectControl = new HtmlSelect();
 
@@ -128,11 +130,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
-                    channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    channelIndex = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
-                    channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    channelName = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, UpLevel))
                 {
@@ -148,23 +150,23 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, GroupChannel))
                 {
-                    groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupChannel = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, GroupChannelNot))
                 {
-                    groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupChannelNot = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, GroupContent))
                 {
-                    groupContent = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupContent = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, GroupContentNot))
                 {
-                    groupContentNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupContentNot = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Tags))
                 {
-                    tags = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    tags = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Order))
                 {
@@ -176,11 +178,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Where))
                 {
-                    where = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    where = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, QueryString))
                 {
-                    queryString = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    queryString = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsTop))
                 {
@@ -208,7 +210,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Title))
                 {
-                    displayTitle = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    displayTitle = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, OpenWin))
                 {
@@ -220,7 +222,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImplAsync(pageInfo, contextInfo, selectControl, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, where, queryString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, displayTitle, openWin).GetAwaiter().GetResult();
+            return await ParseImplAsync(pageInfo, contextInfo, selectControl, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, where, queryString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, displayTitle, openWin);
         }
 
         private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, HtmlSelect selectControl, bool isChannel, string channelIndex, string channelName, int upLevel, int topLevel, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string order, int totalNum, int titleWordNum, string where, string queryString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string displayTitle, bool openWin)
@@ -237,11 +239,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var orderByString = isChannel ? StlDataUtility.GetChannelOrderByString(pageInfo.SiteId, order, ETaxisType.OrderByTaxis) : StlDataUtility.GetContentOrderByString(pageInfo.SiteId, order, ETaxisType.OrderByTaxisDesc);
 
-            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+            var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+            channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-            var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+            var channel = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
 
             var uniqueId = "Select_" + pageInfo.UniqueId;
             selectControl.ID = uniqueId;
@@ -275,17 +277,17 @@ selObj.selectedIndex=0;
 
             if (isChannel)
             {
-                var channelIdList = StlDataUtility.GetChannelIdList(pageInfo.SiteId, channel.Id, orderByString, scopeType, groupChannel, groupChannelNot, false, false, totalNum, where);
+                var channelIdList = await StlDataUtility.GetChannelIdListAsync(pageInfo.SiteId, channel.Id, orderByString, scopeType, groupChannel, groupChannelNot, false, false, totalNum, where);
 
-                if (channelIdList != null && channelIdList.Count > 0)
+                if (channelIdList != null && channelIdList.Any())
                 {
                     foreach (var channelIdInSelect in channelIdList)
                     {
-                        var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelIdInSelect);
+                        var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelIdInSelect);
 
                         if (nodeInfo != null)
                         {
-                            var title = StringUtils.MaxLengthText(nodeInfo.ChannelName, titleWordNum);
+                            var title = WebUtils.MaxLengthText(nodeInfo.ChannelName, titleWordNum);
                             var url = await PageUtility.GetChannelUrlAsync(pageInfo.Site, nodeInfo, pageInfo.IsLocal);
                             if (!string.IsNullOrEmpty(queryString))
                             {
@@ -299,14 +301,14 @@ selObj.selectedIndex=0;
             }
             else
             {
-                var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.Site, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
+                var minContentInfoList = await StlDataUtility.GetMinContentInfoListAsync(pageInfo.Site, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
 
                 if (minContentInfoList != null)
                 {
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
-                        var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
+                        var contentInfo = await ContentManager.GetContentInfoAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
+                        var title = WebUtils.MaxLengthText(contentInfo.Title, titleWordNum);
                         var url = await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, false);
                         if (!string.IsNullOrEmpty(queryString))
                         {

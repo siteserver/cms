@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
-using SiteServer.API.Results.Pages.Settings;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Db;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
     [OpenApiIgnore]
     [RoutePrefix("pages/settings/adminRoleAdd")]
-    public class PagesAdminRoleAddController : ApiController
+    public partial class PagesAdminRoleAddController : ApiController
     {
         private const string Route = "";
         private const string RouteSiteId = "{siteId:int}";
@@ -26,31 +25,32 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
                 var roleId = request.GetQueryInt("roleId");
 
-                var systemPermissionsInfoList = new List<SitePermissionsInfo>();
+                var systemPermissionsInfoList = new List<SitePermissions>();
                 var permissionList = new List<string>();
-                RoleInfo roleInfo = null;
+                Role role = null;
 
                 if (roleId > 0)
                 {
-                    roleInfo = DataProvider.RoleDao.GetRoleInfo(roleId);
+                    role = await DataProvider.RoleDao.GetRoleAsync(roleId);
                     systemPermissionsInfoList =
-                        DataProvider.SitePermissionsDao.GetSystemPermissionsInfoList(roleInfo.RoleName);
+                        await DataProvider.SitePermissionsDao.GetSystemPermissionsListAsync(role.RoleName);
                     permissionList =
-                        DataProvider.PermissionsInRolesDao.GetGeneralPermissionList(new[] { roleInfo.RoleName });
+                        await DataProvider.PermissionsInRolesDao.GetGeneralPermissionListAsync(new[] { role.RoleName });
                 }
 
                 var permissions = new List<Permission>();
-                var generalPermissionList = request.AdminPermissionsImpl.PermissionList;
-                var generalPermissions = PermissionConfigManager.Instance.GeneralPermissions;
+                var generalPermissionList = await request.AdminPermissionsImpl.GetPermissionListAsync();
+                var instance = await PermissionConfigManager.GetInstanceAsync();
+                var generalPermissions = instance.GeneralPermissions;
 
                 if (generalPermissions.Count > 0)
                 {
@@ -70,14 +70,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 var siteList = new List<CMS.Model.Site>();
                 var checkedSiteIdList = new List<int>();
-                foreach (var permissionSiteId in request.AdminPermissionsImpl.GetSiteIdList())
+                foreach (var permissionSiteId in await request.AdminPermissionsImpl.GetSiteIdListAsync())
                 {
-                    if (request.AdminPermissionsImpl.HasChannelPermissions(permissionSiteId, permissionSiteId) &&
-                        request.AdminPermissionsImpl.HasSitePermissions(permissionSiteId))
+                    if (await request.AdminPermissionsImpl.HasChannelPermissionsAsync(permissionSiteId, permissionSiteId) &&
+                        await request.AdminPermissionsImpl.HasSitePermissionsAsync(permissionSiteId))
                     {
                         var listOne =
-                            request.AdminPermissionsImpl.GetChannelPermissions(permissionSiteId, permissionSiteId);
-                        var listTwo = request.AdminPermissionsImpl.GetSitePermissions(permissionSiteId);
+                            await request.AdminPermissionsImpl.GetChannelPermissionsAsync(permissionSiteId, permissionSiteId);
+                        var listTwo = await request.AdminPermissionsImpl.GetSitePermissionsAsync(permissionSiteId);
                         if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                         {
                             siteList.Add(await SiteManager.GetSiteAsync(permissionSiteId));
@@ -99,7 +99,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 return Ok(new
                 {
                     Value = true,
-                    RoleInfo = roleInfo,
+                    RoleInfo = role,
                     Permissions = permissions,
                     SiteList = siteList,
                     CheckedSiteIdList = checkedSiteIdList,
@@ -117,9 +117,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -136,48 +136,50 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
         private async Task<object> GetSitePermissionsObjectAsync(int roleId, int siteId, AuthenticatedRequest request)
         {
-            SitePermissionsInfo sitePermissionsInfo = null;
+            SitePermissions sitePermissionsInfo = null;
             if (roleId > 0)
             {
-                var roleInfo = DataProvider.RoleDao.GetRoleInfo(roleId);
-                sitePermissionsInfo = DataProvider.SitePermissionsDao.GetSystemPermissionsInfo(roleInfo.RoleName, siteId);
+                var roleInfo = await DataProvider.RoleDao.GetRoleAsync(roleId);
+                sitePermissionsInfo = await DataProvider.SitePermissionsDao.GetSystemPermissionsAsync(roleInfo.RoleName, siteId);
             }
-            if (sitePermissionsInfo == null) sitePermissionsInfo = new SitePermissionsInfo();
+            if (sitePermissionsInfo == null) sitePermissionsInfo = new SitePermissions();
 
             var site = await SiteManager.GetSiteAsync(siteId);
             var sitePermissions = new List<Permission>();
             var pluginPermissions = new List<Permission>();
             var channelPermissions = new List<Permission>();
-            if (request.AdminPermissionsImpl.IsSystemAdministrator)
+            var instance = await PermissionConfigManager.GetInstanceAsync();
+
+            if (await request.AdminPermissionsImpl.IsSuperAdminAsync())
             {
-                foreach (var permission in PermissionConfigManager.Instance.WebsiteSysPermissions)
+                foreach (var permission in instance.WebsiteSysPermissions)
                 {
                     sitePermissions.Add(new Permission
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.In(sitePermissionsInfo.WebsitePermissions, permission.Name)
+                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
                     });
                 }
 
-                foreach (var permission in PermissionConfigManager.Instance.WebsitePluginPermissions)
+                foreach (var permission in instance.WebsitePluginPermissions)
                 {
                     pluginPermissions.Add(new Permission
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.In(sitePermissionsInfo.WebsitePermissions, permission.Name)
+                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
                     });
                 }
 
-                var channelPermissionList = PermissionConfigManager.Instance.ChannelPermissions;
+                var channelPermissionList = instance.ChannelPermissions;
                 foreach (var permission in channelPermissionList)
                 {
                     if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel1)
                     {
-                        if (site.Additional.IsCheckContentLevel)
+                        if (site.IsCheckContentLevel)
                         {
-                            if (site.Additional.CheckContentLevel < 1)
+                            if (site.CheckContentLevel < 1)
                             {
                                 continue;
                             }
@@ -189,9 +191,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     }
                     else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel2)
                     {
-                        if (site.Additional.IsCheckContentLevel)
+                        if (site.IsCheckContentLevel)
                         {
-                            if (site.Additional.CheckContentLevel < 2)
+                            if (site.CheckContentLevel < 2)
                             {
                                 continue;
                             }
@@ -203,9 +205,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     }
                     else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel3)
                     {
-                        if (site.Additional.IsCheckContentLevel)
+                        if (site.IsCheckContentLevel)
                         {
-                            if (site.Additional.CheckContentLevel < 3)
+                            if (site.CheckContentLevel < 3)
                             {
                                 continue;
                             }
@@ -217,9 +219,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     }
                     else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel4)
                     {
-                        if (site.Additional.IsCheckContentLevel)
+                        if (site.IsCheckContentLevel)
                         {
-                            if (site.Additional.CheckContentLevel < 4)
+                            if (site.CheckContentLevel < 4)
                             {
                                 continue;
                             }
@@ -231,9 +233,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     }
                     else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel5)
                     {
-                        if (site.Additional.IsCheckContentLevel)
+                        if (site.IsCheckContentLevel)
                         {
-                            if (site.Additional.CheckContentLevel < 5)
+                            if (site.CheckContentLevel < 5)
                             {
                                 continue;
                             }
@@ -248,18 +250,18 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.In(sitePermissionsInfo.ChannelPermissions, permission.Name)
+                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Name)
                     });
                 }
             }
             else
             {
-                if (request.AdminPermissionsImpl.HasSitePermissions(siteId))
+                if (await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId))
                 {
-                    var websitePermissionList = request.AdminPermissionsImpl.GetSitePermissions(siteId);
+                    var websitePermissionList = await request.AdminPermissionsImpl.GetSitePermissionsAsync(siteId);
                     foreach (var websitePermission in websitePermissionList)
                     {
-                        foreach (var permission in PermissionConfigManager.Instance.WebsiteSysPermissions)
+                        foreach (var permission in instance.WebsiteSysPermissions)
                         {
                             if (permission.Name == websitePermission)
                             {
@@ -267,12 +269,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                                 {
                                     Name = permission.Name,
                                     Text = permission.Text,
-                                    Selected = StringUtils.In(sitePermissionsInfo.WebsitePermissions, permission.Name)
+                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
                                 });
                             }
                         }
 
-                        foreach (var permission in PermissionConfigManager.Instance.WebsitePluginPermissions)
+                        foreach (var permission in instance.WebsitePluginPermissions)
                         {
                             if (permission.Name == websitePermission)
                             {
@@ -280,60 +282,60 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                                 {
                                     Name = permission.Name,
                                     Text = permission.Text,
-                                    Selected = StringUtils.In(sitePermissionsInfo.WebsitePermissions, permission.Name)
+                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
                                 });
                             }
                         }
                     }
                 }
 
-                var channelPermissionList = request.AdminPermissionsImpl.GetChannelPermissions(siteId);
+                var channelPermissionList = await request.AdminPermissionsImpl.GetChannelPermissionsAsync(siteId);
                 foreach (var channelPermission in channelPermissionList)
                 {
-                    foreach (var permission in PermissionConfigManager.Instance.ChannelPermissions)
+                    foreach (var permission in instance.ChannelPermissions)
                     {
                         if (permission.Name == channelPermission)
                         {
                             if (channelPermission == ConfigManager.ChannelPermissions.ContentCheck)
                             {
-                                if (site.Additional.IsCheckContentLevel) continue;
+                                if (site.IsCheckContentLevel) continue;
                             }
                             else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel1)
                             {
-                                if (site.Additional.IsCheckContentLevel == false || site.Additional.CheckContentLevel < 1) continue;
+                                if (site.IsCheckContentLevel == false || site.CheckContentLevel < 1) continue;
                             }
                             else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel2)
                             {
-                                if (site.Additional.IsCheckContentLevel == false || site.Additional.CheckContentLevel < 2) continue;
+                                if (site.IsCheckContentLevel == false || site.CheckContentLevel < 2) continue;
                             }
                             else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel3)
                             {
-                                if (site.Additional.IsCheckContentLevel == false || site.Additional.CheckContentLevel < 3) continue;
+                                if (site.IsCheckContentLevel == false || site.CheckContentLevel < 3) continue;
                             }
                             else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel4)
                             {
-                                if (site.Additional.IsCheckContentLevel == false || site.Additional.CheckContentLevel < 4) continue;
+                                if (site.IsCheckContentLevel == false || site.CheckContentLevel < 4) continue;
                             }
                             else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel5)
                             {
-                                if (site.Additional.IsCheckContentLevel == false || site.Additional.CheckContentLevel < 5) continue;
+                                if (site.IsCheckContentLevel == false || site.CheckContentLevel < 5) continue;
                             }
 
                             channelPermissions.Add(new Permission
                             {
                                 Name = permission.Name,
                                 Text = permission.Text,
-                                Selected = StringUtils.In(sitePermissionsInfo.ChannelPermissions, permission.Name)
+                                Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Name)
                             });
                         }
                     }
                 }
             }
 
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, siteId);
-            channelInfo.Children = ChannelManager.GetChildren(siteId, siteId);
+            var channelInfo = await ChannelManager.GetChannelAsync(siteId, siteId);
+            channelInfo.Children = await ChannelManager.GetChildrenAsync(siteId, siteId);
             var checkedChannelIdList = new List<int>();
-            foreach (var i in TranslateUtils.StringCollectionToIntList(sitePermissionsInfo.ChannelIdCollection))
+            foreach (var i in sitePermissionsInfo.ChannelIdList)
             {
                 if (!checkedChannelIdList.Contains(i))
                 {
@@ -357,9 +359,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -368,18 +370,18 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var description = request.GetPostString("description");
                 var generalPermissionList = request.GetPostObject<List<string>>("generalPermissions");
                 var sitePermissionsInRolesInfoList =
-                    request.GetPostObject<List<SitePermissionsInfo>>("sitePermissions");
+                    request.GetPostObject<List<SitePermissions>>("sitePermissions");
 
                 if (EPredefinedRoleUtils.IsPredefinedRole(roleName))
                 {
                     return BadRequest($"角色添加失败，{roleName}为系统角色！");
                 }
-                if (DataProvider.RoleDao.IsRoleExists(roleName))
+                if (await DataProvider.RoleDao.IsRoleExistsAsync(roleName))
                 {
                     return BadRequest("角色名称已存在，请更换角色名称！");
                 }
 
-                DataProvider.RoleDao.InsertRole(new RoleInfo
+                await DataProvider.RoleDao.InsertRoleAsync(new Role
                 {
                     RoleName = roleName,
                     CreatorUserName = request.AdminName,
@@ -388,9 +390,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 if (generalPermissionList != null && generalPermissionList.Count > 0)
                 {
-                    var permissionsInRolesInfo = new PermissionsInRolesInfo(0, roleName,
-                        TranslateUtils.ObjectCollectionToString(generalPermissionList));
-                    DataProvider.PermissionsInRolesDao.Insert(permissionsInRolesInfo);
+                    var permissionsInRolesInfo = new PermissionsInRoles
+                    {
+                        Id = 0,
+                        RoleName = roleName,
+                        GeneralPermissionList = generalPermissionList
+                    };
+                    await DataProvider.PermissionsInRolesDao.InsertAsync(permissionsInRolesInfo);
                 }
 
                 if (sitePermissionsInRolesInfoList != null && sitePermissionsInRolesInfoList.Count > 0)
@@ -398,7 +404,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     foreach (var sitePermissionsInfo in sitePermissionsInRolesInfoList)
                     {
                         sitePermissionsInfo.RoleName = roleName;
-                        DataProvider.SitePermissionsDao.Insert(sitePermissionsInfo);
+                        await DataProvider.SitePermissionsDao.InsertAsync(sitePermissionsInfo);
                     }
                 }
 
@@ -422,9 +428,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -433,29 +439,33 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var description = request.GetPostString("description");
                 var generalPermissionList = request.GetPostObject<List<string>>("generalPermissions");
                 var sitePermissionsInRolesInfoList =
-                    request.GetPostObject<List<SitePermissionsInfo>>("sitePermissions");
+                    request.GetPostObject<List<SitePermissions>>("sitePermissions");
 
-                var roleInfo = DataProvider.RoleDao.GetRoleInfo(roleId);
+                var roleInfo = await DataProvider.RoleDao.GetRoleAsync(roleId);
                 if (roleInfo.RoleName != roleName)
                 {
                     if (EPredefinedRoleUtils.IsPredefinedRole(roleName))
                     {
                         return BadRequest($"角色添加失败，{roleName}为系统角色！");
                     }
-                    if (DataProvider.RoleDao.IsRoleExists(roleName))
+                    if (await DataProvider.RoleDao.IsRoleExistsAsync(roleName))
                     {
                         return BadRequest("角色名称已存在，请更换角色名称！");
                     }
                 }
 
-                DataProvider.PermissionsInRolesDao.Delete(roleInfo.RoleName);
-                DataProvider.SitePermissionsDao.Delete(roleInfo.RoleName);
+                await DataProvider.PermissionsInRolesDao.DeleteAsync(roleInfo.RoleName);
+                await DataProvider.SitePermissionsDao.DeleteAsync(roleInfo.RoleName);
 
                 if (generalPermissionList != null && generalPermissionList.Count > 0)
                 {
-                    var permissionsInRolesInfo = new PermissionsInRolesInfo(0, roleName,
-                        TranslateUtils.ObjectCollectionToString(generalPermissionList));
-                    DataProvider.PermissionsInRolesDao.Insert(permissionsInRolesInfo);
+                    var permissionsInRolesInfo = new PermissionsInRoles
+                    {
+                        Id = 0,
+                        RoleName = roleName,
+                        GeneralPermissionList = generalPermissionList
+                    };
+                    await DataProvider.PermissionsInRolesDao.InsertAsync(permissionsInRolesInfo);
                 }
 
                 if (sitePermissionsInRolesInfoList != null && sitePermissionsInRolesInfoList.Count > 0)
@@ -463,14 +473,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     foreach (var sitePermissionsInfo in sitePermissionsInRolesInfoList)
                     {
                         sitePermissionsInfo.RoleName = roleName;
-                        DataProvider.SitePermissionsDao.Insert(sitePermissionsInfo);
+                        await DataProvider.SitePermissionsDao.InsertAsync(sitePermissionsInfo);
                     }
                 }
 
                 roleInfo.RoleName = roleName;
                 roleInfo.Description = description;
 
-                DataProvider.RoleDao.UpdateRole(roleInfo);
+                await DataProvider.RoleDao.UpdateRoleAsync(roleInfo);
 
                 PermissionsImpl.ClearAllCache();
 

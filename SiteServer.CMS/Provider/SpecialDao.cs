@@ -1,255 +1,95 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Datory;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class SpecialDao : DataProviderBase
+    public class SpecialDao : IRepository
     {
-        public override string TableName => "siteserver_Special";
+        private readonly Repository<Special> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public SpecialDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(SpecialInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SpecialInfo.SiteId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SpecialInfo.Title),
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SpecialInfo.Url),
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SpecialInfo.AddDate),
-                DataType = DataType.DateTime
-            }
-        };
+            _repository = new Repository<Special>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+        }
 
-        public int Insert(SpecialInfo specialInfo)
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task<int> InsertAsync(Special special)
         {
-            var sqlString = $@"INSERT INTO {TableName}
-           ({nameof(SpecialInfo.SiteId)}, 
-            {nameof(SpecialInfo.Title)}, 
-            {nameof(SpecialInfo.Url)},
-            {nameof(SpecialInfo.AddDate)})
-     VALUES
-           (@{nameof(SpecialInfo.SiteId)}, 
-            @{nameof(SpecialInfo.Title)}, 
-            @{nameof(SpecialInfo.Url)}, 
-            @{nameof(SpecialInfo.AddDate)})";
-
-            IDataParameter[] parameters = 
-            {
-                GetParameter(nameof(specialInfo.SiteId), DataType.Integer, specialInfo.SiteId),
-                GetParameter(nameof(specialInfo.Title), DataType.VarChar, 200, specialInfo.Title),
-                GetParameter(nameof(specialInfo.Url), DataType.VarChar, 200, specialInfo.Url),
-                GetParameter(nameof(specialInfo.AddDate), DataType.DateTime, specialInfo.AddDate)
-            };
-
-            var specialId = ExecuteNonQueryAndReturnId(TableName, nameof(SpecialInfo.Id), sqlString, parameters);
-
-            SpecialManager.RemoveCache(specialInfo.SiteId);
-
+            var specialId = await _repository.InsertAsync(special);
+            SpecialManager.RemoveCache(special.SiteId);
             return specialId;
         }
 
-        public void Update(SpecialInfo specialInfo)
+        public async Task UpdateAsync(Special special)
         {
-            var sqlString = $@"UPDATE {TableName} SET
-                {nameof(SpecialInfo.SiteId)} = @{nameof(SpecialInfo.SiteId)},  
-                {nameof(SpecialInfo.Title)} = @{nameof(SpecialInfo.Title)}, 
-                {nameof(SpecialInfo.Url)} = @{nameof(SpecialInfo.Url)},
-                {nameof(SpecialInfo.AddDate)} = @{nameof(SpecialInfo.AddDate)}
-            WHERE {nameof(SpecialInfo.Id)} = @{nameof(SpecialInfo.Id)}";
-
-            IDataParameter[] parameters =
-            {
-                GetParameter(nameof(specialInfo.SiteId), DataType.Integer, specialInfo.SiteId),
-                GetParameter(nameof(specialInfo.Title), DataType.VarChar, 200, specialInfo.Title),
-                GetParameter(nameof(specialInfo.Url), DataType.VarChar, 200, specialInfo.Url),
-                GetParameter(nameof(specialInfo.AddDate), DataType.DateTime, specialInfo.AddDate),
-                GetParameter(nameof(specialInfo.Id), DataType.Integer, specialInfo.Id)
-            };
-
-            ExecuteNonQuery(sqlString, parameters);
-
-            SpecialManager.RemoveCache(specialInfo.SiteId);
+            await _repository.UpdateAsync(special);
+            SpecialManager.RemoveCache(special.SiteId);
         }
 
-        public void Delete(int siteId, int specialId)
+        public async Task DeleteAsync(int siteId, int specialId)
         {
             if (specialId <= 0) return;
-
-            var sqlString = $"DELETE FROM {TableName} WHERE {nameof(SpecialInfo.Id)} = {specialId}";
-            ExecuteNonQuery(sqlString);
-
+            await _repository.DeleteAsync(specialId);
             SpecialManager.RemoveCache(siteId);
         }
 
-        public bool IsTitleExists(int siteId, string title)
+        public async Task<bool> IsTitleExistsAsync(int siteId, string title)
         {
-            var exists = false;
-
-            var sqlString = $@"SELECT {nameof(SpecialInfo.Id)} FROM {TableName} WHERE 
-    {nameof(SpecialInfo.SiteId)} = @{nameof(SpecialInfo.SiteId)} AND {nameof(SpecialInfo.Title)} = @{nameof(SpecialInfo.Title)}";
-
-            IDataParameter[] parameters =
-            {
-                GetParameter(nameof(SpecialInfo.SiteId), DataType.Integer, siteId),
-                GetParameter(nameof(SpecialInfo.Title), DataType.VarChar, 200, title)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parameters))
-            {
-                if (rdr.Read() && !rdr.IsDBNull(0))
-                {
-                    exists = true;
-                }
-                rdr.Close();
-            }
-
-            return exists;
+            return await _repository.ExistsAsync(Q
+                .Where(nameof(Special.SiteId), siteId)
+                .Where(nameof(Special.Title), title)
+            );
         }
 
-        public bool IsUrlExists(int siteId, string url)
+        public async Task<bool> IsUrlExistsAsync(int siteId, string url)
         {
-            var exists = false;
-
-            var sqlString = $@"SELECT {nameof(SpecialInfo.Id)} FROM {TableName} WHERE 
-    {nameof(SpecialInfo.SiteId)} = @{nameof(SpecialInfo.SiteId)} AND {nameof(SpecialInfo.Url)} = @{nameof(SpecialInfo.Url)}";
-
-            IDataParameter[] parameters =
-            {
-                GetParameter(nameof(SpecialInfo.SiteId), DataType.Integer, siteId),
-                GetParameter(nameof(SpecialInfo.Url), DataType.VarChar, 200, url)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parameters))
-            {
-                if (rdr.Read() && !rdr.IsDBNull(0))
-                {
-                    exists = true;
-                }
-                rdr.Close();
-            }
-
-            return exists;
+            return await _repository.ExistsAsync(Q
+                .Where(nameof(Special.SiteId), siteId)
+                .Where(nameof(Special.Url), url)
+            );
         }
 
-        public List<SpecialInfo> GetSpecialInfoList(int siteId)
+        public async Task<IEnumerable<Special>> GetSpecialListAsync(int siteId)
         {
-            var list = new List<SpecialInfo>();
-
-            var sqlString = $@"SELECT {nameof(SpecialInfo.Id)}, 
-                {nameof(SpecialInfo.SiteId)},
-                {nameof(SpecialInfo.Title)}, 
-                {nameof(SpecialInfo.Url)}, 
-                {nameof(SpecialInfo.AddDate)}
-            FROM {TableName} WHERE {nameof(SpecialInfo.SiteId)} = {siteId} ORDER BY {nameof(SpecialInfo.Id)} DESC";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetSpecialInfo(rdr));
-                }
-                rdr.Close();
-            }
-
-            return list;
+            return await _repository.GetAllAsync(Q
+                .Where(nameof(Special.SiteId), siteId)
+                .OrderByDesc(nameof(Special.Id))
+            );
         }
 
-        public List<SpecialInfo> GetSpecialInfoList(int siteId, string keyword)
+        public async Task<IEnumerable<Special>> GetSpecialListAsync(int siteId, string keyword)
         {
-            var list = new List<SpecialInfo>();
-
-            keyword = AttackUtils.FilterSql(keyword);
-
-            var sqlString = $@"SELECT {nameof(SpecialInfo.Id)}, 
-                {nameof(SpecialInfo.SiteId)},
-                {nameof(SpecialInfo.Title)}, 
-                {nameof(SpecialInfo.Url)}, 
-                {nameof(SpecialInfo.AddDate)}
-            FROM {TableName} WHERE {nameof(SpecialInfo.SiteId)} = {siteId} AND ({nameof(SpecialInfo.Title)} LIKE '%{keyword}%' OR {nameof(SpecialInfo.Url)} LIKE '%{keyword}%')  ORDER BY {nameof(SpecialInfo.Id)} DESC";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetSpecialInfo(rdr));
-                }
-                rdr.Close();
-            }
-
-            return list;
+            return await _repository.GetAllAsync(Q
+                .Where(nameof(Special.SiteId), siteId)
+                .Where(q => q
+                    .WhereLike(nameof(Special.Title), $"%{keyword}%")
+                    .OrWhereLike(nameof(Special.Url), $"%{keyword}%")
+                )
+                .OrderByDesc(nameof(Special.Id))
+            );
         }
 
-        public Dictionary<int, SpecialInfo> GetSpecialInfoDictionaryBySiteId(int siteId)
+        public async Task<Dictionary<int, Special>> GetSpecialDictionaryBySiteIdAsync(int siteId)
         {
-            var dictionary = new Dictionary<int, SpecialInfo>();
+            var dictionary = new Dictionary<int, Special>();
 
-            var sqlString = $@"SELECT {nameof(SpecialInfo.Id)}, 
-            {nameof(SpecialInfo.SiteId)},
-            {nameof(SpecialInfo.Title)},
-            {nameof(SpecialInfo.Url)},
-            {nameof(SpecialInfo.AddDate)}
-            FROM {TableName} WHERE {nameof(SpecialInfo.SiteId)} = {siteId}";
-
-            using (var rdr = ExecuteReader(sqlString))
+            var list = await _repository.GetAllAsync(Q.Where(nameof(Special.SiteId), siteId));
+            foreach (var special in list)
             {
-                while (rdr.Read())
-                {
-                    var specialInfo = GetSpecialInfo(rdr);
-                    dictionary.Add(specialInfo.Id, specialInfo);
-                }
-                rdr.Close();
+                dictionary.Add(special.Id, special);
             }
 
             return dictionary;
         }
-
-        private static SpecialInfo GetSpecialInfo(IDataRecord rdr)
-        {
-            if (rdr == null) return null;
-
-            var specialInfo = new SpecialInfo();
-
-            var i = 0;
-            specialInfo.Id = rdr.IsDBNull(i) ? 0 : rdr.GetInt32(i);
-            i++;
-            specialInfo.SiteId = rdr.IsDBNull(i) ? 0 : rdr.GetInt32(i);
-            i++;
-            specialInfo.Title = rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
-            i++;
-            specialInfo.Url = rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
-            i++;
-            specialInfo.AddDate = rdr.IsDBNull(i) ? DateTime.Now : rdr.GetDateTime(i);
-
-            return specialInfo;
-        }
-
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.DataCache.Content
 {
@@ -59,16 +59,16 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static void Add(string tableName, ContentInfo contentInfo)
+            public static void Add(string tableName, Model.Content content)
             {
-                if (string.IsNullOrEmpty(tableName) || contentInfo == null) return;
+                if (string.IsNullOrEmpty(tableName) || content == null) return;
 
                 lock (LockObject)
                 {
                     var countInfoList = GetContentCountInfoList(tableName);
                     var countInfo = countInfoList.FirstOrDefault(x =>
-                        x.SiteId == contentInfo.SiteId && x.ChannelId == contentInfo.ChannelId &&
-                        x.IsChecked == contentInfo.IsChecked.ToString() && x.CheckedLevel == contentInfo.CheckedLevel && x.AdminId == contentInfo.AdminId);
+                        x.SiteId == content.SiteId && x.ChannelId == content.ChannelId &&
+                        x.IsChecked == content.Checked.ToString() && x.CheckedLevel == content.CheckedLevel && x.AdminId == content.AdminId);
                     if (countInfo != null)
                     {
                         countInfo.Count++;
@@ -77,11 +77,11 @@ namespace SiteServer.CMS.DataCache.Content
                     {
                         countInfo = new ContentCountInfo
                         {
-                            SiteId = contentInfo.SiteId,
-                            ChannelId = contentInfo.ChannelId,
-                            IsChecked = contentInfo.IsChecked.ToString(),
-                            CheckedLevel = contentInfo.CheckedLevel,
-                            AdminId = contentInfo.AdminId,
+                            SiteId = content.SiteId,
+                            ChannelId = content.ChannelId,
+                            IsChecked = content.Checked.ToString(),
+                            CheckedLevel = content.CheckedLevel,
+                            AdminId = content.AdminId,
                             Count = 1
                         };
                         countInfoList.Add(countInfo);
@@ -89,27 +89,27 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static bool IsChanged(ContentInfo contentInfo1, ContentInfo contentInfo2)
+            public static bool IsChanged(Model.Content contentInfo1, Model.Content contentInfo2)
             {
                 if (contentInfo1 == null || contentInfo2 == null) return true;
 
                 return contentInfo1.SiteId != contentInfo2.SiteId ||
                        contentInfo1.ChannelId != contentInfo2.ChannelId ||
-                       contentInfo1.IsChecked != contentInfo2.IsChecked ||
+                       contentInfo1.Checked != contentInfo2.Checked ||
                        contentInfo1.CheckedLevel != contentInfo2.CheckedLevel ||
                        contentInfo1.AdminId != contentInfo2.AdminId;
             }
 
-            public static void Remove(string tableName, ContentInfo contentInfo)
+            public static void Remove(string tableName, Model.Content content)
             {
-                if (string.IsNullOrEmpty(tableName) || contentInfo == null) return;
+                if (string.IsNullOrEmpty(tableName) || content == null) return;
 
                 lock (LockObject)
                 {
                     var countInfoList = GetContentCountInfoList(tableName);
                     var countInfo = countInfoList.FirstOrDefault(x =>
-                        x.SiteId == contentInfo.SiteId && x.ChannelId == contentInfo.ChannelId &&
-                        x.IsChecked == contentInfo.IsChecked.ToString() && x.CheckedLevel == contentInfo.CheckedLevel && x.AdminId == contentInfo.AdminId);
+                        x.SiteId == content.SiteId && x.ChannelId == content.ChannelId &&
+                        x.IsChecked == content.Checked.ToString() && x.CheckedLevel == content.CheckedLevel && x.AdminId == content.AdminId);
                     if (countInfo != null && countInfo.Count > 0)
                     {
                         countInfo.Count--;
@@ -117,9 +117,9 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static int GetSiteCountIsChecked(Site site)
+            public static async Task<int> GetSiteCountIsCheckedAsync(Site site)
             {
-                var tableNames = SiteManager.GetTableNameList(site);
+                var tableNames = await SiteManager.GetTableNameListAsync(site);
                 var isChecked = true.ToString();
 
                 lock (LockObject)
@@ -136,9 +136,9 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static int GetSiteCountIsChecking(Site site)
+            public static async Task<int> GetSiteCountIsCheckingAsync(Site site)
             {
-                var tableNames = SiteManager.GetTableNameList(site);
+                var tableNames = await SiteManager.GetTableNameListAsync(site);
                 var isChecked = false.ToString();
 
                 lock (LockObject)
@@ -147,7 +147,7 @@ namespace SiteServer.CMS.DataCache.Content
                     foreach (var tableName in tableNames)
                     {
                         var list = GetContentCountInfoList(tableName);
-                        count += list.Where(x => x.SiteId == site.Id && x.IsChecked == isChecked && x.CheckedLevel != -site.Additional.CheckContentLevel && x.CheckedLevel != CheckManager.LevelInt.CaoGao)
+                        count += list.Where(x => x.SiteId == site.Id && x.IsChecked == isChecked && x.CheckedLevel != -site.CheckContentLevel && x.CheckedLevel != CheckManager.LevelInt.CaoGao)
                             .Sum(x => x.Count);
                     }
 
@@ -155,16 +155,16 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static int GetChannelCount(Site site, ChannelInfo channelInfo, int adminId, bool isAllContents)
+            public static async Task<int> GetChannelCountAsync(Site site, Channel channel, int adminId, bool isAllContents)
             {
                 return isAllContents
-                    ? GetChannelCountAll(site, channelInfo, adminId)
-                    : GetChannelCountSelf(site, channelInfo, adminId);
+                    ? await GetChannelCountAllAsync(site, channel, adminId)
+                    : await GetChannelCountSelfAsync(site, channel, adminId);
             }
 
-            private static int GetChannelCountSelf(Site site, ChannelInfo channelInfo, int adminId)
+            private static async Task<int> GetChannelCountSelfAsync(Site site, Channel channel, int adminId)
             {
-                var tableName = ChannelManager.GetTableName(site, channelInfo);
+                var tableName = await ChannelManager.GetTableNameAsync(site, channel);
 
                 lock (LockObject)
                 {
@@ -172,67 +172,67 @@ namespace SiteServer.CMS.DataCache.Content
                     return adminId > 0
                         ? list.Where(x =>
                                 x.SiteId == site.Id &&
-                                x.ChannelId == channelInfo.Id &&
+                                x.ChannelId == channel.Id &&
                                 x.AdminId == adminId)
                             .Sum(x => x.Count)
                         : list.Where(x =>
                                 x.SiteId == site.Id &&
-                                x.ChannelId == channelInfo.Id)
+                                x.ChannelId == channel.Id)
                             .Sum(x => x.Count);
                 }
             }
 
-            private static int GetChannelCountAll(Site site, ChannelInfo channelInfo, int adminId)
+            private static async Task<int> GetChannelCountAllAsync(Site site, Channel channel, int adminId)
             {
                 var count = 0;
-                var channelInfoList = new List<ChannelInfo> {channelInfo};
-                var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant);
+                var channelInfoList = new List<Channel> {channel};
+                var channelIdList = await ChannelManager.GetChannelIdListAsync(channel, EScopeType.Descendant);
                 foreach (var channelId in channelIdList)
                 {
-                    channelInfoList.Add(ChannelManager.GetChannelInfo(site.Id, channelId));
+                    channelInfoList.Add(await ChannelManager.GetChannelAsync(site.Id, channelId));
                 }
 
                 foreach (var info in channelInfoList)
                 {
-                    count += GetChannelCountSelf(site, info, adminId);
+                    count += await GetChannelCountSelfAsync(site, info, adminId);
                 }
 
                 return count;
             }
 
-            public static int GetChannelCountByIsChecked(Site site, ChannelInfo channelInfo, bool isChecked)
+            public static async Task<int> GetChannelCountByIsCheckedAsync(Site site, Channel channel, bool isChecked)
             {
-                var tableName = ChannelManager.GetTableName(site, channelInfo);
+                var tableName = await ChannelManager.GetTableNameAsync(site, channel);
 
                 lock (LockObject)
                 {
                     var list = GetContentCountInfoList(tableName);
                     return list.Where(x =>
-                            x.SiteId == site.Id && x.ChannelId == channelInfo.Id &&
+                            x.SiteId == site.Id && x.ChannelId == channel.Id &&
                             x.IsChecked == isChecked.ToString())
                         .Sum(x => x.Count);
                 }
             }
         }
 
-        public static int GetCountIsChecked(Site site)
+        public static async Task<int> GetCountIsCheckedAsync(Site site)
         {
-            return CountCache.GetSiteCountIsChecked(site);
+            return await CountCache.GetSiteCountIsCheckedAsync(site);
         }
 
-        public static int GetCountChecking(Site site)
+        public static async Task<int> GetCountCheckingAsync(Site site)
         {
-            return CountCache.GetSiteCountIsChecking(site);
+            return await CountCache.GetSiteCountIsCheckingAsync(site);
         }
 
-        public static int GetCount(Site site, ChannelInfo channelInfo, int adminId, bool isAllContents = false)
+        public static async Task<int> GetCountAsync(Site site, Channel channel, int adminId, bool isAllContents = false)
         {
-            return CountCache.GetChannelCount(site, channelInfo, adminId, isAllContents);
+            return await CountCache.GetChannelCountAsync(site, channel, adminId, isAllContents);
         }
 
-        public static int GetCount(Site site, ChannelInfo channelInfo, bool isChecked)
+        public static async Task<int> GetCountAsync(Site site, Channel channel, bool isChecked)
         {
-            return CountCache.GetChannelCountByIsChecked(site, channelInfo, isChecked);
+            return await CountCache.GetChannelCountByIsCheckedAsync(site, channel, isChecked);
         }
     }
 }

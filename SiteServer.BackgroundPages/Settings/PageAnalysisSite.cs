@@ -5,9 +5,10 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -116,8 +117,8 @@ yArrayUpdate.push('{yValueUpdate}');";
                 //x轴信息
                 SetXHashtable(key, site.SiteName);
                 //y轴信息
-                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentAdd(site.TableName, site.Id, site.Id, EScopeType.All, _begin, _end, string.Empty, ETriState.All), YTypeNew);
-                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentUpdate(site.TableName, site.Id, site.Id, EScopeType.All, _begin, _end, string.Empty), YTypeUpdate);
+                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentAddAsync(site.TableName, site.Id, site.Id, EScopeType.All, _begin, _end, string.Empty, ETriState.All).GetAwaiter().GetResult(), YTypeNew);
+                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentUpdateAsync(site.TableName, site.Id, site.Id, EScopeType.All, _begin, _end, string.Empty).GetAwaiter().GetResult(), YTypeUpdate);
             }
 
             RptContents.DataSource = siteIdList;

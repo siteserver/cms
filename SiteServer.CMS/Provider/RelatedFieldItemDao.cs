@@ -1,273 +1,119 @@
 using System.Collections.Generic;
-using System.Data;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class RelatedFieldItemDao : DataProviderBase
+    public class RelatedFieldItemDao : IRepository
     {
-        public override string TableName => "siteserver_RelatedFieldItem";
+        private readonly Repository<RelatedFieldItem> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public RelatedFieldItemDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldItemInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldItemInfo.RelatedFieldId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldItemInfo.ItemName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldItemInfo.ItemValue),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldItemInfo.ParentId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldItemInfo.Taxis),
-                DataType = DataType.Integer
-            }
-        };
-
-        private const string SqlUpdate = "UPDATE siteserver_RelatedFieldItem SET ItemName = @ItemName, ItemValue = @ItemValue WHERE ID = @ID";
-
-        private const string ParmId = "@ID";
-        private const string ParmRelatedFieldId = "@RelatedFieldID";
-        private const string ParmItemName = "@ItemName";
-        private const string ParmItemValue = "@ItemValue";
-        private const string ParmParentId = "@ParentID";
-        private const string ParmTaxis = "@Taxis";
-
-        public int Insert(RelatedFieldItemInfo info)
-        {
-            info.Taxis = GetMaxTaxis(info.ParentId) + 1;
-
-            const string sqlString = "INSERT INTO siteserver_RelatedFieldItem (RelatedFieldID, ItemName, ItemValue, ParentID, Taxis) VALUES (@RelatedFieldID, @ItemName, @ItemValue, @ParentID, @Taxis)";
-
-            var parms = new IDataParameter[]
-			{
-                GetParameter(ParmRelatedFieldId, DataType.Integer, info.RelatedFieldId),
-                GetParameter(ParmItemName, DataType.VarChar, 255, info.ItemName),
-                GetParameter(ParmItemValue, DataType.VarChar, 255, info.ItemValue),
-				GetParameter(ParmParentId, DataType.Integer, info.ParentId),
-                GetParameter(ParmTaxis, DataType.Integer, info.Taxis)
-			};
-
-            return ExecuteNonQueryAndReturnId(TableName, nameof(RelatedFieldItemInfo.Id), sqlString, parms);
-
-            //RelatedFieldManager.ClearCache();
+            _repository = new Repository<RelatedFieldItem>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public void Update(RelatedFieldItemInfo info)
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task<int> InsertAsync(RelatedFieldItem info)
         {
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmItemName, DataType.VarChar, 255, info.ItemName),
-                GetParameter(ParmItemValue, DataType.VarChar, 255, info.ItemValue),
-				GetParameter(ParmId, DataType.Integer, info.Id)
-			};
+            info.Taxis = await GetMaxTaxisAsync(info.ParentId) + 1;
 
-            ExecuteNonQuery(SqlUpdate, parms);
-
-            //RelatedFieldManager.ClearCache();
+            info.Id = await _repository.InsertAsync(info);
+            return info.Id;
         }
 
-        public void Delete(int id)
+        public async Task<bool> UpdateAsync(RelatedFieldItem info)
         {
-            if (id > 0)
-            {
-                string sqlString = $"DELETE FROM siteserver_RelatedFieldItem WHERE ID = {id} OR ParentID = {id}";
-                ExecuteNonQuery(sqlString);
-            }
-            //RelatedFieldManager.ClearCache();
+            return await _repository.UpdateAsync(info);
         }
 
-        public List<RelatedFieldItemInfo> GetRelatedFieldItemInfoList(int relatedFieldId, int parentId)
+        public async Task DeleteAsync(int id)
         {
-            var list = new List<RelatedFieldItemInfo>();
-
-            string sqlString =
-                $"SELECT ID, RelatedFieldID, ItemName, ItemValue, ParentID, Taxis FROM siteserver_RelatedFieldItem WHERE RelatedFieldID = {relatedFieldId} AND ParentID = {parentId} ORDER BY Taxis";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var info = new RelatedFieldItemInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i));
-                    list.Add(info);
-                }
-                rdr.Close();
-            }
-
-            return list;
+            await _repository.DeleteAsync(id);
         }
 
-        public void UpdateTaxisToUp(int id, int parentId)
+        public async Task<IEnumerable<RelatedFieldItem>> GetRelatedFieldItemInfoListAsync(int relatedFieldId, int parentId)
         {
-            //Get Higher Taxis and ClassID
-            //string sqlString =
-            //    $"SELECT TOP 1 ID, Taxis FROM siteserver_RelatedFieldItem WHERE ((Taxis > (SELECT Taxis FROM siteserver_RelatedFieldItem WHERE ID = {id})) AND ParentID = {parentId}) ORDER BY Taxis";
-            var sqlString = SqlUtils.ToTopSqlString("siteserver_RelatedFieldItem", "ID, Taxis", $"WHERE ((Taxis > (SELECT Taxis FROM siteserver_RelatedFieldItem WHERE ID = {id})) AND ParentID = {parentId})", "ORDER BY Taxis", 1);
+            return await _repository.GetAllAsync(Q
+                .Where(nameof(RelatedFieldItem.RelatedFieldId), relatedFieldId)
+                .Where(nameof(RelatedFieldItem.ParentId), parentId)
+                .OrderBy(nameof(RelatedFieldItem.Taxis)));
+        }
 
-            var higherId = 0;
-            var higherTaxis = 0;
+        public async Task UpdateTaxisToUpAsync(int id, int parentId)
+        {
+            var selectedTaxis = await GetTaxisAsync(id);
+            var result = await _repository.GetAsync<(int Id, int Taxis)?>(Q
+                .Select(nameof(RelatedFieldItem.Id), nameof(RelatedFieldItem.Taxis))
+                .Where(nameof(RelatedFieldItem.Taxis), ">", selectedTaxis)
+                .Where(nameof(RelatedFieldItem.ParentId), parentId)
+                .OrderBy(nameof(RelatedFieldItem.Taxis)));
 
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    higherId = GetInt(rdr, 0);
-                    higherTaxis = GetInt(rdr, 1);
-                }
-                rdr.Close();
-            }
+            if (result == null) return;
 
-            //Get Taxis Of Selected Class
-            var selectedTaxis = GetTaxis(id);
+            var higherId = result.Value.Id;
+            var higherTaxis = result.Value.Taxis;
 
             if (higherId != 0)
             {
-                //Set The Selected Class Taxis To Higher Level
-                SetTaxis(id, higherTaxis);
-                //Set The Higher Class Taxis To Lower Level
-                SetTaxis(higherId, selectedTaxis);
+                await SetTaxisAsync(id, higherTaxis);
+                await SetTaxisAsync(higherId, selectedTaxis);
             }
-
-            //RelatedFieldManager.ClearCache();
         }
 
-        public void UpdateTaxisToDown(int id, int parentId)
+        public async Task UpdateTaxisToDownAsync(int id, int parentId)
         {
-            //Get Lower Taxis and ClassID
-            //string sqlString =
-            //    $"SELECT TOP 1 ID, Taxis FROM siteserver_RelatedFieldItem WHERE ((Taxis < (SELECT Taxis FROM siteserver_RelatedFieldItem WHERE (ID = {id}))) AND ParentID = {parentId}) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.ToTopSqlString("siteserver_RelatedFieldItem", "ID, Taxis", $"WHERE ((Taxis < (SELECT Taxis FROM siteserver_RelatedFieldItem WHERE (ID = {id}))) AND ParentID = {parentId})", "ORDER BY Taxis DESC", 1);
+            var selectedTaxis = await GetTaxisAsync(id);
+            var result = await _repository.GetAsync<(int Id, int Taxis)?>(Q
+                .Select(nameof(RelatedFieldItem.Id), nameof(RelatedFieldItem.Taxis))
+                .Where(nameof(RelatedFieldItem.Taxis), "<", selectedTaxis)
+                .Where(nameof(RelatedFieldItem.ParentId), parentId)
+                .OrderByDesc(nameof(RelatedFieldItem.Taxis)));
 
-            var lowerId = 0;
-            var lowerTaxis = 0;
+            if (result == null) return;
 
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    lowerId = GetInt(rdr, 0);
-                    lowerTaxis = GetInt(rdr, 1);
-                }
-                rdr.Close();
-            }
-
-            //Get Taxis Of Selected Class
-            var selectedTaxis = GetTaxis(id);
+            var lowerId = result.Value.Id;
+            var lowerTaxis = result.Value.Taxis;
 
             if (lowerId != 0)
             {
-                //Set The Selected Class Taxis To Lower Level
-                SetTaxis(id, lowerTaxis);
-                //Set The Lower Class Taxis To Higher Level
-                SetTaxis(lowerId, selectedTaxis);
+                await SetTaxisAsync(id, lowerTaxis);
+                await SetTaxisAsync(lowerId, selectedTaxis);
             }
-
-            //RelatedFieldManager.ClearCache();
         }
 
-        private int GetTaxis(int id)
+        private async Task<int> GetTaxisAsync(int id)
         {
-            string cmd = $"SELECT Taxis FROM siteserver_RelatedFieldItem WHERE (ID = {id})";
-            var taxis = 0;
-
-            using (var rdr = ExecuteReader(cmd))
-            {
-                if (rdr.Read())
-                {
-                    taxis = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return taxis;
+            return await _repository.GetAsync<int>(Q
+                .Select(nameof(RelatedFieldItem.Taxis))
+                .Where(nameof(RelatedFieldItem.Id), id));
         }
 
-        private void SetTaxis(int id, int taxis)
+        private async Task SetTaxisAsync(int id, int taxis)
         {
-            string cmd = $"UPDATE siteserver_RelatedFieldItem SET Taxis = {taxis} WHERE ID = {id}";
-
-            ExecuteNonQuery(cmd);
+            await _repository.UpdateAsync(Q
+                .Set(nameof(RelatedFieldItem.Taxis), taxis)
+                .Where(nameof(RelatedFieldItem.Id), id)
+            );
         }
 
-        public int GetMaxTaxis(int parentId)
+        private async Task<int> GetMaxTaxisAsync(int parentId)
         {
-            int maxTaxis;
-            string cmd =
-                $"SELECT MAX(Taxis) FROM siteserver_RelatedFieldItem WHERE ParentID = {parentId} AND Taxis <> {int.MaxValue}";
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                var o = ExecuteScalar(conn, cmd);
-                if (o is System.DBNull)
-                    maxTaxis = 0;
-                else
-                    maxTaxis = int.Parse(o.ToString());
-            }
-            return maxTaxis;
+            return await _repository.MaxAsync(nameof(RelatedFieldItem.Taxis), Q
+                       .Where(nameof(RelatedFieldItem.ParentId), parentId)) ?? 0;
         }
 
-        public int GetMinTaxis(int parentId)
+        public async Task<RelatedFieldItem> GetAsync(int id)
         {
-            int minTaxis;
-            string cmd = $"SELECT MIN(Taxis) FROM siteserver_RelatedFieldItem WHERE ParentID = {parentId}";
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                var o = ExecuteScalar(conn, cmd);
-                if (o is System.DBNull)
-                    minTaxis = 0;
-                else
-                    minTaxis = int.Parse(o.ToString());
-            }
-            return minTaxis;
+            return await _repository.GetAsync(id);
         }
-
-        public RelatedFieldItemInfo GetRelatedFieldItemInfo(int id)
-        {
-            RelatedFieldItemInfo info = null;
-
-            string sqlString =
-                $"SELECT ID, RelatedFieldID, ItemName, ItemValue, ParentID, Taxis FROM siteserver_RelatedFieldItem WHERE ID = {id}";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    var i = 0;
-                    info = new RelatedFieldItemInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i));
-                }
-                rdr.Close();
-            }
-
-            return info;
-        }
-
-        
     }
 }

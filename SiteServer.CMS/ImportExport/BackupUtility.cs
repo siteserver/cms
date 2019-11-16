@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.Enumerations;
 
 namespace SiteServer.CMS.ImportExport
 {
@@ -23,16 +24,16 @@ namespace SiteServer.CMS.ImportExport
         {
             var exportObject = new ExportObject(siteId, adminName);
 
-            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
+            var channelIdList = await ChannelManager.GetChannelIdListAsync(await ChannelManager.GetChannelAsync(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
 
             await exportObject.ExportChannelsAsync(channelIdList, filePath);  
         }
 
-        public static void BackupFiles(int siteId, string filePath, string adminName)
+        public static async Task BackupFilesAsync(int siteId, string filePath, string adminName)
         {
             var exportObject = new ExportObject(siteId, adminName);
 
-            exportObject.ExportFiles(filePath);
+            await exportObject.ExportFilesAsync(filePath);
         }
 
         public static async Task BackupSiteAsync(int siteId, string filePath, string adminName)
@@ -83,7 +84,7 @@ namespace SiteServer.CMS.ImportExport
 
             if (isDeleteChannels)
             {
-                var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
+                var channelIdList = await ChannelManager.GetChannelIdListAsync(await ChannelManager.GetChannelAsync(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
                 foreach (var channelId in channelIdList)
                 {
                     await DataProvider.ChannelDao.DeleteAsync(siteId, channelId);
@@ -92,10 +93,10 @@ namespace SiteServer.CMS.ImportExport
             if (isDeleteTemplates)
             {
                 var templateInfoList =
-                    DataProvider.TemplateDao.GetTemplateInfoListBySiteId(siteId);
+                    await DataProvider.TemplateDao.GetTemplateListBySiteIdAsync(siteId);
                 foreach (var templateInfo in templateInfoList)
                 {
-                    if (templateInfo.IsDefault == false)
+                    if (templateInfo.Default == false)
                     {
                         await DataProvider.TemplateDao.DeleteAsync(siteId, templateInfo.Id);
                     }
@@ -122,14 +123,14 @@ namespace SiteServer.CMS.ImportExport
 
             //导入栏目及内容
             var siteContentDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.SiteContent);
-            importObject.ImportChannelsAndContents(0, siteContentDirectoryPath, isOverride);
+            await importObject.ImportChannelsAndContentsAsync(0, siteContentDirectoryPath, isOverride);
 
             //导入表样式及清除缓存
             if (isUseTable)
             {
-                importObject.ImportTableStyles(tableDirectoryPath);
+                await importObject.ImportTableStylesAsync(tableDirectoryPath);
             }
-            importObject.RemoveDbCache();
+            await importObject.RemoveDbCacheAsync();
 
             CacheUtils.ClearAll();
         }

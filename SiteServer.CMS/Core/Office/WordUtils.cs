@@ -3,8 +3,9 @@ using SiteServer.Utils;
 using Word.Plugin;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.Core.Office
 {
@@ -86,7 +87,7 @@ namespace SiteServer.CMS.Core.Office
             }
             catch(Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return string.Empty;
             }
         }
@@ -119,13 +120,13 @@ namespace SiteServer.CMS.Core.Office
                 }
                 if (!string.IsNullOrEmpty(title))
                 {
-                    title = StringUtils.MaxLengthText(title, 200, string.Empty);
+                    title = WebUtils.MaxLengthText(title, 200, string.Empty);
                 }
                 formCollection[ContentAttribute.Title] = title;
 
                 wordContent = StringUtils.ReplaceFirst("<p></p>", wordContent, string.Empty);
 
-                formCollection[BackgroundContentAttribute.Content] = wordContent;
+                formCollection[ContentAttribute.Content] = wordContent;
             }
             return formCollection;
         }

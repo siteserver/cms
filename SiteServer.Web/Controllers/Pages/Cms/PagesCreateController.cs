@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -25,9 +24,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }
@@ -35,27 +34,27 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var siteId = request.SiteId;
                 var parentId = request.GetQueryInt("parentId");
                 var site = await SiteManager.GetSiteAsync(siteId);
-                var parent = ChannelManager.GetChannelInfo(siteId, parentId);
+                var parent = await ChannelManager.GetChannelAsync(siteId, parentId);
                 var countDict = new Dictionary<int, int>();
-                countDict[parent.Id] = ContentManager.GetCount(site, parent, true);
+                countDict[parent.Id] = await ContentManager.GetCountAsync(site, parent, true);
 
-                var channelInfoList = new List<ChannelInfo>();
+                var channelInfoList = new List<Channel>();
 
                 var channelIdList =
-                    ChannelManager.GetChannelIdList(parent, EScopeType.Children, string.Empty, string.Empty, string.Empty);
+                    await ChannelManager.GetChannelIdListAsync(parent, EScopeType.Children, string.Empty, string.Empty, string.Empty);
 
                 foreach (var channelId in channelIdList)
                 {
-                    var enabled = request.AdminPermissionsImpl.IsOwningChannelId(channelId);
+                    var enabled = await request.AdminPermissionsImpl.IsOwningChannelIdAsync(channelId);
                     
                     if (!enabled)
                     {
-                        if (!request.AdminPermissionsImpl.IsDescendantOwningChannelId(siteId, channelId)) continue;
+                        if (!await request.AdminPermissionsImpl.IsDescendantOwningChannelIdAsync(siteId, channelId)) continue;
                     }
 
-                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                    var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                     channelInfoList.Add(channelInfo);
-                    countDict[channelInfo.Id] = ContentManager.GetCount(site, channelInfo, true);
+                    countDict[channelInfo.Id] = await ContentManager.GetCountAsync(site, channelInfo, true);
                 }
 
                 return Ok(new
@@ -87,9 +86,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }
@@ -98,7 +97,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 if (parameter.IsAllChecked)
                 {
-                    selectedChannelIdList = ChannelManager.GetChannelIdList(parameter.SiteId);
+                    selectedChannelIdList = await ChannelManager.GetChannelIdListAsync(parameter.SiteId);
                 }
                 else if (parameter.IsDescendent)
                 {
@@ -106,10 +105,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     {
                         selectedChannelIdList.Add(channelId);
 
-                        var channelInfo = ChannelManager.GetChannelInfo(parameter.SiteId, channelId);
+                        var channelInfo = await ChannelManager.GetChannelAsync(parameter.SiteId, channelId);
                         if (channelInfo.ChildrenCount > 0)
                         {
-                            var descendentIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant);
+                            var descendentIdList = await ChannelManager.GetChannelIdListAsync(channelInfo, EScopeType.Descendant);
                             foreach (var descendentId in descendentIdList)
                             {
                                 if (selectedChannelIdList.Contains(descendentId)) continue;
@@ -174,11 +173,11 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 {
                     if (parameter.IsChannelPage)
                     {
-                        CreateManager.CreateChannel(parameter.SiteId, channelId);
+                        await CreateManager.CreateChannelAsync(parameter.SiteId, channelId);
                     }
                     if (parameter.IsContentPage)
                     {
-                        CreateManager.CreateAllContent(parameter.SiteId, channelId);
+                        await CreateManager.CreateAllContentAsync(parameter.SiteId, channelId);
                     }
                 }
 
@@ -191,18 +190,18 @@ namespace SiteServer.API.Controllers.Pages.Cms
         }
 
         [HttpPost, Route(RouteAll)]
-        public IHttpActionResult CreateAll([FromBody] CreateParameter parameter)
+        public async Task<IHttpActionResult> CreateAll([FromBody] CreateParameter parameter)
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }
 
-                CreateManager.CreateByAll(parameter.SiteId);
+                await CreateManager.CreateByAllAsync(parameter.SiteId);
 
                 return Ok(new { });
             }

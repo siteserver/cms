@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.DataCache.Stl
 {
@@ -120,24 +121,21 @@ namespace SiteServer.CMS.DataCache.Stl
             return retVal;
         }
 
-        public static int GetCountOfContentAdd(string tableName, int siteId, int channelId, EScopeType scope,
+        public static async Task<int> GetCountOfContentAddAsync(string tableName, int siteId, int channelId, EScopeType scope,
             DateTime begin, DateTime end, string userName, ETriState checkedState)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetCountOfContentAdd),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetCountOfContentAddAsync),
                     siteId.ToString(), channelId.ToString(), EScopeTypeUtils.GetValue(scope),
                     DateUtils.GetDateString(begin), DateUtils.GetDateString(end), userName, ETriStateUtils.GetValue(checkedState));
             var retVal = StlCacheManager.GetInt(cacheKey);
             if (retVal != -1) return retVal;
 
-            lock (LockObject)
+            retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal == -1)
             {
-                retVal = StlCacheManager.GetInt(cacheKey);
-                if (retVal == -1)
-                {
-                    retVal = DataProvider.ContentDao.GetCountOfContentAdd(tableName, siteId, channelId, scope,
+                retVal = await DataProvider.ContentDao.GetCountOfContentAddAsync(tableName, siteId, channelId, scope,
                     begin, end, userName, checkedState);
-                    StlCacheManager.Set(cacheKey, retVal);
-                }
+                StlCacheManager.Set(cacheKey, retVal);
             }
 
             return retVal;
@@ -203,9 +201,9 @@ namespace SiteServer.CMS.DataCache.Stl
             return retVal;
         }
 
-        public static string GetStlWhereString(int siteId, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        public static async Task<string> GetStlWhereStringAsync(int siteId, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetStlWhereString),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetStlWhereStringAsync),
                     siteId.ToString(), group, groupNot,
                     tags, isImageExists.ToString(), isImage.ToString(), isVideoExists.ToString(), isVideo.ToString(),
                     isFileExists.ToString(), isFile.ToString(), isTopExists.ToString(), isTop.ToString(),
@@ -214,64 +212,55 @@ namespace SiteServer.CMS.DataCache.Stl
             var retVal = StlCacheManager.Get<string>(cacheKey);
             if (retVal != null) return retVal;
 
-            lock (LockObject)
+            retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal == null)
             {
-                retVal = StlCacheManager.Get<string>(cacheKey);
-                if (retVal == null)
-                {
-                    retVal = DataProvider.ContentDao.GetStlWhereString(siteId, group,
+                retVal = await DataProvider.ContentDao.GetStlWhereStringAsync(siteId, group,
                     groupNot,
                     tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop,
                     isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
-                    StlCacheManager.Set(cacheKey, retVal);
-                }
+                StlCacheManager.Set(cacheKey, retVal);
             }
 
             return retVal;
         }
 
-        public static string GetStlWhereString(int siteId, string group, string groupNot, string tags, bool isTopExists, bool isTop, string where)
+        public static async Task<string> GetStlWhereStringAsync(int siteId, string group, string groupNot, string tags, bool isTopExists, bool isTop, string where)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetStlWhereString),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetStlWhereStringAsync),
                     siteId.ToString(), group, groupNot, tags, isTopExists.ToString(), isTop.ToString(),
                     where);
             var retVal = StlCacheManager.Get<string>(cacheKey);
             if (retVal != null) return retVal;
 
-            lock (LockObject)
+            retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal == null)
             {
-                retVal = StlCacheManager.Get<string>(cacheKey);
-                if (retVal == null)
-                {
-                    retVal = DataProvider.ContentDao.GetStlWhereString(siteId, group, groupNot, tags,
+                retVal = await DataProvider.ContentDao.GetStlWhereStringAsync(siteId, group, groupNot, tags,
                     isTopExists, isTop, where);
-                    StlCacheManager.Set(cacheKey, retVal);
-                }
+                StlCacheManager.Set(cacheKey, retVal);
             }
 
             return retVal;
         }
 
-        public static string GetStlSqlStringChecked(string tableName, int siteId, int channelId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot)
+        public static async Task<string> GetStlSqlStringCheckedAsync(string tableName, int siteId, int channelId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetStlSqlStringChecked),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetStlSqlStringCheckedAsync),
                     tableName, siteId.ToString(), channelId.ToString(), startNum.ToString(),
                     totalNum.ToString(), orderByString, whereString, EScopeTypeUtils.GetValue(scopeType), groupChannel,
                     groupChannelNot);
             var retVal = StlCacheManager.Get<string>(cacheKey);
             if (retVal != null) return retVal;
 
-            lock (LockObject)
+            retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal == null)
             {
-                retVal = StlCacheManager.Get<string>(cacheKey);
-                if (retVal == null)
-                {
-                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                    var channelIdList = ChannelManager.GetChannelIdList(channelInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
-                    retVal = DataProvider.ContentDao.GetStlSqlStringChecked(channelIdList, tableName, siteId, channelId, startNum,
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelIdList = await ChannelManager.GetChannelIdListAsync(channelInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
+                retVal = DataProvider.ContentDao.GetStlSqlStringChecked(channelIdList, tableName, siteId, channelId, startNum,
                     totalNum, orderByString, whereString, scopeType, groupChannel, groupChannelNot);
-                    StlCacheManager.Set(cacheKey, retVal);
-                }
+                StlCacheManager.Set(cacheKey, retVal);
             }
 
             return retVal;

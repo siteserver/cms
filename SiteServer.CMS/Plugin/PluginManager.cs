@@ -5,9 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using SiteServer.CMS.Api;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Plugin.Impl;
@@ -22,10 +25,9 @@ namespace SiteServer.CMS.Plugin
     {
         private static class PluginManagerCache
         {
-            private static readonly object LockObject = new object();
             private const string CacheKey = "SiteServer.CMS.Plugin.PluginCache";
 
-            private static SortedList<string, PluginInstance> Load()
+            private static async Task<SortedList<string, PluginInstance>> LoadAsync()
             {
                 var dict = new SortedList<string, PluginInstance>();
 
@@ -33,7 +35,7 @@ namespace SiteServer.CMS.Plugin
 
                 try
                 {
-                    var pluginsPath = PathUtils.PluginsPath;
+                    var pluginsPath = WebUtils.PluginsPath;
                     if (!Directory.Exists(pluginsPath))
                     {
                         return dict;
@@ -44,7 +46,7 @@ namespace SiteServer.CMS.Plugin
                     {
                         if (StringUtils.StartsWith(directoryName, ".") || StringUtils.EqualsIgnoreCase(directoryName, "packages")) continue;
                         
-                        var pluginInfo = ActivePlugin(directoryName);
+                        var pluginInfo = await ActivePluginAsync(directoryName);
                         if (pluginInfo != null)
                         {
                             dict[directoryName] = pluginInfo;
@@ -57,13 +59,13 @@ namespace SiteServer.CMS.Plugin
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(ex, "载入插件时报错");
+                    await LogUtils.AddErrorLogAsync(ex, "载入插件时报错");
                 }
 
                 return dict;
             }
 
-            private static PluginInstance ActivePlugin(string directoryName)
+            private static async Task<PluginInstance> ActivePluginAsync(string directoryName)
             {
                 PackageMetadata metadata = null;
                 string errorMessage;
@@ -72,7 +74,7 @@ namespace SiteServer.CMS.Plugin
                 {
                     metadata = PackageUtils.GetPackageMetadataFromPluginDirectory(directoryName, out errorMessage);
 
-                    var dllDirectoryPath = PathUtils.GetPluginDllDirectoryPath(directoryName);
+                    var dllDirectoryPath = WebUtils.GetPluginDllDirectoryPath(directoryName);
                     if (string.IsNullOrEmpty(dllDirectoryPath))
                     {
                         throw new Exception($"插件可执行文件 {directoryName}.dll 不存在");
@@ -109,12 +111,12 @@ namespace SiteServer.CMS.Plugin
 
                     //var type = assembly.GetTypes().First(o => o.IsClass && !o.IsAbstract && o.IsSubclassOf(typeof(PluginBase)));
 
-                    return ActiveAndAdd(metadata, type);
+                    return await ActiveAndAddAsync(metadata, type);
                 }
                 catch (Exception ex)
                 {
                     errorMessage = ex.Message;
-                    LogUtils.AddErrorLog(ex, $"插件加载：{directoryName}");
+                    await LogUtils.AddErrorLogAsync(ex, $"插件加载：{directoryName}");
                 }
 
                 return new PluginInstance(directoryName, metadata, errorMessage);
@@ -143,7 +145,7 @@ namespace SiteServer.CMS.Plugin
                 }
             }
 
-            private static PluginInstance ActiveAndAdd(PackageMetadata metadata, Type type)
+            private static async Task<PluginInstance> ActiveAndAddAsync(PackageMetadata metadata, Type type)
             {
                 if (metadata == null || type == null) return null;
 
@@ -160,10 +162,10 @@ namespace SiteServer.CMS.Plugin
 
                 plugin.Startup(service);
 
-                PluginContentTableManager.SyncContentTable(service);
+                await PluginContentTableManager.SyncContentTableAsync(service);
                 PluginDatabaseTableManager.SyncTable(service);
 
-                return new PluginInstance(metadata, service, plugin, s.ElapsedMilliseconds);
+                return await PluginInstance.GetAsync(metadata, service, plugin, s.ElapsedMilliseconds);
             }
 
             public static void Clear()
@@ -171,19 +173,16 @@ namespace SiteServer.CMS.Plugin
                 CacheUtils.Remove(CacheKey);
             }
 
-            public static SortedList<string, PluginInstance> GetPluginSortedList()
+            public static async Task<SortedList<string, PluginInstance>> GetPluginSortedListAsync()
             {
                 var retVal = CacheUtils.Get<SortedList<string, PluginInstance>>(CacheKey);
                 if (retVal != null) return retVal;
 
-                lock (LockObject)
+                retVal = CacheUtils.Get<SortedList<string, PluginInstance>>(CacheKey);
+                if (retVal == null)
                 {
-                    retVal = CacheUtils.Get<SortedList<string, PluginInstance>>(CacheKey);
-                    if (retVal == null)
-                    {
-                        retVal = Load();
-                        CacheUtils.InsertHours(CacheKey, retVal, 24);
-                    }
+                    retVal = await LoadAsync();
+                    CacheUtils.InsertHours(CacheKey, retVal, 24);
                 }
 
                 return retVal;
@@ -192,11 +191,13 @@ namespace SiteServer.CMS.Plugin
 
         private static List<PluginInstance> _pluginInfoListRunnable;
 
-        public static void LoadPlugins(string applicationPhysicalPath)
+        public static async Task LoadPluginsAsync(string applicationPhysicalPath)
         {
             WebConfigUtils.Load(applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
 
-            Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
+            var config = await ConfigManager.GetInstanceAsync();
+
+            SiteServer.Plugin.Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, config.ApiUrl), new ApiCollectionImpl
             {
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,
@@ -209,7 +210,7 @@ namespace SiteServer.CMS.Plugin
                 UtilsApi = UtilsApi.Instance
             });
 
-            _pluginInfoListRunnable = PluginInfoListRunnable;
+            _pluginInfoListRunnable = await GetPluginInfoListRunnableAsync();
         }
 
         public static void ClearCache()
@@ -217,9 +218,9 @@ namespace SiteServer.CMS.Plugin
             PluginManagerCache.Clear();
         }
 
-        public static IMetadata GetMetadata(string pluginId)
+        public static async Task<IMetadata> GetMetadataAsync(string pluginId)
         {
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
             PluginInstance pluginInfo;
             if (dict.TryGetValue(pluginId, out pluginInfo))
             {
@@ -228,76 +229,67 @@ namespace SiteServer.CMS.Plugin
             return null;
         }
 
-        public static bool IsExists(string pluginId)
+        public static async Task<bool> IsExistsAsync(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return false;
 
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
 
             return dict.ContainsKey(pluginId);
         }
 
-        public static List<PluginInstance> PluginInfoListRunnable
+        public static async Task<List<PluginInstance>> GetPluginInfoListRunnableAsync()
         {
-            get
-            {
-                var dict = PluginManagerCache.GetPluginSortedList();
-                return dict.Values.Where(pluginInfo => pluginInfo.Plugin != null).ToList();
-            }
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
+            return dict.Values.Where(pluginInfo => pluginInfo.Plugin != null).ToList();
         }
 
-        public static List<PluginInstance> AllPluginInfoList
+        public static async Task<List<PluginInstance>> GetAllPluginInfoListAsync()
         {
-            get
-            {
-                var dict = PluginManagerCache.GetPluginSortedList();
-                return dict.Values.ToList();
-            }
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
+            return dict.Values.ToList();
         }
 
-        public static List<PluginInstance> GetEnabledPluginInfoList<T>() where T : PluginBase
+        public static async Task<List<PluginInstance>> GetEnabledPluginInfoListAsync<T>() where T : PluginBase
         {
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
             return
-                    dict.Values.Where(
-                            pluginInfo =>
-                                pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
-                                pluginInfo.Plugin is T
-                        )
-                        .ToList();
+                dict.Values.Where(
+                        pluginInfo =>
+                            pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
+                            pluginInfo.Plugin is T
+                    )
+                    .ToList();
         }
 
-        public static List<ServiceImpl> Services
+        public static async Task<List<ServiceImpl>> GetServicesAsync()
         {
-            get
-            {
-                var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
 
-                return dict.Values.Where(
-                            pluginInfo =>
-                                pluginInfo.Plugin != null && !pluginInfo.IsDisabled
-                        ).Select(pluginInfo => pluginInfo.Service).ToList();
-            }
+            return dict.Values.Where(
+                pluginInfo =>
+                    pluginInfo.Plugin != null && !pluginInfo.IsDisabled
+            ).Select(pluginInfo => pluginInfo.Service).ToList();
         }
 
-        public static PluginInstance GetPluginInfo(string pluginId)
+        public static async Task<PluginInstance> GetPluginInfoAsync(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
 
             return dict.TryGetValue(pluginId, out var pluginInfo) ? pluginInfo : null;
         }
 
-        public static PluginInstance GetPluginInfo<T>() where T : PluginBase
+        public static async Task<PluginInstance> GetPluginInfoAsync<T>() where T : PluginBase
         {
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
             return dict.Values.Where(instance => instance.Plugin is T).FirstOrDefault(instance => instance.IsRunnable && !instance.IsDisabled);
         }
 
-        public static Dictionary<string, string> GetPluginIdAndVersionDict()
+        public static async Task<Dictionary<string, string>> GetPluginIdAndVersionDictAsync()
         {
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
 
             var retVal = new Dictionary<string, string>();
 
@@ -321,17 +313,17 @@ namespace SiteServer.CMS.Plugin
         {
             get
             {
-                var packagesPath = PathUtils.GetPackagesPath();
+                var packagesPath = WebUtils.GetPackagesPath();
                 DirectoryUtils.CreateDirectoryIfNotExists(packagesPath);
                 return DirectoryUtils.GetDirectoryNames(packagesPath).ToList();
             }
         }
 
-        public static PluginBase GetPlugin(string pluginId)
+        public static async Task<PluginBase> GetPluginAsync(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
 
             PluginInstance pluginInfo;
             if (dict.TryGetValue(pluginId, out pluginInfo))
@@ -341,14 +333,13 @@ namespace SiteServer.CMS.Plugin
             return null;
         }
 
-        public static PluginInstance GetEnabledPluginInfo<T>(string pluginId) where T : PluginBase
+        public static async Task<PluginInstance> GetEnabledPluginInfoAsync<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
 
-            PluginInstance pluginInfo;
-            var isGet = dict.TryGetValue(pluginId, out pluginInfo);
+            var isGet = dict.TryGetValue(pluginId, out var pluginInfo);
             if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                 pluginInfo.Plugin is T)
             {
@@ -357,9 +348,9 @@ namespace SiteServer.CMS.Plugin
             return null;
         }
 
-        public static List<PluginInstance> GetEnabledPluginInfoList<T1, T2>()
+        public static async Task<List<PluginInstance>> GetEnabledPluginInfoListAsync<T1, T2>()
         {
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
 
             return dict.Values.Where(
                             pluginInfo =>
@@ -369,9 +360,9 @@ namespace SiteServer.CMS.Plugin
                         .ToList();
         }
 
-        public static List<PluginBase> GetEnabledPluginMetadatas<T>() where T : PluginBase
+        public static async Task<List<PluginBase>> GetEnabledPluginMetadatasAsync<T>() where T : PluginBase
         {
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
 
             return dict.Values.Where(
                         pluginInfo =>
@@ -380,14 +371,13 @@ namespace SiteServer.CMS.Plugin
                     ).Select(pluginInfo => pluginInfo.Plugin).ToList();
         }
 
-        public static IMetadata GetEnabledPluginMetadata<T>(string pluginId) where T : PluginBase
+        public static async Task<IMetadata> GetEnabledPluginMetadataAsync<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
 
-            PluginInstance pluginInfo;
-            var isGet = dict.TryGetValue(pluginId, out pluginInfo);
+            var isGet = dict.TryGetValue(pluginId, out var pluginInfo);
             if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                 pluginInfo.Plugin is T)
             {
@@ -396,11 +386,11 @@ namespace SiteServer.CMS.Plugin
             return null;
         }
 
-        public static T GetEnabledFeature<T>(string pluginId) where T : PluginBase
+        public static async Task<T> GetEnabledFeatureAsync<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return default(T);
 
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
 
             PluginInstance pluginInfo;
             var isGet = dict.TryGetValue(pluginId, out pluginInfo);
@@ -412,9 +402,9 @@ namespace SiteServer.CMS.Plugin
             return default(T);
         }
 
-        public static List<T> GetEnabledFeatures<T>() where T : PluginBase
+        public static async Task<List<T>> GetEnabledFeaturesAsync<T>() where T : PluginBase
         {
-            var dict = PluginManagerCache.GetPluginSortedList();
+            var dict = await PluginManagerCache.GetPluginSortedListAsync();
 
             var pluginInfos = dict.Values.Where(
                         pluginInfo =>
@@ -425,11 +415,11 @@ namespace SiteServer.CMS.Plugin
             return pluginInfos.Select(pluginInfo => (T)pluginInfo.Plugin).ToList();
         }
 
-        public static ServiceImpl GetService(string pluginId)
+        public static async Task<ServiceImpl> GetServiceAsync(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
-            foreach (var service in Services)
+            foreach (var service in await GetServicesAsync())
             {
                 if (StringUtils.EqualsIgnoreCase(service.PluginId, pluginId))
                 {
@@ -622,28 +612,28 @@ namespace SiteServer.CMS.Plugin
 
         public static void Delete(string pluginId)
         {
-            DirectoryUtils.DeleteDirectoryIfExists(PathUtils.GetPluginPath(pluginId));
+            DirectoryUtils.DeleteDirectoryIfExists(WebUtils.GetPluginPath(pluginId));
             ClearCache();
         }
 
-        public static void UpdateDisabled(string pluginId, bool isDisabled)
+        public static async Task UpdateDisabledAsync(string pluginId, bool isDisabled)
         {
-            var pluginInfo = GetPluginInfo(pluginId);
+            var pluginInfo = await GetPluginInfoAsync(pluginId);
             if (pluginInfo != null)
             {
                 pluginInfo.IsDisabled = isDisabled;
-                DataProvider.PluginDao.UpdateIsDisabled(pluginId, isDisabled);
+                await DataProvider.PluginDao.UpdateIsDisabledAsync(pluginId, isDisabled);
                 ClearCache();
             }
         }
 
-        public static void UpdateTaxis(string pluginId, int taxis)
+        public static async Task UpdateTaxisAsync(string pluginId, int taxis)
         {
-            var pluginInfo = GetPluginInfo(pluginId);
+            var pluginInfo = await GetPluginInfoAsync(pluginId);
             if (pluginInfo != null)
             {
                 pluginInfo.Taxis = taxis;
-                DataProvider.PluginDao.UpdateTaxis(pluginId, taxis);
+                await DataProvider.PluginDao.UpdateTaxisAsync(pluginId, taxis);
                 ClearCache();
             }
         }
@@ -736,9 +726,9 @@ namespace SiteServer.CMS.Plugin
         //    return metadata;
         //}
 
-        public static string GetPluginIconUrl(string pluginId)
+        public static async Task<string> GetPluginIconUrlAsync(string pluginId)
         {
-            foreach (var service in Services)
+            foreach (var service in await GetServicesAsync())
             {
                 if (service.PluginId == pluginId)
                 {

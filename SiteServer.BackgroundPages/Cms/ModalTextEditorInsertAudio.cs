@@ -2,9 +2,10 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.LitJson;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.Utils.LitJson;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -44,10 +45,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            CbIsAutoPlay.Checked = Site.Additional.ConfigUEditorAudioIsAutoPlay;
+            CbIsAutoPlay.Checked = Site.ConfigUEditorAudioIsAutoPlay;
         }
 
-        public string TypeCollection => Site.Additional.VideoUploadTypeCollection;
+        public string TypeCollection => Site.VideoUploadTypeCollection;
 
         private Hashtable Upload()
         {
@@ -116,9 +117,9 @@ namespace SiteServer.BackgroundPages.Cms
             var playUrl = TbPlayUrl.Text;
             var isAutoPlay = CbIsAutoPlay.Checked;
 
-            if (isAutoPlay != Site.Additional.ConfigUEditorAudioIsAutoPlay)
+            if (isAutoPlay != Site.ConfigUEditorAudioIsAutoPlay)
             {
-                Site.Additional.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
+                Site.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
                 DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
             }
 

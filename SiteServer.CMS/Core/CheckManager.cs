@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
+using Content = SiteServer.CMS.Model.Content;
 
 namespace SiteServer.CMS.Core
 {
@@ -100,7 +102,7 @@ namespace SiteServer.CMS.Core
         {
             var checkedLevels = new List<KeyValuePair<int, string>>();
 
-            var checkContentLevel = site.Additional.CheckContentLevel;
+            var checkContentLevel = site.CheckContentLevel;
             if (isChecked)
             {
                 checkedLevel = checkContentLevel;
@@ -287,9 +289,9 @@ namespace SiteServer.CMS.Core
             return checkedLevels;
         }
 
-        public static void LoadContentLevelToEdit(ListControl listControl, Site site, ContentInfo contentInfo, bool isChecked, int checkedLevel)
+        public static void LoadContentLevelToEdit(ListControl listControl, Site site, Content content, bool isChecked, int checkedLevel)
 	    {
-	        var checkContentLevel = site.Additional.CheckContentLevel;
+	        var checkContentLevel = site.CheckContentLevel;
 	        if (isChecked)
 	        {
 	            checkedLevel = checkContentLevel;
@@ -298,9 +300,9 @@ namespace SiteServer.CMS.Core
 	        ListItem listItem;
 
 	        //var isCheckable = false;
-	        //if (contentInfo != null)
+	        //if (content != null)
 	        //{
-	        //    isCheckable = IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
+	        //    isCheckable = IsCheckable(content.IsChecked, content.CheckedLevel, isChecked, checkedLevel);
 	        //    if (isCheckable)
 	        //    {
 	        //        listItem = new ListItem(Level.NotChange, LevelInt.NotChange.ToString());
@@ -404,7 +406,7 @@ namespace SiteServer.CMS.Core
 	            listControl.Items.Add(listItem);
 	        }
 
-	        //if (contentInfo == null)
+	        //if (content == null)
 	        //{
 	            ControlUtils.SelectSingleItem(listControl, checkedLevel.ToString());
 	        //}
@@ -417,7 +419,7 @@ namespace SiteServer.CMS.Core
 
 	    public static void LoadContentLevelToList(ListControl listControl, Site site, bool isCheckOnly, bool isChecked, int checkedLevel)
 	    {
-	        var checkContentLevel = site.Additional.CheckContentLevel;
+	        var checkContentLevel = site.CheckContentLevel;
 
 	        if (isChecked)
 	        {
@@ -605,7 +607,7 @@ namespace SiteServer.CMS.Core
 
 	    public static void LoadContentLevelToCheck(ListControl listControl, Site site, bool isChecked, int checkedLevel)
 	    {
-	        var checkContentLevel = site.Additional.CheckContentLevel;
+	        var checkContentLevel = site.CheckContentLevel;
 	        if (isChecked)
 	        {
 	            checkedLevel = checkContentLevel;
@@ -813,138 +815,138 @@ namespace SiteServer.CMS.Core
 	        ControlUtils.SelectSingleItem(listControl, checkedLevel.ToString());
 	    }
 
-	    public static string GetCheckState(Site site, ContentInfo contentInfo)
+	    public static string GetCheckState(Site site, Content content)
 	    {
-	        if (contentInfo.IsChecked)
+	        if (content.Checked)
 	        {
 	            return Level.YiShenHe;
 	        }
 
 	        var retVal = string.Empty;
 
-	        if (contentInfo.CheckedLevel == LevelInt.CaoGao)
+	        if (content.CheckedLevel == LevelInt.CaoGao)
 	        {
 	            retVal = Level.CaoGao;
 	        }
-	        else if (contentInfo.CheckedLevel == LevelInt.DaiShen)
+	        else if (content.CheckedLevel == LevelInt.DaiShen)
 	        {
 	            retVal = Level.DaiShen;
 	        }
 	        else
 	        {
-	            var checkContentLevel = site.Additional.CheckContentLevel;
+	            var checkContentLevel = site.CheckContentLevel;
 
 	            if (checkContentLevel == 1)
 	            {
-	                if (contentInfo.CheckedLevel == LevelInt.Fail1)
+	                if (content.CheckedLevel == LevelInt.Fail1)
 	                {
 	                    retVal = Level1.Fail1;
 	                }
 	            }
 	            else if (checkContentLevel == 2)
 	            {
-	                if (contentInfo.CheckedLevel == LevelInt.Pass1)
+	                if (content.CheckedLevel == LevelInt.Pass1)
 	                {
 	                    retVal = Level2.Pass1;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail1)
+	                else if (content.CheckedLevel == LevelInt.Fail1)
 	                {
 	                    retVal = Level2.Fail1;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail2)
+	                else if (content.CheckedLevel == LevelInt.Fail2)
 	                {
 	                    retVal = Level2.Fail2;
 	                }
 	            }
 	            else if (checkContentLevel == 3)
 	            {
-	                if (contentInfo.CheckedLevel == LevelInt.Pass1)
+	                if (content.CheckedLevel == LevelInt.Pass1)
 	                {
 	                    retVal = Level3.Pass1;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Pass2)
+	                else if (content.CheckedLevel == LevelInt.Pass2)
 	                {
 	                    retVal = Level3.Pass2;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail1)
+	                else if (content.CheckedLevel == LevelInt.Fail1)
 	                {
 	                    retVal = Level3.Fail1;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail2)
+	                else if (content.CheckedLevel == LevelInt.Fail2)
 	                {
 	                    retVal = Level3.Fail2;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail3)
+	                else if (content.CheckedLevel == LevelInt.Fail3)
 	                {
 	                    retVal = Level3.Fail3;
 	                }
 	            }
 	            else if (checkContentLevel == 4)
 	            {
-	                if (contentInfo.CheckedLevel == LevelInt.Pass1)
+	                if (content.CheckedLevel == LevelInt.Pass1)
 	                {
 	                    retVal = Level4.Pass1;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Pass2)
+	                else if (content.CheckedLevel == LevelInt.Pass2)
 	                {
 	                    retVal = Level4.Pass2;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Pass3)
+	                else if (content.CheckedLevel == LevelInt.Pass3)
 	                {
 	                    retVal = Level4.Pass3;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail1)
+	                else if (content.CheckedLevel == LevelInt.Fail1)
 	                {
 	                    retVal = Level4.Fail1;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail2)
+	                else if (content.CheckedLevel == LevelInt.Fail2)
 	                {
 	                    retVal = Level4.Fail2;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail3)
+	                else if (content.CheckedLevel == LevelInt.Fail3)
 	                {
 	                    retVal = Level4.Fail3;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail4)
+	                else if (content.CheckedLevel == LevelInt.Fail4)
 	                {
 	                    retVal = Level4.Fail4;
 	                }
 	            }
 	            else if (checkContentLevel == 5)
 	            {
-	                if (contentInfo.CheckedLevel == LevelInt.Pass1)
+	                if (content.CheckedLevel == LevelInt.Pass1)
 	                {
 	                    retVal = Level5.Pass1;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Pass2)
+	                else if (content.CheckedLevel == LevelInt.Pass2)
 	                {
 	                    retVal = Level5.Pass2;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Pass3)
+	                else if (content.CheckedLevel == LevelInt.Pass3)
 	                {
 	                    retVal = Level5.Pass3;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Pass4)
+	                else if (content.CheckedLevel == LevelInt.Pass4)
 	                {
 	                    retVal = Level5.Pass4;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail1)
+	                else if (content.CheckedLevel == LevelInt.Fail1)
 	                {
 	                    retVal = Level5.Fail1;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail2)
+	                else if (content.CheckedLevel == LevelInt.Fail2)
 	                {
 	                    retVal = Level5.Fail2;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail3)
+	                else if (content.CheckedLevel == LevelInt.Fail3)
 	                {
 	                    retVal = Level5.Fail3;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail4)
+	                else if (content.CheckedLevel == LevelInt.Fail4)
 	                {
 	                    retVal = Level5.Fail4;
 	                }
-	                else if (contentInfo.CheckedLevel == LevelInt.Fail5)
+	                else if (content.CheckedLevel == LevelInt.Fail5)
 	                {
 	                    retVal = Level5.Fail5;
 	                }
@@ -1024,31 +1026,31 @@ namespace SiteServer.CMS.Core
 	        return false;
 	    }
 
-	    public static KeyValuePair<bool, int> GetUserCheckLevel(PermissionsImpl permissionsImpl, Site site, int channelId)
+	    public static async Task<KeyValuePair<bool, int>> GetUserCheckLevelPairAsync(PermissionsImpl permissionsImpl, Site site, int channelId)
         {
-            if (permissionsImpl.IsSystemAdministrator)
+            if (await permissionsImpl.IsSiteAdminAsync())
             {
-                return new KeyValuePair<bool, int>(true, site.Additional.CheckContentLevel);
+                return new KeyValuePair<bool, int>(true, site.CheckContentLevel);
             }
 
             var isChecked = false;
             var checkedLevel = 0;
-            if (site.Additional.IsCheckContentLevel == false)
+            if (site.IsCheckContentLevel == false)
             {
-                if (permissionsImpl.HasChannelPermissions(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheck))
+                if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     isChecked = true;
                 }
             }
             else
             {
-                if (permissionsImpl.HasChannelPermissions(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel5))
+                if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel5))
                 {
                     isChecked = true;
                 }
-                else if (permissionsImpl.HasChannelPermissions(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel4))
+                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel4))
                 {
-                    if (site.Additional.CheckContentLevel <= 4)
+                    if (site.CheckContentLevel <= 4)
                     {
                         isChecked = true;
                     }
@@ -1057,9 +1059,9 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 4;
                     }
                 }
-                else if (permissionsImpl.HasChannelPermissions(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel3))
+                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel3))
                 {
-                    if (site.Additional.CheckContentLevel <= 3)
+                    if (site.CheckContentLevel <= 3)
                     {
                         isChecked = true;
                     }
@@ -1068,9 +1070,9 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 3;
                     }
                 }
-                else if (permissionsImpl.HasChannelPermissions(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel2))
+                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel2))
                 {
-                    if (site.Additional.CheckContentLevel <= 2)
+                    if (site.CheckContentLevel <= 2)
                     {
                         isChecked = true;
                     }
@@ -1079,9 +1081,9 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 2;
                     }
                 }
-                else if (permissionsImpl.HasChannelPermissions(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel1))
+                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel1))
                 {
-                    if (site.Additional.CheckContentLevel <= 1)
+                    if (site.CheckContentLevel <= 1)
                     {
                         isChecked = true;
                     }
@@ -1098,19 +1100,18 @@ namespace SiteServer.CMS.Core
             return new KeyValuePair<bool, int>(isChecked, checkedLevel);
         }
 
-        public static bool GetUserCheckLevel(PermissionsImpl permissionsImpl, Site site, int channelId, out int userCheckedLevel)
+        public static async Task<(bool IsChecked, int UserCheckedLevel)> GetUserCheckLevelAsync(PermissionsImpl permissionsImpl, Site site, int channelId)
         {
-            var checkContentLevel = site.Additional.CheckContentLevel;
+            var checkContentLevel = site.CheckContentLevel;
 
-            var pair = GetUserCheckLevel(permissionsImpl, site, channelId);
+            var pair = await GetUserCheckLevelPairAsync(permissionsImpl, site, channelId);
             var isChecked = pair.Key;
             var checkedLevel = pair.Value;
             if (isChecked)
             {
                 checkedLevel = checkContentLevel;
             }
-            userCheckedLevel = checkedLevel;
-            return isChecked;
+            return (isChecked, checkedLevel);
         }
     }
 }

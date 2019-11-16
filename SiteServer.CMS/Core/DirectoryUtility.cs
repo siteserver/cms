@@ -3,6 +3,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.Core
@@ -51,7 +52,7 @@ namespace SiteServer.CMS.Core
                 foreach (var subDirectoryPath in directoryPaths)
                 {
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!DirectoryUtils.IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
+                    if (!WebUtils.IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
                     {
                         DirectoryUtils.DeleteDirectoryIfExists(subDirectoryPath);
                     }
@@ -87,7 +88,7 @@ namespace SiteServer.CMS.Core
                 foreach (var subDirectoryPath in directoryPaths)
                 {
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!DirectoryUtils.IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
+                    if (!WebUtils.IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
                     {
                         var destDirectoryPath = PathUtils.Combine(sitePath, directoryName);
                         DirectoryUtils.MoveDirectory(subDirectoryPath, destDirectoryPath, isOverride);

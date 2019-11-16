@@ -10,7 +10,7 @@ using SiteServer.Cli.Updater.Tables.GovInteract;
 using SiteServer.Cli.Updater.Tables.GovPublic;
 using SiteServer.Cli.Updater.Tables.Jobs;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model.Db;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 using TableInfo = SiteServer.Cli.Core.TableInfo;
@@ -138,9 +138,9 @@ namespace SiteServer.Cli.Updater
 
                         foreach (var newRow in newRows)
                         {
-                            if (newRow.ContainsKey(nameof(ContentInfo.SiteId)))
+                            if (newRow.ContainsKey(nameof(Content.SiteId)))
                             {
-                                var siteId = Convert.ToInt32(newRow[nameof(ContentInfo.SiteId)]);
+                                var siteId = Convert.ToInt32(newRow[nameof(Content.SiteId)]);
                                 if (siteIdList.Contains(siteId))
                                 {
                                     var rows = siteIdWithRows[siteId];
@@ -268,10 +268,6 @@ namespace SiteServer.Cli.Updater
             else if (StringUtils.ContainsIgnoreCase(TableTemplateLog.OldTableNames, oldTableName))
             {
                 converter = TableTemplateLog.Converter;
-            }
-            else if (StringUtils.ContainsIgnoreCase(TableTemplateMatch.OldTableNames, oldTableName))
-            {
-                converter = TableTemplateMatch.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableUser.OldTableName, oldTableName))
             {

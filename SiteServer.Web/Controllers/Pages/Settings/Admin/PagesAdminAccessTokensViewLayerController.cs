@@ -20,15 +20,15 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
                 var tokenInfo = await DataProvider.AccessTokenDao.GetAsync(id);
-                var accessToken = TranslateUtils.DecryptStringBySecretKey(tokenInfo.Token);
+                var accessToken = WebConfigUtils.DecryptStringBySecretKey(tokenInfo.Token);
 
                 return Ok(new
                 {
@@ -47,16 +47,16 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
                 var accessTokenInfo = await DataProvider.AccessTokenDao.GetAsync(id);
 
-                var accessToken = TranslateUtils.DecryptStringBySecretKey(await DataProvider.AccessTokenDao.RegenerateAsync(accessTokenInfo));
+                var accessToken = WebConfigUtils.DecryptStringBySecretKey(await DataProvider.AccessTokenDao.RegenerateAsync(accessTokenInfo));
 
                 return Ok(new
                 {

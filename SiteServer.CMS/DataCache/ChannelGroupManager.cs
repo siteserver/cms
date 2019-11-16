@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.DataCache
 {
@@ -11,32 +11,27 @@ namespace SiteServer.CMS.DataCache
 	{
 	    private static class ChannelGroupManagerCache
         {
-	        private static readonly object LockObject = new object();
-
-	        private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(ChannelGroupManager));
+            private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(ChannelGroupManager));
 
 	        public static void Clear()
 	        {
 	            DataCacheManager.Remove(CacheKey);
 	        }
 
-	        public static Dictionary<int, List<ChannelGroupInfo>> GetAllChannelGroups()
+	        public static async Task<Dictionary<int, List<ChannelGroup>>> GetAllChannelGroupsAsync()
 	        {
-	            var retVal = DataCacheManager.Get<Dictionary<int, List<ChannelGroupInfo>>>(CacheKey);
+	            var retVal = DataCacheManager.Get<Dictionary<int, List<ChannelGroup>>>(CacheKey);
 	            if (retVal != null) return retVal;
 
-	            lock (LockObject)
-	            {
-	                retVal = DataCacheManager.Get<Dictionary<int, List<ChannelGroupInfo>>>(CacheKey);
-	                if (retVal == null)
-	                {
-	                    retVal = DataProvider.ChannelGroupDao.GetAllChannelGroups();
+                retVal = DataCacheManager.Get<Dictionary<int, List<ChannelGroup>>>(CacheKey);
+                if (retVal == null)
+                {
+                    retVal = await DataProvider.ChannelGroupDao.GetAllChannelGroupsAsync();
 
-	                    DataCacheManager.Insert(CacheKey, retVal);
-	                }
-	            }
+                    DataCacheManager.Insert(CacheKey, retVal);
+                }
 
-	            return retVal;
+                return retVal;
 	        }
 	    }
 
@@ -45,34 +40,34 @@ namespace SiteServer.CMS.DataCache
 	        ChannelGroupManagerCache.Clear();
 	    }
 
-	    public static bool IsExists(int siteId, string groupName)
+	    public static async Task<bool> IsExistsAsync(int siteId, string groupName)
 	    {
-	        var list = GetChannelGroupInfoList(siteId);
+	        var list = await GetChannelGroupListAsync(siteId);
 	        return list.Any(group => group.GroupName == groupName);
 	    }
 
-	    public static ChannelGroupInfo GetChannelGroupInfo(int siteId, string groupName)
+	    public static async Task<ChannelGroup> GetChannelGroupAsync(int siteId, string groupName)
 	    {
-	        var list = GetChannelGroupInfoList(siteId);
+	        var list = await GetChannelGroupListAsync(siteId);
 	        return list.FirstOrDefault(group => group.GroupName == groupName);
 	    }
 
-	    public static List<string> GetGroupNameList(int siteId)
+	    public static async Task<List<string>> GetGroupNameListAsync(int siteId)
 	    {
-	        var list = GetChannelGroupInfoList(siteId);
+	        var list = await GetChannelGroupListAsync(siteId);
 	        return list.Select(group => group.GroupName).ToList();
 	    }
 
-        public static List<ChannelGroupInfo> GetChannelGroupInfoList(int siteId)
+        public static async Task<List<ChannelGroup>> GetChannelGroupListAsync(int siteId)
         {
-            List<ChannelGroupInfo> list = null;
-            var dict = ChannelGroupManagerCache.GetAllChannelGroups();
+            List<ChannelGroup> list = null;
+            var dict = await ChannelGroupManagerCache.GetAllChannelGroupsAsync();
 
             if (dict != null && dict.ContainsKey(siteId))
             {
                 list = dict[siteId];
             }
-            return list ?? new List<ChannelGroupInfo>();
+            return list ?? new List<ChannelGroup>();
         }
     }
 }

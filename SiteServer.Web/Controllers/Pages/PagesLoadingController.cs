@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -13,11 +14,11 @@ namespace SiteServer.API.Controllers.Pages
         private const string Route = "";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit()
+        public async Task<IHttpActionResult> Submit()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -27,7 +28,7 @@ namespace SiteServer.API.Controllers.Pages
 
                 return Ok(new
                 {
-                    Value = TranslateUtils.DecryptStringBySecretKey(redirectUrl)
+                    Value = WebConfigUtils.DecryptStringBySecretKey(redirectUrl)
                 });
             }
             catch (Exception ex)

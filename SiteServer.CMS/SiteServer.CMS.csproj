@@ -34,9 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoMapper, Version=9.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoMapper.9.0.0\lib\net461\AutoMapper.dll</HintPath>
-    </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.5.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.5\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
@@ -45,9 +42,6 @@
     </Reference>
     <Reference Include="Dapper.Contrib, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.Contrib.2.0.30\lib\net461\Dapper.Contrib.dll</HintPath>
-    </Reference>
-    <Reference Include="Datory, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Datory.1.0.1\lib\netstandard2.0\Datory.dll</HintPath>
     </Reference>
     <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
@@ -108,9 +102,6 @@
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
-    </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.4.0\lib\netstandard2.0\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -187,6 +178,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Serialization" />
     <Reference Include="WordPlugin">
       <HintPath>..\ref\WordPlugin.dll</HintPath>
     </Reference>
@@ -194,7 +186,6 @@
   <ItemGroup>
     <Compile Include="Api\V1\ApiContentsParameters.cs" />
     <Compile Include="Api\V1\StlRequest.cs" />
-    <Compile Include="Api\ApiRoutePlugin.cs" />
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdateSsCms.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdate.cs" />
@@ -227,7 +218,6 @@
     <Compile Include="DataCache\Core\DataCacheManager.cs" />
     <Compile Include="DataCache\AdminManager.cs" />
     <Compile Include="Api\ApiManager.cs" />
-    <Compile Include="Core\CacheDbUtils.cs" />
     <Compile Include="DataCache\ChannelManager.cs" />
     <Compile Include="Core\CheckManager.cs" />
     <Compile Include="DataCache\ConfigManager.cs" />
@@ -250,15 +240,19 @@
     <Compile Include="Core\PathUtility.cs" />
     <Compile Include="Core\RoleManager.cs" />
     <Compile Include="DataCache\PermissionConfigManager.cs" />
-    <Compile Include="Model\Site.cs" />
-    <Compile Include="Model\Mappings\SiteProfile.cs" />
-    <Compile Include="Model\Mappings\UserProfile.cs" />
+    <Compile Include="Model\ContentMin.cs" />
+    <Compile Include="Model\IContentMin.cs" />
+    <Compile Include="Model\Config.cs" />
+    <Compile Include="Model\Channel.cs" />
+    <Compile Include="Model\PermissionsInRoles.cs" />
+    <Compile Include="Model\Plugin.cs" />
+    <Compile Include="Provider\RepositoryManager.cs" />
+    <Compile Include="Model\SitePermissions.cs" />
+    <Compile Include="Model\TableStyleItem.cs" />
+    <Compile Include="Model\ContentTag.cs" />
+    <Compile Include="Model\Template.cs" />
     <Compile Include="Model\User.cs" />
-    <Compile Include="Model\Mappings\AdministratorProfile.cs" />
-    <Compile Include="Model\Mappings\MapperManager.cs" />
-    <Compile Include="Model\Administrator.cs" />
-    <Compile Include="Model\Db\ContentTagInfo.cs" />
-    <Compile Include="Model\Enumerations\ETaxisType.cs" />
+    <Compile Include="Enumerations\ETaxisType.cs" />
     <Compile Include="Core\AuthenticatedRequest.cs" />
     <Compile Include="Plugin\Impl\PermissionsImpl.cs" />
     <Compile Include="DataCache\SiteManager.cs" />
@@ -269,7 +263,7 @@
     <Compile Include="DataCache\TableColumnManager.cs" />
     <Compile Include="DataCache\TableStyleManager.cs" />
     <Compile Include="Core\TabManager.cs" />
-    <Compile Include="Core\TagUtils.cs" />
+    <Compile Include="Core\ContentTagUtils.cs" />
     <Compile Include="DataCache\SpecialManager.cs" />
     <Compile Include="DataCache\TemplateManager.cs" />
     <Compile Include="Core\TemplateTypeUtils.cs" />
@@ -297,78 +291,43 @@
     <Compile Include="ImportExport\Components\TemplateIe.cs" />
     <Compile Include="ImportExport\ExportObject.cs" />
     <Compile Include="ImportExport\ImportObject.cs" />
-    <Compile Include="Model\Db\AdministratorInfo.cs" />
-    <Compile Include="Model\Db\DbCacheInfo.cs" />
-    <Compile Include="Model\Attributes\BackgroundContentAttribute.cs" />
-    <Compile Include="Model\Attributes\ChannelAttribute.cs" />
-    <Compile Include="Model\Db\ChannelGroupInfo.cs" />
-    <Compile Include="Model\Db\ChannelInfo.cs" />
-    <Compile Include="Model\Attributes\ChannelInfoExtend.cs" />
-    <Compile Include="Model\Db\ConfigInfo.cs" />
-    <Compile Include="Model\Attributes\ContentAttribute.cs" />
-    <Compile Include="Model\Db\ContentCheckInfo.cs" />
-    <Compile Include="Model\Db\ContentGroupInfo.cs" />
-    <Compile Include="Model\Db\ContentInfo.cs" />
+    <Compile Include="Model\DbCache.cs" />
+    <Compile Include="Model\ChannelGroup.cs" />
+    <Compile Include="Model\ContentAttribute.cs" />
+    <Compile Include="Model\ContentCheck.cs" />
+    <Compile Include="Model\ContentGroup.cs" />
+    <Compile Include="Model\Content.cs" />
     <Compile Include="Core\Create\CreateTaskInfo.cs" />
     <Compile Include="Core\Create\CreateTaskLogInfo.cs" />
     <Compile Include="Core\Create\CreateTaskSummary.cs" />
     <Compile Include="Core\Create\CreateTaskSummaryItem.cs" />
-    <Compile Include="Model\Enumerations\EAccessControlEntry.cs" />
-    <Compile Include="Model\Enumerations\EBackupType.cs" />
-    <Compile Include="Model\Enumerations\EChangedType.cs" />
-    <Compile Include="Model\Enumerations\ECreateType.cs" />
-    <Compile Include="Model\Enumerations\ECrossSiteTransType.cs" />
-    <Compile Include="Model\Enumerations\EExceptionType.cs" />
-    <Compile Include="Model\Enumerations\EFrequencyType.cs" />
-    <Compile Include="Model\Enumerations\EGatherType.cs" />
-    <Compile Include="Model\Enumerations\EImportExportType.cs" />
-    <Compile Include="Model\Enumerations\EKeywordGrade.cs" />
-    <Compile Include="Model\Enumerations\ETableRule.cs" />
-    <Compile Include="Model\Enumerations\ELayout.cs" />
-    <Compile Include="Model\Enumerations\ELinkType.cs" />
-    <Compile Include="Model\Enumerations\ELoadingType.cs" />
-    <Compile Include="Model\Enumerations\EPositionType.cs" />
-    <Compile Include="Model\Enumerations\EProgressType.cs" />
-    <Compile Include="Model\Enumerations\ERelatedFieldStyle.cs" />
-    <Compile Include="Model\Enumerations\ERollingType.cs" />
-    <Compile Include="Model\Enumerations\ESearchEngineType.cs" />
-    <Compile Include="Model\Enumerations\ESigninPriority.cs" />
-    <Compile Include="Model\Enumerations\EStatisticsInputType.cs" />
-    <Compile Include="Model\Enumerations\ETranslateContentType.cs" />
-    <Compile Include="Model\Enumerations\ETranslateType.cs" />
-    <Compile Include="Model\Enumerations\EWriteBackMethod.cs" />
-    <Compile Include="Model\Db\ErrorLogInfo.cs" />
-    <Compile Include="Model\Db\UserGroupInfo.cs" />
-    <Compile Include="Model\Db\UserMenuInfo.cs" />
-    <Compile Include="Plugin\Impl\AttributesImpl.cs" />
-    <Compile Include="Model\Db\AccessTokenInfo.cs" />
-    <Compile Include="Model\Db\LogInfo.cs" />
-    <Compile Include="Model\Db\PermissionsInRolesInfo.cs" />
-    <Compile Include="Model\Db\AdministratorsInRolesInfo.cs" />
-    <Compile Include="Model\Db\PluginInfo.cs" />
-    <Compile Include="Model\Db\PluginConfigInfo.cs" />
-    <Compile Include="Model\Db\RelatedFieldInfo.cs" />
-    <Compile Include="Model\Db\RelatedFieldItemInfo.cs" />
-    <Compile Include="Model\Attributes\SiteAttribute.cs" />
-    <Compile Include="Model\Db\SiteInfo.cs" />
-    <Compile Include="Model\Attributes\SiteInfoExtend.cs" />
-    <Compile Include="Model\Db\SiteLogInfo.cs" />
-    <Compile Include="Model\Db\SitePermissionsInfo.cs" />
+    <Compile Include="Enumerations\EBackupType.cs" />
+    <Compile Include="Enumerations\ECreateType.cs" />
+    <Compile Include="Enumerations\ECrossSiteTransType.cs" />
+    <Compile Include="Enumerations\ETableRule.cs" />
+    <Compile Include="Enumerations\ELayout.cs" />
+    <Compile Include="Enumerations\ELinkType.cs" />
+    <Compile Include="Enumerations\ELoadingType.cs" />
+    <Compile Include="Enumerations\ERelatedFieldStyle.cs" />
+    <Compile Include="Enumerations\ETranslateContentType.cs" />
+    <Compile Include="Enumerations\ETranslateType.cs" />
+    <Compile Include="Model\ErrorLog.cs" />
+    <Compile Include="Model\UserGroup.cs" />
+    <Compile Include="Model\UserMenu.cs" />
+    <Compile Include="Model\AccessToken.cs" />
+    <Compile Include="Model\Log.cs" />
+    <Compile Include="Model\AdministratorsInRoles.cs" />
+    <Compile Include="Model\PluginConfig.cs" />
+    <Compile Include="Model\RelatedField.cs" />
+    <Compile Include="Model\RelatedFieldItem.cs" />
+    <Compile Include="Model\Site.cs" />
+    <Compile Include="Model\SiteLog.cs" />
     <Compile Include="Core\SiteTemplateInfo.cs" />
-    <Compile Include="Model\Attributes\SystemConfigInfo.cs" />
-    <Compile Include="Model\Db\TableInfo.cs" />
-    <Compile Include="Model\Db\TableMetadataInfo.cs" />
-    <Compile Include="Model\Db\TableStyleInfo.cs" />
-    <Compile Include="Model\Attributes\TableStyleInfoExtend.cs" />
-    <Compile Include="Model\Db\TableStyleItemInfo.cs" />
-    <Compile Include="Model\Db\TagInfo.cs" />
-    <Compile Include="Model\Db\SpecialInfo.cs" />
-    <Compile Include="Model\Db\TemplateInfo.cs" />
-    <Compile Include="Model\Db\TemplateLogInfo.cs" />
-    <Compile Include="Model\Db\TemplateMatchInfo.cs" />
-    <Compile Include="Model\Db\RoleInfo.cs" />
-    <Compile Include="Model\Db\UserInfo.cs" />
-    <Compile Include="Model\Db\UserLogInfo.cs" />
+    <Compile Include="Model\TableStyle.cs" />
+    <Compile Include="Model\Special.cs" />
+    <Compile Include="Model\TemplateLog.cs" />
+    <Compile Include="Model\Role.cs" />
+    <Compile Include="Model\UserLog.cs" />
     <Compile Include="Packaging\PackageMetadata.cs" />
     <Compile Include="Packaging\PackageMetadataStrings.cs" />
     <Compile Include="Packaging\PackageType.cs" />
@@ -400,6 +359,7 @@
     <Compile Include="Plugin\PluginJobManager.cs" />
     <Compile Include="Plugin\PluginStlParserManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Model\Administrator.cs" />
     <Compile Include="Provider\AdministratorDao.cs" />
     <Compile Include="Provider\AdministratorsInRolesDao.cs" />
     <Compile Include="Provider\ChannelDao.cs" />
@@ -424,11 +384,10 @@
     <Compile Include="Provider\AccessTokenDao.cs" />
     <Compile Include="Provider\TableStyleDao.cs" />
     <Compile Include="Provider\TableStyleItemDao.cs" />
-    <Compile Include="Provider\TagDao.cs" />
+    <Compile Include="Provider\ContentTagDao.cs" />
     <Compile Include="Provider\SpecialDao.cs" />
     <Compile Include="Provider\TemplateDao.cs" />
     <Compile Include="Provider\TemplateLogDao.cs" />
-    <Compile Include="Provider\TemplateMatchDao.cs" />
     <Compile Include="Provider\UserDao.cs" />
     <Compile Include="Provider\UserMenuDao.cs" />
     <Compile Include="Provider\UserGroupDao.cs" />
@@ -497,7 +456,6 @@
     <Compile Include="StlParser\StlElement\StlPlayer.cs" />
     <Compile Include="StlParser\StlElement\StlPrinter.cs" />
     <Compile Include="StlParser\StlElement\StlQueryString.cs" />
-    <Compile Include="StlParser\StlElement\StlRss.cs" />
     <Compile Include="StlParser\StlElement\StlSearch.cs" />
     <Compile Include="StlParser\StlElement\StlSelect.cs" />
     <Compile Include="StlParser\StlElement\StlSite.cs" />
@@ -506,7 +464,6 @@
     <Compile Include="StlParser\StlElement\StlSqlContents.cs" />
     <Compile Include="StlParser\StlElement\StlTabs.cs" />
     <Compile Include="StlParser\StlElement\StlTags.cs" />
-    <Compile Include="StlParser\StlElement\StlTree.cs" />
     <Compile Include="StlParser\StlElement\StlValue.cs" />
     <Compile Include="StlParser\StlElement\StlVideo.cs" />
     <Compile Include="StlParser\StlElement\StlYes.cs" />
@@ -538,12 +495,105 @@
     <Compile Include="UEditor\NotSupportedHandler.cs" />
     <Compile Include="UEditor\PathFormater.cs" />
     <Compile Include="UEditor\UploadHandler.cs" />
+    <Compile Include="Context\Atom\Atom.AdditionalElements\DublinCore\DcElement.cs" />
+    <Compile Include="Context\Atom\Atom.AdditionalElements\ScopedElement.cs" />
+    <Compile Include="Context\Atom\Atom.AdditionalElements\ScopedElementCollection.cs" />
+    <Compile Include="Context\Atom\Atom.Core.Collections\AtomContentCollection.cs" />
+    <Compile Include="Context\Atom\Atom.Core.Collections\AtomEntryCollection.cs" />
+    <Compile Include="Context\Atom\Atom.Core.Collections\AtomLinkCollection.cs" />
+    <Compile Include="Context\Atom\Atom.Core.Collections\AtomPersonConstructCollection.cs" />
+    <Compile Include="Context\Atom\Atom.Core\AtomContent.cs" />
+    <Compile Include="Context\Atom\Atom.Core\AtomContentConstruct.cs" />
+    <Compile Include="Context\Atom\Atom.Core\AtomDateConstruct.cs" />
+    <Compile Include="Context\Atom\Atom.Core\AtomElement.cs" />
+    <Compile Include="Context\Atom\Atom.Core\AtomEntry.cs" />
+    <Compile Include="Context\Atom\Atom.Core\AtomFeed.cs" />
+    <Compile Include="Context\Atom\Atom.Core\AtomGenerator.cs" />
+    <Compile Include="Context\Atom\Atom.Core\AtomLink.cs" />
+    <Compile Include="Context\Atom\Atom.Core\AtomPersonConstruct.cs" />
+    <Compile Include="Context\Atom\Atom.Core\Enums.cs" />
+    <Compile Include="Context\Atom\Atom.Core\Exceptions.cs" />
+    <Compile Include="Context\Atom\Atom.Utils\DefaultValues.cs" />
+    <Compile Include="Context\Atom\Atom.Utils\Utils.cs" />
+    <Compile Include="Context\Atom\AtomReader.cs" />
+    <Compile Include="Context\Atom\AtomWriter.cs" />
+    <Compile Include="Context\CacheUtils.cs" />
+    <Compile Include="Context\ControlUtils.cs" />
+    <Compile Include="Context\CookieUtils.cs" />
+    <Compile Include="Context\DatabaseTypeUtils.cs" />
+    <Compile Include="Context\DataTypeUtils.cs" />
+    <Compile Include="Context\DateUtils.cs" />
+    <Compile Include="Context\DirectoryTreeItem.cs" />
+    <Compile Include="Context\Enumerations\EBoolean.cs" />
+    <Compile Include="Context\Enumerations\ECharset.cs" />
+    <Compile Include="Context\Enumerations\EDataFormat.cs" />
+    <Compile Include="Context\Enumerations\EDateFormatType.cs" />
+    <Compile Include="Context\Enumerations\EDiggType.cs" />
+    <Compile Include="Context\Enumerations\EFileSystemType.cs" />
+    <Compile Include="Context\Enumerations\EGender.cs" />
+    <Compile Include="Context\Enumerations\EImageSizeType.cs" />
+    <Compile Include="Context\Enumerations\EImageType.cs" />
+    <Compile Include="Context\Enumerations\ELevelPeriodType.cs" />
+    <Compile Include="Context\Enumerations\EMonth.cs" />
+    <Compile Include="Context\Enumerations\EOraclePrivilege.cs" />
+    <Compile Include="Context\Enumerations\EPasswordFormat.cs" />
+    <Compile Include="Context\Enumerations\EPhotoListType.cs" />
+    <Compile Include="Context\Enumerations\EPredefinedRole.cs" />
+    <Compile Include="Context\Enumerations\EScopeType.cs" />
+    <Compile Include="Context\Enumerations\ESecurityType.cs" />
+    <Compile Include="Context\Enumerations\EStaticXType.cs" />
+    <Compile Include="Context\Enumerations\ESubscribePushType.cs" />
+    <Compile Include="Context\Enumerations\ETheme.cs" />
+    <Compile Include="Context\Enumerations\ETimeFormatType.cs" />
+    <Compile Include="Context\Enumerations\ETriState.cs" />
+    <Compile Include="Context\Enumerations\EUploadType.cs" />
+    <Compile Include="Context\Enumerations\EUserBindingType.cs" />
+    <Compile Include="Context\Enumerations\EUserLockType.cs" />
+    <Compile Include="Context\Enumerations\EUserPasswordRestriction.cs" />
+    <Compile Include="Context\Enumerations\EVoteItemType.cs" />
+    <Compile Include="Context\Enumerations\EVoteRestrictType.cs" />
+    <Compile Include="Context\Enumerations\EVoteType.cs" />
+    <Compile Include="Context\FileManager.cs" />
+    <Compile Include="Context\FileSystemInfoExtend.cs" />
+    <Compile Include="Context\FileSystemInfosExtend.cs" />
+    <Compile Include="Context\FileWatcherClass.cs" />
+    <Compile Include="Context\Images\BitmapFilter.cs" />
+    <Compile Include="Context\Images\ConvMatrix.cs" />
+    <Compile Include="Context\Images\FloatPoint.cs" />
+    <Compile Include="Context\Images\ImageUtils.cs" />
+    <Compile Include="Context\InputParserUtils.cs" />
+    <Compile Include="Context\LayerUtils.cs" />
+    <Compile Include="Context\LitJson\IJsonWrapper.cs" />
+    <Compile Include="Context\LitJson\JsonData.cs" />
+    <Compile Include="Context\LitJson\JsonException.cs" />
+    <Compile Include="Context\LitJson\JsonMapper.cs" />
+    <Compile Include="Context\LitJson\JsonReader.cs" />
+    <Compile Include="Context\LitJson\JsonWriter.cs" />
+    <Compile Include="Context\LitJson\Lexer.cs" />
+    <Compile Include="Context\LitJson\ParserToken.cs" />
+    <Compile Include="Context\MessageUtils.cs" />
+    <Compile Include="Context\MvpXml\XmlNamespaces.cs" />
+    <Compile Include="Context\MvpXml\XPathNavigatorReader.cs" />
+    <Compile Include="Context\PageUtils.cs" />
+    <Compile Include="Context\SiteFilesAssets.cs" />
+    <Compile Include="Context\SiteServerAssets.cs" />
+    <Compile Include="Context\WebUtils.cs" />
+    <Compile Include="Context\ValidateTypeUtils.cs" />
+    <Compile Include="Context\WebClientUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Datory\src\Datory\Datory.csproj">
+      <Project>{c6df816e-0eb3-4e71-b446-0b24bbb2f6f0}</Project>
+      <Name>Datory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{89bc9704-79a7-41ba-838f-afda1b9db82a}</Project>
+      <Name>SiteServer.Plugin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
       <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>
       <Name>SiteServer.Utils</Name>

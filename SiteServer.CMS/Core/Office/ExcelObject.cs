@@ -5,17 +5,17 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model.Db;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
     public static class ExcelObject
     {
-        public static void CreateExcelFileForContents(string filePath, Site site,
-            ChannelInfo channelInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
+        public static async Task CreateExcelFileForContentsAsync(string filePath, Site site,
+            Channel channel, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -24,35 +24,35 @@ namespace SiteServer.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var tableName = ChannelManager.GetTableName(site, channelInfo);
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(site, channelInfo));
+            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
+            var styleList = ContentUtility.GetAllTableStyleList(await TableStyleManager.GetContentStyleListAsync(site, channel));
 
-            foreach (var styleInfo in styleInfoList)
+            foreach (var style in styleList)
             {
-                if (displayAttributes.Contains(styleInfo.AttributeName))
+                if (displayAttributes.Contains(style.AttributeName))
                 {
-                    head.Add(styleInfo.DisplayName);
+                    head.Add(style.DisplayName);
                 }
             }
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelInfo.Id, isPeriods,
+                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channel.Id, isPeriods,
                     startDate, endDate, checkedState);
             }
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+                var contentInfo = await ContentManager.GetContentInfoAsync(site, channel, contentId);
                 if (contentInfo != null)
                 {
                     var row = new List<string>();
 
-                    foreach (var styleInfo in styleInfoList)
+                    foreach (var style in styleList)
                     {
-                        if (displayAttributes.Contains(styleInfo.AttributeName))
+                        if (displayAttributes.Contains(style.AttributeName))
                         {
-                            var value = contentInfo.GetString(styleInfo.AttributeName);
+                            var value = contentInfo.Get<string>(style.AttributeName);
                             row.Add(StringUtils.StripTags(value));
                         }
                     }
@@ -64,8 +64,8 @@ namespace SiteServer.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static void CreateExcelFileForContents(string filePath, Site site,
-            ChannelInfo channelInfo, List<ContentInfo> contentInfoList, List<string> columnNames)
+        public static async Task CreateExcelFileForContentsAsync(string filePath, Site site,
+            Channel channel, List<Content> contentInfoList, List<string> columnNames)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
             FileUtils.DeleteFileIfExists(filePath);
@@ -73,7 +73,7 @@ namespace SiteServer.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var columns = ContentManager.GetContentColumns(site, channelInfo, true);
+            var columns = await ContentManager.GetContentColumnsAsync(site, channel, true);
 
             foreach (var column in columns)
             {
@@ -91,7 +91,7 @@ namespace SiteServer.CMS.Core.Office
                 {
                     if (StringUtils.ContainsIgnoreCase(columnNames, column.AttributeName))
                     {
-                        var value = contentInfo.GetString(column.AttributeName);
+                        var value = contentInfo.Get<string>(column.AttributeName);
                         row.Add(StringUtils.StripTags(value));
                     }
                 }
@@ -178,20 +178,20 @@ namespace SiteServer.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static List<ContentInfo> GetContentsByCsvFile(string filePath, Site site,
-            ChannelInfo nodeInfo)
+        public static async Task<List<Content>> GetContentsByCsvFileAsync(string filePath, Site site,
+            Channel node)
         {
-            var contentInfoList = new List<ContentInfo>();
+            var contentInfoList = new List<Content>();
 
             CsvUtils.Import(filePath, out var head, out var rows);
 
             if (rows.Count <= 0) return contentInfoList;
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(site, nodeInfo));
+            var styleList = ContentUtility.GetAllTableStyleList(await TableStyleManager.GetContentStyleListAsync(site, node));
             var nameValueCollection = new NameValueCollection();
-            foreach (var styleInfo in styleInfoList)
+            foreach (var style in styleList)
             {
-                nameValueCollection[styleInfo.DisplayName] = styleInfo.AttributeName.ToLower();
+                nameValueCollection[style.DisplayName] = style.AttributeName.ToLower();
             }
 
             var attributeNames = new List<string>();
@@ -217,12 +217,12 @@ namespace SiteServer.CMS.Core.Office
                     }
                 }
 
-                var contentInfo = new ContentInfo(dict);
+                var contentInfo = new Content(dict);
 
                 if (!string.IsNullOrEmpty(contentInfo.Title))
                 {
                     contentInfo.SiteId = site.Id;
-                    contentInfo.ChannelId = nodeInfo.Id;
+                    contentInfo.ChannelId = node.Id;
                     contentInfo.LastEditDate = DateTime.Now;
 
                     contentInfoList.Add(contentInfo);

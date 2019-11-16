@@ -4,6 +4,7 @@ using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using System.Threading.Tasks;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -15,13 +16,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
         private const string RouteActionsCancel = "actions/cancel";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }
@@ -42,14 +43,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
         }
 
         [HttpPost, Route(RouteActionsCancel)]
-        public IHttpActionResult Cancel()
+        public async Task<IHttpActionResult> Cancel()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var siteId = request.GetPostInt("siteId");
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Create))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }

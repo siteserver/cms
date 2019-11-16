@@ -4,10 +4,7 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.CMS.Provider;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -122,34 +119,34 @@ namespace SiteServer.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(ChannelInfo.Id), nameof(NodeId)},
-                {nameof(ChannelInfo.ChannelName), nameof(NodeName)},
-                {nameof(ChannelInfo.SiteId), nameof(PublishmentSystemId)},
-                {nameof(ChannelInfo.IndexName), nameof(NodeIndexName)},
-                {nameof(ChannelInfo.GroupNameCollection), nameof(NodeGroupNameCollection)},
-                {nameof(ChannelInfo.ContentModelPluginId), nameof(ContentModelId)}
+                {nameof(Channel.Id), nameof(NodeId)},
+                {nameof(Channel.ChannelName), nameof(NodeName)},
+                {nameof(Channel.SiteId), nameof(PublishmentSystemId)},
+                {nameof(Channel.IndexName), nameof(NodeIndexName)},
+                {nameof(Channel.GroupNameCollection), nameof(NodeGroupNameCollection)},
+                {nameof(Channel.ContentModelPluginId), nameof(ContentModelId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
         {
-            {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "GovInteract"), "SS.GovInteract"},
-            {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "GovPublic"), "SS.GovPublic"},
-            {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "Job"), "SS.Jobs"},
+            {UpdateUtils.GetConvertValueDictKey(nameof(Channel.ContentModelPluginId), "GovInteract"), "SS.GovInteract"},
+            {UpdateUtils.GetConvertValueDictKey(nameof(Channel.ContentModelPluginId), "GovPublic"), "SS.GovPublic"},
+            {UpdateUtils.GetConvertValueDictKey(nameof(Channel.ContentModelPluginId), "Job"), "SS.Jobs"},
         };
 
         private static Dictionary<string, object> Process(Dictionary<string, object> row)
         {
-            if (row.TryGetValue(ChannelAttribute.Content, out var contentObj))
+            if (row.TryGetValue(nameof(Channel.Content), out var contentObj))
             {
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
-                row[ChannelAttribute.Content] = content;
+                row[nameof(Channel.Content)] = content;
             }
-            if (row.TryGetValue(ChannelAttribute.ExtendValues, out contentObj))
+            if (row.TryGetValue(nameof(Channel.ExtendValues), out contentObj))
             {
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
-                row[ChannelAttribute.ExtendValues] = content;
+                row[nameof(Channel.ExtendValues)] = content;
             }
 
             return row;

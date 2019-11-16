@@ -2,7 +2,6 @@
 using System.Text;
 using System.Xml;
 using Datory;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {
@@ -132,8 +131,8 @@ namespace SiteServer.Utils
 
                     if (isProtectData)
                     {
-                        databaseType = TranslateUtils.DecryptStringBySecretKey(databaseType);
-                        connectionString = TranslateUtils.DecryptStringBySecretKey(connectionString);
+                        databaseType = DecryptStringBySecretKey(databaseType);
+                        connectionString = DecryptStringBySecretKey(connectionString);
                     }
                 }
             }
@@ -143,7 +142,7 @@ namespace SiteServer.Utils
             }
 
             IsProtectData = isProtectData;
-            DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
+            DatabaseType = DatabaseType.Parse(databaseType);
             ConnectionString = GetConnectionString(DatabaseType, connectionString);
             if (ApiPrefix == null)
             {
@@ -210,7 +209,7 @@ namespace SiteServer.Utils
                                     attrValue.Value = databaseType.Value;
                                     if (isProtectData)
                                     {
-                                        attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value, secretKey);
+                                        attrValue.Value = EncryptStringBySecretKey(attrValue.Value, secretKey);
                                     }
                                     dirty = true;
                                 }
@@ -223,7 +222,7 @@ namespace SiteServer.Utils
                                     attrValue.Value = connectionString;
                                     if (isProtectData)
                                     {
-                                        attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value, secretKey);
+                                        attrValue.Value = EncryptStringBySecretKey(attrValue.Value, secretKey);
                                     }
                                     dirty = true;
                                 }
@@ -330,73 +329,6 @@ namespace SiteServer.Utils
             return connectionString;
         }
 
-        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database, bool isOracleSid, string oraclePrivilege)
-        {
-            var connectionString = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                connectionString = $"Server={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Uid={userName};Pwd={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-                connectionString += "SslMode=Preferred;CharSet=utf8;";
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                connectionString = $"Server={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString = $"Server={server},{port};";
-                }
-                connectionString += $"Uid={userName};Pwd={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                connectionString = $"Host={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Username={userName};Password={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-            }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                var databaseName = isOracleSid ? $"SID={database}" : $"SERVICE_NAME={database}";
-                port = !isDefaultPort && port > 0 ? port : 1521;
-                var privilege = EOraclePrivilegeUtils.GetEnumType(oraclePrivilege);
-                var privilegeString = string.Empty;
-                if (privilege == EOraclePrivilege.SYSDBA)
-                {
-                    privilegeString = "DBA Privilege=SYSDBA;";
-                }
-                else if (privilege == EOraclePrivilege.SYSDBA)
-                {
-                    privilegeString = "DBA Privilege=SYSOPER;";
-                }
-                database = string.IsNullOrEmpty(database)
-                    ? string.Empty
-                    : $"(CONNECT_DATA=({databaseName}))";
-                connectionString = $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={server})(PORT={port})){database});User ID={userName};Password={password};{privilegeString}";
-            }
-
-            return connectionString;
-        }
-
         private static string GetConnectionString(DatabaseType databaseType, string connectionString)
         {
             if (databaseType == DatabaseType.MySql)
@@ -443,6 +375,51 @@ namespace SiteServer.Utils
             }
 
             return userId;
+        }
+
+        public const string EncryptStingIndicator = "0secret0";
+
+        public static string EncryptStringBySecretKey(string inputString)
+        {
+            return EncryptStringBySecretKey(inputString, SecretKey);
+        }
+
+        public static string EncryptStringBySecretKey(string inputString, string secretKey)
+        {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+
+            var encryptor = new DesEncryptor
+            {
+                InputString = inputString,
+                EncryptKey = secretKey
+            };
+            encryptor.DesEncrypt();
+
+            var retVal = encryptor.OutString;
+            retVal = retVal.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
+
+            return retVal + EncryptStingIndicator;
+        }
+
+        public static string DecryptStringBySecretKey(string inputString)
+        {
+            return DecryptStringBySecretKey(inputString, SecretKey);
+        }
+
+        private static string DecryptStringBySecretKey(string inputString, string secretKey)
+        {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+
+            inputString = inputString.Replace(EncryptStingIndicator, string.Empty).Replace("0add0", "+").Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'").Replace("0slash0", "/");
+
+            var encryptor = new DesEncryptor
+            {
+                InputString = inputString,
+                DecryptKey = secretKey
+            };
+            encryptor.DesDecrypt();
+
+            return encryptor.OutString;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
@@ -20,18 +21,18 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         private const string RoutePluginIdEnable = "{pluginId}/actions/enable";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
 
-                var dict = PluginManager.GetPluginIdAndVersionDict();
+                var dict = await PluginManager.GetPluginIdAndVersionDictAsync();
                 var list = dict.Keys.ToList();
                 var packageIds = TranslateUtils.ObjectCollectionToString(list);
 
@@ -39,7 +40,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                 {
                     IsNightly = WebConfigUtils.IsNightlyUpdate,
                     SystemManager.PluginVersion,
-                    AllPackages = PluginManager.AllPluginInfoList,
+                    AllPackages = await PluginManager.GetAllPluginInfoListAsync(),
                     PackageIds = packageIds
                 });
             }
@@ -54,9 +55,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -65,7 +66,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                 await request.AddAdminLogAsync("删除插件", $"插件:{pluginId}");
 
                 CacheUtils.ClearAll();
-                CacheDbUtils.Clear();
+                await DataProvider.DbCacheDao.ClearAsync();
 
                 return Ok();
             }
@@ -76,19 +77,19 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         }
 
         [HttpPost, Route(RouteActionsReload)]
-        public IHttpActionResult Reload()
+        public async Task<IHttpActionResult> Reload()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
 
                 CacheUtils.ClearAll();
-                CacheDbUtils.Clear();
+                await DataProvider.DbCacheDao.ClearAsync();
 
                 return Ok();
             }
@@ -103,25 +104,25 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
 
-                var pluginInfo = PluginManager.GetPluginInfo(pluginId);
+                var pluginInfo = await PluginManager.GetPluginInfoAsync(pluginId);
                 if (pluginInfo != null)
                 {
                     pluginInfo.IsDisabled = !pluginInfo.IsDisabled;
-                    DataProvider.PluginDao.UpdateIsDisabled(pluginId, pluginInfo.IsDisabled);
+                    await DataProvider.PluginDao.UpdateIsDisabledAsync(pluginId, pluginInfo.IsDisabled);
                     PluginManager.ClearCache();
 
                     await request.AddAdminLogAsync(!pluginInfo.IsDisabled ? "禁用插件" : "启用插件", $"插件:{pluginId}");
                 }
 
                 CacheUtils.ClearAll();
-                CacheDbUtils.Clear();
+                await DataProvider.DbCacheDao.ClearAsync();
 
                 return Ok();
             }

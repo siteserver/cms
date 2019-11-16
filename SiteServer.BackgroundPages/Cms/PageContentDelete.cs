@@ -4,12 +4,13 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model;
+using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -57,16 +58,16 @@ namespace SiteServer.BackgroundPages.Cms
 
             //if (this.channelId > 0)
             //{
-            //    this.nodeInfo = NodeManager.GetChannelInfo(base.SiteId, this.channelId);
+            //    this.node = NodeManager.GetChannelInfo(base.SiteId, this.channelId);
             //}
             //else
             //{
-            //    this.nodeInfo = NodeManager.GetChannelInfo(base.SiteId, -this.channelId);
+            //    this.node = NodeManager.GetChannelInfo(base.SiteId, -this.channelId);
             //}
-            //if (this.nodeInfo != null)
+            //if (this.node != null)
             //{
-            //    this.tableStyle = NodeManager.GetTableStyle(base.Site, nodeInfo);
-            //    this.tableName = NodeManager.GetTableName(base.Site, nodeInfo);
+            //    this.tableStyle = NodeManager.GetTableStyle(base.Site, node);
+            //    this.tableName = NodeManager.GetTableName(base.Site, node);
             //}
 
             //if (this.contentID == 0)
@@ -79,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
             //}
             //else
             //{
-            //    ContentInfo contentInfo = DataProvider.ContentDAO.GetContentInfo(this.tableStyle, this.tableName, this.contentID);
+            //    Body contentInfo = DataProvider.ContentDAO.GetContentInfo(this.tableStyle, this.tableName, this.contentID);
 
             //    if (contentInfo == null || !string.Equals(AuthRequest.AdminName, contentInfo.AddUserName))
             //    {
@@ -99,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(Site, channelId, contentId);
+                    var contentInfo = ContentManager.GetContentInfoAsync(Site, channelId, contentId).GetAwaiter().GetResult();
                     if (contentInfo != null)
                     {
                         builder.Append(
@@ -129,14 +130,14 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 foreach (var channelId in _idsDictionary.Keys)
                 {
-                    var tableName = ChannelManager.GetTableName(Site, channelId);
+                    var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
                     var contentIdList = _idsDictionary[channelId];
 
                     if (!_isDeleteFromTrash)
                     {
                         if (bool.Parse(RblRetainFiles.SelectedValue) == false)
                         {
-                            DeleteManager.DeleteContents(Site, channelId, contentIdList);
+                            DeleteManager.DeleteContentsAsync(Site, channelId, contentIdList).GetAwaiter().GetResult();
                             SuccessMessage("成功删除内容以及生成页面！");
                         }
                         else
@@ -149,15 +150,15 @@ namespace SiteServer.BackgroundPages.Cms
                             var contentId = contentIdList[0];
                             var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
                             AuthRequest.AddSiteLogAsync(SiteId, channelId, contentId, "删除内容",
-                                $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容标题:{contentTitle}").GetAwaiter().GetResult();
+                                $"栏目:{ChannelManager.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()},内容标题:{contentTitle}").GetAwaiter().GetResult();
                         }
                         else
                         {
                             AuthRequest.AddSiteLogAsync(SiteId, "批量删除内容",
-                                $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容条数:{contentIdList.Count}").GetAwaiter().GetResult();
+                                $"栏目:{ChannelManager.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()},内容条数:{contentIdList.Count}").GetAwaiter().GetResult();
                         }
 
-                        DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, tableName, contentIdList);
+                        DataProvider.ContentDao.UpdateTrashContentsAsync(SiteId, channelId, tableName, contentIdList).GetAwaiter().GetResult();
 
                         //引用内容，需要删除
                         //var siteTableNameList = SiteManager.GetTableNameList();
@@ -171,7 +172,7 @@ namespace SiteServer.BackgroundPages.Cms
                         //    }
                         //}
 
-                        CreateManager.TriggerContentChangedEvent(SiteId, channelId);
+                        CreateManager.TriggerContentChangedEventAsync(SiteId, channelId).GetAwaiter().GetResult();
                     }
                     else
                     {
@@ -180,7 +181,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         foreach (var contentId in contentIdList)
                         {
-                            ContentUtility.Delete(tableName, Site, channelId, contentId);
+                            ContentUtility.DeleteAsync(tableName, Site, channelId, contentId).GetAwaiter().GetResult();
                         }
 
                         AuthRequest.AddSiteLogAsync(SiteId, "从回收站清空内容", $"内容条数:{contentIdList.Count}").GetAwaiter().GetResult();
@@ -192,7 +193,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddErrorLogAsync(ex).GetAwaiter().GetResult();
                 FailMessage(ex, "删除内容失败！");
             }
         }

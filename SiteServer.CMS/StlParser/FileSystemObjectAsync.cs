@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser
 {
@@ -32,7 +30,7 @@ namespace SiteServer.CMS.StlParser
             else if (createType == ECreateType.Content)
             {
                 var site = await SiteManager.GetSiteAsync(siteId);
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 await CreateContentAsync(site, channelInfo, contentId);
             }
             else if (createType == ECreateType.AllContent)
@@ -52,9 +50,9 @@ namespace SiteServer.CMS.StlParser
         private static async Task CreateContentsAsync(int siteId, int channelId)
         {
             var site = await SiteManager.GetSiteAsync(siteId);
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
 
-            var tableName = ChannelManager.GetTableName(site, channelInfo);
+            var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
             var contentIdList = StlContentCache.GetContentIdListChecked(tableName, channelId, orderByString);
 
@@ -67,15 +65,15 @@ namespace SiteServer.CMS.StlParser
         private static async Task CreateChannelAsync(int siteId, int channelId)
         {
             var site = await SiteManager.GetSiteAsync(siteId);
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
 
-            if (!ChannelManager.IsCreatable(site, channelInfo)) return;
+            if (!await ChannelManager.IsCreatableAsync(site, channelInfo)) return;
 
             var templateInfo = channelId == siteId
-                ? TemplateManager.GetIndexPageTemplateInfo(siteId)
-                : TemplateManager.GetChannelTemplateInfo(siteId, channelId);
-            var filePath = PathUtility.GetChannelPageFilePath(site, channelId, 0);
-            var pageInfo = new PageInfo(channelId, 0, site, templateInfo, new Dictionary<string, object>());
+                ? await TemplateManager.GetIndexPageTemplateAsync(siteId)
+                : await TemplateManager.GetChannelTemplateAsync(siteId, channelId);
+            var filePath = await PathUtility.GetChannelPageFilePathAsync(site, channelId, 0);
+            var pageInfo = await PageInfo.GetPageInfoAsync(channelId, 0, site, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo)
             {
                 ContextType = EContextType.Channel
@@ -92,15 +90,15 @@ namespace SiteServer.CMS.StlParser
                 contentBuilder.Replace(stlElement, stlElementTranslated);
 
                 var innerBuilder = new StringBuilder(stlElement);
-                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
                 var pageContentHtml = innerBuilder.ToString();
                 var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, pageContentHtml) + 1; //一共需要的页数
 
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = pageInfo.Clone();
+                    var thePageInfo = await pageInfo.CloneAsync();
 
                     var index = pageContentHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
                     var length = index == -1 ? pageContentHtml.Length : index;
@@ -108,12 +106,12 @@ namespace SiteServer.CMS.StlParser
                     var pageHtml = pageContentHtml.Substring(0, length);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
-                    StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList,
+                    await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                         thePageInfo.PageChannelId, currentPageIndex, pageCount, 0);
 
-                    filePath = PathUtility.GetChannelPageFilePath(site, thePageInfo.PageChannelId,
+                    filePath = await PathUtility.GetChannelPageFilePathAsync(site, thePageInfo.PageChannelId,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, pagedBuilder);
 
                     if (index != -1)
                     {
@@ -127,27 +125,27 @@ namespace SiteServer.CMS.StlParser
                 var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlLabelList);
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
-                var pageContentsElementParser = new StlPageContents(stlElement, pageInfo, contextInfo);
-                var pageCount = pageContentsElementParser.GetPageCount(out var totalNum);
+                var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, pageInfo, contextInfo);
+                var (pageCount, totalNum) = await pageContentsElementParser.GetPageCountAsync();
 
                 pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = pageInfo.Clone();
-                    var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
+                    var thePageInfo = await pageInfo.CloneAsync();
+                    var pageHtml = await pageContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, true);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                    StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList,
+                    await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                         thePageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
-                    filePath = PathUtility.GetChannelPageFilePath(site, thePageInfo.PageChannelId,
+                    filePath = await PathUtility.GetChannelPageFilePathAsync(site, thePageInfo.PageChannelId,
                         currentPageIndex);
                     thePageInfo.AddLastPageScript(pageInfo);
 
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, pagedBuilder);
 
                     thePageInfo.ClearLastPageScript(pageInfo);
                     pageInfo.ClearLastPageScript();
@@ -159,25 +157,25 @@ namespace SiteServer.CMS.StlParser
                 var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlLabelList);
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
-                var pageChannelsElementParser = new StlPageChannels(stlElement, pageInfo, contextInfo);
+                var pageChannelsElementParser = await StlPageChannels.GetAsync(stlElement, pageInfo, contextInfo);
                 var pageCount = pageChannelsElementParser.GetPageCount(out var totalNum);
 
                 pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = pageInfo.Clone();
-                    var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
+                    var thePageInfo = await pageInfo.CloneAsync();
+                    var pageHtml = await pageChannelsElementParser.ParseAsync(currentPageIndex, pageCount);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                    StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList,
+                    await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                         thePageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
-                    filePath = PathUtility.GetChannelPageFilePath(site, thePageInfo.PageChannelId,
+                    filePath = await PathUtility.GetChannelPageFilePathAsync(site, thePageInfo.PageChannelId,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, pagedBuilder);
                 }
             }
             //如果标签中存在<stl:pageSqlContents>
@@ -186,68 +184,66 @@ namespace SiteServer.CMS.StlParser
                 var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
-                var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo);
+                var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlElement, pageInfo, contextInfo);
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out var totalNum);
 
                 pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = pageInfo.Clone();
-                    var pageHtml = pageSqlContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
+                    var thePageInfo = await pageInfo.CloneAsync();
+                    var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, true);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                    StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList,
+                    await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                         thePageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
-                    filePath = PathUtility.GetChannelPageFilePath(site, thePageInfo.PageChannelId,
+                    filePath = await PathUtility.GetChannelPageFilePathAsync(site, thePageInfo.PageChannelId,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, pagedBuilder);
                 }
             }
             else
             {
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, contentBuilder);
             }
         }
 
-        private static async Task CreateContentAsync(Site site, ChannelInfo channelInfo, int contentId)
+        private static async Task CreateContentAsync(Site site, Channel channel, int contentId)
         {
-            var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+            var contentInfo = await ContentManager.GetContentInfoAsync(site, channel, contentId);
 
             if (contentInfo == null)
             {
                 return;
             }
 
-            if (!contentInfo.IsChecked)
+            if (!contentInfo.Checked)
             {
-                DeleteManager.DeleteContent(site, channelInfo.Id, contentId);
+                await DeleteManager.DeleteContentAsync(site, channel.Id, contentId);
                 return;
             }
 
+            if (!ContentManager.IsCreatable(channel, contentInfo)) return;
 
-            if (!ContentManager.IsCreatable(channelInfo, contentInfo)) return;
-            
-
-            if (site.Additional.IsCreateStaticContentByAddDate &&
-                contentInfo.AddDate < site.Additional.CreateStaticContentAddDate)
+            if (site.IsCreateStaticContentByAddDate &&
+                contentInfo.AddDate < site.CreateStaticContentAddDate)
             {
                 return;
             }
 
-            var templateInfo = TemplateManager.GetContentTemplateInfo(site.Id, channelInfo.Id);
-            var pageInfo = new PageInfo(channelInfo.Id, contentId, site, templateInfo,
+            var templateInfo = await TemplateManager.GetContentTemplateAsync(site.Id, channel.Id);
+            var pageInfo = await PageInfo.GetPageInfoAsync(channel.Id, contentId, site, templateInfo,
                 new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo)
             {
-                ContextType = EContextType.Content,
-                ContentInfo = contentInfo
+                ContextType = EContextType.Content
             };
-            var filePath = PathUtility.GetContentPageFilePath(site, pageInfo.PageChannelId, contentInfo, 0);
+            contextInfo.SetContentInfo(contentInfo);
+            var filePath = await PathUtility.GetContentPageFilePathAsync(site, pageInfo.PageChannelId, contentInfo, 0);
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(site, templateInfo));
 
             var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
@@ -260,15 +256,15 @@ namespace SiteServer.CMS.StlParser
                 contentBuilder.Replace(stlElement, stlElementTranslated);
 
                 var innerBuilder = new StringBuilder(stlElement);
-                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
                 var pageContentHtml = innerBuilder.ToString();
                 var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, pageContentHtml) + 1; //一共需要的页数
 
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = pageInfo.Clone();
+                    var thePageInfo = await pageInfo.CloneAsync();
 
                     var index = pageContentHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
                     var length = index == -1 ? pageContentHtml.Length : index;
@@ -276,12 +272,12 @@ namespace SiteServer.CMS.StlParser
                     var pageHtml = pageContentHtml.Substring(0, length);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
-                    StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList,
-                        channelInfo.Id, contentId, currentPageIndex, pageCount);
+                    await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        channel.Id, contentId, currentPageIndex, pageCount);
 
-                    filePath = PathUtility.GetContentPageFilePath(site, thePageInfo.PageChannelId, contentInfo,
+                    filePath = await PathUtility.GetContentPageFilePathAsync(site, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, pagedBuilder);
 
                     if (index != -1)
                     {
@@ -297,15 +293,15 @@ namespace SiteServer.CMS.StlParser
                 contentBuilder.Replace(stlElement, stlElementTranslated);
 
                 var innerBuilder = new StringBuilder(stlElement);
-                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
                 var pageContentHtml = innerBuilder.ToString();
                 var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, pageContentHtml) + 1; //一共需要的页数
 
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = pageInfo.Clone();
+                    var thePageInfo = await pageInfo.CloneAsync();
 
                     var index = pageContentHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
                     var length = index == -1 ? pageContentHtml.Length : index;
@@ -313,12 +309,12 @@ namespace SiteServer.CMS.StlParser
                     var pageHtml = pageContentHtml.Substring(0, length);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
-                    StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList,
-                        channelInfo.Id, contentId, currentPageIndex, pageCount);
+                    await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        channel.Id, contentId, currentPageIndex, pageCount);
 
-                    filePath = PathUtility.GetContentPageFilePath(site, thePageInfo.PageChannelId, contentInfo,
+                    filePath = await PathUtility.GetContentPageFilePathAsync(site, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, pagedBuilder);
 
                     if (index != -1)
                     {
@@ -332,24 +328,24 @@ namespace SiteServer.CMS.StlParser
                 var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlLabelList);
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
-                var pageContentsElementParser = new StlPageContents(stlElement, pageInfo, contextInfo);
-                var pageCount = pageContentsElementParser.GetPageCount(out var totalNum);
+                var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, pageInfo, contextInfo);
+                var (pageCount, totalNum) = await pageContentsElementParser.GetPageCountAsync();
 
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = pageInfo.Clone();
-                    var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
+                    var thePageInfo = await pageInfo.CloneAsync();
+                    var pageHtml = await pageContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, true);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                    StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList,
-                        channelInfo.Id, contentId, currentPageIndex, pageCount);
+                    await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        channel.Id, contentId, currentPageIndex, pageCount);
 
-                    filePath = PathUtility.GetContentPageFilePath(site, thePageInfo.PageChannelId, contentInfo,
+                    filePath = await PathUtility.GetContentPageFilePathAsync(site, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, pagedBuilder);
                 }
             }
             //如果标签中存在<stl:pageChannels>
@@ -358,24 +354,24 @@ namespace SiteServer.CMS.StlParser
                 var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlLabelList);
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
-                var pageChannelsElementParser = new StlPageChannels(stlElement, pageInfo, contextInfo);
+                var pageChannelsElementParser = await StlPageChannels.GetAsync(stlElement, pageInfo, contextInfo);
                 var pageCount = pageChannelsElementParser.GetPageCount(out _);
 
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = pageInfo.Clone();
-                    var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
+                    var thePageInfo = await pageInfo.CloneAsync();
+                    var pageHtml = await pageChannelsElementParser.ParseAsync(currentPageIndex, pageCount);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                    StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList,
-                        channelInfo.Id, contentId, currentPageIndex, pageCount);
+                    await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        channel.Id, contentId, currentPageIndex, pageCount);
 
-                    filePath = PathUtility.GetContentPageFilePath(site, thePageInfo.PageChannelId, contentInfo,
+                    filePath = await PathUtility.GetContentPageFilePathAsync(site, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, pagedBuilder);
                 }
             }
             //如果标签中存在<stl:pageSqlContents>
@@ -384,84 +380,84 @@ namespace SiteServer.CMS.StlParser
                 var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
-                var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo);
+                var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlElement, pageInfo, contextInfo);
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out var totalNum);
 
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = pageInfo.Clone();
-                    var pageHtml = pageSqlContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
+                    var thePageInfo = await pageInfo.CloneAsync();
+                    var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, true);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                    StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList,
-                        channelInfo.Id, contentId, currentPageIndex, pageCount);
+                    await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        channel.Id, contentId, currentPageIndex, pageCount);
 
-                    filePath = PathUtility.GetContentPageFilePath(site, thePageInfo.PageChannelId, contentInfo,
+                    filePath = await PathUtility.GetContentPageFilePathAsync(site, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, pagedBuilder);
                 }
             }
             else //无翻页
             {
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, contentBuilder);
             }
         }
 
         private static async Task CreateFileAsync(int siteId, int fileTemplateId)
         {
             var site = await SiteManager.GetSiteAsync(siteId);
-            var templateInfo = TemplateManager.GetTemplateInfo(siteId, fileTemplateId);
-            if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
+            var templateInfo = await TemplateManager.GetTemplateAsync(siteId, fileTemplateId);
+            if (templateInfo == null || templateInfo.Type != TemplateType.FileTemplate)
             {
                 return;
             }
 
-            var pageInfo = new PageInfo(siteId, 0, site, templateInfo, new Dictionary<string, object>());
+            var pageInfo = await PageInfo.GetPageInfoAsync(siteId, 0, site, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
             var filePath = PathUtility.MapPath(site, templateInfo.CreatedFileFullName);
 
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(site, templateInfo));
-            Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-            await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+            await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
+            await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, contentBuilder);
         }
 
         private static async Task CreateSpecialAsync(int siteId, int specialId)
         {
             var site = await SiteManager.GetSiteAsync(siteId);
-            var templateInfoList = SpecialManager.GetTemplateInfoList(site, specialId);
+            var templateInfoList = await SpecialManager.GetTemplateListAsync(site, specialId);
             foreach (var templateInfo in templateInfoList)
             {
-                var pageInfo = new PageInfo(siteId, 0, site, templateInfo, new Dictionary<string, object>());
+                var pageInfo = await PageInfo.GetPageInfoAsync(siteId, 0, site, templateInfo, new Dictionary<string, object>());
                 var contextInfo = new ContextInfo(pageInfo);
                 var filePath = PathUtility.MapPath(site, templateInfo.CreatedFileFullName);
 
                 var contentBuilder = new StringBuilder(templateInfo.Content);
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
+                await GenerateFileAsync(filePath, pageInfo.Template.CharsetType, contentBuilder);
             }
         }
 
         //private string CreateIncludeFile(string virtualUrl, bool isCreateIfExists)
         //{
-        //    var templateInfo = new TemplateInfo(0, SiteId, string.Empty, TemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharsetUtils.GetEnumType(Site.Additional.Charset), false);
-        //    var pageInfo = new PageInfo(SiteId, 0, Site, templateInfo, null);
+        //    var template = new Template(0, SiteId, string.Empty, TemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharsetUtils.GetEnumType(Site.Charset), false);
+        //    var pageInfo = new PageInfo(SiteId, 0, Site, template, null);
         //    var contextInfo = new ContextInfo(pageInfo);
 
         //    var parsedVirtualUrl = virtualUrl.Substring(0, virtualUrl.LastIndexOf('.')) + "_parsed" + virtualUrl.Substring(virtualUrl.LastIndexOf('.'));
         //    var filePath = PathUtility.MapPath(Site, parsedVirtualUrl);
         //    if (!isCreateIfExists && FileUtils.IsFileExists(filePath)) return parsedVirtualUrl;
 
-        //    var contentBuilder = new StringBuilder(StlCacheManager.FileContent.GetIncludeContent(Site, virtualUrl, pageInfo.TemplateInfo.Charset));
+        //    var contentBuilder = new StringBuilder(StlCacheManager.FileContent.GetIncludeContent(Site, virtualUrl, pageInfo.Template.Charset));
         //    StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);
         //    var pageAfterBodyScripts = StlParserManager.GetPageInfoScript(pageInfo, true);
         //    var pageBeforeBodyScripts = StlParserManager.GetPageInfoScript(pageInfo, false);
         //    contentBuilder.Insert(0, pageBeforeBodyScripts);
         //    contentBuilder.Append(pageAfterBodyScripts);
-        //    GenerateFile(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+        //    GenerateFile(filePath, pageInfo.Template.Charset, contentBuilder);
         //    return parsedVirtualUrl;
         //}
 

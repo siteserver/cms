@@ -2,11 +2,12 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -34,18 +35,18 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             var channelId = AuthRequest.GetQueryInt("channelId", SiteId);
-            var channelIdList = ChannelManager.GetChannelIdList(SiteId);
+            var channelIdList = ChannelManager.GetChannelIdListAsync(SiteId).GetAwaiter().GetResult();
             var nodeCount = channelIdList.Count;
             _isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, theChannelId);
+                var nodeInfo = ChannelManager.GetChannelAsync(SiteId, theChannelId).GetAwaiter().GetResult();
                 var itemChannelId = nodeInfo.Id;
                 var nodeName = nodeInfo.ChannelName;
                 var parentsCount = nodeInfo.ParentsCount;
-                var isLastNode = nodeInfo.IsLastNode;
+                var isLastNode = nodeInfo.LastNode;
                 var value = IsOwningChannelId(itemChannelId) ? itemChannelId.ToString() : string.Empty;
-                value = (nodeInfo.Additional.IsChannelAddable) ? value : string.Empty;
+                value = (nodeInfo.IsChannelAddable) ? value : string.Empty;
                 if (!string.IsNullOrEmpty(value))
                 {
                     if (!HasChannelPermissions(theChannelId, ConfigManager.ChannelPermissions.ChannelAdd))
@@ -104,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
                     HifFile.PostedFile.SaveAs(localFilePath);
 
 					var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
-                    importObject.ImportChannelsAndContentsByZipFile(TranslateUtils.ToInt(DdlParentChannelId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
+                    importObject.ImportChannelsAndContentsByZipFileAsync(TranslateUtils.ToInt(DdlParentChannelId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue)).GetAwaiter().GetResult();
 
                     AuthRequest.AddSiteLogAsync(SiteId, "导入栏目").GetAwaiter().GetResult();
 

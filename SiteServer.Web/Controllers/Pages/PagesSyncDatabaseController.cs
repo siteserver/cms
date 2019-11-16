@@ -17,13 +17,13 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                //var request = new AuthenticatedRequest();
+                //var request = await AuthenticatedRequest.GetRequestAsync();
                 //if (!request.IsAdminLoggin || !request.AdminPermissions.IsSuperAdmin())
                 //{
                 //    return Unauthorized();
                 //}
 
-                if (SystemManager.IsNeedInstall())
+                if (await SystemManager.IsNeedInstallAsync())
                 {
                     return BadRequest("系统未安装，向导被禁用！");
                 }

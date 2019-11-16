@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SiteServer.CMS.Api;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -13,11 +14,11 @@ namespace SiteServer.CMS.Plugin
 {
     public static class PluginMenuManager
     {
-        public static string GetSystemDefaultPageUrl(int siteId)
+        public static async Task<string> GetSystemDefaultPageUrlAsync(int siteId)
         {
             string pageUrl = null;
 
-            foreach (var service in PluginManager.Services)
+            foreach (var service in await PluginManager.GetServicesAsync())
             {
                 if (service.SystemDefaultPageUrl == null) continue;
 
@@ -27,18 +28,18 @@ namespace SiteServer.CMS.Plugin
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex);
+                    await LogUtils.AddErrorLogAsync(service.PluginId, ex);
                 }
             }
 
             return pageUrl;
         }
 
-        public static string GetHomeDefaultPageUrl()
+        public static async Task<string> GetHomeDefaultPageUrlAsync()
         {
             string pageUrl = null;
 
-            foreach (var service in PluginManager.Services)
+            foreach (var service in await PluginManager.GetServicesAsync())
             {
                 if (service.HomeDefaultPageUrl == null) continue;
 
@@ -48,18 +49,18 @@ namespace SiteServer.CMS.Plugin
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex);
+                    await LogUtils.AddErrorLogAsync(service.PluginId, ex);
                 }
             }
 
             return pageUrl;
         }
 
-        public static List<PluginMenu> GetTopMenus()
+        public static async Task<List<PluginMenu>> GetTopMenusAsync()
         {
             var menus = new List<PluginMenu>();
 
-            foreach (var service in PluginManager.Services)
+            foreach (var service in await PluginManager.GetServicesAsync())
             {
                 if (service.SystemMenuFuncs == null) continue;
 
@@ -87,18 +88,18 @@ namespace SiteServer.CMS.Plugin
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex);
+                    await LogUtils.AddErrorLogAsync(service.PluginId, ex);
                 }
             }
 
             return menus;
         }
 
-        public static List<PluginMenu> GetSiteMenus(int siteId)
+        public static async Task<List<PluginMenu>> GetSiteMenusAsync(int siteId)
         {
             var menus = new List<PluginMenu>();
 
-            foreach (var service in PluginManager.Services)
+            foreach (var service in await PluginManager.GetServicesAsync())
             {
                 if (service.SiteMenuFuncs == null) continue;
 
@@ -126,19 +127,19 @@ namespace SiteServer.CMS.Plugin
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex);
+                    await LogUtils.AddErrorLogAsync(service.PluginId, ex);
                 }
             }
 
             return menus;
         }
 
-        public static List<PluginMenu> GetContentMenus(List<string> pluginIds, ContentInfo contentInfo)
+        public static async Task<List<PluginMenu>> GetContentMenusAsync(List<string> pluginIds, Content content)
         {
             var menus = new List<PluginMenu>();
             if (pluginIds == null || pluginIds.Count == 0) return menus;
 
-            foreach (var service in PluginManager.Services)
+            foreach (var service in await PluginManager.GetServicesAsync())
             {
                 if (!pluginIds.Contains(service.PluginId)) continue;
 
@@ -150,7 +151,7 @@ namespace SiteServer.CMS.Plugin
 
                     foreach (var menuFunc in service.ContentMenuFuncs)
                     {
-                        var metadataMenu = menuFunc.Invoke(contentInfo);
+                        var metadataMenu = menuFunc.Invoke(content);
                         if (metadataMenu != null)
                         {
                             metadataMenus.Add(metadataMenu);
@@ -162,13 +163,13 @@ namespace SiteServer.CMS.Plugin
                     var i = 0;
                     foreach (var metadataMenu in metadataMenus)
                     {
-                        var pluginMenu = GetMenu(service.PluginId, contentInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, metadataMenu, ++i);
+                        var pluginMenu = GetMenu(service.PluginId, content.SiteId, content.ChannelId, content.Id, metadataMenu, ++i);
                         menus.Add(pluginMenu);
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex);
+                    await LogUtils.AddErrorLogAsync(service.PluginId, ex);
                 }
             }
 
@@ -283,11 +284,11 @@ namespace SiteServer.CMS.Plugin
             return menu;
         }
 
-        public static List<PermissionConfigManager.PermissionConfig> GetTopPermissions()
+        public static async Task<List<PermissionConfigManager.PermissionConfig>> GetTopPermissionsAsync()
         {
             var permissions = new List<PermissionConfigManager.PermissionConfig>();
 
-            foreach (var service in PluginManager.Services)
+            foreach (var service in await PluginManager.GetServicesAsync())
             {
                 if (service.SystemMenuFuncs != null)
                 {
@@ -298,11 +299,11 @@ namespace SiteServer.CMS.Plugin
             return permissions;
         }
 
-        public static List<PermissionConfigManager.PermissionConfig> GetSitePermissions(int siteId)
+        public static async Task<List<PermissionConfigManager.PermissionConfig>> GetSitePermissionsAsync(int siteId)
         {
             var permissions = new List<PermissionConfigManager.PermissionConfig>();
 
-            foreach (var service in PluginManager.Services)
+            foreach (var service in await PluginManager.GetServicesAsync())
             {
                 if (service.SiteMenuFuncs != null)
                 {

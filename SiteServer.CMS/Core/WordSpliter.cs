@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace SiteServer.CMS.Core
 {
@@ -31,15 +33,15 @@ namespace SiteServer.CMS.Core
             return System.Web.HttpContext.Current.Application.Get(key);
         }
 
-        private static SortedList ReadContent(int siteId)
+        private static async Task<SortedList> ReadContentAsync(int siteId)
         {
             var cacheKey = "BaiRong.Core.WordSpliter." + siteId;
             if (GetCache(cacheKey) == null)
             {
                 var arrText = new SortedList();
 
-                var tagList = DataProvider.TagDao.GetTagList(siteId);
-                if (tagList.Count > 0)
+                var tagList = await DataProvider.ContentTagDao.GetTagListAsync(siteId);
+                if (tagList.Any())
                 {
                     foreach (var line in tagList)
                     {
@@ -149,10 +151,10 @@ namespace SiteServer.CMS.Core
         /// 分词
         /// </summary>
         /// <returns></returns>
-        private static ArrayList StringSpliter(string[] key, int siteId)
+        private static async Task<ArrayList> StringSpliterAsync(string[] key, int siteId)
         {
             var list = new ArrayList();
-            var dict = ReadContent(siteId);//载入词典
+            var dict = await ReadContentAsync(siteId);//载入词典
             //
             for (var i = 0; i < key.Length; i++)
             {
@@ -193,9 +195,9 @@ namespace SiteServer.CMS.Core
         /// <summary>
         /// 得到分词结果
         /// </summary>
-        public static string[] DoSplit(string content, int siteId)
+        public static async Task<string[]> DoSplitAsync(string content, int siteId)
         {
-            var keyList = StringSpliter(FormatStr(content).Split(SplitChar.ToCharArray()), siteId);
+            var keyList = await StringSpliterAsync(FormatStr(content).Split(SplitChar.ToCharArray()), siteId);
             keyList.Insert(0, content);
             //去掉重复的关键词
             for (var i = 0; i < keyList.Count; i++)
@@ -216,10 +218,10 @@ namespace SiteServer.CMS.Core
         /// <summary>
         /// 得到分词关键字，以逗号隔开
         /// </summary>
-        public static string GetKeywords(string content, int siteId, int totalNum)
+        public static async Task<string> GetKeywordsAsync(string content, int siteId, int totalNum)
         {
             var value = "";
-            var _key = DoSplit(content, siteId);
+            var _key = await DoSplitAsync(content, siteId);
             var currentNum = 1;
             for (var i = 1; i < _key.Length; i++)
             {

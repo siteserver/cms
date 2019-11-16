@@ -18,13 +18,13 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
 
                 if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     return Unauthorized();
@@ -33,10 +33,10 @@ namespace SiteServer.API.Controllers.Home
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var attributes = ChannelManager.GetContentsColumns(site, channelInfo, true);
+                var attributes = await ChannelManager.GetContentsColumnsAsync(site, channelInfo, true);
 
                 return Ok(new
                 {
@@ -45,7 +45,7 @@ namespace SiteServer.API.Controllers.Home
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -55,14 +55,14 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
                 var attributeNames = request.GetPostString("attributeNames");
 
                 if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     return Unauthorized();
@@ -71,12 +71,12 @@ namespace SiteServer.API.Controllers.Home
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                channelInfo.Additional.ContentAttributesOfDisplay = attributeNames;
+                channelInfo.ContentAttributesOfDisplay = attributeNames;
 
-                DataProvider.ChannelDao.Update(channelInfo);
+                await DataProvider.ChannelDao.UpdateAsync(channelInfo);
 
                 await request.AddSiteLogAsync(siteId, "设置内容显示项", $"显示项:{attributeNames}");
 
@@ -87,7 +87,7 @@ namespace SiteServer.API.Controllers.Home
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

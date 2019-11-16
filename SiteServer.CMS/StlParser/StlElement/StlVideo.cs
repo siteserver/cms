@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -37,9 +38,9 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "是否循环播放")]
         private const string IsLoop = nameof(IsLoop);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-            var type = BackgroundContentAttribute.VideoUrl;
+            var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
             var width = 0;
@@ -86,10 +87,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
+            return await ParseImplAsync(pageInfo, contextInfo, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, string imageUrl, int width, int height, bool isAutoPlay, bool isControls, bool isLoop)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, string imageUrl, int width, int height, bool isAutoPlay, bool isControls, bool isLoop)
         {
             
 
@@ -105,23 +106,24 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contentId != 0)//获取内容视频
                     {
-                        if (contextInfo.ContentInfo == null)
+                        var contentInfo = await contextInfo.GetContentAsync();
+                        if (contentInfo == null)
                         {
                             videoUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
-                                if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
+                                if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                                 {
-                                    videoUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, BackgroundContentAttribute.VideoUrl);
+                                    videoUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
                                 }
                             }
                         }
                         else
                         {
-                            videoUrl = contextInfo.ContentInfo.GetString(type);
+                            videoUrl = contentInfo.Get<string>(type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
-                                videoUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
+                                videoUrl = contentInfo.Get<string>(ContentAttribute.VideoUrl);
                             }
                         }
                     }

@@ -2,6 +2,7 @@
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Packaging;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.Utils;
@@ -15,7 +16,7 @@ namespace SiteServer.API.Controllers.Sys
         public async Task<IHttpActionResult> Main()
         {
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{SystemManager.ProductVersion}";
-            var packagePath = PathUtils.GetPackagesPath(idWithVersion);
+            var packagePath = WebUtils.GetPackagesPath(idWithVersion);
             var homeDirectory = PathUtils.GetHomeDirectoryPath(string.Empty);
             if (!DirectoryUtils.IsDirectoryExists(homeDirectory) || !FileUtils.IsFileExists(PathUtils.Combine(homeDirectory, "config.js")))
             {

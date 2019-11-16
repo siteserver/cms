@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
@@ -10,28 +11,28 @@ namespace SiteServer.CMS.StlParser.Parsers
 	public static class StlPageElementParser
 	{
 		//在内容页中对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-		public static string ParseStlPageInContentPage(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount)
+		public static async Task<string> ParseStlPageInContentPageAsync(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount)
 		{
-            return StlPageItems.Parse(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, pageCount, EContextType.Content);
+            return await StlPageItems.ParseAsync(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, pageCount, EContextType.Content);
 		}
 
 		//在栏目页中对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-		public static string ParseStlPageInChannelPage(string stlElement, PageInfo pageInfo, int channelId, int currentPageIndex, int pageCount, int totalNum)
+		public static async Task<string> ParseStlPageInChannelPageAsync(string stlElement, PageInfo pageInfo, int channelId, int currentPageIndex, int pageCount, int totalNum)
 		{
-            return StlPageItems.Parse(stlElement, pageInfo, channelId, 0, currentPageIndex, pageCount, totalNum, EContextType.Channel);
+            return await StlPageItems.ParseAsync(stlElement, pageInfo, channelId, 0, currentPageIndex, pageCount, totalNum, EContextType.Channel);
 		}
 
-        public static string ParseStlPageInSearchPage(string stlElement, PageInfo pageInfo, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
+        public static async Task<string> ParseStlPageInSearchPageAsync(string stlElement, PageInfo pageInfo, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
         {
-            return StlPageItems.ParseInSearchPage(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
+            return await StlPageItems.ParseInSearchPageAsync(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
         }
 
-        public static string ParseStlPageInDynamicPage(string stlElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static async Task<string> ParseStlPageInDynamicPageAsync(string stlElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
-            return StlPageItems.ParseInDynamicPage(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+            return await StlPageItems.ParseInDynamicPageAsync(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
         }
 
-		public static string ParseStlPageItems(string htmlInStlPageElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent, EContextType contextType)
+		public static async Task<string> ParseStlPageItemsAsync(string htmlInStlPageElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent, EContextType contextType)
 		{
 			var html = htmlInStlPageElement;
 
@@ -39,7 +40,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             for (var i = 0; i < mc.Count; i++)
             {
                 var stlEntity = mc[i].Value;
-                var pageHtml = StlPageItem.ParseEntity(stlEntity, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, isXmlContent, contextType);
+                var pageHtml = await StlPageItem.ParseEntityAsync(stlEntity, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, isXmlContent, contextType);
                 html = html.Replace(stlEntity, pageHtml);
             }
 
@@ -47,14 +48,14 @@ namespace SiteServer.CMS.StlParser.Parsers
 			for (var i = 0; i < mc.Count; i++)
 			{
 				var stlElement = mc[i].Value;
-                var pageHtml = StlPageItem.ParseElement(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, contextType);
+                var pageHtml = await StlPageItem.ParseElementAsync(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, contextType);
 				html = html.Replace(stlElement, pageHtml);
 			}
             
 			return html;
 		}
 
-        public static string ParseStlPageItemsInSearchPage(string htmlInStlPageElement, PageInfo pageInfo, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
+        public static async Task<string> ParseStlPageItemsInSearchPageAsync(string htmlInStlPageElement, PageInfo pageInfo, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
         {
             var html = htmlInStlPageElement;
 
@@ -62,7 +63,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             for (var i = 0; i < mc.Count; i++)
             {
                 var stlEntity = mc[i].Value;
-                var pageHtml = StlPageItem.ParseEntityInSearchPage(stlEntity, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
+                var pageHtml = await StlPageItem.ParseEntityInSearchPageAsync(stlEntity, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
                 html = html.Replace(stlEntity, pageHtml);
             }
 
@@ -70,14 +71,14 @@ namespace SiteServer.CMS.StlParser.Parsers
             for (var i = 0; i < mc.Count; i++)
             {
                 var stlElement = mc[i].Value;
-                var pageHtml = StlPageItem.ParseElementInSearchPage(stlElement, pageInfo, ajaxDivId, currentPageIndex, pageCount, totalNum);
+                var pageHtml = await StlPageItem.ParseElementInSearchPageAsync(stlElement, pageInfo, ajaxDivId, currentPageIndex, pageCount, totalNum);
                 html = html.Replace(stlElement, pageHtml);
             }
 
             return html;
         }
 
-        public static string ParseStlPageItemsInDynamicPage(string htmlInStlPageElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static async Task<string> ParseStlPageItemsInDynamicPageAsync(string htmlInStlPageElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             var html = htmlInStlPageElement;
 
@@ -85,7 +86,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             for (var i = 0; i < mc.Count; i++)
             {
                 var stlEntity = mc[i].Value;
-                var pageHtml = StlPageItem.ParseEntityInDynamicPage(stlEntity, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                var pageHtml = await StlPageItem.ParseEntityInDynamicPageAsync(stlEntity, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
                 html = html.Replace(stlEntity, pageHtml);
             }
 
@@ -93,7 +94,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             for (var i = 0; i < mc.Count; i++)
             {
                 var stlElement = mc[i].Value;
-                var pageHtml = StlPageItem.ParseElementInDynamicPage(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                var pageHtml = await StlPageItem.ParseElementInDynamicPageAsync(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
                 html = html.Replace(stlElement, pageHtml);
             }
 
@@ -102,25 +103,25 @@ namespace SiteServer.CMS.StlParser.Parsers
 
 		
 		//在内容页中对“翻页”（stl:pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-		public static string ParseStlPageItemInContentPage(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum)
+		public static async Task<string> ParseStlPageItemInContentPageAsync(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum)
 		{
-			return StlPageItem.ParseElement(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, EContextType.Content);
+			return await StlPageItem.ParseElementAsync(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, EContextType.Content);
 		}
 
 		//在栏目页中对“翻页”（stl:pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-		public static string ParseStlPageItemInChannelPage(string stlElement, PageInfo pageInfo, int channelId, int currentPageIndex, int pageCount, int totalNum)
+		public static async Task<string> ParseStlPageItemInChannelPageAsync(string stlElement, PageInfo pageInfo, int channelId, int currentPageIndex, int pageCount, int totalNum)
 		{
-            return StlPageItem.ParseElement(stlElement, pageInfo, channelId, 0, currentPageIndex, pageCount, totalNum, EContextType.Channel);
+            return await StlPageItem.ParseElementAsync(stlElement, pageInfo, channelId, 0, currentPageIndex, pageCount, totalNum, EContextType.Channel);
 		}
 
-        public static string ParseStlPageItemInSearchPage(string stlElement, PageInfo pageInfo, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
+        public static async Task<string> ParseStlPageItemInSearchPageAsync(string stlElement, PageInfo pageInfo, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
         {
-            return StlPageItem.ParseElementInSearchPage(stlElement, pageInfo, ajaxDivId, currentPageIndex, pageCount, totalNum);
+            return await StlPageItem.ParseElementInSearchPageAsync(stlElement, pageInfo, ajaxDivId, currentPageIndex, pageCount, totalNum);
         }
 
-        public static string ParseStlPageItemInDynamicPage(string stlElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static async Task<string> ParseStlPageItemInDynamicPageAsync(string stlElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
-            return StlPageItem.ParseElementInDynamicPage(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+            return await StlPageItem.ParseElementInDynamicPageAsync(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
         }
 	}
 }

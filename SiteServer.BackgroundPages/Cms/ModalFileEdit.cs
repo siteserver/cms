@@ -3,8 +3,9 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -80,14 +81,14 @@ namespace SiteServer.BackgroundPages.Cms
             _fileCharset = ECharset.utf_8;
             if (Site != null)
             {
-                _fileCharset = ECharsetUtils.GetEnumType(Site.Additional.Charset);
+                _fileCharset = ECharsetUtils.GetEnumType(Site.Charset);
             }
 
             if (_isCreate == false)
             {
                 var filePath = Site != null
                     ? PathUtility.MapPath(Site, PathUtils.Combine(_relatedPath, _theFileName))
-                    : PathUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
+                    : WebUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
 
                 if (!FileUtils.IsFileExists(filePath))
                 {
@@ -103,10 +104,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (_isCreate == false)
             {
-                var filePath = Site != null ? PathUtility.MapPath(Site, PathUtils.Combine(_relatedPath, _theFileName)) : PathUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
+                var filePath = Site != null ? PathUtility.MapPath(Site, PathUtils.Combine(_relatedPath, _theFileName)) : WebUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
                 TbFileName.Text = _theFileName;
                 TbFileName.Enabled = false;
-                TbFileContent.Text = FileUtils.ReadText(filePath, _fileCharset);
+                TbFileContent.Text = FileUtils.ReadText(filePath);
             }
 
             if (_isCreate) return;
@@ -163,7 +164,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var filePath = Site != null
                     ? PathUtility.MapPath(Site, PathUtils.Combine(_relatedPath, _theFileName))
-                    : PathUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
+                    : WebUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
 
                 try
                 {
@@ -173,12 +174,12 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             _fileCharset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
                         }
-                        FileUtils.WriteText(filePath, _fileCharset, content);
+                        FileUtils.WriteText(filePath, content);
                     }
                     catch
                     {
                         FileUtils.RemoveReadOnlyAndHiddenIfExists(filePath);
-                        FileUtils.WriteText(filePath, _fileCharset, content);
+                        FileUtils.WriteText(filePath, content);
                     }
 
                     AuthRequest.AddSiteLogAsync(SiteId, "新建文件", $"文件名:{_theFileName}").GetAwaiter().GetResult();
@@ -201,7 +202,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var filePath = Site != null
                     ? PathUtility.MapPath(Site, PathUtils.Combine(_relatedPath, TbFileName.Text))
-                    : PathUtils.MapPath(PathUtils.Combine(_relatedPath, TbFileName.Text));
+                    : WebUtils.MapPath(PathUtils.Combine(_relatedPath, TbFileName.Text));
 
                 if (FileUtils.IsFileExists(filePath))
                 {
@@ -213,12 +214,12 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         try
                         {
-                            FileUtils.WriteText(filePath, _fileCharset, content);
+                            FileUtils.WriteText(filePath, content);
                         }
                         catch
                         {
                             FileUtils.RemoveReadOnlyAndHiddenIfExists(filePath);
-                            FileUtils.WriteText(filePath, _fileCharset, content);
+                            FileUtils.WriteText(filePath, content);
                         }
                         AuthRequest.AddSiteLogAsync(SiteId, "编辑文件", $"文件名:{_theFileName}").GetAwaiter().GetResult();
                         isSuccess = true;

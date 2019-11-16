@@ -18,7 +18,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -26,7 +26,7 @@ namespace SiteServer.API.Controllers.Home
                 var isDesc = request.GetPostBool("isDesc");
 
                 if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     return Unauthorized();
@@ -35,12 +35,12 @@ namespace SiteServer.API.Controllers.Home
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var tableName = ChannelManager.GetTableName(site, channelInfo);
+                var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
 
-                DataProvider.ContentDao.UpdateArrangeTaxis(tableName, channelId, attributeName, isDesc);
+                await DataProvider.ContentDao.UpdateArrangeTaxisAsync(tableName, channelId, attributeName, isDesc);
 
                 await request.AddSiteLogAsync(siteId, "批量整理", string.Empty);
 
@@ -51,7 +51,7 @@ namespace SiteServer.API.Controllers.Home
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

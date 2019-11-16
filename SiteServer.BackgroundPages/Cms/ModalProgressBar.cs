@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 
@@ -74,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"SiteTemplateDownload", true.ToString()},
-                    {"DownloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)}
+                    {"DownloadUrl", WebConfigUtils.EncryptStringBySecretKey(downloadUrl)}
                 }), 460, 360);
         }
 
@@ -83,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
             return PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
             {
                 {"SiteTemplateDownload", true.ToString()},
-                {"DownloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)}
+                {"DownloadUrl", WebConfigUtils.EncryptStringBySecretKey(downloadUrl)}
             });
         }
 
@@ -126,7 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 foreach (var channelId in TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("ChannelIDCollection")))
                 {
-                    CreateManager.CreateChannel(SiteId, channelId);
+                    CreateManager.CreateChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
@@ -137,8 +138,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 foreach (var contentId in TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection")))
                 {
-                    CreateManager.CreateContent(SiteId, AuthRequest.GetQueryInt("channelId"),
-                        contentId);
+                    CreateManager.CreateContentAsync(SiteId, AuthRequest.GetQueryInt("channelId"),
+                        contentId).GetAwaiter().GetResult();
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
@@ -147,7 +148,7 @@ namespace SiteServer.BackgroundPages.Cms
             else if (AuthRequest.IsQueryExists("CreateByTemplate") && AuthRequest.IsQueryExists("templateId"))
             {
                 var templateId = AuthRequest.GetQueryInt("templateId");
-                CreateManager.CreateByTemplate(SiteId, templateId);
+                CreateManager.CreateByTemplateAsync(SiteId, templateId).GetAwaiter().GetResult();
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
                 //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
@@ -158,8 +159,8 @@ namespace SiteServer.BackgroundPages.Cms
                     TranslateUtils.StringCollectionToStringCollection(AuthRequest.GetQueryString("IDsCollection")))
                 {
                     var pair = channelIdContentId.Split('_');
-                    CreateManager.CreateContent(SiteId, TranslateUtils.ToInt(pair[0]),
-                        TranslateUtils.ToInt(pair[1]));
+                    CreateManager.CreateContentAsync(SiteId, TranslateUtils.ToInt(pair[0]),
+                        TranslateUtils.ToInt(pair[1])).GetAwaiter().GetResult();
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
@@ -170,7 +171,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var userKeyPrefix = StringUtils.Guid();
 
-                var downloadUrl = TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("DownloadUrl"));
+                var downloadUrl = WebConfigUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("DownloadUrl"));
                 var directoryName = PathUtils.GetFileNameWithoutExtension(downloadUrl);
 
                 var parameters = AjaxOtherService.GetSiteTemplateDownloadParameters(downloadUrl, directoryName, userKeyPrefix);

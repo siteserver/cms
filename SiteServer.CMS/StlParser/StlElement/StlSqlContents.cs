@@ -1,7 +1,9 @@
 ﻿using System.Data;
+using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Enumerations;
 using SiteServer.Utils;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -21,9 +23,9 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "数据库查询语句")]
         public const string QueryString = nameof(QueryString);
 
-        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.SqlContent);
+            var listInfo = await ListInfo.GetListInfoAsync(pageInfo, contextInfo, EContextType.SqlContent);
             var dataSource = StlDataUtility.GetSqlContentsDataSource(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString);
 
             if (contextInfo.IsStlEntity)

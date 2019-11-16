@@ -14,20 +14,22 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
+                var config = await ConfigManager.GetInstanceAsync();
+
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemConfigInfo
+                    Value = config
                 });
             }
             catch (Exception ex)
@@ -41,31 +43,33 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                ConfigManager.SystemConfigInfo.IsUserRegistrationAllowed = request.GetPostBool("isUserRegistrationAllowed");
-                ConfigManager.SystemConfigInfo.IsUserRegistrationChecked = request.GetPostBool("isUserRegistrationChecked");
-                ConfigManager.SystemConfigInfo.IsUserUnRegistrationAllowed = request.GetPostBool("isUserUnRegistrationAllowed");
-                ConfigManager.SystemConfigInfo.UserPasswordMinLength = request.GetPostInt("userPasswordMinLength");
-                ConfigManager.SystemConfigInfo.UserPasswordRestriction = request.GetPostString("userPasswordRestriction");
-                ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes = request.GetPostInt("userRegistrationMinMinutes");
-                ConfigManager.SystemConfigInfo.IsUserLockLogin = request.GetPostBool("isUserLockLogin");
-                ConfigManager.SystemConfigInfo.UserLockLoginCount = request.GetPostInt("userLockLoginCount");
-                ConfigManager.SystemConfigInfo.UserLockLoginType = request.GetPostString("userLockLoginType");
-                ConfigManager.SystemConfigInfo.UserLockLoginHours = request.GetPostInt("userLockLoginHours");
+                var config = await ConfigManager.GetInstanceAsync();
 
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                config.IsUserRegistrationAllowed = request.GetPostBool("isUserRegistrationAllowed");
+                config.IsUserRegistrationChecked = request.GetPostBool("isUserRegistrationChecked");
+                config.IsUserUnRegistrationAllowed = request.GetPostBool("isUserUnRegistrationAllowed");
+                config.UserPasswordMinLength = request.GetPostInt("userPasswordMinLength");
+                config.UserPasswordRestriction = request.GetPostString("userPasswordRestriction");
+                config.UserRegistrationMinMinutes = request.GetPostInt("userRegistrationMinMinutes");
+                config.IsUserLockLogin = request.GetPostBool("isUserLockLogin");
+                config.UserLockLoginCount = request.GetPostInt("userLockLoginCount");
+                config.UserLockLoginType = request.GetPostString("userLockLoginType");
+                config.UserLockLoginHours = request.GetPostInt("userLockLoginHours");
+
+                await DataProvider.ConfigDao.UpdateAsync(config);
 
                 await request.AddAdminLogAsync("修改用户设置");
 
                 return Ok(new
                 {
-                    Value = ConfigManager.SystemConfigInfo
+                    Value = config
                 });
             }
             catch (Exception ex)

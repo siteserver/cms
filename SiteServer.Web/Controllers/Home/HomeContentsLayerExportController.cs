@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
@@ -26,13 +26,13 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
 
                 if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();
@@ -41,12 +41,12 @@ namespace SiteServer.API.Controllers.Home
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var columns = ContentManager.GetContentColumns(site, channelInfo, true);
+                var columns = await ContentManager.GetContentColumnsAsync(site, channelInfo, true);
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, site, siteId, out var checkedLevel);
+                var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, site, siteId);
                 var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
                 return Ok(new
@@ -58,7 +58,7 @@ namespace SiteServer.API.Controllers.Home
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -68,7 +68,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var downloadUrl = string.Empty;
 
@@ -83,7 +83,7 @@ namespace SiteServer.API.Controllers.Home
                 var columnNames = request.GetPostObject<List<string>>("columnNames");
 
                 if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     return Unauthorized();
@@ -92,42 +92,42 @@ namespace SiteServer.API.Controllers.Home
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var adminId = request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
+                var adminId = await request.AdminPermissionsImpl.GetAdminIdAsync(siteId, channelId);
 
-                var columns = ContentManager.GetContentColumns(site, channelInfo, true);
+                var columns = await ContentManager.GetContentColumnsAsync(site, channelInfo, true);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
-                var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
+                var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
-                var contentInfoList = new List<ContentInfo>();
-                var count = ContentManager.GetCount(site, channelInfo, adminId, true);
-                var pages = Convert.ToInt32(Math.Ceiling((double)count / site.Additional.PageSize));
+                var contentInfoList = new List<Content>();
+                var count = await ContentManager.GetCountAsync(site, channelInfo, adminId, true);
+                var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
                 if (pages == 0) pages = 1;
 
                 if (count > 0)
                 {
                     for (var page = 1; page <= pages; page++)
                     {
-                        var offset = site.Additional.PageSize * (page - 1);
-                        var limit = site.Additional.PageSize;
+                        var offset = site.PageSize * (page - 1);
+                        var limit = site.PageSize;
 
-                        var pageContentIds = ContentManager.GetChannelContentIdList(site, channelInfo, adminId, true, offset, limit);
+                        var pageContentIds = await ContentManager.GetChannelContentIdListAsync(site, channelInfo, adminId, true, offset, limit);
 
                         var sequence = offset + 1;
 
                         foreach (var channelContentId in pageContentIds)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(site, channelContentId.ChannelId, channelContentId.ContentId);
+                            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
                             if (contentInfo == null) continue;
 
                             if (!isAllCheckedLevel)
                             {
                                 var checkedLevel = contentInfo.CheckedLevel;
-                                if (contentInfo.IsChecked)
+                                if (contentInfo.Checked)
                                 {
-                                    checkedLevel = site.Additional.CheckContentLevel;
+                                    checkedLevel = site.CheckContentLevel;
                                 }
                                 if (!checkedLevelKeys.Contains(checkedLevel))
                                 {
@@ -155,7 +155,7 @@ namespace SiteServer.API.Controllers.Home
                             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
                             var exportObject = new ExportObject(siteId, request.AdminName);
                             contentInfoList.Reverse();
-                            if (exportObject.ExportContents(filePath, contentInfoList))
+                            if (await exportObject.ExportContentsAsync(filePath, contentInfoList))
                             {
                                 downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                             }
@@ -164,7 +164,7 @@ namespace SiteServer.API.Controllers.Home
                         {
                             var fileName = $"{channelInfo.ChannelName}.csv";
                             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                            ExcelObject.CreateExcelFileForContents(filePath, site, channelInfo, contentInfoList, columnNames);
+                            await ExcelObject.CreateExcelFileForContentsAsync(filePath, site, channelInfo, contentInfoList, columnNames);
                             downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                         }
                     }
@@ -178,7 +178,7 @@ namespace SiteServer.API.Controllers.Home
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

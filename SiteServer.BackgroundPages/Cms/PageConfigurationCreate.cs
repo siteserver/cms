@@ -2,9 +2,10 @@
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -37,42 +38,42 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
 
             EBooleanUtils.AddListItems(DdlIsCreateContentIfContentChanged, "生成", "不生成");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateContentIfContentChanged, Site.Additional.IsCreateContentIfContentChanged.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateContentIfContentChanged, Site.IsCreateContentIfContentChanged.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateChannelIfChannelChanged, "生成", "不生成");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfChannelChanged, Site.Additional.IsCreateChannelIfChannelChanged.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfChannelChanged, Site.IsCreateChannelIfChannelChanged.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateShowPageInfo, "显示", "不显示");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateShowPageInfo, Site.Additional.IsCreateShowPageInfo.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateShowPageInfo, Site.IsCreateShowPageInfo.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateIe8Compatible, "强制兼容", "不设置");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateIe8Compatible, Site.Additional.IsCreateIe8Compatible.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateIe8Compatible, Site.IsCreateIe8Compatible.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateBrowserNoCache, "强制清除缓存", "不设置");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateBrowserNoCache, Site.Additional.IsCreateBrowserNoCache.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateBrowserNoCache, Site.IsCreateBrowserNoCache.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateJsIgnoreError, "包含JS容错代码", "不设置");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateJsIgnoreError, Site.Additional.IsCreateJsIgnoreError.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateJsIgnoreError, Site.IsCreateJsIgnoreError.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateWithJQuery, "是", "否");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateWithJQuery, Site.Additional.IsCreateWithJQuery.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateWithJQuery, Site.IsCreateWithJQuery.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, Site.Additional.IsCreateDoubleClick.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, Site.IsCreateDoubleClick.ToString());
 
-            TbCreateStaticMaxPage.Text = Site.Additional.CreateStaticMaxPage.ToString();
+            TbCreateStaticMaxPage.Text = Site.CreateStaticMaxPage.ToString();
 
             EBooleanUtils.AddListItems(DdlIsCreateUseDefaultFileName, "启用", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateUseDefaultFileName, Site.Additional.IsCreateUseDefaultFileName.ToString());
-            PhIsCreateUseDefaultFileName.Visible = Site.Additional.IsCreateUseDefaultFileName;
-            TbCreateDefaultFileName.Text = Site.Additional.CreateDefaultFileName;
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateUseDefaultFileName, Site.IsCreateUseDefaultFileName.ToString());
+            PhIsCreateUseDefaultFileName.Visible = Site.IsCreateUseDefaultFileName;
+            TbCreateDefaultFileName.Text = Site.CreateDefaultFileName;
 
             EBooleanUtils.AddListItems(DdlIsCreateStaticContentByAddDate, "启用", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateStaticContentByAddDate, Site.Additional.IsCreateStaticContentByAddDate.ToString());
-            PhIsCreateStaticContentByAddDate.Visible = Site.Additional.IsCreateStaticContentByAddDate;
-            if (Site.Additional.CreateStaticContentAddDate != DateTime.MinValue)
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateStaticContentByAddDate, Site.IsCreateStaticContentByAddDate.ToString());
+            PhIsCreateStaticContentByAddDate.Visible = Site.IsCreateStaticContentByAddDate;
+            if (Site.CreateStaticContentAddDate != DateTime.MinValue)
             {
-                TbCreateStaticContentAddDate.DateTime = Site.Additional.CreateStaticContentAddDate;
+                TbCreateStaticContentAddDate.DateTime = Site.CreateStaticContentAddDate;
             }
         }
 
@@ -90,28 +91,28 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    Site.Additional.IsCreateContentIfContentChanged = TranslateUtils.ToBool(DdlIsCreateContentIfContentChanged.SelectedValue);
-		    Site.Additional.IsCreateChannelIfChannelChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfChannelChanged.SelectedValue);
+		    Site.IsCreateContentIfContentChanged = TranslateUtils.ToBool(DdlIsCreateContentIfContentChanged.SelectedValue);
+		    Site.IsCreateChannelIfChannelChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfChannelChanged.SelectedValue);
 
-		    Site.Additional.IsCreateShowPageInfo = TranslateUtils.ToBool(DdlIsCreateShowPageInfo.SelectedValue);
-		    Site.Additional.IsCreateIe8Compatible = TranslateUtils.ToBool(DdlIsCreateIe8Compatible.SelectedValue);
-		    Site.Additional.IsCreateBrowserNoCache = TranslateUtils.ToBool(DdlIsCreateBrowserNoCache.SelectedValue);
-		    Site.Additional.IsCreateJsIgnoreError = TranslateUtils.ToBool(DdlIsCreateJsIgnoreError.SelectedValue);
-		    Site.Additional.IsCreateWithJQuery = TranslateUtils.ToBool(DdlIsCreateWithJQuery.SelectedValue);
+		    Site.IsCreateShowPageInfo = TranslateUtils.ToBool(DdlIsCreateShowPageInfo.SelectedValue);
+		    Site.IsCreateIe8Compatible = TranslateUtils.ToBool(DdlIsCreateIe8Compatible.SelectedValue);
+		    Site.IsCreateBrowserNoCache = TranslateUtils.ToBool(DdlIsCreateBrowserNoCache.SelectedValue);
+		    Site.IsCreateJsIgnoreError = TranslateUtils.ToBool(DdlIsCreateJsIgnoreError.SelectedValue);
+		    Site.IsCreateWithJQuery = TranslateUtils.ToBool(DdlIsCreateWithJQuery.SelectedValue);
 
-		    Site.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
-		    Site.Additional.CreateStaticMaxPage = TranslateUtils.ToInt(TbCreateStaticMaxPage.Text);
+		    Site.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
+		    Site.CreateStaticMaxPage = TranslateUtils.ToInt(TbCreateStaticMaxPage.Text);
 
-		    Site.Additional.IsCreateUseDefaultFileName = TranslateUtils.ToBool(DdlIsCreateUseDefaultFileName.SelectedValue);
-		    if (Site.Additional.IsCreateUseDefaultFileName)
+		    Site.IsCreateUseDefaultFileName = TranslateUtils.ToBool(DdlIsCreateUseDefaultFileName.SelectedValue);
+		    if (Site.IsCreateUseDefaultFileName)
 		    {
-		        Site.Additional.CreateDefaultFileName = TbCreateDefaultFileName.Text;
+		        Site.CreateDefaultFileName = TbCreateDefaultFileName.Text;
 		    }
 
-            Site.Additional.IsCreateStaticContentByAddDate = TranslateUtils.ToBool(DdlIsCreateStaticContentByAddDate.SelectedValue);
-		    if (Site.Additional.IsCreateStaticContentByAddDate)
+            Site.IsCreateStaticContentByAddDate = TranslateUtils.ToBool(DdlIsCreateStaticContentByAddDate.SelectedValue);
+		    if (Site.IsCreateStaticContentByAddDate)
 		    {
-		        Site.Additional.CreateStaticContentAddDate = TbCreateStaticContentAddDate.DateTime;
+		        Site.CreateStaticContentAddDate = TbCreateStaticContentAddDate.DateTime;
 		    } 
 
             DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();

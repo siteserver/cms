@@ -3,6 +3,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.DataCache;
 using System.Collections.Generic;
+using SiteServer.CMS.Context;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -28,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            _siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList();
+            _siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdListAsync().GetAwaiter().GetResult();
             RptContents.DataSource = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();

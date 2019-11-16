@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.DataCache
 {
@@ -11,8 +11,6 @@ namespace SiteServer.CMS.DataCache
 	{
 	    private static class ContentGroupManagerCache
 	    {
-	        private static readonly object LockObject = new object();
-
 	        private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(ContentGroupManager));
 
 	        public static void Clear()
@@ -20,23 +18,20 @@ namespace SiteServer.CMS.DataCache
 	            DataCacheManager.Remove(CacheKey);
 	        }
 
-	        public static Dictionary<int, List<ContentGroupInfo>> GetAllContentGroups()
+	        public static async Task<Dictionary<int, List<ContentGroup>>> GetAllContentGroupsAsync()
 	        {
-	            var retVal = DataCacheManager.Get<Dictionary<int, List<ContentGroupInfo>>>(CacheKey);
+	            var retVal = DataCacheManager.Get<Dictionary<int, List<ContentGroup>>>(CacheKey);
 	            if (retVal != null) return retVal;
 
-	            lock (LockObject)
-	            {
-	                retVal = DataCacheManager.Get<Dictionary<int, List<ContentGroupInfo>>>(CacheKey);
-	                if (retVal == null)
-	                {
-	                    retVal = DataProvider.ContentGroupDao.GetAllContentGroups();
+                retVal = DataCacheManager.Get<Dictionary<int, List<ContentGroup>>>(CacheKey);
+                if (retVal == null)
+                {
+                    retVal = await DataProvider.ContentGroupDao.GetAllContentGroupsAsync();
 
-	                    DataCacheManager.Insert(CacheKey, retVal);
-	                }
-	            }
+                    DataCacheManager.Insert(CacheKey, retVal);
+                }
 
-	            return retVal;
+                return retVal;
 	        }
 	    }
 
@@ -45,34 +40,34 @@ namespace SiteServer.CMS.DataCache
 	        ContentGroupManagerCache.Clear();
 	    }
 
-	    public static bool IsExists(int siteId, string groupName)
+	    public static async Task<bool> IsExistsAsync(int siteId, string groupName)
 	    {
-	        var list = GetContentGroupInfoList(siteId);
+	        var list = await GetContentGroupListAsync(siteId);
 	        return list.Any(group => group.GroupName == groupName);
 	    }
 
-	    public static ContentGroupInfo GetContentGroupInfo(int siteId, string groupName)
+	    public static async Task<ContentGroup> GetContentGroupAsync(int siteId, string groupName)
 	    {
-	        var list = GetContentGroupInfoList(siteId);
+	        var list = await GetContentGroupListAsync(siteId);
 	        return list.FirstOrDefault(group => group.GroupName == groupName);
 	    }
 
-	    public static List<string> GetGroupNameList(int siteId)
+	    public static async Task<List<string>> GetGroupNameListAsync(int siteId)
 	    {
-	        var list = GetContentGroupInfoList(siteId);
+	        var list = await GetContentGroupListAsync(siteId);
 	        return list.Select(group => group.GroupName).ToList();
 	    }
 
-        public static List<ContentGroupInfo> GetContentGroupInfoList(int siteId)
+        public static async Task<List<ContentGroup>> GetContentGroupListAsync(int siteId)
         {
-            List<ContentGroupInfo> list = null;
-            var dict = ContentGroupManagerCache.GetAllContentGroups();
+            List<ContentGroup> list = null;
+            var dict = await ContentGroupManagerCache.GetAllContentGroupsAsync();
 
             if (dict != null && dict.ContainsKey(siteId))
             {
                 list = dict[siteId];
             }
-            return list ?? new List<ContentGroupInfo>();
+            return list ?? new List<ContentGroup>();
         }
     }
 }

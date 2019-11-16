@@ -2,10 +2,11 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Context.Images;
 using SiteServer.Utils;
-using SiteServer.Utils.Images;
 using SiteServer.CMS.Core;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -55,51 +56,51 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (isLoad)
             {
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageIsTitleImage))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageIsTitleImage))
                 {
-                    CbIsTitleImage.Checked = TranslateUtils.ToBool(Site.Additional.ConfigUploadImageIsTitleImage);
+                    CbIsTitleImage.Checked = TranslateUtils.ToBool(Site.ConfigUploadImageIsTitleImage);
                 }
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageTitleImageWidth))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageTitleImageWidth))
                 {
-                    TbTitleImageWidth.Text = Site.Additional.ConfigUploadImageTitleImageWidth;
+                    TbTitleImageWidth.Text = Site.ConfigUploadImageTitleImageWidth;
                 }
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageTitleImageHeight))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageTitleImageHeight))
                 {
-                    TbTitleImageHeight.Text = Site.Additional.ConfigUploadImageTitleImageHeight;
+                    TbTitleImageHeight.Text = Site.ConfigUploadImageTitleImageHeight;
                 }
 
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageIsShowImageInTextEditor))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageIsShowImageInTextEditor))
                 {
-                    CbIsShowImageInTextEditor.Checked = TranslateUtils.ToBool(Site.Additional.ConfigUploadImageIsShowImageInTextEditor);
+                    CbIsShowImageInTextEditor.Checked = TranslateUtils.ToBool(Site.ConfigUploadImageIsShowImageInTextEditor);
                 }
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageIsLinkToOriginal))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageIsLinkToOriginal))
                 {
-                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(Site.Additional.ConfigUploadImageIsLinkToOriginal);
+                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(Site.ConfigUploadImageIsLinkToOriginal);
                 }
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageIsSmallImage))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageIsSmallImage))
                 {
-                    CbIsSmallImage.Checked = TranslateUtils.ToBool(Site.Additional.ConfigUploadImageIsSmallImage);
+                    CbIsSmallImage.Checked = TranslateUtils.ToBool(Site.ConfigUploadImageIsSmallImage);
                 }
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageSmallImageWidth))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageSmallImageWidth))
                 {
-                    TbSmallImageWidth.Text = Site.Additional.ConfigUploadImageSmallImageWidth;
+                    TbSmallImageWidth.Text = Site.ConfigUploadImageSmallImageWidth;
                 }
-                if (!string.IsNullOrEmpty(Site.Additional.ConfigUploadImageSmallImageHeight))
+                if (!string.IsNullOrEmpty(Site.ConfigUploadImageSmallImageHeight))
                 {
-                    TbSmallImageHeight.Text = Site.Additional.ConfigUploadImageSmallImageHeight;
+                    TbSmallImageHeight.Text = Site.ConfigUploadImageSmallImageHeight;
                 }
             }
             else
             {
-                Site.Additional.ConfigUploadImageIsTitleImage = CbIsTitleImage.Checked.ToString();
-                Site.Additional.ConfigUploadImageTitleImageWidth = TbTitleImageWidth.Text;
-                Site.Additional.ConfigUploadImageTitleImageHeight = TbTitleImageHeight.Text;
+                Site.ConfigUploadImageIsTitleImage = CbIsTitleImage.Checked.ToString();
+                Site.ConfigUploadImageTitleImageWidth = TbTitleImageWidth.Text;
+                Site.ConfigUploadImageTitleImageHeight = TbTitleImageHeight.Text;
 
-                Site.Additional.ConfigUploadImageIsShowImageInTextEditor = CbIsShowImageInTextEditor.Checked.ToString();
-                Site.Additional.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
-                Site.Additional.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
-                Site.Additional.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
-                Site.Additional.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
+                Site.ConfigUploadImageIsShowImageInTextEditor = CbIsShowImageInTextEditor.Checked.ToString();
+                Site.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
+                Site.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
+                Site.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
+                Site.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
 
                 DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
             }
@@ -195,7 +196,7 @@ if (parent.document.getElementById('{_textBoxClientId}'))
 
                     var insertHtml = CbIsLinkToOriginal.Checked ? $@"<a href=""{imageUrl}"" target=""_blank""><img src=""{smallImageUrl}"" border=""0"" /></a>" : $@"<img src=""{smallImageUrl}"" border=""0"" />";
 
-                    script += "if(parent." + UEditorUtils.GetEditorInstanceScript() + ") parent." + UEditorUtils.GetInsertHtmlScript("Content", insertHtml);
+                    script += "if(parent." + UEditorUtils.GetEditorInstanceScript() + ") parent." + UEditorUtils.GetInsertHtmlScript("Body", insertHtml);
                 }
 
                 LtlScript.Text = $@"

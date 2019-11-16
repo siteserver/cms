@@ -4,10 +4,10 @@ using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -33,13 +33,13 @@ namespace SiteServer.API.Controllers.Sys
                 var currentChannelId = TranslateUtils.ToInt(form["currentChannelId"]);
 
                 var site = await SiteManager.GetSiteAsync(siteId);
-                var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
+                var channelIdList = await ChannelManager.GetChannelIdListAsync(await ChannelManager.GetChannelAsync(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
 
                 foreach (var channelId in channelIdList)
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                    var nodeInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
 
-                    builder.Append(StlTree.GetChannelRowHtml(site, nodeInfo, target, isShowTreeLine, isShowContentNum, TranslateUtils.DecryptStringBySecretKey(currentFormatString), topChannelId, topParentsCount, currentChannelId, false));
+                    builder.Append(await StlTree.GetChannelRowHtmlAsync(site, nodeInfo, target, isShowTreeLine, isShowContentNum, WebConfigUtils.DecryptStringBySecretKey(currentFormatString), topChannelId, topParentsCount, currentChannelId, false));
                 }
             }
             catch

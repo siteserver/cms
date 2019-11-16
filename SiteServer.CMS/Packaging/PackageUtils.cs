@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NuGet.Packaging;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
@@ -55,7 +56,7 @@ namespace SiteServer.CMS.Packaging
 
         public static void DownloadPackage(string packageId, string version)
         {
-            var packagesPath = PathUtils.GetPackagesPath();
+            var packagesPath = WebUtils.GetPackagesPath();
             var idWithVersion = $"{packageId}.{version}";
             var directoryPath = PathUtils.Combine(packagesPath, idWithVersion);
 
@@ -119,7 +120,7 @@ namespace SiteServer.CMS.Packaging
 
         public static bool IsPackageDownload(string packageId, string version)
         {
-            var packagesPath = PathUtils.GetPackagesPath();
+            var packagesPath = WebUtils.GetPackagesPath();
             var idWithVersion = $"{packageId}.{version}";
             var directoryPath = PathUtils.Combine(packagesPath, idWithVersion);
 
@@ -168,7 +169,7 @@ namespace SiteServer.CMS.Packaging
         {
             try
             {
-                var packagePath = PathUtils.GetPackagesPath(idWithVersion);
+                var packagePath = WebUtils.GetPackagesPath(idWithVersion);
 
                 string nuspecPath;
                 string dllDirectoryPath;
@@ -203,7 +204,7 @@ namespace SiteServer.CMS.Packaging
                 }
                 else if (packageType == PackageType.Plugin)
                 {
-                    var pluginPath = PathUtils.GetPluginPath(metadata.Id);
+                    var pluginPath = WebUtils.GetPluginPath(metadata.Id);
                     DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
 
                     DirectoryUtils.Copy(PathUtils.Combine(packagePath, "content"), pluginPath, true);
@@ -255,7 +256,7 @@ namespace SiteServer.CMS.Packaging
         {
             PackageMetadata metadata = null;
 
-            var nuspecPath = PathUtils.GetPluginNuspecPath(directoryName);
+            var nuspecPath = WebUtils.GetPluginNuspecPath(directoryName);
             if (FileUtils.IsFileExists(nuspecPath))
             {
                 try
@@ -284,7 +285,7 @@ namespace SiteServer.CMS.Packaging
             dllDirectoryPath = string.Empty;
             errorMessage = string.Empty;
 
-            var directoryPath = PathUtils.GetPackagesPath(directoryName);
+            var directoryPath = WebUtils.GetPackagesPath(directoryName);
 
             foreach (var filePath in DirectoryUtils.GetFilePaths(directoryPath))
             {

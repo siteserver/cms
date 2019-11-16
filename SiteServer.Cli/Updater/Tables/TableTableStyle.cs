@@ -6,7 +6,6 @@ using MySqlX.XDevAPI.Relational;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -80,14 +79,14 @@ namespace SiteServer.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(TableStyleInfo.Id), nameof(TableStyleId)},
-                {nameof(TableStyleInfo.TableName), nameof(TableName)}
+                {nameof(TableStyle.Id), nameof(TableStyleId)},
+                {nameof(TableStyle.TableName), nameof(TableName)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
         {
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), "siteserver_PublishmentSystem"), DataProvider.SiteDao.TableName},
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), "siteserver_Node"), DataProvider.ChannelDao.TableName}
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_PublishmentSystem"), DataProvider.SiteDao.TableName},
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_Node"), DataProvider.ChannelDao.TableName}
         };
 
         private static Dictionary<string, object> Process(Dictionary<string, object> row)
@@ -96,7 +95,7 @@ namespace SiteServer.Cli.Updater.Tables
             {
                 if (isVisible != null && StringUtils.EqualsIgnoreCase(isVisible.ToString(), "False"))
                 {
-                    row[nameof(TableStyleInfo.InputType)] = Plugin.InputType.Hidden.Value;
+                    row[nameof(TableStyle.InputType)] = Plugin.InputType.Hidden.Value;
                 }
             }
 

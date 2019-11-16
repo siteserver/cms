@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -58,13 +60,13 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             DdlContentModelPluginId.Items.Add(new ListItem("<与父栏目相同>", string.Empty));
-            var contentTables = PluginContentManager.GetContentModelPlugins();
+            var contentTables = PluginContentManager.GetContentModelPluginsAsync().GetAwaiter().GetResult();
             foreach (var contentTable in contentTables)
             {
                 DdlContentModelPluginId.Items.Add(new ListItem(contentTable.Title, contentTable.Id));
             }
 
-            var plugins = PluginContentManager.GetAllContentRelatedPlugins(false);
+            var plugins = PluginContentManager.GetAllContentRelatedPluginsAsync(false).GetAwaiter().GetResult();
             if (plugins.Count > 0)
             {
                 foreach (var pluginMetadata in plugins)
@@ -89,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             HlSelectChannel.Attributes.Add("onclick", ModalChannelSelect.GetOpenWindowString(SiteId));
             LtlSelectChannelScript.Text =
-                $@"<script>selectChannel('{ChannelManager.GetChannelNameNavigation(SiteId, channelId)}', '{channelId}');</script>";
+                $@"<script>selectChannel('{ChannelManager.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()}', '{channelId}');</script>";
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -145,7 +147,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             if (nodeIndexNameList == null)
                             {
-                                nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameList(SiteId);
+                                nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameListAsync(SiteId).GetAwaiter().GetResult().ToList();
                             }
                             if (nodeIndexNameList.IndexOf(nodeIndex) != -1)
                             {
@@ -161,21 +163,21 @@ namespace SiteServer.BackgroundPages.Cms
                         var contentModelPluginId = DdlContentModelPluginId.SelectedValue;
                         if (string.IsNullOrEmpty(contentModelPluginId))
                         {
-                            var parentNodeInfo = ChannelManager.GetChannelInfo(SiteId, parentId);
+                            var parentNodeInfo = ChannelManager.GetChannelAsync(SiteId, parentId).GetAwaiter().GetResult();
                             contentModelPluginId = parentNodeInfo.ContentModelPluginId;
                         }
 
                         var channelTemplateId = TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue);
                         var contentTemplateId = TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue);
 
-                        var insertedChannelId = DataProvider.ChannelDao.Insert(SiteId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId);
+                        var insertedChannelId = DataProvider.ChannelDao.InsertAsync(SiteId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueStringList(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId).GetAwaiter().GetResult();
                         insertedChannelIdHashtable[count + 1] = insertedChannelId;
 
-                        CreateManager.CreateChannel(SiteId, insertedChannelId);
+                        CreateManager.CreateChannelAsync(SiteId, insertedChannelId).GetAwaiter().GetResult();
                     }
                 }
 
-                AuthRequest.AddSiteLogAsync(SiteId, parentChannelId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelName(SiteId, parentChannelId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}").GetAwaiter().GetResult();
+                AuthRequest.AddSiteLogAsync(SiteId, parentChannelId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelNameAsync(SiteId, parentChannelId).GetAwaiter().GetResult()},栏目:{TbNodeNames.Text.Replace('\n', ',')}").GetAwaiter().GetResult();
 
                 isChanged = true;
             }

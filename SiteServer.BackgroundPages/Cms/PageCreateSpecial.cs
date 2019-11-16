@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -22,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
 
-            var specialInfoList = DataProvider.SpecialDao.GetSpecialInfoList(SiteId);
+            var specialInfoList = DataProvider.SpecialDao.GetSpecialListAsync(SiteId).GetAwaiter().GetResult();
 
             foreach (var specialInfo in specialInfoList)
             {
@@ -52,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var specialId in specialIdList)
             {
-                CreateManager.CreateSpecial(SiteId, specialId);
+                CreateManager.CreateSpecialAsync(SiteId, specialId).GetAwaiter().GetResult();
             }
 
             PageUtils.Redirect(CmsPages.GetCreateStatusUrl(SiteId));

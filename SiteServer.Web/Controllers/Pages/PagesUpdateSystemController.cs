@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.Utils;
@@ -14,17 +16,17 @@ namespace SiteServer.API.Controllers.Pages
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                if (!request.IsAdminLoggin || !request.AdminPermissionsImpl.IsConsoleAdministrator)
+                var request = await AuthenticatedRequest.GetRequestAsync();
+                if (!request.IsAdminLoggin || !await request.AdminPermissionsImpl.IsSuperAdminAsync())
                 {
                     return Unauthorized();
                 }
 
-                if (SystemManager.IsNeedInstall())
+                if (await SystemManager.IsNeedInstallAsync())
                 {
                     return BadRequest("系统未安装，向导被禁用");
                 }
@@ -45,14 +47,14 @@ namespace SiteServer.API.Controllers.Pages
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult UpdateSsCms()
+        public async Task<IHttpActionResult> UpdateSsCms()
         {
-            var request = new AuthenticatedRequest();
+            var request = await AuthenticatedRequest.GetRequestAsync();
 
             var version = request.GetPostString("version");
 
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{version}";
-            var packagePath = PathUtils.GetPackagesPath(idWithVersion);
+            var packagePath = WebUtils.GetPackagesPath(idWithVersion);
             var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
 
             if (!PackageUtils.IsPackageDownload(PackageUtils.PackageIdSsCms, version))
@@ -64,7 +66,7 @@ namespace SiteServer.API.Controllers.Pages
                 WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.ApiPrefix, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
                 WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtils.GetSiteFilesPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), WebUtils.GetSiteFilesPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), PathUtils.GetHomeDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);

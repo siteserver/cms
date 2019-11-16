@@ -1,29 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using System.Text;
-using SiteServer.CMS.Api;
-using SiteServer.CMS.Model.Db;
+using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.StlParser.Model
 {
     public class PageInfo
     {
-        public SortedDictionary<string, string> HeadCodes { get; }
+        private PageInfo() { }
 
-        public SortedDictionary<string, string> BodyCodes { get; }
+        public SortedDictionary<string, string> HeadCodes { get; private set; }
 
-        public SortedDictionary<string, string> FootCodes { get; }
+        public SortedDictionary<string, string> BodyCodes { get; private set; }
+
+        public SortedDictionary<string, string> FootCodes { get; private set; }
 
         public Site Site { get; private set; }
 
         public Dictionary<string, string> Parameters { get; set; }
 
-        public string ApiUrl { get; }
+        public string ApiUrl { get; private set; }
 
-        public TemplateInfo TemplateInfo { get; }
+        public Template Template { get; private set; }
 
         public User User { get; set; }
 
@@ -35,17 +36,17 @@ namespace SiteServer.CMS.StlParser.Model
 
         public bool IsLocal { get; set; }
 
-        public Stack<ChannelItemInfo> ChannelItems { get; }
+        public Stack<ChannelItemInfo> ChannelItems { get; private set; }
 
-        public Stack<ContentItemInfo> ContentItems { get; }
+        public Stack<ContentItemInfo> ContentItems { get; private set; }
 
-        public Stack SqlItems { get; }
+        public Stack SqlItems { get; private set; }
 
-        public Stack SiteItems { get; }
+        public Stack SiteItems { get; private set; }
 
-        public Stack EachItems { get; }
+        public Stack EachItems { get; private set; }
 
-        public Dictionary<string, object> PluginItems { get; }
+        public Dictionary<string, object> PluginItems { get; private set; }
 
         private int _uniqueId;
 
@@ -55,33 +56,39 @@ namespace SiteServer.CMS.StlParser.Model
             set => _uniqueId = value;
         }
 
-        public PageInfo Clone()
+        public async Task<PageInfo> CloneAsync()
         {
-            return new PageInfo(PageChannelId, PageContentId, Site, TemplateInfo, PluginItems);
+            return await PageInfo.GetPageInfoAsync(PageChannelId, PageContentId, Site, Template, PluginItems);
         }
 
-        public PageInfo(int pageChannelId, int pageContentId, Site site, TemplateInfo templateInfo, Dictionary<string, object> pluginItems)
+        public static async Task<PageInfo> GetPageInfoAsync(int pageChannelId, int pageContentId, Site site, Template template, Dictionary<string, object> pluginItems)
         {
-            TemplateInfo = templateInfo;
-            SiteId = site.Id;
-            PageChannelId = pageChannelId;
-            PageContentId = pageContentId;
-            IsLocal = false;
-            HeadCodes = new SortedDictionary<string, string>();
-            BodyCodes = new SortedDictionary<string, string>();
-            FootCodes = new SortedDictionary<string, string>();
-            Site = site;
-            User = null;
-            _uniqueId = 1;
-            ApiUrl = ApiManager.ApiUrl;
+            var pageInfo = new PageInfo();
 
-            ChannelItems = new Stack<ChannelItemInfo>(5);
-            ContentItems = new Stack<ContentItemInfo>(5);
-            SqlItems = new Stack(5);
-            SiteItems = new Stack(5);
-            EachItems = new Stack(5);
+            var config = await ConfigManager.GetInstanceAsync();
 
-            PluginItems = pluginItems;
+            pageInfo.Template = template;
+            pageInfo.SiteId = site.Id;
+            pageInfo.PageChannelId = pageChannelId;
+            pageInfo.PageContentId = pageContentId;
+            pageInfo.IsLocal = false;
+            pageInfo.HeadCodes = new SortedDictionary<string, string>();
+            pageInfo.BodyCodes = new SortedDictionary<string, string>();
+            pageInfo.FootCodes = new SortedDictionary<string, string>();
+            pageInfo.Site = site;
+            pageInfo.User = null;
+            pageInfo._uniqueId = 1;
+            pageInfo.ApiUrl = config.ApiUrl;
+
+            pageInfo.ChannelItems = new Stack<ChannelItemInfo>(5);
+            pageInfo.ContentItems = new Stack<ContentItemInfo>(5);
+            pageInfo.SqlItems = new Stack(5);
+            pageInfo.SiteItems = new Stack(5);
+            pageInfo.EachItems = new Stack(5);
+
+            pageInfo.PluginItems = pluginItems;
+
+            return pageInfo;
         }
 
         public void ChangeSite(Site site, int pageChannelId, int pageContentId, ContextInfo contextInfo)
@@ -223,7 +230,7 @@ namespace SiteServer.CMS.StlParser.Model
 
             if (pageJsName == Const.Jquery)
             {
-                if (Site.Additional.IsCreateWithJQuery)
+                if (Site.IsCreateWithJQuery)
                 {
                     retVal =
                         $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}"" type=""text/javascript""></script>";
@@ -370,7 +377,7 @@ wnd_frame.src=url;}}
                 var builder = new StringBuilder();
 
                 //builder.Append(
-                //$@"<script>var $pageInfo = {{siteId : {SiteId}, channelId : {PageChannelId}, contentId : {PageContentId}, siteUrl : ""{Site.Additional.WebUrl.TrimEnd('/')}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{ApiUrl.TrimEnd('/')}""}};</script>").AppendLine();
+                //$@"<script>var $pageInfo = {{siteId : {SiteId}, channelId : {PageChannelId}, contentId : {PageContentId}, siteUrl : ""{Site.WebUrl.TrimEnd('/')}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{ApiUrl.TrimEnd('/')}""}};</script>").AppendLine();
 
                 foreach (var key in HeadCodes.Keys)
                 {

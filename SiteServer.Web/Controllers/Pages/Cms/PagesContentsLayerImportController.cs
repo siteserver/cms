@@ -4,12 +4,12 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -25,13 +25,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -40,10 +40,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, site, siteId, out var checkedLevel);
+                var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, site, siteId);
                 var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
                 return Ok(new
@@ -54,23 +54,23 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
 
         [HttpPost, Route(RouteUpload)]
-        public IHttpActionResult Upload()
+        public async Task<IHttpActionResult> Upload()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -118,7 +118,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -128,7 +128,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -138,7 +138,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var fileNames = request.GetPostObject<List<string>>("fileNames");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -147,10 +147,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = checkedLevel >= site.Additional.CheckContentLevel;
+                var isChecked = checkedLevel >= site.CheckContentLevel;
 
                 var contentIdList = new List<int>();
 
@@ -164,7 +164,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             continue;
 
                         var importObject = new ImportObject(siteId, request.AdminName);
-                        contentIdList.AddRange(importObject.ImportContentsByZipFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default));
+                        contentIdList.AddRange(await importObject.ImportContentsByZipFileAsync(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default));
                     }
                 }
                 else if (importType == "csv")
@@ -177,7 +177,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             continue;
 
                         var importObject = new ImportObject(siteId, request.AdminName);
-                        contentIdList.AddRange(importObject.ImportContentsByCsvFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default));
+                        contentIdList.AddRange(await importObject.ImportContentsByCsvFileAsync(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default));
                     }
                 }
                 else if (importType == "txt")
@@ -189,15 +189,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             continue;
 
                         var importObject = new ImportObject(siteId, request.AdminName);
-                        contentIdList.AddRange(importObject.ImportContentsByTxtFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default));
+                        contentIdList.AddRange(await importObject.ImportContentsByTxtFileAsync(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default));
                     }
                 }
 
                 foreach (var contentId in contentIdList)
                 {
-                    CreateManager.CreateContent(siteId, channelInfo.Id, contentId);
+                    await CreateManager.CreateContentAsync(siteId, channelInfo.Id, contentId);
                 }
-                CreateManager.CreateChannel(siteId, channelInfo.Id);
+                await CreateManager.CreateChannelAsync(siteId, channelInfo.Id);
 
                 await request.AddSiteLogAsync(siteId, channelId, 0, "导入内容", string.Empty);
 
@@ -208,7 +208,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages
 
         public void ProcessRequest(HttpContext context)
         {
-            AuthRequest = new AuthenticatedRequest(context.Request);
+            AuthRequest = AuthenticatedRequest.GetRequestAsync().GetAwaiter().GetResult();
 
             if (!AuthRequest.IsAdminLoggin) return;
 

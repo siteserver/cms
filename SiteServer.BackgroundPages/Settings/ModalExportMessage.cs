@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
@@ -38,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
                     if (_exportType == ExportTypeSingleTableStyle)
                     {
                         var tableName = AuthRequest.GetQueryString("TableName");
-                        fileName = ExportSingleTableStyle(tableName);
+                        fileName = ExportSingleTableStyleAsync(tableName).GetAwaiter().GetResult();
                     }
 
                     var link = new HyperLink();
@@ -56,9 +58,9 @@ namespace SiteServer.BackgroundPages.Settings
             }
         }
 
-        private static string ExportSingleTableStyle(string tableName)
+        private static async Task<string> ExportSingleTableStyleAsync(string tableName)
         {
-            return ExportObject.ExportRootSingleTableStyle(tableName);
+            return await ExportObject.ExportRootSingleTableStyleAsync(tableName);
         }
     }
 }

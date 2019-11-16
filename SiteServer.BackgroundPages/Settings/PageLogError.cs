@@ -4,10 +4,10 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -30,12 +30,14 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
+            var config = ConfigManager.GetInstanceAsync().GetAwaiter().GetResult();
+
             if (AuthRequest.IsQueryExists("Delete"))
             {
                 var list = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("IDCollection"));
                 try
                 {
-                    DataProvider.ErrorLogDao.Delete(list);
+                    DataProvider.ErrorLogDao.DeleteAsync(list).GetAwaiter().GetResult();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -47,7 +49,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    DataProvider.ErrorLogDao.DeleteAll();
+                    DataProvider.ErrorLogDao.DeleteAllAsync().GetAwaiter().GetResult();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -57,9 +59,9 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else if (AuthRequest.IsQueryExists("Setting"))
             {
-                ConfigManager.SystemConfigInfo.IsLogError = !ConfigManager.SystemConfigInfo.IsLogError;
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
-                SuccessMessage($"成功{(ConfigManager.SystemConfigInfo.IsLogError ? "启用" : "禁用")}日志记录");
+                config.IsLogError = !config.IsLogError;
+                DataProvider.ConfigDao.UpdateAsync(config).GetAwaiter().GetResult();
+                SuccessMessage($"成功{(config.IsLogError ? "启用" : "禁用")}日志记录");
             }
 
             SpContents.ControlToPaginate = RptContents;
@@ -68,7 +70,7 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.SelectCommand = DataProvider.ErrorLogDao.GetSelectCommend(AuthRequest.GetQueryString("category"), AuthRequest.GetQueryString("pluginId"), AuthRequest.GetQueryString("keyword"),
                     AuthRequest.GetQueryString("dateFrom"), AuthRequest.GetQueryString("dateTo"));
 
-            SpContents.SortField = nameof(ErrorLogInfo.Id);
+            SpContents.SortField = nameof(ErrorLog.Id);
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
@@ -81,7 +83,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             DdlPluginId.Items.Add(new ListItem("全部", string.Empty));
-            foreach (var pluginInfo in PluginManager.AllPluginInfoList)
+            foreach (var pluginInfo in PluginManager.GetAllPluginInfoListAsync().GetAwaiter().GetResult())
             {
                 DdlPluginId.Items.Add(new ListItem(pluginInfo.Id, pluginInfo.Id));
             }
@@ -109,7 +111,7 @@ namespace SiteServer.BackgroundPages.Settings
                         {"DeleteAll", "True"}
                     })));
 
-            if (ConfigManager.SystemConfigInfo.IsLogError)
+            if (config.IsLogError)
             {
                 BtnSetting.Text = "禁用系统错误日志";
                 BtnSetting.Attributes.Add("onclick",
@@ -138,10 +140,10 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var id = SqlUtils.EvalInt(e.Item.DataItem, nameof(ErrorLogInfo.Id));
-            var addDate = SqlUtils.EvalDateTime(e.Item.DataItem, nameof(ErrorLogInfo.AddDate));
-            var message = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Message));
-            var summary = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Summary));
+            var id = SqlUtils.EvalInt(e.Item.DataItem, nameof(ErrorLog.Id));
+            var addDate = SqlUtils.EvalDateTime(e.Item.DataItem, nameof(ErrorLog.AddDate));
+            var message = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLog.Message));
+            var summary = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLog.Summary));
 
             var ltlId = (Literal)e.Item.FindControl("ltlId");
             var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");

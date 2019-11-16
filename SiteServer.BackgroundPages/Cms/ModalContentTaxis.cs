@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -41,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
             _channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
-            _tableName = ChannelManager.GetTableName(Site, _channelId);
+            _tableName = ChannelManager.GetTableNameAsync(Site, _channelId).GetAwaiter().GetResult();
 
             if (IsPostBack) return;
 
@@ -55,8 +54,8 @@ namespace SiteServer.BackgroundPages.Cms
             var isUp = DdlTaxisType.SelectedValue == "Up";
             var taxisNum = TranslateUtils.ToInt(TbTaxisNum.Text);
 
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            if (ETaxisTypeUtils.Equals(nodeInfo.Additional.DefaultTaxisType, ETaxisType.OrderByTaxis))
+            var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
+            if (ETaxisTypeUtils.Equals(nodeInfo.DefaultTaxisType, ETaxisType.OrderByTaxis))
             {
                 isUp = !isUp;
             }
@@ -91,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            CreateManager.TriggerContentChangedEvent(SiteId, _channelId);
+            CreateManager.TriggerContentChangedEventAsync(SiteId, _channelId).GetAwaiter().GetResult();
             AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "对内容排序", string.Empty).GetAwaiter().GetResult();
 
             LayerUtils.CloseAndRedirect(Page, _returnUrl);

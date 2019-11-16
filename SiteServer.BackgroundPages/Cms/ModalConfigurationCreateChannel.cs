@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -34,14 +35,14 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+                var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
 
                 EBooleanUtils.AddListItems(DdlIsCreateChannelIfContentChanged, "生成", "不生成");
-                ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfContentChanged, nodeInfo.Additional.IsCreateChannelIfContentChanged.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfContentChanged, nodeInfo.IsCreateChannelIfContentChanged.ToString());
 
                 //NodeManager.AddListItemsForAddContent(this.channelIdCollection.Items, base.Site, false);
-                ChannelManager.AddListItemsForCreateChannel(LbChannelId.Items, Site, false, AuthRequest.AdminPermissionsImpl);
-                ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.CreateChannelIdsIfContentChanged));
+                ChannelManager.AddListItemsForCreateChannelAsync(LbChannelId.Items, Site, false, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
+                ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(nodeInfo.CreateChannelIdsIfContentChanged));
 			}
 		}
 
@@ -51,12 +52,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+                var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
 
-                nodeInfo.Additional.IsCreateChannelIfContentChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfContentChanged.SelectedValue);
-                nodeInfo.Additional.CreateChannelIdsIfContentChanged = ControlUtils.GetSelectedListControlValueCollection(LbChannelId);
+                nodeInfo.IsCreateChannelIfContentChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfContentChanged.SelectedValue);
+                nodeInfo.CreateChannelIdsIfContentChanged = ControlUtils.GetSelectedListControlValueCollection(LbChannelId);
 
-                DataProvider.ChannelDao.Update(nodeInfo);
+                DataProvider.ChannelDao.UpdateAsync(nodeInfo).GetAwaiter().GetResult();
 
                 AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "设置栏目变动生成页面", $"栏目:{nodeInfo.ChannelName}").GetAwaiter().GetResult();
                 isSuccess = true;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
@@ -15,55 +16,55 @@ namespace SiteServer.CMS.Plugin.Apis
         private static AdminApi _instance;
         public static AdminApi Instance => _instance ?? (_instance = new AdminApi());
 
-        public IAdministratorInfo GetAdminInfoByUserId(int userId)
+        public async Task<IAdministrator> GetAdminInfoByUserIdAsync(int userId)
         {
-            return AdminManager.GetByUserIdAsync(userId).GetAwaiter().GetResult();
+            return await AdminManager.GetByUserIdAsync(userId);
         }
 
-        public IAdministratorInfo GetAdminInfoByUserName(string userName)
+        public async Task<IAdministrator> GetAdminInfoByUserNameAsync(string userName)
         {
-            return AdminManager.GetByUserNameAsync(userName).GetAwaiter().GetResult();
+            return await AdminManager.GetByUserNameAsync(userName);
         }
 
-        public IAdministratorInfo GetAdminInfoByEmail(string email)
+        public async Task<IAdministrator> GetAdminInfoByEmailAsync(string email)
         {
-            return AdminManager.GetByEmailAsync(email).GetAwaiter().GetResult();
+            return await AdminManager.GetByEmailAsync(email);
         }
 
-        public IAdministratorInfo GetAdminInfoByMobile(string mobile)
+        public async Task<IAdministrator> GetAdminInfoByMobileAsync(string mobile)
         {
-            return AdminManager.GetByMobileAsync(mobile).GetAwaiter().GetResult();
+            return await AdminManager.GetByMobileAsync(mobile);
         }
 
-        public IAdministratorInfo GetAdminInfoByAccount(string account)
+        public async Task<IAdministrator> GetAdminInfoByAccountAsync(string account)
         {
-            return AdminManager.GetByAccountAsync(account).GetAwaiter().GetResult();
+            return await AdminManager.GetByAccountAsync(account);
         }
 
-        public List<string> GetUserNameList()
+        public async Task<IEnumerable<string>> GetUserNameListAsync()
         {
-            return DataProvider.AdministratorDao.GetUserNameListAsync().GetAwaiter().GetResult().ToList();
+            return await DataProvider.AdministratorDao.GetUserNameListAsync();
         }
 
-        public IPermissions GetPermissions(string userName)
+        public async Task<IPermissions> GetPermissionsAsync(string userName)
         {
-            var adminInfo = AdminManager.GetByUserNameAsync(userName).GetAwaiter().GetResult();
+            var adminInfo = await AdminManager.GetByUserNameAsync(userName);
             return new PermissionsImpl(adminInfo);
         }
 
-        public bool IsUserNameExists(string userName)
+        public async Task<bool> IsUserNameExistsAsync(string userName)
         {
-            return DataProvider.AdministratorDao.IsUserNameExistsAsync(userName).GetAwaiter().GetResult();
+            return await DataProvider.AdministratorDao.IsUserNameExistsAsync(userName);
         }
 
-        public bool IsEmailExists(string email)
+        public async Task<bool> IsEmailExistsAsync(string email)
         {
-            return DataProvider.AdministratorDao.IsEmailExistsAsync(email).GetAwaiter().GetResult();
+            return await DataProvider.AdministratorDao.IsEmailExistsAsync(email);
         }
 
-        public bool IsMobileExists(string mobile)
+        public async Task<bool> IsMobileExistsAsync(string mobile)
         {
-            return DataProvider.AdministratorDao.IsMobileExistsAsync(mobile).GetAwaiter().GetResult();
+            return await DataProvider.AdministratorDao.IsMobileExistsAsync(mobile);
         }
 
         public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)

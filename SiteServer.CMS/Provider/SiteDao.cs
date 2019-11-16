@@ -2,56 +2,50 @@
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Datory;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Model.Mappings;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
-    public class SiteDao : DataProviderBase
+    public class SiteDao : IRepository
     {
-        private readonly Repository<SiteInfo> _repository;
+        private readonly Repository<Site> _repository;
 
         public SiteDao()
         {
-            _repository = new Repository<SiteInfo>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            _repository = new Repository<Site>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public override string TableName => _repository.TableName;
-        public override List<TableColumn> TableColumns => _repository.TableColumns;
+        public IDatabase Database => _repository.Database;
 
-        private static SiteInfo ToDb(Site site)
-        {
-            return MapperManager.MapTo<SiteInfo>(site);
-        }
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
 
         public async Task<int> InsertAsync(Site site)
         {
-            var siteInfo = ToDb(site);
-            siteInfo.Taxis = await GetMaxTaxisAsync() + 1;
-            site.Id = await _repository.InsertAsync(siteInfo);
+            site.Taxis = await GetMaxTaxisAsync() + 1;
+            site.Id = await _repository.InsertAsync(site);
             SiteManager.ClearCache();
             return site.Id;
         }
 
         public async Task DeleteAsync(int siteId)
         {
-            var siteInfo = await SiteManager.GetSiteAsync(siteId);
-            var list = ChannelManager.GetChannelIdList(siteId);
-            DataProvider.TableStyleDao.Delete(list, siteInfo.TableName);
+            var siteEntity = await SiteManager.GetSiteAsync(siteId);
+            var list = await ChannelManager.GetChannelIdListAsync(siteId);
+            await DataProvider.TableStyleDao.DeleteAsync(list, siteEntity.TableName);
 
-            DataProvider.TagDao.DeleteTags(siteId);
+            await DataProvider.ContentTagDao.DeleteTagsAsync(siteId);
 
-            DataProvider.ChannelDao.DeleteAll(siteId);
+            await DataProvider.ChannelDao.DeleteAllAsync(siteId);
 
             await UpdateParentIdToZeroAsync(siteId);
 
@@ -69,17 +63,15 @@ namespace SiteServer.CMS.Provider
                 await UpdateAllIsRootAsync();
             }
 
-            var siteInfo = ToDb(site);
-
-            await _repository.UpdateAsync(siteInfo);
+            await _repository.UpdateAsync(site);
             SiteManager.ClearCache();
         }
 
         public async Task UpdateTableNameAsync(int siteId, string tableName)
         {
             await _repository.UpdateAsync(Q
-                .Set(nameof(SiteInfo.TableName), tableName)
-                .Where(nameof(SiteInfo.Id), siteId)
+                .Set(nameof(Site.TableName), tableName)
+                .Where(nameof(Site.Id), siteId)
             );
             SiteManager.ClearCache();
         }
@@ -87,8 +79,8 @@ namespace SiteServer.CMS.Provider
         public async Task UpdateParentIdToZeroAsync(int parentId)
         {
             await _repository.UpdateAsync(Q
-                .Set(nameof(SiteInfo.ParentId), 0)
-                .Where(nameof(SiteInfo.ParentId), parentId)
+                .Set(nameof(Site.ParentId), 0)
+                .Where(nameof(Site.ParentId), parentId)
             );
             SiteManager.ClearCache();
         }
@@ -96,7 +88,7 @@ namespace SiteServer.CMS.Provider
         private async Task UpdateAllIsRootAsync()
         {
             await _repository.UpdateAsync(Q
-                .Set(nameof(SiteInfo.IsRoot), false.ToString())
+                .Set(nameof(Site.IsRoot), false.ToString())
             );
             SiteManager.ClearCache();
         }
@@ -105,16 +97,13 @@ namespace SiteServer.CMS.Provider
         {
             var list = new List<KeyValuePair<int, Site>>();
 
-            var siteInfoList = (await _repository.GetAllAsync(Q
-                .OrderBy(nameof(SiteInfo.Taxis), nameof(SiteInfo.Id))
+            var siteEntityList = (await _repository.GetAllAsync(Q
+                .OrderBy(nameof(Site.Taxis), nameof(Site.Id))
             )).ToList();
 
-            foreach (var siteInfo in siteInfoList)
+            foreach (var site in siteEntityList)
             {
-                var site = MapperManager.MapTo<Site>(siteInfo);
-
-                site.SiteDir = GetSiteDir(siteInfoList, siteInfo);
-                site.Additional = new SiteInfoExtend(siteInfo.SettingsXml);
+                site.SiteDir = GetSiteDir(siteEntityList, site);
 
                 var entry = new KeyValuePair<int, Site>(site.Id, site);
                 list.Add(entry);
@@ -131,31 +120,31 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        private static string GetSiteDir(List<SiteInfo> siteInfoList, SiteInfo siteInfo)
+        private static string GetSiteDir(List<Site> siteEntityList, Site siteEntity)
         {
-            if (TranslateUtils.ToBool(siteInfo.IsRoot)) return string.Empty;
-            if (siteInfo.ParentId <= 0) return PathUtils.GetDirectoryName(siteInfo.SiteDir, false);
+            if (TranslateUtils.ToBool(siteEntity.IsRoot)) return string.Empty;
+            if (siteEntity.ParentId <= 0) return PathUtils.GetDirectoryName(siteEntity.SiteDir, false);
 
-            SiteInfo parent = null;
-            foreach (var current in siteInfoList)
+            Site parent = null;
+            foreach (var current in siteEntityList)
             {
-                if (current.Id != siteInfo.ParentId) continue;
+                if (current.Id != siteEntity.ParentId) continue;
                 parent = current;
                 break;
             }
 
-            return PathUtils.Combine(GetSiteDir(siteInfoList, parent), PathUtils.GetDirectoryName(siteInfo.SiteDir, false));
+            return PathUtils.Combine(GetSiteDir(siteEntityList, parent), PathUtils.GetDirectoryName(siteEntity.SiteDir, false));
         }
 
         public async Task<bool> IsTableUsedAsync(string tableName)
         {
-            var exists = await _repository.ExistsAsync(Q.Where(nameof(SiteInfo.TableName), tableName));
+            var exists = await _repository.ExistsAsync(Q.Where(nameof(Site.TableName), tableName));
             if (exists) return true;
 
-            var contentModelPluginIdList = DataProvider.ChannelDao.GetContentModelPluginIdList();
+            var contentModelPluginIdList = await DataProvider.ChannelDao.GetContentModelPluginIdListAsync();
             foreach (var pluginId in contentModelPluginIdList)
             {
-                var service = PluginManager.GetService(pluginId);
+                var service = await PluginManager.GetServiceAsync(pluginId);
                 if (service != null && PluginContentTableManager.IsContentTable(service) && service.ContentTableName == tableName)
                 {
                     return true;
@@ -167,8 +156,8 @@ namespace SiteServer.CMS.Provider
 
         public async Task<int> GetIdByIsRootAsync()
         {
-            var siteId = await _repository.GetAsync<int?>(Q.Select(nameof(SiteInfo.Id))
-                .Where(nameof(SiteInfo.IsRoot), true.ToString()));
+            var siteId = await _repository.GetAsync<int?>(Q.Select(nameof(Site.Id))
+                .Where(nameof(Site.IsRoot), true.ToString()));
 
             return siteId ?? 0;
         }
@@ -176,8 +165,8 @@ namespace SiteServer.CMS.Provider
         public async Task<int> GetIdBySiteDirAsync(string siteDir)
         {
             var siteId = await _repository.GetAsync<int?>(Q
-                .Select(nameof(SiteInfo.Id))
-                .Where(nameof(SiteInfo.SiteDir), siteDir)
+                .Select(nameof(Site.Id))
+                .Where(nameof(Site.SiteDir), siteDir)
             );
 
             return siteId ?? 0;
@@ -189,8 +178,8 @@ namespace SiteServer.CMS.Provider
         public async Task<IEnumerable<string>> GetLowerSiteDirListAsync(int parentId)
         {
             var list = await _repository.GetAllAsync<string>(Q
-                .Select(nameof(SiteInfo.SiteDir))
-                .Where(nameof(SiteInfo.ParentId), parentId)
+                .Select(nameof(Site.SiteDir))
+                .Where(nameof(Site.ParentId), parentId)
             );
             return list.Select(StringUtils.ToLower);
         }
@@ -198,9 +187,9 @@ namespace SiteServer.CMS.Provider
         public async Task<IList<string>> GetSiteDirListAsync(int parentId)
         {
             var list = await _repository.GetAllAsync<string>(Q
-                .Select(nameof(SiteInfo.SiteDir))
-                .Where(nameof(SiteInfo.ParentId), parentId)
-                .Where(nameof(SiteInfo.IsRoot), false.ToString())
+                .Select(nameof(Site.SiteDir))
+                .Where(nameof(Site.ParentId), parentId)
+                .Where(nameof(Site.IsRoot), false.ToString())
             );
             return list.ToList();
         }
@@ -249,7 +238,10 @@ namespace SiteServer.CMS.Provider
                 //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
                 var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlUtils.Asterisk, sqlWhereString, orderByString, startNum - 1, totalNum);
 
-                ie = ExecuteReader(sqlSelect);
+                using (var connection = _repository.Database.GetConnection())
+                {
+                    ie = connection.ExecuteReader(sqlSelect);
+                }
             }
 
             return ie;
@@ -257,7 +249,7 @@ namespace SiteServer.CMS.Provider
 
         private async Task<int> GetMaxTaxisAsync()
         {
-            return await _repository.MaxAsync(nameof(SiteInfo.Taxis)) ?? 0;
+            return await _repository.MaxAsync(nameof(Site.Taxis)) ?? 0;
         }
     }
 }

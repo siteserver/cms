@@ -4,13 +4,14 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
+using Content = SiteServer.CMS.Model.Content;
+using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -26,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
         public CheckBox CbIsClearImages;
         public DropDownList DdlContentLevel;
 
-        private ChannelInfo _channelInfo;
+        private Channel _channel;
         private string _returnUrl;
 
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
@@ -47,13 +48,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
             var channelId = int.Parse(AuthRequest.GetQueryString("channelId"));
-            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
             _returnUrl = AuthRequest.GetQueryString("ReturnUrl");
 
             if (IsPostBack) return;
 
-            int checkedLevel;
-            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, Site, SiteId, out checkedLevel);
+            var (isChecked, checkedLevel) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, SiteId).GetAwaiter().GetResult();
             CheckManager.LoadContentLevelToEdit(DdlContentLevel, Site, null, isChecked, checkedLevel);
             ControlUtils.SelectSingleItem(DdlContentLevel, CheckManager.LevelInt.CaoGao.ToString());
         }
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var fileName = fileNames[0];
                 if (!string.IsNullOrEmpty(fileName))
                 {
-                    var redirectUrl = WebUtils.GetContentAddUploadWordUrl(SiteId, _channelInfo, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue), fileName, _returnUrl);
+                    var redirectUrl = WebUtils.GetContentAddUploadWordUrl(SiteId, _channel, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue), fileName, _returnUrl);
                     LayerUtils.CloseAndRedirect(Page, redirectUrl);
                 }
 
@@ -77,8 +77,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (fileNames.Count > 1)
             {
-                var tableName = ChannelManager.GetTableName(Site, _channelInfo);
-                var styleInfoList = TableStyleManager.GetContentStyleInfoList(Site, _channelInfo);
+                var tableName = ChannelManager.GetTableNameAsync(Site, _channel).GetAwaiter().GetResult();
+                var styleList = TableStyleManager.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
 
                 foreach (var fileName in fileNames)
                 {
@@ -88,11 +88,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (!string.IsNullOrEmpty(formCollection[ContentAttribute.Title]))
                         {
-                            var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
+                            var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleList, formCollection, ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
 
-                            var contentInfo = new ContentInfo(dict)
+                            var contentInfo = new Content(dict)
                             {
-                                ChannelId = _channelInfo.Id,
+                                ChannelId = _channel.Id,
                                 SiteId = SiteId,
                                 AddUserName = AuthRequest.AdminName,
                                 AddDate = DateTime.Now
@@ -102,14 +102,14 @@ namespace SiteServer.BackgroundPages.Cms
                             contentInfo.LastEditDate = contentInfo.AddDate;
 
                             contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
-                            contentInfo.IsChecked = contentInfo.CheckedLevel >= Site.Additional.CheckContentLevel;
+                            contentInfo.Checked = contentInfo.CheckedLevel >= Site.CheckContentLevel;
 
                             contentInfo.Title = formCollection[ContentAttribute.Title];
 
-                            contentInfo.Id = DataProvider.ContentDao.Insert(tableName, Site, _channelInfo, contentInfo);
+                            contentInfo.Id = DataProvider.ContentDao.InsertAsync(tableName, Site, _channel, contentInfo).GetAwaiter().GetResult();
 
-                            CreateManager.CreateContent(SiteId, _channelInfo.Id, contentInfo.Id);
-                            CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
+                            CreateManager.CreateContentAsync(SiteId, _channel.Id, contentInfo.Id).GetAwaiter().GetResult();
+                            CreateManager.TriggerContentChangedEventAsync(SiteId, _channel.Id).GetAwaiter().GetResult();
                         }
                     }
                 }

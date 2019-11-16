@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {

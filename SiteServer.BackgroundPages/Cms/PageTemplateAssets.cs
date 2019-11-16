@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = NameInclude;
                 _ext = ExtInclude;
-                _assetsDir = Site.Additional.TemplatesAssetsIncludeDir.Trim('/');
+                _assetsDir = Site.TemplatesAssetsIncludeDir.Trim('/');
                 
                 tips = $@"包含文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;stl:include file=""/{_assetsDir}/包含文件.html""&gt;&lt;/stl:include&gt; 引用。";
             }
@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = NameJs;
                 _ext = ExtJs;
-                _assetsDir = Site.Additional.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = Site.TemplatesAssetsJsDir.Trim('/');
                 tips =
                     $@"脚本文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;script type=""text/javascript"" src=""{{stl.siteUrl}}/{_assetsDir}/脚本文件.js""&gt;&lt;/script&gt; 引用。";
             }
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = NameCss;
                 _ext = ExtCss;
-                _assetsDir = Site.Additional.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = Site.TemplatesAssetsCssDir.Trim('/');
                 tips = $@"样式文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;link rel=""stylesheet"" type=""text/css"" href=""{{stl.siteUrl}}/{_assetsDir}/样式文件.css"" /&gt; 引用。";
             }
 
@@ -125,15 +125,11 @@ namespace SiteServer.BackgroundPages.Cms
             var fileName = (string)e.Item.DataItem;
 
             var ltlFileName = (Literal)e.Item.FindControl("ltlFileName");
-            var ltlCharset = (Literal)e.Item.FindControl("ltlCharset");
             var ltlView = (Literal)e.Item.FindControl("ltlView");
             var ltlEdit = (Literal)e.Item.FindControl("ltlEdit");
             var ltlDelete = (Literal)e.Item.FindControl("ltlDelete");
 
             ltlFileName.Text = fileName;
-
-            var charset = FileUtils.GetFileCharset(PathUtils.Combine(_directoryPath, fileName));
-            ltlCharset.Text = ECharsetUtils.GetText(charset);
 
             ltlView.Text = $@"<a href=""{PageUtility.GetSiteUrl(Site, $"{_assetsDir}/{fileName}", true)}"" target=""_blank"">查看</a>";
             ltlEdit.Text =

@@ -4,8 +4,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Web;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.UEditor
 {

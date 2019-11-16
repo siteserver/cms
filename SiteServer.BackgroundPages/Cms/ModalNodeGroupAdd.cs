@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (AuthRequest.IsQueryExists("GroupName"))
             {
                 var groupName = AuthRequest.GetQueryString("GroupName");
-                var nodeGroupInfo = ChannelGroupManager.GetChannelGroupInfo(SiteId, groupName);
+                var nodeGroupInfo = ChannelGroupManager.GetChannelGroupAsync(SiteId, groupName).GetAwaiter().GetResult();
                 if (nodeGroupInfo != null)
                 {
                     TbNodeGroupName.Text = nodeGroupInfo.GroupName;
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
 			var isChanged = false;
 
-            var nodeGroupInfo = new ChannelGroupInfo
+            var nodeGroupInfo = new ChannelGroup
             {
                 GroupName = TbNodeGroupName.Text,
                 SiteId = SiteId,
@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				try
 				{
-                    DataProvider.ChannelGroupDao.Update(nodeGroupInfo);
+                    DataProvider.ChannelGroupDao.UpdateAsync(nodeGroupInfo).GetAwaiter().GetResult();
                     AuthRequest.AddSiteLogAsync(SiteId, "修改栏目组", $"栏目组:{nodeGroupInfo.GroupName}").GetAwaiter().GetResult();
 					isChanged = true;
                 }
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			else
 			{
-                var nodeGroupNameList = ChannelGroupManager.GetGroupNameList(SiteId);
+                var nodeGroupNameList = ChannelGroupManager.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult();
 				if (nodeGroupNameList.IndexOf(TbNodeGroupName.Text) != -1)
 				{
                     FailMessage("栏目组添加失败，栏目组名称已存在！");
@@ -82,7 +82,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
 					try
 					{
-						DataProvider.ChannelGroupDao.Insert(nodeGroupInfo);
+						DataProvider.ChannelGroupDao.InsertAsync(nodeGroupInfo).GetAwaiter().GetResult();
                         AuthRequest.AddSiteLogAsync(SiteId, "添加栏目组", $"栏目组:{nodeGroupInfo.GroupName}").GetAwaiter().GetResult();
 						isChanged = true;
                     }

@@ -2,13 +2,14 @@
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Core
@@ -21,27 +22,27 @@ namespace SiteServer.BackgroundPages.Core
         private readonly string _iconPlusUrl;
 
         private readonly Site _site;
-        private readonly ChannelInfo _channelInfo;
+        private readonly Channel _channel;
         private readonly bool _enabled;
         private readonly PermissionsImpl _permissionsImpl;
 
-        public static ChannelTreeItem CreateInstance(Site site, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
+        public static ChannelTreeItem CreateInstance(Site site, Channel channel, bool enabled, PermissionsImpl permissionsImpl)
         {
-            return new ChannelTreeItem(site, channelInfo, enabled, permissionsImpl);
+            return new ChannelTreeItem(site, channel, enabled, permissionsImpl);
         }
 
-        private ChannelTreeItem(Site site, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
+        private ChannelTreeItem(Site site, Channel channel, bool enabled, PermissionsImpl permissionsImpl)
         {
             _site = site;
-            _channelInfo = channelInfo;
+            _channel = channel;
             _enabled = enabled;
             _permissionsImpl = permissionsImpl;
 
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
             
             //为后台栏目树中的首页和外链栏目添加图标
-            if (_channelInfo.ParentId == 0) _contentModelIconClass = "ion-ios-home";
-            else if (_channelInfo.LinkUrl.Length != 0) _contentModelIconClass = "ion-link";
+            if (_channel.ParentId == 0) _contentModelIconClass = "ion-ios-home";
+            else if (_channel.LinkUrl.Length != 0) _contentModelIconClass = "ion-link";
             else _contentModelIconClass = "ion-folder";
 
             _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
@@ -49,22 +50,22 @@ namespace SiteServer.BackgroundPages.Core
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
         }
 
-        public string GetItemHtml(ELoadingType loadingType, string returnUrl, int adminId, NameValueCollection additional)
+        public async Task<string> GetItemHtmlAsync(ELoadingType loadingType, string returnUrl, int adminId, NameValueCollection additional)
         {
             var htmlBuilder = new StringBuilder();
-            var parentsCount = _channelInfo.ParentsCount;
+            var parentsCount = _channel.ParentsCount;
             for (var i = 0; i < parentsCount; i++)
             {
                 htmlBuilder.Append($@"<img align=""absmiddle"" src=""{_iconEmptyUrl}"" />");
             }
 
-            if (_channelInfo.ChildrenCount > 0)
+            if (_channel.ChildrenCount > 0)
             {
                 htmlBuilder.Append(
-                    _channelInfo.SiteId == _channelInfo.Id
-                        ? $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""event.stopPropagation();displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_channelInfo
+                    _channel.SiteId == _channel.Id
+                        ? $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""event.stopPropagation();displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_channel
                             .Id}"" src=""{_iconMinusUrl}"" />"
-                        : $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""event.stopPropagation();displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_channelInfo
+                        : $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""event.stopPropagation();displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_channel
                             .Id}"" src=""{_iconPlusUrl}"" />");
             }
             else
@@ -74,9 +75,9 @@ namespace SiteServer.BackgroundPages.Core
 
             var contentModelIconHtml = $@"<i class=""{_contentModelIconClass}""></i>";
 
-            if (_channelInfo.Id > 0)
+            if (_channel.Id > 0)
             {
-                contentModelIconHtml = $@"<a href=""{PageUtils.GetRedirectUrlToChannel(_channelInfo.SiteId, _channelInfo.Id)}"" target=""_blank"" title=""浏览页面"" onclick=""event.stopPropagation()"">{contentModelIconHtml}</a>";
+                contentModelIconHtml = $@"<a href=""{PageUtils.GetRedirectUrlToChannel(_channel.SiteId, _channel.Id)}"" target=""_blank"" title=""浏览页面"" onclick=""event.stopPropagation()"">{contentModelIconHtml}</a>";
             }
 
             htmlBuilder.Append(contentModelIconHtml);
@@ -86,28 +87,28 @@ namespace SiteServer.BackgroundPages.Core
             {
                 if (loadingType == ELoadingType.ContentTree)
                 {
-                    var linkUrl = CmsPages.GetContentsUrl(_channelInfo.SiteId, _channelInfo.Id);
+                    var linkUrl = CmsPages.GetContentsUrl(_channel.SiteId, _channel.Id);
                     if (!string.IsNullOrEmpty(additional?["linkUrl"]))
                     {
                         linkUrl = PageUtils.AddQueryStringIfNotExists(additional["linkUrl"], new NameValueCollection
                         {
-                            ["channelId"] = _channelInfo.Id.ToString()
+                            ["channelId"] = _channel.Id.ToString()
                         });
                     }
 
                     //linkUrl = PageUtils.GetLoadingUrl(linkUrl);
 
                     htmlBuilder.Append(
-                        $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_channelInfo.ChannelName}</a>");
+                        $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_channel.ChannelName}</a>");
                 }
                 else if (loadingType == ELoadingType.ChannelClickSelect)
                 {
-                    var linkUrl = ModalChannelSelect.GetRedirectUrl(_channelInfo.SiteId, _channelInfo.Id);
+                    var linkUrl = ModalChannelSelect.GetRedirectUrl(_channel.SiteId, _channel.Id);
                     if (additional != null)
                     {
                         if (!string.IsNullOrEmpty(additional["linkUrl"]))
                         {
-                            linkUrl = additional["linkUrl"] + _channelInfo.Id;
+                            linkUrl = additional["linkUrl"] + _channel.Id;
                         }
                         else
                         {
@@ -117,35 +118,35 @@ namespace SiteServer.BackgroundPages.Core
                             }
                         }
                     }
-                    htmlBuilder.Append($"<a href='{linkUrl}'>{_channelInfo.ChannelName}</a>");
+                    htmlBuilder.Append($"<a href='{linkUrl}'>{_channel.ChannelName}</a>");
                 }
                 else
                 {
-                    if (_permissionsImpl.HasChannelPermissions(_channelInfo.SiteId, _channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
+                    if (await _permissionsImpl.HasChannelPermissionsAsync(_channel.SiteId, _channel.Id, ConfigManager.ChannelPermissions.ChannelEdit))
                     {
-                        var onClickUrl = ModalChannelEdit.GetOpenWindowString(_channelInfo.SiteId, _channelInfo.Id, returnUrl);
+                        var onClickUrl = ModalChannelEdit.GetOpenWindowString(_channel.SiteId, _channel.Id, returnUrl);
                         htmlBuilder.Append(
-                            $@"<a href=""javascript:;;"" onClick=""{onClickUrl}"" title=""快速编辑栏目"">{_channelInfo.ChannelName}</a>");
+                            $@"<a href=""javascript:;;"" onClick=""{onClickUrl}"" title=""快速编辑栏目"">{_channel.ChannelName}</a>");
 
                     }
                     else
                     {
-                        htmlBuilder.Append($@"<a href=""javascript:;"">{_channelInfo.ChannelName}</a>");
+                        htmlBuilder.Append($@"<a href=""javascript:;"">{_channel.ChannelName}</a>");
                     }
                 }
             }
             else
             {
-                htmlBuilder.Append($"<span>{_channelInfo.ChannelName}</span>");
+                htmlBuilder.Append($"<span>{_channel.ChannelName}</span>");
             }
 
-            if (_channelInfo.SiteId != 0)
+            if (_channel.SiteId != 0)
             {
                 htmlBuilder.Append("&nbsp;");
 
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_site, _channelInfo));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(_site, _channel).GetAwaiter().GetResult());
 
-                var count = ContentManager.GetCount(_site, _channelInfo, adminId);
+                var count = ContentManager.GetCountAsync(_site, _channel, adminId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append(
                     $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span>");

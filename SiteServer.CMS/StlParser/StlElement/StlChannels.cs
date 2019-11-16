@@ -4,12 +4,13 @@ using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Utils.Enumerations;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -24,11 +25,11 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "显示所有级别的子栏目")]
         public const string IsAllChildren = nameof(IsAllChildren);
 
-        public static async Task<object> Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Channel);
+            var listInfo = await ListInfo.GetListInfoAsync(pageInfo, contextInfo, EContextType.Channel);
 
-            var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
+            var dataSource = await GetDataSourceAsync(pageInfo, contextInfo, listInfo);
 
             if (contextInfo.IsStlEntity)
             {
@@ -38,11 +39,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             return ParseElement(pageInfo, contextInfo, listInfo, dataSource);
         }
 
-        public static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        public static async Task<DataSet> GetDataSourceAsync(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
-            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+            var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
-            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+            channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
             var isTotal = TranslateUtils.ToBool(listInfo.Others.Get(IsTotal));
 
@@ -51,7 +52,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 listInfo.Scope = EScopeType.Descendant;
             }
 
-            return StlDataUtility.GetChannelsDataSource(pageInfo.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where);
+            return await StlDataUtility.GetChannelsDataSourceAsync(pageInfo.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where);
         }
 
         private static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, DataSet dataSource)
@@ -118,7 +119,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
 
                 pdlContents.DataSource = dataSource;
-                pdlContents.DataKeyField = ChannelAttribute.Id;
+                pdlContents.DataKeyField = nameof(Channel.Id);
                 pdlContents.DataBind();
 
                 if (pdlContents.Items.Count > 0)
@@ -132,16 +133,16 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static async Task<object> ParseEntityAsync(PageInfo pageInfo, DataSet dataSource)
         {
-            var channelInfoList = new List<Dictionary<string,object>>();
+            var channelInfoList = new List<IDictionary<string,object>>();
             var table = dataSource.Tables[0];
             foreach (DataRow row in table.Rows)
             {
                 var channelId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
 
-                var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
                 if (channelInfo != null)
                 {
-                    channelInfoList.Add(await channelInfo.ToDictionaryAsync());
+                    channelInfoList.Add(channelInfo.ToDictionary());
                 }
             }
 

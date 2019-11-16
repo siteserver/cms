@@ -19,7 +19,7 @@ namespace SiteServer.CMS.Plugin.Impl
         public List<Func<Menu>> SystemMenuFuncs { get; private set; }
         public List<Func<int, Menu>> SiteMenuFuncs { get; private set; }
         public List<Func<Menu>> HomeMenuFuncs { get; private set; }
-        public List<Func<IContentInfo, Menu>> ContentMenuFuncs { get; private set; }
+        public List<Func<IContent, Menu>> ContentMenuFuncs { get; private set; }
 
         public string ContentTableName { get; private set; }
         public bool IsApiAuthorization { get; private set; }
@@ -122,11 +122,11 @@ namespace SiteServer.CMS.Plugin.Impl
             return this;
         }
 
-        public IService AddContentMenu(Func<IContentInfo, Menu> menuFunc)
+        public IService AddContentMenu(Func<IContent, Menu> menuFunc)
         {
             if (ContentMenuFuncs == null)
             {
-                ContentMenuFuncs = new List<Func<IContentInfo, Menu>>();
+                ContentMenuFuncs = new List<Func<IContent, Menu>>();
             }
 
             ContentMenuFuncs.Add(menuFunc);

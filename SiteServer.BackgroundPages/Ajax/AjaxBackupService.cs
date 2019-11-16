@@ -6,10 +6,11 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -74,7 +75,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retVal = new NameValueCollection();
-            var request = new AuthenticatedRequest();
+            var request = AuthenticatedRequest.GetRequestAsync().GetAwaiter().GetResult();
 
             if (type == TypeBackup)
             {
@@ -104,7 +105,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retVal;
-            var request = new AuthenticatedRequest(Request);
+            var request = AuthenticatedRequest.GetRequestAsync().GetAwaiter().GetResult();
 
             try
             {
@@ -125,7 +126,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 }
                 else if (eBackupType == EBackupType.Files)
                 {
-                    BackupUtility.BackupFiles(siteId, filePath, request.AdminName);
+                    await BackupUtility.BackupFilesAsync(siteId, filePath, request.AdminName);
                 }
                 else if (eBackupType == EBackupType.Site)
                 {
@@ -140,7 +141,7 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
             }
 
             return retVal;
@@ -165,7 +166,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 //retVal = new string[] { string.Empty, ex.Message, string.Empty };
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
             }
 
             return retVal;

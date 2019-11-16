@@ -2,11 +2,10 @@
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.Preview;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -31,14 +30,14 @@ namespace SiteServer.BackgroundPages.Cms
             var contentId = AuthRequest.ContentId;
 
             var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(site, channelInfo);
-            var styleInfoList = TableStyleManager.GetContentStyleInfoList(site, channelInfo);
+            var channelInfo = ChannelManager.GetChannelAsync(siteId, channelId).GetAwaiter().GetResult();
+            var tableName = ChannelManager.GetTableNameAsync(site, channelInfo).GetAwaiter().GetResult();
+            var styleList = TableStyleManager.GetContentStyleListAsync(site, channelInfo).GetAwaiter().GetResult();
 
             var form = AuthRequest.HttpRequest.Form;
 
-            var dict = BackgroundInputTypeParser.SaveAttributesAsync(site, styleInfoList, form, ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
-            var contentInfo = new ContentInfo(dict)
+            var dict = BackgroundInputTypeParser.SaveAttributesAsync(site, styleList, form, ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
+            var contentInfo = new Content(dict)
             {
                 ChannelId = channelId,
                 SiteId = siteId,
@@ -48,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
             };
 
             //contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
-            var tagCollection = TagUtils.ParseTagsString(form["TbTags"]);
+            var tagCollection = ContentTagUtils.ParseTagsString(form["TbTags"]);
 
             contentInfo.Title = form["TbTitle"];
             var formatString = TranslateUtils.ToBool(form[ContentAttribute.Title + "_formatStrong"]);
@@ -65,10 +64,10 @@ namespace SiteServer.BackgroundPages.Cms
             //}
             //contentInfo.LinkUrl = TbLinkUrl.Text;
             contentInfo.AddDate = TranslateUtils.ToDateTime(form["TbAddDate"]);
-            contentInfo.IsChecked = false;
+            contentInfo.Checked = false;
             contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
 
-            foreach (var service in PluginManager.Services)
+            foreach (var service in PluginManager.GetServicesAsync().GetAwaiter().GetResult())
             {
                 try
                 {
@@ -76,11 +75,11 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
+                    LogUtils.AddErrorLogAsync(service.PluginId, ex, nameof(IService.ContentFormSubmit)).GetAwaiter().GetResult();
                 }
             }
 
-            contentInfo.Id = DataProvider.ContentDao.InsertPreview(tableName, site, channelInfo, contentInfo);
+            contentInfo.Id = DataProvider.ContentDao.InsertPreviewAsync(tableName, site, channelInfo, contentInfo).GetAwaiter().GetResult();
 
             return new
             {

@@ -4,7 +4,6 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -215,7 +214,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             },
             new TableColumn
             {
-                AttributeName = "Content",
+                AttributeName = "Body",
                 DataType = DataType.Text
             }
         };
@@ -230,15 +229,15 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             {
                 if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
                 {
-                    tableColumnInfo.AttributeName = nameof(ContentInfo.ChannelId);
+                    tableColumnInfo.AttributeName = nameof(CMS.Model.Content.ChannelId);
                 }
                 else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
                 {
-                    tableColumnInfo.AttributeName = nameof(ContentInfo.SiteId);
+                    tableColumnInfo.AttributeName = nameof(CMS.Model.Content.SiteId);
                 }
                 else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
                 {
-                    tableColumnInfo.AttributeName = nameof(ContentInfo.GroupNameCollection);
+                    tableColumnInfo.AttributeName = nameof(CMS.Model.Content.GroupNameCollection);
                 }
 
                 if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
@@ -264,9 +263,9 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(ContentInfo.ChannelId), nameof(NodeId)},
-                {nameof(ContentInfo.SiteId), nameof(PublishmentSystemId)},
-                {nameof(ContentInfo.GroupNameCollection), nameof(ContentGroupNameCollection)}
+                {nameof(CMS.Model.Content.ChannelId), nameof(NodeId)},
+                {nameof(CMS.Model.Content.SiteId), nameof(PublishmentSystemId)},
+                {nameof(CMS.Model.Content.GroupNameCollection), nameof(ContentGroupNameCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

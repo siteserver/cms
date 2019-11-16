@@ -1,210 +1,81 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class RelatedFieldDao : DataProviderBase
-	{
-        public override string TableName => "siteserver_RelatedField";
+    public class RelatedFieldDao : IRepository
+    {
+        private readonly Repository<RelatedField> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public RelatedFieldDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldInfo.Title),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldInfo.SiteId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldInfo.TotalLevel),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldInfo.Prefixes),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RelatedFieldInfo.Suffixes),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            }
-        };
-
-        private const string SqlUpdate = "UPDATE siteserver_RelatedField SET Title = @Title, TotalLevel = @TotalLevel, Prefixes = @Prefixes, Suffixes = @Suffixes WHERE Id = @Id";
-        private const string SqlDelete = "DELETE FROM siteserver_RelatedField WHERE Id = @Id";
-
-        private const string ParmId = "@Id";
-        private const string ParmTitle = "@Title";
-		private const string ParmSiteId = "@SiteId";
-        private const string ParmTotalLevel = "@TotalLevel";
-        private const string ParmPrefixes = "@Prefixes";
-        private const string ParmSuffixes = "@Suffixes";
-
-		public int Insert(RelatedFieldInfo relatedFieldInfo) 
-		{
-            const string sqlString = "INSERT INTO siteserver_RelatedField (Title, SiteId, TotalLevel, Prefixes, Suffixes) VALUES (@Title, @SiteId, @TotalLevel, @Prefixes, @Suffixes)";
-
-			var insertParms = new IDataParameter[]
-			{
-				GetParameter(ParmTitle, DataType.VarChar, 50, relatedFieldInfo.Title),
-				GetParameter(ParmSiteId, DataType.Integer, relatedFieldInfo.SiteId),
-                GetParameter(ParmTotalLevel, DataType.Integer, relatedFieldInfo.TotalLevel),
-                GetParameter(ParmPrefixes, DataType.VarChar, 255, relatedFieldInfo.Prefixes),
-                GetParameter(ParmSuffixes, DataType.VarChar, 255, relatedFieldInfo.Suffixes),
-			};
-
-            return ExecuteNonQueryAndReturnId(TableName, nameof(RelatedFieldInfo.Id), sqlString, insertParms);
-		}
-
-        public void Update(RelatedFieldInfo relatedFieldInfo) 
-		{
-			var updateParms = new IDataParameter[]
-			{
-				GetParameter(ParmTitle, DataType.VarChar, 50, relatedFieldInfo.Title),
-                GetParameter(ParmTotalLevel, DataType.Integer, relatedFieldInfo.TotalLevel),
-                GetParameter(ParmPrefixes, DataType.VarChar, 255, relatedFieldInfo.Prefixes),
-                GetParameter(ParmSuffixes, DataType.VarChar, 255, relatedFieldInfo.Suffixes),
-				GetParameter(ParmId, DataType.Integer, relatedFieldInfo.Id)
-			};
-
-            ExecuteNonQuery(SqlUpdate, updateParms);
-		}
-
-		public void Delete(int id)
-		{
-			var relatedFieldInfoParms = new IDataParameter[]
-			{
-				GetParameter(ParmId, DataType.Integer, id)
-			};
-
-            ExecuteNonQuery(SqlDelete, relatedFieldInfoParms);
-		}
-
-        public RelatedFieldInfo GetRelatedFieldInfo(int id)
-		{
-            if (id <= 0) return null;
-
-            RelatedFieldInfo relatedFieldInfo = null;
-
-		    string sqlString =
-		        $"SELECT Id, Title, SiteId, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE Id = {id}";
-
-		    using (var rdr = ExecuteReader(sqlString))
-		    {
-		        if (rdr.Read())
-		        {
-		            var i = 0;
-		            relatedFieldInfo = new RelatedFieldInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
-		        }
-		        rdr.Close();
-		    }
-
-		    return relatedFieldInfo;
-		}
-
-        public RelatedFieldInfo GetRelatedFieldInfo(int siteId, string relatedFieldName)
-        {
-            RelatedFieldInfo relatedFieldInfo = null;
-
-            string sqlString =
-                $"SELECT Id, Title, SiteId, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE SiteId = {siteId} AND Title = @Title";
-
-            var selectParms = new IDataParameter[]
-			{
-				GetParameter(ParmTitle, DataType.VarChar, 255, relatedFieldName)			 
-			};
-
-            using (var rdr = ExecuteReader(sqlString, selectParms))
-            {
-                if (rdr.Read())
-                {
-                    var i = 0;
-                    relatedFieldInfo = new RelatedFieldInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
-                }
-                rdr.Close();
-            }
-
-            return relatedFieldInfo;
+            _repository = new Repository<RelatedField>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public string GetTitle(int id)
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task<int> InsertAsync(RelatedField relatedField)
         {
-            var relatedFieldName = string.Empty;
-
-            string sqlString =
-                $"SELECT Title FROM siteserver_RelatedField WHERE Id = {id}";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    relatedFieldName = GetString(rdr, 0);
-                }
-                rdr.Close();
-            }
-
-            return relatedFieldName;
+            return await _repository.InsertAsync(relatedField);
         }
 
-		public List<RelatedFieldInfo> GetRelatedFieldInfoList(int siteId)
-		{
-			var list = new List<RelatedFieldInfo>();
-            string sqlString =
-                $"SELECT Id, Title, SiteId, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE SiteId = {siteId} ORDER BY Id";
+        public async Task<bool> UpdateAsync(RelatedField relatedField)
+        {
+            return await _repository.UpdateAsync(relatedField);
+        }
 
-			using (var rdr = ExecuteReader(sqlString)) 
-			{
-				while (rdr.Read())
-				{
-				    var i = 0;
-                    list.Add(new RelatedFieldInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i)));
-				}
-				rdr.Close();
-			}
+        public async Task DeleteAsync(int id)
+        {
+            await _repository.DeleteAsync(id);
+        }
 
-			return list;
-		}
+        public async Task<RelatedField> GetRelatedFieldAsync(int id)
+        {
+            return await _repository.GetAsync(id);
+        }
 
-		public List<string> GetTitleList(int siteId)
-		{
-			var list = new List<string>();
-            string sqlString =
-                $"SELECT Title FROM siteserver_RelatedField WHERE SiteId = {siteId} ORDER BY Id";
-			
-			using (var rdr = ExecuteReader(sqlString)) 
-			{
-				while (rdr.Read()) 
-				{
-                    list.Add(GetString(rdr, 0));
-				}
-				rdr.Close();
-			}
+        public async Task<RelatedField> GetRelatedFieldAsync(int siteId, string title)
+        {
+            return await _repository.GetAsync(Q
+                .Where(nameof(RelatedField.SiteId), siteId)
+                .Where(nameof(RelatedField.Title), title)
+            );
+        }
 
-			return list;
-		}
+        public async Task<string> GetTitleAsync(int id)
+        {
+            return await _repository.GetAsync<string>(Q
+                .Select(nameof(RelatedField.Title))
+                .Where(nameof(RelatedField.Id), id)
+            );
+        }
 
-        public string GetImportTitle(int siteId, string relatedFieldName)
+        public async Task<IEnumerable<RelatedField>> GetRelatedFieldListAsync(int siteId)
+        {
+            return await _repository.GetAllAsync(Q
+                .Where(nameof(RelatedField.SiteId), siteId)
+                .OrderBy(nameof(RelatedField.Id)));
+        }
+
+        public async Task<IEnumerable<string>> GetTitleListAsync(int siteId)
+        {
+            return await _repository.GetAllAsync<string>(Q
+                .Select(nameof(RelatedField.Title))
+                .Where(nameof(RelatedField.SiteId), siteId)
+                .OrderBy(nameof(RelatedField.Id))
+            );
+        }
+
+        public async Task<string> GetImportTitleAsync(int siteId, string relatedFieldName)
         {
             string importName;
             if (relatedFieldName.IndexOf("_", StringComparison.Ordinal) != -1)
@@ -228,10 +99,10 @@ namespace SiteServer.CMS.Provider
                 importName = relatedFieldName + "_1";
             }
 
-            var relatedFieldInfo = GetRelatedFieldInfo(siteId, relatedFieldName);
-            if (relatedFieldInfo != null)
+            var relatedField = await GetRelatedFieldAsync(siteId, relatedFieldName);
+            if (relatedField != null)
             {
-                importName = GetImportTitle(siteId, importName);
+                importName = await GetImportTitleAsync(siteId, importName);
             }
 
             return importName;

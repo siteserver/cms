@@ -4,7 +4,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -73,7 +72,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 	        {TypeSiteUrl, "站点的域名地址"}
 	    };
 
-        internal static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        internal static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
 		{
 		    var siteName = string.Empty;
 		    var siteDir = string.Empty;
@@ -98,11 +97,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 if (StringUtils.EqualsIgnoreCase(name, SiteName))
                 {
-                    siteName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    siteName = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, SiteDir))
                 {
-                    siteDir = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    siteDir = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -162,11 +161,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
 		    if (!string.IsNullOrEmpty(siteName))
 		    {
-		        site = SiteManager.GetSiteBySiteNameAsync(siteName).GetAwaiter().GetResult();
+		        site = await SiteManager.GetSiteBySiteNameAsync(siteName);
 		    }
 		    else if (!string.IsNullOrEmpty(siteDir))
 		    {
-		        site = SiteManager.GetSiteByDirectoryAsync(siteDir).GetAwaiter().GetResult();
+		        site = await SiteManager.GetSiteByDirectoryAsync(siteDir);
 		    }
 
 		    if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
@@ -174,10 +173,10 @@ namespace SiteServer.CMS.StlParser.StlElement
 		        return site;
 		    }
 
-            return ParseImpl(pageInfo, contextInfo, site, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return await ParseImplAsync(pageInfo, contextInfo, site, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, Site site, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, Site site, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
             if (site == null) return string.Empty;
 
@@ -192,7 +191,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 pageInfo.ChangeSite(site, site.Id, 0, contextInfo);
 
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
                 parsedContent = innerBuilder.ToString();
 
                 pageInfo.ChangeSite(preSite, prePageChannelId, prePageContentId, contextInfo);
@@ -210,25 +209,25 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 parsedContent = pageInfo.Site.WebUrl;
             }
-            else if (pageInfo.Site.Additional.GetString(type) != null)
+            else if (pageInfo.Site.Get<string>(type) != null)
             {
-                parsedContent = pageInfo.Site.Additional.GetString(type);
+                parsedContent = pageInfo.Site.Get<string>(type);
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
-                    var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
+                    var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.SiteDao.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
 
                     // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                     if (styleInfo.Id > 0)
                     {
-                        if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
+                        if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.Type, InputType.Image, InputType.File))
                         {
                             parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                         else
                         {
-                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                            parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
 
-                            inputType = styleInfo.InputType;
+                            inputType = styleInfo.Type;
 
                             //parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }

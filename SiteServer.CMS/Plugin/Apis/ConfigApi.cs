@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Apis
@@ -15,12 +14,12 @@ namespace SiteServer.CMS.Plugin.Apis
         private static ConfigApi _instance;
         public static ConfigApi Instance => _instance ?? (_instance = new ConfigApi());
 
-        public bool SetConfig(string pluginId, int siteId, object config)
+        public async Task<bool> SetConfigAsync(string pluginId, int siteId, object config)
         {
-            return SetConfig(pluginId, siteId, string.Empty, config);
+            return await SetConfigAsync(pluginId, siteId, string.Empty, config);
         }
 
-        public bool SetConfig(string pluginId, int siteId, string name, object config)
+        public async Task<bool> SetConfigAsync(string pluginId, int siteId, string name, object config)
         {
             if (name == null) name = string.Empty;
 
@@ -28,7 +27,7 @@ namespace SiteServer.CMS.Plugin.Apis
             {
                 if (config == null)
                 {
-                    DataProvider.PluginConfigDao.Delete(pluginId, siteId, name);
+                    await DataProvider.PluginConfigDao.DeleteAsync(pluginId, siteId, name);
                 }
                 else
                 {
@@ -37,33 +36,47 @@ namespace SiteServer.CMS.Plugin.Apis
                         NullValueHandling = NullValueHandling.Ignore
                     };
                     var json = JsonConvert.SerializeObject(config, Formatting.Indented, settings);
-                    if (DataProvider.PluginConfigDao.IsExists(pluginId, siteId, name))
+                    if (await DataProvider.PluginConfigDao.IsExistsAsync(pluginId, siteId, name))
                     {
-                        var configInfo = new PluginConfigInfo(0, pluginId, siteId, name, json);
-                        DataProvider.PluginConfigDao.Update(configInfo);
+                        var configInfo = new PluginConfig
+                        {
+                            Id = 0,
+                            PluginId = pluginId,
+                            SiteId = siteId,
+                            ConfigName = name,
+                            ConfigValue = json
+                        };
+                        await DataProvider.PluginConfigDao.UpdateAsync(configInfo);
                     }
                     else
                     {
-                        var configInfo = new PluginConfigInfo(0, pluginId, siteId, name, json);
-                        DataProvider.PluginConfigDao.Insert(configInfo);
+                        var configInfo = new PluginConfig
+                        {
+                            Id = 0,
+                            PluginId = pluginId,
+                            SiteId = siteId,
+                            ConfigName = name,
+                            ConfigValue = json
+                        };
+                        await DataProvider.PluginConfigDao.InsertAsync(configInfo);
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(pluginId, ex);
+                await LogUtils.AddErrorLogAsync(pluginId, ex);
                 return false;
             }
             return true;
         }
 
-        public T GetConfig<T>(string pluginId, int siteId, string name = "")
+        public async Task<T> GetConfigAsync<T>(string pluginId, int siteId, string name = "")
         {
             if (name == null) name = string.Empty;
 
             try
             {
-                var value = DataProvider.PluginConfigDao.GetValue(pluginId, siteId, name);
+                var value = await DataProvider.PluginConfigDao.GetValueAsync(pluginId, siteId, name);
                 if (!string.IsNullOrEmpty(value))
                 {
                     return JsonConvert.DeserializeObject<T>(value);
@@ -71,22 +84,22 @@ namespace SiteServer.CMS.Plugin.Apis
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(pluginId, ex);
+                await LogUtils.AddErrorLogAsync(pluginId, ex);
             }
             return default(T);
         }
 
-        public bool RemoveConfig(string pluginId, int siteId, string name = "")
+        public async Task<bool> RemoveConfigAsync(string pluginId, int siteId, string name = "")
         {
             if (name == null) name = string.Empty;
 
             try
             {
-                DataProvider.PluginConfigDao.Delete(pluginId, siteId, name);
+                await DataProvider.PluginConfigDao.DeleteAsync(pluginId, siteId, name);
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(pluginId, ex);
+                await LogUtils.AddErrorLogAsync(pluginId, ex);
                 return false;
             }
             return true;

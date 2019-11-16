@@ -20,7 +20,7 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var site = await SiteManager.GetSiteAsync(siteId);
@@ -29,19 +29,18 @@ namespace SiteServer.API.Controllers.Sys
                 var totalNum = request.GetPostInt("totalNum");
                 var pageCount = request.GetPostInt("pageCount");
                 var currentPageIndex = request.GetPostInt("currentPageIndex");
-                var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("stlPageContentsElement"));
+                var stlPageContentsElement = WebConfigUtils.DecryptStringBySecretKey(request.GetPostString("stlPageContentsElement"));
 
-                var nodeInfo = ChannelManager.GetChannelInfo(siteId, pageChannelId);
-                var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
-                var pageInfo = new PageInfo(nodeInfo.Id, 0, site, templateInfo, new Dictionary<string, object>())
-                {
-                    User = request.User
-                };
+                var nodeInfo = await ChannelManager.GetChannelAsync(siteId, pageChannelId);
+                var templateInfo = await TemplateManager.GetTemplateAsync(siteId, templateId);
+                var pageInfo = await PageInfo.GetPageInfoAsync(nodeInfo.Id, 0, site, templateInfo, new Dictionary<string, object>());
+                pageInfo.User = request.User;
+
                 var contextInfo = new ContextInfo(pageInfo);
 
-                var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo);
+                var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, pageInfo, contextInfo);
 
-                var pageHtml = stlPageContents.Parse(totalNum, currentPageIndex, pageCount, false);
+                var pageHtml = await stlPageContents.ParseAsync(totalNum, currentPageIndex, pageCount, false);
 
                 return Ok(pageHtml);
             }

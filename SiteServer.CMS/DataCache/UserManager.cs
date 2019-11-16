@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
@@ -281,9 +282,10 @@ namespace SiteServer.CMS.DataCache
             return await GetUserByUserNameAsync(account);
         }
 
-        public static bool IsIpAddressCached(string ipAddress)
+        public static async Task<bool> IsIpAddressCachedAsync(string ipAddress)
         {
-            if (ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes == 0 || string.IsNullOrEmpty(ipAddress))
+            var config = await ConfigManager.GetInstanceAsync();
+            if (config.UserRegistrationMinMinutes == 0 || string.IsNullOrEmpty(ipAddress))
             {
                 return true;
             }
@@ -291,18 +293,19 @@ namespace SiteServer.CMS.DataCache
             return obj == null;
         }
 
-        public static void CacheIpAddress(string ipAddress)
+        public static async Task CacheIpAddressAsync(string ipAddress)
         {
-            if (ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes > 0 && !string.IsNullOrEmpty(ipAddress))
+            var config = await ConfigManager.GetInstanceAsync();
+            if (config.UserRegistrationMinMinutes > 0 && !string.IsNullOrEmpty(ipAddress))
             {
-                CacheUtils.InsertMinutes($"SiteServer.CMS.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes);
+                CacheUtils.InsertMinutes($"SiteServer.CMS.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, config.UserRegistrationMinMinutes);
             }
         }
 
         public static string GetHomeUploadPath(params string[] paths)
         {
             
-            var path = PathUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Home, PathUtils.Combine(paths));
+            var path = WebUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Home, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }

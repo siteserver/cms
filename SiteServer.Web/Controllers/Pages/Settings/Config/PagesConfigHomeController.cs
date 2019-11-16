@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Config
 {
@@ -18,23 +19,25 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         private const string RouteUpload = "upload";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
 
+                var config = await ConfigManager.GetInstanceAsync();
+
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemConfigInfo,
+                    Value = config,
                     WebConfigUtils.HomeDirectory,
                     request.AdminToken,
-                    Styles = TableStyleManager.GetUserStyleInfoList()
+                    Styles = await TableStyleManager.GetUserStyleListAsync()
                 });
             }
             catch (Exception ex)
@@ -48,24 +51,26 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
 
-                ConfigManager.SystemConfigInfo.IsHomeClosed = request.GetPostBool("isHomeClosed");
-                ConfigManager.SystemConfigInfo.HomeTitle = request.GetPostString("homeTitle");
-                ConfigManager.SystemConfigInfo.IsHomeLogo = request.GetPostBool("isHomeLogo");
-                ConfigManager.SystemConfigInfo.HomeLogoUrl = request.GetPostString("homeLogoUrl");
-                ConfigManager.SystemConfigInfo.HomeDefaultAvatarUrl = request.GetPostString("homeDefaultAvatarUrl");
-                ConfigManager.SystemConfigInfo.UserRegistrationAttributes = request.GetPostString("userRegistrationAttributes");
-                ConfigManager.SystemConfigInfo.IsUserRegistrationGroup = request.GetPostBool("isUserRegistrationGroup");
-                ConfigManager.SystemConfigInfo.IsHomeAgreement = request.GetPostBool("isHomeAgreement");
-                ConfigManager.SystemConfigInfo.HomeAgreementHtml = request.GetPostString("homeAgreementHtml");
+                var config = await ConfigManager.GetInstanceAsync();
 
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                config.IsHomeClosed = request.GetPostBool("isHomeClosed");
+                config.HomeTitle = request.GetPostString("homeTitle");
+                config.IsHomeLogo = request.GetPostBool("isHomeLogo");
+                config.HomeLogoUrl = request.GetPostString("homeLogoUrl");
+                config.HomeDefaultAvatarUrl = request.GetPostString("homeDefaultAvatarUrl");
+                config.UserRegistrationAttributes = request.GetPostString("userRegistrationAttributes");
+                config.IsUserRegistrationGroup = request.GetPostBool("isUserRegistrationGroup");
+                config.IsHomeAgreement = request.GetPostBool("isHomeAgreement");
+                config.HomeAgreementHtml = request.GetPostString("homeAgreementHtml");
+
+                await DataProvider.ConfigDao.UpdateAsync(config);
 
 //                var config = $@"var $apiConfig = {{
 //    isSeparatedApi: {ApiManager.IsSeparatedApi.ToString().ToLower()},
@@ -78,7 +83,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
 
                 return Ok(new
                 {
-                    Value = ConfigManager.SystemConfigInfo
+                    Value = config
                 });
             }
             catch (Exception ex)
@@ -88,13 +93,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         }
 
         [HttpPost, Route(RouteUpload)]
-        public IHttpActionResult Upload()
+        public async Task<IHttpActionResult> Upload()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
@@ -130,7 +135,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

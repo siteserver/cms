@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -78,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
                     ? ETranslateTypeUtils.GetValue(ETranslateType.All)
                     : ETranslateTypeUtils.GetValue(ETranslateType.Content));
 
-            var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList();
+            var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdListAsync().GetAwaiter().GetResult();
             foreach (var psId in siteIdList)
             {
                 var psInfo = SiteManager.GetSiteAsync(psId).GetAwaiter().GetResult();
@@ -93,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
                 channelIdStrList = TranslateUtils.StringCollectionToStringList(AuthRequest.GetQueryString("ChannelIDCollection"));
             }
 
-            var channelIdList = ChannelManager.GetChannelIdList(SiteId);
+            var channelIdList = ChannelManager.GetChannelIdListAsync(SiteId).GetAwaiter().GetResult();
             var nodeCount = channelIdList.Count;
             _isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
@@ -103,10 +104,10 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (!IsDescendantOwningChannelId(theChannelId)) continue;
                 }
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, theChannelId);
+                var nodeInfo = ChannelManager.GetChannelAsync(SiteId, theChannelId).GetAwaiter().GetResult();
 
                 var value = enabled ? nodeInfo.Id.ToString() : string.Empty;
-                value = nodeInfo.Additional.IsContentAddable ? value : string.Empty;
+                value = nodeInfo.IsContentAddable ? value : string.Empty;
 
                 var text = GetTitle(nodeInfo);
                 var listItem = new ListItem(text, value);
@@ -120,29 +121,29 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-		public string GetTitle(ChannelInfo channelInfo)
+		public string GetTitle(Channel channel)
 		{
 			var str = "";
-            if (channelInfo.Id == SiteId)
+            if (channel.Id == SiteId)
 			{
-                channelInfo.IsLastNode = true;
+                channel.LastNode = true;
 			}
-            if (channelInfo.IsLastNode == false)
+            if (channel.LastNode == false)
 			{
-                _isLastNodeArray[channelInfo.ParentsCount] = false;
+                _isLastNodeArray[channel.ParentsCount] = false;
 			}
 			else
 			{
-                _isLastNodeArray[channelInfo.ParentsCount] = true;
+                _isLastNodeArray[channel.ParentsCount] = true;
 			}
-            for (var i = 0; i < channelInfo.ParentsCount; i++)
+            for (var i = 0; i < channel.ParentsCount; i++)
             {
                 str = string.Concat(str, _isLastNodeArray[i] ? "　" : "│");
             }
-		    str = string.Concat(str, channelInfo.IsLastNode ? "└" : "├");
-		    str = string.Concat(str, channelInfo.ChannelName);
-		    var adminId = AuthRequest.AdminPermissionsImpl.GetAdminId(SiteId, channelInfo.Id);
-            var count = ContentManager.GetCount(Site, channelInfo, adminId);
+		    str = string.Concat(str, channel.LastNode ? "└" : "├");
+		    str = string.Concat(str, channel.ChannelName);
+		    var adminId = AuthRequest.AdminPermissionsImpl.GetAdminIdAsync(SiteId, channel.Id).GetAwaiter().GetResult();
+            var count = ContentManager.GetCountAsync(Site, channel, adminId).GetAwaiter().GetResult();
             if (count != 0)
             {
                 str = $"{str} ({count})";
@@ -168,7 +169,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var channelId = int.Parse(channelIdStr);
                 if (translateType != ETranslateType.Content)//需要转移栏目
                 {
-                    if (!ChannelManager.IsAncestorOrSelf(SiteId, channelId, targetChannelId))
+                    if (!ChannelManager.IsAncestorOrSelfAsync(SiteId, channelId, targetChannelId).GetAwaiter().GetResult())
                     {
                         channelIdList.Add(channelId);
                     }
@@ -185,8 +186,8 @@ namespace SiteServer.BackgroundPages.Cms
                 var channelIdListToTranslate = new List<int>(channelIdList);
                 foreach (var channelId in channelIdList)
                 {
-                    var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                    var subChannelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+                    var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+                    var subChannelIdList = ChannelManager.GetChannelIdListAsync(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
 
                     if (subChannelIdList != null && subChannelIdList.Count > 0)
                     {
@@ -200,10 +201,10 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                var nodeInfoList = new List<ChannelInfo>();
+                var nodeInfoList = new List<Channel>();
                 foreach (int channelId in channelIdListToTranslate)
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                    var nodeInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                     nodeInfoList.Add(nodeInfo);
                 }
 
@@ -247,7 +248,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-		private void TranslateChannelAndContent(List<ChannelInfo> nodeInfoList, int targetSiteId, int parentId, ETranslateType translateType, List<string> nodeIndexNameList, List<string> filePathList)
+		private void TranslateChannelAndContent(List<Channel> nodeInfoList, int targetSiteId, int parentId, ETranslateType translateType, List<string> nodeIndexNameList, List<string> filePathList)
 		{
 			if (nodeInfoList == null || nodeInfoList.Count == 0)
 			{
@@ -256,23 +257,22 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (nodeIndexNameList == null)
 			{
-                nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameList(targetSiteId);
+                nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameListAsync(targetSiteId).GetAwaiter().GetResult().ToList();
 			}
 
             if (filePathList == null)
 			{
-                filePathList = DataProvider.ChannelDao.GetAllFilePathBySiteId(targetSiteId);
+                filePathList = DataProvider.ChannelDao.GetAllFilePathBySiteIdAsync(targetSiteId).GetAwaiter().GetResult().ToList();
 			}
 
 			foreach (var oldNodeInfo in nodeInfoList)
-			{
-			    var nodeInfo = new ChannelInfo(oldNodeInfo)
-			    {
-			        SiteId = targetSiteId,
-			        ParentId = parentId,
-			        ChildrenCount = 0,
-			        AddDate = DateTime.Now
-			    };
+            {
+                var nodeInfo = oldNodeInfo.Clone();
+
+                nodeInfo.SiteId = targetSiteId;
+                nodeInfo.ParentId = parentId;
+                nodeInfo.ChildrenCount = 0;
+                nodeInfo.AddDate = DateTime.Now;
 
 			    if (RblIsDeleteAfterTranslate.Visible && EBooleanUtils.Equals(RblIsDeleteAfterTranslate.SelectedValue, EBoolean.True))
                 {
@@ -297,7 +297,7 @@ namespace SiteServer.BackgroundPages.Cms
                     nodeInfo.FilePath = string.Empty;
                 }
 
-                var targetChannelId = DataProvider.ChannelDao.Insert(nodeInfo);
+                var targetChannelId = DataProvider.ChannelDao.InsertAsync(nodeInfo).GetAwaiter().GetResult();
 
                 if (translateType == ETranslateType.All)
                 {
@@ -309,11 +309,11 @@ namespace SiteServer.BackgroundPages.Cms
                     //var orderByString = ETaxisTypeUtils.GetChannelOrderByString(ETaxisType.OrderByTaxis);
                     //var childrenNodeInfoList = DataProvider.ChannelDao.GetChannelInfoList(oldNodeInfo, 0, "", EScopeType.Children, orderByString);
 
-                    var channelIdList = ChannelManager.GetChannelIdList(oldNodeInfo, EScopeType.Children, string.Empty, string.Empty, string.Empty);
-                    var childrenNodeInfoList = new List<ChannelInfo>();
+                    var channelIdList = ChannelManager.GetChannelIdListAsync(oldNodeInfo, EScopeType.Children, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
+                    var childrenNodeInfoList = new List<Channel>();
                     foreach (var channelId in channelIdList)
                     {
-                        childrenNodeInfoList.Add(ChannelManager.GetChannelInfo(oldNodeInfo.SiteId, channelId));
+                        childrenNodeInfoList.Add(ChannelManager.GetChannelAsync(oldNodeInfo.SiteId, channelId).GetAwaiter().GetResult());
                     }
 
                     if (channelIdList.Count > 0)
@@ -321,14 +321,14 @@ namespace SiteServer.BackgroundPages.Cms
                         TranslateChannelAndContent(childrenNodeInfoList, targetSiteId, targetChannelId, translateType, nodeIndexNameList, filePathList);
                     }
 
-                    CreateManager.CreateChannel(targetSiteId, targetChannelId);
+                    CreateManager.CreateChannelAsync(targetSiteId, targetChannelId).GetAwaiter().GetResult();
                 }
 			}
 		}
 
 		private void TranslateContent(int channelId, int targetSiteId, int targetChannelId)
 		{
-            var tableName = ChannelManager.GetTableName(Site, channelId);
+            var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
 
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxis);
 
@@ -350,14 +350,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             DdlChannelIdTo.Items.Clear();
 
-			var channelIdList = ChannelManager.GetChannelIdList(psId);
+			var channelIdList = ChannelManager.GetChannelIdListAsync(psId).GetAwaiter().GetResult();
             var nodeCount = channelIdList.Count;
 			_isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
 			{
-                var nodeInfo = ChannelManager.GetChannelInfo(psId, theChannelId);
+                var nodeInfo = ChannelManager.GetChannelAsync(psId, theChannelId).GetAwaiter().GetResult();
                 var value = IsOwningChannelId(nodeInfo.Id) ? nodeInfo.Id.ToString() : "";
-                value = (nodeInfo.Additional.IsContentAddable) ? value : "";
+                value = nodeInfo.IsContentAddable ? value : "";
                 var listitem = new ListItem(GetTitle(nodeInfo), value);
                 DdlChannelIdTo.Items.Add(listitem);
 			}

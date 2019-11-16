@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -58,12 +58,12 @@ namespace SiteServer.BackgroundPages.Cms
 
                 try
                 {
-                    var templateInfo = TemplateManager.GetTemplateInfo(SiteId, templateId);
+                    var templateInfo = TemplateManager.GetTemplateAsync(SiteId, templateId).GetAwaiter().GetResult();
                     if (templateInfo != null)
                     {
                         DataProvider.TemplateDao.DeleteAsync(SiteId, templateId).GetAwaiter().GetResult();
                         AuthRequest.AddSiteLogAsync(SiteId,
-                            $"删除{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+                            $"删除{TemplateTypeUtils.GetText(templateInfo.Type)}",
                             $"模板名称:{templateInfo.TemplateName}").GetAwaiter().GetResult();
                     }
                     SuccessDeleteMessage();
@@ -79,12 +79,12 @@ namespace SiteServer.BackgroundPages.Cms
 			
                 try
                 {
-                    var templateInfo = TemplateManager.GetTemplateInfo(SiteId, templateId);
+                    var templateInfo = TemplateManager.GetTemplateAsync(SiteId, templateId).GetAwaiter().GetResult();
                     if (templateInfo != null)
                     {
-                        DataProvider.TemplateDao.SetDefault(SiteId, templateId);
+                        DataProvider.TemplateDao.SetDefaultAsync(SiteId, templateId).GetAwaiter().GetResult();
                         AuthRequest.AddSiteLogAsync(SiteId,
-                            $"设置默认{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+                            $"设置默认{TemplateTypeUtils.GetText(templateInfo.Type)}",
                             $"模板名称:{templateInfo.TemplateName}").GetAwaiter().GetResult();
                     }
                     SuccessMessage();
@@ -139,12 +139,12 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var templateId = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateInfo.Id));
-            var templateType = TemplateTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.TemplateType)));
-            var templateName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.TemplateName));
-            var relatedFileName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.RelatedFileName));
-            var createdFileFullName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.CreatedFileFullName));
-            var isDefault = TranslateUtils.ToBool(SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.IsDefault)));
+            var templateId = SqlUtils.EvalInt(e.Item.DataItem, nameof(Template.Id));
+            var templateType = TemplateTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, nameof(Template.TemplateType)));
+            var templateName = SqlUtils.EvalString(e.Item.DataItem, nameof(Template.TemplateName));
+            var relatedFileName = SqlUtils.EvalString(e.Item.DataItem, nameof(Template.RelatedFileName));
+            var createdFileFullName = SqlUtils.EvalString(e.Item.DataItem, nameof(Template.CreatedFileFullName));
+            var isDefault = TranslateUtils.ToBool(SqlUtils.EvalString(e.Item.DataItem, nameof(Template.Default)));
 
             var ltlTemplateName = (Literal)e.Item.FindControl("ltlTemplateName");
             var ltlRelatedFileName = (Literal)e.Item.FindControl("ltlRelatedFileName");

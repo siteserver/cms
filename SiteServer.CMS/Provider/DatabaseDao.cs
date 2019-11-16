@@ -6,12 +6,14 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Dapper;
 using Datory;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
@@ -63,123 +65,11 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString);
         }
 
-        public void ExecuteSql(List<string> sqlList)
-        {
-            if (sqlList == null || sqlList.Count <= 0) return;
-
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        foreach (var sql in sqlList)
-                        {
-                            ExecuteNonQuery(trans, sql);
-                        }
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-        }
-
-        public void ExecuteSqlInFile(string pathToScriptFile, StringBuilder errorBuilder)
-        {
-            IDbConnection connection;
-
-            if (false == File.Exists(pathToScriptFile))
-            {
-                throw new Exception("File " + pathToScriptFile + " does not exists");
-            }
-            using (Stream stream = File.OpenRead(pathToScriptFile))
-            {
-                var reader = new StreamReader(stream, Encoding.UTF8);
-
-                connection = GetConnection();
-
-                var command = SqlUtils.GetIDbCommand();
-
-                connection.Open();
-                command.Connection = connection;
-                command.CommandType = CommandType.Text;
-
-                string sqlString;
-                while (null != (sqlString = SqlUtils.ReadNextSqlString(reader)))
-                {
-                    command.CommandText = sqlString;
-                    try
-                    {
-                        command.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        errorBuilder.Append($@"
-                    sql:{sqlString}
-                    message:{ex.Message}
-                    ");
-                    }
-                }
-
-                reader.Close();
-            }
-            connection.Close();
-        }
-
-        public void ExecuteSqlInFile(string pathToScriptFile, string tableName, StringBuilder errorBuilder)
-        {
-            IDbConnection connection;
-
-            if (false == File.Exists(pathToScriptFile))
-            {
-                throw new Exception("File " + pathToScriptFile + " does not exists");
-            }
-            using (Stream stream = File.OpenRead(pathToScriptFile))
-            {
-                var reader = new StreamReader(stream, Encoding.Default);
-
-                connection = GetConnection();
-
-                var command = SqlUtils.GetIDbCommand();
-
-                connection.Open();
-                command.Connection = connection;
-                command.CommandType = CommandType.Text;
-
-                string sqlString;
-                while (null != (sqlString = SqlUtils.ReadNextSqlString(reader)))
-                {
-                    sqlString = string.Format(sqlString, tableName);
-                    command.CommandText = sqlString;
-                    try
-                    {
-                        command.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        errorBuilder.Append($@"
-                    sql:{sqlString}
-                    message:{ex.Message}
-                    ");
-                    }
-                }
-
-                reader.Close();
-            }
-            connection.Close();
-        }
-
         public int GetIntResult(string connectionString, string sqlString)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = ConnectionString;
+                connectionString = WebConfigUtils.ConnectionString;
             }
 
             var count = 0;
@@ -218,73 +108,11 @@ namespace SiteServer.CMS.Provider
             return count;
         }
 
-        public int GetIntResult(string sqlString, IDataParameter[] parms)
-        {
-            var count = 0;
-
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var rdr = ExecuteReader(conn, sqlString, parms))
-                {
-                    if (rdr.Read())
-                    {
-                        count = GetInt(rdr, 0);
-                    }
-                    rdr.Close();
-                }
-            }
-            return count;
-        }
-
-        public List<int> GetIntList(string sqlString)
-        {
-            var list = new List<int>();
-
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var rdr = ExecuteReader(conn, sqlString))
-                {
-                    while (rdr.Read())
-                    {
-                        list.Add(GetInt(rdr, 0));
-                    }
-                    rdr.Close();
-                }
-            }
-            return list;
-        }
-
-        public List<int> GetIntList(string connectionString, string sqlString)
-        {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                connectionString = ConnectionString;
-            }
-
-            var list = new List<int>();
-
-            using (var conn = GetConnection(connectionString))
-            {
-                conn.Open();
-                using (var rdr = ExecuteReader(conn, sqlString))
-                {
-                    while (rdr.Read())
-                    {
-                        list.Add(GetInt(rdr, 0));
-                    }
-                    rdr.Close();
-                }
-            }
-            return list;
-        }
-
         public string GetString(string connectionString, string sqlString)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = ConnectionString;
+                connectionString = WebConfigUtils.ConnectionString;
             }
 
             var retVal = string.Empty;
@@ -319,86 +147,11 @@ namespace SiteServer.CMS.Provider
             return value;
         }
 
-        public List<string> GetStringList(string sqlString)
-        {
-            var list = new List<string>();
-
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var rdr = ExecuteReader(conn, sqlString))
-                {
-                    while (rdr.Read())
-                    {
-                        list.Add(GetString(rdr, 0));
-                    }
-                    rdr.Close();
-                }
-            }
-            return list;
-        }
-
-        public List<string> GetStringList(string sqlString, IDataParameter[] parameters)
-        {
-            var list = new List<string>();
-
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var rdr = ExecuteReader(conn, sqlString, parameters))
-                {
-                    while (rdr.Read())
-                    {
-                        list.Add(GetString(rdr, 0));
-                    }
-                    rdr.Close();
-                }
-            }
-            return list;
-        }
-
-        public DateTime GetDateTime(string sqlString)
-        {
-            var datetime = DateTime.MinValue;
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    datetime = GetDateTime(rdr, 0);
-                }
-                rdr.Close();
-            }
-
-            return datetime;
-        }
-
-        public DateTime GetDateTime(string sqlString, IDataParameter[] parms)
-        {
-            var datetime = DateTime.MinValue;
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    datetime = GetDateTime(rdr, 0);
-                }
-                rdr.Close();
-            }
-
-            return datetime;
-        }
-
-        public DataSet GetDataSetByWhereString(string tableName, string whereString)
-        {
-            var sqlSelect = GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
-            var dataset = ExecuteDataset(sqlSelect);
-            return dataset;
-        }
-
         public IDataReader GetDataReader(string connectionString, string sqlString)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = ConnectionString;
+                connectionString = WebConfigUtils.ConnectionString;
             }
 
             return string.IsNullOrEmpty(sqlString) ? null : ExecuteReader(connectionString, sqlString);
@@ -411,23 +164,11 @@ namespace SiteServer.CMS.Provider
             return enumerable;
         }
 
-        public IDataReader GetDataSource(string connectionString, string sqlString)
-        {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                connectionString = ConnectionString;
-            }
-
-            if (string.IsNullOrEmpty(sqlString)) return null;
-            var enumerable = ExecuteReader(connectionString, sqlString);
-            return enumerable;
-        }
-
         public DataTable GetDataTable(string connectionString, string sqlString)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = ConnectionString;
+                connectionString = WebConfigUtils.ConnectionString;
             }
 
             if (string.IsNullOrEmpty(sqlString)) return null;
@@ -442,31 +183,11 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = ConnectionString;
+                connectionString = WebConfigUtils.ConnectionString;
             }
 
             if (string.IsNullOrEmpty(sqlString)) return null;
             return ExecuteDataset(connectionString, sqlString);
-        }
-
-        public DataSet GetDataSet(string sqlString)
-        {
-            if (string.IsNullOrEmpty(sqlString)) return null;
-            return ExecuteDataset(sqlString);
-        }
-
-        public void ReadResultsToNameValueCollection(IDataReader rdr, NameValueCollection attributes)
-        {
-            for (var i = 0; i < rdr.FieldCount; i++)
-            {
-                var columnName = rdr.GetName(i);
-                var value = Convert.ToString(rdr.GetValue(i));
-                if (!string.IsNullOrEmpty(value))
-                {
-                    value = AttackUtils.UnFilterSql(value);
-                }
-                attributes.Set(columnName, value);
-            }
         }
 
         public int GetPageTotalCount(string sqlString)
@@ -575,39 +296,6 @@ SELECT * FROM (
             return retVal;
         }
 
-        //public void Install(StringBuilder errorBuilder)
-        //{
-        //    var sqlPath = PathUtils.GetInstallSqlFilePath(WebConfigUtils.DatabaseType);
-        //    DataProvider.DatabaseDao.ExecuteSqlInFile(sqlPath, errorBuilder);
-        //    DataProvider.TableDao.CreateAllAuxiliaryTableIfNotExists();
-        //}
-
-        //public void Upgrade(DatabaseType databaseType, StringBuilder errorBuilder)
-        //{
-        //    var filePathUpgrade = PathUtils.GetUpgradeSqlFilePath(databaseType, false);
-        //    var filePathUpgradeTable = PathUtils.GetUpgradeSqlFilePath(databaseType, true);
-
-        //    DataProvider.DatabaseDao.ExecuteSqlInFile(filePathUpgrade, errorBuilder);
-
-        //    if (FileUtils.IsFileExists(filePathUpgradeTable))
-        //    {
-        //        try
-        //        {
-        //            var tableList = DataProvider.TableDao.GetAuxiliaryTableListCreatedInDb();
-        //            foreach (var table in tableList)
-        //            {
-        //                DataProvider.DatabaseDao.ExecuteSqlInFile(filePathUpgradeTable, table.TableName, errorBuilder);
-        //            }
-        //        }
-        //        catch
-        //        {
-        //            // ignored
-        //        }
-        //    }
-
-        //    DataProvider.TableDao.CreateAllAuxiliaryTableIfNotExists();
-        //}
-
         public bool ConnectToServer(DatabaseType databaseType, string connectionStringWithoutDatabaseName, out List<string> databaseNameList, out string errorMessage)
         {
             errorMessage = string.Empty;
@@ -665,128 +353,6 @@ SELECT * FROM (
             }
 
             return exists;
-        }
-
-        public void AlterPluginTable(string pluginId, string tableName, List<TableColumn> tableColumns)
-        {
-            var isAltered = false;
-            var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
-            foreach (var tableColumn in tableColumns)
-            {
-                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
-                {
-                    var databaseColumn = TableColumnManager.GetTableColumnInfo(tableName, tableColumn.AttributeName);
-                    if (databaseColumn != null && !tableColumn.IsIdentity)
-                    {
-                        if (tableColumn.DataType != databaseColumn.DataType ||
-                            tableColumn.DataType == databaseColumn.DataType && tableColumn.DataLength > databaseColumn.DataLength)
-                        {
-                            var sqlString = SqlUtils.GetModifyColumnsSqlString(tableName, tableColumn.AttributeName,
-                                SqlUtils.GetColumnTypeString(tableColumn));
-
-                            try
-                            {
-                                DataProvider.DatabaseDao.ExecuteSql(sqlString);
-                                isAltered = true;
-                            }
-                            catch (Exception ex)
-                            {
-                                LogUtils.AddErrorLog(pluginId, ex, sqlString);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn);
-                    var sqlString = SqlUtils.GetAddColumnsSqlString(tableName, columnSqlString);
-
-                    try
-                    {
-                        DataProvider.DatabaseDao.ExecuteSql(sqlString);
-                        isAltered = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        LogUtils.AddErrorLog(pluginId, ex, sqlString);
-                    }
-                }
-            }
-
-            if (isAltered)
-            {
-                TableColumnManager.ClearCache();
-            }
-        }
-
-        public void CreatePluginTable(string pluginId, string tableName, List<TableColumn> tableColumns)
-        {
-            if (!tableColumns.Any(x => StringUtils.EqualsIgnoreCase(x.AttributeName, "Id")))
-            {
-                tableColumns.Insert(0, new TableColumn
-                {
-                    AttributeName = "Id",
-                    DataType = DataType.Integer,
-                    IsIdentity = true,
-                    IsPrimaryKey = true
-                });
-            }
-
-            if (!CreateTable(tableName, tableColumns, out var ex, out var sqlString))
-            {
-                LogUtils.AddErrorLog(pluginId, ex, sqlString);
-            }
-
-            //var sqlString = GetCreateTableSqlString(tableName, tableColumns);
-
-            //try
-            //{
-            //    ExecuteNonQuery(sqlString);
-            //    TableColumnManager.ClearCache();
-            //}
-            //catch (Exception ex)
-            //{
-            //    LogUtils.AddErrorLog(pluginId, ex, sqlString);
-            //}
-
-
-            //var sqlBuilder = new StringBuilder();
-
-            //try
-            //{
-            //    sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
-
-            //    sqlBuilder.Append($"Id {SqlUtils.GetAutoIncrementDataType()},").AppendLine();
-
-            //    foreach (var tableColumn in tableColumns)
-            //    {
-            //        if (string.IsNullOrEmpty(tableColumn.AttributeName) ||
-            //            StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, "Id")) continue;
-
-            //        var columnSql = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName,
-            //            tableColumn.DataLength);
-            //        if (!string.IsNullOrEmpty(columnSql))
-            //        {
-            //            sqlBuilder.Append(columnSql).Append(",").AppendLine();
-            //        }
-            //    }
-
-            //    sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
-            //        ? @"PRIMARY KEY (Id)"
-            //        : $@"CONSTRAINT PK_{tableName} PRIMARY KEY (Id)").AppendLine();
-
-            //    sqlBuilder.Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
-            //        ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
-            //        : ")");
-
-            //    ExecuteNonQuery(sqlBuilder.ToString());
-
-            //    TableColumnManager.ClearCache();
-            //}
-            //catch (Exception ex)
-            //{
-            //    LogUtils.AddErrorLog(pluginId, ex, sqlBuilder.ToString());
-            //}
         }
 
         public string GetCreateTableSqlString(string tableName, List<TableColumn> tableColumns)
@@ -847,26 +413,24 @@ SELECT * FROM (
             return sqlBuilder.ToString();
         }
 
-        public bool CreateTable(string tableName, List<TableColumn> tableColumns, out Exception ex, out string sqlString)
+        public async Task<(bool Success, Exception Ex, string SqlString)> CreateTableAsync(string tableName, List<TableColumn> tableColumns)
         {
-            ex = null;
-            sqlString = GetCreateTableSqlString(tableName, tableColumns);
+            var sqlString = GetCreateTableSqlString(tableName, tableColumns);
 
             try
             {
                 ExecuteNonQuery(sqlString);
                 TableColumnManager.ClearCache();
-                return true;
+                return (true, null, sqlString);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                ex = e;
-                LogUtils.AddErrorLog(ex, tableName);
-                return false;
+                await LogUtils.AddErrorLogAsync(ex, tableName);
+                return (false, ex, sqlString);
             }
         }
 
-        public void AlterSystemTable(string tableName, List<TableColumn> tableColumns, List<string> dropColumnNames = null)
+        public async Task AlterSystemTableAsync(string tableName, List<TableColumn> tableColumns, List<string> dropColumnNames = null)
         {
             var list = new List<string>();
 
@@ -912,7 +476,7 @@ SELECT * FROM (
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddErrorLog(ex, sqlString);
+                        await LogUtils.AddErrorLogAsync(ex, sqlString);
                     }
                 }
 
@@ -952,7 +516,7 @@ SELECT * FROM (
         {
             if (string.IsNullOrEmpty(connectionStringWithoutDatabaseName))
             {
-                connectionStringWithoutDatabaseName = ConnectionString;
+                connectionStringWithoutDatabaseName = WebConfigUtils.ConnectionString;
             }
 
             var list = new List<string>();
@@ -1058,7 +622,8 @@ SELECT * FROM (
             var retVal = false;
             try
             {
-                var connection = GetConnection(databaseType, connectionString);
+                var db = new Database(databaseType, connectionString);
+                var connection = db.GetConnection();
                 connection.Open();
                 if (connection.State == ConnectionState.Open)
                 {
@@ -1074,28 +639,11 @@ SELECT * FROM (
             return retVal;
         }
 
-        public string GetSqlServerDefaultConstraintName(string tableName, string columnName)
-        {
-            var defaultConstraintName = string.Empty;
-            string sqlString =
-                $"select b.name from syscolumns a,sysobjects b where a.id=object_id('{tableName}') and b.id=a.cdefault and a.name='{columnName}' and b.name like 'DF%'";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    defaultConstraintName = GetString(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return defaultConstraintName;
-        }
-
         public List<TableColumn> GetTableColumnInfoList(string connectionString, string tableName)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = ConnectionString;
+                connectionString = WebConfigUtils.ConnectionString;
             }
 
             var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, connectionString);
@@ -1128,7 +676,7 @@ SELECT * FROM (
             var sequence = CacheUtils.Get<string>(cacheKey);
             if (string.IsNullOrEmpty(sequence))
             {
-                using (var conn = new OracleConnection(ConnectionString))
+                using (var conn = new OracleConnection(WebConfigUtils.ConnectionString))
                 {
                     conn.Open();
                     var cmd = new OracleCommand
@@ -1413,19 +961,14 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
             return GetSelectSqlString(tableName, 0, columns, whereString, null);
         }
 
-        public string GetSelectSqlString(string tableName, string columns, string whereString, string orderByString)
-        {
-            return GetSelectSqlString(tableName, 0, columns, whereString, orderByString);
-        }
-
         public string GetSelectSqlString(string tableName, int totalNum, string columns, string whereString, string orderByString)
         {
-            return GetSelectSqlString(ConnectionString, tableName, totalNum, columns, whereString, orderByString);
+            return GetSelectSqlString(WebConfigUtils.ConnectionString, tableName, totalNum, columns, whereString, orderByString);
         }
 
         public string GetSelectSqlString(string connectionString, string tableName, int totalNum, string columns, string whereString, string orderByString)
         {
-            return GetSelectSqlString(ConnectionString, tableName, totalNum, columns, whereString, orderByString, string.Empty);
+            return GetSelectSqlString(connectionString, tableName, totalNum, columns, whereString, orderByString, string.Empty);
         }
 
         public string GetSelectSqlString(string connectionString, string tableName, int totalNum, string columns, string whereString, string orderByString, string joinString)
@@ -1446,92 +989,6 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
 
             return SqlUtils.ToTopSqlString(tableName, columns, whereString, orderByString, totalNum);
         }
-
-//        public string GetSelectSqlString(string tableName, int startNum, int totalNum, string columns, string whereString, string orderByString)
-//        {
-//            return GetSelectSqlString(ConnectionString, tableName, startNum, totalNum, columns, whereString, orderByString);
-//        }
-
-//        public string GetSelectSqlString(string connectionString, string tableName, int startNum, int totalNum, string columns, string whereString, string orderByString)
-//        {
-//            if (string.IsNullOrEmpty(connectionString))
-//            {
-//                connectionString = ConnectionString;
-//            }
-
-//            if (startNum <= 1)
-//            {
-//                return GetSelectSqlString(connectionString, tableName, totalNum, columns, whereString, orderByString);
-//            }
-
-//            string countSqlString = $"SELECT Count(*) FROM {tableName} {whereString}";
-//            var allCount = DataProvider.DatabaseDao.GetIntResult(connectionString, countSqlString);
-//            if (totalNum == 0)
-//            {
-//                totalNum = allCount;
-//            }
-
-//            if (startNum > allCount) return string.Empty;
-
-//            var topNum = startNum + totalNum - 1;
-
-//            if (allCount < topNum)
-//            {
-//                totalNum = allCount - startNum + 1;
-//                if (totalNum < 1)
-//                {
-//                    return GetSelectSqlString(connectionString, tableName, totalNum, columns, whereString, orderByString);
-//                }
-//            }
-
-//            var orderByStringOpposite = GetOrderByStringOpposite(orderByString);
-
-//            var retVal = string.Empty;
-
-//            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-//            {
-//                retVal = $@"
-//SELECT {columns} FROM (
-//    SELECT {columns} FROM (
-//        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
-//    ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
-//) AS tmp {orderByString}
-//";
-//            }
-//            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-//            {
-//                retVal = $@"
-//SELECT {columns}
-//FROM (SELECT TOP {totalNum} {columns}
-//        FROM (SELECT TOP {topNum} {columns}
-//                FROM {tableName} {whereString} {orderByString}) tmp
-//        {orderByStringOpposite}) tmp
-//{orderByString}
-//";
-//            }
-//            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-//            {
-//                retVal = $@"
-//SELECT {columns} FROM (
-//    SELECT {columns} FROM (
-//        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
-//    ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
-//) AS tmp {orderByString}
-//";
-//            }
-//            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-//            {
-//                retVal = $@"
-//SELECT {columns} FROM (
-//    SELECT {columns} FROM (
-//        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
-//    ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
-//) AS tmp {orderByString}
-//";
-//            }
-
-//            return retVal;
-//        }
 
         public string GetSelectSqlStringByQueryString(string connectionString, string queryString, int totalNum, string orderByString)
         {
@@ -1558,7 +1015,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = ConnectionString;
+                connectionString = WebConfigUtils.ConnectionString;
             }
 
             if (startNum == 1 && totalNum == 0 && string.IsNullOrEmpty(orderByString))
@@ -1673,35 +1130,6 @@ FROM (SELECT TOP {totalNum} *
                 retVal = orderByString.Replace(" DESC", " DESC_OPPOSITE").Replace(" ASC", " DESC").Replace(" DESC_OPPOSITE", " ASC");
             }
             return retVal;
-        }
-
-        public List<string> GetDropColumnsSqlString(string tableName, string attributeName)
-        {
-            var sqlList = new List<string>();
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                var defaultConstraintName = GetSqlServerDefaultConstraintName(tableName, attributeName);
-                if (!string.IsNullOrEmpty(defaultConstraintName))
-                {
-                    sqlList.Add($"ALTER TABLE [{tableName}] DROP CONSTRAINT [{defaultConstraintName}]");
-                }
-                sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                sqlList.Add($"ALTER TABLE [{tableName}] DROP COLUMN [{attributeName}]");
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                sqlList.Add($"ALTER TABLE {tableName} DROP COLUMN {attributeName}");
-            }
-
-            return sqlList;
         }
 
         public List<string> GetTableNameList()

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Text;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {
@@ -30,7 +29,7 @@ namespace SiteServer.Utils
                 builder.Append("\n");
             }
 
-            FileUtils.WriteText(filePath, ECharset.gb2312, builder.ToString());
+            FileUtils.WriteText(filePath, builder.ToString());
         }
 
         public static void Import(string filePath, out List<string> head, out List<List<string>> rows)
@@ -41,7 +40,7 @@ namespace SiteServer.Utils
             var valueList = new List<string>();
 
             //string content = FileUtils.ReadText(filePath, ECharset.utf_8);
-            var content = FileUtils.ReadText(filePath, ECharset.gb2312);
+            var content = FileUtils.ReadText(filePath);
             if (!string.IsNullOrEmpty(content))
             {
                 valueList = TranslateUtils.StringCollectionToStringList(content, '\n');

@@ -20,7 +20,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -33,7 +33,7 @@ namespace SiteServer.API.Controllers.Home
                 var hits = request.GetPostInt("hits");
 
                 if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     return Unauthorized();
@@ -42,7 +42,7 @@ namespace SiteServer.API.Controllers.Home
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 if (pageType == "setAttributes")
@@ -51,26 +51,26 @@ namespace SiteServer.API.Controllers.Home
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+                            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
                             {
-                                contentInfo.IsRecommend = true;
+                                contentInfo.Recommend = true;
                             }
                             if (isHot)
                             {
-                                contentInfo.IsHot = true;
+                                contentInfo.Hot = true;
                             }
                             if (isColor)
                             {
-                                contentInfo.IsColor = true;
+                                contentInfo.Color = true;
                             }
                             if (isTop)
                             {
-                                contentInfo.IsTop = true;
+                                contentInfo.Top = true;
                             }
-                            DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
+                            await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
                         }
 
                         await request.AddSiteLogAsync(siteId, "设置内容属性");
@@ -82,26 +82,26 @@ namespace SiteServer.API.Controllers.Home
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+                            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
                             {
-                                contentInfo.IsRecommend = false;
+                                contentInfo.Recommend = false;
                             }
                             if (isHot)
                             {
-                                contentInfo.IsHot = false;
+                                contentInfo.Hot = false;
                             }
                             if (isColor)
                             {
-                                contentInfo.IsColor = false;
+                                contentInfo.Color = false;
                             }
                             if (isTop)
                             {
-                                contentInfo.IsTop = false;
+                                contentInfo.Top = false;
                             }
-                            DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
+                            await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
                         }
 
                         await request.AddSiteLogAsync(siteId, "取消内容属性");
@@ -111,11 +111,11 @@ namespace SiteServer.API.Controllers.Home
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         contentInfo.Hits = hits;
-                        DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
+                        await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
                     await request.AddSiteLogAsync(siteId, "设置内容点击量");
@@ -128,7 +128,7 @@ namespace SiteServer.API.Controllers.Home
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

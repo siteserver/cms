@@ -18,9 +18,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -29,7 +29,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 var user = await UserManager.GetUserByUserIdAsync(userId);
                 if (user == null) return NotFound();
 
-                var groupName = UserGroupManager.GetUserGroupName(user.GroupId);
+                var groupName = await UserGroupManager.GetUserGroupNameAsync(user.GroupId);
 
                 return Ok(new
                 {

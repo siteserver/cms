@@ -18,7 +18,7 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var dynamicInfo = DynamicInfo.GetDynamicInfo(request, request.User);
                 var ifInfo = TranslateUtils.JsonDeserialize<DynamicInfo.IfInfo>(dynamicInfo.ElementValues);

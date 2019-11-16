@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Impl;
@@ -8,6 +9,11 @@ namespace SiteServer.CMS.Plugin
 {
     public class PluginInstance
     {
+        private PluginInstance()
+        {
+
+        }
+
         public PluginInstance(string directoryName, PackageMetadata metadata, string errorMessage)
         {
             if (metadata != null)
@@ -23,38 +29,41 @@ namespace SiteServer.CMS.Plugin
             ErrorMessage = errorMessage;
         }
 
-        public PluginInstance(PackageMetadata metadata, ServiceImpl service, PluginBase plugin, long initTime)
+        public static async Task<PluginInstance> GetAsync(PackageMetadata metadata, ServiceImpl service, PluginBase plugin, long initTime)
         {
-            Id = plugin.Id;
-            Metadata = metadata;
-            Plugin = plugin;
-            Service = service;
-            InitTime = initTime;
+            var instance = new PluginInstance
+            {
+                Id = plugin.Id,
+                Metadata = metadata,
+                Plugin = plugin,
+                Service = service,
+                InitTime = initTime
+            };
 
-            bool isDisabled;
-            int taxis;
-            DataProvider.PluginDao.SetIsDisabledAndTaxis(Id, out isDisabled, out taxis);
+            var (isDisabled, taxis) = await DataProvider.PluginDao.SetIsDisabledAndTaxisAsync(instance.Id);
 
-            IsRunnable = plugin != null;
-            IsDisabled = isDisabled;
-            Taxis = taxis;
+            instance.IsRunnable = plugin != null;
+            instance.IsDisabled = isDisabled;
+            instance.Taxis = taxis;
+
+            return instance;
         }
 
-        public string Id { get; }
+        public string Id { get; private set; }
 
-        public PackageMetadata Metadata { get; }
-
-        [JsonIgnore]
-        public PluginBase Plugin { get; }
+        public PackageMetadata Metadata { get; private set; }
 
         [JsonIgnore]
-        public ServiceImpl Service { get; }
+        public PluginBase Plugin { get; private set; }
 
-        public long InitTime { get; }
+        [JsonIgnore]
+        public ServiceImpl Service { get; private set; }
 
-        public string ErrorMessage { get; }
+        public long InitTime { get; private set; }
 
-        public bool IsRunnable { get; set; }
+        public string ErrorMessage { get; private set; }
+
+        public bool IsRunnable { get; private set; }
 
         public bool IsDisabled { get; set; }
 

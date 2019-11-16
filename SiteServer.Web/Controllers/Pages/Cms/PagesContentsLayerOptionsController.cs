@@ -18,13 +18,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     return Unauthorized();
@@ -33,21 +33,21 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var attributes = ChannelManager.GetContentsColumns(site, channelInfo, true);
+                var attributes = await ChannelManager.GetContentsColumnsAsync(site, channelInfo, true);
 
                 return Ok(new
                 {
                     Value = attributes,
-                    channelInfo.Additional.IsAllContents,
-                    channelInfo.Additional.IsSelfOnly
+                    channelInfo.IsAllContents,
+                    channelInfo.IsSelfOnly
                 });
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -57,13 +57,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     return Unauthorized();
@@ -72,18 +72,18 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var attributeNames = request.GetPostString("attributeNames");
                 var isAllContents = request.GetPostBool("isAllContents");
                 var isSelfOnly = request.GetPostBool("isSelfOnly");
 
-                channelInfo.Additional.ContentAttributesOfDisplay = attributeNames;
-                channelInfo.Additional.IsAllContents = isAllContents;
-                channelInfo.Additional.IsSelfOnly = isSelfOnly;
+                channelInfo.ContentAttributesOfDisplay = attributeNames;
+                channelInfo.IsAllContents = isAllContents;
+                channelInfo.IsSelfOnly = isSelfOnly;
 
-                DataProvider.ChannelDao.Update(channelInfo);
+                await DataProvider.ChannelDao.UpdateAsync(channelInfo);
 
                 await request.AddSiteLogAsync(siteId, "设置内容选项");
 
@@ -94,7 +94,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

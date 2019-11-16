@@ -18,11 +18,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Configration))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, ConfigManager.WebSitePermissions.Configration))
                 {
                     return Unauthorized();
                 }
@@ -32,7 +32,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 return Ok(new
                 {
                     Value = site,
-                    Config = site.Additional
+                    Config = site.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -46,11 +46,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Configration))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, ConfigManager.WebSitePermissions.Configration))
                 {
                     return Unauthorized();
                 }
@@ -59,7 +59,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
 
                 var isSaveImageInTextEditor = request.GetPostBool("isSaveImageInTextEditor", true);
                 var isAutoPageInTextEditor = request.GetPostBool("isAutoPageInTextEditor");
-                var autoPageWordNum = request.GetPostInt("autoPageWordNum", site.Additional.AutoPageWordNum);
+                var autoPageWordNum = request.GetPostInt("autoPageWordNum", site.AutoPageWordNum);
                 var isContentTitleBreakLine = request.GetPostBool("isContentTitleBreakLine", true);
                 var isContentSubTitleBreakLine = request.GetPostBool("isContentSubTitleBreakLine", true);
                 var isAutoCheckKeywords = request.GetPostBool("isAutoCheckKeywords", true);
@@ -67,33 +67,33 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 var checkContentLevel = request.GetPostInt("checkContentLevel");
                 var checkContentDefaultLevel = request.GetPostInt("checkContentDefaultLevel");
 
-                site.Additional.IsSaveImageInTextEditor = isSaveImageInTextEditor;
+                site.IsSaveImageInTextEditor = isSaveImageInTextEditor;
 
                 var isReCalculate = false;
                 if (isAutoPageInTextEditor)
                 {
-                    if (site.Additional.IsAutoPageInTextEditor == false)
+                    if (site.IsAutoPageInTextEditor == false)
                     {
                         isReCalculate = true;
                     }
-                    else if (site.Additional.AutoPageWordNum != autoPageWordNum)
+                    else if (site.AutoPageWordNum != autoPageWordNum)
                     {
                         isReCalculate = true;
                     }
                 }
 
-                site.Additional.IsAutoPageInTextEditor = isAutoPageInTextEditor;
-                site.Additional.AutoPageWordNum = autoPageWordNum;
-                site.Additional.IsContentTitleBreakLine = isContentTitleBreakLine;
-                site.Additional.IsContentSubTitleBreakLine = isContentSubTitleBreakLine;
-                site.Additional.IsAutoCheckKeywords = isAutoCheckKeywords;
+                site.IsAutoPageInTextEditor = isAutoPageInTextEditor;
+                site.AutoPageWordNum = autoPageWordNum;
+                site.IsContentTitleBreakLine = isContentTitleBreakLine;
+                site.IsContentSubTitleBreakLine = isContentSubTitleBreakLine;
+                site.IsAutoCheckKeywords = isAutoCheckKeywords;
 
-                site.Additional.IsCheckContentLevel = isCheckContentLevel;
-                if (site.Additional.IsCheckContentLevel)
+                site.IsCheckContentLevel = isCheckContentLevel;
+                if (site.IsCheckContentLevel)
                 {
-                    site.Additional.CheckContentLevel = checkContentLevel;
+                    site.CheckContentLevel = checkContentLevel;
                 }
-                site.Additional.CheckContentDefaultLevel = checkContentDefaultLevel;
+                site.CheckContentDefaultLevel = checkContentDefaultLevel;
 
                 await DataProvider.SiteDao.UpdateAsync(site);
 
@@ -107,7 +107,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 return Ok(new
                 {
                     Value = site,
-                    Config = site.Additional,
+                    Config = site.ToDictionary(),
                 });
             }
             catch (Exception ex)

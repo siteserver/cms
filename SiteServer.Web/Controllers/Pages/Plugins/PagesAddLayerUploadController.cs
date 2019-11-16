@@ -18,13 +18,13 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         private const string RouteUpload = "actions/upload";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -36,19 +36,19 @@ namespace SiteServer.API.Controllers.Pages.Plugins
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
 
         [HttpPost, Route(RouteUpload)]
-        public IHttpActionResult Upload()
+        public async Task<IHttpActionResult> Upload()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -96,7 +96,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -106,9 +106,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -120,7 +120,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                     var localFilePath = PathUtils.GetTemporaryFilesPath(fileName);
 
                     //var importObject = new ImportObject(siteId, request.AdminName);
-                    //importObject.ImportContentsByZipFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
+                    //importObject.ImportContentsByZipFile(channel, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
                 }
 
                 await request.AddAdminLogAsync("安装离线插件", string.Empty);
@@ -132,7 +132,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

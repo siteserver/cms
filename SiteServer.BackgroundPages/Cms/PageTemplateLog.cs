@@ -4,10 +4,10 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var arraylist = TranslateUtils.StringCollectionToIntList(Request.QueryString["IDCollection"]);
                 try
                 {
-                    DataProvider.TemplateLogDao.Delete(arraylist);
+                    DataProvider.TemplateLogDao.DeleteAsync(arraylist).GetAwaiter().GetResult();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             SpContents.SelectCommand = DataProvider.TemplateLogDao.GetSelectCommend(SiteId, _templateId);
 
-            SpContents.SortField = nameof(TemplateLogInfo.Id);
+            SpContents.SortField = nameof(TemplateLog.Id);
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
@@ -81,12 +81,12 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlContentLength = (Literal)e.Item.FindControl("ltlContentLength");
             var ltlView = (Literal)e.Item.FindControl("ltlView");
 
-            var logId = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateLogInfo.Id));
+            var logId = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateLog.Id));
 
             ltlIndex.Text = Convert.ToString(e.Item.ItemIndex + 1);
-            ltlAddUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateLogInfo.AddUserName));
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(TemplateLogInfo.AddDate)));
-            ltlContentLength.Text = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateLogInfo.ContentLength)).ToString();
+            ltlAddUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateLog.AddUserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(TemplateLog.AddDate)));
+            ltlContentLength.Text = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateLog.ContentLength)).ToString();
             ltlView.Text =
                 $@"<a href=""javascript:;"" onclick=""{ModalTemplateView.GetOpenWindowString(SiteId,
                     logId)}"">查看</a>";

@@ -195,9 +195,9 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             var parameter = GetParameter();
             parameter.ParameterName = name;
-            if (value is DateTime && (DateTime) value < DateUtils.SqlMinValue)
+            if (value is DateTime && (DateTime) value < Constants.SqlMinValue)
             {
-                value = DateUtils.SqlMinValue;
+                value = Constants.SqlMinValue;
             }
             parameter.Value = value;
 

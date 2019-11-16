@@ -357,18 +357,7 @@ namespace SiteServer.Utils
             return size;
         }
 
-        public static bool IsSystemDirectory(string directoryName)
-        {
-            if (StringUtils.EqualsIgnoreCase(directoryName, AspnetClient.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, Bin.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, Home.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, SiteFiles.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, WebConfigUtils.AdminDirectory))
-            {
-                return true;
-            }
-            return false;
-        }
+        
 
         public static bool IsWebSiteDirectory(string directoryName)
         {
@@ -379,16 +368,6 @@ namespace SiteServer.Utils
                    || StringUtils.EqualsIgnoreCase(directoryName, "upload");
         }
 
-        public static List<string> GetLowerSystemDirectoryNames()
-        {
-            return new List<string>
-            {
-                AspnetClient.DirectoryName.ToLower(),
-                Bin.DirectoryName.ToLower(),
-                SiteFiles.DirectoryName.ToLower(),
-                WebConfigUtils.AdminDirectory.ToLower(),
-                SiteTemplates.SiteTemplateMetadata.ToLower()
-            };
-        }
+        
     }
 }

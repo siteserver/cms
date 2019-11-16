@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -17,7 +17,6 @@ using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -31,7 +30,7 @@ namespace SiteServer.API.Controllers.Sys
             var template = string.Empty;
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var form = GetPostCollection(request);
 
                 var isAllSites = request.GetPostBool(StlSearch.IsAllSites.ToLower());
@@ -51,15 +50,25 @@ namespace SiteServer.API.Controllers.Sys
                 var isHighlight = request.GetPostBool(StlSearch.IsHighlight.ToLower());
                 var siteId = request.GetPostInt("siteid");
                 var ajaxDivId = AttackUtils.FilterSqlAndXss(request.GetPostString("ajaxdivid"));
-                template = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("template"));
+                template = WebConfigUtils.DecryptStringBySecretKey(request.GetPostString("template"));
                 var pageIndex = request.GetPostInt("page", 1) - 1;
 
-                var templateInfo = new TemplateInfo(0, siteId, string.Empty, TemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, false);
-                var site = await SiteManager.GetSiteAsync(siteId);
-                pageInfo = new PageInfo(siteId, 0, site, templateInfo, new Dictionary<string, object>())
+                var templateInfo = new Template
                 {
-                    User = request.User
+                    Id = 0,
+                    SiteId = siteId,
+                    TemplateName = string.Empty,
+                    Type = TemplateType.FileTemplate,
+                    RelatedFileName = string.Empty,
+                    CreatedFileFullName = string.Empty,
+                    CreatedFileExtName = string.Empty,
+                    CharsetType = ECharset.utf_8,
+                    Default = false
                 };
+                var site = await SiteManager.GetSiteAsync(siteId);
+                pageInfo = await PageInfo.GetPageInfoAsync(siteId, 0, site, templateInfo, new Dictionary<string, object>());
+                pageInfo.User = request.User;
+
                 var contextInfo = new ContextInfo(pageInfo);
                 var contentBuilder = new StringBuilder(StlRequestEntities.ParseRequestEntities(form, template));
 
@@ -73,8 +82,8 @@ namespace SiteServer.API.Controllers.Sys
 
                     var whereString = await DataProvider.ContentDao.GetWhereStringByStlSearchAsync(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form);
 
-                    var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, pageNum, site.TableName, whereString);
-                    var pageCount = stlPageContents.GetPageCount(out var totalNum);
+                    var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, pageInfo, contextInfo, pageNum, site.TableName, whereString);
+                    var (pageCount, totalNum) = await stlPageContents.GetPageCountAsync();
                     if (totalNum == 0)
                     {
                         return NotFound();
@@ -84,10 +93,10 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (currentPageIndex != pageIndex) continue;
 
-                        var pageHtml = stlPageContents.Parse(totalNum, currentPageIndex, pageCount, false);
+                        var pageHtml = await stlPageContents.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageContentsElementReplaceString, pageHtml));
 
-                        StlParserManager.ReplacePageElementsInSearchPage(pagedBuilder, pageInfo, stlLabelList, ajaxDivId, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
+                        await StlParserManager.ReplacePageElementsInSearchPageAsync(pagedBuilder, pageInfo, stlLabelList, ajaxDivId, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
                         if (isHighlight && !string.IsNullOrEmpty(word))
                         {
@@ -98,7 +107,7 @@ namespace SiteServer.API.Controllers.Sys
                                 $"<span style='color:#cc0000'>{word}</span>"));
                         }
 
-                        Parser.Parse(pageInfo, contextInfo, pagedBuilder, string.Empty, false);
+                        await Parser.ParseAsync(pageInfo, contextInfo, pagedBuilder, string.Empty, false);
                         return Ok(pagedBuilder.ToString());
                     }
                 }
@@ -106,7 +115,7 @@ namespace SiteServer.API.Controllers.Sys
                 {
                     var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
 
-                    var stlPageSqlContents = new StlPageSqlContents(stlElement, pageInfo, contextInfo);
+                    var stlPageSqlContents = await StlPageSqlContents.GetAsync(stlElement, pageInfo, contextInfo);
                     
                     var pageCount = stlPageSqlContents.GetPageCount(out var totalNum);
                     if (totalNum == 0)
@@ -118,10 +127,10 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (currentPageIndex != pageIndex) continue;
 
-                        var pageHtml = stlPageSqlContents.Parse(totalNum, currentPageIndex, pageCount, false);
+                        var pageHtml = await stlPageSqlContents.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElement, pageHtml));
 
-                        StlParserManager.ReplacePageElementsInSearchPage(pagedBuilder, pageInfo, stlLabelList, ajaxDivId, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
+                        await StlParserManager.ReplacePageElementsInSearchPageAsync(pagedBuilder, pageInfo, stlLabelList, ajaxDivId, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
                         if (isHighlight && !string.IsNullOrEmpty(word))
                         {
@@ -132,17 +141,17 @@ namespace SiteServer.API.Controllers.Sys
                                 $"<span style='color:#cc0000'>{word}</span>"));
                         }
 
-                        Parser.Parse(pageInfo, contextInfo, pagedBuilder, string.Empty, false);
+                        await Parser.ParseAsync(pageInfo, contextInfo, pagedBuilder, string.Empty, false);
                         return Ok(pagedBuilder.ToString());
                     }
                 }
 
-                Parser.Parse(pageInfo, contextInfo, contentBuilder, string.Empty, false);
+                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, string.Empty, false);
                 return Ok(contentBuilder.ToString());
             }
             catch (Exception ex)
             {
-                var message = LogUtils.AddStlErrorLog(pageInfo, StlSearch.ElementName, template, ex);
+                var message = await LogUtils.AddStlErrorLogAsync(pageInfo, StlSearch.ElementName, template, ex);
                 return BadRequest(message);
             }
         }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -48,15 +48,15 @@ namespace SiteServer.BackgroundPages.Cms
             _type = AuthRequest.GetQueryString("type");
             if (_type == PageTemplateAssets.TypeInclude)
             {
-                _assetsDir = Site.Additional.TemplatesAssetsIncludeDir.Trim('/');
+                _assetsDir = Site.TemplatesAssetsIncludeDir.Trim('/');
             }
             else if (_type == PageTemplateAssets.TypeJs)
             {
-                _assetsDir = Site.Additional.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = Site.TemplatesAssetsJsDir.Trim('/');
             }
             else if (_type == PageTemplateAssets.TypeCss)
             {
-                _assetsDir = Site.Additional.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = Site.TemplatesAssetsCssDir.Trim('/');
             }
 
             if (string.IsNullOrEmpty(_assetsDir)) return;
@@ -75,15 +75,15 @@ namespace SiteServer.BackgroundPages.Cms
                 var assetsDir = TbDirectoryPath.Text.Trim('/');
                 if (_type == PageTemplateAssets.TypeInclude)
                 {
-                    Site.Additional.TemplatesAssetsIncludeDir = assetsDir;
+                    Site.TemplatesAssetsIncludeDir = assetsDir;
                 }
                 else if (_type == PageTemplateAssets.TypeJs)
                 {
-                    Site.Additional.TemplatesAssetsJsDir = assetsDir;
+                    Site.TemplatesAssetsJsDir = assetsDir;
                 }
                 else if (_type == PageTemplateAssets.TypeCss)
                 {
-                    Site.Additional.TemplatesAssetsCssDir = assetsDir;
+                    Site.TemplatesAssetsCssDir = assetsDir;
                 }
 
                 DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();

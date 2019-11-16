@@ -1,124 +1,65 @@
 using System.Collections.Generic;
-using System.Data;
+using System.Threading.Tasks;
 using Datory;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class ConfigDao : DataProviderBase
-	{
-        public override string TableName => "siteserver_Config";
+    public class ConfigDao : IRepository
+    {
+        private readonly Repository<Config> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public ConfigDao()
         {
-            new TableColumn
+            _repository = new Repository<Config>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+        }
+
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task<int> InsertAsync(Config config)
+        {
+            var configId = await _repository.InsertAsync(config);
+            ConfigManager.IsChanged = true;
+            return configId;
+        }
+
+		public async Task UpdateAsync(Config config)
+		{
+            await _repository.UpdateAsync(config);
+            ConfigManager.IsChanged = true;
+		}
+
+		public async Task<bool> IsInitializedAsync()
+		{
+            try
             {
-                AttributeName = nameof(ConfigInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ConfigInfo.IsInitialized),
-                DataType = DataType.VarChar,
-                DataLength = 18
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ConfigInfo.DatabaseVersion),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ConfigInfo.UpdateDate),
-                DataType = DataType.DateTime
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ConfigInfo.SystemConfig),
-                DataType = DataType.Text
+                return await _repository.ExistsAsync();
             }
-        };
-
-        public void Insert(ConfigInfo info)
-        {
-            var sqlString =
-                $"INSERT INTO {TableName} ({nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}) VALUES (@{nameof(ConfigInfo.IsInitialized)}, @{nameof(ConfigInfo.DatabaseVersion)}, @{nameof(ConfigInfo.UpdateDate)}, @{nameof(ConfigInfo.SystemConfig)})";
-
-            var insertParms = new IDataParameter[]
-			{
-				GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", DataType.VarChar, 18, info.IsInitialized.ToString()),
-				GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", DataType.VarChar, 50, info.DatabaseVersion),
-                GetParameter($"@{nameof(ConfigInfo.UpdateDate)}", DataType.DateTime, info.UpdateDate),
-                GetParameter($"@{nameof(ConfigInfo.SystemConfig)}", DataType.Text, info.SystemConfigInfo.ToString())
-            };
-
-            ExecuteNonQuery(sqlString, insertParms);
-            ConfigManager.IsChanged = true;
-		}
-
-		public void Update(ConfigInfo info)
-		{
-		    var sqlString =
-                $"UPDATE {TableName} SET {nameof(ConfigInfo.IsInitialized)} = @{nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}= @{nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}= @{nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}= @{nameof(ConfigInfo.SystemConfig)} WHERE {nameof(ConfigInfo.Id)} = @{nameof(ConfigInfo.Id)}";
-
-            var updateParms = new IDataParameter[]
-			{
-				GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", DataType.VarChar, 18, info.IsInitialized.ToString()),
-				GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", DataType.VarChar, 50, info.DatabaseVersion),
-                GetParameter($"@{nameof(ConfigInfo.UpdateDate)}", DataType.DateTime, info.UpdateDate),
-                GetParameter($"@{nameof(ConfigInfo.SystemConfig)}", DataType.Text, info.SystemConfigInfo.ToString()),
-			    GetParameter($"@{nameof(ConfigInfo.Id)}", DataType.Integer, info.Id)
-            };
-
-            ExecuteNonQuery(sqlString, updateParms);
-            ConfigManager.IsChanged = true;
-		}
-
-		public bool IsInitialized()
-		{
-            var isInitialized = false;
-
-			try
-			{
-                using (var rdr = ExecuteReader($"SELECT {nameof(ConfigInfo.IsInitialized)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}")) 
-				{
-					if (rdr.Read()) 
-					{
-                        isInitialized = GetBool(rdr, 0);
-					}
-					rdr.Close();
-				}
-			}
 		    catch
 		    {
 		        // ignored
 		    }
 
-		    return isInitialized;
-		}
+            return false;
+        }
 
-		public string GetDatabaseVersion()
+		public async Task<string> GetDatabaseVersionAsync()
 		{
 			var databaseVersion = string.Empty;
 
 			try
 			{
-				using (var rdr = ExecuteReader($"SELECT {nameof(ConfigInfo.DatabaseVersion)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}")) 
-				{
-					if (rdr.Read()) 
-					{
-                        databaseVersion = GetString(rdr, 0);
-					}
-					rdr.Close();
-				}
-			}
+                databaseVersion = await _repository.GetAsync<string>(Q
+                    .Select(nameof(Config.DatabaseVersion))
+                    .OrderBy(nameof(Config.Id))
+                );
+            }
 		    catch
 		    {
 		        // ignored
@@ -127,21 +68,9 @@ namespace SiteServer.CMS.Provider
 		    return databaseVersion;
 		}
 
-		public ConfigInfo GetConfigInfo()
-		{
-            ConfigInfo info = null;
-
-		    using (var rdr = ExecuteReader($"SELECT {nameof(ConfigInfo.Id)}, {nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
-            {
-                if (rdr.Read())
-                {
-                    var i = 0;
-                    info = new ConfigInfo(GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i));
-                }
-                rdr.Close();
-            }
-
-			return info;
-		}
+		public async Task<Config> GetConfigAsync()
+        {
+            return await _repository.GetAsync(Q.OrderBy(nameof(Config.Id)));
+        }
     }
 }

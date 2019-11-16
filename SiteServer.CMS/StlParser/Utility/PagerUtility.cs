@@ -2,14 +2,13 @@
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.StlParser.StlElement;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
     public static class PagerUtility
     {
-        public static async Task<string> GetUrlInChannelPageAsync(string type, Site site, ChannelInfo nodeInfo, int index, int currentPageIndex, int pageCount, bool isLocal)
+        public static async Task<string> GetUrlInChannelPageAsync(string type, Site site, Channel node, int index, int currentPageIndex, int pageCount, bool isLocal)
         {
             var pageIndex = 0;
             if (type.ToLower().Equals(StlPageItem.TypeFirstPage.ToLower()))//首页
@@ -33,7 +32,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 pageIndex = index - 1;
             }
 
-            var physicalPath = PathUtility.GetChannelPageFilePath(site, nodeInfo.Id, pageIndex);
+            var physicalPath = await PathUtility.GetChannelPageFilePathAsync(site, node.Id, pageIndex);
             return await PageUtility.GetSiteUrlByPhysicalPathAsync(site, physicalPath, isLocal);
         }
 
@@ -61,7 +60,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 pageIndex = index - 1;
             }
 
-            var physicalPath = PathUtility.GetContentPageFilePath(site, channelId, contentId, pageIndex);
+            var physicalPath = await PathUtility.GetContentPageFilePathAsync(site, channelId, contentId, pageIndex);
             return await PageUtility.GetSiteUrlByPhysicalPathAsync(site, physicalPath, isLocal);
         }
 
@@ -180,8 +179,8 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
                 else
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(site.Id, channelId);
-                    var redirectUrl = contentId > 0 ? PathUtility.GetContentPageFilePath(site, nodeInfo.Id, contentId, pageIndex) : PathUtility.GetChannelPageFilePath(site, nodeInfo.Id, pageIndex);
+                    var nodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                    var redirectUrl = contentId > 0 ? await PathUtility.GetContentPageFilePathAsync(site, nodeInfo.Id, contentId, pageIndex) : await PathUtility.GetChannelPageFilePathAsync(site, nodeInfo.Id, pageIndex);
                     redirectUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, redirectUrl, isLocal);
                     jsMethod = $"window.location.href='{redirectUrl}';";
                 }

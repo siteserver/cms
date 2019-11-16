@@ -93,8 +93,8 @@ namespace SiteServer.Cli
                 {TestJob.CommandName, testJob.Execute}
             };
 
-            PluginManager.LoadPlugins(CliUtils.PhysicalApplicationPath);
-            var pluginJobs = PluginJobManager.GetJobs();
+            PluginManager.LoadPluginsAsync(CliUtils.PhysicalApplicationPath).GetAwaiter().GetResult();
+            var pluginJobs = PluginJobManager.GetJobsAsync().GetAwaiter().GetResult();
             if (pluginJobs != null && pluginJobs.Count > 0)
             {
                 foreach (var command in pluginJobs.Keys)

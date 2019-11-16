@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
@@ -104,15 +104,15 @@ namespace SiteServer.CMS.Core
 
                 foreach (var filePath in filePathList)
                 {
-                    importObject.ImportSiteContent(siteContentDirectoryPath, filePath, isImportContents);
+                    await importObject.ImportSiteContentAsync(siteContentDirectoryPath, filePath, isImportContents);
                 }
 
                 if (isImportTableStyles)
                 {
-                    importObject.ImportTableStyles(tableDirectoryPath);
+                    await importObject.ImportTableStylesAsync(tableDirectoryPath);
                 }
 
-                importObject.RemoveDbCache();
+                await importObject.RemoveDbCacheAsync();
             }
         }
 
@@ -133,7 +133,7 @@ namespace SiteServer.CMS.Core
             await exportObject.ExportConfigurationAsync(configurationFilePath);
             //导出关联字段
             var relatedFieldDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.RelatedField);
-            exportObject.ExportRelatedField(relatedFieldDirectoryPath);
+            await exportObject.ExportRelatedFieldAsync(relatedFieldDirectoryPath);
         }
     }
 }

@@ -7,6 +7,8 @@ var data = {
   pageAlert: null,
   pageType: utils.getQueryString('pageType'),
   userId: parseInt(utils.getQueryString('userId') || '0'),
+  userName: utils.getQueryString('userName'),
+  returnUrl: utils.getQueryString('returnUrl'),
   adminInfo: null,
   level: null,
   isSuperAdmin: null,
@@ -19,7 +21,12 @@ var methods = {
   getConfig: function () {
     var $this = this;
 
-    $api.get($url + '?userId=' + $this.userId).then(function (response) {
+    $api.get($url, {
+      params: {
+        userId: this.userId,
+        userName: this.userName
+      }
+    }).then(function (response) {
       var res = response.data;
 
       $this.adminInfo = res.value;

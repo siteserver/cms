@@ -6,12 +6,12 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
+using TableStyle = SiteServer.CMS.Model.TableStyle;
+using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
         public Literal LtlAttributes;
         public Button BtnSubmit;
 
-        private List<TableStyleInfo> _styleInfoList;
+        private List<TableStyle> _styleList;
 
         public static string GetRedirectUrl(int siteId)
         {
@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            _styleInfoList = TableStyleManager.GetSiteStyleInfoList(SiteId);
+            _styleList = TableStyleManager.GetSiteStyleListAsync(SiteId).GetAwaiter().GetResult();
 
             if (!IsPostBack)
 			{
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 TbSiteName.Text = Site.SiteName;
 
-			    var nameValueCollection = TranslateUtils.DictionaryToNameValueCollection(Site.Additional.ToDictionary());
+			    var nameValueCollection = TranslateUtils.DictionaryToNameValueCollection(Site.ToDictionary());
 
                 LtlAttributes.Text = GetAttributesHtml(nameValueCollection);
 
@@ -63,23 +63,23 @@ namespace SiteServer.BackgroundPages.Cms
 
             var pageScripts = new NameValueCollection();
 
-            if (_styleInfoList == null) return string.Empty;
+            if (_styleList == null) return string.Empty;
 
-            var attributes = new AttributesImpl(formCollection);
+            var attributes = TranslateUtils.NameValueCollectionToDictionary(formCollection);
 
             var builder = new StringBuilder();
-            foreach (var styleInfo in _styleInfoList)
+            foreach (var style in _styleList)
             {
                 string extra;
-                var value = BackgroundInputTypeParser.Parse(Site, 0, styleInfo, attributes, pageScripts, out extra);
+                var value = BackgroundInputTypeParser.Parse(Site, 0, style, attributes, pageScripts, out extra);
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
+                if (InputTypeUtils.Equals(style.InputType, InputType.TextEditor))
                 {
-                    var commands = WebUtils.GetTextEditorCommands(Site, styleInfo.AttributeName);
+                    var commands = WebUtils.GetTextEditorCommands(Site, style.AttributeName);
                     builder.Append($@"
 <div class=""form-group"">
-    <label class=""control-label"">{styleInfo.DisplayName}</label>
+    <label class=""control-label"">{style.DisplayName}</label>
     {commands}
     <hr />
     {value}
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     builder.Append($@"
 <div class=""form-group"">
-    <label class=""control-label"">{styleInfo.DisplayName}</label>
+    <label class=""control-label"">{style.DisplayName}</label>
     {value}
     {extra}
 </div>");
@@ -111,9 +111,12 @@ namespace SiteServer.BackgroundPages.Cms
 
 		    Site.SiteName = TbSiteName.Text;
 
-            var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, _styleInfoList, Page.Request.Form, null).GetAwaiter().GetResult();
+            var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, _styleList, Page.Request.Form, null).GetAwaiter().GetResult();
 
-		    Site.Additional.Load(dict);
+            foreach (var o in dict)
+            {
+                Site.Set(o.Key, o.Value);
+            }
 
             DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
 

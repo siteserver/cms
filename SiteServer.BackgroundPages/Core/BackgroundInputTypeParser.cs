@@ -12,12 +12,12 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Editors;
 using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
-using SiteServer.Utils.Enumerations;
+using TableStyle = SiteServer.CMS.Model.TableStyle;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -26,72 +26,72 @@ namespace SiteServer.BackgroundPages.Core
         public const string Current = "{Current}";
         public const string Value = "{Value}";
 
-        public static string Parse(Site site, int channelId, TableStyleInfo styleInfo, AttributesImpl attributes, NameValueCollection pageScripts, out string extraHtml)
+        public static string Parse(Site site, int channelId, TableStyle style, IDictionary<string, object> attributes, NameValueCollection pageScripts, out string extraHtml)
         {
             var retVal = string.Empty;
             var extraBuilder = new StringBuilder();
-            if (!string.IsNullOrEmpty(styleInfo.HelpText))
+            if (!string.IsNullOrEmpty(style.HelpText))
             {
-                extraBuilder.Append($@"<small class=""form-text text-muted"">{styleInfo.HelpText}</small>");
+                extraBuilder.Append($@"<small class=""form-text text-muted"">{style.HelpText}</small>");
             }
 
-            var inputType = styleInfo.InputType;
+            var inputType = style.Type;
 
             if (inputType == InputType.Text)
             {
-                retVal = ParseText(attributes, site, channelId, styleInfo, extraBuilder);
+                retVal = ParseText(attributes, site, channelId, style, extraBuilder);
             }
             else if (inputType == InputType.TextArea)
             {
-                retVal = ParseTextArea(attributes, styleInfo, extraBuilder);
+                retVal = ParseTextArea(attributes, style, extraBuilder);
             }
             else if (inputType == InputType.TextEditor)
             {
-                retVal = ParseTextEditor(attributes, styleInfo.AttributeName, site, pageScripts, extraBuilder);
+                retVal = ParseTextEditor(attributes, style.AttributeName, site, pageScripts, extraBuilder);
             }
             else if (inputType == InputType.SelectOne)
             {
-                retVal = ParseSelectOne(attributes, styleInfo, extraBuilder);
+                retVal = ParseSelectOne(attributes, style, extraBuilder);
             }
             else if (inputType == InputType.SelectMultiple)
             {
-                retVal = ParseSelectMultiple(attributes, styleInfo, extraBuilder);
+                retVal = ParseSelectMultiple(attributes, style, extraBuilder);
             }
             else if (inputType == InputType.SelectCascading)
             {
-                retVal = ParseSelectCascading(attributes, site, styleInfo, extraBuilder);
+                retVal = ParseSelectCascading(attributes, site, style, extraBuilder);
             }
             else if (inputType == InputType.CheckBox)
             {
-                retVal = ParseCheckBox(attributes, styleInfo, extraBuilder);
+                retVal = ParseCheckBox(attributes, style, extraBuilder);
             }
             else if (inputType == InputType.Radio)
             {
-                retVal = ParseRadio(attributes, styleInfo, extraBuilder);
+                retVal = ParseRadio(attributes, style, extraBuilder);
             }
             else if (inputType == InputType.Date)
             {
-                retVal = ParseDate(attributes, pageScripts, styleInfo, extraBuilder);
+                retVal = ParseDate(attributes, pageScripts, style, extraBuilder);
             }
             else if (inputType == InputType.DateTime)
             {
-                retVal = ParseDateTime(attributes, pageScripts, styleInfo, extraBuilder);
+                retVal = ParseDateTime(attributes, pageScripts, style, extraBuilder);
             }
             else if (inputType == InputType.Image)
             {
-                retVal = ParseImage(attributes, site, channelId, styleInfo, extraBuilder);
+                retVal = ParseImage(attributes, site, channelId, style, extraBuilder);
             }
             else if (inputType == InputType.Video)
             {
-                retVal = ParseVideo(attributes, site, channelId, styleInfo, extraBuilder);
+                retVal = ParseVideo(attributes, site, channelId, style, extraBuilder);
             }
             else if (inputType == InputType.File)
             {
-                retVal = ParseFile(attributes, site, channelId, styleInfo, extraBuilder);
+                retVal = ParseFile(attributes, site, channelId, style, extraBuilder);
             }
             else if (inputType == InputType.Customize)
             {
-                retVal = ParseCustomize(attributes, styleInfo, extraBuilder);
+                retVal = ParseCustomize(attributes, style, extraBuilder);
             }
             else if (inputType == InputType.Hidden)
             {
@@ -103,99 +103,100 @@ namespace SiteServer.BackgroundPages.Core
             return retVal;
         }
 
-        public static string ParseText(AttributesImpl attributes, Site site, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        public static string ParseText(IDictionary<string, object> attributes, Site site, int channelId, TableStyle style, StringBuilder extraBuilder)
         {
-            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            var validateAttributes = InputParserUtils.GetValidateAttributes(style.IsValidate, style.DisplayName, style.IsRequired, style.MinNum, style.MaxNum, style.ValidateType, style.RegExp, style.ErrorMessage);
 
-            if (styleInfo.Additional.IsValidate)
+            if (style.IsValidate)
             {
                 extraBuilder.Append(
-                    $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
+                    $@"<span id=""{style.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{style.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
-            if (styleInfo.Additional.IsFormatString)
+            if (style.IsFormatString)
             {
                 var formatStrong = false;
                 var formatEm = false;
                 var formatU = false;
                 var formatColor = string.Empty;
-                var formatValues = attributes.GetString(ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName));
+                var formatValues = TranslateUtils.Get<string>(attributes, ContentAttribute.GetFormatStringAttributeName(style.AttributeName));
+
                 if (!string.IsNullOrEmpty(formatValues))
                 {
                     ContentUtility.SetTitleFormatControls(formatValues, out formatStrong, out formatEm, out formatU, out formatColor);
                 }
 
                 extraBuilder.Append(
-                    $@"<a class=""btn"" href=""javascript:;"" onclick=""$('#div_{styleInfo.AttributeName}').toggle();return false;""><i class=""icon-text-height""></i></a>
+                    $@"<a class=""btn"" href=""javascript:;"" onclick=""$('#div_{style.AttributeName}').toggle();return false;""><i class=""icon-text-height""></i></a>
 <script type=""text/javascript"">
-function {styleInfo.AttributeName}_strong(e){{
+function {style.AttributeName}_strong(e){{
 var e = $(e);
-if ($('#{styleInfo.AttributeName}_formatStrong').val() == 'true'){{
-$('#{styleInfo.AttributeName}_formatStrong').val('false');
+if ($('#{style.AttributeName}_formatStrong').val() == 'true'){{
+$('#{style.AttributeName}_formatStrong').val('false');
 e.removeClass('btn-success');
 }}else{{
-$('#{styleInfo.AttributeName}_formatStrong').val('true');
+$('#{style.AttributeName}_formatStrong').val('true');
 e.addClass('btn-success');
 }}
 }}
-function {styleInfo.AttributeName}_em(e){{
+function {style.AttributeName}_em(e){{
 var e = $(e);
-if ($('#{styleInfo.AttributeName}_formatEM').val() == 'true'){{
-$('#{styleInfo.AttributeName}_formatEM').val('false');
+if ($('#{style.AttributeName}_formatEM').val() == 'true'){{
+$('#{style.AttributeName}_formatEM').val('false');
 e.removeClass('btn-success');
 }}else{{
-$('#{styleInfo.AttributeName}_formatEM').val('true');
+$('#{style.AttributeName}_formatEM').val('true');
 e.addClass('btn-success');
 }}
 }}
-function {styleInfo.AttributeName}_u(e){{
+function {style.AttributeName}_u(e){{
 var e = $(e);
-if ($('#{styleInfo.AttributeName}_formatU').val() == 'true'){{
-$('#{styleInfo.AttributeName}_formatU').val('false');
+if ($('#{style.AttributeName}_formatU').val() == 'true'){{
+$('#{style.AttributeName}_formatU').val('false');
 e.removeClass('btn-success');
 }}else{{
-$('#{styleInfo.AttributeName}_formatU').val('true');
+$('#{style.AttributeName}_formatU').val('true');
 e.addClass('btn-success');
 }}
 }}
-function {styleInfo.AttributeName}_color(){{
-if ($('#{styleInfo.AttributeName}_formatColor').val()){{
-$('#{styleInfo.AttributeName}_colorBtn').css('color', $('#{styleInfo.AttributeName}_formatColor').val());
-$('#{styleInfo.AttributeName}_colorBtn').addClass('btn-success');
+function {style.AttributeName}_color(){{
+if ($('#{style.AttributeName}_formatColor').val()){{
+$('#{style.AttributeName}_colorBtn').css('color', $('#{style.AttributeName}_formatColor').val());
+$('#{style.AttributeName}_colorBtn').addClass('btn-success');
 }}else{{
-$('#{styleInfo.AttributeName}_colorBtn').css('color', '');
-$('#{styleInfo.AttributeName}_colorBtn').removeClass('btn-success');
+$('#{style.AttributeName}_colorBtn').css('color', '');
+$('#{style.AttributeName}_colorBtn').removeClass('btn-success');
 }}
-$('#{styleInfo.AttributeName}_colorContainer').hide();
+$('#{style.AttributeName}_colorContainer').hide();
 }}
 </script>
 ");
 
                 extraBuilder.Append($@"
 <div class=""btn-group btn-group-sm"" style=""float:left;"">
-    <button class=""btn{(formatStrong ? @" btn-success" : string.Empty)}"" style=""font-weight:bold;font-size:12px;"" onclick=""{styleInfo
+    <button class=""btn{(formatStrong ? @" btn-success" : string.Empty)}"" style=""font-weight:bold;font-size:12px;"" onclick=""{style
                     .AttributeName}_strong(this);return false;"">粗体</button>
-    <button class=""btn{(formatEm ? " btn-success" : string.Empty)}"" style=""font-style:italic;font-size:12px;"" onclick=""{styleInfo
+    <button class=""btn{(formatEm ? " btn-success" : string.Empty)}"" style=""font-style:italic;font-size:12px;"" onclick=""{style
                     .AttributeName}_em(this);return false;"">斜体</button>
-    <button class=""btn{(formatU ? " btn-success" : string.Empty)}"" style=""text-decoration:underline;font-size:12px;"" onclick=""{styleInfo
+    <button class=""btn{(formatU ? " btn-success" : string.Empty)}"" style=""text-decoration:underline;font-size:12px;"" onclick=""{style
                     .AttributeName}_u(this);return false;"">下划线</button>
-    <button class=""btn{(!string.IsNullOrEmpty(formatColor) ? " btn-success" : string.Empty)}"" style=""font-size:12px;"" id=""{styleInfo
-                    .AttributeName}_colorBtn"" onclick=""$('#{styleInfo.AttributeName}_colorContainer').toggle();return false;"">颜色</button>
+    <button class=""btn{(!string.IsNullOrEmpty(formatColor) ? " btn-success" : string.Empty)}"" style=""font-size:12px;"" id=""{style
+                    .AttributeName}_colorBtn"" onclick=""$('#{style.AttributeName}_colorContainer').toggle();return false;"">颜色</button>
 </div>
-<div id=""{styleInfo.AttributeName}_colorContainer"" class=""input-append"" style=""float:left;display:none"">
-    <input id=""{styleInfo.AttributeName}_formatColor"" name=""{styleInfo.AttributeName}_formatColor"" class=""input-mini color {{required:false}}"" type=""text"" value=""{formatColor}"" placeholder=""颜色值"">
+<div id=""{style.AttributeName}_colorContainer"" class=""input-append"" style=""float:left;display:none"">
+    <input id=""{style.AttributeName}_formatColor"" name=""{style.AttributeName}_formatColor"" class=""input-mini color {{required:false}}"" type=""text"" value=""{formatColor}"" placeholder=""颜色值"">
     <button class=""btn"" type=""button"" onclick=""Title_color();return false;"">确定</button>
 </div>
-<input id=""{styleInfo.AttributeName}_formatStrong"" name=""{styleInfo.AttributeName}_formatStrong"" type=""hidden"" value=""{formatStrong
+<input id=""{style.AttributeName}_formatStrong"" name=""{style.AttributeName}_formatStrong"" type=""hidden"" value=""{formatStrong
                     .ToString().ToLower()}"" />
-<input id=""{styleInfo.AttributeName}_formatEM"" name=""{styleInfo.AttributeName}_formatEM"" type=""hidden"" value=""{formatEm
+<input id=""{style.AttributeName}_formatEM"" name=""{style.AttributeName}_formatEM"" type=""hidden"" value=""{formatEm
                     .ToString().ToLower()}"" />
-<input id=""{styleInfo.AttributeName}_formatU"" name=""{styleInfo.AttributeName}_formatU"" type=""hidden"" value=""{formatU
+<input id=""{style.AttributeName}_formatU"" name=""{style.AttributeName}_formatU"" type=""hidden"" value=""{formatU
                     .ToString().ToLower()}"" />
 ");
             }
 
-            if (channelId > 0 && styleInfo.AttributeName == ContentAttribute.Title)
+            if (channelId > 0 && style.AttributeName == ContentAttribute.Title)
             {
                 extraBuilder.Append(@"
 <script type=""text/javascript"">
@@ -238,42 +239,42 @@ $('#Title').keyup(function (e) {
                 extraBuilder.Replace("[url]", AjaxCmsService.GetTitlesUrl(site.Id, channelId));
             }
 
-            var value = StringUtils.HtmlDecode(attributes.GetString(styleInfo.AttributeName));
+            var value = CMS.Context.WebUtils.HtmlDecode(TranslateUtils.Get<string>(attributes, style.AttributeName));
 
             return
-                $@"<input id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" {validateAttributes} />";
+                $@"<input id=""{style.AttributeName}"" name=""{style.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" {validateAttributes} />";
         }
 
-        public static string ParseTextArea(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        public static string ParseTextArea(IDictionary<string, object> attributes, TableStyle tableStyle, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (tableStyle.IsValidate)
             {
                 extraBuilder.Append(
-                $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
+                $@"<span id=""{tableStyle.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{tableStyle.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
-            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            var validateAttributes = InputParserUtils.GetValidateAttributes(tableStyle.IsValidate, tableStyle.DisplayName, tableStyle.IsRequired, tableStyle.MinNum, tableStyle.MaxNum, tableStyle.ValidateType, tableStyle.RegExp, tableStyle.ErrorMessage);
 
-            var height = styleInfo.Additional.Height;
+            var height = tableStyle.Height;
             if (height == 0)
             {
                 height = 80;
             }
             string style = $@"style=""height:{height}px;""";
 
-            var value = StringUtils.HtmlDecode(attributes.GetString(styleInfo.AttributeName));
+            var value = CMS.Context.WebUtils.HtmlDecode(TranslateUtils.Get<string>(attributes, tableStyle.AttributeName));
 
             return
-                $@"<textarea id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" class=""form-control"" {style} {validateAttributes}>{value}</textarea>";
+                $@"<textarea id=""{tableStyle.AttributeName}"" name=""{tableStyle.AttributeName}"" class=""form-control"" {style} {validateAttributes}>{value}</textarea>";
         }
 
-        public static string ParseTextEditor(AttributesImpl attributes, string attributeName, Site site, NameValueCollection pageScripts, StringBuilder extraBuilder)
+        public static string ParseTextEditor(IDictionary<string, object> attributes, string attributeName, Site site, NameValueCollection pageScripts, StringBuilder extraBuilder)
         {
-            var value = attributes.GetString(attributeName);
+            var value = TranslateUtils.Get<string>(attributes, attributeName);
 
             value = ContentUtility.TextEditorContentDecode(site, value, true);
             value = UEditorUtils.TranslateToHtml(value);
-            value = StringUtils.HtmlEncode(value);
+            value = CMS.Context.WebUtils.HtmlEncode(value);
 
             var controllerUrl = ApiRouteUEditor.GetUrl(ApiManager.InnerApiUrl, site.Id);
             var editorUrl = SiteServerAssets.GetUrl("ueditor");
@@ -296,21 +297,21 @@ $(function(){{
             return $@"<textarea id=""{attributeName}"" name=""{attributeName}"" style=""display:none"">{value}</textarea>";
         }
 
-        private static string ParseSelectOne(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseSelectOne(IDictionary<string, object> attributes, TableStyle style, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (style.IsValidate)
             {
                 extraBuilder.Append(
-                    $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
+                    $@"<span id=""{style.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{style.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
             var builder = new StringBuilder();
-            var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
+            var styleItems = style.StyleItems ?? new List<TableStyleItem>();
 
-            var selectedValue = attributes.GetString(styleInfo.AttributeName);
+            var selectedValue = TranslateUtils.Get<string>(attributes, style.AttributeName);
 
-            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
-            builder.Append($@"<select id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" class=""form-control""  isListItem=""true"" {validateAttributes}>");
+            var validateAttributes = InputParserUtils.GetValidateAttributes(style.IsValidate, style.DisplayName, style.IsRequired, style.MinNum, style.MaxNum, style.ValidateType, style.RegExp, style.ErrorMessage);
+            builder.Append($@"<select id=""{style.AttributeName}"" name=""{style.AttributeName}"" class=""form-control""  isListItem=""true"" {validateAttributes}>");
 
             var isTicked = false;
             foreach (var styleItem in styleItems)
@@ -329,21 +330,21 @@ $(function(){{
             return builder.ToString();
         }
 
-        private static string ParseSelectMultiple(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseSelectMultiple(IDictionary<string, object> attributes, TableStyle style, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (style.IsValidate)
             {
                 extraBuilder.Append(
-                    $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
+                    $@"<span id=""{style.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{style.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
             var builder = new StringBuilder();
-            var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
+            var styleItems = style.StyleItems ?? new List<TableStyleItem>();
 
-            var selectedValues = TranslateUtils.StringCollectionToStringList(attributes.GetString(styleInfo.AttributeName));
+            var selectedValues = TranslateUtils.StringCollectionToStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
 
-            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
-            builder.Append($@"<select id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" class=""form-control"" isListItem=""true"" multiple  {validateAttributes}>");
+            var validateAttributes = InputParserUtils.GetValidateAttributes(style.IsValidate, style.DisplayName, style.IsRequired, style.MinNum, style.MaxNum, style.ValidateType, style.RegExp, style.ErrorMessage);
+            builder.Append($@"<select id=""{style.AttributeName}"" name=""{style.AttributeName}"" class=""form-control"" isListItem=""true"" multiple  {validateAttributes}>");
 
             foreach (var styleItem in styleItems)
             {
@@ -355,18 +356,18 @@ $(function(){{
             return builder.ToString();
         }
 
-        private static string ParseSelectCascading(AttributesImpl attributes, Site site, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseSelectCascading(IDictionary<string, object> attributes, Site site, TableStyle tableStyle, StringBuilder extraBuilder)
         {
-            var attributeName = styleInfo.AttributeName;
-            var fieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(styleInfo.Additional.RelatedFieldId);
+            var attributeName = tableStyle.AttributeName;
+            var fieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldAsync(tableStyle.RelatedFieldId).GetAwaiter().GetResult();
             if (fieldInfo == null) return string.Empty;
 
-            var list = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(styleInfo.Additional.RelatedFieldId, 0);
+            var list = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoListAsync(tableStyle.RelatedFieldId, 0).GetAwaiter().GetResult();
 
             var prefixes = TranslateUtils.StringCollectionToStringCollection(fieldInfo.Prefixes);
             var suffixes = TranslateUtils.StringCollectionToStringCollection(fieldInfo.Suffixes);
 
-            var style = ERelatedFieldStyleUtils.GetEnumType(styleInfo.Additional.RelatedFieldStyle);
+            var style = ERelatedFieldStyleUtils.GetEnumType(tableStyle.RelatedFieldStyle);
 
             var builder = new StringBuilder();
             builder.Append($@"
@@ -375,7 +376,8 @@ $(function(){{
     <select name=""{attributeName}"" id=""{attributeName}_1"" class=""select"" onchange=""getRelatedField_{fieldInfo.Id}(2);"">
         <option value="""">请选择</option>");
 
-            var values = attributes.GetString(attributeName);
+            var values = TranslateUtils.Get<string>(attributes, attributeName);
+            
             var value = string.Empty;
             if (!string.IsNullOrEmpty(values))
             {
@@ -412,7 +414,7 @@ $(function(){{
             extraBuilder.Append($@"
 <script>
 function getRelatedField_{fieldInfo.Id}(level){{
-    var attributeName = '{styleInfo.AttributeName}';
+    var attributeName = '{tableStyle.AttributeName}';
     var totalLevel = {fieldInfo.TotalLevel};
     for(i=level;i<=totalLevel;i++){{
         $('#c_' + attributeName + '_' + i).hide();
@@ -421,7 +423,7 @@ function getRelatedField_{fieldInfo.Id}(level){{
     var itemID = $('option:selected', obj).attr('itemID');
     if (itemID){{
         var url = '{ApiRouteActionsRelatedField.GetUrl(ApiManager.InnerApiUrl, site.Id,
-                styleInfo.Additional.RelatedFieldId, 0)}' + itemID;
+                tableStyle.RelatedFieldId, 0)}' + itemID;
         var values = '{values}';
         var value = (values) ? values.split(',')[level - 1] : '';
         $.post(url + '&callback=?', '', function(data, textStatus){{
@@ -465,29 +467,29 @@ $(document).ready(function(){{
             return builder.ToString();
         }
 
-        private static string ParseCheckBox(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseCheckBox(IDictionary<string, object> attributes, TableStyle style, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (style.IsValidate)
             {
                 extraBuilder.Append(
-                    $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
+                    $@"<span id=""{style.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{style.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
+            var styleItems = style.StyleItems ?? new List<TableStyleItem>();
 
             var checkBoxList = new CheckBoxList
             {
                 CssClass = "checkbox checkbox-primary",
-                ID = styleInfo.AttributeName,
-                RepeatDirection = styleInfo.IsHorizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
-                RepeatColumns = styleInfo.Additional.Columns
+                ID = style.AttributeName,
+                RepeatDirection = style.Horizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
+                RepeatColumns = style.Columns
             };
 
-            var selectedValues = TranslateUtils.StringCollectionToStringList(attributes.GetString(styleInfo.AttributeName));
+            var selectedValues = TranslateUtils.StringCollectionToStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
 
-            InputParserUtils.GetValidateAttributesForListItem(checkBoxList, styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            InputParserUtils.GetValidateAttributesForListItem(checkBoxList, style.IsValidate, style.DisplayName, style.IsRequired, style.MinNum, style.MaxNum, style.ValidateType, style.RegExp, style.ErrorMessage);
 
             foreach (var styleItem in styleItems)
             {
@@ -505,35 +507,35 @@ $(document).ready(function(){{
             var i = 0;
             foreach (var styleItem in styleItems)
             {
-                builder.Replace($@"name=""{styleInfo.AttributeName}${i}""",
-                    $@"name=""{styleInfo.AttributeName}"" value=""{styleItem.ItemValue}""");
+                builder.Replace($@"name=""{style.AttributeName}${i}""",
+                    $@"name=""{style.AttributeName}"" value=""{styleItem.ItemValue}""");
                 i++;
             }
 
             return builder.ToString();
         }
 
-        private static string ParseRadio(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseRadio(IDictionary<string, object> attributes, TableStyle style, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (style.IsValidate)
             {
                 extraBuilder.Append(
-                    $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
+                    $@"<span id=""{style.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{style.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems;
+            var styleItems = style.StyleItems;
             if (styleItems == null || styleItems.Count == 0)
             {
-                styleItems = new List<TableStyleItemInfo>
+                styleItems = new List<TableStyleItem>
                 {
-                    new TableStyleItemInfo
+                    new TableStyleItem
                     {
                         ItemTitle = "是",
                         ItemValue = "1"
                     },
-                    new TableStyleItemInfo
+                    new TableStyleItem
                     {
                         ItemTitle = "否",
                         ItemValue = "0"
@@ -543,14 +545,14 @@ $(document).ready(function(){{
             var radioButtonList = new RadioButtonList
             {
                 CssClass = "radio radio-primary",
-                ID = styleInfo.AttributeName,
-                RepeatDirection = styleInfo.IsHorizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
-                RepeatColumns = styleInfo.Additional.Columns
+                ID = style.AttributeName,
+                RepeatDirection = style.Horizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
+                RepeatColumns = style.Columns
             };
 
-            var selectedValue = attributes.GetString(styleInfo.AttributeName);
+            var selectedValue = TranslateUtils.Get<string>(attributes, style.AttributeName);
 
-            InputParserUtils.GetValidateAttributesForListItem(radioButtonList, styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            InputParserUtils.GetValidateAttributesForListItem(radioButtonList, style.IsValidate, style.DisplayName, style.IsRequired, style.MinNum, style.MaxNum, style.ValidateType, style.RegExp, style.ErrorMessage);
 
             var isTicked = false;
             foreach (var styleItem in styleItems)
@@ -573,15 +575,15 @@ $(document).ready(function(){{
             return builder.ToString();
         }
 
-        private static string ParseDate(AttributesImpl attributes, NameValueCollection pageScripts, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseDate(IDictionary<string, object> attributes, NameValueCollection pageScripts, TableStyle style, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (style.IsValidate)
             {
                 extraBuilder.Append(
-                    $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
+                    $@"<span id=""{style.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{style.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
-            var selectedValue = attributes.GetString(styleInfo.AttributeName);
+            var selectedValue = TranslateUtils.Get<string>(attributes, style.AttributeName);
             var dateTime = selectedValue == Current ? DateTime.Now : TranslateUtils.ToDateTime(selectedValue);
 
             if (pageScripts != null)
@@ -591,24 +593,24 @@ $(document).ready(function(){{
             }
 
             var value = string.Empty;
-            if (dateTime > DateUtils.SqlMinValue)
+            if (dateTime > Constants.SqlMinValue)
             {
                 value = DateUtils.GetDateString(dateTime);
             }
 
             return
-                $@"<input id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" onfocus=""{SiteServerAssets.DatePicker.OnFocusDateOnly}"" style=""width: 180px"" />";
+                $@"<input id=""{style.AttributeName}"" name=""{style.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" onfocus=""{SiteServerAssets.DatePicker.OnFocusDateOnly}"" style=""width: 180px"" />";
         }
 
-        private static string ParseDateTime(AttributesImpl attributes, NameValueCollection pageScripts, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseDateTime(IDictionary<string, object> attributes, NameValueCollection pageScripts, TableStyle style, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (style.IsValidate)
             {
                 extraBuilder.Append(
-                    $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
+                    $@"<span id=""{style.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{style.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
-            var selectedValue = attributes.GetString(styleInfo.AttributeName);
+            var selectedValue = TranslateUtils.Get<string>(attributes, style.AttributeName);
             var dateTime = selectedValue == Current ? DateTime.Now : TranslateUtils.ToDateTime(selectedValue);
 
             if (pageScripts != null)
@@ -618,22 +620,22 @@ $(document).ready(function(){{
             }
 
             var value = string.Empty;
-            if (dateTime > DateUtils.SqlMinValue)
+            if (dateTime > Constants.SqlMinValue)
             {
                 value = DateUtils.GetDateAndTimeString(dateTime, EDateFormatType.Day, ETimeFormatType.LongTime);
             }
 
-            return $@"<input id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" onfocus=""{SiteServerAssets.DatePicker.OnFocus}"" style=""width: 180px"" />";
+            return $@"<input id=""{style.AttributeName}"" name=""{style.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" onfocus=""{SiteServerAssets.DatePicker.OnFocus}"" style=""width: 180px"" />";
         }
 
-        private static string ParseImage(AttributesImpl attributes, Site site, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseImage(IDictionary<string, object> attributes, Site site, int channelId, TableStyle style, StringBuilder extraBuilder)
         {
             var btnAddHtml = string.Empty;
 
             if (channelId > 0)
             {
                 btnAddHtml = $@"
-    <button class=""btn"" onclick=""add_{styleInfo.AttributeName}('',true);return false;"">
+    <button class=""btn"" onclick=""add_{style.AttributeName}('',true);return false;"">
         新增
     </button>
 ";
@@ -641,29 +643,29 @@ $(document).ready(function(){{
 
             extraBuilder.Append($@"
 <div class=""btn-group btn-group-sm"">
-    <button class=""btn"" onclick=""{ModalUploadImage.GetOpenWindowString(site.Id, styleInfo.AttributeName)}"">
+    <button class=""btn"" onclick=""{ModalUploadImage.GetOpenWindowString(site.Id, style.AttributeName)}"">
         上传
     </button>
-    <button class=""btn"" onclick=""{ModalSelectImage.GetOpenWindowString(site, styleInfo.AttributeName)}"">
+    <button class=""btn"" onclick=""{ModalSelectImage.GetOpenWindowString(site, style.AttributeName)}"">
         选择
     </button>
-    <button class=""btn"" onclick=""{ModalCuttingImage.GetOpenWindowStringWithTextBox(site.Id, styleInfo.AttributeName)}"">
+    <button class=""btn"" onclick=""{ModalCuttingImage.GetOpenWindowStringWithTextBox(site.Id, style.AttributeName)}"">
         裁切
     </button>
-    <button class=""btn"" onclick=""{ModalMessage.GetOpenWindowStringToPreviewImage(site.Id, styleInfo.AttributeName)}"">
+    <button class=""btn"" onclick=""{ModalMessage.GetOpenWindowStringToPreviewImage(site.Id, style.AttributeName)}"">
         预览
     </button>
     {btnAddHtml}
 </div>
 ");
 
-            var attributeName = styleInfo.AttributeName;
-            var extendAttributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
+            var attributeName = style.AttributeName;
+            var extendAttributeName = ContentAttribute.GetExtendAttributeName(style.AttributeName);
 
             extraBuilder.Append($@"
 <script type=""text/javascript"">
-function select_{styleInfo.AttributeName}(obj, index){{
-  var cmd = ""{ModalSelectImage.GetOpenWindowString(site, styleInfo.AttributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
+function select_{style.AttributeName}(obj, index){{
+  var cmd = ""{ModalSelectImage.GetOpenWindowString(site, style.AttributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}
 function upload_{attributeName}(obj, index){{
@@ -699,7 +701,7 @@ function add_{attributeName}(val,foucs){{
 }}
 ");
 
-            var extendValues = attributes.GetString(extendAttributeName);
+            var extendValues = TranslateUtils.Get<string>(attributes, extendAttributeName);
             if (!string.IsNullOrEmpty(extendValues))
             {
                 foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
@@ -713,12 +715,12 @@ function add_{attributeName}(val,foucs){{
 
             extraBuilder.Append("</script>");
 
-            return $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{attributes.GetString(attributeName)}"" />";
+            return $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{TranslateUtils.Get<string>(attributes, attributeName)}"" />";
         }
 
-        private static string ParseVideo(AttributesImpl attributes, Site site, int channelId, TableStyleInfo styleInfo, StringBuilder extraBulder)
+        private static string ParseVideo(IDictionary<string, object> attributes, Site site, int channelId, TableStyle style, StringBuilder extraBulder)
         {
-            var attributeName = styleInfo.AttributeName;
+            var attributeName = style.AttributeName;
 
             var btnAddHtml = string.Empty;
             if (channelId > 0)
@@ -780,7 +782,7 @@ function add_{attributeName}(val,foucs){{
 }}
 ");
 
-            var extendValues = attributes.GetString(extendAttributeName);
+            var extendValues = TranslateUtils.Get<string>(attributes, extendAttributeName);
             if (!string.IsNullOrEmpty(extendValues))
             {
                 foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
@@ -794,13 +796,13 @@ function add_{attributeName}(val,foucs){{
 
             extraBulder.Append("</script>");
 
-            return $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{attributes.GetString(attributeName)}"" />";
+            return $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{TranslateUtils.Get<string>(attributes, attributeName)}"" />";
         }
 
-        private static string ParseFile(AttributesImpl attributes, Site site, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseFile(IDictionary<string, object> attributes, Site site, int channelId, TableStyle style, StringBuilder extraBuilder)
         {
-            var attributeName = styleInfo.AttributeName;
-            var value = attributes.GetString(attributeName);
+            var attributeName = style.AttributeName;
+            var value = TranslateUtils.Get<string>(attributes, attributeName);
             var relatedPath = string.Empty;
             if (!string.IsNullOrEmpty(value))
             {
@@ -874,7 +876,7 @@ function add_{attributeName}(val,foucs){{
 }}
 ");
 
-            var extendValues = attributes.GetString(extendAttributeName);
+            var extendValues = TranslateUtils.Get<string>(attributes, extendAttributeName);
             if (!string.IsNullOrEmpty(extendValues))
             {
                 foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
@@ -892,23 +894,23 @@ function add_{attributeName}(val,foucs){{
                 $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{value}"" />";
         }
 
-        private static string ParseCustomize(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseCustomize(IDictionary<string, object> attributes, TableStyle style, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (style.IsValidate)
             {
                 extraBuilder.Append(
-                    $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
+                    $@"<span id=""{style.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{style.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
-            var value = attributes.GetString(styleInfo.AttributeName);
-            var left = styleInfo.Additional.CustomizeLeft.Replace(Value, value);
-            var right = styleInfo.Additional.CustomizeRight.Replace(Value, value);
+            var value = TranslateUtils.Get<string>(attributes, style.AttributeName);
+            var left = style.CustomizeLeft.Replace(Value, value);
+            var right = style.CustomizeRight.Replace(Value, value);
 
             extraBuilder.Append(right);
             return left;
         }
 
-        public static async Task<Dictionary<string, object>> SaveAttributesAsync(Site site, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributes)
+        public static async Task<Dictionary<string, object>> SaveAttributesAsync(Site site, List<TableStyle> styleList, NameValueCollection formCollection, List<string> dontAddAttributes)
         {
             var dict = new Dictionary<string, object>();
 
@@ -917,40 +919,40 @@ function add_{attributeName}(val,foucs){{
                 dontAddAttributes = new List<string>();
             }
 
-            foreach (var styleInfo in styleInfoList)
+            foreach (var style in styleList)
             {
-                if (StringUtils.ContainsIgnoreCase(dontAddAttributes, styleInfo.AttributeName)) continue;
-                //var theValue = GetValueByForm(styleInfo, site, formCollection);
+                if (StringUtils.ContainsIgnoreCase(dontAddAttributes, style.AttributeName)) continue;
+                //var theValue = GetValueByForm(style, site, formCollection);
 
-                var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;
-                var inputType = styleInfo.InputType;
+                var theValue = formCollection[style.AttributeName] ?? string.Empty;
+                var inputType = style.Type;
                 if (inputType == InputType.TextEditor)
                 {
                     theValue = await ContentUtility.TextEditorContentEncodeAsync(site, theValue);
                     theValue = UEditorUtils.TranslateToStlElement(theValue);
                 }
 
-                if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && styleInfo.AttributeName != ContentAttribute.LinkUrl)
+                if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && style.AttributeName != ContentAttribute.LinkUrl)
                 {
                     theValue = AttackUtils.FilterXss(theValue);
                 }
 
-                dict[styleInfo.AttributeName] = theValue;
+                dict[style.AttributeName] = theValue;
 
-                if (styleInfo.Additional.IsFormatString)
+                if (style.IsFormatString)
                 {
-                    var formatString = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatStrong"]);
-                    var formatEm = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatEM"]);
-                    var formatU = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatU"]);
-                    var formatColor = formCollection[styleInfo.AttributeName + "_formatColor"];
+                    var formatString = TranslateUtils.ToBool(formCollection[style.AttributeName + "_formatStrong"]);
+                    var formatEm = TranslateUtils.ToBool(formCollection[style.AttributeName + "_formatEM"]);
+                    var formatU = TranslateUtils.ToBool(formCollection[style.AttributeName + "_formatU"]);
+                    var formatColor = formCollection[style.AttributeName + "_formatColor"];
                     var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
 
-                    dict[ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName)] = theFormatString;
+                    dict[ContentAttribute.GetFormatStringAttributeName(style.AttributeName)] = theFormatString;
                 }
 
                 if (inputType == InputType.Image || inputType == InputType.File || inputType == InputType.Video)
                 {
-                    var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
+                    var attributeName = ContentAttribute.GetExtendAttributeName(style.AttributeName);
                     dict[attributeName] = formCollection[attributeName];
                 }
             }
@@ -958,49 +960,49 @@ function add_{attributeName}(val,foucs){{
             return dict;
         }
 
-        //public static void SaveAttributes(IAttributes attributes, Site site, List<TableStyleInfo> styleInfoList, NameValueCollection formCollection, List<string> dontAddAttributes)
+        //public static void SaveAttributes(IAttributes attributes, Site site, List<TableStyle> styleList, NameValueCollection formCollection, List<string> dontAddAttributes)
         //{
         //    if (dontAddAttributes == null)
         //    {
         //        dontAddAttributes = new List<string>();
         //    }
 
-        //    foreach (var styleInfo in styleInfoList)
+        //    foreach (var style in styleList)
         //    {
-        //        if (StringUtils.ContainsIgnoreCase(dontAddAttributes, styleInfo.AttributeName)) continue;
-        //        //var theValue = GetValueByForm(styleInfo, site, formCollection);
+        //        if (StringUtils.ContainsIgnoreCase(dontAddAttributes, style.AttributeName)) continue;
+        //        //var theValue = GetValueByForm(style, site, formCollection);
 
-        //        var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;
-        //        var inputType = styleInfo.InputType;
+        //        var theValue = formCollection[style.AttributeName] ?? string.Empty;
+        //        var inputType = style.InputType;
         //        if (inputType == InputType.TextEditor)
         //        {
         //            theValue = ContentUtility.TextEditorContentEncode(site, theValue);
         //            theValue = UEditorUtils.TranslateToStlElement(theValue);
         //        }
 
-        //        if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && styleInfo.AttributeName != ContentAttribute.LinkUrl)
+        //        if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && style.AttributeName != ContentAttribute.LinkUrl)
         //        {
         //            theValue = AttackUtils.FilterSqlAndXss(theValue);
         //        }
 
-        //        attributes.Set(styleInfo.AttributeName, theValue);
-        //        //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
+        //        attributes.Set(style.AttributeName, theValue);
+        //        //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, style.AttributeName, theValue);
 
-        //        if (styleInfo.Additional.IsFormatString)
+        //        if (style.IsFormatString)
         //        {
-        //            var formatString = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatStrong"]);
-        //            var formatEm = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatEM"]);
-        //            var formatU = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatU"]);
-        //            var formatColor = formCollection[styleInfo.AttributeName + "_formatColor"];
+        //            var formatString = TranslateUtils.ToBool(formCollection[style.AttributeName + "_formatStrong"]);
+        //            var formatEm = TranslateUtils.ToBool(formCollection[style.AttributeName + "_formatEM"]);
+        //            var formatU = TranslateUtils.ToBool(formCollection[style.AttributeName + "_formatU"]);
+        //            var formatColor = formCollection[style.AttributeName + "_formatColor"];
         //            var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
 
-        //            attributes.Set(ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
-        //            //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
+        //            attributes.Set(ContentAttribute.GetFormatStringAttributeName(style.AttributeName), theFormatString);
+        //            //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, ContentAttribute.GetFormatStringAttributeName(style.AttributeName), theFormatString);
         //        }
 
         //        if (inputType == InputType.Image || inputType == InputType.File || inputType == InputType.Video)
         //        {
-        //            var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
+        //            var attributeName = ContentAttribute.GetExtendAttributeName(style.AttributeName);
         //            attributes.Set(attributeName, formCollection[attributeName]);
         //            //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, attributeName, formCollection[attributeName]);
         //        }

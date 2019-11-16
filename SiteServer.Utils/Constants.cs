@@ -1,4 +1,7 @@
-﻿namespace SiteServer.Utils
+﻿using System;
+using System.Text;
+
+namespace SiteServer.Utils
 {
     public static class Constants
     {
@@ -12,6 +15,14 @@
         public const string AuthKeyApiCookie = "SS-API-KEY";
         public const string AuthKeyApiQuery = "apiKey";
         public const int AccessTokenExpireDays = 7;
+
+        public static DateTime SqlMinValue { get; } = new DateTime(1754, 1, 1, 0, 0, 0, 0);
+
+        public static Encoding Gb2312 { get; } = Encoding.GetEncoding("gb2312");
+
+        public const char PageSeparatorChar = '/';
+
+        public const string AdminLogin = "后台管理员登录";
 
         public static string GetSessionIdCacheKey(int userId)
         {

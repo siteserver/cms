@@ -1,364 +1,162 @@
 ﻿using System.Collections.Generic;
-using System.Data;
+using System.Threading.Tasks;
 using Datory;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
-	public class ChannelGroupDao : DataProviderBase
-	{
-        public override string TableName => "siteserver_ChannelGroup";
+	public class ChannelGroupDao : IRepository
+    {
+        private readonly Repository<ChannelGroup> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public ChannelGroupDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(ChannelGroupInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ChannelGroupInfo.GroupName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ChannelGroupInfo.SiteId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ChannelGroupInfo.Taxis),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ChannelGroupInfo.Description),
-                DataType = DataType.Text
-            }
-        };
-
-		private const string ParmGroupName = "@GroupName";
-		private const string ParmSiteId = "@SiteId";
-        private const string ParmTaxis = "@Taxis";
-		private const string ParmDescription = "@Description";
-
-
-		public void Insert(ChannelGroupInfo groupInfo) 
-		{
-            var maxTaxis = GetMaxTaxis(groupInfo.SiteId);
-            groupInfo.Taxis = maxTaxis + 1;
-
-            var sqlString = $"INSERT INTO {TableName} (GroupName, SiteId, Taxis, Description) VALUES (@GroupName, @SiteId, @Taxis, @Description)";
-
-            var insertParms = new IDataParameter[]
-			{
-				GetParameter(ParmGroupName, DataType.VarChar, 255, groupInfo.GroupName),
-				GetParameter(ParmSiteId, DataType.Integer, groupInfo.SiteId),
-                GetParameter(ParmTaxis, DataType.Integer, groupInfo.Taxis),
-				GetParameter(ParmDescription, DataType.Text, groupInfo.Description)
-			};
-
-            ExecuteNonQuery(sqlString, insertParms);
-
-		    ChannelGroupManager.ClearCache();
+            _repository = new Repository<ChannelGroup>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-		public void Update(ChannelGroupInfo groupInfo) 
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task InsertAsync(ChannelGroup group) 
 		{
-            var sqlString = $"UPDATE {TableName} SET Description = @Description WHERE GroupName = @GroupName AND SiteId = @SiteId";
+            group.Taxis = await GetMaxTaxisAsync(group.SiteId) + 1;
 
-            var updateParms = new IDataParameter[]
-			{
-				GetParameter(ParmDescription, DataType.Text, groupInfo.Description),
-				GetParameter(ParmGroupName, DataType.VarChar, 255, groupInfo.GroupName),
-				GetParameter(ParmSiteId, DataType.Integer, groupInfo.SiteId)
-			};
-
-            ExecuteNonQuery(sqlString, updateParms);
-
-		    ChannelGroupManager.ClearCache();
+            await _repository.InsertAsync(group);
+            ChannelGroupManager.ClearCache();
         }
 
-        public void Delete(int siteId, string groupName)
+		public async Task UpdateAsync(ChannelGroup group) 
 		{
-            var sqlString = $"DELETE FROM {TableName} WHERE GroupName = @GroupName AND SiteId = @SiteId";
+            await _repository.UpdateAsync(group);
+            ChannelGroupManager.ClearCache();
+        }
 
-            var groupParms = new IDataParameter[]
-			{
-				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
-				GetParameter(ParmSiteId, DataType.Integer, siteId)
-			};
+        public async Task DeleteAsync(int siteId, string groupName)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+                .Where(nameof(ChannelGroup.GroupName), groupName)
+            );
 
-            ExecuteNonQuery(sqlString, groupParms);
-
-		    var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), EScopeType.All, groupName, string.Empty, string.Empty);
+		    var channelIdList = await ChannelManager.GetChannelIdListAsync(await ChannelManager.GetChannelAsync(siteId, siteId), EScopeType.All, groupName, string.Empty, string.Empty);
 		    foreach (var channelId in channelIdList)
 		    {
-		        var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-		        var groupNameList = TranslateUtils.StringCollectionToStringList(channelInfo.GroupNameCollection);
-		        groupNameList.Remove(groupName);
-                channelInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(groupNameList);
-                DataProvider.ChannelDao.Update(channelInfo);
+		        var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                channelInfo.GroupNames.Remove(groupName);
+                await DataProvider.ChannelDao.UpdateAsync(channelInfo);
 		    }
 
 		    ChannelGroupManager.ClearCache();
         }
 
-  //      public ChannelGroupInfo GetGroupInfo(int siteId, string groupName)
-		//{
-		//	ChannelGroupInfo group = null;
-
-  //          const string sqlString = "SELECT GroupName, SiteId, Taxis, Description FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId";
-
-  //          var parms = new IDataParameter[]
-		//	{
-		//		GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
-		//		GetParameter(ParmSiteId, DataType.Integer, siteId)
-		//	};
-			
-		//	using (var rdr = ExecuteReader(sqlString, parms))
-		//	{
-		//		if (rdr.Read())
-		//		{
-		//		    var i = 0;
-  //                  group = new ChannelGroupInfo(GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i));
-		//		}
-		//		rdr.Close();
-		//	}
-
-		//	return group;
-		//}
-
-  //      public bool IsExists(int siteId, string groupName)
-		//{
-		//	var exists = false;
-
-  //          var sqlString = "SELECT GroupName FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId";
-
-  //          var parms = new IDataParameter[]
-		//	{
-		//		GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
-		//		GetParameter(ParmSiteId, DataType.Integer, siteId)
-		//	};
-			
-		//	using (var rdr = ExecuteReader(sqlString, parms)) 
-		//	{
-		//		if (rdr.Read()) 
-		//		{					
-		//			exists = true;
-		//		}
-		//		rdr.Close();
-		//	}
-
-		//	return exists;
-		//}
-
-		//public IDataReader GetDataSource(int siteId)
-		//{
-  //          string sqlString =
-  //              $"SELECT GroupName, SiteId, Taxis, Description FROM siteserver_ChannelGroup WHERE SiteId = {siteId} ORDER BY Taxis DESC, GroupName";
-		//	var enumerable = ExecuteReader(sqlString);
-		//	return enumerable;
-		//}
-
-		//public List<ChannelGroupInfo> GetGroupInfoList(int siteId)
-		//{
-		//	var list = new List<ChannelGroupInfo>();
-  //          string sqlString =
-  //              $"SELECT GroupName, SiteId, Taxis, Description FROM siteserver_ChannelGroup WHERE SiteId = {siteId} ORDER BY Taxis DESC, GroupName";
-
-		//	using (var rdr = ExecuteReader(sqlString)) 
-		//	{
-		//		while (rdr.Read())
-		//		{
-		//		    var i = 0;
-  //                  list.Add(new ChannelGroupInfo(GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i)));
-		//		}
-		//		rdr.Close();
-		//	}
-
-		//	return list;
-		//}
-
-		//public List<string> GetGroupNameList(int siteId)
-		//{
-		//	var list = new List<string>();
-  //          var sqlString =
-  //              $"SELECT GroupName FROM siteserver_ChannelGroup WHERE SiteId = {siteId} ORDER BY Taxis DESC, GroupName";
-			
-		//	using (var rdr = ExecuteReader(sqlString)) 
-		//	{
-		//		while (rdr.Read()) 
-		//		{
-  //                  list.Add(GetString(rdr, 0));
-		//		}
-		//		rdr.Close();
-		//	}
-
-		//	return list;
-		//}
-
-        private int GetTaxis(int siteId, string groupName)
+        private async Task<int> GetTaxisAsync(int siteId, string groupName)
         {
-            var sqlString = "SELECT Taxis FROM siteserver_ChannelGroup WHERE (GroupName = @GroupName AND SiteId = @SiteId)";
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
-				GetParameter(ParmSiteId, DataType.Integer, siteId)
-			};
-            return DataProvider.DatabaseDao.GetIntResult(sqlString, parms);
+            return await _repository.GetAsync<int>(Q
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+                .Where(nameof(ChannelGroup.GroupName), groupName)
+            );
         }
 
-        private void SetTaxis(int siteId, string groupName, int taxis)
+        private async Task SetTaxisAsync(int siteId, string groupName, int taxis)
         {
-            string sqlString =
-                $"UPDATE siteserver_ChannelGroup SET Taxis = {taxis} WHERE (GroupName = @GroupName AND SiteId = @SiteId)";
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
-				GetParameter(ParmSiteId, DataType.Integer, siteId)
-			};
-            ExecuteNonQuery(sqlString, parms);
+            await _repository.UpdateAsync(Q
+                .Set(nameof(ChannelGroup.Taxis), taxis)
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+                .Where(nameof(ChannelGroup.GroupName), groupName)
+            );
         }
 
-        private int GetMaxTaxis(int siteId)
+        private async Task<int> GetMaxTaxisAsync(int siteId)
         {
-            var sqlString =
-                $"SELECT MAX(Taxis) FROM {TableName} WHERE (SiteId = {siteId})";
-            var maxTaxis = 0;
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    maxTaxis = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return maxTaxis;
+            var max = await _repository.MaxAsync(nameof(ChannelGroup.Taxis), Q
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+            );
+            return max ?? 0;
         }
 
-        public void UpdateTaxisToUp(int siteId, string groupName)
+        public async Task UpdateTaxisToUpAsync(int siteId, string groupName)
         {
-            //Get Higher Taxis and ID
-            //var sqlString = "SELECT TOP 1 GroupName, Taxis FROM siteserver_ChannelGroup WHERE (Taxis > (SELECT Taxis FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId) AND SiteId = @SiteId) ORDER BY Taxis";
-            var sqlString = SqlUtils.ToTopSqlString("siteserver_ChannelGroup", "GroupName, Taxis",
-                "WHERE (Taxis > (SELECT Taxis FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId) AND SiteId = @SiteId)",
-                "ORDER BY Taxis", 1);
+            var taxis = await GetTaxisAsync(siteId, groupName);
+            var result = await _repository.GetAsync<(string GroupName, int Taxis)?>(Q
+                .Select(nameof(ChannelGroup.GroupName), nameof(ChannelGroup.Taxis))
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+                .Where(nameof(ChannelGroup.Taxis), ">", taxis)
+                .OrderBy(nameof(ChannelGroup.Taxis)));
 
             var higherGroupName = string.Empty;
             var higherTaxis = 0;
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
-				GetParameter(ParmSiteId, DataType.Integer, siteId)
-			};
-
-            using (var rdr = ExecuteReader(sqlString, parms))
+            if (result != null)
             {
-                if (rdr.Read())
-                {
-                    higherGroupName = GetString(rdr, 0);
-                    higherTaxis = GetInt(rdr, 1);
-                }
-                rdr.Close();
+                higherGroupName = result.Value.GroupName;
+                higherTaxis = result.Value.Taxis;
             }
 
             if (!string.IsNullOrEmpty(higherGroupName))
             {
-                //Get Taxis Of Selected ID
-                var selectedTaxis = GetTaxis(siteId, groupName);
-
-                //Set The Selected Class Taxis To Higher Level
-                SetTaxis(siteId, groupName, higherTaxis);
-                //Set The Higher Class Taxis To Lower Level
-                SetTaxis(siteId, higherGroupName, selectedTaxis);
+                await SetTaxisAsync(siteId, groupName, higherTaxis);
+                await SetTaxisAsync(siteId, higherGroupName, taxis);
             }
 
             ChannelGroupManager.ClearCache();
         }
 
-        public void UpdateTaxisToDown(int siteId, string groupName)
+        public async Task UpdateTaxisToDownAsync(int siteId, string groupName)
         {
-            //Get Lower Taxis and ID
-            //var sqlString = "SELECT TOP 1 GroupName, Taxis FROM siteserver_ChannelGroup WHERE (Taxis < (SELECT Taxis FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId) AND SiteId = @SiteId) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.ToTopSqlString("siteserver_ChannelGroup", "GroupName, Taxis",
-                "WHERE (Taxis < (SELECT Taxis FROM siteserver_ChannelGroup WHERE GroupName = @GroupName AND SiteId = @SiteId) AND SiteId = @SiteId)",
-                "ORDER BY Taxis DESC", 1);
+            var taxis = await GetTaxisAsync(siteId, groupName);
+            var result = await _repository.GetAsync<(string GroupName, int Taxis)?>(Q
+                .Select(nameof(ChannelGroup.GroupName), nameof(ChannelGroup.Taxis))
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+                .Where(nameof(ChannelGroup.Taxis), "<", taxis)
+                .OrderByDesc(nameof(ChannelGroup.Taxis)));
 
             var lowerGroupName = string.Empty;
             var lowerTaxis = 0;
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
-				GetParameter(ParmSiteId, DataType.Integer, siteId)
-			};
-            using (var rdr = ExecuteReader(sqlString, parms))
+            if (result != null)
             {
-                if (rdr.Read())
-                {
-                    lowerGroupName = GetString(rdr, 0);
-                    lowerTaxis = GetInt(rdr, 1);
-                }
-                rdr.Close();
+                lowerGroupName = result.Value.GroupName;
+                lowerTaxis = result.Value.Taxis;
             }
 
             if (!string.IsNullOrEmpty(lowerGroupName))
             {
-                //Get Taxis Of Selected Class
-                var selectedTaxis = GetTaxis(siteId, groupName);
-
-                //Set The Selected Class Taxis To Lower Level
-                SetTaxis(siteId, groupName, lowerTaxis);
-                //Set The Lower Class Taxis To Higher Level
-                SetTaxis(siteId, lowerGroupName, selectedTaxis);
+                await SetTaxisAsync(siteId, groupName, lowerTaxis);
+                await SetTaxisAsync(siteId, lowerGroupName, taxis);
             }
-            
+
             ChannelGroupManager.ClearCache();
         }
 
-	    public Dictionary<int, List<ChannelGroupInfo>> GetAllChannelGroups()
+	    public async Task<Dictionary<int, List<ChannelGroup>>> GetAllChannelGroupsAsync()
 	    {
-	        var allDict = new Dictionary<int, List<ChannelGroupInfo>>();
+            var allDict = new Dictionary<int, List<ChannelGroup>>();
 
-	        var sqlString =
-	            $"SELECT GroupName, SiteId, Taxis, Description FROM {TableName} ORDER BY Taxis DESC, GroupName";
+            var groupList = await _repository.GetAllAsync(Q
+                .OrderByDesc(nameof(ChannelGroup.Taxis))
+                .OrderBy(nameof(ChannelGroup.GroupName)));
 
-	        using (var rdr = ExecuteReader(sqlString))
-	        {
-	            while (rdr.Read())
-	            {
-	                var i = 0;
-	                var group = new ChannelGroupInfo(GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
-	                    GetString(rdr, i));
+            foreach (var group in groupList)
+            {
+                allDict.TryGetValue(group.SiteId, out var list);
 
-	                List<ChannelGroupInfo> list;
-	                allDict.TryGetValue(group.SiteId, out list);
+                if (list == null)
+                {
+                    list = new List<ChannelGroup>();
+                }
 
-	                if (list == null)
-	                {
-	                    list = new List<ChannelGroupInfo>();
-	                }
+                list.Add(group);
 
-	                list.Add(group);
+                allDict[group.SiteId] = list;
+            }
 
-	                allDict[group.SiteId] = list;
-	            }
-	            rdr.Close();
-	        }
-
-	        return allDict;
-	    }
+            return allDict;
+        }
     }
 }

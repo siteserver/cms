@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -12,7 +12,6 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public Literal LtlPageTitle;
         public TextBox TbRelatedFileName;
-        public DropDownList DdlCharset;
         public TextBox TbContent;
         public PlaceHolder PhCodeMirror;
         public PlaceHolder PhCodeMirrorInclude;
@@ -54,21 +53,21 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = PageTemplateAssets.NameInclude;
                 _ext = PageTemplateAssets.ExtInclude;
-                _assetsDir = Site.Additional.TemplatesAssetsIncludeDir.Trim('/');
+                _assetsDir = Site.TemplatesAssetsIncludeDir.Trim('/');
                 PhCodeMirrorInclude.Visible = true;
             }
             else if (_type == PageTemplateAssets.TypeJs)
             {
                 _name = PageTemplateAssets.NameJs;
                 _ext = PageTemplateAssets.ExtJs;
-                _assetsDir = Site.Additional.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = Site.TemplatesAssetsJsDir.Trim('/');
                 PhCodeMirrorJs.Visible = true;
             }
             else if (_type == PageTemplateAssets.TypeCss)
             {
                 _name = PageTemplateAssets.NameCss;
                 _ext = PageTemplateAssets.ExtCss;
-                _assetsDir = Site.Additional.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = Site.TemplatesAssetsCssDir.Trim('/');
                 PhCodeMirrorCss.Visible = true;
             }
 
@@ -88,11 +87,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_fileName) ? $"添加{_name}" : $"编辑{_name}";
 
-            var isCodeMirror = Site.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = Site.ConfigTemplateIsCodeMirror;
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
-
-            ECharsetUtils.AddListItems(DdlCharset);
 
             if (_fileName != null)
             {
@@ -104,13 +101,9 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     TbRelatedFileName.Text = _fileName;
                     var fileCharset = FileUtils.GetFileCharset(PathUtils.Combine(_directoryPath, _fileName));
-                    ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, ECharsetUtils.GetValue(fileCharset));
+                    
                     TbContent.Text = FileUtils.ReadText(PathUtils.Combine(_directoryPath, _fileName), fileCharset);
                 }
-            }
-            else
-            {
-                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, Site.Additional.Charset);
             }
         }
 
@@ -118,9 +111,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var isCodeMirror = Site.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = Site.ConfigTemplateIsCodeMirror;
             isCodeMirror = !isCodeMirror;
-            Site.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
+            Site.ConfigTemplateIsCodeMirror = isCodeMirror;
             DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
 
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
@@ -161,8 +154,7 @@ namespace SiteServer.BackgroundPages.Cms
                     previousFileName = _fileName;
                 }
                 
-                var charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
-                FileUtils.WriteText(PathUtils.Combine(_directoryPath, relatedFileName), charset, TbContent.Text);
+                FileUtils.WriteText(PathUtils.Combine(_directoryPath, relatedFileName), TbContent.Text);
                 if (!string.IsNullOrEmpty(previousFileName))
                 {
                     FileUtils.DeleteFileIfExists(PathUtils.Combine(_directoryPath, previousFileName));
@@ -183,8 +175,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                var charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
-                FileUtils.WriteText(PathUtils.Combine(_directoryPath, relatedFileName), charset, TbContent.Text);
+                FileUtils.WriteText(PathUtils.Combine(_directoryPath, relatedFileName), TbContent.Text);
                 AuthRequest.AddSiteLogAsync(SiteId, $"添加{_name}", $"{_name}:{relatedFileName}").GetAwaiter().GetResult();
                 SuccessMessage($"{_name}添加成功！");
                 AddWaitAndRedirectScript(PageTemplateAssets.GetRedirectUrl(SiteId, _type));

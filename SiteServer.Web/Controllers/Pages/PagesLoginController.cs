@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -13,19 +14,21 @@ namespace SiteServer.API.Controllers.Pages
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var redirect = request.AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true);
+                var request = await AuthenticatedRequest.GetRequestAsync();
+                var redirect = await request.AdminRedirectCheckAsync(checkInstall: true, checkDatabaseVersion: true);
                 if (redirect != null) return Ok(redirect);
+
+                var config = await ConfigManager.GetInstanceAsync();
 
                 return Ok(new
                 {
                     Value = true,
                     SystemManager.ProductVersion,
-                    ConfigManager.SystemConfigInfo.AdminTitle
+                    config.AdminTitle
                 });
             }
             catch (Exception ex)

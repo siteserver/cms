@@ -8,8 +8,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Plugin;
@@ -18,6 +16,13 @@ namespace SiteServer.CMS.StlParser.Utility
 {
     public static class StlParserUtility
     {
+        public const string PageContent = nameof(PageContent);
+        public const string CountOfChannels = nameof(CountOfChannels);
+        public const string CountOfContents = nameof(CountOfContents);
+        public const string CountOfImageContents = nameof(CountOfImageContents);
+        public const string ItemIndex = nameof(ItemIndex);
+        public const string Title = nameof(Title);
+
         public const string OrderDefault = "Default";								//默认排序
         public const string OrderBack = "Back";								//默认排序的相反方向
         public const string OrderAddDate = "AddDate";							//添加时间
@@ -84,7 +89,7 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             foreach (var label in list)
             {
-                if (!IsStlChannelElement(label, ChannelAttribute.PageContent)) continue;
+                if (!IsStlChannelElement(label, PageContent)) continue;
                 return true;
             }
             return false;
@@ -95,7 +100,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var stlPageChannelElement = string.Empty;
             foreach (var label in labelList)
             {
-                if (!IsStlChannelElement(label, ChannelAttribute.PageContent)) continue;
+                if (!IsStlChannelElement(label, PageContent)) continue;
                 stlPageChannelElement = label;
                 break;
             }
@@ -339,8 +344,6 @@ namespace SiteServer.CMS.StlParser.Utility
             return retVal;
         }
 
-        public const string ItemIndex = "ItemIndex";
-
         public static int ParseItemIndex(int dbItemIndex, string attributeName, ContextInfo contextInfo)
         {
             var itemIndex = contextInfo.PageItemIndex + dbItemIndex + 1;
@@ -392,7 +395,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return "ajaxElement_" + updaterId + "_" + StringUtils.GetRandomInt(100, 1000);
         }
 
-        public static async Task<string> GetStlCurrentUrlAsync(Site site, int channelId, int contentId, ContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
+        public static async Task<string> GetStlCurrentUrlAsync(Site site, int channelId, int contentId, Content content, TemplateType templateType, int templateId, bool isLocal)
         {
             var currentUrl = string.Empty;
             if (templateType == TemplateType.IndexPageTemplate)
@@ -401,23 +404,23 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (templateType == TemplateType.ContentTemplate)
             {
-                if (contentInfo == null)
+                if (content == null)
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(site.Id, channelId);
+                    var nodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
                     currentUrl = await PageUtility.GetContentUrlAsync(site, nodeInfo, contentId, isLocal);
                 }
                 else
                 {
-                    currentUrl = await PageUtility.GetContentUrlAsync(site, contentInfo, isLocal);
+                    currentUrl = await PageUtility.GetContentUrlAsync(site, content, isLocal);
                 }
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
-                currentUrl = await PageUtility.GetChannelUrlAsync(site, ChannelManager.GetChannelInfo(site.Id, channelId), isLocal);
+                currentUrl = await PageUtility.GetChannelUrlAsync(site, await ChannelManager.GetChannelAsync(site.Id, channelId), isLocal);
             }
             else if (templateType == TemplateType.FileTemplate)
             {
-                currentUrl = PageUtility.GetFileUrl(site, templateId, isLocal);
+                currentUrl = await PageUtility.GetFileUrlAsync(site, templateId, isLocal);
             }
             //currentUrl是当前页面的地址，前后台分离的时候，不允许带上protocol
             //return PageUtils.AddProtocolToUrl(currentUrl);

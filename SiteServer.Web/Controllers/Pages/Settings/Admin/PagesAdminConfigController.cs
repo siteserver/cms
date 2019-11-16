@@ -14,20 +14,22 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
+                var config = await ConfigManager.GetInstanceAsync();
+
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemConfigInfo
+                    Value = config
                 });
             }
             catch (Exception ex)
@@ -41,40 +43,42 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                ConfigManager.SystemConfigInfo.AdminUserNameMinLength =
+                var config = await ConfigManager.GetInstanceAsync();
+
+                config.AdminUserNameMinLength =
                     request.GetPostInt("adminUserNameMinLength");
-                ConfigManager.SystemConfigInfo.AdminPasswordMinLength =
+                config.AdminPasswordMinLength =
                     request.GetPostInt("adminPasswordMinLength");
-                ConfigManager.SystemConfigInfo.AdminPasswordRestriction =
+                config.AdminPasswordRestriction =
                     request.GetPostString("adminPasswordRestriction");
 
-                ConfigManager.SystemConfigInfo.IsAdminLockLogin = request.GetPostBool("isAdminLockLogin");
-                ConfigManager.SystemConfigInfo.AdminLockLoginCount = request.GetPostInt("adminLockLoginCount");
-                ConfigManager.SystemConfigInfo.AdminLockLoginType = request.GetPostString("adminLockLoginType");
-                ConfigManager.SystemConfigInfo.AdminLockLoginHours = request.GetPostInt("adminLockLoginHours");
+                config.IsAdminLockLogin = request.GetPostBool("isAdminLockLogin");
+                config.AdminLockLoginCount = request.GetPostInt("adminLockLoginCount");
+                config.AdminLockLoginType = request.GetPostString("adminLockLoginType");
+                config.AdminLockLoginHours = request.GetPostInt("adminLockLoginHours");
 
-                ConfigManager.SystemConfigInfo.IsViewContentOnlySelf = request.GetPostBool("isViewContentOnlySelf");
+                config.IsViewContentOnlySelf = request.GetPostBool("isViewContentOnlySelf");
 
-                ConfigManager.SystemConfigInfo.IsAdminEnforcePasswordChange = request.GetPostBool("isAdminEnforcePasswordChange");
-                ConfigManager.SystemConfigInfo.AdminEnforcePasswordChangeDays = request.GetPostInt("adminEnforcePasswordChangeDays");
+                config.IsAdminEnforcePasswordChange = request.GetPostBool("isAdminEnforcePasswordChange");
+                config.AdminEnforcePasswordChangeDays = request.GetPostInt("adminEnforcePasswordChangeDays");
 
-                ConfigManager.SystemConfigInfo.IsAdminEnforceLogout = request.GetPostBool("isAdminEnforceLogout");
-                ConfigManager.SystemConfigInfo.AdminEnforceLogoutMinutes = request.GetPostInt("adminEnforceLogoutMinutes");
+                config.IsAdminEnforceLogout = request.GetPostBool("isAdminEnforceLogout");
+                config.AdminEnforceLogoutMinutes = request.GetPostInt("adminEnforceLogoutMinutes");
 
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                await DataProvider.ConfigDao.UpdateAsync(config);
 
                 await request.AddAdminLogAsync("修改管理员设置");
 
                 return Ok(new
                 {
-                    Value = ConfigManager.SystemConfigInfo
+                    Value = config
                 });
             }
             catch (Exception ex)

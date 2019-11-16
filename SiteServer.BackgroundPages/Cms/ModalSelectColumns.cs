@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
@@ -36,26 +37,26 @@ namespace SiteServer.BackgroundPages.Cms
 
             _channelId = AuthRequest.GetQueryInt("channelId");
 
-            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
+            var channelInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
+            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.ContentAttributesOfDisplay);
             var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
-            _pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
+            _pluginColumns = PluginContentManager.GetContentColumnsAsync(pluginIds).GetAwaiter().GetResult();
 
             if (IsPostBack) return;
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(Site, channelInfo));
-            foreach (var styleInfo in styleInfoList)
+            var styleList = ContentUtility.GetAllTableStyleList(TableStyleManager.GetContentStyleListAsync(Site, channelInfo).GetAwaiter().GetResult());
+            foreach (var style in styleList)
             {
-                if (styleInfo.InputType == InputType.TextEditor) continue;
+                if (style.Type == InputType.TextEditor) continue;
                 
-                var listitem = new ListItem($"{styleInfo.DisplayName}({styleInfo.AttributeName})", styleInfo.AttributeName);
-                if (styleInfo.AttributeName == ContentAttribute.Title)
+                var listitem = new ListItem($"{style.DisplayName}({style.AttributeName})", style.AttributeName);
+                if (style.AttributeName == ContentAttribute.Title)
                 {
                     listitem.Selected = true;
                 }
                 else
                 {
-                    if (attributesOfDisplay.Contains(styleInfo.AttributeName))
+                    if (attributesOfDisplay.Contains(style.AttributeName))
                     {
                         listitem.Selected = true;
                     }
@@ -88,11 +89,11 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            var channelInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
             var attributesOfDisplay = ControlUtils.SelectedItemsValueToStringCollection(CblDisplayAttributes.Items);
-            channelInfo.Additional.ContentAttributesOfDisplay = attributesOfDisplay;
+            channelInfo.ContentAttributesOfDisplay = attributesOfDisplay;
 
-            DataProvider.ChannelDao.Update(channelInfo);
+            DataProvider.ChannelDao.UpdateAsync(channelInfo).GetAwaiter().GetResult();
 
             AuthRequest.AddSiteLogAsync(SiteId, "设置内容显示项", $"显示项:{attributesOfDisplay}").GetAwaiter().GetResult();
 

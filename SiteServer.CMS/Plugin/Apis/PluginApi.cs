@@ -1,5 +1,8 @@
-﻿using SiteServer.CMS.Api;
+﻿using System.Threading.Tasks;
+using SiteServer.CMS.Api;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -12,7 +15,7 @@ namespace SiteServer.CMS.Plugin.Apis
         private static PluginApi _instance;
         public static PluginApi Instance => _instance ?? (_instance = new PluginApi());
 
-        public string GetPluginUrl(string pluginId, string relatedUrl = "")
+        public async Task<string> GetPluginUrlAsync(string pluginId, string relatedUrl = "")
         {
             if (PageUtils.IsProtocolUrl(relatedUrl)) return relatedUrl;
 
@@ -26,24 +29,26 @@ namespace SiteServer.CMS.Plugin.Apis
                 return PageUtils.GetAdminUrl(relatedUrl.Substring(1));
             }
 
-            return PageUtility.GetSiteFilesUrl(ApiManager.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));
+            var config = await ConfigManager.GetInstanceAsync();
+
+            return PageUtility.GetSiteFilesUrl(config.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));
         }
 
-        public string GetPluginApiUrl(string pluginId)
+        public async Task<string> GetPluginApiUrlAsync(string pluginId)
         {
-            return ApiManager.GetApiUrl($"plugins/{pluginId}");
+            return await ApiManager.GetApiUrlAsync($"plugins/{pluginId}");
         }
 
         public string GetPluginPath(string pluginId, string relatedPath = "")
         {
-            var path = PathUtils.Combine(PathUtils.GetPluginPath(pluginId), relatedPath);
+            var path = PathUtils.Combine(WebUtils.GetPluginPath(pluginId), relatedPath);
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }
 
-        public T GetPlugin<T>() where T : PluginBase
+        public async Task<T> GetPluginAsync<T>() where T : PluginBase
         {
-            var pluginInfo = PluginManager.GetPluginInfo<T>();
+            var pluginInfo = await PluginManager.GetPluginInfoAsync<T>();
             return pluginInfo?.Plugin as T;
         }
     }

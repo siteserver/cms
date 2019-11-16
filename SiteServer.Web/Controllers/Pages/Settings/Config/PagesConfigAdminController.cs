@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Config
 {
@@ -18,20 +18,22 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         private const string RouteUpload = "upload";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetConfig()
+        public async Task<IHttpActionResult> GetConfig()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
 
+                var config = await ConfigManager.GetInstanceAsync();
+
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemConfigInfo,
+                    Value = config,
                     request.AdminToken
                 });
             }
@@ -46,24 +48,26 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
 
-                ConfigManager.SystemConfigInfo.AdminTitle = request.GetPostString("adminTitle");
-                ConfigManager.SystemConfigInfo.AdminLogoUrl = request.GetPostString("adminLogoUrl");
-                ConfigManager.SystemConfigInfo.AdminWelcomeHtml = request.GetPostString("adminWelcomeHtml");
+                var config = await ConfigManager.GetInstanceAsync();
 
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                config.AdminTitle = request.GetPostString("adminTitle");
+                config.AdminLogoUrl = request.GetPostString("adminLogoUrl");
+                config.AdminWelcomeHtml = request.GetPostString("adminWelcomeHtml");
+
+                await DataProvider.ConfigDao.UpdateAsync(config);
 
                 await request.AddAdminLogAsync("修改管理后台设置");
 
                 return Ok(new
                 {
-                    Value = ConfigManager.SystemConfigInfo
+                    Value = config
                 });
             }
             catch (Exception ex)
@@ -73,13 +77,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         }
 
         [HttpPost, Route(RouteUpload)]
-        public IHttpActionResult Upload()
+        public async Task<IHttpActionResult> Upload()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
@@ -115,7 +119,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

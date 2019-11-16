@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
 				if (AuthRequest.IsQueryExists("GroupName"))
 				{
                     var groupName = AuthRequest.GetQueryString("GroupName");
-                    var contentGroupInfo = ContentGroupManager.GetContentGroupInfo(SiteId, groupName);
+                    var contentGroupInfo = ContentGroupManager.GetContentGroupAsync(SiteId, groupName).GetAwaiter().GetResult();
 					if (contentGroupInfo != null)
 					{
                         TbContentGroupName.Text = contentGroupInfo.GroupName;
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
 			var isChanged = false;
 
-            var contentGroupInfo = new ContentGroupInfo
+            var contentGroupInfo = new ContentGroup
             {
                 GroupName = AttackUtils.FilterXss(TbContentGroupName.Text),
                 SiteId = SiteId,
@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				try
 				{
-                    DataProvider.ContentGroupDao.Update(contentGroupInfo);
+                    DataProvider.ContentGroupDao.UpdateAsync(contentGroupInfo).GetAwaiter().GetResult();
                     AuthRequest.AddSiteLogAsync(SiteId, "修改内容组", $"内容组:{contentGroupInfo.GroupName}").GetAwaiter().GetResult();
 					isChanged = true;
 				}
@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			else
 			{
-				if (ContentGroupManager.IsExists(SiteId, TbContentGroupName.Text))
+				if (ContentGroupManager.IsExistsAsync(SiteId, TbContentGroupName.Text).GetAwaiter().GetResult())
 				{
                     FailMessage("内容组添加失败，内容组名称已存在！");
 				}
@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
 					try
 					{
-                        DataProvider.ContentGroupDao.Insert(contentGroupInfo);
+                        DataProvider.ContentGroupDao.InsertAsync(contentGroupInfo).GetAwaiter().GetResult();
                         AuthRequest.AddSiteLogAsync(SiteId, "添加内容组",
                             $"内容组:{contentGroupInfo.GroupName}").GetAwaiter().GetResult();
 						isChanged = true;

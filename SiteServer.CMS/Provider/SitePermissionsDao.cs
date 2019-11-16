@@ -1,177 +1,88 @@
 ﻿using System.Collections.Generic;
-using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using Datory;
-using SiteServer.CMS.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.Provider
 {
-    public class SitePermissionsDao : DataProviderBase
+    public class SitePermissionsDao : IRepository
     {
-        public override string TableName => "siteserver_SitePermissions";
+        private readonly Repository<SitePermissions> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public SitePermissionsDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(SitePermissionsInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SitePermissionsInfo.RoleName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SitePermissionsInfo.SiteId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SitePermissionsInfo.ChannelIdCollection),
-                DataType = DataType.Text
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SitePermissionsInfo.ChannelPermissions),
-                DataType = DataType.Text
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(SitePermissionsInfo.WebsitePermissions),
-                DataType = DataType.Text
-            }
-        };
-
-        private const string SqlSelectAllByRoleName = "SELECT RoleName, SiteId, ChannelIdCollection, ChannelPermissions, WebsitePermissions FROM siteserver_SitePermissions WHERE RoleName = @RoleName ORDER BY SiteId DESC";
-
-        private const string SqlSelectAllByRoleNameAndSiteId = "SELECT RoleName, SiteId, ChannelIdCollection, ChannelPermissions, WebsitePermissions FROM siteserver_SitePermissions WHERE RoleName = @RoleName AND SiteId = @SiteId";
-
-        private const string SqlInsert = "INSERT INTO siteserver_SitePermissions (RoleName, SiteId, ChannelIdCollection, ChannelPermissions, WebsitePermissions) VALUES (@RoleName, @SiteId, @ChannelIdCollection, @ChannelPermissions, @WebsitePermissions)";
-
-        private const string SqlDelete = "DELETE FROM siteserver_SitePermissions WHERE RoleName = @RoleName";
-
-        private const string ParamRoleName = "@RoleName";
-        private const string ParamSiteId = "@SiteId";
-        private const string ParamChannelIdCollection = "@ChannelIdCollection";
-        private const string ParamChannelPermissions = "@ChannelPermissions";
-        private const string ParamWebsitePermissions = "@WebsitePermissions";
-
-        public void Insert(SitePermissionsInfo info)
-        {
-            var insertParams = new IDataParameter[]
-			{
-				GetParameter(ParamRoleName, DataType.VarChar, 255, info.RoleName),
-				GetParameter(ParamSiteId, DataType.Integer, info.SiteId),
-				GetParameter(ParamChannelIdCollection, DataType.Text, info.ChannelIdCollection),
-				GetParameter(ParamChannelPermissions, DataType.Text, info.ChannelPermissions),
-				GetParameter(ParamWebsitePermissions, DataType.Text, info.WebsitePermissions)
-			};
-
-            ExecuteNonQuery(SqlInsert, insertParams);
+            _repository = new Repository<SitePermissions>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
+        public IDatabase Database => _repository.Database;
 
-        public void Delete(string roleName)
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task InsertAsync(SitePermissions permissions)
         {
-            var parameters = new IDataParameter[]
-			{
-				GetParameter(ParamRoleName, DataType.VarChar, 255, roleName)
-			};
-
-            ExecuteNonQuery(SqlDelete, parameters);
+            await _repository.InsertAsync(permissions);
         }
 
-        public List<SitePermissionsInfo> GetSystemPermissionsInfoList(string roleName)
+        public async Task DeleteAsync(string roleName)
         {
-            var list = new List<SitePermissionsInfo>();
-
-            var parameters = new IDataParameter[]
-			{
-				GetParameter(ParamRoleName, DataType.VarChar, 255, roleName)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectAllByRoleName, parameters))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var info = new SitePermissionsInfo(GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
-                    list.Add(info);
-                }
-                rdr.Close();
-            }
-
-            return list;
+            await _repository.DeleteAsync(Q.Where(nameof(SitePermissions.RoleName), roleName));
         }
 
-        public SitePermissionsInfo GetSystemPermissionsInfo(string roleName, int siteId)
+        public async Task<List<SitePermissions>> GetSystemPermissionsListAsync(string roleName)
         {
-            SitePermissionsInfo permissionsInfo = null; 
+            var permissionsList = await _repository.GetAllAsync(Q.Where(nameof(SitePermissions.RoleName), roleName));
 
-            var parameters = new IDataParameter[]
-            {
-                GetParameter(ParamRoleName, DataType.VarChar, 255, roleName),
-                GetParameter(ParamSiteId, DataType.Integer, siteId)
-            };
-
-            using (var rdr = ExecuteReader(SqlSelectAllByRoleNameAndSiteId, parameters))
-            {
-                if (rdr.Read())
-                {
-                    var i = 0;
-                    permissionsInfo = new SitePermissionsInfo(GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
-                }
-                rdr.Close();
-            }
-
-            return permissionsInfo;
+            return permissionsList.ToList();
         }
 
-        public Dictionary<int, List<string>> GetWebsitePermissionSortedList(IEnumerable<string> roles)
+        public async Task<SitePermissions> GetSystemPermissionsAsync(string roleName, int siteId)
+        {
+            return await _repository.GetAsync(Q
+                .Where(nameof(SitePermissions.RoleName), roleName)
+                .Where(nameof(SitePermissions.SiteId), siteId)
+            );
+        }
+
+        public async Task<Dictionary<int, List<string>>> GetWebsitePermissionSortedListAsync(IEnumerable<string> roles)
         {
             var sortedList = new Dictionary<int, List<string>>();
             if (roles == null) return sortedList;
 
             foreach (var roleName in roles)
             {
-                var systemPermissionsList = GetSystemPermissionsInfoList(roleName);
-                foreach (var systemPermissionsInfo in systemPermissionsList)
+                var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
+                foreach (var systemPermissions in systemPermissionsList)
                 {
                     var list = new List<string>();
-                    var websitePermissionList = TranslateUtils.StringCollectionToStringList(systemPermissionsInfo.WebsitePermissions);
-                    foreach (var websitePermission in websitePermissionList)
+                    foreach (var websitePermission in systemPermissions.WebsitePermissionList)
                     {
                         if (!list.Contains(websitePermission)) list.Add(websitePermission);
                     }
-                    sortedList[systemPermissionsInfo.SiteId] = list;
+                    sortedList[systemPermissions.SiteId] = list;
                 }
             }
 
             return sortedList;
         }
 
-        public Dictionary<string, List<string>> GetChannelPermissionSortedList(IList<string> roles)
+        public async Task<Dictionary<string, List<string>>> GetChannelPermissionSortedListAsync(IList<string> roles)
         {
             var dict = new Dictionary<string, List<string>>();
             if (roles == null) return dict;
 
             foreach (var roleName in roles)
             {
-                var systemPermissionsInfoList = GetSystemPermissionsInfoList(roleName);
-                foreach (var systemPermissionsInfo in systemPermissionsInfoList)
+                var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
+                foreach (var systemPermissions in systemPermissionsList)
                 {
-                    var channelIdList = TranslateUtils.StringCollectionToIntList(systemPermissionsInfo.ChannelIdCollection);
-                    foreach (var channelId in channelIdList)
+                    foreach (var channelId in systemPermissions.ChannelIdList)
                     {
-                        var key = PermissionsImpl.GetChannelPermissionDictKey(systemPermissionsInfo.SiteId, channelId);
+                        var key = PermissionsImpl.GetChannelPermissionDictKey(systemPermissions.SiteId, channelId);
 
                         if (!dict.TryGetValue(key, out var list))
                         {
@@ -179,8 +90,7 @@ namespace SiteServer.CMS.Provider
                             dict[key] = list;
                         }
 
-                        var channelPermissionList = TranslateUtils.StringCollectionToStringList(systemPermissionsInfo.ChannelPermissions);
-                        foreach (var channelPermission in channelPermissionList)
+                        foreach (var channelPermission in systemPermissions.ChannelPermissionList)
                         {
                             if (!list.Contains(channelPermission)) list.Add(channelPermission);
                         }
@@ -191,18 +101,17 @@ namespace SiteServer.CMS.Provider
             return dict;
         }
 
-        public List<string> GetChannelPermissionListIgnoreChannelId(IList<string> roles)
+        public async Task<List<string>> GetChannelPermissionListIgnoreChannelIdAsync(IList<string> roles)
         {
             var list = new List<string>();
             if (roles == null) return list;
 
             foreach (var roleName in roles)
             {
-                var systemPermissionsInfoList = GetSystemPermissionsInfoList(roleName);
-                foreach (var systemPermissionsInfo in systemPermissionsInfoList)
+                var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
+                foreach (var systemPermissions in systemPermissionsList)
                 {
-                    var channelPermissionList = TranslateUtils.StringCollectionToStringList(systemPermissionsInfo.ChannelPermissions);
-                    foreach (var channelPermission in channelPermissionList)
+                    foreach (var channelPermission in systemPermissions.ChannelPermissionList)
                     {
                         if (!list.Contains(channelPermission))
                         {

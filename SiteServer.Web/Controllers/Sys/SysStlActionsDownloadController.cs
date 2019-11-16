@@ -3,12 +3,13 @@ using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -21,12 +22,12 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 if (!string.IsNullOrEmpty(request.GetQueryString("siteId")) && !string.IsNullOrEmpty(request.GetQueryString("fileUrl")) && string.IsNullOrEmpty(request.GetQueryString("contentId")))
                 {
                     var siteId = request.GetQueryInt("siteId");
-                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
+                    var fileUrl = WebConfigUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
@@ -53,7 +54,7 @@ namespace SiteServer.API.Controllers.Sys
                 }
                 else if (!string.IsNullOrEmpty(request.GetQueryString("filePath")))
                 {
-                    var filePath = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("filePath"));
+                    var filePath = WebConfigUtils.DecryptStringBySecretKey(request.GetQueryString("filePath"));
                     var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
                     if (EFileSystemTypeUtils.IsDownload(fileType))
                     {
@@ -75,14 +76,14 @@ namespace SiteServer.API.Controllers.Sys
                     var siteId = request.GetQueryInt("siteId");
                     var channelId = request.GetQueryInt("channelId");
                     var contentId = request.GetQueryInt("contentId");
-                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
+                    var fileUrl = WebConfigUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
                     var site = await SiteManager.GetSiteAsync(siteId);
-                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                    var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+                    var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                    var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
 
-                    DataProvider.ContentDao.AddDownloads(ChannelManager.GetTableName(site, channelInfo), channelId, contentId);
+                    DataProvider.ContentDao.AddDownloads(await ChannelManager.GetTableNameAsync(site, channelInfo), channelId, contentId);
 
-                    if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
+                    if (!string.IsNullOrEmpty(contentInfo?.Get<string>(ContentAttribute.FileUrl)))
                     {
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {

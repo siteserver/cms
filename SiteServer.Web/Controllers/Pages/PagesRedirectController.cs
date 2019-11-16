@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Preview;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
@@ -20,7 +21,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -38,29 +39,29 @@ namespace SiteServer.API.Controllers.Pages
 
                 if (siteId > 0 && channelId > 0 && contentId > 0)
                 {
-                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                    var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                     url = await PageUtility.GetContentUrlAsync(site, channelInfo, contentId, isLocal);
                 }
                 else if (siteId > 0 && channelId > 0)
                 {
-                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                    var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                     url = await PageUtility.GetChannelUrlAsync(site, channelInfo, isLocal);
                 }
                 else if (siteId > 0 && fileTemplateId > 0)
                 {
-                    url = PageUtility.GetFileUrl(site, fileTemplateId, isLocal);
+                    url = await PageUtility.GetFileUrlAsync(site, fileTemplateId, isLocal);
                 }
                 else if (siteId > 0 && specialId > 0)
                 {
-                    url = PageUtility.GetSpecialUrl(site, specialId, isLocal);
+                    url = await PageUtility.GetSpecialUrlAsync(site, specialId, isLocal);
                 }
                 else if (siteId > 0)
                 {
-                    var channelInfo = ChannelManager.GetChannelInfo(siteId, siteId);
+                    var channelInfo = await ChannelManager.GetChannelAsync(siteId, siteId);
                     url = await PageUtility.GetChannelUrlAsync(site, channelInfo, isLocal);
                 }
 
-                //if (site.Additional.IsSeparatedWeb)
+                //if (site.IsSeparatedWeb)
                 //{
                 //    if (siteId > 0 && channelId > 0 && contentId > 0)
                 //    {
@@ -93,7 +94,7 @@ namespace SiteServer.API.Controllers.Pages
                     if (siteId != 0)
                     {
                         site = await SiteManager.GetSiteAsync(siteId);
-                        url = site.Additional.IsSeparatedWeb
+                        url = site.IsSeparatedWeb
                             ? ApiRoutePreview.GetSiteUrl(siteId)
                             : site.WebUrl;
                     }

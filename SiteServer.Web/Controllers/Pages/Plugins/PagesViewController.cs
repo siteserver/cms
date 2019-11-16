@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -15,18 +16,18 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         private const string Route = "{pluginId}";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get(string pluginId)
+        public async Task<IHttpActionResult> Get(string pluginId)
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
                 
-                var plugin = PluginManager.GetPlugin(pluginId);
+                var plugin = await PluginManager.GetPluginAsync(pluginId);
 
                 return Ok(new
                 {

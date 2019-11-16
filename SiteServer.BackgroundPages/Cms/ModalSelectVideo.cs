@@ -3,12 +3,11 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
-using SiteServer.Utils.Enumerations;
-using SiteServer.Utils.IO;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -65,11 +64,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = Site.Additional.ConfigSelectVideoCurrentUrl.TrimEnd('/');
+                _currentRootPath = Site.ConfigSelectVideoCurrentUrl.TrimEnd('/');
             }
             else
             {
-                Site.Additional.ConfigSelectVideoCurrentUrl = _currentRootPath;
+                Site.ConfigSelectVideoCurrentUrl = _currentRootPath;
                 DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
@@ -200,8 +199,8 @@ namespace SiteServer.BackgroundPages.Cms
 				</td>
 			</tr>
 			<tr>
-				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"">{StringUtils
-				    .MaxLengthText(subDirectoryInfo.Name, 7)}</a></td>
+				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"">{WebUtils
+                    .MaxLengthText(subDirectoryInfo.Name, 7)}</a></td>
 			</tr>
 		</table>
 	</td>
@@ -245,8 +244,8 @@ namespace SiteServer.BackgroundPages.Cms
 				</td>
 			</tr>
 			<tr>
-				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"" title=""点击浏览视频"" target=""_blank"">{StringUtils
-				    .MaxLengthText(fileInfo.Name, 7)}</a></td>
+				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"" title=""点击浏览视频"" target=""_blank"">{WebUtils
+                    .MaxLengthText(fileInfo.Name, 7)}</a></td>
 			</tr>
 		</table>
 	</td>

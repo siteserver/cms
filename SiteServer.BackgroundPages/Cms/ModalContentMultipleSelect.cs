@@ -3,18 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Utils.Enumerations;
+using Content = SiteServer.CMS.Model.Content;
+using TableStyle = SiteServer.CMS.Model.TableStyle;
+using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -29,8 +32,8 @@ namespace SiteServer.BackgroundPages.Cms
         public Repeater RptContents;
         public SqlPager SpContents;
 
-        private ChannelInfo _channelInfo;
-        private List<TableStyleInfo> _tableStyleInfoList;
+        private Channel _channel;
+        private List<TableStyle> _tableStyleList;
         private string _jsMethod;
         private readonly Hashtable _valueHashtable = new Hashtable();
 
@@ -54,22 +57,22 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 channelId = SiteId;
             }
-            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-            var tableName = ChannelManager.GetTableName(Site, _channelInfo);
-            _tableStyleInfoList = TableStyleManager.GetContentStyleInfoList(Site, _channelInfo);
+            _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+            var tableName = ChannelManager.GetTableNameAsync(Site, _channel).GetAwaiter().GetResult();
+            _tableStyleList = TableStyleManager.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.SelectCommand = string.IsNullOrEmpty(AuthRequest.GetQueryString("channelId"))
-                ? DataProvider.ContentDao.GetSqlString(tableName, SiteId,
-                    _channelInfo.Id, AuthRequest.AdminPermissionsImpl.IsSystemAdministrator,
-                    AuthRequest.AdminPermissionsImpl.ChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
-                    TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, false)
-                : DataProvider.ContentDao.GetSqlString(tableName, SiteId,
-                    _channelInfo.Id, AuthRequest.AdminPermissionsImpl.IsSystemAdministrator,
-                    AuthRequest.AdminPermissionsImpl.ChannelIdList, AuthRequest.GetQueryString("SearchType"),
+                ? DataProvider.ContentDao.GetSqlStringAsync(tableName, SiteId,
+                    _channel.Id, AuthRequest.AdminPermissionsImpl.IsSiteAdminAsync().GetAwaiter().GetResult(),
+                    AuthRequest.AdminPermissionsImpl.GetChannelIdListAsync().GetAwaiter().GetResult(), DdlSearchType.SelectedValue, TbKeyword.Text,
+                    TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, false).GetAwaiter().GetResult()
+                : DataProvider.ContentDao.GetSqlStringAsync(tableName, SiteId,
+                    _channel.Id, AuthRequest.AdminPermissionsImpl.IsSiteAdminAsync().GetAwaiter().GetResult(),
+                    AuthRequest.AdminPermissionsImpl.GetChannelIdListAsync().GetAwaiter().GetResult(), AuthRequest.GetQueryString("SearchType"),
                     AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"), true,
-                    ETriState.True, true);
-            SpContents.ItemsPerPage = Site.Additional.PageSize;
+                    ETriState.True, true).GetAwaiter().GetResult();
+            SpContents.ItemsPerPage = Site.PageSize;
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
             SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
@@ -77,13 +80,13 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            ChannelManager.AddListItems(DdlChannelId.Items, Site, false, true, AuthRequest.AdminPermissionsImpl);
+            ChannelManager.AddListItemsAsync(DdlChannelId.Items, Site, false, true, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
 
-            if (_tableStyleInfoList != null)
+            if (_tableStyleList != null)
             {
-                foreach (var styleInfo in _tableStyleInfoList)
+                foreach (var style in _tableStyleList)
                 {
-                    var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
+                    var listitem = new ListItem(style.DisplayName, style.AttributeName);
                     DdlSearchType.Items.Add(listitem);
                 }
             }
@@ -95,9 +98,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (AuthRequest.IsQueryExists("channelId"))
             {
-                if (SiteId != _channelInfo.Id)
+                if (SiteId != _channel.Id)
                 {
-                    ControlUtils.SelectSingleItem(DdlChannelId, _channelInfo.Id.ToString());
+                    ControlUtils.SelectSingleItem(DdlChannelId, _channel.Id.ToString());
                 }
                 ControlUtils.SelectSingleItem(DdlSearchType, AuthRequest.GetQueryString("SearchType"));
                 TbKeyword.Text = AuthRequest.GetQueryString("Keyword");
@@ -108,6 +111,24 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.DataBind();
         }
 
+        public Content GetContent(DataRow row)
+        {
+            if (row == null) return null;
+
+            var content = new Content();
+
+            var dict = row.Table.Columns
+                .Cast<DataColumn>()
+                .ToDictionary(c => c.ColumnName, c => row[c]);
+
+            foreach (var key in dict.Keys)
+            {
+                content.Set(key, dict[key]);
+            }
+
+            return content;
+        }
+
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
@@ -116,12 +137,13 @@ namespace SiteServer.BackgroundPages.Cms
                 var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
                 var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
 
-                var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
+                var rowView = (DataRowView) e.Item.DataItem;
+                var contentInfo = GetContent(rowView.Row);
 
                 var nodeName = _valueHashtable[contentInfo.ChannelId] as string;
                 if (nodeName == null)
                 {
-                    nodeName = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
+                    nodeName = ChannelManager.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult();
                     _valueHashtable[contentInfo.ChannelId] = nodeName;
                 }
                 ltlChannel.Text = nodeName;
@@ -135,7 +157,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void AddContent_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, PageUrl));
+            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channel.Id, PageUrl));
         }
 
         public void Search_OnClick(object sender, EventArgs e)
@@ -153,7 +175,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var channelId = TranslateUtils.ToInt(pair.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(pair.Split('_')[1]);
 
-                    var tableName = ChannelManager.GetTableName(Site, channelId);
+                    var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
                     var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
                     builder.Append($@"parent.{_jsMethod}('{title}', '{pair}');");
                 }

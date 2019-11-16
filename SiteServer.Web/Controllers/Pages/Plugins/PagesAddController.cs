@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -16,18 +17,18 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
 
-                var dict = PluginManager.GetPluginIdAndVersionDict();
+                var dict = await PluginManager.GetPluginIdAndVersionDictAsync();
                 var list = dict.Keys.ToList();
                 var packageIds = TranslateUtils.ObjectCollectionToString(list);
 

@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Security;
-using System.Web;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
 using SiteServer.CMS.Api;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
@@ -19,12 +18,12 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string Encrypt(string inputString)
         {
-            return TranslateUtils.EncryptStringBySecretKey(inputString);
+            return WebConfigUtils.EncryptStringBySecretKey(inputString);
         }
 
         public string Decrypt(string inputString)
         {
-            return TranslateUtils.DecryptStringBySecretKey(inputString);
+            return WebConfigUtils.DecryptStringBySecretKey(inputString);
         }
 
         public string FilterXss(string html)
@@ -57,9 +56,9 @@ namespace SiteServer.CMS.Plugin.Apis
             return PageUtils.GetHomeUrl(relatedUrl);
         }
 
-        public string GetApiUrl(string relatedUrl = "")
+        public async Task<string> GetApiUrlAsync(string relatedUrl = "")
         {
-            return ApiManager.GetApiUrl(relatedUrl);
+            return await ApiManager.GetApiUrlAsync(relatedUrl);
         }
 
         public void CreateZip(string zipFilePath, string directoryPath)
@@ -87,9 +86,9 @@ namespace SiteServer.CMS.Plugin.Apis
             throw new System.NotImplementedException();
         }
 
-        public IAuthenticatedRequest GetAuthenticatedRequest()
+        public async Task<IAuthenticatedRequest> GetRequestAsync()
         {
-            return new AuthenticatedRequest(HttpContext.Current.Request);
+            return await AuthenticatedRequest.GetRequestAsync();
         }
     }
 }

@@ -2,17 +2,15 @@ using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System;
 using System.Collections.Generic;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
-using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.Context.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
 	public static class TxtObject
 	{
-        public static List<ContentInfo> GetContentListByTxtFile(string directoryPath, Site site, ChannelInfo nodeInfo)
+        public static List<Content> GetContentListByTxtFile(string directoryPath, Site site, Channel node)
         {
-            var contentInfoList = new List<ContentInfo>();
+            var contentInfoList = new List<Content>();
 
             var filePaths = DirectoryUtils.GetFilePaths(directoryPath);
             foreach (var filePath in filePaths)
@@ -21,7 +19,7 @@ namespace SiteServer.CMS.Core.Office
 
                 try
                 {
-                    var content = FileUtils.ReadText(filePath, ECharset.gb2312);
+                    var content = FileUtils.ReadText(filePath, Constants.Gb2312);
                     if (!string.IsNullOrEmpty(content))
                     {
                         content = content.Trim();
@@ -32,11 +30,11 @@ namespace SiteServer.CMS.Core.Office
                             {
                                 {ContentAttribute.Title, title.Trim()},
                                 {ContentAttribute.SiteId, site.Id},
-                                {ContentAttribute.ChannelId, nodeInfo.Id},
+                                {ContentAttribute.ChannelId, node.Id},
                                 {ContentAttribute.LastEditDate, DateTime.Now}
                             };
-                            var contentInfo = new ContentInfo(dict);
-                            contentInfo.Set(BackgroundContentAttribute.Content, StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim()));
+                            var contentInfo = new Content(dict);
+                            contentInfo.Set(ContentAttribute.Content, StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim()));
 
                             contentInfoList.Add(contentInfo);
                         }

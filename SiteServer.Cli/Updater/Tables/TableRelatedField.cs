@@ -3,7 +3,6 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
@@ -52,9 +51,9 @@ namespace SiteServer.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(RelatedFieldInfo.Id), nameof(RelatedFieldId)},
-                {nameof(RelatedFieldInfo.Title), nameof(RelatedFieldName)},
-                {nameof(RelatedFieldInfo.SiteId), nameof(PublishmentSystemId)}
+                {nameof(RelatedField.Id), nameof(RelatedFieldId)},
+                {nameof(RelatedField.Title), nameof(RelatedFieldName)},
+                {nameof(RelatedField.SiteId), nameof(PublishmentSystemId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

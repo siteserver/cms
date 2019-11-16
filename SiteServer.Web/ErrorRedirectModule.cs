@@ -49,7 +49,7 @@ namespace SiteServer.API
                     }
                     HttpContext.Current.Server.ClearError();
 
-                    LogUtils.AddErrorLogAndRedirect(lastError, "Server Error in Application");
+                    LogUtils.AddErrorLogAndRedirectAsync(lastError, "Server Error in Application").GetAwaiter().GetResult();
                 }
 
 

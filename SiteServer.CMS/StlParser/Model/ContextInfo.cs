@@ -1,9 +1,8 @@
 using System.Collections.Specialized;
-using SiteServer.CMS.Core;
+using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -23,8 +22,8 @@ namespace SiteServer.CMS.StlParser.Model
             Site = contextInfo.Site;
             ChannelId = contextInfo.ChannelId;
             ContentId = contextInfo.ContentId;
-            _channelInfo = contextInfo._channelInfo;
-            _contentInfo = contextInfo._contentInfo;
+            _channel = contextInfo._channel;
+            _content = contextInfo._content;
 
             IsInnerElement = contextInfo.IsInnerElement;
             IsStlEntity = contextInfo.IsStlEntity;
@@ -68,30 +67,30 @@ namespace SiteServer.CMS.StlParser.Model
 
         public NameValueCollection Attributes { get; set; }
 
-        private ChannelInfo _channelInfo;
-        public ChannelInfo ChannelInfo
+        private Channel _channel;
+        public async Task<Channel> GetChannelAsync()
         {
-            get
-            {
-                if (_channelInfo != null) return _channelInfo;
-                if (ChannelId <= 0) return null;
-                _channelInfo = ChannelManager.GetChannelInfo(Site.Id, ChannelId);
-                return _channelInfo;
-            }
-            set { _channelInfo = value; }
+            if (_channel != null) return _channel;
+            if (ChannelId <= 0) return null;
+            _channel = await ChannelManager.GetChannelAsync(Site.Id, ChannelId);
+            return _channel;
+        }
+        public void SetChannel(Channel value)
+        {
+            _channel = value;
         }
 
-        private ContentInfo _contentInfo;
-        public ContentInfo ContentInfo
+        private Content _content;
+        public async Task<Content> GetContentAsync()
         {
-            get
-            {
-                if (_contentInfo != null) return _contentInfo;
-                if (ContentId <= 0) return null;
-                _contentInfo = ContentManager.GetContentInfo(Site, ChannelId, ContentId);
-                return _contentInfo;
-            }
-            set { _contentInfo = value; }
+            if (_content != null) return _content;
+            if (ContentId <= 0) return null;
+            _content = await ContentManager.GetContentInfoAsync(Site, ChannelId, ContentId);
+            return _content;
+        }
+        public void SetContentInfo(Content value)
+        {
+            _content = value;
         }
 
         public bool IsInnerElement { get; set; }

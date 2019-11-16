@@ -6,7 +6,6 @@ using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -19,35 +18,35 @@ namespace SiteServer.API.Controllers.Pages.Shared
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetQueryString("tableName");
                 var attributeName = request.GetQueryString("attributeName");
                 var relatedIdentities = TranslateUtils.StringCollectionToIntList(request.GetQueryString("relatedIdentities"));
 
-                var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities) ?? new TableStyleInfo
+                var style = await TableStyleManager.GetTableStyleAsync(tableName, attributeName, relatedIdentities) ?? new TableStyle
                 {
-                    InputType = InputType.Text
+                    Type = InputType.Text
                 };
-                if (styleInfo.StyleItems == null)
+                if (style.StyleItems == null)
                 {
-                    styleInfo.StyleItems = new List<TableStyleItemInfo>();
+                    style.StyleItems = new List<TableStyleItem>();
                 }
 
                 var isRapid = true;
                 var rapidValues = string.Empty;
-                if (styleInfo.StyleItems.Count == 0)
+                if (style.StyleItems.Count == 0)
                 {
-                    styleInfo.StyleItems.Add(new TableStyleItemInfo
+                    style.StyleItems.Add(new TableStyleItem
                     {
                         ItemTitle = string.Empty,
                         ItemValue = string.Empty,
-                        IsSelected = false
+                        Selected = false
                     });
                 }
                 else
@@ -55,10 +54,10 @@ namespace SiteServer.API.Controllers.Pages.Shared
                     var isSelected = false;
                     var isNotEquals = false;
                     var list = new List<string>();
-                    foreach (var item in styleInfo.StyleItems)
+                    foreach (var item in style.StyleItems)
                     {
                         list.Add(item.ItemValue);
-                        if (item.IsSelected)
+                        if (item.Selected)
                         {
                             isSelected = true;
                         }
@@ -74,7 +73,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
 
                 return Ok(new
                 {
-                    Value = styleInfo,
+                    Value = style,
                     InputTypes = InputTypeUtils.GetInputTypes(tableName),
                     IsRapid = isRapid,
                     RapidValues = rapidValues
@@ -91,7 +90,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetPostString("tableName");
@@ -99,25 +98,25 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 var relatedIdentities = TranslateUtils.StringCollectionToIntList(request.GetPostString("relatedIdentities"));
                 var isRapid = request.GetPostBool("isRapid");
                 var rapidValues = TranslateUtils.StringCollectionToStringList(request.GetPostString("rapidValues"));
-                var body = request.GetPostObject<TableStyleInfo>("styleInfo");
+                var body = request.GetPostObject<TableStyle>("style");
 
-                var styleInfoDatabase =
-                    TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities) ??
-                    new TableStyleInfo();
+                var styleDatabase =
+                    await TableStyleManager.GetTableStyleAsync(tableName, attributeName, relatedIdentities) ??
+                    new TableStyle();
 
                 bool isSuccess;
                 string errorMessage;
 
                 //数据库中没有此项及父项的表样式 or 数据库中没有此项的表样式，但是有父项的表样式
-                if (styleInfoDatabase.Id == 0 && styleInfoDatabase.RelatedIdentity == 0 || styleInfoDatabase.RelatedIdentity != relatedIdentities[0])
+                if (styleDatabase.Id == 0 && styleDatabase.RelatedIdentity == 0 || styleDatabase.RelatedIdentity != relatedIdentities[0])
                 {
-                    isSuccess = InsertTableStyleInfo(tableName, relatedIdentities, body, isRapid, rapidValues, out errorMessage);
+                    (isSuccess, errorMessage) = await InsertTableStyleAsync(tableName, relatedIdentities, body, isRapid, rapidValues);
                     await request.AddAdminLogAsync("添加表单显示样式", $"字段名:{body.AttributeName}");
                 }
                 //数据库中有此项的表样式
                 else
                 {
-                    isSuccess = UpdateTableStyleInfo(styleInfoDatabase, body, isRapid, rapidValues, out errorMessage);
+                    (isSuccess, errorMessage) = await UpdateTableStyleAsync(styleDatabase, body, isRapid, rapidValues);
                     await request.AddAdminLogAsync("修改表单显示样式", $"字段名:{body.AttributeName}");
                 }
 
@@ -134,46 +133,48 @@ namespace SiteServer.API.Controllers.Pages.Shared
             }
         }
 
-        private bool InsertTableStyleInfo(string tableName, List<int> relatedIdentities, TableStyleInfo body, bool isRapid, List<string> rapidValues, out string errorMessage)
+        private async Task<(bool Success, string ErrorMessage)> InsertTableStyleAsync(string tableName, List<int> relatedIdentities, TableStyle body, bool isRapid, List<string> rapidValues)
         {
-            errorMessage = string.Empty;
-
             var relatedIdentity = relatedIdentities[0];
 
             if (string.IsNullOrEmpty(body.AttributeName))
             {
-                errorMessage = "操作失败，字段名不能为空！";
-                return false;
+                return (false, "操作失败，字段名不能为空！");
             }
 
-            if (TableStyleManager.IsExists(relatedIdentity, tableName, body.AttributeName))
+            if (await TableStyleManager.IsExistsAsync(relatedIdentity, tableName, body.AttributeName))
             {
-                errorMessage = $@"显示样式添加失败：字段名""{body.AttributeName}""已存在";
-                return false;
+                return (false, $@"显示样式添加失败：字段名""{body.AttributeName}""已存在");
             }
 
-            var styleInfo = TableColumnManager.IsAttributeNameExists(tableName, body.AttributeName) ? TableStyleManager.GetTableStyleInfo(tableName, body.AttributeName, relatedIdentities) : new TableStyleInfo();
+            var style = TableColumnManager.IsAttributeNameExists(tableName, body.AttributeName) ? await TableStyleManager.GetTableStyleAsync(tableName, body.AttributeName, relatedIdentities) : new TableStyle();
 
-            styleInfo.RelatedIdentity = relatedIdentity;
-            styleInfo.TableName = tableName;
-            styleInfo.AttributeName = body.AttributeName;
-            styleInfo.DisplayName = AttackUtils.FilterXss(body.DisplayName);
-            styleInfo.HelpText = body.HelpText;
-            styleInfo.Taxis = body.Taxis;
-            styleInfo.InputType = body.InputType;
-            styleInfo.DefaultValue = body.DefaultValue;
-            styleInfo.IsHorizontal = body.IsHorizontal;
-            styleInfo.ExtendValues = body.Additional.ToString();
-            styleInfo.StyleItems = new List<TableStyleItemInfo>();
+            style.RelatedIdentity = relatedIdentity;
+            style.TableName = tableName;
+            style.AttributeName = body.AttributeName;
+            style.DisplayName = AttackUtils.FilterXss(body.DisplayName);
+            style.HelpText = body.HelpText;
+            style.Taxis = body.Taxis;
+            style.Type = body.Type;
+            style.DefaultValue = body.DefaultValue;
+            style.Horizontal = body.Horizontal;
+            style.StyleItems = new List<TableStyleItem>();
 
-            if (body.InputType == InputType.CheckBox || body.InputType == InputType.Radio || body.InputType == InputType.SelectMultiple || body.InputType == InputType.SelectOne)
+            if (body.Type == InputType.CheckBox || body.Type == InputType.Radio || body.Type == InputType.SelectMultiple || body.Type == InputType.SelectOne)
             {
                 if (isRapid)
                 {
                     foreach (var rapidValue in rapidValues)
                     {
-                        var itemInfo = new TableStyleItemInfo(0, 0, rapidValue, rapidValue, false);
-                        styleInfo.StyleItems.Add(itemInfo);
+                        var itemInfo = new TableStyleItem
+                        {
+                            Id = 0,
+                            TableStyleId = 0,
+                            ItemTitle = rapidValue,
+                            ItemValue = rapidValue,
+                            Selected = false
+                        };
+                        style.StyleItems.Add(itemInfo);
                     }
                 }
                 else
@@ -181,46 +182,56 @@ namespace SiteServer.API.Controllers.Pages.Shared
                     var isHasSelected = false;
                     foreach (var styleItem in body.StyleItems)
                     {
-                        if (body.InputType != InputType.SelectMultiple && body.InputType != InputType.CheckBox && isHasSelected && styleItem.IsSelected)
+                        if (body.Type != InputType.SelectMultiple && body.Type != InputType.CheckBox && isHasSelected && styleItem.Selected)
                         {
-                            errorMessage = "操作失败，只能有一个初始化时选定项！";
-                            return false;
+                            return (false, "操作失败，只能有一个初始化时选定项！");
                         }
-                        if (styleItem.IsSelected) isHasSelected = true;
+                        if (styleItem.Selected) isHasSelected = true;
 
-                        var itemInfo = new TableStyleItemInfo(0, 0, styleItem.ItemTitle, styleItem.ItemValue, styleItem.IsSelected);
-                        styleInfo.StyleItems.Add(itemInfo);
+                        var itemInfo = new TableStyleItem
+                        {
+                            Id = 0,
+                            TableStyleId = 0,
+                            ItemTitle = styleItem.ItemTitle,
+                            ItemValue = styleItem.ItemValue,
+                            Selected = styleItem.Selected
+                        };
+                        style.StyleItems.Add(itemInfo);
                     }
                 }
             }
 
-            DataProvider.TableStyleDao.Insert(styleInfo);
+            await DataProvider.TableStyleDao.InsertAsync(style);
 
-            return true;
+            return (true, string.Empty);
         }
 
-        private bool UpdateTableStyleInfo(TableStyleInfo styleInfo, TableStyleInfo body, bool isRapid, List<string> rapidValues, out string errorMessage)
+        private async Task<(bool Success, string ErrorMessage)> UpdateTableStyleAsync(TableStyle style, TableStyle body, bool isRapid, List<string> rapidValues)
         {
-            errorMessage = string.Empty;
+            style.AttributeName = body.AttributeName;
+            style.DisplayName = AttackUtils.FilterXss(body.DisplayName);
+            style.HelpText = body.HelpText;
+            style.Taxis = body.Taxis;
+            style.Type = body.Type;
+            style.DefaultValue = body.DefaultValue;
+            style.Horizontal = body.Horizontal;
+            style.StyleItems = new List<TableStyleItem>();
 
-            styleInfo.AttributeName = body.AttributeName;
-            styleInfo.DisplayName = AttackUtils.FilterXss(body.DisplayName);
-            styleInfo.HelpText = body.HelpText;
-            styleInfo.Taxis = body.Taxis;
-            styleInfo.InputType = body.InputType;
-            styleInfo.DefaultValue = body.DefaultValue;
-            styleInfo.IsHorizontal = body.IsHorizontal;
-            styleInfo.ExtendValues = body.Additional.ToString();
-            styleInfo.StyleItems = new List<TableStyleItemInfo>();
-
-            if (body.InputType == InputType.CheckBox || body.InputType == InputType.Radio || body.InputType == InputType.SelectMultiple || body.InputType == InputType.SelectOne)
+            if (body.Type == InputType.CheckBox || body.Type == InputType.Radio || body.Type == InputType.SelectMultiple || body.Type == InputType.SelectOne)
             {
                 if (isRapid)
                 {
                     foreach (var rapidValue in rapidValues)
                     {
-                        var itemInfo = new TableStyleItemInfo(0, styleInfo.Id, rapidValue, rapidValue, false);
-                        styleInfo.StyleItems.Add(itemInfo);
+                        var itemInfo = new TableStyleItem
+                        {
+                            Id = 0,
+                            TableStyleId = style.Id,
+                            ItemTitle = rapidValue,
+                            ItemValue = rapidValue,
+                            Selected = false
+                        };
+                        style.StyleItems.Add(itemInfo);
                     }
                 }
                 else
@@ -228,22 +239,28 @@ namespace SiteServer.API.Controllers.Pages.Shared
                     var isHasSelected = false;
                     foreach (var styleItem in body.StyleItems)
                     {
-                        if (body.InputType != InputType.SelectMultiple && body.InputType != InputType.CheckBox && isHasSelected && styleItem.IsSelected)
+                        if (body.Type != InputType.SelectMultiple && body.Type != InputType.CheckBox && isHasSelected && styleItem.Selected)
                         {
-                            errorMessage = "操作失败，只能有一个初始化时选定项！";
-                            return false;
+                            return (false, "操作失败，只能有一个初始化时选定项！");
                         }
-                        if (styleItem.IsSelected) isHasSelected = true;
+                        if (styleItem.Selected) isHasSelected = true;
 
-                        var itemInfo = new TableStyleItemInfo(0, styleInfo.Id, styleItem.ItemTitle, styleItem.ItemValue, styleItem.IsSelected);
-                        styleInfo.StyleItems.Add(itemInfo);
+                        var itemInfo = new TableStyleItem
+                        {
+                            Id = 0,
+                            TableStyleId = style.Id,
+                            ItemTitle = styleItem.ItemTitle,
+                            ItemValue = styleItem.ItemValue,
+                            Selected = styleItem.Selected
+                        };
+                        style.StyleItems.Add(itemInfo);
                     }
                 }
             }
 
-            DataProvider.TableStyleDao.Update(styleInfo);
+            await DataProvider.TableStyleDao.UpdateAsync(style);
             
-            return true;
+            return (true, string.Empty);
         }
     }
 }

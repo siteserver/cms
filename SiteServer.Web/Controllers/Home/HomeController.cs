@@ -7,9 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -30,20 +28,20 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var pageName = request.GetQueryString("pageName");
 
                 if (pageName == PageNameRegister)
                 {
-                    return Ok(GetRegister(request));
+                    return Ok(await GetRegisterAsync(request));
                 }
                 if (pageName == PageNameIndex)
                 {   
-                    return Ok(GetIndex(request));
+                    return Ok(await GetIndexAsync(request));
                 }
                 if (pageName == PageNameProfile)
                 {
-                    return Ok(GetProfile(request));
+                    return Ok(await GetProfileAsync(request));
                 }
                 if (pageName == PageNameContents)
                 {
@@ -54,49 +52,51 @@ namespace SiteServer.API.Controllers.Home
                     return Ok(await GetContentAddAsync(request));
                 }
 
+                var config = await ConfigManager.GetInstanceAsync();
+
                 return Ok(new
                 {
                     Value = request.User,
-                    Config = ConfigManager.Instance.SystemConfigInfo
+                    Config = config
                 });
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
 
-        private object GetRegister(AuthenticatedRequest request)
+        private async Task<object> GetRegisterAsync(AuthenticatedRequest request)
         {
+            var config = await ConfigManager.GetInstanceAsync();
+
             return new
             {
                 Value = request.User,
-                Config = ConfigManager.Instance.SystemConfigInfo,
-                Styles = TableStyleManager.GetUserStyleInfoList(),
-                Groups = UserGroupManager.GetUserGroupInfoList()
+                Config = config,
+                Styles = await TableStyleManager.GetUserStyleListAsync(),
+                Groups = await UserGroupManager.GetUserGroupListAsync()
             };
         }
 
-        private object GetIndex(AuthenticatedRequest request)
+        private async Task<object> GetIndexAsync(AuthenticatedRequest request)
         {
             var menus = new List<object>();
             var defaultPageUrl = string.Empty;
 
             if (request.IsUserLoggin)
             {
-                var userMenus = UserMenuManager.GetAllUserMenuInfoList();
+                var userMenus = await UserMenuManager.GetAllUserMenuListAsync();
                 foreach (var menuInfo1 in userMenus)
                 {
-                    if (menuInfo1.IsDisabled || menuInfo1.ParentId != 0 ||
-                        !string.IsNullOrEmpty(menuInfo1.GroupIdCollection) &&
-                        !StringUtils.In(menuInfo1.GroupIdCollection, request.User.GroupId)) continue;
+                    if (menuInfo1.Disabled || menuInfo1.ParentId != 0 ||
+                        menuInfo1.GroupIds.Contains(request.User.GroupId)) continue;
                     var children = new List<object>();
                     foreach (var menuInfo2 in userMenus)
                     {
-                        if (menuInfo2.IsDisabled || menuInfo2.ParentId != menuInfo1.Id ||
-                            !string.IsNullOrEmpty(menuInfo2.GroupIdCollection) &&
-                            !StringUtils.In(menuInfo2.GroupIdCollection, request.User.GroupId)) continue;
+                        if (menuInfo2.Disabled || menuInfo2.ParentId != menuInfo1.Id ||
+                            menuInfo2.GroupIds.Contains(request.User.GroupId)) continue;
 
                         children.Add(new
                         {
@@ -117,25 +117,29 @@ namespace SiteServer.API.Controllers.Home
                     });
                 }
 
-                defaultPageUrl = PluginMenuManager.GetHomeDefaultPageUrl();
+                defaultPageUrl = await PluginMenuManager.GetHomeDefaultPageUrlAsync();
             }
+
+            var config = await ConfigManager.GetInstanceAsync();
 
             return new
             {
                 Value = request.User,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Config = config,
                 Menus = menus,
                 DefaultPageUrl = defaultPageUrl
             };
         }
 
-        private object GetProfile(AuthenticatedRequest request)
+        private async Task<object> GetProfileAsync(AuthenticatedRequest request)
         {
+            var config = await ConfigManager.GetInstanceAsync();
+
             return new
             {
                 Value = request.User,
-                Config = ConfigManager.Instance.SystemConfigInfo,
-                Styles = TableStyleManager.GetUserStyleInfoList()
+                Config = config,
+                Styles = await TableStyleManager.GetUserStyleListAsync()
             };
         }
 
@@ -152,8 +156,8 @@ namespace SiteServer.API.Controllers.Home
             if (request.IsUserLoggin)
             {
                 Site site = null;
-                ChannelInfo channelInfo = null;
-                var siteIdList = request.UserPermissionsImpl.GetSiteIdList();
+                Channel channelInfo = null;
+                var siteIdList = await request.UserPermissionsImpl.GetSiteIdListAsync();
                 foreach (var siteId in siteIdList)
                 {
                     var permissionSite = await SiteManager.GetSiteAsync(siteId);
@@ -175,11 +179,11 @@ namespace SiteServer.API.Controllers.Home
 
                 if (site != null)
                 {
-                    var channelIdList = request.UserPermissionsImpl.GetChannelIdList(site.Id,
+                    var channelIdList = await request.UserPermissionsImpl.GetChannelIdListAsync(site.Id,
                         ConfigManager.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
-                        var permissionChannelInfo = ChannelManager.GetChannelInfo(site.Id, permissionChannelId);
+                        var permissionChannelInfo = await ChannelManager.GetChannelAsync(site.Id, permissionChannelId);
                         if (channelInfo == null || requestChannelId == permissionChannelId)
                         {
                             channelInfo = permissionChannelInfo;
@@ -187,7 +191,7 @@ namespace SiteServer.API.Controllers.Home
                         channels.Add(new
                         {
                             permissionChannelInfo.Id,
-                            ChannelName = ChannelManager.GetChannelNameNavigation(site.Id, permissionChannelId)
+                            ChannelName = await ChannelManager.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
                         });
                     }
 
@@ -204,15 +208,17 @@ namespace SiteServer.API.Controllers.Home
                     channel = new
                     {
                         channelInfo.Id,
-                        ChannelName = ChannelManager.GetChannelNameNavigation(site.Id, channelInfo.Id)
+                        ChannelName = await ChannelManager.GetChannelNameNavigationAsync(site.Id, channelInfo.Id)
                     };
                 }
             }
 
+            var config = await ConfigManager.GetInstanceAsync();
+
             return new
             {
                 Value = request.User,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Config = config,
                 Sites = sites,
                 Channels = channels,
                 Site = siteInfo,
@@ -228,46 +234,46 @@ namespace SiteServer.API.Controllers.Home
 
             var sites = new List<object>();
             var channels = new List<object>();
-            object siteInfo = null;
+            object site = null;
             object channel = null;
             List<string> groupNames = null;
             List<string> tagNames = null;
-            ContentInfo contentInfo = null;
-            List<TableStyleInfo> styles = null;
+            Content content = null;
+            List<TableStyle> styles = null;
             List<KeyValuePair<int, string>> checkedLevels = null;
             var checkedLevel = 0;
 
             if (request.IsUserLoggin)
             {
-                Site site = null;
-                ChannelInfo channelInfo = null;
-                var siteIdList = request.UserPermissionsImpl.GetSiteIdList();
+                Site siteInfo = null;
+                Channel channelInfo = null;
+                var siteIdList = await request.UserPermissionsImpl.GetSiteIdListAsync();
                 foreach (var siteId in siteIdList)
                 {
-                    var permissionSite = await SiteManager.GetSiteAsync(siteId);
+                    var permissionSiteInfo = await SiteManager.GetSiteAsync(siteId);
                     if (requestSiteId == siteId)
                     {
-                        site = permissionSite;
+                        siteInfo = permissionSiteInfo;
                     }
                     sites.Add(new
                     {
-                        permissionSite.Id,
-                        permissionSite.SiteName
+                        permissionSiteInfo.Id,
+                        permissionSiteInfo.SiteName
                     });
                 }
 
-                if (site == null && siteIdList.Count > 0)
+                if (siteInfo == null && siteIdList.Count > 0)
                 {
-                    site = await SiteManager.GetSiteAsync(siteIdList[0]);
+                    siteInfo = await SiteManager.GetSiteAsync(siteIdList[0]);
                 }
 
-                if (site != null)
+                if (siteInfo != null)
                 {
-                    var channelIdList = request.UserPermissionsImpl.GetChannelIdList(site.Id,
+                    var channelIdList = await request.UserPermissionsImpl.GetChannelIdListAsync(siteInfo.Id,
                         ConfigManager.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
-                        var permissionChannelInfo = ChannelManager.GetChannelInfo(site.Id, permissionChannelId);
+                        var permissionChannelInfo = await ChannelManager.GetChannelAsync(siteInfo.Id, permissionChannelId);
                         if (channelInfo == null || permissionChannelInfo.Id == requestChannelId)
                         {
                             channelInfo = permissionChannelInfo;
@@ -275,18 +281,18 @@ namespace SiteServer.API.Controllers.Home
                         channels.Add(new
                         {
                             permissionChannelInfo.Id,
-                            ChannelName = ChannelManager.GetChannelNameNavigation(site.Id, permissionChannelId)
+                            ChannelName = await ChannelManager.GetChannelNameNavigationAsync(siteInfo.Id, permissionChannelId)
                         });
                     }
 
-                    siteInfo = new
+                    site = new
                     {
-                        site.Id,
-                        site.SiteName,
-                        SiteUrl = PageUtility.GetSiteUrl(site, false)
+                        siteInfo.Id,
+                        siteInfo.SiteName,
+                        SiteUrl = PageUtility.GetSiteUrl(siteInfo, false)
                     };
 
-                    groupNames = ContentGroupManager.GetGroupNameList(site.Id);
+                    groupNames = await ContentGroupManager.GetGroupNameListAsync(siteInfo.Id);
                     tagNames = new List<string>();
                 }
 
@@ -295,53 +301,55 @@ namespace SiteServer.API.Controllers.Home
                     channel = new
                     {
                         channelInfo.Id,
-                        ChannelName = ChannelManager.GetChannelNameNavigation(site.Id, channelInfo.Id)
+                        ChannelName = await ChannelManager.GetChannelNameNavigationAsync(siteInfo.Id, channelInfo.Id)
                     };
 
-                    styles = TableStyleManager.GetContentStyleInfoList(site, channelInfo);
+                    styles = await TableStyleManager.GetContentStyleListAsync(siteInfo, channelInfo);
 
-                    var checkKeyValuePair = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, site, site.Id);
-                    checkedLevels = CheckManager.GetCheckedLevels(site, checkKeyValuePair.Key, checkedLevel, true);
+                    var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, siteInfo, siteInfo.Id);
+                    checkedLevels = CheckManager.GetCheckedLevels(siteInfo, userIsChecked, userCheckedLevel, true);
 
                     if (requestContentId != 0)
                     {
                         //checkedLevels.Insert(0, new KeyValuePair<int, string>(CheckManager.LevelInt.NotChange, CheckManager.Level.NotChange));
                         //checkedLevel = CheckManager.LevelInt.NotChange;
 
-                        contentInfo = ContentManager.GetContentInfo(site, channelInfo, requestContentId);
-                        if (contentInfo != null &&
-                            (contentInfo.SiteId != site.Id || contentInfo.ChannelId != channelInfo.Id))
+                        content = await ContentManager.GetContentInfoAsync(siteInfo, channelInfo, requestContentId);
+                        if (content != null &&
+                            (content.SiteId != siteInfo.Id || content.ChannelId != channelInfo.Id))
                         {
-                            contentInfo = null;
+                            content = null;
                         }
                     }
                     else
                     {
-                        contentInfo = new ContentInfo(new
+                        content = new Content
                         {
                             Id = 0,
-                            SiteId = site.Id,
+                            SiteId = siteInfo.Id,
                             ChannelId = channelInfo.Id,
                             AddDate = DateTime.Now
-                        });
+                        };
                     }
                 }
             }
 
+            var config = await ConfigManager.GetInstanceAsync();
+
             return new
             {
                 Value = request.User,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Config = config,
                 Sites = sites,
                 Channels = channels,
-                Site = siteInfo,
+                Site = site,
                 Channel = channel,
                 AllGroupNames = groupNames,
                 AllTagNames = tagNames,
                 Styles = styles,
                 CheckedLevels = checkedLevels,
                 CheckedLevel = checkedLevel,
-                Content = contentInfo,
+                Content = content,
             };
         }
     }

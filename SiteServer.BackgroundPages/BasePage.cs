@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.UI;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            AuthRequest = new AuthenticatedRequest(Request);
+            AuthRequest = AuthenticatedRequest.GetRequestAsync().GetAwaiter().GetResult();
 
             if (!IsInstallerPage)
             {
@@ -50,7 +51,7 @@ namespace SiteServer.BackgroundPages
                 #if !DEBUG
                 if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
                 {
-                    PageUtils.Redirect(PageSyncDatabase.GetRedirectUrl());
+                    PageUtils.Redirect("syncDatabase.cshtml");
                     return;
                 }
                 #endif
@@ -195,7 +196,7 @@ setTimeout(function() {{
 
         public string MaxLengthText(string str, int length)
         {
-            return StringUtils.MaxLengthText(str, length);
+            return WebUtils.MaxLengthText(str, length);
         }
 
         public Control FindControlBySelfAndChildren(string controlId)
@@ -205,7 +206,7 @@ setTimeout(function() {{
 
         public void VerifySystemPermissions(params string[] permissionArray)
         {
-            if (AuthRequest.AdminPermissionsImpl.HasSystemPermissions(permissionArray))
+            if (AuthRequest.AdminPermissionsImpl.HasSystemPermissionsAsync(permissionArray).GetAwaiter().GetResult())
             {
                 return;
             }

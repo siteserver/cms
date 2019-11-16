@@ -1,29 +1,29 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Api.V1
 {
     public class StlRequest
     {
-        private AuthenticatedRequest Request { get; }
+        private AuthenticatedRequest Request { get; set; }
 
-        public bool IsApiAuthorized { get; }
+        public bool IsApiAuthorized { get; private set; }
 
-        public Site Site { get; }
+        public Site Site { get; private set; }
 
-        public PageInfo PageInfo { get; }
+        public PageInfo PageInfo { get; private set; }
 
-        public ContextInfo ContextInfo { get; }
+        public ContextInfo ContextInfo { get; private set; }
 
-        public StlRequest(AuthenticatedRequest request, bool isApiAuthorized)
+        public async Task LoadAsync(AuthenticatedRequest request, bool isApiAuthorized)
         {
             //Request = new AuthenticatedRequest();
             //IsApiAuthorized = Request.IsApiAuthenticated && AccessTokenManager.IsScope(Request.ApiToken, AccessTokenManager.ScopeStl);
@@ -41,18 +41,18 @@ namespace SiteServer.CMS.Api.V1
 
             if (siteId > 0)
             {
-                Site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                Site = await SiteManager.GetSiteAsync(siteId);
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                Site = SiteManager.GetSiteByDirectoryAsync(siteDir).GetAwaiter().GetResult();
+                Site = await SiteManager.GetSiteByDirectoryAsync(siteDir);
             }
             else
             {
-                Site = SiteManager.GetSiteByIsRootAsync().GetAwaiter().GetResult();
+                Site = await SiteManager.GetSiteByIsRootAsync();
                 if (Site == null)
                 {
-                    var siteList = SiteManager.GetSiteListAsync().GetAwaiter().GetResult();
+                    var siteList = await SiteManager.GetSiteListAsync();
                     if (siteList != null && siteList.Count > 0)
                     {
                         Site = siteList[0];
@@ -67,13 +67,23 @@ namespace SiteServer.CMS.Api.V1
                 channelId = Site.Id;
             }
 
-            var templateInfo = new TemplateInfo(0, Site.Id, string.Empty, TemplateType.IndexPageTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, true);
-
-            PageInfo = new PageInfo(channelId, contentId, Site, templateInfo, new Dictionary<string, object>())
+            var templateInfo = new Template
             {
-                UniqueId = 1000,
-                User = Request.User
+                Id = 0,
+                SiteId = Site.Id,
+                TemplateName = string.Empty,
+                Type = TemplateType.IndexPageTemplate,
+                RelatedFileName = string.Empty,
+                CreatedFileFullName = string.Empty,
+                CreatedFileExtName = string.Empty,
+                CharsetType = ECharset.utf_8,
+                Default = true
             };
+
+            PageInfo = await PageInfo.GetPageInfoAsync(channelId, contentId, Site, templateInfo, new Dictionary<string, object>());
+
+            PageInfo.UniqueId = 1000;
+            PageInfo.User = Request.User;
 
             var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
             foreach (var key in Request.QueryString.AllKeys)

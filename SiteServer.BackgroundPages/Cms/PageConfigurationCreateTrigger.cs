@@ -3,10 +3,11 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -52,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BindGrid()
         {
-            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, SiteId), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty);
+            var channelIdList = ChannelManager.GetChannelIdListAsync(ChannelManager.GetChannelAsync(SiteId, SiteId).GetAwaiter().GetResult(), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
 
             RptContents.DataSource = channelIdList;
             RptContents.ItemDataBound += rptContents_ItemDataBound;
@@ -68,11 +69,11 @@ namespace SiteServer.BackgroundPages.Cms
                 if (!IsDescendantOwningChannelId(channelId)) e.Item.Visible = false;
             }
 
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            var nodeInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
             var ltlHtml = e.Item.FindControl("ltlHtml") as Literal;
             if (ltlHtml != null)
             {
-                ltlHtml.Text = ChannelLoading.GetChannelRowHtml(Site, nodeInfo, enabled, ELoadingType.ConfigurationCreateDetails, null, AuthRequest.AdminPermissionsImpl);
+                ltlHtml.Text = ChannelLoading.GetChannelRowHtmlAsync(Site, nodeInfo, enabled, ELoadingType.ConfigurationCreateDetails, null, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
             }
         }
 	}

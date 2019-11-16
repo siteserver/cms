@@ -578,7 +578,7 @@ namespace SiteServer.CMS.Plugin.Impl
                      ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
             {
                 redirect = true;
-                redirectUrl = PageUtils.GetAdminUrl("pageSyncDatabase.aspx");
+                redirectUrl = PageUtils.GetAdminUrl("syncDatabase.cshtml");
             }
             else if (checkLogin && (!IsAdminLoggin || AdminInfo == null || AdminInfo.IsLockedOut))
             {

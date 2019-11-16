@@ -1,207 +1,82 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class DbCacheDao : DataProviderBase
+    public class DbCacheDao : IRepository
     {
-        public override string TableName => "siteserver_DbCache";
+        private readonly Repository<DbCache> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public DbCacheDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(DbCacheInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(DbCacheInfo.CacheKey),
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(DbCacheInfo.CacheValue),
-                DataType = DataType.VarChar,
-                DataLength = 500
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(DbCacheInfo.AddDate),
-                DataType = DataType.DateTime
-            }
-        };
+            _repository = new Repository<DbCache>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+        }
 
-        private const string SqlSelectValue = "SELECT CacheValue FROM siteserver_DbCache WHERE CacheKey = @CacheKey";
+        public IDatabase Database => _repository.Database;
 
-        private const string SqlSelectCount = "SELECT COUNT(*) FROM siteserver_DbCache";
+        public string TableName => _repository.TableName;
 
-        private const string SqlInsert = "INSERT INTO siteserver_DbCache (CacheKey, CacheValue, AddDate) VALUES (@CacheKey, @CacheValue, @AddDate)";
+        public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private const string SqlDelete = "DELETE FROM siteserver_DbCache WHERE CacheKey = @CacheKey";
-
-        private const string SqlDeleteAll = "DELETE FROM siteserver_DbCache";
-
-        private const string ParmCacheKey = "@CacheKey";
-        private const string ParmCacheValue = "@CacheValue";
-        private const string ParmAddDate = "@AddDate";
-
-        public void RemoveAndInsert(string cacheKey, string cacheValue)
+        public async Task RemoveAndInsertAsync(string cacheKey, string cacheValue)
         {
             if (string.IsNullOrEmpty(cacheKey)) return;
 
-            DeleteExcess90Days();
+            await DeleteExcess90DaysAsync();
 
-            using (var conn = GetConnection())
+            await _repository.DeleteAsync(Q
+                .Where(nameof(DbCache.CacheKey), cacheKey));
+
+            await _repository.InsertAsync(new DbCache
             {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        var removeParams = new IDataParameter[]
-                        {
-                            GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey)
-                        };
-
-                        ExecuteNonQuery(trans, SqlDelete, removeParams);
-
-                        var insertParms = new IDataParameter[]
-                        {
-                            GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey),
-                            GetParameter(ParmCacheValue, DataType.VarChar, 500, cacheValue),
-                            GetParameter(ParmAddDate, DataType.DateTime, DateTime.Now)
-                        };
-
-                        ExecuteNonQuery(trans, SqlInsert, insertParms);
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
+                CacheKey = cacheKey,
+                CacheValue = cacheValue
+            });
         }
 
-        public void Clear()
+        public async Task ClearAsync()
         {
-            ExecuteNonQuery(SqlDeleteAll);
+            await _repository.DeleteAsync();
         }
 
-        public bool IsExists(string cacheKey)
+        public async Task<bool> IsExistsAsync(string cacheKey)
         {
-            var retVal = false;
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectValue, parms))
-            {
-                if (rdr.Read())
-                {
-                    retVal = true;
-                }
-                rdr.Close();
-            }
-            return retVal;
+            return await _repository.ExistsAsync(Q.Where(nameof(DbCache.CacheKey), cacheKey));
         }
 
-        public string GetValue(string cacheKey)
+        public async Task<string> GetValueAsync(string cacheKey)
         {
-            var retVal = string.Empty;
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectValue, parms))
-            {
-                if (rdr.Read())
-                {
-                    retVal = GetString(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return retVal;
+            return await _repository.GetAsync<string>(Q
+                .Select(nameof(DbCache.CacheValue))
+                .Where(nameof(DbCache.CacheKey), cacheKey));
         }
 
-        public string GetValueAndRemove(string cacheKey)
+        public async Task<string> GetValueAndRemoveAsync(string cacheKey)
         {
-            var retVal = string.Empty;
+            var retVal = await _repository.GetAsync<string>(Q
+                .Select(nameof(DbCache.CacheValue))
+                .Where(nameof(DbCache.CacheKey), cacheKey));
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        var parms = new IDataParameter[]
-                        {
-                            GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey)
-                        };
-
-                        using (var rdr = ExecuteReader(trans, SqlSelectValue, parms))
-                        {
-                            if (rdr.Read())
-                            {
-                                retVal = GetString(rdr, 0);
-                            }
-                            rdr.Close();
-                        }
-
-                        var removeParams = new IDataParameter[]
-                        {
-                            GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey)
-                        };
-
-                        ExecuteNonQuery(trans, SqlDelete, removeParams);
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
+            await _repository.DeleteAsync(Q
+                .Where(nameof(DbCache.CacheKey), cacheKey));
 
             return retVal;
         }
 
-        public int GetCount()
+        public async Task<int> GetCountAsync()
         {
-            var count = 0;
-            using (var rdr = ExecuteReader(SqlSelectCount))
-            {
-                if (rdr.Read())
-                {
-                    count = GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return count;
+            return await _repository.CountAsync();
         }
 
-        public void DeleteExcess90Days()
+        public async Task DeleteExcess90DaysAsync()
         {
-            ExecuteNonQuery("DELETE FROM siteserver_DbCache WHERE " + SqlUtils.GetDateDiffGreatThanDays("AddDate", 90.ToString()));
+            await _repository.DeleteAsync(Q
+                .Where(nameof(DbCache.CreatedDate), "<", DateTime.Now.AddDays(-90)));
         }
     }
 }

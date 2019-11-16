@@ -4,11 +4,12 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Enumerations;
+using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -79,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(Site, channelId, contentId);
+                        var contentInfo = ContentManager.GetContentInfoAsync(Site, channelId, contentId).GetAwaiter().GetResult();
                         if (contentInfo != null)
                         {
                             builder.Append(
@@ -129,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(ex);
+                    LogUtils.AddErrorLogAsync(ex).GetAwaiter().GetResult();
                     FailMessage(ex, "内容转移失败！");
                 }
             }

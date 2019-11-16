@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
@@ -16,16 +18,18 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }
+
+                var config = await ConfigManager.GetInstanceAsync();
 
                 var parameterList = new List<KeyValuePair<string, string>>
                 {
@@ -38,7 +42,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
                     new KeyValuePair<string, string>(".NET CLR 版本", SystemManager.EnvironmentVersion),
                     new KeyValuePair<string, string>("SiteServer CMS 版本", SystemManager.ProductVersion),
                     new KeyValuePair<string, string>("SiteServer.Plugin 版本", SystemManager.PluginVersion),
-                    new KeyValuePair<string, string>("最近升级时间", DateUtils.GetDateAndTimeString(ConfigManager.Instance.UpdateDate)),
+                    new KeyValuePair<string, string>("最近升级时间", DateUtils.GetDateAndTimeString(config.UpdateDate)),
                     new KeyValuePair<string, string>("数据库类型", WebConfigUtils.DatabaseType.Value),
                     new KeyValuePair<string, string>("数据库名称", SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
                 };

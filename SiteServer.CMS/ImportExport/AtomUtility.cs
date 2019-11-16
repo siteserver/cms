@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using Atom.AdditionalElements;
-using Atom.AdditionalElements.DublinCore;
-using Atom.Core;
+using SiteServer.CMS.Context.Atom.Atom.AdditionalElements;
+using SiteServer.CMS.Context.Atom.Atom.AdditionalElements.DublinCore;
+using SiteServer.CMS.Context.Atom.Atom.Core;
 using SiteServer.Utils;
-using SiteServer.Utils.Auth;
 
 namespace SiteServer.CMS.ImportExport
 {

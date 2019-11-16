@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -32,7 +33,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         private const string Context = nameof(Context);
 
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
 		{
 		    var tagLevel = 1;
             var totalNum = 0;
@@ -66,10 +67,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(isInnerHtml, pageInfo, contextInfo, tagLevel, totalNum, isOrderByCount, theme);
+            return await ParseImplAsync(isInnerHtml, pageInfo, contextInfo, tagLevel, totalNum, isOrderByCount, theme);
 		}
 
-        private static string ParseImpl(bool isInnerHtml, PageInfo pageInfo, ContextInfo contextInfo, int tagLevel, int totalNum, bool isOrderByCount, string theme)
+        private static async Task<string> ParseImplAsync(bool isInnerHtml, PageInfo pageInfo, ContextInfo contextInfo, int tagLevel, int totalNum, bool isOrderByCount, string theme)
         {
             var innerHtml = string.Empty;
             if (isInnerHtml)
@@ -96,12 +97,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                 contentId = contextInfo.ContentId;
             }
 
-            var tagInfoList = StlTagCache.GetTagInfoList(pageInfo.SiteId, contentId, isOrderByCount, totalNum);
-            tagInfoList = TagUtils.GetTagInfoList(tagInfoList, totalNum, tagLevel);
-            if (contextInfo.ContextType == EContextType.Content && contextInfo.ContentInfo != null)
+            var tagInfoList = await StlTagCache.GetTagListAsync(pageInfo.SiteId, contentId, isOrderByCount, totalNum);
+            tagInfoList = ContentTagUtils.GetTagInfoList(tagInfoList, totalNum, tagLevel);
+            var contentInfo = await contextInfo.GetContentAsync();
+            if (contextInfo.ContextType == EContextType.Content && contentInfo != null)
             {
-                var tagInfoList2 = new List<TagInfo>();
-                var tagNameList = TranslateUtils.StringCollectionToStringList(contextInfo.ContentInfo.Tags.Trim().Replace(" ", ","));
+                var tagInfoList2 = new List<ContentTag>();
+                var tagNameList = TranslateUtils.StringCollectionToStringList(contentInfo.Tags.Trim().Replace(" ", ","));
                 foreach (var tagName in tagNameList)
                 {
                     if (!string.IsNullOrEmpty(tagName))
@@ -118,7 +120,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         if (!isAdd)
                         {
-                            var tagInfo = new TagInfo(0, pageInfo.SiteId, contentId.ToString(), tagName, 1);
+                            var tagInfo = new ContentTag
+                            {
+                                Id = 0,
+                                SiteId = pageInfo.SiteId,
+                                ContentIds = new List<int> { contentId },
+                                Tag = tagName,
+                                UseNum = 1
+                            };
                             tagInfoList2.Add(tagInfo);
                         }
                     }
@@ -135,7 +144,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Count}", tagInfo.UseNum.ToString());
                     tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Level}", tagInfo.Level.ToString());
                     var innerBuilder = new StringBuilder(tagHtml);
-                    StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                    await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
                     tagsBuilder.Append(innerBuilder);
                 }
                 else

@@ -1,4 +1,6 @@
-﻿using SiteServer.Utils;
+﻿using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.Utils;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
@@ -15,7 +17,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
         public const string EntityName = "user";
 
-	    internal static string Parse(string stlEntity, PageInfo pageInfo)
+	    internal static async Task<string> ParseAsync(string stlEntity, PageInfo pageInfo)
 	    {
 	        var parsedContent = string.Empty;
 	        if (pageInfo?.User == null) return string.Empty;
@@ -87,7 +89,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else
                 {
-                    parsedContent = pageInfo.User.GetString(attributeName);
+                    parsedContent = pageInfo.User.Get<string>(attributeName);
                 }
             }
 	        catch

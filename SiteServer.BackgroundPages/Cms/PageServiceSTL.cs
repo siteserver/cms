@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var theTemplateType = TemplateTypeUtils.GetEnumType(templateType);
 
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(siteId, theTemplateType);
+            var templateInfoList = DataProvider.TemplateDao.GetTemplateListByTypeAsync(siteId, theTemplateType).GetAwaiter().GetResult();
 
             foreach (var templateInfo in templateInfoList)
             {

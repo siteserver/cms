@@ -1,137 +1,63 @@
 using System.Collections.Generic;
-using System.Data;
+using System.Threading.Tasks;
 using Datory;
-using SiteServer.CMS.Data;
 using SiteServer.Utils;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
-    public class PluginDao : DataProviderBase
+    public class PluginDao : IRepository
     {
-        public override string TableName => "siteserver_Plugin";
+        private readonly Repository<Model.Plugin> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public PluginDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(PluginInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(PluginInfo.PluginId),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(PluginInfo.IsDisabled),
-                DataType = DataType.VarChar,
-                DataLength = 18
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(PluginInfo.Taxis),
-                DataType = DataType.Integer
-            }
-        };
-
-        public void Delete(string pluginId)
-        {
-            const string sqlString = "DELETE FROM siteserver_Plugin WHERE PluginId = @PluginId";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
+            _repository = new Repository<Model.Plugin>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public void UpdateIsDisabled(string pluginId, bool isDisabled)
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task DeleteAsync(string pluginId)
         {
-            const string sqlString = "UPDATE siteserver_Plugin SET IsDisabled = @IsDisabled WHERE PluginId = @PluginId";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(nameof(PluginInstance.IsDisabled), DataType.VarChar, 18, isDisabled.ToString()),
-                GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
+            await _repository.DeleteAsync(Q.Where(nameof(Model.Plugin.PluginId), pluginId));
         }
 
-        public void UpdateTaxis(string pluginId, int taxis)
+        public async Task UpdateIsDisabledAsync(string pluginId, bool isDisabled)
         {
-            const string sqlString = "UPDATE siteserver_Plugin SET Taxis = @Taxis WHERE PluginId = @PluginId";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(nameof(PluginInstance.Taxis), DataType.Integer, taxis),
-                GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
+            await _repository.UpdateAsync(Q
+                .Set(nameof(Model.Plugin.IsDisabled), isDisabled.ToString())
+                .Where(nameof(Model.Plugin.PluginId), pluginId)
+            );
         }
 
-        public void SetIsDisabledAndTaxis(string pluginId, out bool isDisabled, out int taxis)
+        public async Task UpdateTaxisAsync(string pluginId, int taxis)
         {
-            isDisabled = false;
-            taxis = 0;
+            await _repository.UpdateAsync(Q
+                .Set(nameof(Model.Plugin.Taxis), taxis)
+                .Where(nameof(Model.Plugin.PluginId), pluginId)
+            );
+        }
 
-            var exists = false;
-
-            var sqlString = "SELECT Id FROM siteserver_Plugin WHERE PluginId = @PluginId";
-
-            var parameters = new IDataParameter[]
-            {
-                GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parameters))
-            {
-                if (rdr.Read() && !rdr.IsDBNull(0))
-                {
-                    exists = true;
-                }
-                rdr.Close();
-            }
+        public async Task<(bool IsDisabled, int Taxis)> SetIsDisabledAndTaxisAsync(string pluginId)
+        {
+            var exists = await _repository.ExistsAsync(Q.Where(nameof(Model.Plugin.PluginId), pluginId));
 
             if (!exists)
             {
-                sqlString = "INSERT INTO siteserver_Plugin(PluginId, IsDisabled, Taxis) VALUES (@PluginId, @IsDisabled, @Taxis)";
-
-                parameters = new IDataParameter[]
+                await _repository.InsertAsync(new Model.Plugin
                 {
-                    GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId),
-                    GetParameter(nameof(PluginInstance.IsDisabled), DataType.VarChar, 18, false.ToString()),
-                    GetParameter(nameof(PluginInstance.Taxis), DataType.Integer, 0)
-                };
-
-                ExecuteNonQuery(sqlString, parameters);
+                    PluginId = pluginId,
+                    Disabled = false,
+                    Taxis = 0
+                });
             }
 
-            sqlString = "SELECT IsDisabled, Taxis FROM siteserver_Plugin WHERE PluginId = @PluginId";
+            var pluginEntity = await _repository.GetAsync(Q.Where(nameof(Model.Plugin.PluginId), pluginId));
 
-            parameters = new IDataParameter[]
-            {
-                GetParameter(nameof(PluginConfigInfo.PluginId), DataType.VarChar, 50, pluginId)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parameters))
-            {
-                if (rdr.Read() && !rdr.IsDBNull(0))
-                {
-                    isDisabled = TranslateUtils.ToBool(rdr.GetString(0));
-                    taxis = rdr.GetInt32(1);
-                }
-                rdr.Close();
-            }
+            return (pluginEntity.Disabled, pluginEntity.Taxis);
         }
     }
 }

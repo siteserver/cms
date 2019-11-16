@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -26,22 +27,22 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
-            TbVideoUploadDirectoryName.Text = Site.Additional.VideoUploadDirectoryName;
+            TbVideoUploadDirectoryName.Text = Site.VideoUploadDirectoryName;
 
             DdlVideoUploadDateFormatString.Items.Add(new ListItem("按年存入不同目录(不推荐)", EDateFormatTypeUtils.GetValue(EDateFormatType.Year)));
             DdlVideoUploadDateFormatString.Items.Add(new ListItem("按年/月存入不同目录", EDateFormatTypeUtils.GetValue(EDateFormatType.Month)));
             DdlVideoUploadDateFormatString.Items.Add(new ListItem("按年/月/日存入不同目录", EDateFormatTypeUtils.GetValue(EDateFormatType.Day)));
-            ControlUtils.SelectSingleItemIgnoreCase(DdlVideoUploadDateFormatString, Site.Additional.VideoUploadDateFormatString);
+            ControlUtils.SelectSingleItemIgnoreCase(DdlVideoUploadDateFormatString, Site.VideoUploadDateFormatString);
 
             EBooleanUtils.AddListItems(DdlIsVideoUploadChangeFileName, "自动修改文件名", "保持文件名不变");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsVideoUploadChangeFileName, Site.Additional.IsVideoUploadChangeFileName.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsVideoUploadChangeFileName, Site.IsVideoUploadChangeFileName.ToString());
 
-            TbVideoUploadTypeCollection.Text = Site.Additional.VideoUploadTypeCollection.Replace("|", ",");
-            var mbSize = GetMbSize(Site.Additional.VideoUploadTypeMaxSize);
+            TbVideoUploadTypeCollection.Text = Site.VideoUploadTypeCollection.Replace("|", ",");
+            var mbSize = GetMbSize(Site.VideoUploadTypeMaxSize);
             if (mbSize == 0)
             {
                 DdlVideoUploadTypeUnit.SelectedIndex = 0;
-                TbVideoUploadTypeMaxSize.Text = Site.Additional.VideoUploadTypeMaxSize.ToString();
+                TbVideoUploadTypeMaxSize.Text = Site.VideoUploadTypeMaxSize.ToString();
             }
             else
             {
@@ -64,14 +65,14 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 			if (Page.IsPostBack && Page.IsValid)
 			{
-                Site.Additional.VideoUploadDirectoryName = TbVideoUploadDirectoryName.Text;
+                Site.VideoUploadDirectoryName = TbVideoUploadDirectoryName.Text;
 
-                Site.Additional.VideoUploadDateFormatString = EDateFormatTypeUtils.GetValue(EDateFormatTypeUtils.GetEnumType(DdlVideoUploadDateFormatString.SelectedValue));
-                Site.Additional.IsVideoUploadChangeFileName = TranslateUtils.ToBool(DdlIsVideoUploadChangeFileName.SelectedValue);
+                Site.VideoUploadDateFormatString = EDateFormatTypeUtils.GetValue(EDateFormatTypeUtils.GetEnumType(DdlVideoUploadDateFormatString.SelectedValue));
+                Site.IsVideoUploadChangeFileName = TranslateUtils.ToBool(DdlIsVideoUploadChangeFileName.SelectedValue);
 
-                Site.Additional.VideoUploadTypeCollection = TbVideoUploadTypeCollection.Text.Replace(",", "|");
+                Site.VideoUploadTypeCollection = TbVideoUploadTypeCollection.Text.Replace(",", "|");
                 var kbSize = int.Parse(TbVideoUploadTypeMaxSize.Text);
-                Site.Additional.VideoUploadTypeMaxSize = (DdlVideoUploadTypeUnit.SelectedIndex == 0) ? kbSize : 1024 * kbSize;
+                Site.VideoUploadTypeMaxSize = (DdlVideoUploadTypeUnit.SelectedIndex == 0) ? kbSize : 1024 * kbSize;
 				
 				try
 				{

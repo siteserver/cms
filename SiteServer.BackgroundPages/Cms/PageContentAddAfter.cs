@@ -2,11 +2,11 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
+using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
         public ListBox LbChannelId;
         public PlaceHolder PhSubmit;
 
-        private ChannelInfo _channelInfo;
+        private Channel _channel;
         private int _contentId;
         private string _returnUrl;
 
@@ -48,17 +48,17 @@ namespace SiteServer.BackgroundPages.Cms
             _contentId = AuthRequest.GetQueryInt("ContentID");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
-            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
 
             if (IsPostBack) return;
 
             RblOperation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
             RblOperation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
 
-            var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTransAsync(Site, _channelInfo).GetAwaiter().GetResult();
-            var isAutomatic = CrossSiteTransUtility.IsAutomatic(_channelInfo);
+            var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTransAsync(Site, _channel).GetAwaiter().GetResult();
+            var isAutomatic = CrossSiteTransUtility.IsAutomatic(_channel);
 
-            var isTranslated = ContentUtility.AfterContentAddedAsync(Site, _channelInfo, _contentId, isCrossSiteTrans, isAutomatic).GetAwaiter().GetResult();
+            var isTranslated = ContentUtility.AfterContentAddedAsync(Site, _channel, _contentId, isCrossSiteTrans, isAutomatic).GetAwaiter().GetResult();
             if (isCrossSiteTrans && !isAutomatic)
             {
                 RblOperation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
@@ -74,7 +74,7 @@ namespace SiteServer.BackgroundPages.Cms
             var after = TranslateUtils.ToEnum(RblOperation.SelectedValue, EContentAddAfter.ContinueAdd);
             if (after == EContentAddAfter.ContinueAdd)
             {
-                PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, AuthRequest.GetQueryString("ReturnUrl")));
+                PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channel.Id, AuthRequest.GetQueryString("ReturnUrl")));
                 return;
             }
 
@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 		    if (after == EContentAddAfter.Contribute)
 		    {
-		        CrossSiteTransUtility.LoadSiteIdDropDownListAsync(DdlSiteId, Site, _channelInfo.Id).GetAwaiter().GetResult();
+		        CrossSiteTransUtility.LoadSiteIdDropDownListAsync(DdlSiteId, Site, _channel.Id).GetAwaiter().GetResult();
 
 		        if (DdlSiteId.Items.Count > 0)
 		        {
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBoxAsync(LbChannelId, Site, psId, _channelInfo, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
+            CrossSiteTransUtility.LoadChannelIdListBoxAsync(LbChannelId, Site, psId, _channel, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -116,11 +116,11 @@ namespace SiteServer.BackgroundPages.Cms
                     var targetChannelId = TranslateUtils.ToInt(listItem.Value);
                     if (targetChannelId != 0)
                     {
-                        CrossSiteTransUtility.TransContentInfo(Site, _channelInfo, _contentId, targetSite, targetChannelId);
+                        CrossSiteTransUtility.TransContentInfoAsync(Site, _channel, _contentId, targetSite, targetChannelId).GetAwaiter().GetResult();
                     }
                 }
 
-                AuthRequest.AddSiteLogAsync(SiteId, _channelInfo.Id, _contentId, "内容跨站转发", $"转发到站点:{targetSite.SiteName}").GetAwaiter().GetResult();
+                AuthRequest.AddSiteLogAsync(SiteId, _channel.Id, _contentId, "内容跨站转发", $"转发到站点:{targetSite.SiteName}").GetAwaiter().GetResult();
 
                 SuccessMessage("内容跨站转发成功，请选择后续操作。");
                 RblOperation.Items.Clear();

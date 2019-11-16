@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Utils;
@@ -33,21 +34,21 @@ namespace SiteServer.CMS.Core
             var dict = new Dictionary<string, string>
             {
                 {StlPlayer.PlayUrl, playUrl},
-                {StlPlayer.IsAutoPlay, site.Additional.ConfigUEditorVideoIsAutoPlay.ToString()},
-                {StlPlayer.PlayBy, site.Additional.ConfigUEditorVideoPlayBy},
+                {StlPlayer.IsAutoPlay, site.ConfigUEditorVideoIsAutoPlay.ToString()},
+                {StlPlayer.PlayBy, site.ConfigUEditorVideoPlayBy},
                 {"style", "width: 333px; height: 333px;" }
             };
-            if (site.Additional.ConfigUEditorVideoIsImageUrl && !string.IsNullOrEmpty(imageUrl))
+            if (site.ConfigUEditorVideoIsImageUrl && !string.IsNullOrEmpty(imageUrl))
             {
                 dict.Add(StlPlayer.ImageUrl, imageUrl);
             }
-            if (site.Additional.ConfigUEditorVideoIsWidth)
+            if (site.ConfigUEditorVideoIsWidth)
             {
-                dict.Add(StlPlayer.Width, site.Additional.ConfigUEditorVideoWidth.ToString());
+                dict.Add(StlPlayer.Width, site.ConfigUEditorVideoWidth.ToString());
             }
-            if (site.Additional.ConfigUEditorVideoIsHeight)
+            if (site.ConfigUEditorVideoIsHeight)
             {
-                dict.Add(StlPlayer.Height, site.Additional.ConfigUEditorVideoHeight.ToString());
+                dict.Add(StlPlayer.Height, site.ConfigUEditorVideoHeight.ToString());
             }
 
             return GetInsertHtmlScript(attributeName,
@@ -61,7 +62,7 @@ namespace SiteServer.CMS.Core
             var dict = new Dictionary<string, string>
             {
                 {StlPlayer.PlayUrl, playUrl},
-                {StlPlayer.IsAutoPlay, site.Additional.ConfigUEditorAudioIsAutoPlay.ToString()},
+                {StlPlayer.IsAutoPlay, site.ConfigUEditorAudioIsAutoPlay.ToString()},
                 {"style", "width: 400px; height: 40px;" }
             };
 

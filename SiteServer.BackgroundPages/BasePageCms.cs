@@ -1,8 +1,8 @@
 ﻿using System.Collections.Specialized;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages
@@ -11,27 +11,27 @@ namespace SiteServer.BackgroundPages
 	{
         public bool HasChannelPermissions(int channelId, params string[] channelPermissionArray)
         {
-            return AuthRequest.AdminPermissionsImpl.HasChannelPermissions(SiteId, channelId, channelPermissionArray);
+            return AuthRequest.AdminPermissionsImpl.HasChannelPermissionsAsync(SiteId, channelId, channelPermissionArray).GetAwaiter().GetResult();
         }
 
         public bool HasChannelPermissionsIgnoreChannelId(params string[] channelPermissionArray)
         {
-            return AuthRequest.AdminPermissionsImpl.HasChannelPermissionsIgnoreChannelId(channelPermissionArray);
+            return AuthRequest.AdminPermissionsImpl.HasChannelPermissionsIgnoreChannelIdAsync(channelPermissionArray).GetAwaiter().GetResult();
         }
 
         public bool HasSitePermissions(params string[] websitePermissionArray)
         {
-            return AuthRequest.AdminPermissionsImpl.HasSitePermissions(SiteId, websitePermissionArray);
+            return AuthRequest.AdminPermissionsImpl.HasSitePermissionsAsync(SiteId, websitePermissionArray).GetAwaiter().GetResult();
         }
 
         public bool IsOwningChannelId(int channelId)
         {
-            return AuthRequest.AdminPermissionsImpl.IsOwningChannelId(channelId);
+            return AuthRequest.AdminPermissionsImpl.IsOwningChannelIdAsync(channelId).GetAwaiter().GetResult();
         }
 
         public bool IsDescendantOwningChannelId(int channelId)
         {
-            return AuthRequest.AdminPermissionsImpl.IsDescendantOwningChannelId(SiteId, channelId);
+            return AuthRequest.AdminPermissionsImpl.IsDescendantOwningChannelIdAsync(SiteId, channelId).GetAwaiter().GetResult();
         }
 
         private int _siteId = -1;
@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages
 
         public void VerifySitePermissions(params string[] sitePermissions)
         {
-            if (AuthRequest.AdminPermissionsImpl.HasSitePermissions(SiteId, sitePermissions))
+            if (AuthRequest.AdminPermissionsImpl.HasSitePermissionsAsync(SiteId, sitePermissions).GetAwaiter().GetResult())
             {
                 return;
             }

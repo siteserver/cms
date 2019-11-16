@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -26,22 +27,22 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
-                TbFileUploadDirectoryName.Text = Site.Additional.FileUploadDirectoryName;
+                TbFileUploadDirectoryName.Text = Site.FileUploadDirectoryName;
 
                 DdlFileUploadDateFormatString.Items.Add(new ListItem("按年存入不同目录(不推荐)", EDateFormatTypeUtils.GetValue(EDateFormatType.Year)));
                 DdlFileUploadDateFormatString.Items.Add(new ListItem("按年/月存入不同目录", EDateFormatTypeUtils.GetValue(EDateFormatType.Month)));
                 DdlFileUploadDateFormatString.Items.Add(new ListItem("按年/月/日存入不同目录", EDateFormatTypeUtils.GetValue(EDateFormatType.Day)));
-                ControlUtils.SelectSingleItemIgnoreCase(DdlFileUploadDateFormatString, Site.Additional.FileUploadDateFormatString);
+                ControlUtils.SelectSingleItemIgnoreCase(DdlFileUploadDateFormatString, Site.FileUploadDateFormatString);
 
 				EBooleanUtils.AddListItems(DdlIsFileUploadChangeFileName, "自动修改文件名", "保持文件名不变");
-                ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, Site.Additional.IsFileUploadChangeFileName.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, Site.IsFileUploadChangeFileName.ToString());
 
-                TbFileUploadTypeCollection.Text = Site.Additional.FileUploadTypeCollection.Replace("|", ",");
-                var mbSize = GetMbSize(Site.Additional.FileUploadTypeMaxSize);
+                TbFileUploadTypeCollection.Text = Site.FileUploadTypeCollection.Replace("|", ",");
+                var mbSize = GetMbSize(Site.FileUploadTypeMaxSize);
 				if (mbSize == 0)
 				{
                     DdlFileUploadTypeUnit.SelectedIndex = 0;
-                    TbFileUploadTypeMaxSize.Text = Site.Additional.FileUploadTypeMaxSize.ToString();
+                    TbFileUploadTypeMaxSize.Text = Site.FileUploadTypeMaxSize.ToString();
 				}
 				else
 				{
@@ -65,14 +66,14 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 			if (Page.IsPostBack && Page.IsValid)
 			{
-                Site.Additional.FileUploadDirectoryName = TbFileUploadDirectoryName.Text;
+                Site.FileUploadDirectoryName = TbFileUploadDirectoryName.Text;
 
-                Site.Additional.FileUploadDateFormatString = EDateFormatTypeUtils.GetValue(EDateFormatTypeUtils.GetEnumType(DdlFileUploadDateFormatString.SelectedValue));
-                Site.Additional.IsFileUploadChangeFileName = TranslateUtils.ToBool(DdlIsFileUploadChangeFileName.SelectedValue);
+                Site.FileUploadDateFormatString = EDateFormatTypeUtils.GetValue(EDateFormatTypeUtils.GetEnumType(DdlFileUploadDateFormatString.SelectedValue));
+                Site.IsFileUploadChangeFileName = TranslateUtils.ToBool(DdlIsFileUploadChangeFileName.SelectedValue);
 
-                Site.Additional.FileUploadTypeCollection = TbFileUploadTypeCollection.Text.Replace(",", "|");
+                Site.FileUploadTypeCollection = TbFileUploadTypeCollection.Text.Replace(",", "|");
                 var kbSize = int.Parse(TbFileUploadTypeMaxSize.Text);
-                Site.Additional.FileUploadTypeMaxSize = (DdlFileUploadTypeUnit.SelectedIndex == 0) ? kbSize : 1024 * kbSize;
+                Site.FileUploadTypeMaxSize = (DdlFileUploadTypeUnit.SelectedIndex == 0) ? kbSize : 1024 * kbSize;
 				
 				try
 				{

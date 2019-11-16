@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -9,7 +10,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
     [StlElement(Title = "请求实体", Description = "通过 {request.} 实体在模板中显示地址栏请求参数")]
     public static class StlRequestEntities
 	{
-        internal static string Parse(string stlEntity, PageInfo pageInfo)
+        internal static async Task<string> ParseAsync(string stlEntity, PageInfo pageInfo)
         {
             var parsedContent = string.Empty;
             try

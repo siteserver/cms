@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using Datory;
+using SiteServer.CMS.Context;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -331,7 +332,7 @@ namespace SiteServer.CMS.Core
 
                 if (wordNum > 0)
                 {
-                    parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
+                    parsedContent = WebUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                 }
 
                 if (isReturnToBr)

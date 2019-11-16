@@ -8,8 +8,6 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -25,14 +23,14 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
                 var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetQueryString("contentIds"));
 
                 if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     return Unauthorized();
@@ -41,13 +39,13 @@ namespace SiteServer.API.Controllers.Home
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var retVal = new List<Dictionary<string, object>>();
+                var retVal = new List<IDictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+                    var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -56,11 +54,11 @@ namespace SiteServer.API.Controllers.Home
                     retVal.Add(dict);
                 }
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, site, channelId, out var checkedLevel);
+                var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, site, channelId);
                 var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
                 var allChannels =
-                    ChannelManager.GetChannels(siteId, request.AdminPermissionsImpl, ConfigManager.ChannelPermissions.ContentAdd);
+                    await ChannelManager.GetChannelsAsync(siteId, request.AdminPermissionsImpl, ConfigManager.ChannelPermissions.ContentAdd);
 
                 return Ok(new
                 {
@@ -72,7 +70,7 @@ namespace SiteServer.API.Controllers.Home
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -82,7 +80,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -93,7 +91,7 @@ namespace SiteServer.API.Controllers.Home
                 var reasons = request.GetPostString("reasons");
 
                 if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     return Unauthorized();
@@ -102,50 +100,62 @@ namespace SiteServer.API.Controllers.Home
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = checkedLevel >= site.Additional.CheckContentLevel;
+                var isChecked = checkedLevel >= site.CheckContentLevel;
                 if (isChecked)
                 {
                     checkedLevel = 0;
                 }
-                var tableName = ChannelManager.GetTableName(site, channelInfo);
+                var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
 
-                var contentInfoList = new List<ContentInfo>();
+                var contentInfoList = new List<Content>();
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+                    var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
                     contentInfo.Set(ContentAttribute.CheckUserName, request.AdminName);
                     contentInfo.Set(ContentAttribute.CheckDate, DateTime.Now);
                     contentInfo.Set(ContentAttribute.CheckReasons, reasons);
 
-                    contentInfo.IsChecked = isChecked;
+                    contentInfo.Checked = isChecked;
                     contentInfo.CheckedLevel = checkedLevel;
 
                     if (isTranslate && translateChannelId > 0)
                     {
-                        var translateChannelInfo = ChannelManager.GetChannelInfo(siteId, translateChannelId);
+                        var translateChannelInfo = await ChannelManager.GetChannelAsync(siteId, translateChannelId);
                         contentInfo.ChannelId = translateChannelInfo.Id;
-                        DataProvider.ContentDao.Update(site, translateChannelInfo, contentInfo);
+                        await DataProvider.ContentDao.UpdateAsync(site, translateChannelInfo, contentInfo);
                     }
                     else
                     {
-                        DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
+                        await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
                     contentInfoList.Add(contentInfo);
 
-                    var checkInfo = new ContentCheckInfo(0, tableName, siteId, contentInfo.ChannelId, contentInfo.Id, request.AdminName, isChecked, checkedLevel, DateTime.Now, reasons);
-                    DataProvider.ContentCheckDao.Insert(checkInfo);
+                    var checkInfo = new ContentCheck
+                    {
+                        TableName = tableName,
+                        SiteId = siteId,
+                        ChannelId = contentInfo.ChannelId,
+                        ContentId = contentInfo.Id,
+                        UserName = request.AdminName,
+                        IsChecked = isChecked.ToString(),
+                        CheckedLevel = checkedLevel,
+                        CheckDate = DateTime.Now,
+                        Reasons = reasons
+                    };
+
+                    await DataProvider.ContentCheckDao.InsertAsync(checkInfo);
                 }
 
                 if (isTranslate && translateChannelId > 0)
                 {
                     ContentManager.RemoveCache(tableName, channelId);
-                    var translateTableName = ChannelManager.GetTableName(site, translateChannelId);
+                    var translateTableName = await ChannelManager.GetTableNameAsync(site, translateChannelId);
                     ContentManager.RemoveCache(translateTableName, translateChannelId);
                 }
 
@@ -153,12 +163,12 @@ namespace SiteServer.API.Controllers.Home
 
                 foreach (var contentInfo in contentInfoList)
                 {
-                    CreateManager.CreateContent(siteId, contentInfo.ChannelId, contentInfo.Id);
+                    await CreateManager.CreateContentAsync(siteId, contentInfo.ChannelId, contentInfo.Id);
                 }
-                CreateManager.TriggerContentChangedEvent(siteId, channelId);
+                await CreateManager.TriggerContentChangedEventAsync(siteId, channelId);
                 if (isTranslate && translateChannelId > 0)
                 {
-                    CreateManager.TriggerContentChangedEvent(siteId, translateChannelId);
+                    await CreateManager.TriggerContentChangedEventAsync(siteId, translateChannelId);
                 }
 
                 return Ok(new
@@ -168,7 +178,7 @@ namespace SiteServer.API.Controllers.Home
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

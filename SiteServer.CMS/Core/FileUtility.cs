@@ -1,11 +1,10 @@
 using System;
 using SiteServer.Utils;
 using System.Collections.Generic;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Context.Images;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
-using SiteServer.Utils.Enumerations;
-using SiteServer.Utils.Images;
 
 namespace SiteServer.CMS.Core
 {
@@ -18,21 +17,21 @@ namespace SiteServer.CMS.Core
                 var fileExtName = PathUtils.GetExtension(imagePath);
                 if (EFileSystemTypeUtils.IsImage(fileExtName))
                 {
-                    if (site.Additional.IsWaterMark)
+                    if (site.IsWaterMark)
                     {
-                        if (site.Additional.IsImageWaterMark)
+                        if (site.IsImageWaterMark)
                         {
-                            if (!string.IsNullOrEmpty(site.Additional.WaterMarkImagePath))
+                            if (!string.IsNullOrEmpty(site.WaterMarkImagePath))
                             {
-                                ImageUtils.AddImageWaterMark(imagePath, PathUtility.MapPath(site, site.Additional.WaterMarkImagePath), site.Additional.WaterMarkPosition, site.Additional.WaterMarkTransparency, site.Additional.WaterMarkMinWidth, site.Additional.WaterMarkMinHeight);
+                                ImageUtils.AddImageWaterMark(imagePath, PathUtility.MapPath(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
                             }
                         }
                         else
                         {
-                            if (!string.IsNullOrEmpty(site.Additional.WaterMarkFormatString))
+                            if (!string.IsNullOrEmpty(site.WaterMarkFormatString))
                             {
                                 var now = DateTime.Now;
-                                ImageUtils.AddTextWaterMark(imagePath, string.Format(site.Additional.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), site.Additional.WaterMarkFontName, site.Additional.WaterMarkFontSize, site.Additional.WaterMarkPosition, site.Additional.WaterMarkTransparency, site.Additional.WaterMarkMinWidth, site.Additional.WaterMarkMinHeight);
+                                ImageUtils.AddTextWaterMark(imagePath, string.Format(site.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), site.WaterMarkFontName, site.WaterMarkFontSize, site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
                             }
                         }
                     }
@@ -57,48 +56,48 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void MoveFileByContentInfo(Site sourceSite, Site destSite, ContentInfo contentInfo)
+        public static void MoveFileByContentInfo(Site sourceSite, Site destSite, Content content)
         {
-            if (contentInfo == null || sourceSite.Id == destSite.Id) return;
+            if (content == null || sourceSite.Id == destSite.Id) return;
 
             try
             {
                 var fileUrls = new List<string>
                 {
-                    contentInfo.GetString(BackgroundContentAttribute.ImageUrl),
-                    contentInfo.GetString(BackgroundContentAttribute.VideoUrl),
-                    contentInfo.GetString(BackgroundContentAttribute.FileUrl)
+                    content.Get<string>(ContentAttribute.ImageUrl),
+                    content.Get<string>(ContentAttribute.VideoUrl),
+                    content.Get<string>(ContentAttribute.FileUrl)
                 };
 
-                foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl))))
+                foreach (var url in TranslateUtils.StringCollectionToStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl))))
                 {
                     if (!fileUrls.Contains(url))
                     {
                         fileUrls.Add(url);
                     }
                 }
-                foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.VideoUrl))))
+                foreach (var url in TranslateUtils.StringCollectionToStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.VideoUrl))))
                 {
                     if (!fileUrls.Contains(url))
                     {
                         fileUrls.Add(url);
                     }
                 }
-                foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl))))
+                foreach (var url in TranslateUtils.StringCollectionToStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl))))
                 {
                     if (!fileUrls.Contains(url))
                     {
                         fileUrls.Add(url);
                     }
                 }
-                foreach (var url in RegexUtils.GetOriginalImageSrcs(contentInfo.GetString(BackgroundContentAttribute.Content)))
+                foreach (var url in RegexUtils.GetOriginalImageSrcs(content.Get<string>(ContentAttribute.Content)))
                 {
                     if (!fileUrls.Contains(url))
                     {
                         fileUrls.Add(url);
                     }
                 }
-                foreach (var url in RegexUtils.GetOriginalLinkHrefs(contentInfo.GetString(BackgroundContentAttribute.Content)))
+                foreach (var url in RegexUtils.GetOriginalLinkHrefs(content.Get<string>(ContentAttribute.Content)))
                 {
                     if (!fileUrls.Contains(url) && PageUtils.IsVirtualUrl(url))
                     {

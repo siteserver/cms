@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -29,9 +29,18 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var user = new User(request.GetPostObject<Dictionary<string, object>>());
-                if (!ConfigManager.SystemConfigInfo.IsUserRegistrationGroup)
+                var request = await AuthenticatedRequest.GetRequestAsync();
+
+                var user = new User();
+                var dict = request.GetPostObject<Dictionary<string, object>>();
+                foreach (var o in dict)
+                {
+                    user.Set(o.Key, o.Value);
+                }
+
+                var config = await ConfigManager.GetInstanceAsync();
+
+                if (!config.IsUserRegistrationGroup)
                 {
                     user.GroupId = 0;
                 }
@@ -50,7 +59,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -60,13 +69,13 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isAuth = request.IsApiAuthenticated && await 
                              AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var body = request.GetPostObject<Dictionary<string, object>>();
@@ -89,7 +98,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -99,13 +108,13 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isAuth = request.IsApiAuthenticated && await 
                              AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var user = await UserManager.GetUserByUserIdAsync(id);
@@ -121,7 +130,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -131,13 +140,13 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isAuth = request.IsApiAuthenticated && await 
                              AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 if (!await DataProvider.UserDao.IsExistsAsync(id)) return NotFound();
@@ -151,7 +160,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -175,13 +184,13 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isAuth = request.IsApiAuthenticated && await 
                              AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var user = await UserManager.GetUserByUserIdAsync(id);
@@ -219,7 +228,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -229,11 +238,11 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isAuth = request.IsApiAuthenticated && await 
                              AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var top = request.GetQueryInt("top", 20);
@@ -246,7 +255,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -256,7 +265,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
@@ -268,7 +277,7 @@ namespace SiteServer.API.Controllers.V1
                     return BadRequest(valid.ErrorMessage);
                 }
 
-                var accessToken = request.UserLogin(valid.UserName, isAutoLogin);
+                var accessToken = await request.UserLoginAsync(valid.UserName, isAutoLogin);
                 var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
                 return Ok(new
@@ -280,17 +289,17 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
 
         [HttpPost, Route(RouteActionsLogout)]
-        public IHttpActionResult Logout()
+        public async Task<IHttpActionResult> Logout()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var user = request.IsUserLoggin ? request.User : null;
                 request.UserLogout();
 
@@ -301,29 +310,29 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
 
         [HttpPost, Route(RouteUserLogs)]
-        public async Task<IHttpActionResult> CreateLog(int id, [FromBody] UserLogInfo logInfo)
+        public async Task<IHttpActionResult> CreateLog(int id, [FromBody] UserLog log)
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isAuth = request.IsApiAuthenticated && await 
                              AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var user = await UserManager.GetUserByUserIdAsync(id);
                 if (user == null) return NotFound();
 
-                var retVal = DataProvider.UserLogDao.ApiInsert(user.UserName, logInfo);
+                var retVal = await DataProvider.UserLogDao.InsertAsync(user.UserName, log);
 
                 return Ok(new
                 {
@@ -332,7 +341,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -342,13 +351,13 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isAuth = request.IsApiAuthenticated && await 
                              AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var user = await UserManager.GetUserByUserIdAsync(id);
@@ -357,14 +366,14 @@ namespace SiteServer.API.Controllers.V1
                 var top = request.GetQueryInt("top", 20);
                 var skip = request.GetQueryInt("skip");
 
-                var logs = DataProvider.UserLogDao.ApiGetLogs(user.UserName, skip, top);
+                var logs = await DataProvider.UserLogDao.GetLogsAsync(user.UserName, skip, top);
 
                 return Ok(new PageResponse(logs, top, skip, request.HttpRequest.Url.AbsoluteUri)
                     {Count = await DataProvider.UserDao.GetCountAsync()});
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -374,13 +383,13 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isAuth = request.IsApiAuthenticated && await 
                              AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var user = await UserManager.GetUserByUserIdAsync(id);
@@ -407,7 +416,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

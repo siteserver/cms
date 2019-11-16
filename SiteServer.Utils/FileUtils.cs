@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {	
@@ -29,13 +28,10 @@ namespace SiteServer.Utils
 	        return text;
 	    }
 
-        public static string ReadText(string filePath, ECharset charset)
-		{
-			var sr = new StreamReader(filePath, ECharsetUtils.GetEncoding(charset));
-			var text = sr.ReadToEnd();
-			sr.Close();
-			return text;
-		}
+        public static string ReadText(string filePath)
+        {
+            return ReadText(filePath, Encoding.UTF8);
+        }
 
         public static string ReadText(string filePath, Encoding encoding)
         {
@@ -66,11 +62,6 @@ namespace SiteServer.Utils
             }
         }
 
-        public static void WriteText(string filePath, ECharset charset, string content)
-        {
-            WriteText(filePath, ECharsetUtils.GetEncoding(charset), content);
-        }
-
 	    public static void WriteText(string filePath, string content)
 	    {
 	        WriteText(filePath, Encoding.UTF8, content);
@@ -95,11 +86,6 @@ namespace SiteServer.Utils
 	    {
 	        AppendText(filePath, Encoding.UTF8, content);
 	    }
-
-        public static void AppendText(string filePath, ECharset charset, string content)
-        {
-            AppendText(filePath, ECharsetUtils.GetEncoding(charset), content);
-        }
 
 	    public static void AppendText(string filePath, Encoding encoding, string content)
 	    {
@@ -270,10 +256,9 @@ namespace SiteServer.Utils
             }
         }
 
-        public static ECharset GetFileCharset(string filePath)
+        public static Encoding GetFileCharset(string filePath)
         {
-            var encoding = EncodingType.GetType(filePath);
-            return ECharsetUtils.GetEnumType(encoding.BodyName);
+            return EncodingType.GetType(filePath);
         }
 
 	    public static string ComputeHash(string filePath)

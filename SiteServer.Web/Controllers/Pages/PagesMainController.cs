@@ -7,11 +7,11 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Api.Preview;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser;
@@ -32,16 +32,16 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var redirect = request.AdminRedirectCheck(checkInstall:true, checkDatabaseVersion:true, checkLogin:true);
+                var request = await AuthenticatedRequest.GetRequestAsync();
+                var redirect = await request.AdminRedirectCheckAsync(checkInstall:true, checkDatabaseVersion:true, checkLogin:true);
                 if (redirect != null) return Ok(redirect);
 
                 var siteId = request.GetQueryInt("siteId");
                 var site = await SiteManager.GetSiteAsync(siteId);
                 var adminInfo = request.Administrator;
                 var permissions = request.AdminPermissionsImpl;
-                var isSuperAdmin = permissions.IsConsoleAdministrator;
-                var siteIdListWithPermissions = permissions.GetSiteIdList();
+                var isSuperAdmin = await permissions.IsSuperAdminAsync();
+                var siteIdListWithPermissions = await permissions.GetSiteIdListAsync();
 
                 if (site == null || !siteIdListWithPermissions.Contains(site.Id))
                 {
@@ -84,7 +84,7 @@ namespace SiteServer.API.Controllers.Pages
                     PackageUtils.PackageIdSsCms
                 };
                 var packageList = new List<object>();
-                var dict = PluginManager.GetPluginIdAndVersionDict();
+                var dict = await PluginManager.GetPluginIdAndVersionDictAsync();
                 foreach (var id in dict.Keys)
                 {
                     packageIds.Add(id);
@@ -98,16 +98,16 @@ namespace SiteServer.API.Controllers.Pages
 
                 var siteIdListLatestAccessed = await DataProvider.AdministratorDao.UpdateSiteIdAsync(adminInfo, site.Id);
 
-                var permissionList = new List<string>(permissions.PermissionList);
-                if (permissions.HasSitePermissions(site.Id))
+                var permissionList = await permissions.GetPermissionListAsync();
+                if (await permissions.HasSitePermissionsAsync(site.Id))
                 {
-                    var websitePermissionList = permissions.GetSitePermissions(site.Id);
+                    var websitePermissionList = await permissions.GetSitePermissionsAsync(site.Id);
                     if (websitePermissionList != null)
                     {
                         permissionList.AddRange(websitePermissionList);
                     }
                 }
-                var channelPermissions = permissions.GetChannelPermissions(site.Id);
+                var channelPermissions = await permissions.GetChannelPermissionsAsync(site.Id);
                 if (channelPermissions.Count > 0)
                 {
                     permissionList.AddRange(channelPermissions);
@@ -115,20 +115,22 @@ namespace SiteServer.API.Controllers.Pages
 
                 var topMenus = await GetTopMenusAsync(site, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions);
                 var siteMenus =
-                    GetLeftMenus(site, ConfigManager.TopMenu.IdSite, isSuperAdmin, permissionList);
-                var pluginMenus = GetLeftMenus(site, string.Empty, isSuperAdmin, permissionList);
+                    await GetLeftMenusAsync(site, ConfigManager.TopMenu.IdSite, isSuperAdmin, permissionList);
+                var pluginMenus = await GetLeftMenusAsync(site, string.Empty, isSuperAdmin, permissionList);
+
+                var config = await ConfigManager.GetInstanceAsync();
 
                 return Ok(new
                 {
                     Value = true,
-                    DefaultPageUrl = PluginMenuManager.GetSystemDefaultPageUrl(siteId) ?? "dashboard.cshtml",
+                    DefaultPageUrl = await PluginMenuManager.GetSystemDefaultPageUrlAsync(siteId) ?? "dashboard.cshtml",
                     IsNightly = WebConfigUtils.IsNightlyUpdate,
                     SystemManager.ProductVersion,
                     SystemManager.PluginVersion,
                     SystemManager.TargetFramework,
                     SystemManager.EnvironmentVersion,
-                    ConfigManager.SystemConfigInfo.AdminLogoUrl,
-                    ConfigManager.SystemConfigInfo.AdminTitle,
+                    config.AdminLogoUrl,
+                    config.AdminTitle,
                     IsSuperAdmin = isSuperAdmin,
                     PackageList = packageList,
                     PackageIds = packageIds,
@@ -140,7 +142,7 @@ namespace SiteServer.API.Controllers.Pages
                         UserId = adminInfo.Id,
                         adminInfo.UserName,
                         adminInfo.AvatarUrl,
-                        Level = permissions.GetAdminLevel()
+                        Level = await permissions.GetAdminLevelAsync()
                     }
                 });
             }
@@ -207,7 +209,7 @@ namespace SiteServer.API.Controllers.Pages
             {
                 foreach (var tab in TabManager.GetTopMenuTabs())
                 {
-                    var tabs = TabManager.GetTabList(tab.Id, 0);
+                    var tabs = await TabManager.GetTabListAsync(tab.Id, 0);
                     tab.Children = tabs.ToArray();
 
                     menus.Add(tab);
@@ -217,11 +219,11 @@ namespace SiteServer.API.Controllers.Pages
             return menus;
         }
 
-        private static List<Tab> GetLeftMenus(Site site, string topId, bool isSuperAdmin, List<string> permissionList)
+        private static async Task<List<Tab>> GetLeftMenusAsync(Site site, string topId, bool isSuperAdmin, List<string> permissionList)
         {
             var menus = new List<Tab>();
 
-            var tabs = TabManager.GetTabList(topId, site.Id);
+            var tabs = await TabManager.GetTabListAsync(topId, site.Id);
             foreach (var parent in tabs)
             {
                 if (!isSuperAdmin && !TabManager.IsValid(parent, permissionList)) continue;
@@ -280,7 +282,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin || request.Administrator == null)
                 {
                     return Unauthorized();
@@ -295,10 +297,12 @@ namespace SiteServer.API.Controllers.Pages
                 }
 #endif
 
-                if (request.Administrator.LastActivityDate != null && ConfigManager.SystemConfigInfo.IsAdminEnforceLogout)
+                var config = await ConfigManager.GetInstanceAsync();
+
+                if (request.Administrator.LastActivityDate != null && config.IsAdminEnforceLogout)
                 {
                     var ts = new TimeSpan(DateTime.Now.Ticks - request.Administrator.LastActivityDate.Value.Ticks);
-                    if (ts.TotalMinutes > ConfigManager.SystemConfigInfo.AdminEnforceLogoutMinutes)
+                    if (ts.TotalMinutes > config.AdminEnforceLogoutMinutes)
                     {
                         return Unauthorized();
                     }
@@ -340,9 +344,9 @@ namespace SiteServer.API.Controllers.Pages
         }
 
         [HttpPost, Route(RouteActionsDownload)]
-        public IHttpActionResult Download()
+        public async Task<IHttpActionResult> Download()
         {
-            var request = new AuthenticatedRequest();
+            var request = await AuthenticatedRequest.GetRequestAsync();
 
             if (!request.IsAdminLoggin)
             {
@@ -366,7 +370,7 @@ namespace SiteServer.API.Controllers.Pages
             {
                 if (StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSsCms))
                 {
-                    CacheDbUtils.RemoveAndInsert(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
+                    await DataProvider.DbCacheDao.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
                 }
             }
 

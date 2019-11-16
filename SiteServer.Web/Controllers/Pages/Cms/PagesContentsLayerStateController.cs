@@ -20,14 +20,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
                 var contentId = request.GetQueryInt("contentId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();
@@ -36,18 +36,18 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+                var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
                 var title = WebUtils.GetContentTitle(site, contentInfo, string.Empty);
                 var checkState = 
                     CheckManager.GetCheckState(site, contentInfo);
 
-                var tableName = ChannelManager.GetTableName(site, channelInfo);
-                var contentChecks = DataProvider.ContentCheckDao.GetCheckInfoList(tableName, contentId);
+                var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
+                var contentChecks = await DataProvider.ContentCheckDao.GetCheckListAsync(tableName, contentId);
 
                 return Ok(new
                 {
@@ -58,7 +58,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

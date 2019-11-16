@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
@@ -53,8 +54,8 @@ namespace SiteServer.BackgroundPages.Cms
             var mod = 0;
             var count = 0;
             var entitiesDictionary = _isChannel
-                ? PathUtility.ChannelFilePathRules.GetDictionary(Site, _channelId)
-                : PathUtility.ContentFilePathRules.GetDictionary(Site, _channelId);
+                ? PathUtility.ChannelFilePathRules.GetDictionaryAsync(Site, _channelId).GetAwaiter().GetResult()
+                : PathUtility.ContentFilePathRules.GetDictionaryAsync(Site, _channelId).GetAwaiter().GetResult();
             
             foreach (string label in entitiesDictionary.Keys)
             {

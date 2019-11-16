@@ -6,7 +6,7 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Db;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
@@ -22,16 +22,16 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
                 var adminNames = new List<string>();
 
-                if (request.AdminPermissionsImpl.IsConsoleAdministrator)
+                if (await request.AdminPermissionsImpl.IsSuperAdminAsync())
                 {
                     adminNames = (await DataProvider.AdministratorDao.GetUserNameListAsync()).ToList();
                 }
@@ -42,7 +42,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 var scopes = new List<string>(AccessTokenManager.ScopeList);
 
-                foreach (var service in PluginManager.Services)
+                foreach (var service in await PluginManager.GetServicesAsync())
                 {
                     if (service.IsApiAuthorization)
                     {
@@ -71,9 +71,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -95,13 +95,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         }
 
         [HttpPost, Route(Route)]
-        public async Task<IHttpActionResult> Submit([FromBody] AccessTokenInfo itemObj)
+        public async Task<IHttpActionResult> Submit([FromBody] AccessToken itemObj)
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -130,7 +130,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                         return BadRequest("保存失败，已存在相同标题的API密钥！");
                     }
 
-                    var tokenInfo = new AccessTokenInfo
+                    var tokenInfo = new AccessToken
                     {
                         Title = itemObj.Title,
                         AdminName = itemObj.AdminName,

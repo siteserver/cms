@@ -4,12 +4,12 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PhSiteId.Visible = _isSiteSelect;
 
-            var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList();
+            var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdListAsync().GetAwaiter().GetResult();
 
             var mySystemInfoArrayList = new ArrayList();
             var parentWithChildren = new Hashtable();
@@ -100,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (targetChannelId > 0)
             {
                 var siteName = SiteManager.GetSiteAsync(_targetSiteId).GetAwaiter().GetResult().SiteName;
-                var nodeNames = ChannelManager.GetChannelNameNavigation(_targetSiteId, targetChannelId);
+                var nodeNames = ChannelManager.GetChannelNameNavigationAsync(_targetSiteId, targetChannelId).GetAwaiter().GetResult();
                 if (_targetSiteId != SiteId)
                 {
                     nodeNames = siteName + "：" + nodeNames;
@@ -115,7 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(_targetSiteId, _targetSiteId);
+                var nodeInfo = ChannelManager.GetChannelAsync(_targetSiteId, _targetSiteId).GetAwaiter().GetResult();
                 var linkUrl = GetRedirectUrl(_targetSiteId, _targetSiteId.ToString());
                 LtlChannelName.Text = $"<a href='{linkUrl}'>{nodeInfo.ChannelName}</a>";
 
@@ -125,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
                 };
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteManager.GetSiteAsync(_targetSiteId).GetAwaiter().GetResult(), string.Empty, ELoadingType.ChannelClickSelect, additional));
 
-                var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, EScopeType.Children, string.Empty, string.Empty, string.Empty);
+                var channelIdList = ChannelManager.GetChannelIdListAsync(nodeInfo, EScopeType.Children, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
 
                 RptChannel.DataSource = channelIdList;
                 RptChannel.ItemDataBound += RptChannel_ItemDataBound;
@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (!IsDescendantOwningChannelId(channelId)) e.Item.Visible = false;
             }
-            var nodeInfo = ChannelManager.GetChannelInfo(_targetSiteId, channelId);
+            var nodeInfo = ChannelManager.GetChannelAsync(_targetSiteId, channelId).GetAwaiter().GetResult();
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
@@ -150,7 +150,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ["linkUrl"] = GetRedirectUrl(_targetSiteId, string.Empty)
             };
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(Site, nodeInfo, enabled, ELoadingType.ChannelClickSelect, additional, AuthRequest.AdminPermissionsImpl);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtmlAsync(Site, nodeInfo, enabled, ELoadingType.ChannelClickSelect, additional, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
         }
 
         public void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)

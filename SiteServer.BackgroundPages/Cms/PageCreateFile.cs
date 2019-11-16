@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Settings;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
@@ -24,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
 
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListOfFile(SiteId);
+            var templateInfoList = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.FileTemplate).GetAwaiter().GetResult();
 
             foreach (var templateInfo in templateInfoList)
             {
@@ -54,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var templateId in templateIdList)
             {
-                CreateManager.CreateFile(SiteId, templateId);
+                CreateManager.CreateFileAsync(SiteId, templateId).GetAwaiter().GetResult();
             }
 
             PageUtils.Redirect(CmsPages.GetCreateStatusUrl(SiteId));

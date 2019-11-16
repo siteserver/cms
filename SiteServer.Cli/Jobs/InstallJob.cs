@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -100,7 +100,7 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            if (!SystemManager.IsNeedInstall())
+            if (!await SystemManager.IsNeedInstallAsync())
             {
                 await CliUtils.PrintErrorAsync("系统已安装在 web.config 指定的数据库中，命令执行失败");
                 return;

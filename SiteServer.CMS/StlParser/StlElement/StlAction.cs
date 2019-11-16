@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -21,7 +23,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "动作类型")]
         private const string Type = nameof(Type);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var type = string.Empty;
 
@@ -34,10 +36,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, type);
+            return await ParseImplAsync(pageInfo, contextInfo, type);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string type)
         {
             var stlAnchor = new HtmlAnchor();
 
@@ -50,7 +52,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var onclick = string.Empty;
 
             var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+            await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
             stlAnchor.InnerHtml = innerBuilder.ToString();
 
             //计算动作开始

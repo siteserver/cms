@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Plugin
@@ -18,7 +19,7 @@ namespace SiteServer.CMS.Plugin
 
             _watcher = new FileSystemWatcher
             {
-                Path = PathUtils.PluginsPath,
+                Path = WebUtils.PluginsPath,
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
                 IncludeSubdirectories = true
             };
@@ -35,7 +36,7 @@ namespace SiteServer.CMS.Plugin
         private void Watcher_EventHandler(object sender, FileSystemEventArgs e)
         {
             var fileName = PathUtils.GetFileNameWithoutExtension(e.FullPath);
-            if (!PluginManager.IsExists(fileName)) return;
+            if (!PluginManager.IsExistsAsync(fileName).GetAwaiter().GetResult()) return;
             if (!e.FullPath.EndsWith(".nuspec") && !e.FullPath.EndsWith(".dll")) return;
 
             try

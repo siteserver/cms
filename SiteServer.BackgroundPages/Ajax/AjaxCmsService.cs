@@ -3,10 +3,11 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -73,7 +74,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var siteId = TranslateUtils.ToInt(Request["siteId"]);
                 var contents = Request.Form["content"];
-                var tags = WordSpliter.GetKeywords(contents, siteId, 10);
+                var tags = WordSpliter.GetKeywordsAsync(contents, siteId, 10).GetAwaiter().GetResult();
 
                 Page.Response.Write(tags);
                 Page.Response.End();
@@ -85,7 +86,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var siteId = TranslateUtils.ToInt(Request["siteId"]);
                 var tag = Request["tag"];
-                var tags = GetTags(siteId, tag);
+                var tags = GetTagsAsync(siteId, tag).GetAwaiter().GetResult();
 
                 Page.Response.Write(tags);
                 Page.Response.End();
@@ -102,9 +103,9 @@ namespace SiteServer.BackgroundPages.Ajax
             var retVal = new StringBuilder();
 
             var site = await SiteManager.GetSiteAsync(siteId);
-            var tableName = ChannelManager.GetTableName(site, channelId);
+            var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
 
-            var titleList = DataProvider.ContentDao.GetValueListByStartString(tableName, channelId, ContentAttribute.Title, title, 10);
+            var titleList = await DataProvider.ContentDao.GetValueListByStartStringAsync(tableName, channelId, ContentAttribute.Title, title, 10);
             if (titleList.Count > 0)
             {
                 foreach (var value in titleList)
@@ -118,11 +119,11 @@ namespace SiteServer.BackgroundPages.Ajax
             return retVal.ToString();
         }
 
-        public string GetTags(int siteId, string tag)
+        public async Task<string> GetTagsAsync(int siteId, string tag)
         {
             var retVal = new StringBuilder();
 
-            var tagList = DataProvider.TagDao.GetTagListByStartString(siteId, tag, 10);
+            var tagList = await DataProvider.ContentTagDao.GetTagListByStartStringAsync(siteId, tag, 10);
             if (tagList.Count > 0)
             {
                 foreach (var value in tagList)

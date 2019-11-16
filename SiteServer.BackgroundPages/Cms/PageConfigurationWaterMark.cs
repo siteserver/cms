@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Drawing.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -42,30 +43,30 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             EBooleanUtils.AddListItems(DdlIsWaterMark);
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsWaterMark, Site.Additional.IsWaterMark.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsWaterMark, Site.IsWaterMark.ToString());
 
-            LoadWaterMarkPosition(Site.Additional.WaterMarkPosition);
+            LoadWaterMarkPosition(Site.WaterMarkPosition);
 
             for (var i = 1; i <= 10; i++)
             {
                 DdlWaterMarkTransparency.Items.Add(new ListItem(i + "0%", i.ToString()));
             }
-            ControlUtils.SelectSingleItemIgnoreCase(DdlWaterMarkTransparency, Site.Additional.WaterMarkTransparency.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlWaterMarkTransparency, Site.WaterMarkTransparency.ToString());
 
-            TbWaterMarkMinWidth.Text = Site.Additional.WaterMarkMinWidth.ToString();
-            TbWaterMarkMinHeight.Text = Site.Additional.WaterMarkMinHeight.ToString();
+            TbWaterMarkMinWidth.Text = Site.WaterMarkMinWidth.ToString();
+            TbWaterMarkMinHeight.Text = Site.WaterMarkMinHeight.ToString();
 
             EBooleanUtils.AddListItems(DdlIsImageWaterMark, "图片型", "文字型");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsImageWaterMark, Site.Additional.IsImageWaterMark.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsImageWaterMark, Site.IsImageWaterMark.ToString());
 
-            TbWaterMarkFormatString.Text = Site.Additional.WaterMarkFormatString;
+            TbWaterMarkFormatString.Text = Site.WaterMarkFormatString;
 
             LoadSystemFont();
-            ControlUtils.SelectSingleItemIgnoreCase(DdlWaterMarkFontName, Site.Additional.WaterMarkFontName);
+            ControlUtils.SelectSingleItemIgnoreCase(DdlWaterMarkFontName, Site.WaterMarkFontName);
 
-            TbWaterMarkFontSize.Text = Site.Additional.WaterMarkFontSize.ToString();
+            TbWaterMarkFontSize.Text = Site.WaterMarkFontSize.ToString();
 
-            TbWaterMarkImagePath.Text = Site.Additional.WaterMarkImagePath;
+            TbWaterMarkImagePath.Text = Site.WaterMarkImagePath;
                
             DdlIsWaterMark_SelectedIndexChanged(null, null);
             TbWaterMarkImagePath.Attributes.Add("onchange", GetShowImageScript("preview_WaterMarkImagePath", Site.WebUrl));
@@ -117,16 +118,16 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    Site.Additional.IsWaterMark = TranslateUtils.ToBool(DdlIsWaterMark.SelectedValue);
-		    Site.Additional.WaterMarkPosition = TranslateUtils.ToInt(Request.Form["WaterMarkPosition"]);
-		    Site.Additional.WaterMarkTransparency = TranslateUtils.ToInt(DdlWaterMarkTransparency.SelectedValue);
-		    Site.Additional.WaterMarkMinWidth = TranslateUtils.ToInt(TbWaterMarkMinWidth.Text);
-		    Site.Additional.WaterMarkMinHeight = TranslateUtils.ToInt(TbWaterMarkMinHeight.Text);
-		    Site.Additional.IsImageWaterMark = TranslateUtils.ToBool(DdlIsImageWaterMark.SelectedValue);
-		    Site.Additional.WaterMarkFormatString = TbWaterMarkFormatString.Text;
-		    Site.Additional.WaterMarkFontName = DdlWaterMarkFontName.SelectedValue;
-		    Site.Additional.WaterMarkFontSize = TranslateUtils.ToInt(TbWaterMarkFontSize.Text);
-		    Site.Additional.WaterMarkImagePath = TbWaterMarkImagePath.Text;
+		    Site.IsWaterMark = TranslateUtils.ToBool(DdlIsWaterMark.SelectedValue);
+		    Site.WaterMarkPosition = TranslateUtils.ToInt(Request.Form["WaterMarkPosition"]);
+		    Site.WaterMarkTransparency = TranslateUtils.ToInt(DdlWaterMarkTransparency.SelectedValue);
+		    Site.WaterMarkMinWidth = TranslateUtils.ToInt(TbWaterMarkMinWidth.Text);
+		    Site.WaterMarkMinHeight = TranslateUtils.ToInt(TbWaterMarkMinHeight.Text);
+		    Site.IsImageWaterMark = TranslateUtils.ToBool(DdlIsImageWaterMark.SelectedValue);
+		    Site.WaterMarkFormatString = TbWaterMarkFormatString.Text;
+		    Site.WaterMarkFontName = DdlWaterMarkFontName.SelectedValue;
+		    Site.WaterMarkFontSize = TranslateUtils.ToInt(TbWaterMarkFontSize.Text);
+		    Site.WaterMarkImagePath = TbWaterMarkImagePath.Text;
 				
 		    try
 		    {

@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
-using SiteServer.Utils.Enumerations;
+using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -83,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+                var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
                 if (nodeInfo == null) return;
 
                 if (nodeInfo.ParentId == 0)
@@ -94,9 +97,9 @@ namespace SiteServer.BackgroundPages.Cms
                     PhFilePath.Visible = false;
                 }
 
-                BtnSubmit.Attributes.Add("onclick", $"if (UE && UE.getEditor('Content', {UEditorUtils.ConfigValues})){{ UE.getEditor('Content', {UEditorUtils.ConfigValues}).sync(); }}");
+                BtnSubmit.Attributes.Add("onclick", $"if (UE && UE.getEditor('Body', {UEditorUtils.ConfigValues})){{ UE.getEditor('Body', {UEditorUtils.ConfigValues}).sync(); }}");
 
-                CacAttributes.Attributes = nodeInfo.Additional;
+                CacAttributes.Attributes = nodeInfo.ToDictionary();
 
                 if (PhLinkType.Visible)
                 {
@@ -105,7 +108,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ETaxisTypeUtils.AddListItemsForChannelEdit(DdlTaxisType);
 
-                ControlUtils.AddListControlItems(CblNodeGroupNameCollection, ChannelGroupManager.GetGroupNameList(SiteId));
+                ControlUtils.AddListControlItems(CblNodeGroupNameCollection, ChannelGroupManager.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult());
                 //CblNodeGroupNameCollection.DataSource = DataProvider.ChannelGroupDao.GetDataSource(SiteId);
 
                 if (PhChannelTemplateId.Visible)
@@ -134,7 +137,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 foreach (ListItem item in CblNodeGroupNameCollection.Items)
                 {
-                    item.Selected = StringUtils.In(nodeInfo.GroupNameCollection, item.Value);
+                    item.Selected = StringUtils.ContainsIgnoreCase(nodeInfo.GroupNames, item.Value);
                 }
                 if (PhFilePath.Visible)
                 {
@@ -145,11 +148,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     ControlUtils.SelectSingleItem(DdlLinkType, nodeInfo.LinkType);
                 }
-                ControlUtils.SelectSingleItem(DdlTaxisType, nodeInfo.Additional.DefaultTaxisType);
+                ControlUtils.SelectSingleItem(DdlTaxisType, nodeInfo.DefaultTaxisType);
 
                 TbImageUrl.Text = nodeInfo.ImageUrl;
                 LtlImageUrlButtonGroup.Text = WebUtils.GetImageUrlButtonGroupHtml(Site, TbImageUrl.ClientID);
-                TbContent.SetParameters(Site, ChannelAttribute.Content, nodeInfo.Content);
+                TbContent.SetParameters(Site, nameof(Channel.Content), nodeInfo.Content);
                 if (TbKeywords.Visible)
                 {
                     TbKeywords.Text = nodeInfo.Keywords;
@@ -161,7 +164,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                CacAttributes.Attributes = new AttributesImpl(Request.Form);
+                CacAttributes.Attributes = TranslateUtils.NameValueCollectionToDictionary(Request.Form);
             }
         }
 
@@ -173,12 +176,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+                var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
 
                 if (!nodeInfo.IndexName.Equals(TbNodeIndexName.Text) && TbNodeIndexName.Text.Length != 0)
                 {
-                    var nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameList(SiteId);
-                    if (nodeIndexNameList.IndexOf(TbNodeIndexName.Text) != -1)
+                    var nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameListAsync(SiteId).GetAwaiter().GetResult();
+                    if (nodeIndexNameList.Contains(TbNodeIndexName.Text))
                     {
                         FailMessage("栏目修改失败，栏目索引已存在！");
                         return;
@@ -201,8 +204,8 @@ namespace SiteServer.BackgroundPages.Cms
                             TbFilePath.Text = PageUtils.Combine(TbFilePath.Text, "index.html");
                         }
 
-                        var filePathArrayList = DataProvider.ChannelDao.GetAllFilePathBySiteId(SiteId);
-                        if (filePathArrayList.IndexOf(TbFilePath.Text) != -1)
+                        var filePathArrayList = DataProvider.ChannelDao.GetAllFilePathBySiteIdAsync(SiteId).GetAwaiter().GetResult();
+                        if (filePathArrayList.Contains(TbFilePath.Text))
                         {
                             FailMessage("栏目修改失败，栏目页面路径已存在！");
                             return;
@@ -210,12 +213,15 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                var styleInfoList = TableStyleManager.GetChannelStyleInfoList(nodeInfo);
+                var styleList = TableStyleManager.GetChannelStyleListAsync(nodeInfo).GetAwaiter().GetResult();
 
-                var extendedAttributes = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleInfoList, Request.Form, null).GetAwaiter().GetResult();
+                var extendedAttributes = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleList, Request.Form, null).GetAwaiter().GetResult();
                 if (extendedAttributes.Count > 0)
                 {
-                    nodeInfo.Additional.Load(extendedAttributes);
+                    foreach (var extendedAttribute in extendedAttributes)
+                    {
+                        nodeInfo.Set(extendedAttribute.Key, extendedAttribute.Value);
+                    }
                 }
 
                 nodeInfo.ChannelName = TbNodeName.Text;
@@ -225,7 +231,7 @@ namespace SiteServer.BackgroundPages.Cms
                     nodeInfo.FilePath = TbFilePath.Text;
                 }
 
-                var list = new ArrayList();
+                var list = new List<string>();
                 foreach (ListItem item in CblNodeGroupNameCollection.Items)
                 {
                     if (item.Selected)
@@ -233,9 +239,10 @@ namespace SiteServer.BackgroundPages.Cms
                         list.Add(item.Value);
                     }
                 }
-                nodeInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
+
+                nodeInfo.GroupNames = list;
                 nodeInfo.ImageUrl = TbImageUrl.Text;
-                nodeInfo.Content = ContentUtility.TextEditorContentEncodeAsync(Site, Request.Form[ChannelAttribute.Content]).GetAwaiter().GetResult();
+                nodeInfo.Content = ContentUtility.TextEditorContentEncodeAsync(Site, Request.Form[nameof(Channel.Content)]).GetAwaiter().GetResult();
                 if (TbKeywords.Visible)
                 {
                     nodeInfo.Keywords = TbKeywords.Text;
@@ -253,14 +260,14 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     nodeInfo.LinkType = DdlLinkType.SelectedValue;
                 }
-                nodeInfo.Additional.DefaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
+                nodeInfo.DefaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
                 if (PhChannelTemplateId.Visible)
                 {
                     nodeInfo.ChannelTemplateId = DdlChannelTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue) : 0;
                 }
                 nodeInfo.ContentTemplateId = DdlContentTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue) : 0;
 
-                DataProvider.ChannelDao.Update(nodeInfo);
+                DataProvider.ChannelDao.UpdateAsync(nodeInfo).GetAwaiter().GetResult();
 
                 AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "修改栏目", $"栏目:{nodeInfo.ChannelName}").GetAwaiter().GetResult();
 
@@ -269,12 +276,12 @@ namespace SiteServer.BackgroundPages.Cms
             catch (Exception ex)
             {
                 FailMessage(ex, $"栏目修改失败：{ex.Message}");
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddErrorLogAsync(ex).GetAwaiter().GetResult();
             }
 
             if (isChanged)
             {
-                CreateManager.CreateChannel(SiteId, _channelId);
+                CreateManager.CreateChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
 
                 if (string.IsNullOrEmpty(_returnUrl))
                 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -29,10 +30,10 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
             TemplateTypeUtils.AddListItems(DdlTemplateType);
-            ChannelManager.AddListItems(DdlChannelId.Items, Site, false, true, AuthRequest.AdminPermissionsImpl);
+            ChannelManager.AddListItemsAsync(DdlChannelId.Items, Site, false, true, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
             if (AuthRequest.IsQueryExists("fromCache"))
             {
-                TbTemplate.Text = TranslateUtils.DecryptStringBySecretKey(CacheUtils.Get<string>("SiteServer.BackgroundPages.Cms.PageTemplatePreview"));
+                TbTemplate.Text = WebConfigUtils.DecryptStringBySecretKey(CacheUtils.Get<string>("SiteServer.BackgroundPages.Cms.PageTemplatePreview"));
             }
             
             if (AuthRequest.IsQueryExists("returnUrl"))
@@ -70,11 +71,11 @@ namespace SiteServer.BackgroundPages.Cms
                 channelId = TranslateUtils.ToInt(DdlChannelId.SelectedValue);
                 if (templateType == TemplateType.ContentTemplate)
                 {
-                    var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                    var count = ContentManager.GetCount(Site, channelInfo, true);
+                    var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+                    var count = ContentManager.GetCountAsync(Site, channelInfo, true).GetAwaiter().GetResult();
                     if (count > 0)
                     {
-                        var tableName = ChannelManager.GetTableName(Site, channelInfo);
+                        var tableName = ChannelManager.GetTableNameAsync(Site, channelInfo).GetAwaiter().GetResult();
                         contentId = DataProvider.ContentDao.GetFirstContentId(tableName, channelId);
                     }
 
@@ -86,14 +87,14 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            TbCode.Text = LtlPreview.Text = StlParserManager.ParseTemplatePreview(Site, templateType, channelId, contentId, TbTemplate.Text);
+            TbCode.Text = LtlPreview.Text = StlParserManager.ParseTemplatePreviewAsync(Site, templateType, channelId, contentId, TbTemplate.Text).GetAwaiter().GetResult();
 
             LtlPreview.Text += "<script>$('#linkCode').click();</script>";
         }
 
         public void BtnReturn_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("returnUrl")));
+            PageUtils.Redirect(WebConfigUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("returnUrl")));
         }
     }
 }

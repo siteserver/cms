@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
@@ -16,13 +18,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }
@@ -78,19 +80,19 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Post()
+        public async Task<IHttpActionResult> Post()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }
 
                 CacheUtils.ClearAll();
-                CacheDbUtils.Clear();
+                await DataProvider.DbCacheDao.ClearAsync();
 
                 var parameterList = new List<KeyValuePair<string, string>>();
                 foreach (var key in CacheUtils.AllKeys)

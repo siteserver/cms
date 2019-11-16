@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
@@ -19,12 +18,12 @@ namespace SiteServer.CMS.DataCache
 	            DataCacheManager.Remove(CacheKey);
 	        }
 
-	        public static async Task<Dictionary<string, AccessTokenInfo>> GetAccessTokenDictionaryAsync()
+	        public static async Task<Dictionary<string, AccessToken>> GetAccessTokenDictionaryAsync()
 	        {
-	            var retVal = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
+	            var retVal = DataCacheManager.Get<Dictionary<string, AccessToken>>(CacheKey);
 	            if (retVal != null) return retVal;
 
-                retVal = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
+                retVal = DataCacheManager.Get<Dictionary<string, AccessToken>>(CacheKey);
                 if (retVal == null)
                 {
                     retVal = await DataProvider.AccessTokenDao.GetAccessTokenInfoDictionaryAsync();
@@ -66,9 +65,9 @@ namespace SiteServer.CMS.DataCache
 	        return StringUtils.ContainsIgnoreCase(TranslateUtils.StringCollectionToStringList(tokenInfo.Scopes), scope);
 	    }
 
-        public static async Task<AccessTokenInfo> GetAccessTokenInfoAsync(string token)
+        public static async Task<AccessToken> GetAccessTokenInfoAsync(string token)
         {
-            AccessTokenInfo tokenInfo = null;
+            AccessToken tokenInfo = null;
             var dict = await AccessTokenManagerCache.GetAccessTokenDictionaryAsync();
 
             if (dict != null && dict.ContainsKey(token))

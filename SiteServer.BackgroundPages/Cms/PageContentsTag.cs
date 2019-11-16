@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Data;
+using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
+using Content = SiteServer.CMS.Model.Content;
+using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -42,9 +44,9 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var channelId = AuthRequest.GetQueryInt("channelId");
                 var contentId = AuthRequest.GetQueryInt("contentId");
-                var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
 
-                var contentInfo = ContentManager.GetContentInfo(Site, channelInfo, contentId);
+                var contentInfo = ContentManager.GetContentInfoAsync(Site, channelInfo, contentId).GetAwaiter().GetResult();
                 
                 var tagList = TranslateUtils.StringCollectionToStringList(contentInfo.Tags, ' ');
                 if (tagList.Contains(_tag))
@@ -53,9 +55,9 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagList, " ");
-                DataProvider.ContentDao.Update(Site, channelInfo, contentInfo);
+                DataProvider.ContentDao.UpdateAsync(Site, channelInfo, contentInfo).GetAwaiter().GetResult();
 
-                TagUtils.RemoveTags(SiteId, contentId);
+                ContentTagUtils.RemoveTagsAsync(SiteId, contentId).GetAwaiter().GetResult();
 
                 AuthRequest.AddSiteLogAsync(SiteId, "移除内容", $"内容:{contentInfo.Title}").GetAwaiter().GetResult();
                 SuccessMessage("移除成功");
@@ -64,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = Site.Additional.PageSize;
+            SpContents.ItemsPerPage = Site.PageSize;
             SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByContentTag(Site.TableName, _tag, siteId);
             SpContents.SortField = ContentAttribute.AddDate;
             SpContents.SortMode = SortMode.DESC;
@@ -74,6 +76,24 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
             LtlContentTag.Text = "标签：" + _tag;
             SpContents.DataBind();
+        }
+
+        public Content GetContent(DataRow row)
+        {
+            if (row == null) return null;
+
+            var content = new Content();
+
+            var dict = row.Table.Columns
+                .Cast<DataColumn>()
+                .ToDictionary(c => c.ColumnName, c => row[c]);
+
+            foreach (var key in dict.Keys)
+            {
+                content.Set(key, dict[key]);
+            }
+
+            return content;
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -87,10 +107,11 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlItemEditUrl = (Literal) e.Item.FindControl("ltlItemEditUrl");
             var ltlItemDeleteUrl = (Literal) e.Item.FindControl("ltlItemDeleteUrl");
 
-            var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
+            var rowView = (DataRowView)e.Item.DataItem;
+            var contentInfo = GetContent(rowView.Row);
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(Site, contentInfo, PageUrl);
-            ltlItemChannel.Text = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
+            ltlItemChannel.Text = ChannelManager.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult();
             ltlItemAddDate.Text = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
             ltlItemStatus.Text = CheckManager.GetCheckState(Site, contentInfo);
 

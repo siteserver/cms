@@ -68,7 +68,7 @@ namespace SiteServer.Cli.Jobs
 
                 await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.Value}");
                 await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
-                await Console.Out.WriteLineAsync($"连接字符串（加密）: {TranslateUtils.EncryptStringBySecretKey(WebConfigUtils.ConnectionString, WebConfigUtils.SecretKey)}");
+                await Console.Out.WriteLineAsync($"连接字符串（加密）: {WebConfigUtils.EncryptStringBySecretKey(WebConfigUtils.ConnectionString, WebConfigUtils.SecretKey)}");
             }
         }
     }

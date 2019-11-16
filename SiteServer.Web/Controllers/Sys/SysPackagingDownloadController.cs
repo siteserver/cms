@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
@@ -11,9 +12,9 @@ namespace SiteServer.API.Controllers.Sys
     public class SysPackagesDownloadController : ApiController
     {
         [HttpPost, Route(ApiRouteDownload.Route)]
-        public IHttpActionResult Main()
+        public async Task<IHttpActionResult> Main()
         {
-            var request = new AuthenticatedRequest();
+            var request = await AuthenticatedRequest.GetRequestAsync();
 
             if (!request.IsAdminLoggin)
             {
@@ -34,7 +35,7 @@ namespace SiteServer.API.Controllers.Sys
 
             if (StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSsCms))
             {
-                CacheDbUtils.RemoveAndInsert(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
+                await DataProvider.DbCacheDao.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
             }
 
             return Ok();

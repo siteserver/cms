@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -48,9 +50,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             PlayByJwPlayer
         };
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-            var type = BackgroundContentAttribute.VideoUrl;
+            var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
             var playBy = string.Empty;
@@ -92,33 +94,34 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, playUrl, imageUrl, playBy, width, height, type, isAutoPlay);
+            return await ParseImplAsync(pageInfo, contextInfo, playUrl, imageUrl, playBy, width, height, type, isAutoPlay);
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string playUrl, string imageUrl, string playBy, int width, int height, string type, bool isAutoPlay)
+        private static async Task<object> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string playUrl, string imageUrl, string playBy, int width, int height, string type, bool isAutoPlay)
         {
             if (string.IsNullOrEmpty(playUrl))
             {
                 var contentId = contextInfo.ContentId;
                 if (contentId != 0)//获取内容视频
                 {
-                    if (contextInfo.ContentInfo == null)
+                    var contentInfo = await contextInfo.GetContentAsync();
+                    if (contentInfo == null)
                     {
                         playUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
+                            if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
-                                playUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, BackgroundContentAttribute.VideoUrl);
+                                playUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
                             }
                         }
                     }
                     else
                     {
-                        playUrl = contextInfo.ContentInfo.GetString(type);
+                        playUrl = contentInfo.Get<string>(type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
+                            playUrl = contentInfo.Get<string>(ContentAttribute.VideoUrl);
                         }
                     }
                 }
@@ -136,12 +139,12 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (EFileSystemTypeUtils.IsFlash(extension))
             {
-                return StlFlash.Parse(pageInfo, contextInfo);
+                return await StlFlash.ParseAsync(pageInfo, contextInfo);
             }
 
             if (EFileSystemTypeUtils.IsImage(extension))
             {
-                return StlImage.Parse(pageInfo, contextInfo);
+                return await StlImage.ParseAsync(pageInfo, contextInfo);
             }
 
             if (fileType == EFileSystemType.Avi)
@@ -211,7 +214,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 ";
             }
 
-            return StlVideo.Parse(pageInfo, contextInfo);
+            return await StlVideo.ParseAsync(pageInfo, contextInfo);
         }
 
         private static string ParseAvi(int uniqueId, int width, int height, bool isAutoPlay, string playUrl)

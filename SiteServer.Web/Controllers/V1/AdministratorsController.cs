@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -26,7 +27,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -46,7 +47,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -56,7 +57,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -79,7 +80,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -89,7 +90,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -104,7 +105,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -114,7 +115,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -129,7 +130,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -139,7 +140,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -153,7 +154,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -163,7 +164,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
@@ -185,15 +186,17 @@ namespace SiteServer.API.Controllers.V1
 
                 adminInfo = await AdminManager.GetByUserNameAsync(valid.UserName);
                 await DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLoginAsync(adminInfo); // 记录最后登录时间、失败次数清零
-                var accessToken = request.AdminLogin(adminInfo.UserName, isAutoLogin);
+                var accessToken = await request.AdminLoginAsync(adminInfo.UserName, isAutoLogin);
                 var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
                 var sessionId = StringUtils.Guid();
                 var cacheKey = Constants.GetSessionIdCacheKey(adminInfo.Id);
                 CacheUtils.Insert(cacheKey, sessionId);
 
+                var config = await ConfigManager.GetInstanceAsync();
+
                 var isEnforcePasswordChange = false;
-                if (ConfigManager.SystemConfigInfo.IsAdminEnforcePasswordChange)
+                if (config.IsAdminEnforcePasswordChange)
                 {
                     if (adminInfo.LastChangePasswordDate == null)
                     {
@@ -202,7 +205,7 @@ namespace SiteServer.API.Controllers.V1
                     else
                     {
                         var ts = new TimeSpan(DateTime.Now.Ticks - adminInfo.LastChangePasswordDate.Value.Ticks);
-                        if (ts.TotalDays > ConfigManager.SystemConfigInfo.AdminEnforcePasswordChangeDays)
+                        if (ts.TotalDays > config.AdminEnforcePasswordChangeDays)
                         {
                             isEnforcePasswordChange = true;
                         }
@@ -220,17 +223,17 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
 
         [HttpPost, Route(RouteActionsLogout)]
-        public IHttpActionResult Logout()
+        public async Task<IHttpActionResult> Logout()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var adminInfo = request.IsAdminLoggin ? request.Administrator : null;
                 request.AdminLogout();
 
@@ -241,7 +244,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -251,7 +254,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -280,7 +283,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

@@ -115,17 +115,14 @@ namespace SiteServer.CMS.Core
         private static TableStyleItemDao _tableStyleItemDao;
         public static TableStyleItemDao TableStyleItemDao => _tableStyleItemDao ?? (_tableStyleItemDao = new TableStyleItemDao());
 
-        private static TagDao _tagDao;
-        public static TagDao TagDao => _tagDao ?? (_tagDao = new TagDao());
+        private static ContentTagDao _contentTagDao;
+        public static ContentTagDao ContentTagDao => _contentTagDao ?? (_contentTagDao = new ContentTagDao());
 
         private static TemplateDao _templateDao;
         public static TemplateDao TemplateDao => _templateDao ?? (_templateDao = new TemplateDao());
 
         private static TemplateLogDao _templateLogDao;
         public static TemplateLogDao TemplateLogDao => _templateLogDao ?? (_templateLogDao = new TemplateLogDao());
-
-        private static TemplateMatchDao _templateMatchDao;
-        public static TemplateMatchDao TemplateMatchDao => _templateMatchDao ?? (_templateMatchDao = new TemplateMatchDao());
 
         private static UserDao _userDao;
         public static UserDao UserDao => _userDao ?? (_userDao = new UserDao());
@@ -168,17 +165,16 @@ namespace SiteServer.CMS.Core
             _specialDao = null;
             _tableStyleDao = null;
             _tableStyleItemDao = null;
-            _tagDao = null;
+            _contentTagDao = null;
             _templateDao = null;
             _templateLogDao = null;
-            _templateMatchDao = null;
             _userDao = null;
             _userGroupDao = null;
             _userLogDao = null;
             _userMenuDao = null;
         }
 
-        public static List<DataProviderBase> AllProviders => new List<DataProviderBase>
+        public static List<IRepository> AllProviders => new List<IRepository>
         {
             AccessTokenDao,
             AdministratorDao,
@@ -187,9 +183,7 @@ namespace SiteServer.CMS.Core
             ChannelGroupDao,
             ConfigDao,
             ContentCheckDao,
-            ContentDao,
             ContentGroupDao,
-            DatabaseDao,
             DbCacheDao,
             ErrorLogDao,
             LogDao,
@@ -205,10 +199,9 @@ namespace SiteServer.CMS.Core
             SpecialDao,
             TableStyleDao,
             TableStyleItemDao,
-            TagDao,
+            ContentTagDao,
             TemplateDao,
             TemplateLogDao,
-            TemplateMatchDao,
             UserDao,
             UserGroupDao,
             UserLogDao,

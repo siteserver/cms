@@ -15,7 +15,7 @@ namespace SiteServer.API
     {
         public void Configuration(IAppBuilder app)
         {
-            PluginManager.LoadPlugins(HostingEnvironment.ApplicationPhysicalPath);
+            PluginManager.LoadPluginsAsync(HostingEnvironment.ApplicationPhysicalPath).GetAwaiter().GetResult();
 
             app.UseSwaggerReDoc(typeof(Startup).Assembly, settings =>
             {

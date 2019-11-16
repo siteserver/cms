@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -16,13 +17,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -30,17 +31,17 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 var allAttributes = DataProvider.UserDao.TableColumns.Select(x => x.AttributeName).ToList();
 
                 var list = new List<object>();
-                foreach (var styleInfo in TableStyleManager.GetUserStyleInfoList())
+                foreach (var style in await TableStyleManager.GetUserStyleListAsync())
                 {
                     list.Add(new
                     {
-                        styleInfo.Id,
-                        styleInfo.AttributeName,
-                        styleInfo.DisplayName,
-                        InputType = InputTypeUtils.GetText(styleInfo.InputType),
-                        Validate = styleInfo.Additional.VeeValidate,
-                        styleInfo.Taxis,
-                        IsSystem = StringUtils.ContainsIgnoreCase(allAttributes, styleInfo.AttributeName)
+                        style.Id,
+                        style.AttributeName,
+                        style.DisplayName,
+                        InputType = InputTypeUtils.GetText(style.Type),
+                        Validate = style.VeeValidate,
+                        style.Taxis,
+                        IsSystem = StringUtils.ContainsIgnoreCase(allAttributes, style.AttributeName)
                     });
                 }
 
@@ -58,35 +59,35 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         }
 
         [HttpDelete, Route(Route)]
-        public IHttpActionResult Delete()
+        public async Task<IHttpActionResult> Delete()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
                 var attributeName = request.GetPostString("attributeName");
 
-                DataProvider.TableStyleDao.Delete(0, DataProvider.UserDao.TableName, attributeName);
+                await DataProvider.TableStyleDao.DeleteAsync(0, DataProvider.UserDao.TableName, attributeName);
 
                 var allAttributes = DataProvider.UserDao.TableColumns.Select(x => x.AttributeName).ToList();
 
                 var list = new List<object>();
-                foreach (var styleInfo in TableStyleManager.GetUserStyleInfoList())
+                foreach (var style in await TableStyleManager.GetUserStyleListAsync())
                 {
                     list.Add(new
                     {
-                        styleInfo.Id,
-                        styleInfo.AttributeName,
-                        styleInfo.DisplayName,
-                        InputType = InputTypeUtils.GetText(styleInfo.InputType),
-                        Validate = TableStyleManager.GetValidateInfo(styleInfo),
-                        styleInfo.Taxis,
-                        IsSystem = StringUtils.ContainsIgnoreCase(allAttributes, styleInfo.AttributeName)
+                        style.Id,
+                        style.AttributeName,
+                        style.DisplayName,
+                        InputType = InputTypeUtils.GetText(style.Type),
+                        Validate = TableStyleManager.GetValidateInfo(style),
+                        style.Taxis,
+                        IsSystem = StringUtils.ContainsIgnoreCase(allAttributes, style.AttributeName)
                     });
                 }
 

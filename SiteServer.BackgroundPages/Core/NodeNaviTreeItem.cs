@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -193,7 +194,7 @@ namespace SiteServer.BackgroundPages.Core
                 var site = SiteManager.GetSiteAsync(_siteId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append("&nbsp;");
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(site, ChannelManager.GetChannelInfo(_siteId, _channelId)));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(site, ChannelManager.GetChannelAsync(_siteId, _channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());
 
                 if (_contentNum >= 0)
                 {
@@ -292,7 +293,7 @@ namespace SiteServer.BackgroundPages.Core
                 var site = SiteManager.GetSiteAsync(_siteId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append("&nbsp;");
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(site, ChannelManager.GetChannelInfo(_siteId, _channelId)));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(site, ChannelManager.GetChannelAsync(_siteId, _channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());
 
                 if (_contentNum >= 0)
                 {

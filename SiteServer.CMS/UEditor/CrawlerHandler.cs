@@ -4,12 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.UEditor
 {
@@ -41,7 +40,7 @@ namespace SiteServer.CMS.UEditor
             }
             var site = SiteManager.GetSiteAsync(SiteId).GetAwaiter().GetResult();
 
-            Crawlers = Sources.Select(x => new Crawler(x, site, Server).FetchAsync().GetAwaiter().GetResult()).ToArray();
+            Crawlers = Sources.Select(x => new Crawler(x, site, Server)).ToArray();
             WriteJson(new
             {
                 state = "SUCCESS",

@@ -1,4 +1,5 @@
 ﻿using System.Web;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -9,7 +10,7 @@ namespace SiteServer.CMS.StlParser.Model
     {
         public static DynamicInfo GetDynamicInfo(IAuthenticatedRequest request, User user)
         {
-            var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(TranslateUtils.DecryptStringBySecretKey(request.GetPostString("value")));
+            var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(WebConfigUtils.DecryptStringBySecretKey(request.GetPostString("value")));
             if (dynamicInfo.ChannelId == 0)
             {
                 dynamicInfo.ChannelId = dynamicInfo.SiteId;
@@ -33,7 +34,7 @@ namespace SiteServer.CMS.StlParser.Model
                 return string.Empty;
             }
 
-            var values = TranslateUtils.EncryptStringBySecretKey(TranslateUtils.JsonSerialize(this));
+            var values = WebConfigUtils.EncryptStringBySecretKey(TranslateUtils.JsonSerialize(this));
 
             return $@"
 <span id=""{AjaxDivId}_loading"">{LoadingTemplate}</span>

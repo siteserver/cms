@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -22,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             return PageUtils.GetCmsUrl(siteId, nameof(ModalMessage), new NameValueCollection
             {
-                {"html", TranslateUtils.EncryptStringBySecretKey(html)}
+                {"html", WebConfigUtils.EncryptStringBySecretKey(html)}
             });
         }
 
@@ -30,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             return LayerUtils.GetOpenScript(title, PageUtils.GetCmsUrl(siteId, nameof(ModalMessage), new NameValueCollection
             {
-                {"html", TranslateUtils.EncryptStringBySecretKey(html)}
+                {"html", WebConfigUtils.EncryptStringBySecretKey(html)}
             }), width, height);
         }
 
@@ -142,7 +143,7 @@ if (videoUrl){{
             }
             else
             {
-                LtlHtml.Text = TranslateUtils.DecryptStringBySecretKey(Request.QueryString["html"]);
+                LtlHtml.Text = WebConfigUtils.DecryptStringBySecretKey(Request.QueryString["html"]);
             }
         }
     }

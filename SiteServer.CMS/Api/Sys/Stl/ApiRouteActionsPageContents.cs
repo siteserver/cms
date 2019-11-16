@@ -1,4 +1,5 @@
-﻿using SiteServer.Utils;
+﻿using SiteServer.CMS.Context;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api.Sys.Stl
 {
@@ -22,7 +23,7 @@ namespace SiteServer.CMS.Api.Sys.Stl
     totalNum: {totalNum},
     pageCount: {pageCount},
     currentPageIndex: {currentPageIndex},
-    stlPageContentsElement: '{TranslateUtils.EncryptStringBySecretKey(stlPageContentsElement)}'
+    stlPageContentsElement: '{WebConfigUtils.EncryptStringBySecretKey(stlPageContentsElement)}'
 }}";
         }
     }

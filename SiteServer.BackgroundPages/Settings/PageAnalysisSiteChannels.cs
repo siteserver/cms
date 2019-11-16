@@ -6,10 +6,11 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -110,16 +111,16 @@ yArrayUpdate.push('{yValueUpdate}');";
 
         public void BindGrid()
         {
-            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, SiteId), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty);
+            var channelIdList = ChannelManager.GetChannelIdListAsync(ChannelManager.GetChannelAsync(SiteId, SiteId).GetAwaiter().GetResult(), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
             foreach (var channelId in channelIdList)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                var tableName = ChannelManager.GetTableName(Site, channelId);
+                var nodeInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+                var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
 
                 SetXHashtable(channelId, nodeInfo.ChannelName);
 
-                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentAdd(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty, ETriState.All), YTypeNew);
-                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentUpdate(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeUpdate);
+                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentAddAsync(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty, ETriState.All).GetAwaiter().GetResult(), YTypeNew);
+                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentUpdateAsync(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty).GetAwaiter().GetResult(), YTypeUpdate);
             }
 
             RptChannels.DataSource = channelIdList;
@@ -137,11 +138,11 @@ yArrayUpdate.push('{yValueUpdate}');";
             {
                 if (!IsDescendantOwningChannelId(channelId)) e.Item.Visible = false;
             }
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            var nodeInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
 
             var ltlRow = (Literal)e.Item.FindControl("ltlRow");
 
-            ltlRow.Text = ChannelLoading.GetChannelRowHtml(Site, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, AuthRequest.AdminPermissionsImpl);
+            ltlRow.Text = ChannelLoading.GetChannelRowHtmlAsync(Site, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
         }
 
         public void Analysis_OnClick(object sender, EventArgs e)

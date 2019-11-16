@@ -7,7 +7,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Home
@@ -23,14 +22,14 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
                 var page = request.GetQueryInt("page");
 
                 if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();
@@ -39,35 +38,35 @@ namespace SiteServer.API.Controllers.Home
                 var site = await SiteManager.GetSiteAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var adminId = request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
+                var adminId = await request.AdminPermissionsImpl.GetAdminIdAsync(siteId, channelId);
 
-                var columns = ContentManager.GetContentColumns(site, channelInfo, false);
+                var columns = await ContentManager.GetContentColumnsAsync(site, channelInfo, false);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
-                var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
+                var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
-                var pageContentInfoList = new List<ContentInfo>();
-                var count = ContentManager.GetCount(site, channelInfo, adminId, true);
+                var pageContentInfoList = new List<Content>();
+                var count = await ContentManager.GetCountAsync(site, channelInfo, adminId, true);
 
-                var pages = Convert.ToInt32(Math.Ceiling((double)count / site.Additional.PageSize));
+                var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
                 if (pages == 0) pages = 1;
 
                 if (count > 0)
                 {
-                    var offset = site.Additional.PageSize * (page - 1);
-                    var limit = site.Additional.PageSize;
+                    var offset = site.PageSize * (page - 1);
+                    var limit = site.PageSize;
 
-                    var pageContentIds = ContentManager.GetChannelContentIdList(site, channelInfo, adminId, true, offset, limit);
+                    var pageContentIds = await ContentManager.GetChannelContentIdListAsync(site, channelInfo, adminId, true, offset, limit);
 
                     var sequence = offset + 1;
                     foreach (var channelContentId in pageContentIds)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(site, channelContentId.ChannelId, channelContentId.ContentId);
+                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
                         if (contentInfo == null) continue;
 
-                        var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId, channelContentId.ChannelId);
+                        var channelName = await ChannelManager.GetChannelNameNavigationAsync(siteId, channelId, channelContentId.ChannelId);
                         contentInfo.Set("ChannelName", channelName);
 
                         pageContentInfoList.Add(await ContentManager.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
@@ -76,13 +75,13 @@ namespace SiteServer.API.Controllers.Home
 
                 var permissions = new
                 {
-                    IsAdd = request.UserPermissionsImpl.HasChannelPermissions(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Additional.IsContentAddable,
-                    IsDelete = request.UserPermissionsImpl.HasChannelPermissions(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete),
-                    IsEdit = request.UserPermissionsImpl.HasChannelPermissions(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit),
-                    IsTranslate = request.UserPermissionsImpl.HasChannelPermissions(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate),
-                    IsCheck = request.UserPermissionsImpl.HasChannelPermissions(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck),
-                    IsCreate = request.UserPermissionsImpl.HasSitePermissions(site.Id, ConfigManager.WebSitePermissions.Create) || request.UserPermissionsImpl.HasChannelPermissions(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.CreatePage),
-                    IsChannelEdit = request.UserPermissionsImpl.HasChannelPermissions(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit)
+                    IsAdd = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.IsContentAddable,
+                    IsDelete = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete),
+                    IsEdit = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit),
+                    IsTranslate = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate),
+                    IsCheck = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck),
+                    IsCreate = await request.UserPermissionsImpl.HasSitePermissionsAsync(site.Id, ConfigManager.WebSitePermissions.Create) || await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.CreatePage),
+                    IsChannelEdit = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit)
                 };
 
                 return Ok(new
@@ -96,7 +95,7 @@ namespace SiteServer.API.Controllers.Home
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

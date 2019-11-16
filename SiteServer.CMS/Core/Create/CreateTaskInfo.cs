@@ -1,4 +1,4 @@
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Enumerations;
 
 namespace SiteServer.CMS.Core.Create
 {

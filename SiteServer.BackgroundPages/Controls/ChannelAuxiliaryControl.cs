@@ -1,10 +1,10 @@
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages.Controls
 {
 	public class ChannelAuxiliaryControl : Control
 	{
-        public AttributesImpl Attributes { get; set; }
+        public IDictionary<string, object> Attributes { get; set; }
 
         public Site Site { get; set; }
 
@@ -24,24 +24,24 @@ namespace SiteServer.BackgroundPages.Controls
 		{
             if (Attributes == null) return;
 
-		    var channelInfo = ChannelManager.GetChannelInfo(Site.Id, ChannelId);
-            var styleInfoList = TableStyleManager.GetChannelStyleInfoList(channelInfo);
+		    var channelInfo = ChannelManager.GetChannelAsync(Site.Id, ChannelId).GetAwaiter().GetResult();
+            var styleList = TableStyleManager.GetChannelStyleListAsync(channelInfo).GetAwaiter().GetResult();
 
-		    if (styleInfoList == null) return;
+		    if (styleList == null) return;
 
             var builder = new StringBuilder();
 		    var pageScripts = new NameValueCollection();
-		    foreach (var styleInfo in styleInfoList)
+		    foreach (var style in styleList)
 		    {
-		        var value = BackgroundInputTypeParser.Parse(Site, ChannelId, styleInfo, Attributes, pageScripts, out var extra);
+		        var value = BackgroundInputTypeParser.Parse(Site, ChannelId, style, Attributes, pageScripts, out var extra);
 
 		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (styleInfo.InputType == InputType.TextEditor)
+                if (style.Type == InputType.TextEditor)
                 {
                     builder.Append($@"
 <div class=""form-group form-row"">
-    <label class=""col-sm-2 col-form-label text-right"">{styleInfo.DisplayName}</label>
+    <label class=""col-sm-2 col-form-label text-right"">{style.DisplayName}</label>
     <div class=""col-sm-9"">
         {value}
     </div>
@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Controls
                 {
                     builder.Append($@"
 <div class=""form-group form-row"">
-    <label class=""col-sm-2 col-form-label text-right"">{styleInfo.DisplayName}</label>
+    <label class=""col-sm-2 col-form-label text-right"">{style.DisplayName}</label>
     <div class=""col-sm-4"">
         {value}
     </div>

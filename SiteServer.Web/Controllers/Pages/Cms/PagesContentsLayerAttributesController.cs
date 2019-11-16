@@ -20,7 +20,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelContentIds =
@@ -46,27 +46,27 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     {
                         foreach (var channelContentId in channelContentIds)
                         {
-                            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                            var contentInfo = ContentManager.GetContentInfo(site, channelInfo, channelContentId.Id);
+                            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
+                            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, channelContentId.Id);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
                             {
-                                contentInfo.IsRecommend = true;
+                                contentInfo.Recommend = true;
                             }
                             if (isHot)
                             {
-                                contentInfo.IsHot = true;
+                                contentInfo.Hot = true;
                             }
                             if (isColor)
                             {
-                                contentInfo.IsColor = true;
+                                contentInfo.Color = true;
                             }
                             if (isTop)
                             {
-                                contentInfo.IsTop = true;
+                                contentInfo.Top = true;
                             }
-                            DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
+                            await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
                         }
 
                         await request.AddSiteLogAsync(siteId, "设置内容属性");
@@ -78,27 +78,27 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     {
                         foreach (var channelContentId in channelContentIds)
                         {
-                            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                            var contentInfo = ContentManager.GetContentInfo(site, channelInfo, channelContentId.Id);
+                            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
+                            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, channelContentId.Id);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
                             {
-                                contentInfo.IsRecommend = false;
+                                contentInfo.Recommend = false;
                             }
                             if (isHot)
                             {
-                                contentInfo.IsHot = false;
+                                contentInfo.Hot = false;
                             }
                             if (isColor)
                             {
-                                contentInfo.IsColor = false;
+                                contentInfo.Color = false;
                             }
                             if (isTop)
                             {
-                                contentInfo.IsTop = false;
+                                contentInfo.Top = false;
                             }
-                            DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
+                            await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
                         }
 
                         await request.AddSiteLogAsync(siteId, "取消内容属性");
@@ -108,12 +108,12 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 {
                     foreach (var channelContentId in channelContentIds)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                        var contentInfo = ContentManager.GetContentInfo(site, channelInfo, channelContentId.Id);
+                        var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
+                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         contentInfo.Hits = hits;
-                        DataProvider.ContentDao.Update(site, channelInfo, contentInfo);
+                        await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
                     await request.AddSiteLogAsync(siteId, "设置内容点击量");
@@ -126,7 +126,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

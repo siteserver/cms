@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -30,7 +31,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         private const string IsContainSelf = nameof(IsContainSelf);
 
         //对“当前位置”（stl:location）元素进行解析
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var separator = " - ";
             var target = string.Empty;
@@ -64,7 +65,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImplAsync(pageInfo, contextInfo, separator, target, linkClass, wordNum,isContainSelf).GetAwaiter().GetResult();
+            return await ParseImplAsync(pageInfo, contextInfo, separator, target, linkClass, wordNum,isContainSelf);
         }
 
         private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
@@ -74,7 +75,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 separator = contextInfo.InnerHtml;
             }
 
-            var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
+            var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId);
 
             var builder = new StringBuilder();
 
@@ -91,7 +92,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 foreach (var channelIdStr in channelIdArrayList)
                 {
                     var currentId = int.Parse(channelIdStr);
-                    var currentNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, currentId);
+                    var currentNodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, currentId);
                     if (currentId == pageInfo.SiteId)
                     {
                         var stlAnchor = new HtmlAnchor();
@@ -103,13 +104,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
-                        var url = PageUtility.GetIndexPageUrl(pageInfo.Site, pageInfo.IsLocal);
+                        var url = await PageUtility.GetIndexPageUrlAsync(pageInfo.Site, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
                         }
                         stlAnchor.HRef = url;
-                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
+                        stlAnchor.InnerHtml = WebUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, contextInfo.Attributes);
 
@@ -137,7 +138,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             stlAnchor.Target = string.Empty;
                         }
                         stlAnchor.HRef = url;
-                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
+                        stlAnchor.InnerHtml = WebUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, contextInfo.Attributes);
 
@@ -160,7 +161,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             stlAnchor.Target = string.Empty;
                         }
                         stlAnchor.HRef = url;
-                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
+                        stlAnchor.InnerHtml = WebUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, contextInfo.Attributes);
 

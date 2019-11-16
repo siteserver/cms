@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -28,8 +28,8 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 var relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
 
-                var relatedFieldName = DataProvider.RelatedFieldDao.GetTitle(relatedFieldId);
-                DataProvider.RelatedFieldDao.Delete(relatedFieldId);
+                var relatedFieldName = DataProvider.RelatedFieldDao.GetTitleAsync(relatedFieldId).GetAwaiter().GetResult();
+                DataProvider.RelatedFieldDao.DeleteAsync(relatedFieldId).GetAwaiter().GetResult();
                 AuthRequest.AddSiteLogAsync(SiteId, "删除联动字段", $"联动字段:{relatedFieldName}").GetAwaiter().GetResult();
                 SuccessDeleteMessage();
             }
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
-            RptContents.DataSource = DataProvider.RelatedFieldDao.GetRelatedFieldInfoList(SiteId);
+            RptContents.DataSource = DataProvider.RelatedFieldDao.GetRelatedFieldListAsync(SiteId).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var relatedFieldInfo = (RelatedFieldInfo) e.Item.DataItem;
+            var relatedFieldInfo = (RelatedField) e.Item.DataItem;
 
             var ltlRelatedFieldName = (Literal)e.Item.FindControl("ltlRelatedFieldName");
             var ltlTotalLevel = (Literal)e.Item.FindControl("ltlTotalLevel");

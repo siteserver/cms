@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -14,13 +15,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         private const string Route = "";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Post()
+        public async Task<IHttpActionResult> Post()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }
@@ -29,8 +30,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
                 var value = request.GetPostString("value");
 
                 var encoded = isEncrypt
-                    ? TranslateUtils.EncryptStringBySecretKey(value)
-                    : TranslateUtils.DecryptStringBySecretKey(value);
+                    ? WebConfigUtils.EncryptStringBySecretKey(value)
+                    : WebConfigUtils.DecryptStringBySecretKey(value);
 
                 if (!isEncrypt && string.IsNullOrEmpty(encoded))
                 {

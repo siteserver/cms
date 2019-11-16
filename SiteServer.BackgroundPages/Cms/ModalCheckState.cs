@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
+using Content = SiteServer.CMS.Model.Content;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -24,13 +26,13 @@ namespace SiteServer.BackgroundPages.Cms
         private int _contentId;
         private string _returnUrl;
 
-        public static string GetOpenWindowString(int siteId, ContentInfo contentInfo, string returnUrl)
+        public static string GetOpenWindowString(int siteId, Content content, string returnUrl)
         {
             return LayerUtils.GetOpenScript("审核状态",
                 PageUtils.GetCmsUrl(siteId, nameof(ModalCheckState), new NameValueCollection
                 {
-                    {"channelId", contentInfo.ChannelId.ToString()},
-                    {"contentID", contentInfo.Id.ToString()},
+                    {"channelId", content.ChannelId.ToString()},
+                    {"contentID", content.Id.ToString()},
                     {"returnUrl", StringUtils.ValueToUrl(returnUrl)}
                 }), 560, 500);
         }
@@ -42,21 +44,20 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "channelId", "contentID", "returnUrl");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
-            _tableName = ChannelManager.GetTableName(Site, _channelId);
+            _tableName = ChannelManager.GetTableNameAsync(Site, _channelId).GetAwaiter().GetResult();
             _contentId = AuthRequest.GetQueryInt("contentID");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            var contentInfo = ContentManager.GetContentInfo(Site, _channelId, _contentId);
+            var contentInfo = ContentManager.GetContentInfoAsync(Site, _channelId, _contentId).GetAwaiter().GetResult();
 
-            int checkedLevel;
-            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, Site, SiteId, out checkedLevel);
-            BtnCheck.Visible = CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
+            var (isChecked, checkedLevel) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, SiteId).GetAwaiter().GetResult();
+            BtnCheck.Visible = CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isChecked, checkedLevel);
 
             LtlTitle.Text = contentInfo.Title;
             LtlState.Text = CheckManager.GetCheckState(Site, contentInfo);
 
-            var checkInfoList = DataProvider.ContentCheckDao.GetCheckInfoList(_tableName, _contentId);
-            if (checkInfoList.Count > 0)
+            var checkInfoList = DataProvider.ContentCheckDao.GetCheckListAsync(_tableName, _contentId).GetAwaiter().GetResult();
+            if (checkInfoList.Any())
             {
                 PhCheckReasons.Visible = true;
                 RptContents.DataSource = checkInfoList;
@@ -67,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         private static void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            var checkInfo = (ContentCheckInfo)e.Item.DataItem;
+            var checkInfo = (ContentCheck)e.Item.DataItem;
 
             var ltlUserName = (Literal)e.Item.FindControl("ltlUserName");
             var ltlCheckDate = (Literal)e.Item.FindControl("ltlCheckDate");

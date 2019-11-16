@@ -20,19 +20,19 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId,
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
                         ConfigManager.WebSitePermissions.Template))
                 {
                     return Unauthorized();
                 }
 
                 var site = await SiteManager.GetSiteAsync(siteId);
-                var specialInfoList = DataProvider.SpecialDao.GetSpecialInfoList(siteId);
+                var specialInfoList = await DataProvider.SpecialDao.GetSpecialListAsync(siteId);
 
                 return Ok(new
                 {
@@ -51,25 +51,25 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var siteId = request.GetPostInt("siteId");
                 var specialId = request.GetPostInt("specialId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId,
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
                         ConfigManager.WebSitePermissions.Template))
                 {
                     return Unauthorized();
                 }
 
                 var site = await SiteManager.GetSiteAsync(siteId);
-                var specialInfo = SpecialManager.DeleteSpecialInfo(site, specialId);
+                var specialInfo = await SpecialManager.DeleteSpecialAsync(site, specialId);
 
                 await request.AddSiteLogAsync(siteId,
                     "删除专题",
                     $"专题名称:{specialInfo.Title}");
 
-                var specialInfoList = DataProvider.SpecialDao.GetSpecialInfoList(siteId);
+                var specialInfoList = await DataProvider.SpecialDao.GetSpecialListAsync(siteId);
 
                 return Ok(new
                 {
@@ -87,20 +87,20 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var specialId = request.GetPostInt("specialId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId,
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
                         ConfigManager.WebSitePermissions.Template))
                 {
                     return Unauthorized();
                 }
 
                 var site = await SiteManager.GetSiteAsync(siteId);
-                var specialInfo = SpecialManager.GetSpecialInfo(siteId, specialId);
+                var specialInfo = await SpecialManager.GetSpecialAsync(siteId, specialId);
 
                 var directoryPath = SpecialManager.GetSpecialDirectoryPath(site, specialInfo.Url);
                 var srcDirectoryPath = SpecialManager.GetSpecialSrcDirectoryPath(directoryPath);

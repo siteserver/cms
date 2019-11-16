@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Cms

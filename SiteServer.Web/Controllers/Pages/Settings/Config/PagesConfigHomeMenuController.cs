@@ -4,7 +4,7 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Db;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Config
 {
@@ -16,21 +16,21 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         private const string RouteReset = "actions/reset";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
 
                 return Ok(new
                 {
-                    Value = UserMenuManager.GetAllUserMenuInfoList(),
-                    Groups = UserGroupManager.GetUserGroupInfoList()
+                    Value = await UserMenuManager.GetAllUserMenuListAsync(),
+                    Groups = await UserGroupManager.GetUserGroupListAsync()
                 });
             }
             catch (Exception ex)
@@ -40,24 +40,24 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         }
 
         [HttpDelete, Route(Route)]
-        public IHttpActionResult Delete()
+        public async Task<IHttpActionResult> Delete()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
 
                 var id = request.GetPostInt("id");
 
-                DataProvider.UserMenuDao.Delete(id);
+                await DataProvider.UserMenuDao.DeleteAsync(id);
 
                 return Ok(new
                 {
-                    Value = UserMenuManager.GetAllUserMenuInfoList()
+                    Value = await UserMenuManager.GetAllUserMenuListAsync()
                 });
             }
             catch (Exception ex)
@@ -67,33 +67,33 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         }
 
         [HttpPost, Route(Route)]
-        public async Task<IHttpActionResult> Submit([FromBody] UserMenuInfo menuInfo)
+        public async Task<IHttpActionResult> Submit([FromBody] UserMenu menuInfo)
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
 
                 if (menuInfo.Id == 0)
                 {
-                    DataProvider.UserMenuDao.Insert(menuInfo);
+                    await DataProvider.UserMenuDao.InsertAsync(menuInfo);
 
                     await request.AddAdminLogAsync("新增用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
                 else if (menuInfo.Id > 0)
                 {
-                    DataProvider.UserMenuDao.Update(menuInfo);
+                    await DataProvider.UserMenuDao.UpdateAsync(menuInfo);
 
                     await request.AddAdminLogAsync("修改用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
 
                 return Ok(new
                 {
-                    Value = UserMenuManager.GetAllUserMenuInfoList()
+                    Value = await UserMenuManager.GetAllUserMenuListAsync()
                 });
             }
             catch (Exception ex)
@@ -107,23 +107,23 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
 
-                foreach (var userMenuInfo in UserMenuManager.GetAllUserMenuInfoList())
+                foreach (var userMenuInfo in await UserMenuManager.GetAllUserMenuListAsync())
                 {
-                    DataProvider.UserMenuDao.Delete(userMenuInfo.Id);
+                    await DataProvider.UserMenuDao.DeleteAsync(userMenuInfo.Id);
                 }
 
                 await request.AddAdminLogAsync("重置用户菜单");
 
                 return Ok(new
                 {
-                    Value = UserMenuManager.GetAllUserMenuInfoList()
+                    Value = await UserMenuManager.GetAllUserMenuListAsync()
                 });
             }
             catch (Exception ex)

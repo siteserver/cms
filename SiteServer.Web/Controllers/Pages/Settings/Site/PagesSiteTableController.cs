@@ -5,7 +5,7 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
@@ -22,9 +22,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -57,13 +57,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         }
 
         [HttpGet, Route(RouteTable)]
-        public IHttpActionResult GetColumns(string tableName)
+        public async Task<IHttpActionResult> GetColumns(string tableName)
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -83,13 +83,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         }
 
         [HttpPost, Route(RouteTableActionsRemoveCache)]
-        public IHttpActionResult RemoveCache(string tableName)
+        public async Task<IHttpActionResult> RemoveCache(string tableName)
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }

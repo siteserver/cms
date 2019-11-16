@@ -4,12 +4,12 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
+using SiteServer.CMS.Provider;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
@@ -72,7 +72,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void CreateSiteServerTables()
+        public static async Task CreateSiteServerTablesAsync()
         {
             foreach (var provider in DataProvider.AllProviders)
             {
@@ -80,11 +80,11 @@ namespace SiteServer.CMS.Core
 
                 if (!DataProvider.DatabaseDao.IsTableExists(provider.TableName))
                 {
-                    DataProvider.DatabaseDao.CreateTable(provider.TableName, provider.TableColumns, out _, out _);
+                    await DataProvider.DatabaseDao.CreateTableAsync(provider.TableName, provider.TableColumns);
                 }
                 else
                 {
-                    DataProvider.DatabaseDao.AlterSystemTable(provider.TableName, provider.TableColumns);
+                    await DataProvider.DatabaseDao.AlterSystemTableAsync(provider.TableName, provider.TableColumns);
                 }
             }
         }
@@ -96,55 +96,61 @@ namespace SiteServer.CMS.Core
             {
                 if (!DataProvider.DatabaseDao.IsTableExists(tableName))
                 {
-                    DataProvider.DatabaseDao.CreateTable(tableName, DataProvider.ContentDao.TableColumns, out _, out _);
+                    await DataProvider.DatabaseDao.CreateTableAsync(tableName, DataProvider.ContentDao.TableColumns);
                 }
                 else
                 {
-                    DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumns, ContentAttribute.DropAttributes.Value);
+                    await DataProvider.DatabaseDao.AlterSystemTableAsync(tableName, DataProvider.ContentDao.TableColumns, ContentAttribute.DropAttributes.Value);
                 }
             }
         }
 
-        public static void UpdateConfigVersion()
+        public static async Task UpdateConfigVersionAsync()
         {
-            var configInfo = DataProvider.ConfigDao.GetConfigInfo();
-            if (configInfo == null)
+            var config = await DataProvider.ConfigDao.GetConfigAsync();
+            if (config == null)
             {
-                configInfo = new ConfigInfo(0, true, ProductVersion, DateTime.Now, string.Empty);
-                DataProvider.ConfigDao.Insert(configInfo);
+                config = new Config
+                {
+                    Id = 0,
+                    DatabaseVersion = ProductVersion,
+                    UpdateDate = DateTime.Now
+                };
+                config.Id = await DataProvider.ConfigDao.InsertAsync(config);
             }
             else
             {
-                configInfo.DatabaseVersion = ProductVersion;
-                configInfo.IsInitialized = true;
-                configInfo.UpdateDate = DateTime.Now;
-                DataProvider.ConfigDao.Update(configInfo);
+                config.DatabaseVersion = ProductVersion;
+                config.UpdateDate = DateTime.Now;
+                await DataProvider.ConfigDao.UpdateAsync(config);
             }
         }
 
         public static async Task SyncDatabaseAsync()
         {
-            CacheUtils.ClearAll();
+            //CacheUtils.ClearAll();
 
-            CreateSiteServerTables();
+            //await CreateSiteServerTablesAsync();
 
-            await SyncContentTablesAsync();
+            //await SyncContentTablesAsync();
 
-            UpdateConfigVersion();
+            //await UpdateConfigVersionAsync();
+
+            await RepositoryManager.SyncDatabaseAsync();
         }
 
 
-        public static bool IsNeedUpdate()
+        public static async Task<bool> IsNeedUpdateAsync()
         {
-            return !StringUtils.EqualsIgnoreCase(ProductVersion, DataProvider.ConfigDao.GetDatabaseVersion());
+            return !StringUtils.EqualsIgnoreCase(ProductVersion, await DataProvider.ConfigDao.GetDatabaseVersionAsync());
         }
 
-        public static bool IsNeedInstall()
+        public static async Task<bool> IsNeedInstallAsync()
         {
-            var isNeedInstall = !DataProvider.ConfigDao.IsInitialized();
+            var isNeedInstall = !await DataProvider.ConfigDao.IsInitializedAsync();
             if (isNeedInstall)
             {
-                isNeedInstall = !DataProvider.ConfigDao.IsInitialized();
+                isNeedInstall = !await DataProvider.ConfigDao.IsInitializedAsync();
             }
             return isNeedInstall;
         }

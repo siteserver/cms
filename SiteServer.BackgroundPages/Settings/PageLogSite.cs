@@ -4,10 +4,10 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -32,6 +32,8 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
+            var config = ConfigManager.GetInstanceAsync().GetAwaiter().GetResult();
+
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = Constants.PageSize;
 
@@ -41,26 +43,26 @@ namespace SiteServer.BackgroundPages.Settings
                     AuthRequest.GetQueryString("UserName"), AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"),
                     AuthRequest.GetQueryString("DateTo"));
 
-            SpContents.SortField = nameof(SiteLogInfo.Id);
+            SpContents.SortField = nameof(SiteLog.Id);
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             if (AuthRequest.IsQueryExists("Delete"))
             {
                 var arraylist = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("IDCollection"));
-                DataProvider.SiteLogDao.Delete(arraylist);
+                DataProvider.SiteLogDao.DeleteAsync(arraylist).GetAwaiter().GetResult();
                 SuccessDeleteMessage();
             }
             else if (AuthRequest.IsQueryExists("DeleteAll"))
             {
-                DataProvider.SiteLogDao.DeleteAll();
+                DataProvider.SiteLogDao.DeleteAllAsync().GetAwaiter().GetResult();
                 SuccessDeleteMessage();
             }
             else if (AuthRequest.IsQueryExists("Setting"))
             {
-                ConfigManager.SystemConfigInfo.IsLogSite = !ConfigManager.SystemConfigInfo.IsLogSite;
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
-                SuccessMessage($"成功{(ConfigManager.SystemConfigInfo.IsLogSite ? "启用" : "禁用")}日志记录");
+                config.IsLogSite = !config.IsLogSite;
+                DataProvider.ConfigDao.UpdateAsync(config).GetAwaiter().GetResult();
+                SuccessMessage($"成功{(config.IsLogSite ? "启用" : "禁用")}日志记录");
             }
 
             if (IsPostBack) return;
@@ -82,7 +84,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             DdlLogType.Items.Add(new ListItem("全部记录", "All"));
             DdlLogType.Items.Add(new ListItem("栏目相关记录", "Channel"));
-            DdlLogType.Items.Add(new ListItem("内容相关记录", "Content"));
+            DdlLogType.Items.Add(new ListItem("内容相关记录", "Body"));
 
             if (AuthRequest.IsQueryExists("LogType"))
             {
@@ -108,7 +110,7 @@ namespace SiteServer.BackgroundPages.Settings
                         {"DeleteAll", "True"}
                     })));
 
-            if (ConfigManager.SystemConfigInfo.IsLogSite)
+            if (config.IsLogSite)
             {
                 BtnSetting.Text = "禁用站点日志";
                 BtnSetting.Attributes.Add("onclick",
@@ -146,7 +148,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (SiteId == 0)
             {
-                var site = SiteManager.GetSiteAsync(SqlUtils.EvalInt(e.Item.DataItem, nameof(SiteLogInfo.SiteId))).GetAwaiter().GetResult();
+                var site = SiteManager.GetSiteAsync(SqlUtils.EvalInt(e.Item.DataItem, nameof(SiteLog.SiteId))).GetAwaiter().GetResult();
                 var siteName = string.Empty;
                 if (site != null)
                 {
@@ -155,11 +157,11 @@ namespace SiteServer.BackgroundPages.Settings
                 }
                 ltlSite.Text = $@"<td align=""text-center text-nowrap"">{siteName}</td>";
             }
-            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.UserName));
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(SiteLogInfo.AddDate)));
-            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.IpAddress));
-            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.Action));
-            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.Summary));
+            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLog.UserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(SiteLog.AddDate)));
+            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLog.IpAddress));
+            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLog.Action));
+            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLog.Summary));
         }
 
         public void Search_OnClick(object sender, EventArgs e)

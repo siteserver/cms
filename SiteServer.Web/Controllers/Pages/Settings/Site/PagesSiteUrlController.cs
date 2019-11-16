@@ -21,9 +21,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -36,12 +36,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     sites.Add(await SiteManager.GetSiteAsync(siteId));
                 }
 
+                var config = await ConfigManager.GetInstanceAsync();
+
                 return Ok(new
                 {
                     Value = sites,
                     RootSiteId = rootSiteId,
-                    ConfigManager.SystemConfigInfo.IsSeparatedApi,
-                    ConfigManager.SystemConfigInfo.SeparatedApiUrl
+                    config.IsSeparatedApi,
+                    config.SeparatedApiUrl
                 });
             }
             catch (Exception ex)
@@ -55,9 +57,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -76,12 +78,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
 
                 var site = await SiteManager.GetSiteAsync(siteId);
 
-                site.Additional.IsSeparatedWeb = isSeparatedWeb;
-                site.Additional.SeparatedWebUrl = separatedWebUrl;
+                site.IsSeparatedWeb = isSeparatedWeb;
+                site.SeparatedWebUrl = separatedWebUrl;
 
-                site.Additional.IsSeparatedAssets = isSeparatedAssets;
-                site.Additional.SeparatedAssetsUrl = separatedAssetsUrl;
-                site.Additional.AssetsDir = assetsDir;
+                site.IsSeparatedAssets = isSeparatedAssets;
+                site.SeparatedAssetsUrl = separatedAssetsUrl;
+                site.AssetsDir = assetsDir;
 
                 await DataProvider.SiteDao.UpdateAsync(site);
                 await request.AddSiteLogAsync(siteId, "修改站点访问地址");
@@ -109,9 +111,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -119,10 +121,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 var isSeparatedApi = request.GetPostBool("isSeparatedApi");
                 var separatedApiUrl = request.GetPostString("separatedApiUrl");
 
-                ConfigManager.SystemConfigInfo.IsSeparatedApi = isSeparatedApi;
-                ConfigManager.SystemConfigInfo.SeparatedApiUrl = separatedApiUrl;
+                var config = await ConfigManager.GetInstanceAsync();
 
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                config.IsSeparatedApi = isSeparatedApi;
+                config.SeparatedApiUrl = separatedApiUrl;
+
+                await DataProvider.ConfigDao.UpdateAsync(config);
 
                 await request.AddAdminLogAsync("修改API访问地址");
 

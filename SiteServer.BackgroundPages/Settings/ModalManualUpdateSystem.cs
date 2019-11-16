@@ -2,8 +2,9 @@
 using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -78,7 +79,7 @@ namespace SiteServer.BackgroundPages.Settings
 	        }
 
 	        var idAndVersion = Path.GetFileNameWithoutExtension(filePath);
-	        var directoryPath = PathUtils.GetPackagesPath(idAndVersion);
+	        var directoryPath = WebUtils.GetPackagesPath(idAndVersion);
 	        var localFilePath = PathUtils.Combine(directoryPath, idAndVersion + ".nupkg");
 
 	        if (!Directory.Exists(directoryPath))

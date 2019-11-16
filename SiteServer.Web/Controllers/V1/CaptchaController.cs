@@ -2,9 +2,11 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
@@ -90,7 +92,7 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(ApiRouteActionsCheck)]
-        public IHttpActionResult Check(string name, [FromBody] CaptchaInfo captchaInfo)
+        public async Task<IHttpActionResult> Check(string name, [FromBody] CaptchaInfo captchaInfo)
         {
             try
             {
@@ -116,7 +118,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

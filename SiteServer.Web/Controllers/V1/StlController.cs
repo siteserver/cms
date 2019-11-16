@@ -4,7 +4,6 @@ using System.Web.Http;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 
 namespace SiteServer.API.Controllers.V1
@@ -19,10 +18,11 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeStl);
 
-                var stlRequest = new StlRequest(request, isApiAuthorized);
+                var stlRequest = new StlRequest();
+                await stlRequest.LoadAsync(request, isApiAuthorized);
 
                 if (!stlRequest.IsApiAuthorized)
                 {
@@ -42,10 +42,9 @@ namespace SiteServer.API.Controllers.V1
 
                 if (StlElementParser.ElementsToParseDic.ContainsKey(elementName))
                 {
-                    Func<PageInfo, ContextInfo, object> func;
-                    if (StlElementParser.ElementsToParseDic.TryGetValue(elementName, out func))
+                    if (StlElementParser.ElementsToParseDic.TryGetValue(elementName, out var func))
                     {
-                        var obj = func(stlRequest.PageInfo, stlRequest.ContextInfo);
+                        var obj = await func(stlRequest.PageInfo, stlRequest.ContextInfo);
 
                         if (obj is string)
                         {
@@ -65,7 +64,7 @@ namespace SiteServer.API.Controllers.V1
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

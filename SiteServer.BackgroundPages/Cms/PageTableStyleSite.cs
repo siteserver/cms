@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
+using TableStyle = SiteServer.CMS.Model.TableStyle;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -53,11 +53,11 @@ namespace SiteServer.BackgroundPages.Cms
             if (AuthRequest.IsQueryExists("DeleteStyle"))
             {
                 var attributeName = AuthRequest.GetQueryString("AttributeName");
-                if (TableStyleManager.IsExists(SiteId, _tableName, attributeName))
+                if (TableStyleManager.IsExistsAsync(SiteId, _tableName, attributeName).GetAwaiter().GetResult())
                 {
                     try
                     {
-                        DataProvider.TableStyleDao.Delete(SiteId, _tableName, attributeName);
+                        DataProvider.TableStyleDao.DeleteAsync(SiteId, _tableName, attributeName).GetAwaiter().GetResult();
                         AuthRequest.AddSiteLogAsync(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}").GetAwaiter().GetResult();
                         SuccessDeleteMessage();
                     }
@@ -77,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
                 BtnReturn.Visible = false;
             }
 
-            RptContents.DataSource = TableStyleManager.GetSiteStyleInfoList(SiteId);
+            RptContents.DataSource = TableStyleManager.GetSiteStyleListAsync(SiteId).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -94,9 +94,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var styleInfo = (TableStyleInfo)e.Item.DataItem;
+            var style = (TableStyle)e.Item.DataItem;
 
-            if (_attributeNames.Contains(styleInfo.AttributeName))
+            if (_attributeNames.Contains(style.AttributeName))
             {
                 e.Item.Visible = false;
                 return;
@@ -110,28 +110,28 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlEditStyle = (Literal)e.Item.FindControl("ltlEditStyle");
             var ltlEditValidate = (Literal)e.Item.FindControl("ltlEditValidate");
 
-            ltlAttributeName.Text = styleInfo.AttributeName;
+            ltlAttributeName.Text = style.AttributeName;
 
-            ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
+            ltlDisplayName.Text = style.DisplayName;
+            ltlInputType.Text = InputTypeUtils.GetText(style.Type);
 
-            ltlValidate.Text = TableStyleManager.GetValidateInfo(styleInfo);
+            ltlValidate.Text = TableStyleManager.GetValidateInfo(style);
 
             var redirectUrl = GetRedirectUrl(SiteId, _itemId, _returnUrl);
-            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(SiteId, styleInfo.Id, _relatedIdentities, _tableName, styleInfo.AttributeName, redirectUrl);
+            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(SiteId, style.Id, _relatedIdentities, _tableName, style.AttributeName, redirectUrl);
             ltlEditStyle.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">修改</a>";
 
-            showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(SiteId, styleInfo.Id, _relatedIdentities, _tableName, styleInfo.AttributeName, redirectUrl);
+            showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(SiteId, style.Id, _relatedIdentities, _tableName, style.AttributeName, redirectUrl);
             ltlEditValidate.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">设置</a>";
 
-            ltlTaxis.Text = styleInfo.Taxis == 0 ? string.Empty : styleInfo.Taxis.ToString();
+            ltlTaxis.Text = style.Taxis == 0 ? string.Empty : style.Taxis.ToString();
 
             var urlStyle = PageUtils.GetCmsUrl(SiteId, nameof(PageTableStyleSite), new NameValueCollection
             {
                 {"TableName", _tableName},
                 {"RelatedIdentity", SiteId.ToString()},
                 {"DeleteStyle", true.ToString()},
-                {"AttributeName", styleInfo.AttributeName}
+                {"AttributeName", style.AttributeName}
             });
             ltlEditStyle.Text +=
                 $@"&nbsp;&nbsp;<a href=""{urlStyle}"" onClick=""javascript:return confirm('此操作将删除对应显示样式，确认吗？');"">删除</a>";

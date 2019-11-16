@@ -1,4 +1,6 @@
-﻿using SiteServer.CMS.Core;
+﻿using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 
@@ -6,10 +8,6 @@ namespace SiteServer.CMS.Api
 {
     public static class ApiManager
     {
-        public static bool IsSeparatedApi => ConfigManager.SystemConfigInfo.IsSeparatedApi;
-
-        public static string ApiUrl => ConfigManager.SystemConfigInfo.ApiUrl;
-
         public static string RootUrl => PageUtils.ApplicationPath;
 
         private static string _innerApiUrl;
@@ -26,9 +24,10 @@ namespace SiteServer.CMS.Api
             }
         }
 
-        public static string GetApiUrl(string route)
+        public static async Task<string> GetApiUrlAsync(string route = "")
         {
-            return PageUtils.Combine(ApiUrl, route);
+            var config = await ConfigManager.GetInstanceAsync();
+            return PageUtils.Combine(config.ApiUrl, route);
         }
 
         public static string GetInnerApiUrl(string route)

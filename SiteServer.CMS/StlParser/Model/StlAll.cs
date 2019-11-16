@@ -133,10 +133,6 @@ namespace SiteServer.CMS.StlParser.Model
                 typeof(StlQueryString)
             },
             {
-                StlRss.ElementName,
-                typeof(StlRss)
-            },
-            {
                 StlSearch.ElementName,
                 typeof(StlSearch)
             },
@@ -167,10 +163,6 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 StlTags.ElementName,
                 typeof(StlTags)
-            },
-            {
-                StlTree.ElementName,
-                typeof(StlTree)
             },
             {
                 StlValue.ElementName,

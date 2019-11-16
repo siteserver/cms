@@ -1,182 +1,86 @@
 ﻿using System.Collections.Generic;
-using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class AdministratorsInRolesDao : DataProviderBase
+    public class AdministratorsInRolesDao : IRepository
     {
-        public override string TableName => "siteserver_AdministratorsInRoles";
+        private readonly Repository<AdministratorsInRoles> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public AdministratorsInRolesDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(AdministratorsInRolesInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(AdministratorsInRolesInfo.RoleName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(AdministratorsInRolesInfo.UserName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            }
-        };
-
-        public string[] GetRolesForUser(string userName)
-        {
-            var tmpRoleNames = string.Empty;
-            var sqlString = "SELECT RoleName FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName ORDER BY RoleName";
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@UserName", DataType.VarChar, 255, userName)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    tmpRoleNames += GetString(rdr, 0) + ",";
-                }
-                rdr.Close();
-            }
-
-            if (tmpRoleNames.Length > 0)
-            {
-                tmpRoleNames = tmpRoleNames.Substring(0, tmpRoleNames.Length - 1);
-                return tmpRoleNames.Split(',');
-            }
-
-            return new string[0];
+            _repository = new Repository<AdministratorsInRoles>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public string[] GetUsersInRole(string roleName)
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task<IList<string>> GetRolesForUserAsync(string userName)
         {
-            var tmpUserNames = string.Empty;
-            var sqlString = "SELECT UserName FROM siteserver_AdministratorsInRoles WHERE RoleName = @RoleName ORDER BY userName";
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    tmpUserNames += GetString(rdr, 0) + ",";
-                }
-                rdr.Close();
-            }
-
-            if (tmpUserNames.Length > 0)
-            {
-                tmpUserNames = tmpUserNames.Substring(0, tmpUserNames.Length - 1);
-                return tmpUserNames.Split(',');
-            }
-
-            return new string[0];
+            var roleNames = await _repository.GetAllAsync<string>(Q
+                .Select(nameof(AdministratorsInRoles.RoleName))
+                .Where(nameof(AdministratorsInRoles.UserName), userName)
+                .OrderBy(nameof(AdministratorsInRoles.RoleName))
+            );
+            return roleNames.ToList();
         }
 
-        public void RemoveUser(string userName)
+        public async Task<IList<string>> GetUsersInRoleAsync(string roleName)
         {
-            var sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName";
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@UserName", DataType.VarChar, 255, userName)
-            };
-            ExecuteNonQuery(sqlString, parms);
+            var userNames = await _repository.GetAllAsync<string>(Q
+                .Select(nameof(AdministratorsInRoles.UserName))
+                .Where(nameof(AdministratorsInRoles.RoleName), roleName)
+                .OrderBy(nameof(AdministratorsInRoles.UserName))
+            );
+            return userNames.ToList();
         }
 
-        public void RemoveUserFromRoles(string userName, string[] roleNames)
+        public async Task RemoveUserAsync(string userName)
         {
-            var sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
-            foreach (var roleName in roleNames)
-            {
-                var parms = new IDataParameter[]
-                {
-                    GetParameter("@UserName", DataType.VarChar, 255, userName),
-                    GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-                };
-                ExecuteNonQuery(sqlString, parms);
-            }
+            await _repository.DeleteAsync(Q.Where(nameof(AdministratorsInRoles.UserName), userName));
         }
 
-        public void RemoveUserFromRole(string userName, string roleName)
+        public async Task RemoveUserFromRolesAsync(string userName, string[] roleNames)
         {
-            var sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@UserName", DataType.VarChar, 255, userName),
-                GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
+            await _repository.DeleteAsync(Q
+                .Where(nameof(AdministratorsInRoles.UserName), userName)
+                .WhereIn(nameof(AdministratorsInRoles.RoleName), roleNames)
+            );
         }
 
-        public string[] FindUsersInRole(string roleName, string userNameToMatch)
+        public async Task RemoveUserFromRoleAsync(string userName, string roleName)
         {
-            var tmpUserNames = string.Empty;
-            string sqlString =
-                $"SELECT UserName FROM siteserver_AdministratorsInRoles WHERE RoleName = @RoleName AND UserName LIKE '%{AttackUtils.FilterSql(userNameToMatch)}%'";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    tmpUserNames += GetString(rdr, 0) + ",";
-                }
-                rdr.Close();
-            }
-
-            if (tmpUserNames.Length > 0)
-            {
-                tmpUserNames = tmpUserNames.Substring(0, tmpUserNames.Length - 1);
-                return tmpUserNames.Split(',');
-            }
-
-            return new string[0];
+            await _repository.DeleteAsync(Q
+                .Where(nameof(AdministratorsInRoles.UserName), userName)
+                .Where(nameof(AdministratorsInRoles.RoleName), roleName)
+            );
         }
 
-        public bool IsUserInRole(string userName, string roleName)
+        public async Task<IList<string>> FindUsersInRoleAsync(string roleName, string userNameToMatch)
         {
-            var isUserInRole = false;
-            const string sqlString = "SELECT * FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@UserName", DataType.VarChar, 255, userName),
-                GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-            };
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    if (!rdr.IsDBNull(0))
-                    {
-                        isUserInRole = true;
-                    }
-                }
-                rdr.Close();
-            }
-            return isUserInRole;
+            var userNames = await _repository.GetAllAsync<string>(Q
+                .Select(nameof(AdministratorsInRoles.UserName))
+                .Where(nameof(AdministratorsInRoles.RoleName), roleName)
+                .WhereLike(nameof(AdministratorsInRoles.UserName), $"%{userNameToMatch}%")
+                .OrderBy(nameof(AdministratorsInRoles.UserName))
+            );
+            return userNames.ToList();
+        }
+
+        public async Task<bool> IsUserInRoleAsync(string userName, string roleName)
+        {
+            return await _repository.ExistsAsync(Q
+                .Where(nameof(AdministratorsInRoles.UserName), userName)
+                .Where(nameof(AdministratorsInRoles.RoleName), roleName)
+            );
         }
 
         public async Task AddUserToRolesAsync(string userName, string[] roleNames)
@@ -190,17 +94,13 @@ namespace SiteServer.CMS.Provider
         public async Task AddUserToRoleAsync(string userName, string roleName)
         {
             if (!await DataProvider.AdministratorDao.IsUserNameExistsAsync(userName)) return;
-            if (!IsUserInRole(userName, roleName))
+            if (!await IsUserInRoleAsync(userName, roleName))
             {
-                var sqlString = "INSERT INTO siteserver_AdministratorsInRoles (UserName, RoleName) VALUES (@UserName, @RoleName)";
-
-                var parms = new IDataParameter[]
+                await _repository.InsertAsync(new AdministratorsInRoles
                 {
-                    GetParameter("@UserName", DataType.VarChar, 255, userName),
-                    GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-                };
-
-                ExecuteNonQuery(sqlString, parms);
+                    RoleName = roleName,
+                    UserName = userName
+                });
             }
         }
     }

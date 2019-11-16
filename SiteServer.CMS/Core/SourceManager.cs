@@ -25,11 +25,11 @@ namespace SiteServer.CMS.Core
             }
             if (sourceId <= 0) return string.Empty;
 
-            var sourceSiteId = DataProvider.ChannelDao.GetSiteId(sourceId);
+            var sourceSiteId = await DataProvider.ChannelDao.GetSiteIdAsync(sourceId);
             var siteInfo = await SiteManager.GetSiteAsync(sourceSiteId);
             if (siteInfo == null) return "内容转移";
 
-            var nodeNames = ChannelManager.GetChannelNameNavigation(siteInfo.Id, sourceId);
+            var nodeNames = await ChannelManager.GetChannelNameNavigationAsync(siteInfo.Id, sourceId);
             if (!string.IsNullOrEmpty(nodeNames))
             {
                 return siteInfo.SiteName + "：" + nodeNames;

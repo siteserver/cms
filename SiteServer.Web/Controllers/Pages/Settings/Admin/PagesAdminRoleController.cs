@@ -14,20 +14,20 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public IHttpActionResult GetList()
+        public async Task<IHttpActionResult> GetList()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var roleInfoList = request.AdminPermissionsImpl.IsConsoleAdministrator
-                    ? DataProvider.RoleDao.GetRoleInfoList()
-                    : DataProvider.RoleDao.GetRoleInfoListByCreatorUserName(request.AdminName);
+                var roleInfoList = await request.AdminPermissionsImpl.IsSuperAdminAsync()
+                    ? await DataProvider.RoleDao.GetRoleListAsync()
+                    : await DataProvider.RoleDao.GetRoleListByCreatorUserNameAsync(request.AdminName);
 
                 return Ok(new
                 {
@@ -45,26 +45,26 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
                 var id = request.GetPostInt("id");
 
-                var roleInfo = DataProvider.RoleDao.GetRoleInfo(id);
+                var roleInfo = await DataProvider.RoleDao.GetRoleAsync(id);
 
-                DataProvider.PermissionsInRolesDao.Delete(roleInfo.RoleName);
-                DataProvider.SitePermissionsDao.Delete(roleInfo.RoleName);
-                DataProvider.RoleDao.DeleteRole(roleInfo.Id);
+                await DataProvider.PermissionsInRolesDao.DeleteAsync(roleInfo.RoleName);
+                await DataProvider.SitePermissionsDao.DeleteAsync(roleInfo.RoleName);
+                await DataProvider.RoleDao.DeleteRoleAsync(roleInfo.Id);
 
                 await request.AddAdminLogAsync("删除管理员角色", $"角色名称:{roleInfo.RoleName}");
 
-                var roleInfoList = request.AdminPermissionsImpl.IsConsoleAdministrator
-                    ? DataProvider.RoleDao.GetRoleInfoList()
-                    : DataProvider.RoleDao.GetRoleInfoListByCreatorUserName(request.AdminName);
+                var roleInfoList = await request.AdminPermissionsImpl.IsSuperAdminAsync()
+                    ? await DataProvider.RoleDao.GetRoleListAsync()
+                    : await DataProvider.RoleDao.GetRoleListByCreatorUserNameAsync(request.AdminName);
 
                 return Ok(new
                 {

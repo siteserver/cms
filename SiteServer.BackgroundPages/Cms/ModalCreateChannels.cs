@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -36,19 +37,19 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var channelId in TranslateUtils.StringCollectionToIntList(_channelIdCollection))
             {
-                CreateManager.CreateChannel(SiteId, channelId);
+                CreateManager.CreateChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                 if (isCreateContents)
                 {
-                    CreateManager.CreateAllContent(SiteId, channelId);
+                    CreateManager.CreateAllContentAsync(SiteId, channelId).GetAwaiter().GetResult();
                 }
                 if (isIncludeChildren)
                 {
-                    foreach (var childChannelId in ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, channelId), EScopeType.Descendant, string.Empty, string.Empty, string.Empty))
+                    foreach (var childChannelId in ChannelManager.GetChannelIdListAsync(ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult(), EScopeType.Descendant, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult())
                     {
-                        CreateManager.CreateChannel(SiteId, childChannelId);
+                        CreateManager.CreateChannelAsync(SiteId, childChannelId).GetAwaiter().GetResult();
                         if (isCreateContents)
                         {
-                            CreateManager.CreateAllContent(SiteId, channelId);
+                            CreateManager.CreateAllContentAsync(SiteId, channelId).GetAwaiter().GetResult();
                         }
                     }
                 }

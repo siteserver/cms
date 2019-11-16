@@ -1,4 +1,5 @@
-﻿using System.Web.UI;
+﻿using System.Threading.Tasks;
+using System.Web.UI;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.Utils;
@@ -66,7 +67,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "是否转换为大写")]
         private const string IsUpper = nameof(IsUpper);
 
-        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
 		{
 		    var connectionString = string.Empty;
             var queryString = string.Empty;
@@ -103,7 +104,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, QueryString))
                 {
-                    queryString = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    queryString = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {

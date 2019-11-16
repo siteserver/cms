@@ -3,12 +3,12 @@ using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Utils;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -23,17 +23,17 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "站点文件夹")]
         private const string SiteDir = nameof(SiteDir);
 
-        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Site);
+            var listInfo = await ListInfo.GetListInfoAsync(pageInfo, contextInfo, EContextType.Site);
             var siteName = listInfo.Others.Get(SiteName);
             var siteDir = listInfo.Others.Get(SiteDir);
 
-            var dataSource = StlDataUtility.GetSitesDataSourceAsync(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString).GetAwaiter().GetResult();
+            var dataSource = await StlDataUtility.GetSitesDataSourceAsync(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString);
 
             if (contextInfo.IsStlEntity)
             {
-                return ParseEntityAsync(dataSource).GetAwaiter().GetResult();
+                return ParseEntityAsync(dataSource);
             }
 
             return ParseElement(pageInfo, contextInfo, listInfo, dataSource);

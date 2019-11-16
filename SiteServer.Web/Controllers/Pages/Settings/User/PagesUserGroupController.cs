@@ -5,7 +5,7 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Db;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
@@ -20,9 +20,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -32,7 +32,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                 return Ok(new
                 {
-                    Value = UserGroupManager.GetUserGroupInfoList(),
+                    Value = await UserGroupManager.GetUserGroupListAsync(),
                     AdminNames = adminNames
                 });
             }
@@ -43,24 +43,24 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         }
 
         [HttpDelete, Route(Route)]
-        public IHttpActionResult Delete()
+        public async Task<IHttpActionResult> Delete()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
                 var id = request.GetPostInt("id");
 
-                DataProvider.UserGroupDao.Delete(id);
+                await DataProvider.UserGroupDao.DeleteAsync(id);
 
                 return Ok(new
                 {
-                    Value = UserGroupManager.GetUserGroupInfoList()
+                    Value = await UserGroupManager.GetUserGroupListAsync()
                 });
             }
             catch (Exception ex)
@@ -70,39 +70,41 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         }
 
         [HttpPost, Route(Route)]
-        public async Task<IHttpActionResult> Submit([FromBody] UserGroupInfo itemObj)
+        public async Task<IHttpActionResult> Submit([FromBody] UserGroup itemObj)
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
                 if (itemObj.Id == -1)
                 {
-                    if (UserGroupManager.IsExists(itemObj.GroupName))
+                    if (await UserGroupManager.IsExistsAsync(itemObj.GroupName))
                     {
                         return BadRequest("保存失败，已存在相同名称的用户组！");
                     }
 
-                    var groupInfo = new UserGroupInfo
+                    var groupInfo = new UserGroup
                     {
                         GroupName = itemObj.GroupName,
                         AdminName = itemObj.AdminName
                     };
 
-                    DataProvider.UserGroupDao.Insert(groupInfo);
+                    await DataProvider.UserGroupDao.InsertAsync(groupInfo);
 
                     await request.AddAdminLogAsync("新增用户组", $"用户组:{groupInfo.GroupName}");
                 }
                 else if (itemObj.Id == 0)
                 {
-                    ConfigManager.SystemConfigInfo.UserDefaultGroupAdminName = itemObj.AdminName;
+                    var config = await ConfigManager.GetInstanceAsync();
 
-                    DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                    config.UserDefaultGroupAdminName = itemObj.AdminName;
+
+                    await DataProvider.ConfigDao.UpdateAsync(config);
 
                     UserGroupManager.ClearCache();
 
@@ -110,9 +112,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 }
                 else if (itemObj.Id > 0)
                 {
-                    var groupInfo = UserGroupManager.GetUserGroupInfo(itemObj.Id);
+                    var groupInfo = await UserGroupManager.GetUserGroupAsync(itemObj.Id);
 
-                    if (groupInfo.GroupName != itemObj.GroupName && UserGroupManager.IsExists(itemObj.GroupName))
+                    if (groupInfo.GroupName != itemObj.GroupName && await UserGroupManager.IsExistsAsync(itemObj.GroupName))
                     {
                         return BadRequest("保存失败，已存在相同名称的用户组！");
                     }
@@ -120,14 +122,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                     groupInfo.GroupName = itemObj.GroupName;
                     groupInfo.AdminName = itemObj.AdminName;
 
-                    DataProvider.UserGroupDao.Update(groupInfo);
+                    await DataProvider.UserGroupDao.UpdateAsync(groupInfo);
 
                     await request.AddAdminLogAsync("修改用户组", $"用户组:{groupInfo.GroupName}");
                 }
 
                 return Ok(new
                 {
-                    Value = UserGroupManager.GetUserGroupInfoList()
+                    Value = await UserGroupManager.GetUserGroupListAsync()
                 });
             }
             catch (Exception ex)

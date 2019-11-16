@@ -5,13 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
@@ -31,16 +32,16 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
                 var roles = new List<KeyValuePair<string, string>>();
 
-                var roleNameList = request.AdminPermissionsImpl.IsConsoleAdministrator ? DataProvider.RoleDao.GetRoleNameList() : DataProvider.RoleDao.GetRoleNameListByCreatorUserName(request.AdminName);
+                var roleNameList = await request.AdminPermissionsImpl.IsSuperAdminAsync() ? await DataProvider.RoleDao.GetRoleNameListAsync() : await DataProvider.RoleDao.GetRoleNameListByCreatorUserNameAsync(request.AdminName);
 
                 var predefinedRoles = EPredefinedRoleUtils.GetAllPredefinedRoleName();
                 foreach (var predefinedRole in predefinedRoles)
@@ -62,7 +63,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var offset = request.GetQueryInt("offset");
                 var limit = request.GetQueryInt("limit");
 
-                var isSuperAdmin = request.AdminPermissions.IsSuperAdmin();
+                var isSuperAdmin = await request.AdminPermissions.IsSuperAdminAsync();
                 var creatorUserName = isSuperAdmin ? string.Empty : request.AdminName;
                 var count = await DataProvider.AdministratorDao.GetCountAsync(creatorUserName, role, lastActivityDate, keyword);
                 var administratorInfoList = await DataProvider.AdministratorDao.GetAdministratorsAsync(creatorUserName, role, order, lastActivityDate, keyword, offset, limit);
@@ -81,7 +82,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                         administratorInfo.LastActivityDate,
                         administratorInfo.CountOfLogin,
                         administratorInfo.Locked,
-                        Roles = AdminManager.GetRoles(administratorInfo.UserName)
+                        Roles = await AdminManager.GetRolesAsync(administratorInfo.UserName)
                     });
                 }
 
@@ -90,7 +91,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     Value = administrators,
                     Count = count,
                     Roles = roles,
-                    IsSuperAdmin = request.AdminPermissions.IsSuperAdmin(),
+                    IsSuperAdmin = await request.AdminPermissions.IsSuperAdminAsync(),
                     request.AdminId
                 });
             }
@@ -105,23 +106,23 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                if (!request.AdminPermissions.IsSuperAdmin())
+                if (!await request.AdminPermissions.IsSuperAdminAsync())
                 {
                     return Unauthorized();
                 }
 
-                var roles = DataProvider.RoleDao.GetRoleNameList();
+                var roles = await DataProvider.RoleDao.GetRoleNameListAsync();
                 var allSites = await SiteManager.GetSiteListAsync();
 
                 var adminInfo = await AdminManager.GetByUserIdAsync(adminId);
-                var adminRoles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(adminInfo.UserName);
+                var adminRoles = await DataProvider.AdministratorsInRolesDao.GetRolesForUserAsync(adminInfo.UserName);
                 string adminLevel;
                 var checkedSites = new List<int>();
                 var checkedRoles = new List<string>();
@@ -167,14 +168,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                if (!request.AdminPermissions.IsSuperAdmin())
+                if (!await request.AdminPermissions.IsSuperAdminAsync())
                 {
                     return Unauthorized();
                 }
@@ -185,7 +186,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 var adminInfo = await AdminManager.GetByUserIdAsync(adminId);
 
-                DataProvider.AdministratorsInRolesDao.RemoveUser(adminInfo.UserName);
+                await DataProvider.AdministratorsInRolesDao.RemoveUserAsync(adminInfo.UserName);
                 if (adminLevel == "SuperAdmin")
                 {
                     await DataProvider.AdministratorsInRolesDao.AddUserToRoleAsync(adminInfo.UserName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
@@ -212,7 +213,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 return Ok(new
                 {
                     Value = true,
-                    Roles = AdminManager.GetRoles(adminInfo.UserName)
+                    Roles = await AdminManager.GetRolesAsync(adminInfo.UserName)
                 });
             }
             catch (Exception ex)
@@ -226,9 +227,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -236,7 +237,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var id = request.GetPostInt("id");
 
                 var adminInfo = await AdminManager.GetByUserIdAsync(id);
-                DataProvider.AdministratorsInRolesDao.RemoveUser(adminInfo.UserName);
+                await DataProvider.AdministratorsInRolesDao.RemoveUserAsync(adminInfo.UserName);
                 await DataProvider.AdministratorDao.DeleteAsync(adminInfo);
 
                 await request.AddAdminLogAsync("删除管理员", $"管理员:{adminInfo.UserName}");
@@ -257,9 +258,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -291,9 +292,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -325,9 +326,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -407,7 +408,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }
@@ -417,9 +418,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }

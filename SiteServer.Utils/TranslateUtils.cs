@@ -3,30 +3,25 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Data;
-using System.Web.UI.WebControls;
 using System.Drawing;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using SiteServer.Utils.Auth;
 
 namespace SiteServer.Utils
 {
     public static class TranslateUtils
     {
-        public static T ToEnum<T>(string value, T defaultValue) where T : struct
+        public static object Get(IDictionary<string, object> dict, string name)
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                return defaultValue;
-            }
+            if (string.IsNullOrEmpty(name)) return null;
 
-            return Enum.TryParse<T>(value, true, out var result) ? result : defaultValue;
+            return dict.TryGetValue(name, out var extendValue) ? extendValue : null;
         }
 
-        public static T Cast<T>(object value, T defaultValue = default(T))
+        public static T Get<T>(object value, T defaultValue = default(T))
         {
             switch (value)
             {
@@ -44,6 +39,23 @@ namespace SiteServer.Utils
                         return defaultValue;
                     }
             }
+        }
+
+        public static T Get<T>(IDictionary<string, object> dict, string name, T defaultValue = default(T))
+        {
+            if (string.IsNullOrEmpty(name)) return default(T);
+
+            return dict.TryGetValue(name, out var extendValue) ? Get<T>(extendValue, defaultValue) : default(T);
+        }
+
+        public static T ToEnum<T>(string value, T defaultValue) where T : struct
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return defaultValue;
+            }
+
+            return Enum.TryParse<T>(value, true, out var result) ? result : defaultValue;
         }
 
         //添加枚举：(fileAttributes | FileAttributes.ReadOnly)   判断枚举：((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)   去除枚举：(fileAttributes ^ FileAttributes.ReadOnly)
@@ -130,17 +142,17 @@ namespace SiteServer.Utils
 
         public static DateTime ToDateTime(string dateTimeStr)
         {
-            var datetime = DateUtils.SqlMinValue;
+            var datetime = Constants.SqlMinValue;
             if (!string.IsNullOrEmpty(dateTimeStr))
             {
                 if (!DateTime.TryParse(dateTimeStr.Trim(), out datetime))
                 {
-                    datetime = DateUtils.SqlMinValue;
+                    datetime = Constants.SqlMinValue;
                 }
             }
-            if (datetime < DateUtils.SqlMinValue)
+            if (datetime < Constants.SqlMinValue)
             {
-                datetime = DateUtils.SqlMinValue;
+                datetime = Constants.SqlMinValue;
             }
             return datetime;
         }
@@ -171,20 +183,6 @@ namespace SiteServer.Utils
                 // ignored
             }
             return color;
-        }
-
-        public static Unit ToUnit(string unitStr)
-        {
-            var type = Unit.Empty;
-            try
-            {
-                type = Unit.Parse(unitStr.Trim());
-            }
-            catch
-            {
-                // ignored
-            }
-            return type;
         }
 
         public static string ToTwoCharString(int i)
@@ -357,12 +355,29 @@ namespace SiteServer.Utils
             return builder.ToString();
         }
 
-        public static NameValueCollection DictionaryToNameValueCollection(Dictionary<string, object> attributes)
+        public static NameValueCollection DictionaryToNameValueCollection(IDictionary<string, object> attributes)
         {
             var nvc = new NameValueCollection(StringComparer.OrdinalIgnoreCase);
             if (attributes != null && attributes.Count > 0)
             {
                 foreach (var key in attributes.Keys)
+                {
+                    var value = attributes[key];
+                    if (value != null)
+                    {
+                        nvc[key] = attributes[key].ToString();
+                    }
+                }
+            }
+            return nvc;
+        }
+
+        public static Dictionary<string, object> NameValueCollectionToDictionary(NameValueCollection  attributes)
+        {
+            var nvc = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (attributes != null && attributes.Count > 0)
+            {
+                foreach (var key in attributes.AllKeys)
                 {
                     var value = attributes[key];
                     if (value != null)
@@ -627,76 +642,6 @@ namespace SiteServer.Utils
         public static Dictionary<string, object> JsonGetDictionaryIgnorecase(JObject json)
         {
             return new Dictionary<string, object>(json.ToObject<IDictionary<string, object>>(), StringComparer.CurrentCultureIgnoreCase);
-        }
-
-        public const string EncryptStingIndicator = "0secret0";
-
-        public static string EncryptStringBySecretKey(string inputString)
-        {
-            return EncryptStringBySecretKey(inputString, WebConfigUtils.SecretKey);
-        }
-
-        public static string EncryptStringBySecretKey(string inputString, string secretKey)
-        {
-            if (string.IsNullOrEmpty(inputString)) return string.Empty;
-
-            var encryptor = new DesEncryptor
-            {
-                InputString = inputString,
-                EncryptKey = secretKey
-            };
-            encryptor.DesEncrypt();
-
-            var retVal = encryptor.OutString;
-            retVal = retVal.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
-
-            return retVal + EncryptStingIndicator;
-        }
-
-        public static string DecryptStringBySecretKey(string inputString)
-        {
-            return DecryptStringBySecretKey(inputString, WebConfigUtils.SecretKey);
-        }
-
-        private static string DecryptStringBySecretKey(string inputString, string secretKey)
-        {
-            if (string.IsNullOrEmpty(inputString)) return string.Empty;
-
-            inputString = inputString.Replace(EncryptStingIndicator, string.Empty).Replace("0add0", "+").Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'").Replace("0slash0", "/");
-
-            var encryptor = new DesEncryptor
-            {
-                InputString = inputString,
-                DecryptKey = secretKey
-            };
-            encryptor.DesDecrypt();
-
-            return encryptor.OutString;
-        }
-
-        public static HorizontalAlign ToHorizontalAlign(string typeStr)
-        {
-            return ToEnum(typeStr, HorizontalAlign.Left);
-        }
-
-        public static VerticalAlign ToVerticalAlign(string typeStr)
-        {
-            return ToEnum(typeStr, VerticalAlign.Middle);
-        }
-
-        public static GridLines ToGridLines(string typeStr)
-        {
-            return ToEnum(typeStr, GridLines.None);
-        }
-
-        public static RepeatDirection ToRepeatDirection(string typeStr)
-        {
-            return ToEnum(typeStr, RepeatDirection.Vertical);
-        }
-
-        public static RepeatLayout ToRepeatLayout(string typeStr)
-        {
-            return ToEnum(typeStr, RepeatLayout.Table);
         }
 
         public static List<Dictionary<string, object>> DataTableToDictionaryList(DataTable dataTable)

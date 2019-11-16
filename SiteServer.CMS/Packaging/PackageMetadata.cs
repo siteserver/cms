@@ -160,7 +160,7 @@ namespace SiteServer.CMS.Packaging
             return new PackageMetadata(
                 nuspecReader.GetMetadata().ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                 nuspecReader.GetDependencyGroups(true),
-                nuspecReader.GetFrameworkReferenceGroups(),
+                nuspecReader.GetFrameworkAssemblyGroups(),
                 nuspecReader.GetPackageTypes(),
                 nuspecReader.GetMinClientVersion()
            );

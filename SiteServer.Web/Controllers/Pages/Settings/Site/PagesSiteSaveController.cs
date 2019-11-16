@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils;
-using SiteServer.Utils.IO;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
@@ -25,9 +25,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -53,9 +53,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -90,7 +90,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                             }
                         }
                     }
-                    if (!isSiteDirectory && !DirectoryUtils.IsSystemDirectory(fileSystem.Name))
+                    if (!isSiteDirectory && !WebUtils.IsSystemDirectory(fileSystem.Name))
                     {
                         directories.Add(fileSystem.Name);
                     }
@@ -122,9 +122,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -139,8 +139,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 var siteTemplatePath = PathUtility.GetSiteTemplatesPath(templateDir);
                 await exportObject.ExportFilesToSiteAsync(siteTemplatePath, isAllFiles, checkedDirectories, checkedFiles, true);
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, siteId);
-                channelInfo.Children = ChannelManager.GetChildren(siteId, siteId);
+                var channelInfo = await ChannelManager.GetChannelAsync(siteId, siteId);
+                channelInfo.Children = await ChannelManager.GetChildrenAsync(siteId, siteId);
 
                 return Ok(new
                 {
@@ -159,9 +159,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }

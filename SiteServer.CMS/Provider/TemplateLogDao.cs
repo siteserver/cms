@@ -1,81 +1,31 @@
 ﻿using System.Collections.Generic;
-using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using Datory;
-using SiteServer.CMS.Data;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.Provider
 {
-    public class TemplateLogDao : DataProviderBase
+    public class TemplateLogDao : IRepository
     {
-        public override string TableName => "siteserver_TemplateLog";
+        private readonly Repository<TemplateLog> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public TemplateLogDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateLogInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateLogInfo.TemplateId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateLogInfo.SiteId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateLogInfo.AddDate),
-                DataType = DataType.DateTime
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateLogInfo.AddUserName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateLogInfo.ContentLength),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(TemplateLogInfo.TemplateContent),
-                DataType = DataType.Text
-            }
-        };
+            _repository = new Repository<TemplateLog>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+        }
 
-        private const string ParmTemplateId = "@TemplateId";
-        private const string ParmSiteId = "@SiteId";
-        private const string ParmAddDate = "@AddDate";
-        private const string ParmAddUserName = "@AddUserName";
-        private const string ParmContentLength = "@ContentLength";
-        private const string ParmTemplateContent = "@TemplateContent";
+        public IDatabase Database => _repository.Database;
 
-        public void Insert(TemplateLogInfo logInfo)
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task InsertAsync(TemplateLog log)
         {
-            var sqlString = "INSERT INTO siteserver_TemplateLog(TemplateId, SiteId, AddDate, AddUserName, ContentLength, TemplateContent) VALUES (@TemplateId, @SiteId, @AddDate, @AddUserName, @ContentLength, @TemplateContent)";
-
-            var parms = new IDataParameter[]
-			{
-                GetParameter(ParmTemplateId, DataType.Integer, logInfo.TemplateId),
-                GetParameter(ParmSiteId, DataType.Integer, logInfo.SiteId),
-                GetParameter(ParmAddDate, DataType.DateTime, logInfo.AddDate),
-                GetParameter(ParmAddUserName, DataType.VarChar, 255, logInfo.AddUserName),
-                GetParameter(ParmContentLength, DataType.Integer, logInfo.ContentLength),
-				GetParameter(ParmTemplateContent, DataType.Text, logInfo.TemplateContent)
-			};
-
-            ExecuteNonQuery(sqlString, parms);
+            await _repository.InsertAsync(log);
         }
 
         public string GetSelectCommend(int siteId, int templateId)
@@ -84,59 +34,30 @@ namespace SiteServer.CMS.Provider
                 $"SELECT ID, TemplateId, SiteId, AddDate, AddUserName, ContentLength, TemplateContent FROM siteserver_TemplateLog WHERE SiteId = {siteId} AND TemplateId = {templateId}";
         }
 
-        public string GetTemplateContent(int logId)
+        public async Task<string> GetTemplateContentAsync(int logId)
         {
-            var templateContent = string.Empty;
-
-            string sqlString = $"SELECT TemplateContent FROM siteserver_TemplateLog WHERE ID = {logId}";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    templateContent = GetString(rdr, 0);
-                }
-                rdr.Close();
-            }
-
-            return templateContent;
+            return await _repository.GetAsync<string>(Q.Select(nameof(TemplateLog.TemplateContent))
+                .Where(nameof(TemplateLog.Id), logId)
+            );
         }
 
-        public Dictionary<int, string> GetLogIdWithNameDictionary(int siteId, int templateId)
+        public async Task<Dictionary<int, string>> GetLogIdWithNameDictionaryAsync(int siteId, int templateId)
         {
-            var dictionary = new Dictionary<int, string>();
+            var list = await _repository.GetAllAsync(Q
+                .Where(nameof(TemplateLog.TemplateId), templateId)
+                .OrderByDesc(nameof(TemplateLog.Id))
+            );
 
-            string sqlString =
-                $"SELECT ID, AddDate, AddUserName, ContentLength FROM siteserver_TemplateLog WHERE TemplateId = {templateId}";
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var id = GetInt(rdr, 0);
-                    var addDate = GetDateTime(rdr, 1);
-                    var addUserName = GetString(rdr, 2);
-                    var contentLength = GetInt(rdr, 3);
-
-                    string name =
-                        $"修订时间：{DateUtils.GetDateAndTimeString(addDate)}，修订人：{addUserName}，字符数：{contentLength}";
-
-                    dictionary.Add(id, name);
-                }
-                rdr.Close();
-            }
-
-            return dictionary;
+            return list.ToDictionary(templateLog => templateLog.Id,
+                templateLog =>
+                    $"修订时间：{DateUtils.GetDateAndTimeString(templateLog.AddDate)}，修订人：{templateLog.AddUserName}，字符数：{templateLog.ContentLength}");
         }
 
-        public void Delete(List<int> idList)
+        public async Task DeleteAsync(List<int> idList)
         {
             if (idList != null && idList.Count > 0)
             {
-                string sqlString =
-                    $"DELETE FROM siteserver_TemplateLog WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
-
-                ExecuteNonQuery(sqlString);
+                await _repository.DeleteAsync(Q.WhereIn(nameof(TemplateLog.Id), idList));
             }
         }
     }

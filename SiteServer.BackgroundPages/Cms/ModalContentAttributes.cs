@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -23,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
         protected TextBox TbHits;
         protected TextBox TbDownloads;
 
-        private ChannelInfo _channelInfo;
+        private Channel _channel;
         private List<int> _idList;
 
         public static string GetOpenWindowString(int siteId, int channelId)
@@ -49,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "channelId");
 
             var channelId = AuthRequest.GetQueryInt("channelId");
-            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
             _idList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
 		}
 
@@ -64,26 +63,26 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(Site, _channelInfo, contentId);
+                            var contentInfo = ContentManager.GetContentInfoAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
                                 {
-                                    contentInfo.IsRecommend = true;
+                                    contentInfo.Recommend = true;
                                 }
                                 if (CbIsHot.Checked)
                                 {
-                                    contentInfo.IsHot = true;
+                                    contentInfo.Hot = true;
                                 }
                                 if (CbIsColor.Checked)
                                 {
-                                    contentInfo.IsColor = true;
+                                    contentInfo.Color = true;
                                 }
                                 if (CbIsTop.Checked)
                                 {
-                                    contentInfo.IsTop = true;
+                                    contentInfo.Top = true;
                                 }
-                                DataProvider.ContentDao.Update(Site, _channelInfo, contentInfo);
+                                DataProvider.ContentDao.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
                             }
                         }
 
@@ -99,26 +98,26 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(Site, _channelInfo, contentId);
+                            var contentInfo = ContentManager.GetContentInfoAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
                                 {
-                                    contentInfo.IsRecommend = false;
+                                    contentInfo.Recommend = false;
                                 }
                                 if (CbIsHot.Checked)
                                 {
-                                    contentInfo.IsHot = false;
+                                    contentInfo.Hot = false;
                                 }
                                 if (CbIsColor.Checked)
                                 {
-                                    contentInfo.IsColor = false;
+                                    contentInfo.Color = false;
                                 }
                                 if (CbIsTop.Checked)
                                 {
-                                    contentInfo.IsTop = false;
+                                    contentInfo.Top = false;
                                 }
-                                DataProvider.ContentDao.Update(Site, _channelInfo, contentInfo);
+                                DataProvider.ContentDao.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
                             }
                         }
 
@@ -134,11 +133,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(Site, _channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfoAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                         if (contentInfo != null)
                         {
                             contentInfo.Hits = hits;
-                            DataProvider.ContentDao.Update(Site, _channelInfo, contentInfo);
+                            DataProvider.ContentDao.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
                         }
                     }
 
@@ -152,11 +151,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(Site, _channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfoAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                         if (contentInfo != null)
                         {
                             contentInfo.Downloads = downloads;
-                            DataProvider.ContentDao.Update(Site, _channelInfo, contentInfo);
+                            DataProvider.ContentDao.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
                         }
                     }
 

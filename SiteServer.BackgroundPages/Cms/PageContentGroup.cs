@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 			
 				try
 				{
-					DataProvider.ContentGroupDao.Delete(groupName, SiteId);
+					DataProvider.ContentGroupDao.DeleteAsync(SiteId, groupName).GetAwaiter().GetResult();
                     AuthRequest.AddSiteLogAsync(SiteId, "删除内容组", $"内容组:{groupName}").GetAwaiter().GetResult();
 					SuccessDeleteMessage();
 				}
@@ -46,10 +46,10 @@ namespace SiteServer.BackgroundPages.Cms
                 switch (direction.ToUpper())
                 {
                     case "UP":
-                        DataProvider.ContentGroupDao.UpdateTaxisToUp(SiteId, groupName);
+                        DataProvider.ContentGroupDao.UpdateTaxisToUpAsync(SiteId, groupName).GetAwaiter().GetResult();
                         break;
                     case "DOWN":
-                        DataProvider.ContentGroupDao.UpdateTaxisToDown(SiteId, groupName);
+                        DataProvider.ContentGroupDao.UpdateTaxisToDownAsync(SiteId, groupName).GetAwaiter().GetResult();
                         break;
                 }
                 SuccessMessage("排序成功！");
@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
-            RptContents.DataSource = ContentGroupManager.GetContentGroupInfoList(SiteId);
+            RptContents.DataSource = ContentGroupManager.GetContentGroupListAsync(SiteId).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var groupInfo = (ContentGroupInfo) e.Item.DataItem;
+            var groupInfo = (ContentGroup) e.Item.DataItem;
 
             var ltlContentGroupName = (Literal)e.Item.FindControl("ltlContentGroupName");
             var ltlDescription = (Literal)e.Item.FindControl("ltlDescription");

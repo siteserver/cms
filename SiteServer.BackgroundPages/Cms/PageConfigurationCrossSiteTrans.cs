@@ -3,10 +3,11 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -47,14 +48,14 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             EBooleanUtils.AddListItems(RblIsCrossSiteTransChecked, "无需审核", "需要审核");
-            ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, Site.Additional.IsCrossSiteTransChecked.ToString());
+            ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, Site.IsCrossSiteTransChecked.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    Site.Additional.IsCrossSiteTransChecked = TranslateUtils.ToBool(RblIsCrossSiteTransChecked.SelectedValue);
+		    Site.IsCrossSiteTransChecked = TranslateUtils.ToBool(RblIsCrossSiteTransChecked.SelectedValue);
 				
 		    try
 		    {

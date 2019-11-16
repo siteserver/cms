@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -69,7 +70,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (_isContent)
                 {
-                    var contentGroupNameList = ContentGroupManager.GetGroupNameList(SiteId);
+                    var contentGroupNameList = ContentGroupManager.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult();
                     foreach (var groupName in contentGroupNameList)
                     {
                         var item = new ListItem(groupName, groupName);
@@ -80,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var nodeGroupNameList = ChannelGroupManager.GetGroupNameList(SiteId);
+                    var nodeGroupNameList = ChannelGroupManager.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult();
                     foreach (var groupName in nodeGroupNameList)
                     {
                         var item = new ListItem(groupName, groupName);
@@ -112,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in _idsDictionary.Keys)
                     {
-                        var tableName = ChannelManager.GetTableName(Site, channelId);
+                        var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
                         var contentIdArrayList = _idsDictionary[channelId];
                         if (contentIdArrayList != null)
                         {
@@ -138,7 +139,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (int channelId in _channelIdArrayList)
                     {
-                        DataProvider.ChannelDao.AddGroupNameList(SiteId, channelId, groupNameList);
+                        DataProvider.ChannelDao.AddGroupNameListAsync(SiteId, channelId, groupNameList).GetAwaiter().GetResult();
                     }
 
                     AuthRequest.AddSiteLogAsync(SiteId, "添加栏目到栏目组", $"栏目组:{TranslateUtils.ObjectCollectionToString(groupNameList)}").GetAwaiter().GetResult();

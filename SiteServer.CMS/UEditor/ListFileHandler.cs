@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.UEditor
 {
@@ -65,11 +65,11 @@ namespace SiteServer.CMS.UEditor
                 var applicationPath = WebConfigUtils.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\'); // 系统物理路径
                 if (UploadType == EUploadType.Image)
                 {
-                    PathToList = site.Additional.ImageUploadDirectoryName; 
+                    PathToList = site.ImageUploadDirectoryName; 
                 }
                 else if(UploadType == EUploadType.File)
                 {
-                    PathToList = site.Additional.FileUploadDirectoryName;
+                    PathToList = site.FileUploadDirectoryName;
                 }
 
                 //var localPath = Server.MapPath(PathToList);

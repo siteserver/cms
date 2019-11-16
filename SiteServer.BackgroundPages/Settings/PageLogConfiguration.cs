@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -20,9 +21,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Log);
 
+            var config = ConfigManager.GetInstanceAsync().GetAwaiter().GetResult();
+
             EBooleanUtils.AddListItems(RblIsTimeThreshold, "启用", "不启用");
-            ControlUtils.SelectSingleItem(RblIsTimeThreshold, ConfigManager.SystemConfigInfo.IsTimeThreshold.ToString());
-            TbTime.Text = ConfigManager.SystemConfigInfo.TimeThreshold.ToString();
+            ControlUtils.SelectSingleItem(RblIsTimeThreshold, config.IsTimeThreshold.ToString());
+            TbTime.Text = config.TimeThreshold.ToString();
 
             PhTimeThreshold.Visible = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
         }
@@ -34,13 +37,15 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            ConfigManager.SystemConfigInfo.IsTimeThreshold = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
-            if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
+            var config = ConfigManager.GetInstanceAsync().GetAwaiter().GetResult();
+
+            config.IsTimeThreshold = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
+            if (config.IsTimeThreshold)
             {
-                ConfigManager.SystemConfigInfo.TimeThreshold = TranslateUtils.ToInt(TbTime.Text);
+                config.TimeThreshold = TranslateUtils.ToInt(TbTime.Text);
             }
 
-            DataProvider.ConfigDao.Update(ConfigManager.Instance);
+            DataProvider.ConfigDao.UpdateAsync(config).GetAwaiter().GetResult();
 
             AuthRequest.AddAdminLogAsync("设置日志阈值参数").GetAwaiter().GetResult();
             SuccessMessage("日志设置成功");

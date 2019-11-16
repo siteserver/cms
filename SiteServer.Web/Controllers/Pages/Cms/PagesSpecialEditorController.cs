@@ -20,20 +20,20 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var specialId = request.GetQueryInt("specialId");
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId,
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
                         ConfigManager.WebSitePermissions.Template))
                 {
                     return Unauthorized();
                 }
 
                 var site = await SiteManager.GetSiteAsync(siteId);
-                var specialInfo = SpecialManager.GetSpecialInfo(siteId, specialId);
+                var specialInfo = await SpecialManager.GetSpecialAsync(siteId, specialId);
 
                 if (specialInfo == null)
                 {

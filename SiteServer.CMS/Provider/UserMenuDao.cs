@@ -1,186 +1,53 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using Dapper;
+using System.Threading.Tasks;
 using Datory;
-using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
+using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.Provider
 {
-    public class UserMenuDao : DataProviderBase
+    public class UserMenuDao : IRepository
     {
-        public const string DatabaseTableName = "siteserver_UserMenu";
+        private readonly Repository<UserMenu> _repository;
 
-        public override string TableName => DatabaseTableName;
-
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public UserMenuDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(UserMenuInfo.Id),
-                DataType = DataType.Integer,
-                IsPrimaryKey = true,
-                IsIdentity = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserMenuInfo.SystemId),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserMenuInfo.GroupIdCollection),
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserMenuInfo.IsDisabled),
-                DataType = DataType.Boolean
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserMenuInfo.ParentId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserMenuInfo.Taxis),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserMenuInfo.Text),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserMenuInfo.IconClass),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserMenuInfo.Href),
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserMenuInfo.Target),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            }
-        };
-
-        public int Insert(UserMenuInfo menuInfo)
-        {
-            var sqlString =
-                $@"
-INSERT INTO {TableName} (
-    {nameof(UserMenuInfo.SystemId)}, 
-    {nameof(UserMenuInfo.GroupIdCollection)}, 
-    {nameof(UserMenuInfo.IsDisabled)}, 
-    {nameof(UserMenuInfo.ParentId)}, 
-    {nameof(UserMenuInfo.Taxis)}, 
-    {nameof(UserMenuInfo.Text)}, 
-    {nameof(UserMenuInfo.IconClass)}, 
-    {nameof(UserMenuInfo.Href)}, 
-    {nameof(UserMenuInfo.Target)}
-) VALUES (
-    @{nameof(UserMenuInfo.SystemId)}, 
-    @{nameof(UserMenuInfo.GroupIdCollection)}, 
-    @{nameof(UserMenuInfo.IsDisabled)}, 
-    @{nameof(UserMenuInfo.ParentId)}, 
-    @{nameof(UserMenuInfo.Taxis)}, 
-    @{nameof(UserMenuInfo.Text)}, 
-    @{nameof(UserMenuInfo.IconClass)}, 
-    @{nameof(UserMenuInfo.Href)}, 
-    @{nameof(UserMenuInfo.Target)}
-)";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter($"@{nameof(UserMenuInfo.SystemId)}", DataType.VarChar, 50, menuInfo.SystemId),
-                GetParameter($"@{nameof(UserMenuInfo.GroupIdCollection)}", DataType.VarChar, 200, menuInfo.GroupIdCollection),
-                GetParameter($"@{nameof(UserMenuInfo.IsDisabled)}", DataType.Boolean, menuInfo.IsDisabled),
-                GetParameter($"@{nameof(UserMenuInfo.ParentId)}", DataType.Integer, menuInfo.ParentId),
-                GetParameter($"@{nameof(UserMenuInfo.Taxis)}", DataType.Integer, menuInfo.Taxis),
-                GetParameter($"@{nameof(UserMenuInfo.Text)}", DataType.VarChar, 50, menuInfo.Text),
-                GetParameter($"@{nameof(UserMenuInfo.IconClass)}", DataType.VarChar, 50, menuInfo.IconClass),
-                GetParameter($"@{nameof(UserMenuInfo.Href)}", DataType.VarChar, 200, menuInfo.Href),
-                GetParameter($"@{nameof(UserMenuInfo.Target)}", DataType.VarChar, 50, menuInfo.Target)
-            };
-
-            var menuId = ExecuteNonQueryAndReturnId(TableName, nameof(UserMenuInfo.Id), sqlString, parms);
-
-            UserMenuManager.ClearCache();
-
-            return menuId;
+            _repository = new Repository<UserMenu>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public void Update(UserMenuInfo menuInfo)
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task<int> InsertAsync(UserMenu userMenu)
         {
-            var sqlString = $@"UPDATE {TableName} SET
-                {nameof(UserMenuInfo.SystemId)} = @{nameof(UserMenuInfo.SystemId)}, 
-                {nameof(UserMenuInfo.GroupIdCollection)} = @{nameof(UserMenuInfo.GroupIdCollection)}, 
-                {nameof(UserMenuInfo.IsDisabled)} = @{nameof(UserMenuInfo.IsDisabled)}, 
-                {nameof(UserMenuInfo.ParentId)} = @{nameof(UserMenuInfo.ParentId)}, 
-                {nameof(UserMenuInfo.Taxis)} = @{nameof(UserMenuInfo.Taxis)}, 
-                {nameof(UserMenuInfo.Text)} = @{nameof(UserMenuInfo.Text)}, 
-                {nameof(UserMenuInfo.IconClass)} = @{nameof(UserMenuInfo.IconClass)}, 
-                {nameof(UserMenuInfo.Href)} = @{nameof(UserMenuInfo.Href)}, 
-                {nameof(UserMenuInfo.Target)} = @{nameof(UserMenuInfo.Target)}
-            WHERE {nameof(UserMenuInfo.Id)} = @{nameof(UserMenuInfo.Id)}";
+            userMenu.Id = await _repository.InsertAsync(userMenu);
+            UserMenuManager.ClearCache();
 
-            IDataParameter[] parameters =
-            {
-                GetParameter(nameof(UserMenuInfo.SystemId), DataType.VarChar, 50, menuInfo.SystemId),
-                GetParameter(nameof(UserMenuInfo.GroupIdCollection), DataType.VarChar, 200, menuInfo.GroupIdCollection),
-                GetParameter(nameof(UserMenuInfo.IsDisabled), DataType.Boolean, menuInfo.IsDisabled),
-                GetParameter(nameof(UserMenuInfo.ParentId), DataType.Integer, menuInfo.ParentId),
-                GetParameter(nameof(UserMenuInfo.Taxis), DataType.Integer, menuInfo.Taxis),
-                GetParameter(nameof(UserMenuInfo.Text), DataType.VarChar, 50, menuInfo.Text),
-                GetParameter(nameof(UserMenuInfo.IconClass), DataType.VarChar, 50, menuInfo.IconClass),
-                GetParameter(nameof(UserMenuInfo.Href), DataType.VarChar, 200, menuInfo.Href),
-                GetParameter(nameof(UserMenuInfo.Target), DataType.VarChar, 50, menuInfo.Target),
-                GetParameter(nameof(UserMenuInfo.Id), DataType.Integer, menuInfo.Id)
-            };
+            return userMenu.Id;
+        }
 
-            ExecuteNonQuery(sqlString, parameters);
+        public async Task UpdateAsync(UserMenu userMenu)
+        {
+            await _repository.UpdateAsync(userMenu);
 
             UserMenuManager.ClearCache();
         }
 
-        public void Delete(int menuId)
+        public async Task DeleteAsync(int menuId)
         {
-            var sqlString = $"DELETE FROM {TableName} WHERE {nameof(UserMenuInfo.Id)} = @{nameof(UserMenuInfo.Id)} OR {nameof(UserMenuInfo.ParentId)} = @{nameof(UserMenuInfo.ParentId)}";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter($"@{nameof(UserMenuInfo.Id)}", DataType.Integer, menuId),
-                GetParameter($"@{nameof(UserMenuInfo.ParentId)}", DataType.Integer, menuId)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
-
+            await _repository.DeleteAsync(menuId);
             UserMenuManager.ClearCache();
         }
 
-        public List<UserMenuInfo> GetUserMenuInfoList()
+        public async Task<List<UserMenu>> GetUserMenuListAsync()
         {
-            List<UserMenuInfo> list;
-
-            var sqlString = $"SELECT * FROM {TableName}";
-            using (var connection = GetConnection())
-            {
-                list = connection.Query<UserMenuInfo>(sqlString).ToList();
-            }
+            var infoList = await _repository.GetAllAsync();
+            var list = infoList.ToList();
 
             var systemMenus = UserMenuManager.SystemMenus.Value;
             foreach (var kvp in systemMenus)
@@ -190,7 +57,7 @@ INSERT INTO {TableName} (
 
                 if (list.All(x => x.SystemId != parent.SystemId))
                 {
-                    parent.Id = Insert(parent);
+                    parent.Id = await InsertAsync(parent);
                     list.Add(parent);
                 }
                 else
@@ -205,14 +72,14 @@ INSERT INTO {TableName} (
                         if (list.All(x => x.SystemId != child.SystemId))
                         {
                             child.ParentId = parent.Id;
-                            child.Id = Insert(child);
+                            child.Id = await InsertAsync(child);
                             list.Add(child);
                         }
                     }
                 }
             }
 
-            return list.OrderBy(menuInfo => menuInfo.Taxis == 0 ? int.MaxValue : menuInfo.Taxis).ToList();
+            return list.OrderBy(userMenu => userMenu.Taxis == 0 ? int.MaxValue : userMenu.Taxis).ToList();
         }
     }
 }

@@ -1,26 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core.Create
 {
-    public class DeleteManager
+    public static class DeleteManager
     {
-        public static void DeleteContentsByPage(Site site, List<int> channelIdList)
+        public static async Task DeleteContentsByPageAsync(Site site, List<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
-                var tableName = ChannelManager.GetTableName(site, channelId);
+                var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
                 var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
                 if (contentIdList.Count > 0)
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var filePath = PathUtility.GetContentPageFilePath(site, channelId, contentId, 0);
+                        var filePath = await PathUtility.GetContentPageFilePathAsync(site, channelId, contentId, 0);
                         FileUtils.DeleteFileIfExists(filePath);
                         DeletePagingFiles(filePath);
                         DirectoryUtils.DeleteEmptyDirectory(DirectoryUtils.GetDirectoryPath(filePath));
@@ -29,44 +29,44 @@ namespace SiteServer.CMS.Core.Create
             }
         }
 
-        public static void DeleteContents(Site site, int channelId, List<int> contentIdList)
+        public static async Task DeleteContentsAsync(Site site, int channelId, List<int> contentIdList)
         {
             foreach (var contentId in contentIdList)
             {
-                DeleteContent(site, channelId, contentId);
+                await DeleteContentAsync(site, channelId, contentId);
             }
         }
 
-        public static void DeleteContent(Site site, int channelId, int contentId)
+        public static async Task DeleteContentAsync(Site site, int channelId, int contentId)
         {
-            var filePath = PathUtility.GetContentPageFilePath(site, channelId, contentId, 0);
+            var filePath = await PathUtility.GetContentPageFilePathAsync(site, channelId, contentId, 0);
             FileUtils.DeleteFileIfExists(filePath);
         }
 
-        public static void DeleteChannels(Site site, List<int> channelIdList)
+        public static async Task DeleteChannelsAsync(Site site, List<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
-                var filePath = PathUtility.GetChannelPageFilePath(site, channelId, 0);
+                var filePath = await PathUtility.GetChannelPageFilePathAsync(site, channelId, 0);
 
                 FileUtils.DeleteFileIfExists(filePath);
 
-                var tableName = ChannelManager.GetTableName(site, channelId);
+                var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
                 var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
                 if (contentIdList.Count > 0)
                 {
-                    DeleteContents(site, channelId, contentIdList);
+                    await DeleteContentsAsync(site, channelId, contentIdList);
                 }
             }
         }
 
-        public static void DeleteChannelsByPage(Site site, List<int> channelIdList)
+        public static async Task DeleteChannelsByPageAsync(Site site, List<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
                 if (channelId != site.Id)
                 {
-                    var filePath = PathUtility.GetChannelPageFilePath(site, channelId, 0);
+                    var filePath = await PathUtility.GetChannelPageFilePathAsync(site, channelId, 0);
                     FileUtils.DeleteFileIfExists(filePath);
                     DeletePagingFiles(filePath);
                     DirectoryUtils.DeleteEmptyDirectory(DirectoryUtils.GetDirectoryPath(filePath));
@@ -94,12 +94,12 @@ namespace SiteServer.CMS.Core.Create
             }
         }
 
-        public static void DeleteFiles(Site site, List<int> templateIdList)
+        public static async Task DeleteFilesAsync(Site site, List<int> templateIdList)
         {
             foreach (var templateId in templateIdList)
             {
-                var templateInfo = TemplateManager.GetTemplateInfo(site.Id, templateId);
-                if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
+                var templateInfo = await TemplateManager.GetTemplateAsync(site.Id, templateId);
+                if (templateInfo == null || templateInfo.Type != TemplateType.FileTemplate)
                 {
                     return;
                 }

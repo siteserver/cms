@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
@@ -11,9 +12,9 @@ namespace SiteServer.API.Controllers.Sys
     public class SysPackagesUpdateController : ApiController
     {
         [HttpPost, Route(ApiRouteUpdate.Route)]
-        public IHttpActionResult Main()
+        public async Task<IHttpActionResult> Main()
         {
-            var request = new AuthenticatedRequest();
+            var request = await AuthenticatedRequest.GetRequestAsync();
 
             if (!request.IsAdminLoggin)
             {

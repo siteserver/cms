@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -22,29 +22,29 @@ namespace SiteServer.CMS.Plugin.Apis
             return StlParserUtility.GetStlElements(html, stlElementNames);
         }
 
-        public string Parse(string html, IParseContext context)
+        public async Task<string> ParseAsync(string html, IParseContext context)
         {
-            return StlParserManager.ParseInnerContentAsync(html, (ParseContextImpl)context).GetAwaiter().GetResult();
+            return await StlParserManager.ParseInnerContentAsync(html, (ParseContextImpl)context);
         }
 
-        public string ParseAttributeValue(string attributeValue, IParseContext context)
+        public async Task<string> ParseAttributeValueAsync(string attributeValue, IParseContext context)
         {
-            var site = SiteManager.GetSiteAsync(context.SiteId).GetAwaiter().GetResult();
-            var templateInfo = new TemplateInfo
+            var site = await SiteManager.GetSiteAsync(context.SiteId);
+            var templateInfo = new Template
             {
                 Id = context.TemplateId,
-                TemplateType = context.TemplateType
+                Type = context.TemplateType
             };
-            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, site, templateInfo, new Dictionary<string, object>());
+            var pageInfo = await PageInfo.GetPageInfoAsync(context.ChannelId, context.ContentId, site, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
-            return StlEntityParser.ReplaceStlEntitiesForAttributeValue(attributeValue, pageInfo, contextInfo);
+            return await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(attributeValue, pageInfo, contextInfo);
         }
 
-        public string GetCurrentUrl(IParseContext context)
+        public async Task<string> GetCurrentUrlAsync(IParseContext context)
         {
-            var site = SiteManager.GetSiteAsync(context.SiteId).GetAwaiter().GetResult();
-            return StlParserUtility.GetStlCurrentUrlAsync(site, context.ChannelId, context.ContentId,
-                (ContentInfo)context.ContentInfo, context.TemplateType, context.TemplateId, false).GetAwaiter().GetResult();
+            var site = await SiteManager.GetSiteAsync(context.SiteId);
+            return await StlParserUtility.GetStlCurrentUrlAsync(site, context.ChannelId, context.ContentId,
+                (Content)context.ContentInfo, context.TemplateType, context.TemplateId, false);
         }
     }
 }

@@ -3,15 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
+using Content = SiteServer.CMS.Model.Content;
+using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -54,7 +56,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = Site.Additional.PageSize;
+            SpContents.ItemsPerPage = Site.PageSize;
 
             SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommandByHitsAnalysis(Site.TableName, SiteId);
 
@@ -105,6 +107,24 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
                 : PageAnalysisSiteHits.GetRedirectUrl());
         }
 
+        public Content GetContent(DataRow row)
+        {
+            if (row == null) return null;
+
+            var content = new Content();
+
+            var dict = row.Table.Columns
+                .Cast<DataColumn>()
+                .ToDictionary(c => c.ColumnName, c => row[c]);
+
+            foreach (var key in dict.Keys)
+            {
+                content.Set(key, dict[key]);
+            }
+
+            return content;
+        }
+
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
@@ -117,14 +137,15 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
             var ltlHitsByMonth = (Literal)e.Item.FindControl("ltlHitsByMonth");
             var ltlLastHitsDate = (Literal)e.Item.FindControl("ltlLastHitsDate");
 
-            var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
+            var rowView = (DataRowView)e.Item.DataItem;
+            var contentInfo = GetContent(rowView.Row);
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(Site, contentInfo, _pageUrl);
 
             string nodeNameNavigation;
             if (!_nodeNameNavigations.ContainsKey(contentInfo.ChannelId))
             {
-                nodeNameNavigation = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
+                nodeNameNavigation = ChannelManager.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult();
                 _nodeNameNavigations.Add(contentInfo.ChannelId, nodeNameNavigation);
             }
             else

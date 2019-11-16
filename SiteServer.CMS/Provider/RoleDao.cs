@@ -1,242 +1,85 @@
 using System.Collections.Generic;
-using System.Data;
+using System.Threading.Tasks;
 using Datory;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
-using SiteServer.Utils.Enumerations;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class RoleDao : DataProviderBase
-	{
-        public override string TableName => "siteserver_Role";
+    public class RoleDao : IRepository
+    {
+        private readonly Repository<Role> _repository;
 
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public RoleDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(RoleInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RoleInfo.RoleName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RoleInfo.CreatorUserName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(RoleInfo.Description),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            }
-        };
-
-        private const string ParamId = "@Id";
-        private const string ParamRoleName = "@RoleName";
-        private const string ParamCreatorUsername= "@CreatorUserName";
-        private const string ParamDescription = "@Description";
-
-        public RoleInfo GetRoleInfo(int roleId)
-        {
-            RoleInfo roleInfo = null;
-            var sqlString = "SELECT Id, RoleName, CreatorUserName, Description FROM siteserver_Role WHERE Id = @Id";
-            var parameters = new IDataParameter[]
-            {
-                GetParameter(ParamId, DataType.Integer, roleId)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parameters))
-            {
-                if (rdr.Read())
-                {
-                    roleInfo = new RoleInfo
-                    {
-                        Id = GetInt(rdr, 0),
-                        RoleName = GetString(rdr, 1),
-                        CreatorUserName = GetString(rdr, 2),
-                        Description = GetString(rdr, 3)
-                    };
-                }
-                rdr.Close();
-            }
-            return roleInfo;
+            _repository = new Repository<Role>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
         }
 
-        public List<RoleInfo> GetRoleInfoList()
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task<Role> GetRoleAsync(int roleId)
         {
-            var list = new List<RoleInfo>();
-            const string sqlSelect = "SELECT Id, RoleName, CreatorUserName, Description FROM siteserver_Role ORDER BY RoleName";
-
-            using (var rdr = ExecuteReader(sqlSelect))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(new RoleInfo
-                    {
-                        Id = GetInt(rdr, 0),
-                        RoleName = GetString(rdr, 1),
-                        CreatorUserName = GetString(rdr, 2),
-                        Description = GetString(rdr, 3)
-                    });
-                }
-                rdr.Close();
-            }
-
-            return list;
+            return await _repository.GetAsync(roleId);
         }
 
-        public List<RoleInfo> GetRoleInfoListByCreatorUserName(string creatorUserName)
+        public async Task<IEnumerable<Role>> GetRoleListAsync()
         {
-            var list = new List<RoleInfo>();
-
-            if (string.IsNullOrEmpty(creatorUserName)) return list;
-
-            const string sqlString = "SELECT Id, RoleName, CreatorUserName, Description FROM siteserver_Role WHERE CreatorUserName = @CreatorUserName ORDER BY RoleName";
-            var parameters = new IDataParameter[]
-            {
-                GetParameter(ParamCreatorUsername, DataType.VarChar, 255, creatorUserName)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parameters))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(new RoleInfo
-                    {
-                        Id = GetInt(rdr, 0),
-                        RoleName = GetString(rdr, 1),
-                        CreatorUserName = GetString(rdr, 2),
-                        Description = GetString(rdr, 3)
-                    });
-                }
-                rdr.Close();
-            }
-
-            return list;
+            return await _repository.GetAllAsync(Q.OrderBy(nameof(Role.RoleName)));
         }
 
-        public List<string> GetRoleNameList()
+        public async Task<IEnumerable<Role>> GetRoleListByCreatorUserNameAsync(string creatorUserName)
         {
-            var list = new List<string>();
-            const string sqlSelect = "SELECT RoleName FROM siteserver_Role ORDER BY RoleName";
+            if (string.IsNullOrEmpty(creatorUserName)) return new List<Role>();
 
-            using (var rdr = ExecuteReader(sqlSelect))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetString(rdr, 0));
-                }
-                rdr.Close();
-            }
-
-            return list;
+            return await _repository.GetAllAsync(Q
+                .Where(nameof(Role.CreatorUserName), creatorUserName)
+                .OrderBy(nameof(Role.RoleName))
+            );
         }
 
-		public List<string> GetRoleNameListByCreatorUserName(string creatorUserName)
+        public async Task<IEnumerable<string>> GetRoleNameListAsync()
+        {
+            return await _repository.GetAllAsync<string>(Q
+                .Select(nameof(Role.RoleName))
+                .OrderBy(nameof(Role.RoleName))
+            );
+        }
+
+		public async Task<IEnumerable<string>> GetRoleNameListByCreatorUserNameAsync(string creatorUserName)
 		{
-			var list = new List<string>();
-
-		    if (string.IsNullOrEmpty(creatorUserName)) return list;
-
-		    const string sqlString = "SELECT RoleName FROM siteserver_Role WHERE CreatorUserName = @CreatorUserName";
-		    var parameters = new IDataParameter[]
-		    {
-		        GetParameter(ParamCreatorUsername, DataType.VarChar, 255, creatorUserName)
-		    };
-
-		    using (var rdr = ExecuteReader(sqlString, parameters)) 
-		    {
-		        while (rdr.Read()) 
-		        {
-		            list.Add(GetString(rdr, 0));
-		        }
-		        rdr.Close();
-		    }
-		    return list;
-		}
-
-        public void InsertRole(RoleInfo roleInfo)
-        {
-            if (EPredefinedRoleUtils.IsPredefinedRole(roleInfo.RoleName)) return;
-
-            const string sqlString = "INSERT INTO siteserver_Role (RoleName, CreatorUserName, Description) VALUES (@RoleName, @CreatorUserName, @Description)";
-
-            var parameters = new IDataParameter[]
-			{
-				GetParameter(ParamRoleName, DataType.VarChar, 255, roleInfo.RoleName),
-                GetParameter(ParamCreatorUsername, DataType.VarChar, 255, roleInfo.CreatorUserName),
-                GetParameter(ParamDescription, DataType.VarChar, 255, roleInfo.Description)
-			};
-
-            ExecuteNonQuery(sqlString, parameters);
+            return await _repository.GetAllAsync<string>(Q
+                .Select(nameof(Role.RoleName))
+                .Where(nameof(Role.CreatorUserName), creatorUserName)
+                .OrderBy(nameof(Role.RoleName))
+            );
         }
 
-        public virtual void UpdateRole(RoleInfo roleInfo) 
-		{
-            var sqlString = "UPDATE siteserver_Role SET RoleName = @RoleName, Description = @Description WHERE Id = @Id";
-
-            var parameters = new IDataParameter[]
-			{
-                GetParameter(ParamRoleName, DataType.VarChar, 255, roleInfo.RoleName),
-                GetParameter(ParamDescription, DataType.VarChar, 255, roleInfo.Description),
-                GetParameter(ParamId, DataType.Integer, roleInfo.Id)
-			};
-
-            ExecuteNonQuery(sqlString, parameters);
-		}
-
-        public bool DeleteRole(int roleId)
-		{
-            var isSuccess = false;
-            try
-            {
-                var sqlString = "DELETE FROM siteserver_Role WHERE Id = @Id";
-
-                var parameters = new IDataParameter[]
-			    {
-                    GetParameter(ParamId, DataType.Integer, roleId)
-			    };
-
-                ExecuteNonQuery(sqlString, parameters);
-                isSuccess = true;
-            }
-		    catch
-		    {
-		        // ignored
-		    }
-		    return isSuccess;
-		}
-
-        public bool IsRoleExists(string roleName)
+        public async Task<int> InsertRoleAsync(Role role)
         {
-            var exists = false;
-            var sqlString = "SELECT RoleName FROM siteserver_Role WHERE RoleName = @RoleName";
-            var parameters = new IDataParameter[]
-			{
-                GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-			};
-            using (var rdr = ExecuteReader(sqlString, parameters))
-            {
-                if (rdr.Read())
-                {
-                    if (!rdr.IsDBNull(0))
-                    {
-                        exists = true;
-                    }
-                }
-                rdr.Close();
-            }
-            return exists;
+            if (EPredefinedRoleUtils.IsPredefinedRole(role.RoleName)) return 0;
+
+            return await _repository.InsertAsync(role);
+        }
+
+        public async Task UpdateRoleAsync(Role role)
+        {
+            await _repository.UpdateAsync(role);
+        }
+
+        public async Task<bool> DeleteRoleAsync(int roleId)
+        {
+            return await _repository.DeleteAsync(roleId);
+        }
+
+        public async Task<bool> IsRoleExistsAsync(string roleName)
+        {
+            return await _repository.ExistsAsync(Q.Where(nameof(Role.RoleName), roleName));
         }
 	}
 }

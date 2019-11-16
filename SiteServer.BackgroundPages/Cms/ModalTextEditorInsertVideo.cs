@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.LitJson;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.Utils.LitJson;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -36,8 +37,8 @@ namespace SiteServer.BackgroundPages.Cms
             {"upload", true.ToString()}
         });
 
-        public string VideoTypeCollection => Site.Additional.VideoUploadTypeCollection;
-        public string ImageTypeCollection => Site.Additional.ImageUploadTypeCollection;
+        public string VideoTypeCollection => Site.VideoUploadTypeCollection;
+        public string ImageTypeCollection => Site.ImageUploadTypeCollection;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -57,13 +58,13 @@ namespace SiteServer.BackgroundPages.Cms
 
             ControlUtils.AddListControlItems(DdlPlayBy, StlPlayer.PlayByList);
 
-            CbIsImageUrl.Checked = Site.Additional.ConfigUEditorVideoIsImageUrl;
-            CbIsAutoPlay.Checked = Site.Additional.ConfigUEditorVideoIsAutoPlay;
-            CbIsWidth.Checked = Site.Additional.ConfigUEditorVideoIsWidth;
-            CbIsHeight.Checked = Site.Additional.ConfigUEditorVideoIsHeight;
-            ControlUtils.SelectSingleItem(DdlPlayBy, Site.Additional.ConfigUEditorVideoPlayBy);
-            TbWidth.Text = Site.Additional.ConfigUEditorVideoWidth.ToString();
-            TbHeight.Text = Site.Additional.ConfigUEditorVideoHeight.ToString();
+            CbIsImageUrl.Checked = Site.ConfigUEditorVideoIsImageUrl;
+            CbIsAutoPlay.Checked = Site.ConfigUEditorVideoIsAutoPlay;
+            CbIsWidth.Checked = Site.ConfigUEditorVideoIsWidth;
+            CbIsHeight.Checked = Site.ConfigUEditorVideoIsHeight;
+            ControlUtils.SelectSingleItem(DdlPlayBy, Site.ConfigUEditorVideoPlayBy);
+            TbWidth.Text = Site.ConfigUEditorVideoWidth.ToString();
+            TbHeight.Text = Site.ConfigUEditorVideoHeight.ToString();
         }
 
 	    private Hashtable Upload()
@@ -190,21 +191,21 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-            if (isImageUrl != Site.Additional.ConfigUEditorVideoIsImageUrl
-                || isAutoPlay != Site.Additional.ConfigUEditorVideoIsAutoPlay
-                || isWidth != Site.Additional.ConfigUEditorVideoIsWidth
-                || isHeight != Site.Additional.ConfigUEditorVideoIsHeight
-                || playBy != Site.Additional.ConfigUEditorVideoPlayBy
-                || width != Site.Additional.ConfigUEditorVideoWidth
-                || height != Site.Additional.ConfigUEditorVideoHeight)
+            if (isImageUrl != Site.ConfigUEditorVideoIsImageUrl
+                || isAutoPlay != Site.ConfigUEditorVideoIsAutoPlay
+                || isWidth != Site.ConfigUEditorVideoIsWidth
+                || isHeight != Site.ConfigUEditorVideoIsHeight
+                || playBy != Site.ConfigUEditorVideoPlayBy
+                || width != Site.ConfigUEditorVideoWidth
+                || height != Site.ConfigUEditorVideoHeight)
             {
-                Site.Additional.ConfigUEditorVideoIsImageUrl = isImageUrl;
-                Site.Additional.ConfigUEditorVideoIsAutoPlay = isAutoPlay;
-                Site.Additional.ConfigUEditorVideoIsWidth = isWidth;
-                Site.Additional.ConfigUEditorVideoIsHeight = isHeight;
-                Site.Additional.ConfigUEditorVideoPlayBy = playBy;
-                Site.Additional.ConfigUEditorVideoWidth = width;
-                Site.Additional.ConfigUEditorVideoHeight = height;
+                Site.ConfigUEditorVideoIsImageUrl = isImageUrl;
+                Site.ConfigUEditorVideoIsAutoPlay = isAutoPlay;
+                Site.ConfigUEditorVideoIsWidth = isWidth;
+                Site.ConfigUEditorVideoIsHeight = isHeight;
+                Site.ConfigUEditorVideoPlayBy = playBy;
+                Site.ConfigUEditorVideoWidth = width;
+                Site.ConfigUEditorVideoHeight = height;
                 DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
             }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
@@ -302,7 +303,7 @@ namespace SiteServer.CMS.DataCache
 
             if (includePluginTables)
             {
-                var pluginTableNames = PluginContentManager.GetContentTableNameList();
+                var pluginTableNames = await PluginContentManager.GetContentTableNameListAsync();
                 foreach (var pluginTableName in pluginTableNames)
                 {
                     if (!StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))
@@ -315,10 +316,10 @@ namespace SiteServer.CMS.DataCache
             return tableNames;
         }
 
-        public static List<string> GetTableNameList(Site site)
+        public static async Task<List<string>> GetTableNameListAsync(Site site)
         {
             var tableNames = new List<string>{ site.TableName };
-            var pluginTableNames = PluginContentManager.GetContentTableNameList();
+            var pluginTableNames = await PluginContentManager.GetContentTableNameListAsync();
             foreach (var pluginTableName in pluginTableNames)
             {
                 if (!StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))

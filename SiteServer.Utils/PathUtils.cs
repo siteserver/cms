@@ -17,10 +17,10 @@ namespace SiteServer.Utils
             var retVal = string.Empty;
             if (paths != null && paths.Length > 0)
             {
-                retVal = paths[0]?.Replace(PageUtils.SeparatorChar, SeparatorChar).TrimEnd(SeparatorChar) ?? string.Empty;
+                retVal = paths[0]?.Replace(Constants.PageSeparatorChar, SeparatorChar).TrimEnd(SeparatorChar) ?? string.Empty;
                 for (var i = 1; i < paths.Length; i++)
                 {
-                    var path = paths[i] != null ? paths[i].Replace(PageUtils.SeparatorChar, SeparatorChar).Trim(SeparatorChar) : string.Empty;
+                    var path = paths[i] != null ? paths[i].Replace(Constants.PageSeparatorChar, SeparatorChar).Trim(SeparatorChar) : string.Empty;
                     retVal = Path.Combine(retVal, path);
                 }
             }
@@ -58,12 +58,24 @@ namespace SiteServer.Utils
             }
         }
 
+        public static string RemoveQueryString(string url)
+        {
+            if (url == null) return null;
+
+            if (url.IndexOf("?", StringComparison.Ordinal) == -1 || url.EndsWith("?"))
+            {
+                return url;
+            }
+
+            return url.Substring(0, url.IndexOf("?", StringComparison.Ordinal));
+        }
+
         public static string GetExtension(string path)
         {
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(path))
             {
-                path = PageUtils.RemoveQueryString(path);
+                path = RemoveQueryString(path);
                 path = path.Trim('/', '\\').Trim();
                 try
                 {
@@ -147,20 +159,6 @@ namespace SiteServer.Utils
             return string.Empty;
         }
 
-        public static string GetCurrentPagePath()
-        {
-            if (HttpContext.Current != null)
-            {
-                return HttpContext.Current.Request.PhysicalPath;
-            }
-            return string.Empty;
-        }
-
-        public static string GetSiteFilesPath(params string[] paths)
-        {
-            return MapPath(Combine("~/" + DirectoryUtils.SiteFiles.DirectoryName, Combine(paths)));
-        }
-
         public static string GetBinDirectoryPath(string relatedPath)
         {
             relatedPath = RemoveParentPath(relatedPath);
@@ -179,68 +177,6 @@ namespace SiteServer.Utils
             return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, relatedPath);
         }
 
-        public static string PluginsPath => GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins);
-
-        public static string GetPluginPath(string pluginId, params string[] paths)
-        {
-            return GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins, pluginId, Combine(paths));
-        }
-
-        public static string GetPluginNuspecPath(string pluginId)
-        {
-            return GetPluginPath(pluginId, pluginId + ".nuspec");
-        }
-
-        public static string GetPluginDllDirectoryPath(string pluginId)
-        {
-            var fileName = pluginId + ".dll";
-
-            var filePaths = Directory.GetFiles(GetPluginPath(pluginId, "Bin"), fileName, SearchOption.AllDirectories);
-
-            var dict = new Dictionary<DateTime, string>();
-            foreach (var filePath in filePaths)
-            {
-                var lastModifiedDate = File.GetLastWriteTime(filePath);
-                dict[lastModifiedDate] = filePath;
-            }
-
-            if (dict.Count > 0)
-            {
-                var filePath = dict.OrderByDescending(x => x.Key).First().Value;
-                return Path.GetDirectoryName(filePath);
-            }
-
-            //if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", fileName)))
-            //{
-            //    return GetPluginPath(pluginId, "Bin");
-            //}
-            //if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", "Debug", "net4.6.1", fileName)))
-            //{
-            //    return GetPluginPath(pluginId, "Bin", "Debug");
-            //}
-            //if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", "Debug", "net4.6.1", fileName)))
-            //{
-            //    return GetPluginPath(pluginId, "Bin", "Debug");
-            //}
-            //if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", "Debug", fileName)))
-            //{
-            //    return GetPluginPath(pluginId, "Bin", "Debug");
-            //}
-            //if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", "Release", fileName)))
-            //{
-            //    return GetPluginPath(pluginId, "Bin", "Release");
-            //}
-            
-            return string.Empty;
-        }
-
-        public static string GetPackagesPath(params string[] paths)
-        {
-            var packagesPath = GetSiteFilesPath(DirectoryUtils.SiteFiles.Packages, Combine(paths));
-            DirectoryUtils.CreateDirectoryIfNotExists(packagesPath);
-            return packagesPath;
-        }
-
         public static string RemovePathInvalidChar(string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
@@ -248,38 +184,6 @@ namespace SiteServer.Utils
             var invalidChars = new string(Path.GetInvalidPathChars());
             string invalidReStr = $"[{Regex.Escape(invalidChars)}]";
             return Regex.Replace(filePath, invalidReStr, "");
-        }
-
-        public static string MapPath(string virtualPath)
-        {
-            virtualPath = RemovePathInvalidChar(virtualPath);
-            string retVal;
-            if (!string.IsNullOrEmpty(virtualPath))
-            {
-                if (virtualPath.StartsWith("~"))
-                {
-                    virtualPath = virtualPath.Substring(1);
-                }
-                virtualPath = PageUtils.Combine("~", virtualPath);
-            }
-            else
-            {
-                virtualPath = "~/";
-            }
-            if (HttpContext.Current != null)
-            {
-                retVal = HttpContext.Current.Server.MapPath(virtualPath);
-            }
-            else
-            {
-                var rootPath = WebConfigUtils.PhysicalApplicationPath;
-
-                virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
-                retVal = Combine(rootPath, virtualPath);
-            }
-
-            if (retVal == null) retVal = string.Empty;
-            return retVal.Replace("/", "\\");
         }
 
         public static bool IsFileExtenstionAllowed(string sAllowedExt, string sExt)
@@ -298,10 +202,7 @@ namespace SiteServer.Utils
             return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
         }
 
-        public static string GetMenusPath(params string[] paths)
-        {
-            return Combine(SiteServerAssets.GetPath("menus"), Combine(paths));
-        }
+        
 
         public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory);
 

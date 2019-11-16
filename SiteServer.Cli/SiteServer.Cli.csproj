@@ -52,9 +52,6 @@
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.0.30\lib\net461\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="Datory, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Datory.1.0.1\lib\netstandard2.0\Datory.dll</HintPath>
-    </Reference>
     <Reference Include="Google.Protobuf, Version=3.10.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.10.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
@@ -63,9 +60,6 @@
     </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=3.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=8.0.18.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.8.0.18\lib\net452\MySql.Data.dll</HintPath>
@@ -90,9 +84,6 @@
     </Reference>
     <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
-    </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.4.0\lib\netstandard2.0\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -211,7 +202,6 @@
     <Compile Include="Updater\Tables\TableRelatedFieldItem.cs" />
     <Compile Include="Updater\Tables\TableSitePermissions.cs" />
     <Compile Include="Updater\Tables\TableTemplate.cs" />
-    <Compile Include="Updater\Tables\TableTemplateMatch.cs" />
     <Compile Include="Updater\Tables\Jobs\TableJobsContent.cs" />
     <Compile Include="Updater\UpdaterManager.cs" />
   </ItemGroup>
@@ -224,6 +214,14 @@
     <Content Include="logo.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Datory\src\Datory\Datory.csproj">
+      <Project>{c6df816e-0eb3-4e71-b446-0b24bbb2f6f0}</Project>
+      <Name>Datory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{89bc9704-79a7-41ba-838f-afda1b9db82a}</Project>
+      <Name>SiteServer.Plugin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
       <Name>SiteServer.CMS</Name>

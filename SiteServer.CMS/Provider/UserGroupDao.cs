@@ -1,117 +1,59 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using Dapper;
+using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class UserGroupDao : DataProviderBase
+    public class UserGroupDao : IRepository
     {
-        public const string DatabaseTableName = "siteserver_UserGroup";
+        private readonly Repository<UserGroup> _repository;
 
-        public override string TableName => DatabaseTableName;
-
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        public UserGroupDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(UserGroupInfo.Id),
-                DataType = DataType.Integer,
-                IsPrimaryKey = true,
-                IsIdentity = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserGroupInfo.GroupName),
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(UserGroupInfo.AdminName),
-                DataType = DataType.VarChar,
-                DataLength = 200
-            }
-        };
+            _repository = new Repository<UserGroup>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+        }
 
-        public int Insert(UserGroupInfo groupInfo)
+        public IDatabase Database => _repository.Database;
+
+        public string TableName => _repository.TableName;
+
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        public async Task<int> InsertAsync(UserGroup group)
         {
-            var sqlString =
-                $@"
-INSERT INTO {TableName} (
-    {nameof(UserGroupInfo.GroupName)},
-    {nameof(UserGroupInfo.AdminName)}
-) VALUES (
-    @{nameof(UserGroupInfo.GroupName)},
-    @{nameof(UserGroupInfo.AdminName)}
-)";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter($"@{nameof(UserGroupInfo.GroupName)}", DataType.VarChar, 200, groupInfo.GroupName),
-                GetParameter($"@{nameof(UserGroupInfo.AdminName)}", DataType.VarChar, 200, groupInfo.AdminName)
-            };
-
-            var groupId = ExecuteNonQueryAndReturnId(TableName, nameof(UserGroupInfo.Id), sqlString, parms);
-
+            var groupId = await _repository.InsertAsync(group);
             UserGroupManager.ClearCache();
-
             return groupId;
         }
 
-        public void Update(UserGroupInfo groupInfo)
+        public async Task UpdateAsync(UserGroup group)
         {
-            var sqlString = $@"UPDATE {TableName} SET
-                {nameof(UserGroupInfo.GroupName)} = @{nameof(UserGroupInfo.GroupName)},  
-                {nameof(UserGroupInfo.AdminName)} = @{nameof(UserGroupInfo.AdminName)}
-            WHERE {nameof(UserGroupInfo.Id)} = @{nameof(UserGroupInfo.Id)}";
-
-            IDataParameter[] parameters =
-            {
-                GetParameter(nameof(UserGroupInfo.GroupName), DataType.VarChar, 200, groupInfo.GroupName),
-                GetParameter(nameof(UserGroupInfo.AdminName), DataType.VarChar, 200, groupInfo.AdminName),
-                GetParameter(nameof(UserGroupInfo.Id), DataType.Integer, groupInfo.Id)
-            };
-
-            ExecuteNonQuery(sqlString, parameters);
-
+            await _repository.UpdateAsync(group);
             UserGroupManager.ClearCache();
         }
 
-        public void Delete(int groupId)
+        public async Task DeleteAsync(int groupId)
         {
-            var sqlString = $"DELETE FROM {TableName} WHERE Id = @Id";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@Id", DataType.Integer, groupId)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
-
+            await _repository.DeleteAsync(groupId);
             UserGroupManager.ClearCache();
         }
 
-        public List<UserGroupInfo> GetUserGroupInfoList()
+        public async Task<List<UserGroup>> GetUserGroupListAsync()
         {
-            List<UserGroupInfo> list;
+            var config = await ConfigManager.GetInstanceAsync();
 
-            var sqlString = $"SELECT * FROM {TableName} ORDER BY Id";
-            using (var connection = GetConnection())
-            {
-                list = connection.Query<UserGroupInfo>(sqlString).ToList();
-            }
+            var list = (await _repository.GetAllAsync(Q.OrderBy(nameof(UserGroup.Id)))).ToList();
 
-            list.Insert(0, new UserGroupInfo
+            list.Insert(0, new UserGroup
             {
                 Id = 0,
                 GroupName = "默认用户组",
-                AdminName = ConfigManager.SystemConfigInfo.UserDefaultGroupAdminName
+                AdminName = config.UserDefaultGroupAdminName
             });
 
             return list;

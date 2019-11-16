@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
@@ -25,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            _dictionary = DataProvider.TemplateDao.GetCountDictionary(SiteId);
+            _dictionary = DataProvider.TemplateDao.GetCountDictionaryAsync(SiteId).GetAwaiter().GetResult();
 
             LtlTotalCount.Text = $"({GetCount(string.Empty)})";
             LtlIndexPageCount.Text = $"({GetCount("IndexPageTemplate")})";

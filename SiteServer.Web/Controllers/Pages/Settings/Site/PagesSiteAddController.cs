@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Db;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Provider;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
@@ -27,9 +27,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.SiteAdd))
                 {
                     return Unauthorized();
                 }
@@ -119,9 +119,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.SiteAdd))
                 {
                     return Unauthorized();
                 }
@@ -140,7 +140,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
 
                 if (!root)
                 {
-                    if (DirectoryUtils.IsSystemDirectory(siteDir))
+                    if (WebUtils.IsSystemDirectory(siteDir))
                     {
                         return BadRequest("文件夹名称不能为系统文件夹名称，请更改文件夹名称！");
                     }
@@ -155,7 +155,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     }
                 }
 
-                var channelInfo = new ChannelInfo();
+                var channelInfo = new Channel();
 
                 channelInfo.ChannelName = channelInfo.IndexName = "首页";
                 channelInfo.ParentId = 0;
@@ -175,7 +175,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     }
                     else
                     {
-                        DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        await DataProvider.DatabaseDao.AlterSystemTableAsync(tableName, DataProvider.ContentDao.TableColumnsDefault);
                     }
                 }
 
@@ -185,11 +185,10 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     SiteDir = siteDir,
                     TableName = tableName,
                     ParentId = parentId,
-                    Root = root,
-                    Additional = new SiteInfoExtend(string.Empty)
+                    Root = root
                 };
-                site.Additional.IsCheckContentLevel = false;
-                site.Additional.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
+                site.IsCheckContentLevel = false;
+                site.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
 
                 var siteId = await DataProvider.ChannelDao.InsertSiteAsync(channelInfo, site, request.AdminName);
 
@@ -200,9 +199,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     await DataProvider.SiteDao.UpdateTableNameAsync(siteId, tableName);
                 }
 
-                if (request.AdminPermissionsImpl.IsSystemAdministrator && !request.AdminPermissionsImpl.IsConsoleAdministrator)
+                if (await request.AdminPermissionsImpl.IsSiteAdminAsync() && !await request.AdminPermissionsImpl.IsSuperAdminAsync())
                 {
-                    var siteIdList = request.AdminPermissionsImpl.GetSiteIdList() ?? new List<int>();
+                    var siteIdList = await request.AdminPermissionsImpl.GetSiteIdListAsync() ?? new List<int>();
                     siteIdList.Add(siteId);
                     var adminInfo = await AdminManager.GetByUserIdAsync(request.AdminId);
                     await DataProvider.AdministratorDao.UpdateSiteIdCollectionAsync(adminInfo, TranslateUtils.ObjectCollectionToString(siteIdList));

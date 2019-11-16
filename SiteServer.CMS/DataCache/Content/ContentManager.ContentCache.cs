@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Db;
 
 namespace SiteServer.CMS.DataCache.Content
 {
@@ -27,15 +27,15 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static Dictionary<int, ContentInfo> GetContentDict(int channelId)
+            public static Dictionary<int, Model.Content> GetContentDict(int channelId)
             {
                 lock (LockObject)
                 {
                     var cacheKey = GetCacheKey(channelId);
-                    var dict = DataCacheManager.Get<Dictionary<int, ContentInfo>>(cacheKey);
+                    var dict = DataCacheManager.Get<Dictionary<int, Model.Content>>(cacheKey);
                     if (dict == null)
                     {
-                        dict = new Dictionary<int, ContentInfo>();
+                        dict = new Dictionary<int, Model.Content>();
                         DataCacheManager.InsertHours(cacheKey, dict, 12);
                     }
 
@@ -43,45 +43,39 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static ContentInfo GetContent(Site site, int channelId, int contentId)
+            public static async Task<Model.Content> GetContentAsync(Site site, int channelId, int contentId)
             {
-                lock (LockObject)
-                {
-                    var dict = GetContentDict(channelId);
-                    dict.TryGetValue(contentId, out var contentInfo);
-                    if (contentInfo != null && contentInfo.ChannelId == channelId && contentInfo.Id == contentId) return contentInfo;
+                var dict = GetContentDict(channelId);
+                dict.TryGetValue(contentId, out var contentInfo);
+                if (contentInfo != null && contentInfo.ChannelId == channelId && contentInfo.Id == contentId) return contentInfo;
 
-                    contentInfo = DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(site, channelId), channelId, contentId);
-                    dict[contentId] = contentInfo;
+                contentInfo = await DataProvider.ContentDao.GetContentAsync(await ChannelManager.GetTableNameAsync(site, channelId), contentId);
+                dict[contentId] = contentInfo;
 
-                    return new ContentInfo(contentInfo);
-                }
+                return new Model.Content(contentInfo.ToDictionary());
             }
 
-            public static ContentInfo GetContent(Site site, ChannelInfo channelInfo, int contentId)
+            public static async Task<Model.Content> GetContentAsync(Site site, Channel channel, int contentId)
             {
-                lock (LockObject)
-                {
-                    var dict = GetContentDict(channelInfo.Id);
-                    dict.TryGetValue(contentId, out var contentInfo);
-                    if (contentInfo != null && contentInfo.ChannelId == channelInfo.Id && contentInfo.Id == contentId) return contentInfo;
+                var dict = GetContentDict(channel.Id);
+                dict.TryGetValue(contentId, out var contentInfo);
+                if (contentInfo != null && contentInfo.ChannelId == channel.Id && contentInfo.Id == contentId) return contentInfo;
 
-                    contentInfo = DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(site, channelInfo), channelInfo.Id, contentId);
-                    dict[contentId] = contentInfo;
+                contentInfo = await DataProvider.ContentDao.GetContentAsync(await ChannelManager.GetTableNameAsync(site, channel), contentId);
+                dict[contentId] = contentInfo;
 
-                    return new ContentInfo(contentInfo);
-                }
+                return new Model.Content(contentInfo.ToDictionary());
             }
         }
 
-        public static ContentInfo GetContentInfo(Site site, int channelId, int contentId)
+        public static async Task<Model.Content> GetContentInfoAsync(Site site, int channelId, int contentId)
         {
-            return ContentCache.GetContent(site, channelId, contentId);
+            return await ContentCache.GetContentAsync(site, channelId, contentId);
         }
 
-        public static ContentInfo GetContentInfo(Site site, ChannelInfo channelInfo, int contentId)
+        public static async Task<Model.Content> GetContentInfoAsync(Site site, Channel channel, int contentId)
         {
-            return ContentCache.GetContent(site, channelInfo, contentId);
+            return await ContentCache.GetContentAsync(site, channel, contentId);
         }
     }
 }

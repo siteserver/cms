@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Config
 {
@@ -22,11 +22,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Configration))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, ConfigManager.WebSitePermissions.Configration))
                 {
                     return Unauthorized();
                 }
@@ -36,7 +36,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 return Ok(new
                 {
                     Value = site,
-                    Config = site.Additional,
+                    Config = site.ToDictionary(),
                     request.AdminToken
                 });
             }
@@ -51,11 +51,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Configration))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, ConfigManager.WebSitePermissions.Configration))
                 {
                     return Unauthorized();
                 }
@@ -64,23 +64,23 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
 
                 var siteName = request.GetPostString("siteName");
                 var charset = ECharsetUtils.GetEnumType(request.GetPostString("charset"));
-                var pageSize = request.GetPostInt("pageSize", site.Additional.PageSize);
+                var pageSize = request.GetPostInt("pageSize", site.PageSize);
                 var isCreateDoubleClick = request.GetPostBool("isCreateDoubleClick");
 
                 site.SiteName = siteName;
-                site.Additional.Charset = ECharsetUtils.GetValue(charset);
-                site.Additional.PageSize = pageSize;
-                site.Additional.IsCreateDoubleClick = isCreateDoubleClick;
+                site.Charset = ECharsetUtils.GetValue(charset);
+                site.PageSize = pageSize;
+                site.IsCreateDoubleClick = isCreateDoubleClick;
 
                 //修改所有模板编码
-                var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListBySiteId(siteId);
+                var templateInfoList = await DataProvider.TemplateDao.GetTemplateListBySiteIdAsync(siteId);
                 foreach (var templateInfo in templateInfoList)
                 {
-                    if (templateInfo.Charset == charset) continue;
+                    if (templateInfo.CharsetType == charset) continue;
 
                     var templateContent = TemplateManager.GetTemplateContent(site, templateInfo);
-                    templateInfo.Charset = charset;
-                    DataProvider.TemplateDao.Update(site, templateInfo, templateContent, request.AdminName);
+                    templateInfo.CharsetType = charset;
+                    await DataProvider.TemplateDao.UpdateAsync(site, templateInfo, templateContent, request.AdminName);
                 }
 
                 await DataProvider.SiteDao.UpdateAsync(site);
@@ -90,7 +90,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 return Ok(new
                 {
                     Value = site,
-                    Config = site.Additional,
+                    Config = site.ToDictionary(),
                 });
             }
             catch (Exception ex)
@@ -100,13 +100,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         }
 
         [HttpPost, Route(RouteUpload)]
-        public IHttpActionResult Upload()
+        public async Task<IHttpActionResult> Upload()
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = await AuthenticatedRequest.GetRequestAsync();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
@@ -142,7 +142,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                await LogUtils.AddErrorLogAsync(ex);
                 return InternalServerError(ex);
             }
         }

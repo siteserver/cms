@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -44,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            var channelInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
             if (SiteId == _channelId)
             {
                 PhChannel.Visible = false;
@@ -59,14 +61,14 @@ namespace SiteServer.BackgroundPages.Cms
                 TbFilePath.Text = string.IsNullOrEmpty(channelInfo.FilePath) ? PageUtility.GetInputChannelUrlAsync(Site, channelInfo, false).GetAwaiter().GetResult() : channelInfo.FilePath;
             }
 
-            TbChannelFilePathRule.Text = string.IsNullOrEmpty(channelInfo.ChannelFilePathRule) ? PathUtility.GetChannelFilePathRule(Site, _channelId) : channelInfo.ChannelFilePathRule;
+            TbChannelFilePathRule.Text = string.IsNullOrEmpty(channelInfo.ChannelFilePathRule) ? PathUtility.GetChannelFilePathRuleAsync(Site, _channelId).GetAwaiter().GetResult() : channelInfo.ChannelFilePathRule;
             BtnCreateChannelRule.Attributes.Add("onclick", ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, true, TbChannelFilePathRule.ClientID));
 
-            TbContentFilePathRule.Text = string.IsNullOrEmpty(channelInfo.ContentFilePathRule) ? PathUtility.GetContentFilePathRule(Site, _channelId) : channelInfo.ContentFilePathRule;
+            TbContentFilePathRule.Text = string.IsNullOrEmpty(channelInfo.ContentFilePathRule) ? PathUtility.GetContentFilePathRuleAsync(Site, _channelId).GetAwaiter().GetResult() : channelInfo.ContentFilePathRule;
             BtnCreateContentRule.Attributes.Add("onclick", ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, false, TbContentFilePathRule.ClientID));
 
-            ControlUtils.SelectSingleItem(RblIsChannelCreatable, channelInfo.Additional.IsChannelCreatable.ToString());
-            ControlUtils.SelectSingleItem(RblIsContentCreatable, channelInfo.Additional.IsContentCreatable.ToString());
+            ControlUtils.SelectSingleItem(RblIsChannelCreatable, channelInfo.IsChannelCreatable.ToString());
+            ControlUtils.SelectSingleItem(RblIsContentCreatable, channelInfo.IsContentCreatable.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -75,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+                var channelInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
 
                 if (PhChannel.Visible)
                 {
@@ -97,9 +99,8 @@ namespace SiteServer.BackgroundPages.Cms
                             TbFilePath.Text = PageUtils.Combine(TbFilePath.Text, "index.html");
                         }
 
-                        var filePathArrayList = DataProvider.ChannelDao.GetAllFilePathBySiteId(SiteId);
-                        filePathArrayList.AddRange(DataProvider.TemplateMatchDao.GetAllFilePathBySiteId(SiteId));
-                        if (filePathArrayList.IndexOf(TbFilePath.Text) != -1)
+                        var filePathArrayList = DataProvider.ChannelDao.GetAllFilePathBySiteIdAsync(SiteId).GetAwaiter().GetResult();
+                        if (filePathArrayList.Contains(TbFilePath.Text))
                         {
                             FailMessage("栏目修改失败，栏目页面路径已存在！");
                             return;
@@ -142,21 +143,21 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
                 
-                if (TbChannelFilePathRule.Text != PathUtility.GetChannelFilePathRule(Site, _channelId))
+                if (TbChannelFilePathRule.Text != PathUtility.GetChannelFilePathRuleAsync(Site, _channelId).GetAwaiter().GetResult())
                 {
                     channelInfo.ChannelFilePathRule = TbChannelFilePathRule.Text;
                 }
-                if (TbContentFilePathRule.Text != PathUtility.GetContentFilePathRule(Site, _channelId))
+                if (TbContentFilePathRule.Text != PathUtility.GetContentFilePathRuleAsync(Site, _channelId).GetAwaiter().GetResult())
                 {
                     channelInfo.ContentFilePathRule = TbContentFilePathRule.Text;
                 }
 
-                channelInfo.Additional.IsChannelCreatable = TranslateUtils.ToBool(RblIsChannelCreatable.SelectedValue);
-                channelInfo.Additional.IsContentCreatable = TranslateUtils.ToBool(RblIsContentCreatable.SelectedValue);
+                channelInfo.IsChannelCreatable = TranslateUtils.ToBool(RblIsChannelCreatable.SelectedValue);
+                channelInfo.IsContentCreatable = TranslateUtils.ToBool(RblIsContentCreatable.SelectedValue);
 
-                DataProvider.ChannelDao.Update(channelInfo);
+                DataProvider.ChannelDao.UpdateAsync(channelInfo).GetAwaiter().GetResult();
 
-                CreateManager.CreateChannel(SiteId, _channelId);
+                CreateManager.CreateChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
 
                 AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "设置页面生成规则", $"栏目:{channelInfo.ChannelName}").GetAwaiter().GetResult();
 

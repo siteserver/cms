@@ -4,10 +4,11 @@ using System.Web;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.StlParser;
 using SiteServer.Utils;
 
@@ -20,7 +21,7 @@ namespace SiteServer.API.Controllers.Sys
         [Route(ApiRouteActionsTrigger.Route)]
         public async Task Main()
         {
-            var request = new AuthenticatedRequest();
+            var request = await AuthenticatedRequest.GetRequestAsync();
 
             var siteId = request.GetQueryInt("siteId");
             var site = await SiteManager.GetSiteAsync(siteId);
@@ -60,20 +61,20 @@ namespace SiteServer.API.Controllers.Sys
 
                 if (isRedirect)
                 {
-                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                    var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
 
                     var redirectUrl = string.Empty;
                     if (specialId != 0)
                     {
-                        redirectUrl = PageUtility.GetFileUrl(site, specialId, false);
+                        redirectUrl = await PageUtility.GetFileUrlAsync(site, specialId, false);
                     }
                     else if (fileTemplateId != 0)
                     {
-                        redirectUrl = PageUtility.GetFileUrl(site, fileTemplateId, false);
+                        redirectUrl = await PageUtility.GetFileUrlAsync(site, fileTemplateId, false);
                     }
                     else if (contentId != 0)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(site, channelInfo, contentId);
+                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
                         redirectUrl = await PageUtility.GetContentUrlAsync(site, contentInfo, false);
                     }
                     else if (channelId != 0)
@@ -82,7 +83,7 @@ namespace SiteServer.API.Controllers.Sys
                     }
                     else if (siteId != 0)
                     {
-                        redirectUrl = PageUtility.GetIndexPageUrl(site, false);
+                        redirectUrl = await PageUtility.GetIndexPageUrlAsync(site, false);
                     }
 
                     if (!string.IsNullOrEmpty(redirectUrl))
@@ -103,7 +104,7 @@ namespace SiteServer.API.Controllers.Sys
             }
             catch
             {
-                var redirectUrl = PageUtility.GetIndexPageUrl(site, false);
+                var redirectUrl = await PageUtility.GetIndexPageUrlAsync(site, false);
                 PageUtils.Redirect(redirectUrl);
                 return;
             }
