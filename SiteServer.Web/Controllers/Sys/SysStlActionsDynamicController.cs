@@ -9,7 +9,7 @@ using SiteServer.CMS.StlParser.StlElement;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    [OpenApiIgnore]
+    
     public class SysStlActionsDynamicController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsDynamic.Route)]
@@ -17,7 +17,7 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
 
                 var dynamicInfo = DynamicInfo.GetDynamicInfo(request, request.User);
 

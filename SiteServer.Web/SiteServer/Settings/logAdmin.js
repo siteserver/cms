@@ -20,12 +20,10 @@ var methods = {
   getConfig: function () {
     var $this = this;
 
-    $api.get($url, {
-      params: this.formInline
-    }).then(function (response) {
+    $api.post($url, this.formInline).then(function (response) {
       var res = response.data;
 
-      $this.items = res.value;
+      $this.items = res.items;
       $this.count = res.count;
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
@@ -59,13 +57,15 @@ var methods = {
   btnSearchClick() {
     var $this = this;
 
+    this.formInline.currentPage = 1;
+    this.formInline.offset = 0;
+    this.formInline.limit = 30;
+
     utils.loading(true);
-    $api.get($url, {
-      params: this.formInline
-    }).then(function (response) {
+    $api.post($url, this.formInline).then(function (response) {
       var res = response.data;
 
-      $this.items = res.value;
+      $this.items = res.items;
       $this.count = res.count;
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
@@ -75,10 +75,23 @@ var methods = {
   },
 
   handleCurrentChange: function(val) {
+    var $this = this;
+
     this.formInline.currentValue = val;
     this.formInline.offset = this.formInline.limit * (val - 1);
 
-    this.btnSearchClick();
+    utils.loading(true);
+    $api.post($url, this.formInline).then(function (response) {
+      var res = response.data;
+
+      $this.items = res.items;
+      $this.count = res.count;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
+    });
+    window.scrollTo(0, 0);
   }
 };
 

@@ -88,7 +88,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task<IAuthenticatedRequest> GetRequestAsync()
         {
-            return await AuthenticatedRequest.GetRequestAsync();
+            return await AuthenticatedRequest.GetAuthAsync();
         }
     }
 }

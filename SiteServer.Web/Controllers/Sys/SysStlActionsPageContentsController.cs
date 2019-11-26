@@ -12,7 +12,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    [OpenApiIgnore]
+    
     public class SysStlActionsPageContentsController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsPageContents.Route)]
@@ -20,10 +20,10 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
 
                 var siteId = request.GetPostInt("siteId");
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 var pageChannelId = request.GetPostInt("pageChannelId");
                 var templateId = request.GetPostInt("templateId");
                 var totalNum = request.GetPostInt("totalNum");

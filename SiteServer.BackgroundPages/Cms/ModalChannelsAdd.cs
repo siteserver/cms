@@ -79,8 +79,8 @@ namespace SiteServer.BackgroundPages.Cms
                 PhContentRelatedPluginIds.Visible = false;
             }
 
-            DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
-            DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
+            DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
+            DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
 
             DdlChannelTemplateId.DataBind();
             DdlChannelTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));

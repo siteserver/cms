@@ -4,6 +4,7 @@ using SiteServer.CMS.Model;
 using System.Text;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.StlParser.Model
@@ -65,7 +66,7 @@ namespace SiteServer.CMS.StlParser.Model
         {
             var pageInfo = new PageInfo();
 
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             pageInfo.Template = template;
             pageInfo.SiteId = site.Id;

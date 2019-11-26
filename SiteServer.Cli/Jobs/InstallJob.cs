@@ -4,6 +4,7 @@ using NDesk.Options;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -106,7 +107,7 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            WebConfigUtils.UpdateWebConfig(WebConfigUtils.IsProtectData, WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.ApiPrefix, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory, StringUtils.GetShortGuid(), false);
+            WebConfigUtils.UpdateWebConfig(WebConfigUtils.IsProtectData, WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.Redis, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory, StringUtils.GetShortGuid(), false);
 
             DataProvider.Reset();
 

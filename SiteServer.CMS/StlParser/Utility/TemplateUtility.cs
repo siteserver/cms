@@ -10,6 +10,7 @@ using SiteServer.CMS.StlParser.StlElement;
 using System.Threading.Tasks;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using SiteServer.CMS.Context;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Enumerations;
 
 namespace SiteServer.CMS.StlParser.Utility
@@ -43,7 +44,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var prePageContentId = pageInfo.PageContentId;
             if (contentInfo.SiteId != pageInfo.SiteId)
             {
-                var siteInfo = await SiteManager.GetSiteAsync(contentInfo.SiteId);
+                var siteInfo = await DataProvider.SiteDao.GetAsync(contentInfo.SiteId);
                 contextInfo.Site = siteInfo;
                 pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
             }
@@ -284,7 +285,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
             var siteId = SqlUtils.EvalInt(itemContainer.SiteItem.DataItem, nameof(Site.Id));
-            var siteInfo = await SiteManager.GetSiteAsync(siteId);
+            var siteInfo = await DataProvider.SiteDao.GetAsync(siteId);
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContainerClientId = containerClientId;

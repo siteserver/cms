@@ -900,7 +900,7 @@ namespace SiteServer.CMS.Provider
 
         public async Task<int> GetCountCheckedImageAsync(int siteId, int channelId)
         {
-            var tableName = await SiteManager.GetTableNameAsync(siteId);
+            var tableName = await DataProvider.SiteDao.GetTableNameAsync(siteId);
             var sqlString =
                 $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {ContentAttribute.ImageUrl} != '' AND {nameof(Content.IsChecked)} = '{true}' AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
 
@@ -1438,15 +1438,15 @@ group by tmp.userName";
             Site site = null;
             if (!string.IsNullOrEmpty(siteName))
             {
-                site = await SiteManager.GetSiteBySiteNameAsync(siteName);
+                site = await DataProvider.SiteDao.GetSiteBySiteNameAsync(siteName);
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                site = await SiteManager.GetSiteByDirectoryAsync(siteDir);
+                site = await DataProvider.SiteDao.GetSiteByDirectoryAsync(siteDir);
             }
             if (site == null)
             {
-                site = await SiteManager.GetSiteAsync(siteId);
+                site = await DataProvider.SiteDao.GetAsync(siteId);
             }
 
             var channelId = await ChannelManager.GetChannelIdAsync(siteId, siteId, channelIndex, channelName);

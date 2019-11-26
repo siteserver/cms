@@ -125,7 +125,7 @@ namespace SiteServer.CMS.ImportExport.Components
             var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
             if (channelInfo == null) return;
 
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
 
             var fileName = await DataProvider.ChannelDao.GetOrderStringInSiteAsync(channelId);

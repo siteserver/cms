@@ -1,0 +1,130 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+@section Styles {
+<style>
+  .custom-tree .el-tree-node__content {
+    line-height: 38px;
+    height: 38px;
+  }
+  .custom-tree .el-tree-node__content > .el-checkbox {
+    margin-top: 6px;
+  }
+  .custom-tree .custom-tree-node {
+    font-size: 16px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 8px;
+  }
+</style>
+}
+
+<el-card class="box-card">
+
+  <el-alert
+    title="蓝色标签代表栏目索引，灰色标签代表栏目组"
+    type="info">
+  </el-alert>
+
+  <el-form :inline="true" :model="formInline" class="demo-form-inline">
+    <el-form-item label="关键字">
+      <el-input v-model="formInline.keyword" size="mini" placeholder="输入关键字进行过滤"></el-input>
+    </el-form-item>
+    <el-form-item label="栏目组">
+      <el-select v-model="formInline.groupName" size="mini" placeholder="活动区域">
+        <el-option label="区域一" value="shanghai"></el-option>
+        <el-option label="区域二" value="beijing"></el-option>
+      </el-select>
+    </el-form-item>
+  </el-form>
+
+  <el-tree
+    ref="tree"
+    :data="channels"
+    :default-expanded-keys="expandedChannelIds"
+    node-key="id"
+    draggable
+    show-checkbox
+    highlight-current
+    :allow-drop="allowDrop"
+    :allow-drag="allowDrag"
+    class="custom-tree"
+    :filter-node-method="filterNode"
+    v-on:node-drag-start="handleDragStart"
+    v-on:node-drag-enter="handleDragEnter"
+    v-on:node-drag-leave="handleDragLeave"
+    v-on:node-drag-over="handleDragOver"
+    v-on:node-drag-end="handleDragEnd"
+    v-on:node-drop="handleDrop"
+  >
+    <div slot-scope="{ node, data }" class="custom-tree-node">
+      <span>
+        {{ data.channelName }}
+        <el-tag size="mini" v-if="data.indexName">{{ data.indexName }}</el-tag>
+      </span>
+      <span>
+        
+        <el-tag v-if="data.groupNames" v-for="groupName in data.groupNames" :key="groupName" size="mini" type="info">{{ groupName }}</el-tag>
+        <el-button
+          type="text"
+          size="mini"
+          style="margin-left: 10px"
+          v-on:click.stop="btnAppendClick(data)"
+        >
+          添加
+        </el-button>
+        <el-button
+          type="text"
+          size="mini"
+          v-on:click.stop="remove(node, data)"
+        >
+          删除
+        </el-button>
+      </span>
+    </div>
+  </el-tree>
+
+  <el-divider></el-divider>
+
+  <el-button-group>
+    <el-button size="mini" v-on:click="getCheckedNodes">通过 node 获取</el-button>
+    <el-button size="mini" v-on:click="getCheckedKeys">通过 key 获取</el-button>
+    <el-button size="mini" v-on:click="setCheckedNodes">通过 node 设置</el-button>
+    <el-button size="mini" v-on:click="setCheckedKeys">通过 key 设置</el-button>
+    <el-button size="mini" icon="el-icon-delete" type="danger" v-on:click="resetChecked">清空</el-button>
+  </el-button-group>
+
+</el-card>
+
+<el-drawer
+  v-if="appendForm"
+  title="新增栏目"
+  ref="appendPanel"
+  :visible.sync="appendPanel"
+  direction="rtl"
+  size="80%">
+  <div class="drawer__content">
+    <el-alert v-if="appendAlert" :title="appendAlert.title" :type="appendAlert.type"></el-alert>
+    <br />
+
+    <el-form ref="appendForm" :model="appendForm" :rules="appendRules" label-width="120px">
+      <el-form-item label="父栏目">
+        <el-input v-model="appendParent.channelName" :disabled="true" />
+      </el-form-item>
+      <el-form-item label="栏目索引">
+        <el-switch v-model="appendForm.isIndexName" active-text="将栏目名称作为栏目索引" />
+      </el-form-item>
+      <el-form-item label="栏目" prop="channels">
+        <el-input v-model="appendForm.channels" type="textarea" rows="5" :autosize="{ minRows: 5}" placeholder="栏目之间用换行分割，下级栏目在栏目前添加“-”字符，索引可以放到括号中" />
+      </el-form-item>
+    </el-form>
+    
+    <div class="drawer__footer">
+      <el-button type="primary" v-on:click="btnAppendSubmitClick" size="small" :loading="appendLoading">{{ appendLoading ? '提交中 ...' : '确 定' }}</el-button>
+      <el-button size="small" v-on:click="btnAppendCancelClick">取 消</el-button>
+    </div>
+  </div>
+</el-drawer>
+
+@section Scripts{
+<script src="channels.js" type="text/javascript"></script> }

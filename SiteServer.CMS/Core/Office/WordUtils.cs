@@ -59,7 +59,7 @@ namespace SiteServer.CMS.Core.Office
                 }
                 else
                 {
-                    var site = await SiteManager.GetSiteAsync(siteId);
+                    var site = await DataProvider.SiteDao.GetAsync(siteId);
                     var imageFileNameArrayList = RegexUtils.GetOriginalImageSrcs(parsedContent);
                     if (imageFileNameArrayList != null && imageFileNameArrayList.Count > 0)
                     {

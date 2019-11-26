@@ -4,12 +4,13 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Packaging;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/updateSystem")]
     public class PagesUpdateSystemController : ApiController
     {
@@ -20,7 +21,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin || !await request.AdminPermissionsImpl.IsSuperAdminAsync())
                 {
                     return Unauthorized();
@@ -49,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages
         [HttpPost, Route(Route)]
         public async Task<IHttpActionResult> UpdateSsCms()
         {
-            var request = await AuthenticatedRequest.GetRequestAsync();
+            var request = await AuthenticatedRequest.GetAuthAsync();
 
             var version = request.GetPostString("version");
 
@@ -63,7 +64,7 @@ namespace SiteServer.API.Controllers.Pages
             }
 
             WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
-                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.ApiPrefix, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
+                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.Redis, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
                 WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), WebUtils.GetSiteFilesPath(string.Empty), true);

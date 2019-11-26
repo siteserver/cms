@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
 			PageUtils.CheckRequestParameter("siteId");
             ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
-            if (!HasChannelPermissions(SiteId, ConfigManager.ChannelPermissions.ContentDelete))
+            if (!HasChannelPermissions(SiteId, Constants.ChannelPermissions.ContentDelete))
 			{
                 RblIsDeleteAfterTranslate.Visible = false;
 			}
@@ -82,7 +82,7 @@ namespace SiteServer.BackgroundPages.Cms
             var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdListAsync().GetAwaiter().GetResult();
             foreach (var psId in siteIdList)
             {
-                var psInfo = SiteManager.GetSiteAsync(psId).GetAwaiter().GetResult();
+                var psInfo = DataProvider.SiteDao.GetAsync(psId).GetAwaiter().GetResult();
                 var listitem = new ListItem(psInfo.SiteName, psId.ToString());
                 if (psId == SiteId) listitem.Selected = true;
                 DdlSiteId.Items.Add(listitem);

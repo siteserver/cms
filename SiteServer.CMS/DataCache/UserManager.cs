@@ -246,45 +246,45 @@ namespace SiteServer.CMS.DataCache
             UserManagerCache.Remove(user);
         }
 
-        public static async Task<User> GetUserByUserIdAsync(int userId)
+        public static async Task<User> GetByUserIdAsync(int userId)
         {
             return await UserManagerCache.GetCacheByUserIdAsync(userId);
         }
 
-        public static async Task<User> GetUserByUserNameAsync(string userName)
+        public static async Task<User> GetByUserNameAsync(string userName)
         {
             return await UserManagerCache.GetCacheByUserNameAsync(userName);
         }
 
-        public static async Task<User> GetUserByMobileAsync(string mobile)
+        public static async Task<User> GetByMobileAsync(string mobile)
         {
             return await UserManagerCache.GetCacheByMobileAsync(mobile);
         }
 
-        public static async Task<User> GetUserByEmailAsync(string email)
+        public static async Task<User> GetByEmailAsync(string email)
         {
             return await UserManagerCache.GetCacheByEmailAsync(email);
         }
 
-        public static async Task<User> GetUserByAccountAsync(string account)
+        public static async Task<User> GetByAccountAsync(string account)
         {
             if (string.IsNullOrEmpty(account)) return null;
 
             if (StringUtils.IsMobile(account))
             {
-                return await GetUserByMobileAsync(account);
+                return await GetByMobileAsync(account);
             }
             if (StringUtils.IsEmail(account))
             {
-                return await GetUserByEmailAsync(account);
+                return await GetByEmailAsync(account);
             }
 
-            return await GetUserByUserNameAsync(account);
+            return await GetByUserNameAsync(account);
         }
 
         public static async Task<bool> IsIpAddressCachedAsync(string ipAddress)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (config.UserRegistrationMinMinutes == 0 || string.IsNullOrEmpty(ipAddress))
             {
                 return true;
@@ -295,7 +295,7 @@ namespace SiteServer.CMS.DataCache
 
         public static async Task CacheIpAddressAsync(string ipAddress)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (config.UserRegistrationMinMinutes > 0 && !string.IsNullOrEmpty(ipAddress))
             {
                 CacheUtils.InsertMinutes($"SiteServer.CMS.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, config.UserRegistrationMinMinutes);

@@ -4,10 +4,11 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
-using SiteServer.CMS.Context;
+using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 
@@ -15,8 +16,14 @@ namespace SiteServer.CMS.Core
 {
     public static class SystemManager
     {
-        static SystemManager()
+        public static async Task LoadSettingsAsync(string applicationPhysicalPath)
         {
+            WebConfigUtils.Load(applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
+
+            await CacheManager.LoadCacheAsync();
+
+            await PluginManager.LoadPluginsAsync(applicationPhysicalPath);
+
             try
             {
                 ProductVersion = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.CMS.dll")).ProductVersion;
@@ -37,24 +44,15 @@ namespace SiteServer.CMS.Core
             {
                 // ignored
             }
-
-            //var ssemblyName = assembly.GetName();
-            //var assemblyVersion = ssemblyName.Version;
-            //var version = assemblyVersion.ToString();
-            //if (StringUtils.EndsWith(version, ".0"))
-            //{
-            //    version = version.Substring(0, version.DataLength - 2);
-            //}
-            //Version = version;
         }
 
-        public static string ProductVersion { get; }
+        public static string ProductVersion { get; private set; }
 
-        public static string PluginVersion { get; }
+        public static string PluginVersion { get; private set; }
 
-        public static string TargetFramework { get; }
+        public static string TargetFramework { get; private set; }
 
-        public static string EnvironmentVersion { get; }
+        public static string EnvironmentVersion { get; private set; }
 
         public static async Task InstallDatabaseAsync(string adminName, string adminPassword)
         {
@@ -91,7 +89,7 @@ namespace SiteServer.CMS.Core
 
         public static async Task SyncContentTablesAsync()
         {
-            var tableNameList = await SiteManager.GetAllTableNameListAsync();
+            var tableNameList = await DataProvider.SiteDao.GetAllTableNameListAsync();
             foreach (var tableName in tableNameList)
             {
                 if (!DataProvider.DatabaseDao.IsTableExists(tableName))
@@ -107,8 +105,8 @@ namespace SiteServer.CMS.Core
 
         public static async Task UpdateConfigVersionAsync()
         {
-            var config = await DataProvider.ConfigDao.GetConfigAsync();
-            if (config == null)
+            var config = await DataProvider.ConfigDao.GetAsync();
+            if (config.Id == 0)
             {
                 config = new Config
                 {
@@ -139,12 +137,6 @@ namespace SiteServer.CMS.Core
             await RepositoryManager.SyncDatabaseAsync();
         }
 
-
-        public static async Task<bool> IsNeedUpdateAsync()
-        {
-            return !StringUtils.EqualsIgnoreCase(ProductVersion, await DataProvider.ConfigDao.GetDatabaseVersionAsync());
-        }
-
         public static async Task<bool> IsNeedInstallAsync()
         {
             var isNeedInstall = !await DataProvider.ConfigDao.IsInitializedAsync();
@@ -154,12 +146,5 @@ namespace SiteServer.CMS.Core
             }
             return isNeedInstall;
         }
-
-        //public static bool DetermineRedirectToInstaller()
-        //{
-        //    if (!IsNeedInstall()) return false;
-        //    PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl("Installer"));
-        //    return true;
-        //}
     }
 }

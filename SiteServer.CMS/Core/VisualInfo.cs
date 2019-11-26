@@ -32,7 +32,7 @@ namespace SiteServer.CMS.Core
             }
             var visualInfo = new VisualInfo
             {
-                Site = await SiteManager.GetSiteAsync(siteId),
+                Site = await DataProvider.SiteDao.GetAsync(siteId),
                 ChannelId = channelId,
                 ContentId = contentId,
                 Template = null,

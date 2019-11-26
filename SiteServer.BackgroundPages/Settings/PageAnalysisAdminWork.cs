@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Settings
                 _begin = TranslateUtils.ToDateTime(AuthRequest.GetQueryString("startDate"));
                 _end = TranslateUtils.ToDateTime(AuthRequest.GetQueryString("endDate"));
             }
-            var siteIdList = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
+            var siteIdList = DataProvider.SiteDao.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
 
             if (SiteId == 0 && siteIdList.Count > 0)
             {
@@ -71,11 +71,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.Chart);
+            VerifySystemPermissions(Constants.SettingsPermissions.Chart);
             
             foreach (var siteId in siteIdList)
             {
-                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
                 DdlSiteId.Items.Add(new ListItem(site.SiteName, siteId.ToString()));
             }
             ControlUtils.SelectSingleItem(DdlSiteId, SiteId.ToString());

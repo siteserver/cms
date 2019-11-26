@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Text.Json.Serialization;
+using System.Collections.Generic;
 using Datory;
+using Newtonsoft.Json;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -42,6 +43,7 @@ namespace SiteServer.CMS.Model
         [DataColumn]
         public string CreatorUserName { get; set; }
 
+        [JsonIgnore]
         [DataColumn]
         public string IsLockedOut { get; set; }
 
@@ -51,8 +53,15 @@ namespace SiteServer.CMS.Model
             set => IsLockedOut = value.ToString();
         }
 
+        [JsonIgnore]
         [DataColumn]
-        public string SiteIdCollection { get; set; }
+        private string SiteIdCollection { get; set; }
+
+        public List<int> SiteIds
+        {
+            get => TranslateUtils.StringCollectionToIntList(SiteIdCollection);
+            set => SiteIdCollection = string.Join(",", SiteIdCollection);
+        }
 
         [DataColumn]
         public int SiteId { get; set; }

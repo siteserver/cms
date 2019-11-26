@@ -8,10 +8,11 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("home")]
     public class HomeController : ApiController
     {
@@ -28,7 +29,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var pageName = request.GetQueryString("pageName");
 
                 if (pageName == PageNameRegister)
@@ -52,7 +53,7 @@ namespace SiteServer.API.Controllers.Home
                     return Ok(await GetContentAddAsync(request));
                 }
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 return Ok(new
                 {
@@ -69,7 +70,7 @@ namespace SiteServer.API.Controllers.Home
 
         private async Task<object> GetRegisterAsync(AuthenticatedRequest request)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             return new
             {
@@ -120,7 +121,7 @@ namespace SiteServer.API.Controllers.Home
                 defaultPageUrl = await PluginMenuManager.GetHomeDefaultPageUrlAsync();
             }
 
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             return new
             {
@@ -133,7 +134,7 @@ namespace SiteServer.API.Controllers.Home
 
         private async Task<object> GetProfileAsync(AuthenticatedRequest request)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             return new
             {
@@ -160,7 +161,7 @@ namespace SiteServer.API.Controllers.Home
                 var siteIdList = await request.UserPermissionsImpl.GetSiteIdListAsync();
                 foreach (var siteId in siteIdList)
                 {
-                    var permissionSite = await SiteManager.GetSiteAsync(siteId);
+                    var permissionSite = await DataProvider.SiteDao.GetAsync(siteId);
                     if (requestSiteId == siteId)
                     {
                         site = permissionSite;
@@ -174,13 +175,13 @@ namespace SiteServer.API.Controllers.Home
 
                 if (site == null && siteIdList.Count > 0)
                 {
-                    site = await SiteManager.GetSiteAsync(siteIdList[0]);
+                    site = await DataProvider.SiteDao.GetAsync(siteIdList[0]);
                 }
 
                 if (site != null)
                 {
                     var channelIdList = await request.UserPermissionsImpl.GetChannelIdListAsync(site.Id,
-                        ConfigManager.ChannelPermissions.ContentAdd);
+                        Constants.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
                         var permissionChannelInfo = await ChannelManager.GetChannelAsync(site.Id, permissionChannelId);
@@ -213,7 +214,7 @@ namespace SiteServer.API.Controllers.Home
                 }
             }
 
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             return new
             {
@@ -250,7 +251,7 @@ namespace SiteServer.API.Controllers.Home
                 var siteIdList = await request.UserPermissionsImpl.GetSiteIdListAsync();
                 foreach (var siteId in siteIdList)
                 {
-                    var permissionSiteInfo = await SiteManager.GetSiteAsync(siteId);
+                    var permissionSiteInfo = await DataProvider.SiteDao.GetAsync(siteId);
                     if (requestSiteId == siteId)
                     {
                         siteInfo = permissionSiteInfo;
@@ -264,13 +265,13 @@ namespace SiteServer.API.Controllers.Home
 
                 if (siteInfo == null && siteIdList.Count > 0)
                 {
-                    siteInfo = await SiteManager.GetSiteAsync(siteIdList[0]);
+                    siteInfo = await DataProvider.SiteDao.GetAsync(siteIdList[0]);
                 }
 
                 if (siteInfo != null)
                 {
                     var channelIdList = await request.UserPermissionsImpl.GetChannelIdListAsync(siteInfo.Id,
-                        ConfigManager.ChannelPermissions.ContentAdd);
+                        Constants.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
                         var permissionChannelInfo = await ChannelManager.GetChannelAsync(siteInfo.Id, permissionChannelId);
@@ -334,7 +335,7 @@ namespace SiteServer.API.Controllers.Home
                 }
             }
 
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             return new
             {

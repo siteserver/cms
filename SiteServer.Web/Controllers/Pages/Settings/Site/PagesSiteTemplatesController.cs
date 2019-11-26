@@ -11,7 +11,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/siteTemplates")]
     public class PagesSiteTemplatesController : ApiController
     {
@@ -64,9 +64,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -84,9 +84,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -118,9 +118,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -145,9 +145,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -182,9 +182,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }

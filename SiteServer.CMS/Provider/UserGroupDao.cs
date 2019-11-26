@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -45,7 +46,7 @@ namespace SiteServer.CMS.Provider
 
         public async Task<List<UserGroup>> GetUserGroupListAsync()
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             var list = (await _repository.GetAllAsync(Q.OrderBy(nameof(UserGroup.Id)))).ToList();
 

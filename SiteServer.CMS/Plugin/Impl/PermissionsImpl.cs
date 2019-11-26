@@ -102,13 +102,13 @@ namespace SiteServer.CMS.Plugin.Impl
 
             if (await IsSuperAdminAsync())
             {
-                siteIdList = await SiteManager.GetSiteIdListAsync();
+                siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync();
             }
             else if (await IsSiteAdminAsync())
             {
                 if (_adminInfo != null)
                 {
-                    foreach (var siteId in TranslateUtils.StringCollectionToIntList(_adminInfo.SiteIdCollection))
+                    foreach (var siteId in _adminInfo.SiteIds)
                     {
                         if (!siteIdList.Contains(siteId))
                         {
@@ -238,7 +238,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 {
                     _permissionList = new List<string>
                     {
-                        ConfigManager.SettingsPermissions.Admin
+                        Constants.SettingsPermissions.Admin
                     };
                 }
                 else
@@ -501,11 +501,11 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public async Task<int> GetAdminIdAsync(int siteId, int channelId)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (!config.IsViewContentOnlySelf
                 || await IsSuperAdminAsync()
                 || await IsSiteAdminAsync()
-                || await HasChannelPermissionsAsync(siteId, channelId, ConfigManager.ChannelPermissions.ContentCheck))
+                || await HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentCheck))
             {
                 return 0;
             }

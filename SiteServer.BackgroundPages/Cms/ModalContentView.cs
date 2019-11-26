@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (_content.ReferenceId > 0 && _content.Get<string>(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
                 var referenceSiteId = DataProvider.ChannelDao.GetSiteIdAsync(_content.SourceId).GetAwaiter().GetResult();
-                var referenceSite = SiteManager.GetSiteAsync(referenceSiteId).GetAwaiter().GetResult();
+                var referenceSite = DataProvider.SiteDao.GetAsync(referenceSiteId).GetAwaiter().GetResult();
                 var referenceContentInfo = ContentManager.GetContentInfoAsync(referenceSite, _content.SourceId, _content.ReferenceId).GetAwaiter().GetResult();
 
                 if (referenceContentInfo != null)

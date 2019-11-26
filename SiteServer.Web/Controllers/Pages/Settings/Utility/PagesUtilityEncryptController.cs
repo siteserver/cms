@@ -8,7 +8,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Utility
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/utilityEncrypt")]
     public class PagesUtilityEncryptController : ApiController
     {
@@ -19,9 +19,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }

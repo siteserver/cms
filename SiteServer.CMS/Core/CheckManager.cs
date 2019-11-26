@@ -1037,18 +1037,18 @@ namespace SiteServer.CMS.Core
             var checkedLevel = 0;
             if (site.IsCheckContentLevel == false)
             {
-                if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheck))
+                if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheck))
                 {
                     isChecked = true;
                 }
             }
             else
             {
-                if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel5))
+                if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel5))
                 {
                     isChecked = true;
                 }
-                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel4))
+                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel4))
                 {
                     if (site.CheckContentLevel <= 4)
                     {
@@ -1059,7 +1059,7 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 4;
                     }
                 }
-                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel3))
+                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel3))
                 {
                     if (site.CheckContentLevel <= 3)
                     {
@@ -1070,7 +1070,7 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 3;
                     }
                 }
-                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel2))
+                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel2))
                 {
                     if (site.CheckContentLevel <= 2)
                     {
@@ -1081,7 +1081,7 @@ namespace SiteServer.CMS.Core
                         checkedLevel = 2;
                     }
                 }
-                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel1))
+                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel1))
                 {
                     if (site.CheckContentLevel <= 1)
                     {

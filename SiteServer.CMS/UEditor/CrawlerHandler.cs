@@ -38,7 +38,7 @@ namespace SiteServer.CMS.UEditor
                 });
                 return;
             }
-            var site = SiteManager.GetSiteAsync(SiteId).GetAwaiter().GetResult();
+            var site = DataProvider.SiteDao.GetAsync(SiteId).GetAwaiter().GetResult();
 
             Crawlers = Sources.Select(x => new Crawler(x, site, Server)).ToArray();
             WriteJson(new

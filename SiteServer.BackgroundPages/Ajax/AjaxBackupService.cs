@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retVal = new NameValueCollection();
-            var request = AuthenticatedRequest.GetRequestAsync().GetAwaiter().GetResult();
+            var request = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
 
             if (type == TypeBackup)
             {
@@ -105,13 +105,13 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retVal;
-            var request = AuthenticatedRequest.GetRequestAsync().GetAwaiter().GetResult();
+            var request = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
 
             try
             {
                 var eBackupType = EBackupTypeUtils.GetEnumType(backupType);
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 var filePath = PathUtility.GetBackupFilePath(site, eBackupType);
                 DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                 FileUtils.DeleteFileIfExists(filePath);

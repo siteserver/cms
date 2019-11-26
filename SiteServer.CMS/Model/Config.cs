@@ -6,6 +6,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
+    [Serializable]
     [DataTable("siteserver_Config")]
     public class Config : Entity
     {
@@ -24,7 +25,7 @@ namespace SiteServer.CMS.Model
 
         public string SeparatedApiUrl { get; set; }
 
-        public string ApiUrl => IsSeparatedApi ? SeparatedApiUrl : PageUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
+        public string ApiUrl => IsSeparatedApi ? SeparatedApiUrl : PageUtils.ParseNavigationUrl("~/api");
 
         public bool IsLogSite { get; set; } = true;
 

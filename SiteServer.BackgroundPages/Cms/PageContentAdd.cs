@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 LtlPageTitle.Text = pageTitle;
 
-                if (HasChannelPermissions(_channel.Id, ConfigManager.ChannelPermissions.ContentTranslate))
+                if (HasChannelPermissions(_channel.Id, Constants.ChannelPermissions.ContentTranslate))
                 {
                     PhTranslate.Visible = true;
                     BtnTranslate.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
@@ -142,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(SiteId));
 
-                if (HasChannelPermissions(_channel.Id, ConfigManager.ChannelPermissions.ContentCheck))
+                if (HasChannelPermissions(_channel.Id, Constants.ChannelPermissions.ContentCheck))
                 {
                     PhStatus.Visible = true;
                     var (isChecked, checkedLevel) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, _channel.Id).GetAwaiter().GetResult();
@@ -423,7 +423,7 @@ namespace SiteServer.BackgroundPages.Cms
                     //        DataProvider.ContentDao.Update(table.TableName, contentInfo);
 
                     //        //资源：图片，文件，视频
-                    //        var targetSite = SiteManager.GetSite(targetContentInfo.SiteId);
+                    //        var targetSite = DataProvider.SiteDao.GetSite(targetContentInfo.SiteId);
                     //        var bgContentInfo = contentInfo as BackgroundContentInfo;
                     //        var bgTargetContentInfo = targetContentInfo as BackgroundContentInfo;
                     //        if (bgTargetContentInfo != null && bgContentInfo != null)
@@ -486,7 +486,7 @@ namespace SiteServer.BackgroundPages.Cms
                     return false;
                 }
 
-                if (!HasChannelPermissions(_channel.Id, ConfigManager.ChannelPermissions.ContentAdd))
+                if (!HasChannelPermissions(_channel.Id, Constants.ChannelPermissions.ContentAdd))
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {
@@ -500,7 +500,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                if (!HasChannelPermissions(_channel.Id, ConfigManager.ChannelPermissions.ContentEdit))
+                if (!HasChannelPermissions(_channel.Id, Constants.ChannelPermissions.ContentEdit))
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {

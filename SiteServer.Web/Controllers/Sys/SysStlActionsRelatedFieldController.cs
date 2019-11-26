@@ -10,13 +10,13 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    [OpenApiIgnore]
+    
     public class SysStlActionsRelatedFieldController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsRelatedField.Route)]
         public async Task Main(int siteId)
         {
-            var request = await AuthenticatedRequest.GetRequestAsync();
+            var request = await AuthenticatedRequest.GetAuthAsync();
 
             var callback = request.GetQueryString("callback");
             var relatedFieldId = request.GetQueryInt("relatedFieldId");

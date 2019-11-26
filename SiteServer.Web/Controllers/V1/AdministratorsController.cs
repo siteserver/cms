@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
+using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -14,7 +17,7 @@ namespace SiteServer.API.Controllers.V1
     /// Administrators
     /// </summary>
     [RoutePrefix("v1/administrators")]
-    public class AdministratorsController : ApiController
+    public partial class AdministratorsController : ApiController
     {
         private const string Route = "";
         private const string RouteActionsLogin = "actions/login";
@@ -27,8 +30,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isApiAuthorized = request.IsApiAuthenticated && await DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 var administrator = request.GetPostObject<Administrator>("administrator");
@@ -57,8 +60,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isApiAuthorized = request.IsApiAuthenticated && await DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 if (administrator == null) return BadRequest("Could not read administrator from body");
@@ -90,8 +93,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isApiAuthorized = request.IsApiAuthenticated && await DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 if (!await DataProvider.AdministratorDao.IsExistsAsync(id)) return NotFound();
@@ -115,8 +118,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isApiAuthorized = request.IsApiAuthenticated && await DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 if (!await DataProvider.AdministratorDao.IsExistsAsync(id)) return NotFound();
@@ -140,8 +143,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isApiAuthorized = request.IsApiAuthenticated && await DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 var top = request.GetQueryInt("top", 20);
@@ -160,72 +163,64 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(RouteActionsLogin)]
-        public async Task<IHttpActionResult> Login()
+        public async Task<LoginResult> Login([FromBody] LoginRequest request)
         {
-            try
+            var context = await AuthenticatedRequest.GetAuthAsync();
+
+            Administrator adminInfo;
+
+            var (isValid, userName, errorMessage) = await DataProvider.AdministratorDao.ValidateAsync(request.Account, request.Password, true);
+
+            if (!isValid)
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-
-                var account = request.GetPostString("account");
-                var password = request.GetPostString("password");
-                var isAutoLogin = request.GetPostBool("isAutoLogin");
-
-                Administrator adminInfo;
-
-                var valid = await DataProvider.AdministratorDao.ValidateAsync(account, password, true);
-
-                if (!valid.IsValid)
+                adminInfo = await AdminManager.GetByUserNameAsync(userName);
+                if (adminInfo != null)
                 {
-                    adminInfo = await AdminManager.GetByUserNameAsync(valid.UserName);
-                    if (adminInfo != null)
-                    {
-                        await DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLoginAsync(adminInfo); // 记录最后登录时间、失败次数+1
-                    }
-                    return BadRequest(valid.ErrorMessage);
+                    await DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLoginAsync(adminInfo); // 记录最后登录时间、失败次数+1
                 }
 
-                adminInfo = await AdminManager.GetByUserNameAsync(valid.UserName);
-                await DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLoginAsync(adminInfo); // 记录最后登录时间、失败次数清零
-                var accessToken = await request.AdminLoginAsync(adminInfo.UserName, isAutoLogin);
-                var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
+                throw new HttpResponseException(Request.CreateErrorResponse(
+                    HttpStatusCode.BadRequest,
+                    errorMessage
+                ));
+            }
 
-                var sessionId = StringUtils.Guid();
-                var cacheKey = Constants.GetSessionIdCacheKey(adminInfo.Id);
-                CacheUtils.Insert(cacheKey, sessionId);
+            adminInfo = await AdminManager.GetByUserNameAsync(userName);
+            await DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLoginAsync(adminInfo); // 记录最后登录时间、失败次数清零
+            var accessToken = await context.AdminLoginAsync(adminInfo.UserName, request.IsAutoLogin);
+            var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
-                var config = await ConfigManager.GetInstanceAsync();
+            var sessionId = StringUtils.Guid();
+            var cacheKey = Constants.GetSessionIdCacheKey(adminInfo.Id);
+            CacheUtils.Insert(cacheKey, sessionId);
 
-                var isEnforcePasswordChange = false;
-                if (config.IsAdminEnforcePasswordChange)
+            var config = await DataProvider.ConfigDao.GetAsync();
+
+            var isEnforcePasswordChange = false;
+            if (config.IsAdminEnforcePasswordChange)
+            {
+                if (adminInfo.LastChangePasswordDate == null)
                 {
-                    if (adminInfo.LastChangePasswordDate == null)
+                    isEnforcePasswordChange = true;
+                }
+                else
+                {
+                    var ts = new TimeSpan(DateTime.Now.Ticks - adminInfo.LastChangePasswordDate.Value.Ticks);
+                    if (ts.TotalDays > config.AdminEnforcePasswordChangeDays)
                     {
                         isEnforcePasswordChange = true;
                     }
-                    else
-                    {
-                        var ts = new TimeSpan(DateTime.Now.Ticks - adminInfo.LastChangePasswordDate.Value.Ticks);
-                        if (ts.TotalDays > config.AdminEnforcePasswordChangeDays)
-                        {
-                            isEnforcePasswordChange = true;
-                        }
-                    }
                 }
+            }
 
-                return Ok(new
-                {
-                    Value = adminInfo,
-                    AccessToken = accessToken,
-                    ExpiresAt = expiresAt,
-                    SessionId = sessionId,
-                    IsEnforcePasswordChange = isEnforcePasswordChange
-                });
-            }
-            catch (Exception ex)
+            return new LoginResult
             {
-                await LogUtils.AddErrorLogAsync(ex);
-                return InternalServerError(ex);
-            }
+                Value = adminInfo,
+                AccessToken = accessToken,
+                ExpiresAt = expiresAt,
+                SessionId = sessionId,
+                IsEnforcePasswordChange = isEnforcePasswordChange
+            };
         }
 
         [HttpPost, Route(RouteActionsLogout)]
@@ -233,7 +228,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var adminInfo = request.IsAdminLoggin ? request.Administrator : null;
                 request.AdminLogout();
 
@@ -254,8 +249,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isApiAuthorized = request.IsApiAuthenticated && await DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 var account = request.GetPostString("account");

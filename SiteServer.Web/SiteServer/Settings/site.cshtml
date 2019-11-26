@@ -111,8 +111,8 @@
       </el-form-item>
     </el-form>
     <div class="drawer__footer">
-      <el-button type="primary" v-on:click="btnEditSubmitClick" :loading="editLoading">{{ editLoading ? '提交中 ...' : '确 定' }}</el-button>
-      <el-button v-on:click="btnEditCancelClick">取 消</el-button>
+      <el-button type="primary" size="small" v-on:click="btnEditSubmitClick" :loading="editLoading">{{ editLoading ? '提交中 ...' : '确 定' }}</el-button>
+      <el-button size="small" v-on:click="btnEditCancelClick">取 消</el-button>
     </div>
   </div>
 </el-drawer>
@@ -141,8 +141,8 @@
     </el-form>
 
     <div class="drawer__footer">
-      <el-button type="danger" v-on:click="btnDeleteSubmitClick" :loading="deleteLoading">{{ deleteLoading ? '提交中 ...' : '删 除' }}</el-button>
-      <el-button v-on:click="btnDeleteCancelClick">取 消</el-button>
+      <el-button type="danger" size="small" v-on:click="btnDeleteSubmitClick" :loading="deleteLoading">{{ deleteLoading ? '提交中 ...' : '删 除' }}</el-button>
+      <el-button size="small" v-on:click="btnDeleteCancelClick">取 消</el-button>
     </div>
   </div>
 </el-drawer>

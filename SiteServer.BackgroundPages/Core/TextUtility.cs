@@ -126,12 +126,12 @@ namespace SiteServer.BackgroundPages.Core
 
         public static async Task<bool> IsEditAsync(Site site, int channelId, PermissionsImpl permissionsImpl)
         {
-            return await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, ConfigManager.ChannelPermissions.ContentEdit);
+            return await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentEdit);
         }
 
         //public static bool IsComment(Site site, int channelId, string administratorName)
         //{
-        //    return site.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, site.Id, channelId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete);
+        //    return site.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, site.Id, channelId, SystemManager.Permissions.Channel.CommentCheck, SystemManager.Permissions.Channel.CommentDelete);
         //}
 
         public static string GetColumnsHeadHtml(List<TableStyle> tableStyleList, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns, StringCollection attributesOfDisplay)

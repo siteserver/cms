@@ -215,7 +215,7 @@ namespace SiteServer.BackgroundPages.Cms
                 LtlColumnsHead.Text += @"<th class=""text-center text-nowrap"" width=""150"">删除时间</th>";
                 BtnAddToGroup.Visible = BtnTranslate.Visible = BtnCheck.Visible = false;
                 PhTrash.Visible = true;
-                if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ContentDelete))
+                if (!HasChannelPermissions(_channelId, Constants.ChannelPermissions.ContentDelete))
                 {
                     BtnDelete.Visible = false;
                     BtnDeleteAll.Visible = false;
@@ -234,7 +234,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 BtnAddToGroup.Attributes.Add("onclick", ModalAddToGroup.GetOpenWindowStringToContentForMultiChannels(SiteId));
 
-                if (HasChannelPermissions(SiteId, ConfigManager.ChannelPermissions.ContentCheck))
+                if (HasChannelPermissions(SiteId, Constants.ChannelPermissions.ContentCheck))
                 {
                     BtnCheck.Attributes.Add("onclick", ModalContentCheck.GetOpenWindowStringForMultiChannels(SiteId, PageUrl));
                     if (_isCheckOnly)
@@ -247,7 +247,7 @@ namespace SiteServer.BackgroundPages.Cms
                     PhCheck.Visible = false;
                 }
 
-                if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ContentTranslate))
+                if (!HasChannelPermissions(_channelId, Constants.ChannelPermissions.ContentTranslate))
                 {
                     BtnTranslate.Visible = false;
                 }
@@ -256,7 +256,7 @@ namespace SiteServer.BackgroundPages.Cms
                     BtnTranslate.Attributes.Add("onclick", PageContentTranslate.GetRedirectClickStringForMultiChannels(SiteId, PageUrl));
                 }
 
-                if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ContentDelete))
+                if (!HasChannelPermissions(_channelId, Constants.ChannelPermissions.ContentDelete))
                 {
                     BtnDelete.Visible = false;
                 }

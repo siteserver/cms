@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Core
             if (sourceId <= 0) return string.Empty;
 
             var sourceSiteId = await DataProvider.ChannelDao.GetSiteIdAsync(sourceId);
-            var siteInfo = await SiteManager.GetSiteAsync(sourceSiteId);
+            var siteInfo = await DataProvider.SiteDao.GetAsync(sourceSiteId);
             if (siteInfo == null) return "内容转移";
 
             var nodeNames = await ChannelManager.GetChannelNameNavigationAsync(siteInfo.Id, sourceId);

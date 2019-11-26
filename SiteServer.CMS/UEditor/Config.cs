@@ -16,7 +16,7 @@ namespace SiteServer.CMS.UEditor
         private static bool noCache = true;
         private static async Task<JObject> BuildItemsAsync()
         {
-            var request = await AuthenticatedRequest.GetRequestAsync();
+            var request = await AuthenticatedRequest.GetAuthAsync();
 
             if (!request.IsAdminLoggin) return new JObject();
 

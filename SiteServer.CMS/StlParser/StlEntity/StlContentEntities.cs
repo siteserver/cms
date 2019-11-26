@@ -72,7 +72,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         var targetChannelId = contentInfo.SourceId;
                         var targetSiteId = await StlChannelCache.GetSiteIdAsync(targetChannelId);
-                        var targetSite = await SiteManager.GetSiteAsync(targetSiteId);
+                        var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
                         var targetNodeInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
 
                         var targetContentInfo = await ContentManager.GetContentInfoAsync(targetSite, targetNodeInfo, contentInfo.ReferenceId);
@@ -237,6 +237,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Content);
                             parsedContent = StlContentCache.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Content);
                         }
+
                         parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                     }
                     else if (StringUtils.EqualsIgnoreCase(Group, attributeName))//内容组别

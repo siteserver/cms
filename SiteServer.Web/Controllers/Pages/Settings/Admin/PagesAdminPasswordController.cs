@@ -4,10 +4,11 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/adminPassword")]
     public class PagesAdminPasswordController : ApiController
     {
@@ -18,14 +19,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var userId = request.GetQueryInt("userId");
                 if (userId == 0) userId = request.AdminId;
                 if (!request.IsAdminLoggin) return Unauthorized();
                 var adminInfo = await AdminManager.GetByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
-                    ! await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
+                    ! await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -46,14 +47,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var userId = request.GetQueryInt("userId");
                 if (userId == 0) userId = request.AdminId;
                 if (!request.IsAdminLoggin) return Unauthorized();
                 var adminInfo = await AdminManager.GetByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }

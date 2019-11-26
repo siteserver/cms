@@ -7,7 +7,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/loading")]
     public class PagesLoadingController : ApiController
     {
@@ -18,7 +18,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();

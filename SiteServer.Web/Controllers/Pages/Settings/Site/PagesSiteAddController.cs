@@ -16,7 +16,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/siteAdd")]
     public class PagesSiteAddController : ApiController
     {
@@ -27,9 +27,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.SiteAdd))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.SiteAdd))
                 {
                     return Unauthorized();
                 }
@@ -41,12 +41,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     new KeyValuePair<int, string>(0, "<无上级站点>")
                 };
 
-                var siteIdList = await SiteManager.GetSiteIdListAsync();
+                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync();
                 var siteInfoList = new List<CMS.Model.Site>();
                 var parentWithChildren = new Dictionary<int, List<CMS.Model.Site>>();
                 foreach (var siteId in siteIdList)
                 {
-                    var site = await SiteManager.GetSiteAsync(siteId);
+                    var site = await DataProvider.SiteDao.GetAsync(siteId);
                     if (site.ParentId == 0)
                     {
                         siteInfoList.Add(site);
@@ -67,9 +67,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     AddSite(siteList, site, parentWithChildren, 0);
                 }
 
-                var tableNameList = await SiteManager.GetSiteTableNamesAsync();
+                var tableNameList = await DataProvider.SiteDao.GetSiteTableNamesAsync();
 
-                var rootExists = await SiteManager.GetSiteByIsRootAsync() != null;
+                var rootExists = await DataProvider.SiteDao.GetSiteByIsRootAsync() != null;
 
                 return Ok(new
                 {
@@ -119,9 +119,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.SiteAdd))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.SiteAdd))
                 {
                     return Unauthorized();
                 }
@@ -204,7 +204,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     var siteIdList = await request.AdminPermissionsImpl.GetSiteIdListAsync() ?? new List<int>();
                     siteIdList.Add(siteId);
                     var adminInfo = await AdminManager.GetByUserIdAsync(request.AdminId);
-                    await DataProvider.AdministratorDao.UpdateSiteIdCollectionAsync(adminInfo, TranslateUtils.ObjectCollectionToString(siteIdList));
+                    await DataProvider.AdministratorDao.UpdateSiteIdCollectionAsync(adminInfo, siteIdList);
                 }
 
                 var siteTemplateDir = string.Empty;

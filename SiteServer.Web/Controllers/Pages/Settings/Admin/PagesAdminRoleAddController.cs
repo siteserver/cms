@@ -12,7 +12,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/adminRoleAdd")]
     public partial class PagesAdminRoleAddController : ApiController
     {
@@ -25,9 +25,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -80,7 +80,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                         var listTwo = await request.AdminPermissionsImpl.GetSitePermissionsAsync(permissionSiteId);
                         if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                         {
-                            siteList.Add(await SiteManager.GetSiteAsync(permissionSiteId));
+                            siteList.Add(await DataProvider.SiteDao.GetAsync(permissionSiteId));
                         }
                     }
                 }
@@ -117,9 +117,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -144,7 +144,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
             }
             if (sitePermissionsInfo == null) sitePermissionsInfo = new SitePermissions();
 
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             var sitePermissions = new List<Permission>();
             var pluginPermissions = new List<Permission>();
             var channelPermissions = new List<Permission>();
@@ -175,7 +175,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var channelPermissionList = instance.ChannelPermissions;
                 foreach (var permission in channelPermissionList)
                 {
-                    if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel1)
+                    if (permission.Name == Constants.ChannelPermissions.ContentCheckLevel1)
                     {
                         if (site.IsCheckContentLevel)
                         {
@@ -189,7 +189,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                             continue;
                         }
                     }
-                    else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel2)
+                    else if (permission.Name == Constants.ChannelPermissions.ContentCheckLevel2)
                     {
                         if (site.IsCheckContentLevel)
                         {
@@ -203,7 +203,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                             continue;
                         }
                     }
-                    else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel3)
+                    else if (permission.Name == Constants.ChannelPermissions.ContentCheckLevel3)
                     {
                         if (site.IsCheckContentLevel)
                         {
@@ -217,7 +217,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                             continue;
                         }
                     }
-                    else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel4)
+                    else if (permission.Name == Constants.ChannelPermissions.ContentCheckLevel4)
                     {
                         if (site.IsCheckContentLevel)
                         {
@@ -231,7 +231,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                             continue;
                         }
                     }
-                    else if (permission.Name == ConfigManager.ChannelPermissions.ContentCheckLevel5)
+                    else if (permission.Name == Constants.ChannelPermissions.ContentCheckLevel5)
                     {
                         if (site.IsCheckContentLevel)
                         {
@@ -296,27 +296,27 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     {
                         if (permission.Name == channelPermission)
                         {
-                            if (channelPermission == ConfigManager.ChannelPermissions.ContentCheck)
+                            if (channelPermission == Constants.ChannelPermissions.ContentCheck)
                             {
                                 if (site.IsCheckContentLevel) continue;
                             }
-                            else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel1)
+                            else if (channelPermission == Constants.ChannelPermissions.ContentCheckLevel1)
                             {
                                 if (site.IsCheckContentLevel == false || site.CheckContentLevel < 1) continue;
                             }
-                            else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel2)
+                            else if (channelPermission == Constants.ChannelPermissions.ContentCheckLevel2)
                             {
                                 if (site.IsCheckContentLevel == false || site.CheckContentLevel < 2) continue;
                             }
-                            else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel3)
+                            else if (channelPermission == Constants.ChannelPermissions.ContentCheckLevel3)
                             {
                                 if (site.IsCheckContentLevel == false || site.CheckContentLevel < 3) continue;
                             }
-                            else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel4)
+                            else if (channelPermission == Constants.ChannelPermissions.ContentCheckLevel4)
                             {
                                 if (site.IsCheckContentLevel == false || site.CheckContentLevel < 4) continue;
                             }
-                            else if (channelPermission == ConfigManager.ChannelPermissions.ContentCheckLevel5)
+                            else if (channelPermission == Constants.ChannelPermissions.ContentCheckLevel5)
                             {
                                 if (site.IsCheckContentLevel == false || site.CheckContentLevel < 5) continue;
                             }
@@ -359,9 +359,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -428,9 +428,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }

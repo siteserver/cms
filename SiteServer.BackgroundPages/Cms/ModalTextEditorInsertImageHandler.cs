@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
             string filePath = null;
             string errorMessage = null;
 
-            var site = SiteManager.GetSiteAsync(AuthRequest.SiteId).GetAwaiter().GetResult();
+            var site = DataProvider.SiteDao.GetAsync(AuthRequest.SiteId).GetAwaiter().GetResult();
 
             if (fileCount > 0)
             {

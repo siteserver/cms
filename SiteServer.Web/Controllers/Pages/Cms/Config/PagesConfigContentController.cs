@@ -4,10 +4,11 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Config
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/cms/configContent")]
     public class PagesConfigContentController : ApiController
     {
@@ -18,16 +19,16 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, ConfigManager.WebSitePermissions.Configration))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, Constants.WebSitePermissions.Configuration))
                 {
                     return Unauthorized();
                 }
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
 
                 return Ok(new
                 {
@@ -46,16 +47,16 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, ConfigManager.WebSitePermissions.Configration))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, Constants.WebSitePermissions.Configuration))
                 {
                     return Unauthorized();
                 }
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
 
                 var isSaveImageInTextEditor = request.GetPostBool("isSaveImageInTextEditor", true);
                 var isAutoPageInTextEditor = request.GetPostBool("isAutoPageInTextEditor");

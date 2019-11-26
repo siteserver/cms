@@ -193,9 +193,7 @@ namespace SiteServer.CMS.Plugin
 
         public static async Task LoadPluginsAsync(string applicationPhysicalPath)
         {
-            WebConfigUtils.Load(applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
-
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             SiteServer.Plugin.Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, config.ApiUrl), new ApiCollectionImpl
             {

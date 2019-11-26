@@ -11,7 +11,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Shared
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/shared/tableStyle")]
     public class PagesTableStyleController : ApiController
     {
@@ -22,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetQueryString("tableName");
@@ -90,7 +90,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetPostString("tableName");

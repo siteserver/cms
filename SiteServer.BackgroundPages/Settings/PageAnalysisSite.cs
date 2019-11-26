@@ -66,13 +66,13 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.Chart);
+            VerifySystemPermissions(Constants.SettingsPermissions.Chart);
 
             DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
-            var siteIdList = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
+            var siteIdList = DataProvider.SiteDao.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             foreach (var siteId in siteIdList)
             {
-                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
                 DdlSiteId.Items.Add(new ListItem(site.SiteName, siteId.ToString()));
             }
 
@@ -107,11 +107,11 @@ yArrayUpdate.push('{yValueUpdate}');";
 
         public void BindGrid()
         {
-            var siteIdList = SiteManager.GetSiteIdListAsync().GetAwaiter().GetResult();
+            var siteIdList = DataProvider.SiteDao.GetSiteIdListAsync().GetAwaiter().GetResult();
             
             foreach(var siteId in siteIdList)
             {
-                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
 
                 var key = site.Id;
                 //x轴信息
@@ -131,7 +131,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
             var siteId = (int) e.Item.DataItem;
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+            var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
 
             var ltlSiteName = (Literal)e.Item.FindControl("ltlSiteName");
             var ltlNewContentNum = (Literal)e.Item.FindControl("ltlNewContentNum");

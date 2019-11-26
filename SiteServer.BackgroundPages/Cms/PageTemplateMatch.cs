@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
+            VerifySitePermissions(Constants.WebSitePermissions.Template);
 
             LbChannelTemplateId.Attributes.Add("onfocus", "$('#LbContentTemplateId option:selected').removeAttr('selected')");
             LbContentTemplateId.Attributes.Add("onfocus", "$('#LbChannelTemplateId option:selected').removeAttr('selected')");
@@ -142,9 +142,9 @@ namespace SiteServer.BackgroundPages.Cms
                 LbChannelId.Items.Add(listitem);
 			}
 
-            LbChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
-            LbContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
-			DataBind();
+            LbChannelTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
+            LbContentTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
+            DataBind();
 
 			ControlUtils.SelectMultiItems(LbChannelId, selectedChannelIdList);
 			ControlUtils.SelectSingleItem(LbChannelTemplateId, selectedChannelTemplateId);

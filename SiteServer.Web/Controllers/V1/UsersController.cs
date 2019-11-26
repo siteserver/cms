@@ -9,6 +9,7 @@ using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
@@ -29,7 +30,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
 
                 var user = new User();
                 var dict = request.GetPostObject<Dictionary<string, object>>();
@@ -38,7 +39,7 @@ namespace SiteServer.API.Controllers.V1
                     user.Set(o.Key, o.Value);
                 }
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 if (!config.IsUserRegistrationGroup)
                 {
@@ -54,7 +55,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = await UserManager.GetUserByUserIdAsync(valid.UserId)
+                    Value = await UserManager.GetByUserIdAsync(valid.UserId)
                 });
             }
             catch (Exception ex)
@@ -69,20 +70,20 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isAuth = request.IsApiAuthenticated && await 
-                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isAuth = request.IsApiAuthenticated && await
+                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var body = request.GetPostObject<Dictionary<string, object>>();
 
                 if (body == null) return BadRequest("Could not read user from body");
 
-                var user = await UserManager.GetUserByUserIdAsync(id);
+                var user = await UserManager.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 var valid = await DataProvider.UserDao.UpdateAsync(user, body);
@@ -108,16 +109,16 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isAuth = request.IsApiAuthenticated && await 
-                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isAuth = request.IsApiAuthenticated && await
+                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await UserManager.GetUserByUserIdAsync(id);
+                var user = await UserManager.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 request.UserLogout();
@@ -140,18 +141,18 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isAuth = request.IsApiAuthenticated && await 
-                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isAuth = request.IsApiAuthenticated && await
+                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 if (!await DataProvider.UserDao.IsExistsAsync(id)) return NotFound();
 
-                var user = await UserManager.GetUserByUserIdAsync(id);
+                var user = await UserManager.GetByUserIdAsync(id);
 
                 return Ok(new
                 {
@@ -168,7 +169,7 @@ namespace SiteServer.API.Controllers.V1
         [HttpGet, Route(RouteUserAvatar)]
         public async Task<IHttpActionResult> GetAvatar(int id)
         {
-            var user = await UserManager.GetUserByUserIdAsync(id);
+            var user = await UserManager.GetByUserIdAsync(id);
 
             var avatarUrl = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : UserManager.DefaultAvatarUrl;
             avatarUrl = PageUtils.AddProtocolToUrl(avatarUrl);
@@ -184,16 +185,16 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isAuth = request.IsApiAuthenticated && await 
-                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isAuth = request.IsApiAuthenticated && await
+                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await UserManager.GetUserByUserIdAsync(id);
+                var user = await UserManager.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 foreach (string name in HttpContext.Current.Request.Files)
@@ -238,11 +239,11 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var isAuth = request.IsApiAuthenticated && await 
-                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var top = request.GetQueryInt("top", 20);
@@ -265,7 +266,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
@@ -299,7 +300,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var user = request.IsUserLoggin ? request.User : null;
                 request.UserLogout();
 
@@ -320,16 +321,16 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isAuth = request.IsApiAuthenticated && await 
-                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isAuth = request.IsApiAuthenticated && await
+                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await UserManager.GetUserByUserIdAsync(id);
+                var user = await UserManager.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 var retVal = await DataProvider.UserLogDao.InsertAsync(user.UserName, log);
@@ -351,16 +352,16 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isAuth = request.IsApiAuthenticated && await 
-                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isAuth = request.IsApiAuthenticated && await
+                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await UserManager.GetUserByUserIdAsync(id);
+                var user = await UserManager.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 var top = request.GetQueryInt("top", 20);
@@ -383,16 +384,16 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isAuth = request.IsApiAuthenticated && await 
-                             AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isAuth = request.IsApiAuthenticated && await
+                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await UserManager.GetUserByUserIdAsync(id);
+                var user = await UserManager.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 var password = request.GetPostString("password");

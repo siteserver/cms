@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
@@ -29,14 +28,6 @@ namespace SiteServer.CMS.Provider
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-
-        private const string SqlSelectAllTemplateByType = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, Default FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType ORDER BY RelatedFileName";
-
-        private const string SqlSelectAllTemplateBySiteId = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, Default FROM siteserver_Template WHERE SiteId = @SiteId ORDER BY TemplateType, RelatedFileName";
-
-        private const string ParmSiteId = "@SiteId";
-        private const string ParmTemplateType = "@TemplateType";
-
         public async Task<int> InsertAsync(Template template, string templateContent, string administratorName)
         {
             if (template.Default)
@@ -46,7 +37,7 @@ namespace SiteServer.CMS.Provider
 
             template.Id = await _repository.InsertAsync(template);
 
-            var site = await SiteManager.GetSiteAsync(template.SiteId);
+            var site = await DataProvider.SiteDao.GetAsync(template.SiteId);
             await TemplateManager.WriteContentToTemplateFileAsync(site, template, templateContent, administratorName);
 
             TemplateManager.RemoveCache(template.SiteId);
@@ -92,7 +83,7 @@ namespace SiteServer.CMS.Provider
 
         public async Task DeleteAsync(int siteId, int id)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             var template = await TemplateManager.GetTemplateAsync(siteId, id);
             var filePath = TemplateManager.GetTemplateFilePath(site, template);
 
@@ -165,45 +156,29 @@ namespace SiteServer.CMS.Provider
             return dictionary;
         }
 
-        public IDataReader GetDataSourceByType(int siteId, TemplateType type)
+        public async Task<List<Template>> GetTemplateListAsync(int siteId, string keyword, string templateTypeString)
         {
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteId, DataType.Integer, siteId),
-				GetParameter(ParmTemplateType, DataType.VarChar, 50, type.Value)
-			};
+            var query = Q.Where(nameof(Template.SiteId), siteId)
+                .OrderBy(nameof(Template.TemplateType), nameof(Template.RelatedFileName));
 
-            var enumerable = ExecuteReader(SqlSelectAllTemplateByType, parms);
-            return enumerable;
-        }
-
-        public IDataReader GetDataSource(int siteId, string searchText, string templateTypeString)
-        {
-            if (string.IsNullOrEmpty(searchText) && string.IsNullOrEmpty(templateTypeString))
+            if (!string.IsNullOrEmpty(templateTypeString))
             {
-                var parms = new IDataParameter[]
-				{
-					GetParameter(ParmSiteId, DataType.Integer, siteId)
-				};
-
-                var enumerable = ExecuteReader(SqlSelectAllTemplateBySiteId, parms);
-                return enumerable;
-            }
-            if (!string.IsNullOrEmpty(searchText))
-            {
-                var whereString = (string.IsNullOrEmpty(templateTypeString)) ? string.Empty :
-                    $"AND TemplateType = '{templateTypeString}' ";
-                searchText = AttackUtils.FilterSql(searchText);
-                whereString +=
-                    $"AND (TemplateName LIKE '%{searchText}%' OR RelatedFileName LIKE '%{searchText}%' OR CreatedFileFullName LIKE '%{searchText}%' OR CreatedFileExtName LIKE '%{searchText}%')";
-                string sqlString =
-                    $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, Default FROM siteserver_Template WHERE SiteId = {siteId} {whereString} ORDER BY TemplateType, RelatedFileName";
-
-                var enumerable = ExecuteReader(sqlString);
-                return enumerable;
+                query.Where(nameof(Template.TemplateType), templateTypeString);
             }
 
-            return GetDataSourceByType(siteId, TemplateTypeUtils.GetEnumType(templateTypeString));
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                var like = $"%{keyword}%";
+                query.Where(q => q
+                    .WhereLike(nameof(Template.TemplateName), like)
+                    .OrWhereLike(nameof(Template.RelatedFileName), like)
+                    .OrWhereLike(nameof(Template.CreatedFileFullName), like)
+                    .OrWhereLike(nameof(Template.CreatedFileExtName), like)
+                );
+            }
+
+            var templateEntityList = await _repository.GetAllAsync(query);
+            return templateEntityList.ToList();
         }
 
         public async Task<List<int>> GetIdListByTypeAsync(int siteId, TemplateType templateType)
@@ -253,7 +228,7 @@ namespace SiteServer.CMS.Provider
 
         public async Task CreateDefaultTemplateAsync(int siteId, string administratorName)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
 
             var templateList = new List<Template>();
             var charset = ECharsetUtils.GetEnumType(site.Charset);
@@ -322,7 +297,6 @@ namespace SiteServer.CMS.Provider
 
             return dictionary;
         }
-
 
         public async Task<Template> GetTemplateByUrlTypeAsync(int siteId, TemplateType templateType, string createdFileFullName)
         {

@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
+            VerifySitePermissions(Constants.WebSitePermissions.Configuration);
             LtlContentTag.Text = "标签：" + _tag;
             SpContents.DataBind();
         }
@@ -115,7 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlItemAddDate.Text = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
             ltlItemStatus.Text = CheckManager.GetCheckState(Site, contentInfo);
 
-            if (!HasChannelPermissions(contentInfo.ChannelId, ConfigManager.ChannelPermissions.ContentEdit) &&
+            if (!HasChannelPermissions(contentInfo.ChannelId, Constants.ChannelPermissions.ContentEdit) &&
                 AuthRequest.AdminName != contentInfo.AddUserName) return;
 
             ltlItemEditUrl.Text =

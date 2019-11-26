@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
+            VerifySitePermissions(Constants.WebSitePermissions.Template);
 
             var elements = StlAll.Elements;
             var allBuilder = new StringBuilder();

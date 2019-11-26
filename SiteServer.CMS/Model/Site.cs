@@ -8,6 +8,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
+    [Serializable]
     [DataTable("siteserver_Site")]
     public class Site : Entity, ISite
     {

@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            AuthRequest = AuthenticatedRequest.GetRequestAsync().GetAwaiter().GetResult();
+            AuthRequest = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
 
             if (!IsInstallerPage)
             {
@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages
                 }
 
                 #if !DEBUG
-                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
+                if (SystemManager.Instance.IsInitialized && SystemManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
                 {
                     PageUtils.Redirect("syncDatabase.cshtml");
                     return;

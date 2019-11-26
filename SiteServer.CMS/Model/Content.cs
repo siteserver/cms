@@ -389,7 +389,7 @@ namespace SiteServer.CMS.Model
     //        var dict = base.ToDictionary();
     //        //dict.Remove(nameof(SettingsXml));
 
-    //           var site = SiteManager.GetSiteAsync(SiteId).GetAwaiter().GetResult();
+    //           var site = DataProvider.SiteDao.GetAsync(SiteId).GetAwaiter().GetResult();
     //        var channelInfo = ChannelManager.GetChannelAsync(SiteId, ChannelId).GetAwaiter().GetResult();
     //        var styleInfoList = TableStyleManager.GetContentStyleListAsync(site, channelInfo).GetAwaiter().GetResult();
 

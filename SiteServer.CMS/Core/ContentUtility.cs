@@ -472,12 +472,12 @@ namespace SiteServer.CMS.Core
                 }
                 else if (channel.TransType == ECrossSiteTransType.ParentSite)
                 {
-                    targetSiteId = await SiteManager.GetParentSiteIdAsync(site.Id);
+                    targetSiteId = await DataProvider.SiteDao.GetParentSiteIdAsync(site.Id);
                 }
 
                 if (targetSiteId > 0)
                 {
-                    var targetSite = await SiteManager.GetSiteAsync(targetSiteId);
+                    var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
                     if (targetSite != null)
                     {
                         var targetChannelIdArrayList = TranslateUtils.StringCollectionToIntList(channel.TransChannelIds);
@@ -552,7 +552,7 @@ namespace SiteServer.CMS.Core
         {
             if (site == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
-            var targetSite = await SiteManager.GetSiteAsync(targetSiteId);
+            var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
             var targetChannelInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
             var targetTableName = await ChannelManager.GetTableNameAsync(targetSite, targetChannelInfo);
 

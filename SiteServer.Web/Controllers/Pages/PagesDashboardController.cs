@@ -14,7 +14,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/dashboard")]
     public class PagesDashboardController : ApiController
     {
@@ -26,7 +26,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -34,7 +34,7 @@ namespace SiteServer.API.Controllers.Pages
 
                 var lastActivityDate = request.Administrator.LastActivityDate ?? Constants.SqlMinValue;
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 return Ok(new
                 {
@@ -58,7 +58,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -68,7 +68,7 @@ namespace SiteServer.API.Controllers.Pages
 
                 if (await request.AdminPermissionsImpl.IsSuperAdminAsync())
                 {
-                    foreach(var site in await SiteManager.GetSiteListAsync())
+                    foreach(var site in await DataProvider.SiteDao.GetSiteListAsync())
                     {
                         var count = await ContentManager.GetCountCheckingAsync(site);
                         if (count > 0)
@@ -84,9 +84,9 @@ namespace SiteServer.API.Controllers.Pages
                 }
                 else if (await request.AdminPermissionsImpl.IsSiteAdminAsync())
                 {
-                    foreach (var siteId in TranslateUtils.StringCollectionToIntList(request.Administrator.SiteIdCollection))
+                    foreach (var siteId in request.Administrator.SiteIds)
                     {
-                        var site = await SiteManager.GetSiteAsync(siteId);
+                        var site = await DataProvider.SiteDao.GetAsync(siteId);
                         if (site == null) continue;
 
                         var count = await ContentManager.GetCountCheckingAsync(site);

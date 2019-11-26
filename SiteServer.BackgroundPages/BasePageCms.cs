@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages
 	        get
 	        {
 	            if (_site != null) return _site;
-	            _site = SiteManager.GetSiteAsync(SiteId).GetAwaiter().GetResult();
+	            _site = DataProvider.SiteDao.GetAsync(SiteId).GetAwaiter().GetResult();
 	            return _site;
 	        }
 	    }

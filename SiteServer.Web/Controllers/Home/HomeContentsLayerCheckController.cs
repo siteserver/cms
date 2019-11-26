@@ -12,7 +12,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("home/contentsLayerCheck")]
     public class HomeContentsLayerCheckController : ApiController
     {
@@ -23,7 +23,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -31,12 +31,12 @@ namespace SiteServer.API.Controllers.Home
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                        ConfigManager.ChannelPermissions.ContentCheck))
+                        Constants.ChannelPermissions.ContentCheck))
                 {
                     return Unauthorized();
                 }
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -58,7 +58,7 @@ namespace SiteServer.API.Controllers.Home
                 var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
                 var allChannels =
-                    await ChannelManager.GetChannelsAsync(siteId, request.AdminPermissionsImpl, ConfigManager.ChannelPermissions.ContentAdd);
+                    await ChannelManager.GetChannelsAsync(siteId, request.AdminPermissionsImpl, Constants.ChannelPermissions.ContentAdd);
 
                 return Ok(new
                 {
@@ -80,7 +80,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -92,12 +92,12 @@ namespace SiteServer.API.Controllers.Home
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                        ConfigManager.ChannelPermissions.ContentCheck))
+                        Constants.ChannelPermissions.ContentCheck))
                 {
                     return Unauthorized();
                 }
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);

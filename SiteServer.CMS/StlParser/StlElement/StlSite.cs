@@ -161,11 +161,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
 		    if (!string.IsNullOrEmpty(siteName))
 		    {
-		        site = await SiteManager.GetSiteBySiteNameAsync(siteName);
+		        site = await DataProvider.SiteDao.GetSiteBySiteNameAsync(siteName);
 		    }
 		    else if (!string.IsNullOrEmpty(siteDir))
 		    {
-		        site = await SiteManager.GetSiteByDirectoryAsync(siteDir);
+		        site = await DataProvider.SiteDao.GetSiteByDirectoryAsync(siteDir);
 		    }
 
 		    if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))

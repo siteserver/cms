@@ -98,12 +98,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (PhSite.Visible)
             {
-                var siteIdList = SiteManager.GetSiteIdListAsync().GetAwaiter().GetResult();
+                var siteIdList = DataProvider.SiteDao.GetSiteIdListAsync().GetAwaiter().GetResult();
 
                 var allParentSiteIdList = new List<int>();
                 if (contributeType == ECrossSiteTransType.AllParentSite)
                 {
-                    SiteManager.GetAllParentSiteIdListAsync(allParentSiteIdList, siteIdList, SiteId).GetAwaiter().GetResult();
+                    DataProvider.SiteDao.GetAllParentSiteIdListAsync(allParentSiteIdList, siteIdList, SiteId).GetAwaiter().GetResult();
                 }
                 else if (contributeType == ECrossSiteTransType.SelfSite)
                 {
@@ -115,7 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 foreach (var psId in siteIdList)
                 {
-                    var psInfo = SiteManager.GetSiteAsync(psId).GetAwaiter().GetResult();
+                    var psInfo = DataProvider.SiteDao.GetAsync(psId).GetAwaiter().GetResult();
                     var show = false;
                     if (contributeType == ECrossSiteTransType.SpecifiedSite)
                     {
@@ -150,7 +150,7 @@ namespace SiteServer.BackgroundPages.Cms
             LbChannelId.Items.Clear();
             if (PhSite.Visible && DdlSiteId.Items.Count > 0)
             {
-                ChannelManager.AddListItemsForAddContentAsync(LbChannelId.Items, SiteManager.GetSiteAsync(int.Parse(DdlSiteId.SelectedValue)).GetAwaiter().GetResult(), false, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
+                ChannelManager.AddListItemsForAddContentAsync(LbChannelId.Items, DataProvider.SiteDao.GetAsync(int.Parse(DdlSiteId.SelectedValue)).GetAwaiter().GetResult(), false, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
             }
         }
 

@@ -30,7 +30,7 @@ namespace SiteServer.CMS.Provider
 
         private async Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string email, string mobile, string password, string ipAddress)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (!await UserManager.IsIpAddressCachedAsync(ipAddress))
             {
                 return (false, $"同一IP在{config.UserRegistrationMinMinutes}分钟内只能注册一次");
@@ -125,7 +125,7 @@ namespace SiteServer.CMS.Provider
 
         public async Task<(int UserId, string ErrorMessage)> InsertAsync(User user, string password, string ipAddress)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (!config.IsUserRegistrationAllowed)
             {
                 return (0, "对不起，系统已禁止新用户注册！");
@@ -180,7 +180,7 @@ namespace SiteServer.CMS.Provider
 
         public static async Task<(bool Valid, string ErrorMessage)> IsPasswordCorrectAsync(string password)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (string.IsNullOrEmpty(password))
             {
                 return (false, "密码不能为空");
@@ -332,7 +332,7 @@ namespace SiteServer.CMS.Provider
 
         public async Task<(bool IsValid, string ErrorMessage)> ChangePasswordAsync(string userName, string password)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (password.Length < config.UserPasswordMinLength)
             {
                 return (false, $"密码长度必须大于等于{config.UserPasswordMinLength}");
@@ -350,7 +350,7 @@ namespace SiteServer.CMS.Provider
 
         private async Task ChangePasswordAsync(string userName, EPasswordFormat passwordFormat, string passwordSalt, string password)
         {
-            var user = await UserManager.GetUserByUserNameAsync(userName);
+            var user = await UserManager.GetByUserNameAsync(userName);
             if (user == null) return;
 
             user.LastResetPasswordDate = DateTime.Now;
@@ -539,7 +539,7 @@ namespace SiteServer.CMS.Provider
                 return (null, user.UserName, "此账号被锁定，无法登录");
             }
 
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             if (config.IsUserLockLogin)
             {
@@ -735,7 +735,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             {
                 foreach (var userId in dbList)
                 {
-                    list.Add(await UserManager.GetUserByUserIdAsync(userId));
+                    list.Add(await UserManager.GetByUserIdAsync(userId));
                 }
             }
 

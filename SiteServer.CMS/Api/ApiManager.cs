@@ -18,7 +18,7 @@ namespace SiteServer.CMS.Api
             {
                 if (string.IsNullOrEmpty(_innerApiUrl))
                 {
-                    _innerApiUrl = PageUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
+                    _innerApiUrl = PageUtils.ParseNavigationUrl("~/api");
                 }
                 return _innerApiUrl;
             }
@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Api
 
         public static async Task<string> GetApiUrlAsync(string route = "")
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             return PageUtils.Combine(config.ApiUrl, route);
         }
 

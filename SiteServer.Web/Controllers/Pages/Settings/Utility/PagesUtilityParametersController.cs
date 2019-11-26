@@ -11,7 +11,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Utility
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/utilityParameters")]
     public class PagesUtilityParametersController : ApiController
     {
@@ -22,14 +22,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 var parameterList = new List<KeyValuePair<string, string>>
                 {

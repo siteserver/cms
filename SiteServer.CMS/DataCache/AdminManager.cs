@@ -288,7 +288,7 @@ namespace SiteServer.CMS.DataCache
 
             if (siteIdList.Count < 10)
             {
-                var siteIdListOrderByLevel = await SiteManager.GetSiteIdListOrderByLevelAsync();
+                var siteIdListOrderByLevel = await DataProvider.SiteDao.GetSiteIdListOrderByLevelAsync();
                 foreach (var siteId in siteIdListOrderByLevel)
                 {
                     if (siteIdList.Count >= 5) break;

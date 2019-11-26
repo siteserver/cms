@@ -119,7 +119,7 @@ namespace SiteServer.CMS.DataCache.Content
 
             public static async Task<int> GetSiteCountIsCheckedAsync(Site site)
             {
-                var tableNames = await SiteManager.GetTableNameListAsync(site);
+                var tableNames = await DataProvider.SiteDao.GetTableNameListAsync(site);
                 var isChecked = true.ToString();
 
                 lock (LockObject)
@@ -138,7 +138,7 @@ namespace SiteServer.CMS.DataCache.Content
 
             public static async Task<int> GetSiteCountIsCheckingAsync(Site site)
             {
-                var tableNames = await SiteManager.GetTableNameListAsync(site);
+                var tableNames = await DataProvider.SiteDao.GetTableNameListAsync(site);
                 var isChecked = false.ToString();
 
                 lock (LockObject)

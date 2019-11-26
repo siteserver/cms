@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var builder = new StringBuilder();
 
-            if (HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelAdd))
+            if (HasChannelPermissionsIgnoreChannelId(Constants.ChannelPermissions.ChannelAdd))
             {
                 builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalChannelsAdd.GetOpenWindowString(SiteId, SiteId, GetRedirectUrl(SiteId, SiteId))}"">快速添加</a>
@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
 <a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalExportMessage.GetOpenWindowStringToChannel(SiteId, "ChannelIDCollection", "请选择需要导出的栏目！")}"">导 出</a>
 ");
 
-            if (HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelEdit))
+            if (HasChannelPermissionsIgnoreChannelId(Constants.ChannelPermissions.ChannelEdit))
             {
                 builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalAddToGroup.GetOpenWindowStringToChannel(SiteId)}"">设置栏目组</a>
@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
 ");
             }
 
-            if (HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelTranslate))
+            if (HasChannelPermissionsIgnoreChannelId(Constants.ChannelPermissions.ChannelTranslate))
             {
                 builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{
@@ -117,7 +117,7 @@ namespace SiteServer.BackgroundPages.Cms
 ");
             }
 
-            if (HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.ChannelDelete))
+            if (HasChannelPermissionsIgnoreChannelId(Constants.ChannelPermissions.ChannelDelete))
             {
                 builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{
@@ -128,8 +128,8 @@ namespace SiteServer.BackgroundPages.Cms
 ");
             }
 
-            if (HasSitePermissions(ConfigManager.WebSitePermissions.Create) ||
-                HasChannelPermissionsIgnoreChannelId(ConfigManager.ChannelPermissions.CreatePage))
+            if (HasSitePermissions(Constants.WebSitePermissions.Create) ||
+                HasChannelPermissionsIgnoreChannelId(Constants.ChannelPermissions.CreatePage))
             {
                 builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalCreateChannels.GetOpenWindowString(SiteId)}"">生 成</a>

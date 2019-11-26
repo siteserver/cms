@@ -131,7 +131,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request["type"];
             var retVal = new NameValueCollection();
             string retString = null;
-            var request = AuthenticatedRequest.GetRequestAsync().GetAwaiter().GetResult();
+            var request = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
             if (!request.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)
@@ -408,7 +408,7 @@ namespace SiteServer.BackgroundPages.Ajax
                     await ChannelManager.GetChannelAsync(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children,
                     string.Empty, string.Empty, string.Empty);
 
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
 
             var nameValueCollection = TranslateUtils.ToNameValueCollection(WebConfigUtils.DecryptStringBySecretKey(additional));
 

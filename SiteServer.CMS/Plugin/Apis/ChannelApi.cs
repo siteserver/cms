@@ -114,7 +114,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task<string> GetChannelUrlAsync(int siteId, int channelId)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             return await PageUtility.GetChannelUrlAsync(site, await ChannelManager.GetChannelAsync(siteId, channelId), false);
         }
     }

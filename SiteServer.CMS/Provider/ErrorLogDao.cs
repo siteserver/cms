@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
+using SqlKata;
 
 namespace SiteServer.CMS.Provider
 {
@@ -32,18 +34,9 @@ namespace SiteServer.CMS.Provider
             return logInfo.Id;
         }
 
-        public async Task DeleteAsync(List<int> idList)
-        {
-            if (idList == null || idList.Count <= 0) return;
-
-            await _repository.DeleteAsync(Q
-                .WhereIn(nameof(ErrorLog.Id), idList)
-            );
-        }
-
         public async Task DeleteIfThresholdAsync()
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (!config.IsTimeThreshold) return;
 
             var days = config.TimeThreshold;
@@ -64,52 +57,65 @@ namespace SiteServer.CMS.Provider
             return await _repository.GetAsync(logId);
         }
 
-        public string GetSelectCommend(string category, string pluginId, string keyword, string dateFrom, string dateTo)
+        private Query GetQuery(string category, string pluginId, string keyword, string dateFrom, string dateTo)
         {
-            var whereString = new StringBuilder();
+            var query = Q.OrderByDesc(nameof(ErrorLog.Id));
+
+            if (string.IsNullOrEmpty(category) && string.IsNullOrEmpty(pluginId) && string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
+            {
+                return query;
+            }
 
             if (!string.IsNullOrEmpty(category))
             {
-                whereString.Append($"Category = '{AttackUtils.FilterSql(category)}'");
+                query.Where(nameof(ErrorLog.Category), category);
             }
 
             if (!string.IsNullOrEmpty(pluginId))
             {
-                whereString.Append($"PluginId = '{AttackUtils.FilterSql(pluginId)}'");
+                query.Where(nameof(ErrorLog.PluginId), pluginId);
             }
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                if (whereString.Length > 0)
-                {
-                    whereString.Append(" AND ");
-                }
-                var filterKeyword = AttackUtils.FilterSql(keyword);
                 var keywordId = TranslateUtils.ToInt(keyword);
-                whereString.Append(keywordId > 0
-                    ? $"Id = {keywordId}"
-                    : $"(Message LIKE '%{filterKeyword}%' OR Stacktrace LIKE '%{filterKeyword}%' OR Summary LIKE '%{filterKeyword}%')");
+                if (keywordId > 0)
+                {
+                    query.Where(nameof(ErrorLog.Id), keywordId);
+                }
+                else
+                {
+                    var like = $"%{keyword}%";
+                    query.Where(q =>
+                        q.WhereLike(nameof(ErrorLog.Message), like)
+                            .OrWhereLike(nameof(ErrorLog.Stacktrace), like)
+                            .OrWhereLike(nameof(ErrorLog.Summary), like)
+                    );
+                }
             }
+
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                if (whereString.Length > 0)
-                {
-                    whereString.Append(" AND ");
-                }
-                whereString.Append($"AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))}");
+                query.WhereDate(nameof(ErrorLog.AddDate), ">=", TranslateUtils.ToDateTime(dateFrom));
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                if (whereString.Length > 0)
-                {
-                    whereString.Append(" AND ");
-                }
-                whereString.Append($"AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo))}");
+                query.WhereDate(nameof(ErrorLog.AddDate), "<=", TranslateUtils.ToDateTime(dateTo));
             }
 
-            return whereString.Length > 0
-                ? $"SELECT Id, Category, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName} WHERE {whereString}"
-                : $"SELECT Id, Category, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName}";
+            return query;
+        }
+
+        public async Task<int> GetCountAsync(string category, string pluginId, string keyword, string dateFrom, string dateTo)
+        {
+            return await _repository.CountAsync(GetQuery(category, pluginId, keyword, dateFrom, dateTo));
+        }
+
+        public async Task<IEnumerable<ErrorLog>> GetAllAsync(string category, string pluginId, string keyword, string dateFrom, string dateTo, int offset, int limit)
+        {
+            var query = GetQuery(category, pluginId, keyword, dateFrom, dateTo);
+            query.Offset(offset).Limit(limit);
+            return await _repository.GetAllAsync(query);
         }
     }
 }

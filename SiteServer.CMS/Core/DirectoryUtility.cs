@@ -110,20 +110,20 @@ namespace SiteServer.CMS.Core
             string oldPsPath;
             if (oldParentSiteId != 0)
             {
-                var oldSite = await SiteManager.GetSiteAsync(oldParentSiteId);
+                var oldSite = await DataProvider.SiteDao.GetAsync(oldParentSiteId);
 
                 oldPsPath = PathUtils.Combine(PathUtility.GetSitePath(oldSite), siteDir);
             }
             else
             {
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 oldPsPath = PathUtility.GetSitePath(site);
             }
 
             string newPsPath;
             if (newParentSiteId != 0)
             {
-                var newSite = await SiteManager.GetSiteAsync(newParentSiteId);
+                var newSite = await DataProvider.SiteDao.GetAsync(newParentSiteId);
 
                 newPsPath = PathUtils.Combine(PathUtility.GetSitePath(newSite), siteDir);
             }

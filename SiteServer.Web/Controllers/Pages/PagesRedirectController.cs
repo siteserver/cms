@@ -10,7 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/redirect")]
     public class PagesRedirectController : ApiController
     {
@@ -21,7 +21,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -34,7 +34,7 @@ namespace SiteServer.API.Controllers.Pages
                 var specialId = request.GetPostInt("specialId");
                 var isLocal = request.GetPostBool("isLocal");
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 var url = string.Empty;
 
                 if (siteId > 0 && channelId > 0 && contentId > 0)
@@ -93,7 +93,7 @@ namespace SiteServer.API.Controllers.Pages
                     }
                     if (siteId != 0)
                     {
-                        site = await SiteManager.GetSiteAsync(siteId);
+                        site = await DataProvider.SiteDao.GetAsync(siteId);
                         url = site.IsSeparatedWeb
                             ? ApiRoutePreview.GetSiteUrl(siteId)
                             : site.WebUrl;

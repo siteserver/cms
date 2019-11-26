@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (!Page.IsPostBack || !Page.IsValid) return;
 
             var targetSiteId = int.Parse(DdlSiteId.SelectedValue);
-            var targetSite = SiteManager.GetSiteAsync(targetSiteId).GetAwaiter().GetResult();
+            var targetSite = DataProvider.SiteDao.GetAsync(targetSiteId).GetAwaiter().GetResult();
             try
             {
                 foreach (ListItem listItem in LbChannelId.Items)

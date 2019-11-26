@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
+                VerifySitePermissions(Constants.WebSitePermissions.Create);
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(Site, string.Empty, ELoadingType.ConfigurationCreateDetails, null));
 

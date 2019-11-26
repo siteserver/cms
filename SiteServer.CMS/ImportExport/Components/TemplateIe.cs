@@ -57,7 +57,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var entry = AtomUtility.GetEmptyEntry();
 
-            var site = await SiteManager.GetSiteAsync(_siteId);
+            var site = await DataProvider.SiteDao.GetAsync(_siteId);
 
 			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Template.Id), "TemplateID" }, template.Id.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Template.SiteId), "PublishmentSystemID" }, template.SiteId.ToString());
@@ -80,7 +80,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			if (!FileUtils.IsFileExists(_filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
-		    var site = await SiteManager.GetSiteAsync(_siteId);
+		    var site = await DataProvider.SiteDao.GetAsync(_siteId);
 			foreach (AtomEntry entry in feed.Entries)
 			{
 				var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.TemplateName));

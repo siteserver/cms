@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
             foreach (var channelId in channelIdList)
             {
                 if (channelId == SiteId) continue;
-                if (!HasChannelPermissions(channelId, ConfigManager.ChannelPermissions.ChannelDelete)) continue;
+                if (!HasChannelPermissions(channelId, Constants.ChannelPermissions.ChannelDelete)) continue;
 
                 var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                 var adminId = AuthRequest.AdminPermissionsImpl.GetAdminIdAsync(SiteId, channelId).GetAwaiter().GetResult();
@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var channelId in channelIdList)
                 {
                     if (channelId == SiteId) continue;
-                    if (HasChannelPermissions(channelId, ConfigManager.ChannelPermissions.ChannelDelete))
+                    if (HasChannelPermissions(channelId, Constants.ChannelPermissions.ChannelDelete))
                     {
                         channelIdListToDelete.Add(channelId);
                     }

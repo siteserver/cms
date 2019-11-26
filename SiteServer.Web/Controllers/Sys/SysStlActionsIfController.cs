@@ -10,7 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    [OpenApiIgnore]
+    
     public class SysStlActionsIfController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsIf.Route)]
@@ -18,7 +18,7 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
 
                 var dynamicInfo = DynamicInfo.GetDynamicInfo(request, request.User);
                 var ifInfo = TranslateUtils.JsonDeserialize<DynamicInfo.IfInfo>(dynamicInfo.ElementValues);

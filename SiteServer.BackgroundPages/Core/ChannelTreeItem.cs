@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
                 else
                 {
-                    if (await _permissionsImpl.HasChannelPermissionsAsync(_channel.SiteId, _channel.Id, ConfigManager.ChannelPermissions.ChannelEdit))
+                    if (await _permissionsImpl.HasChannelPermissionsAsync(_channel.SiteId, _channel.Id, Constants.ChannelPermissions.ChannelEdit))
                     {
                         var onClickUrl = ModalChannelEdit.GetOpenWindowString(_channel.SiteId, _channel.Id, returnUrl);
                         htmlBuilder.Append(

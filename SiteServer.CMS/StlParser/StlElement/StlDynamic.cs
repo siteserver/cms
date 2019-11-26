@@ -9,6 +9,7 @@ using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -125,7 +126,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             StlCacheManager.ClearAll();
 
             var templateInfo = await TemplateManager.GetTemplateAsync(dynamicInfo.SiteId, dynamicInfo.TemplateId);
-            var siteInfo = await SiteManager.GetSiteAsync(dynamicInfo.SiteId);
+            var siteInfo = await DataProvider.SiteDao.GetAsync(dynamicInfo.SiteId);
             var pageInfo = await PageInfo.GetPageInfoAsync(dynamicInfo.ChannelId, dynamicInfo.ContentId, siteInfo,
                 templateInfo, new Dictionary<string, object>());
 

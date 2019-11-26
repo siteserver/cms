@@ -5,10 +5,11 @@ using NSwag.Annotations;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Utility
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/utilityDbLogDelete")]
     public class PagesUtilityDbLogDeleteController : ApiController
     {
@@ -19,9 +20,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }
@@ -45,9 +46,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }

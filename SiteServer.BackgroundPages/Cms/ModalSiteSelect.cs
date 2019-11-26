@@ -4,6 +4,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.DataCache;
 using System.Collections.Generic;
 using SiteServer.CMS.Context;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -30,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             _siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdListAsync().GetAwaiter().GetResult();
-            RptContents.DataSource = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
+            RptContents.DataSource = DataProvider.SiteDao.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -39,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var site = SiteManager.GetSiteAsync((int)e.Item.DataItem).GetAwaiter().GetResult();
+            var site = DataProvider.SiteDao.GetAsync((int)e.Item.DataItem).GetAwaiter().GetResult();
 
             if (!_siteIdList.Contains(site.Id))
             {
@@ -51,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlDir = (Literal)e.Item.FindControl("ltlDir");
             var ltlWebUrl = (Literal)e.Item.FindControl("ltlWebUrl");
 
-            ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageUtils.GetMainUrl(site.Id))}"" target=""_top"">{SiteManager.GetSiteNameAsync(site).GetAwaiter().GetResult()}</a>";
+            ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageUtils.GetMainUrl(site.Id))}"" target=""_top"">{DataProvider.SiteDao.GetSiteNameAsync(site).GetAwaiter().GetResult()}</a>";
             ltlDir.Text = site.SiteDir;
 
             ltlWebUrl.Text = $@"<a href=""{site.WebUrl}"" target=""_blank"">{site.WebUrl}</a>";

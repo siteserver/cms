@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
                 value = (nodeInfo.IsChannelAddable) ? value : string.Empty;
                 if (!string.IsNullOrEmpty(value))
                 {
-                    if (!HasChannelPermissions(theChannelId, ConfigManager.ChannelPermissions.ChannelAdd))
+                    if (!HasChannelPermissions(theChannelId, Constants.ChannelPermissions.ChannelAdd))
                     {
                         value = string.Empty;
                     }

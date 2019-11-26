@@ -19,7 +19,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/main")]
     public class PagesMainController : ApiController
     {
@@ -32,12 +32,12 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var redirect = await request.AdminRedirectCheckAsync(checkInstall:true, checkDatabaseVersion:true, checkLogin:true);
                 if (redirect != null) return Ok(redirect);
 
                 var siteId = request.GetQueryInt("siteId");
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 var adminInfo = request.Administrator;
                 var permissions = request.AdminPermissionsImpl;
                 var isSuperAdmin = await permissions.IsSuperAdminAsync();
@@ -115,10 +115,10 @@ namespace SiteServer.API.Controllers.Pages
 
                 var topMenus = await GetTopMenusAsync(site, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions);
                 var siteMenus =
-                    await GetLeftMenusAsync(site, ConfigManager.TopMenu.IdSite, isSuperAdmin, permissionList);
+                    await GetLeftMenusAsync(site, Constants.TopMenu.IdSite, isSuperAdmin, permissionList);
                 var pluginMenus = await GetLeftMenusAsync(site, string.Empty, isSuperAdmin, permissionList);
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 return Ok(new
                 {
@@ -172,7 +172,7 @@ namespace SiteServer.API.Controllers.Pages
                     var siteIdList = await AdminManager.GetLatestTop10SiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
                     foreach (var siteId in siteIdList)
                     {
-                        var site = await SiteManager.GetSiteAsync(siteId);
+                        var site = await DataProvider.SiteDao.GetAsync(siteId);
                         if (site == null) continue;
 
                         siteMenus.Add(new Tab
@@ -282,7 +282,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin || request.Administrator == null)
                 {
                     return Unauthorized();
@@ -297,7 +297,7 @@ namespace SiteServer.API.Controllers.Pages
                 }
 #endif
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 if (request.Administrator.LastActivityDate != null && config.IsAdminEnforceLogout)
                 {
@@ -346,7 +346,7 @@ namespace SiteServer.API.Controllers.Pages
         [HttpPost, Route(RouteActionsDownload)]
         public async Task<IHttpActionResult> Download()
         {
-            var request = await AuthenticatedRequest.GetRequestAsync();
+            var request = await AuthenticatedRequest.GetAuthAsync();
 
             if (!request.IsAdminLoggin)
             {

@@ -11,7 +11,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/userProfile")]
     public class PagesUserProfileController : ApiController
     {
@@ -23,9 +23,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -35,7 +35,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 CMS.Model.User user;
                 if (userId > 0)
                 {
-                    user = await UserManager.GetUserByUserIdAsync(userId);
+                    user = await UserManager.GetByUserIdAsync(userId);
                     if (user == null) return NotFound();
                 }
                 else
@@ -60,15 +60,15 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
                 var userId = request.GetQueryInt("userId");
-                var user = await UserManager.GetUserByUserIdAsync(userId);
+                var user = await UserManager.GetByUserIdAsync(userId);
                 if (user == null) return NotFound();
 
                 var avatarUrl = string.Empty;
@@ -112,9 +112,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -123,7 +123,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 CMS.Model.User user;
                 if (userId > 0)
                 {
-                    user = await UserManager.GetUserByUserIdAsync(userId);
+                    user = await UserManager.GetByUserIdAsync(userId);
                     if (user == null) return NotFound();
                 }
                 else

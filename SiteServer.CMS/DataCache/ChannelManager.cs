@@ -67,8 +67,7 @@ namespace SiteServer.CMS.DataCache
             {
                 var allDict = GetAllDictionary();
 
-                Dictionary<int, Channel> dict;
-                allDict.TryGetValue(siteId, out dict);
+                allDict.TryGetValue(siteId, out var dict);
 
                 if (dict != null) return dict;
 
@@ -332,7 +331,7 @@ namespace SiteServer.CMS.DataCache
 
         public static async Task<bool> IsExistsAsync(int channelId)
         {
-            var list = await SiteManager.GetSiteIdListAsync();
+            var list = await DataProvider.SiteDao.GetSiteIdListAsync();
             foreach (var siteId in list)
             {
                 var nodeInfo = await GetChannelAsync(siteId, channelId);
@@ -808,7 +807,7 @@ namespace SiteServer.CMS.DataCache
                 var enabled = await permissionsImpl.HasChannelPermissionsAsync(siteId, channelId, channelPermissions);
 
                 var channelInfo = await GetChannelAsync(siteId, channelId);
-                if (enabled && channelPermissions.Contains(ConfigManager.ChannelPermissions.ContentAdd))
+                if (enabled && channelPermissions.Contains(Constants.ChannelPermissions.ContentAdd))
                 {
                     if (channelInfo.IsContentAddable == false) enabled = false;
                 }

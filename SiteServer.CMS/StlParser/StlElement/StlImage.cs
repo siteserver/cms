@@ -172,7 +172,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var targetChannelId = contentInfo.SourceId;
                             //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
                             var targetSiteId = await StlChannelCache.GetSiteIdAsync(targetChannelId);
-                            var targetSite = await SiteManager.GetSiteAsync(targetSiteId);
+                            var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
                             var targetNodeInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
 
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);

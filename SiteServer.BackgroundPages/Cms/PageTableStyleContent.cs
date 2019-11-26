@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
+            VerifySitePermissions(Constants.WebSitePermissions.Configuration);
 
             //删除样式
             if (AuthRequest.IsQueryExists("DeleteStyle"))

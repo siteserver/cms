@@ -6,10 +6,11 @@ using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/siteTables")]
     public class PagesSiteTablesController : ApiController
     {
@@ -22,16 +23,16 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
 
                 var nameDict = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
-                foreach (var site in await SiteManager.GetSiteListAsync())
+                foreach (var site in await DataProvider.SiteDao.GetSiteListAsync())
                 {
                     if (nameDict.ContainsKey(site.TableName))
                     {
@@ -61,9 +62,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -87,9 +88,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }

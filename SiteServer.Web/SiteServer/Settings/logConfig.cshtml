@@ -1,4 +1,5 @@
-﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+@section Navs{
 <li class="nav-item">
   <a class="nav-link" href="logSite.cshtml">站点日志</a>
 </li>
@@ -11,8 +12,8 @@
 <li class="nav-item">
   <a class="nav-link" href="logError.cshtml">系统错误日志</a>
 </li>
-<li class="nav-item active">
-  <a class="nav-link" href="logConfig.cshtml">日志设置</a>
+<li class="nav-item">
+  <a class="nav-link active" href="logConfig.cshtml">日志设置</a>
 </li>
 }
 
@@ -39,13 +40,44 @@
           </a>
         </td>
       </tr>
+      <tr>
+        <td>站点日志</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'isLogSite'" class="editable">
+            {{ config.isLogSite ? '启用' : '禁用' }}
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>管理员日志</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'isLogAdmin'" class="editable">
+            {{ config.isLogAdmin ? '启用' : '禁用' }}
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>用户日志</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'isLogUser'" class="editable">
+            {{ config.isLogUser ? '启用' : '禁用' }}
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>错误日志</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'isLogError'" class="editable">
+            {{ config.isLogError ? '启用' : '禁用' }}
+          </a>
+        </td>
+      </tr>
     </tbody>
   </table>
 </template>
 <template v-else>
 
   <template v-if="pageType === 'isTimeThreshold'">
-
     <div class="form-group">
       <label>
         自动删除日志
@@ -68,21 +100,62 @@
         type="text" class="form-control" />
       <small class="form-text text-muted">设置为60天，则默认只保留60天的日志，60天之前的日志将被系统自动删除</small>
     </div>
-
   </template>
-  
-  <template v-else-if="pageType === 'adminWelcomeHtml'">
+  <template v-else-if="pageType === 'isLogSite'">
     <div class="form-group">
       <label>
-        管理后台欢迎语
-        <small v-show="errors.has('adminWelcomeHtml')" class="text-danger">{{
-          errors.first('adminWelcomeHtml') }}</small>
+        站点日志
       </label>
-      <textarea v-model="adminWelcomeHtml" name="adminWelcomeHtml" data-vv-as="管理后台欢迎语" v-validate="'required'" :class="{'is-invalid': errors.has('homeAgreement') }"
-        style="height: 100px" class="form-control"></textarea>
-      <small class="form-text text-muted">请在管理后台欢迎语中填写进入管理后台后显示的欢迎文字，支持HTML格式。</small>
+      <div class="mt-2">
+        <el-radio-group v-model="isLogSite">
+          <el-radio :label="true">启用</el-radio>
+          <el-radio :label="false">禁用</el-radio>
+        </el-radio-group>
+      <small class="form-text text-muted">禁用后系统将不再记录站点操作日志</small>
+      </div>
     </div>
-
+  </template>
+  <template v-else-if="pageType === 'isLogAdmin'">
+    <div class="form-group">
+      <label>
+        管理员日志
+      </label>
+      <div class="mt-2">
+        <el-radio-group v-model="isLogAdmin">
+          <el-radio :label="true">启用</el-radio>
+          <el-radio :label="false">禁用</el-radio>
+        </el-radio-group>
+      <small class="form-text text-muted">禁用后系统将不再记录管理员操作日志</small>
+      </div>
+    </div>
+  </template>
+  <template v-else-if="pageType === 'isLogUser'">
+    <div class="form-group">
+      <label>
+        用户日志
+      </label>
+      <div class="mt-2">
+        <el-radio-group v-model="isLogUser">
+          <el-radio :label="true">启用</el-radio>
+          <el-radio :label="false">禁用</el-radio>
+        </el-radio-group>
+      <small class="form-text text-muted">禁用后系统将不再记录用户操作日志</small>
+      </div>
+    </div>
+  </template>
+  <template v-else-if="pageType === 'isLogError'">
+    <div class="form-group">
+      <label>
+        系统错误日志
+      </label>
+      <div class="mt-2">
+        <el-radio-group v-model="isLogError">
+          <el-radio :label="true">启用</el-radio>
+          <el-radio :label="false">禁用</el-radio>
+        </el-radio-group>
+      <small class="form-text text-muted">禁用后系统将不再记录系统错误日志</small>
+      </div>
+    </div>
   </template>
 
   <hr />

@@ -14,17 +14,17 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    [OpenApiIgnore]
+    
     public class SysStlActionsTriggerController : ApiController
     {
         [HttpGet]
         [Route(ApiRouteActionsTrigger.Route)]
         public async Task Main()
         {
-            var request = await AuthenticatedRequest.GetRequestAsync();
+            var request = await AuthenticatedRequest.GetAuthAsync();
 
             var siteId = request.GetQueryInt("siteId");
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
 
             try
             {

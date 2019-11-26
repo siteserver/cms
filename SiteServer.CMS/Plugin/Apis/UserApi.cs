@@ -24,27 +24,27 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task<IUser> GetUserByUserIdAsync(int userId)
         {
-            return await UserManager.GetUserByUserIdAsync(userId);
+            return await UserManager.GetByUserIdAsync(userId);
         }
 
         public async Task<IUser> GetUserByUserNameAsync(string userName)
         {
-            return await UserManager.GetUserByUserNameAsync(userName);
+            return await UserManager.GetByUserNameAsync(userName);
         }
 
         public async Task<IUser> GetUserByEmailAsync(string email)
         {
-            return await UserManager.GetUserByEmailAsync(email);
+            return await UserManager.GetByEmailAsync(email);
         }
 
         public async Task<IUser> GetUserByMobileAsync(string mobile)
         {
-            return await UserManager.GetUserByMobileAsync(mobile);
+            return await UserManager.GetByMobileAsync(mobile);
         }
 
         public async Task<IUser> GetUserByAccountAsync(string account)
         {
-            return await UserManager.GetUserByAccountAsync(account);
+            return await UserManager.GetByAccountAsync(account);
         }
 
         public async Task<bool> IsUserNameExistsAsync(string userName)

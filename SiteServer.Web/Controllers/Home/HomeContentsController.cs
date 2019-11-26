@@ -8,10 +8,11 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("home/contents")]
     public class HomeContentsController : ApiController
     {
@@ -22,7 +23,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -30,12 +31,12 @@ namespace SiteServer.API.Controllers.Home
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                        ConfigManager.ChannelPermissions.ContentView))
+                        Constants.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();
                 }
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -75,13 +76,13 @@ namespace SiteServer.API.Controllers.Home
 
                 var permissions = new
                 {
-                    IsAdd = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.IsContentAddable,
-                    IsDelete = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete),
-                    IsEdit = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit),
-                    IsTranslate = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate),
-                    IsCheck = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck),
-                    IsCreate = await request.UserPermissionsImpl.HasSitePermissionsAsync(site.Id, ConfigManager.WebSitePermissions.Create) || await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.CreatePage),
-                    IsChannelEdit = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit)
+                    IsAdd = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ContentAdd) && channelInfo.IsContentAddable,
+                    IsDelete = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ContentDelete),
+                    IsEdit = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ContentEdit),
+                    IsTranslate = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ContentTranslate),
+                    IsCheck = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ContentCheck),
+                    IsCreate = await request.UserPermissionsImpl.HasSitePermissionsAsync(site.Id, Constants.WebSitePermissions.Create) || await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.CreatePage),
+                    IsChannelEdit = await request.UserPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ChannelEdit)
                 };
 
                 return Ok(new

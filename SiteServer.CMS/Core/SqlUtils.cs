@@ -1426,7 +1426,12 @@ SELECT * FROM (
                 var index2 = connectionString.IndexOf(")));", StringComparison.Ordinal);
                 return connectionString.Substring(index1 + 13, index2 - index1 - 13);
             }
-            return GetValueFromConnectionString(connectionString, "Database");
+            var name = GetValueFromConnectionString(connectionString, "Database");
+            if (string.IsNullOrEmpty(name))
+            {
+                name = GetValueFromConnectionString(connectionString, "Initial Catalog");
+            }
+            return name;
         }
 
         private static string GetValueFromConnectionString(string connectionString, string attribute)

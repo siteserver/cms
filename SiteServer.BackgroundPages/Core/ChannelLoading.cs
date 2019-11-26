@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Core
 
                 if (enabled)
                 {
-                    if (await permissionsImpl.HasChannelPermissionsAsync(node.SiteId, node.Id, ConfigManager.ChannelPermissions.ChannelEdit))
+                    if (await permissionsImpl.HasChannelPermissionsAsync(node.SiteId, node.Id, Constants.ChannelPermissions.ChannelEdit))
                     {
                         editUrl = $@"<a href=""{PageChannelEdit.GetRedirectUrl(node.SiteId, node.Id, PageChannel.GetRedirectUrl(node.SiteId, node.Id))}"" onclick=""event.stopPropagation()"">编辑</a>";
                         upLink =

@@ -10,7 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/siteChangeRoot")]
     public class PagesSiteChangeRootController : ApiController
     {
@@ -21,17 +21,17 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
 
                 var siteId = request.GetQueryInt("siteId");
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
 
-                if (!site.Root && await SiteManager.IsRootExistsAsync())
+                if (!site.Root && await DataProvider.SiteDao.IsRootExistsAsync())
                 {
                     return BadRequest($"根目录站点已经存在，站点{site.SiteName}不能转移到根目录");
                 }
@@ -77,9 +77,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -90,7 +90,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 var checkedFiles = request.GetPostObject<IList<string>>("checkedFiles");
                 var isMoveFiles = request.GetPostBool("isMoveFiles");
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 var root = site.Root;
 
                 if (root)

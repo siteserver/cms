@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
+            VerifySitePermissions(Constants.WebSitePermissions.Template);
 
             DdlTemplateType.Items.Add(new ListItem("<所有类型>", string.Empty));
             TemplateTypeUtils.AddListItems(DdlTemplateType);
@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages.Cms
 ";
             }
 
-            RptContents.DataSource = DataProvider.TemplateDao.GetDataSource(SiteId, _keywords, _templateType);
+            RptContents.DataSource = DataProvider.TemplateDao.GetTemplateListAsync(SiteId, _keywords, _templateType).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }

@@ -12,7 +12,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/site")]
     public class PagesSiteController : ApiController
     {
@@ -23,33 +23,33 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
 
                 var rootSiteId = await DataProvider.SiteDao.GetIdByIsRootAsync();
-                //var siteIdList = await SiteManager.GetSiteIdListOrderByLevelAsync();
+                //var siteIdList = await DataProvider.SiteDao.GetSiteIdListOrderByLevelAsync();
                 //var sites = new List<Site>();
                 //foreach (var siteId in siteIdList)
                 //{
                     
-                //    var site = await SiteManager.GetSiteAsync(siteId);
+                //    var site = await DataProvider.SiteDao.GetAsync(siteId);
                 //    if (string.IsNullOrEmpty(keyword) || site.SiteName.Contains(keyword) || site.TableName.Contains(keyword) || site.SiteDir.Contains(keyword))
                 //    {
                 //        sites.Add(site);
                 //    }
                 //}
-                var siteIdList = await SiteManager.GetSiteIdListAsync(0);
+                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync(0);
                 var sites = new List<CMS.Model.Site>();
                 foreach (var siteId in siteIdList)
                 {
-                    sites.Add(await SiteManager.GetSiteAsync(siteId));
+                    sites.Add(await DataProvider.SiteDao.GetAsync(siteId));
                 }
 
-                var tableNames = await SiteManager.GetSiteTableNamesAsync();
+                var tableNames = await DataProvider.SiteDao.GetSiteTableNamesAsync();
 
                 return Ok(new
                 {
@@ -69,9 +69,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -80,7 +80,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 var siteDir = request.GetPostString("siteDir");
                 var deleteFiles = request.GetPostBool("deleteFiles");
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 if (!StringUtils.EqualsIgnoreCase(site.SiteDir, siteDir))
                 {
                     return BadRequest("删除失败，请输入正确的文件夹名称");
@@ -97,11 +97,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 await request.AddAdminLogAsync("删除站点", $"站点:{site.SiteName}");
                 await DataProvider.SiteDao.DeleteAsync(siteId);
 
-                var siteIdList = await SiteManager.GetSiteIdListAsync(0);
+                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync(0);
                 var sites = new List<CMS.Model.Site>();
                 foreach (var id in siteIdList)
                 {
-                    sites.Add(await SiteManager.GetSiteAsync(id));
+                    sites.Add(await DataProvider.SiteDao.GetAsync(id));
                 }
 
                 return Ok(new
@@ -120,9 +120,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -136,7 +136,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 var tableChoose = request.GetPostString("tableChoose");
                 var tableHandWrite = request.GetPostString("tableHandWrite");
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 site.SiteName = siteName;
                 site.Taxis = taxis;
 
@@ -182,7 +182,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                         var parentPsPath = WebConfigUtils.PhysicalApplicationPath;
                         if (site.ParentId > 0)
                         {
-                            var parentSite = await SiteManager.GetSiteAsync(site.ParentId);
+                            var parentSite = await DataProvider.SiteDao.GetAsync(site.ParentId);
                             parentPsPath = PathUtility.GetSitePath(parentSite);
                         }
                         DirectoryUtility.ChangeSiteDir(parentPsPath, site.SiteDir, siteDir);
@@ -211,11 +211,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
 
                 await request.AddAdminLogAsync("修改站点属性", $"站点:{site.SiteName}");
 
-                var siteIdList = await SiteManager.GetSiteIdListAsync(0);
+                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync(0);
                 var sites = new List<CMS.Model.Site>();
                 foreach (var id in siteIdList)
                 {
-                    sites.Add(await SiteManager.GetSiteAsync(id));
+                    sites.Add(await DataProvider.SiteDao.GetAsync(id));
                 }
 
                 return Ok(new

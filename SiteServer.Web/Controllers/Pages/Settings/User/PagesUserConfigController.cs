@@ -4,10 +4,11 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/userConfig")]
     public class PagesUserConfigController : ApiController
     {
@@ -18,14 +19,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 return Ok(new
                 {
@@ -43,14 +44,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 config.IsUserRegistrationAllowed = request.GetPostBool("isUserRegistrationAllowed");
                 config.IsUserRegistrationChecked = request.GetPostBool("isUserRegistrationChecked");

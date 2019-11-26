@@ -4,14 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
+using SiteServer.CMS.Caching;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Provider;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/adminAccessTokens")]
     public class PagesAdminAccessTokensController : ApiController
     {
@@ -22,9 +25,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -40,7 +43,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     adminNames.Add(request.AdminName);
                 }
 
-                var scopes = new List<string>(AccessTokenManager.ScopeList);
+                var scopes = new List<string>(Constants.ScopeList);
 
                 foreach (var service in await PluginManager.GetServicesAsync())
                 {
@@ -71,9 +74,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -99,9 +102,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }

@@ -34,13 +34,13 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.Chart);
+            VerifySystemPermissions(Constants.SettingsPermissions.Chart);
 
             DdlSiteId.Items.Add(new ListItem("<<全部站点>>", "0"));
-            var siteIdList = SiteManager.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
+            var siteIdList = DataProvider.SiteDao.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
             foreach (var siteId in siteIdList)
             {
-                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
                 DdlSiteId.Items.Add(new ListItem(site.SiteName, siteId.ToString()));
 
                 var key = site.Id;
@@ -73,7 +73,7 @@ yArrayHits.push('{yValueHits}');";
 
             var siteId = (int) e.Item.DataItem;
 
-            var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+            var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
 
             var ltlSiteName = (Literal)e.Item.FindControl("ltlSiteName");
             var ltlHitsNum = (Literal)e.Item.FindControl("ltlHitsNum");

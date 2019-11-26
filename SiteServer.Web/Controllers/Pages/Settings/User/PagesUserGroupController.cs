@@ -6,10 +6,11 @@ using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/userGroup")]
     public class PagesUserGroupController : ApiController
     {
@@ -20,9 +21,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -47,9 +48,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -74,9 +75,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -100,7 +101,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 }
                 else if (itemObj.Id == 0)
                 {
-                    var config = await ConfigManager.GetInstanceAsync();
+                    var config = await DataProvider.ConfigDao.GetAsync();
 
                     config.UserDefaultGroupAdminName = itemObj.AdminName;
 

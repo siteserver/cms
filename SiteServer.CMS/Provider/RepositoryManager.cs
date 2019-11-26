@@ -27,7 +27,7 @@ namespace SiteServer.CMS.Provider
         {
             var database = new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
 
-            var configInfo = await DataProvider.ConfigDao.GetConfigAsync();
+            var configInfo = await DataProvider.ConfigDao.GetAsync();
 
             if (!await database.IsTableExistsAsync(DataProvider.ConfigDao.TableName))
             {
@@ -38,9 +38,8 @@ namespace SiteServer.CMS.Provider
                 await AlterTableAsync(DataProvider.ConfigDao.TableName, DataProvider.ConfigDao.TableColumns, string.Empty);
             }
 
-            if (configInfo == null)
+            if (configInfo.Id == 0)
             {
-                configInfo = new Config();
                 await DataProvider.ConfigDao.InsertAsync(configInfo);
             }
 
@@ -78,7 +77,7 @@ namespace SiteServer.CMS.Provider
         private static async Task SyncContentTablesAsync()
         {
             var database = new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
-            var tableNameList = await SiteManager.GetAllTableNameListAsync();
+            var tableNameList = await DataProvider.SiteDao.GetAllTableNameListAsync();
 
             foreach (var tableName in tableNameList)
             {
@@ -95,9 +94,9 @@ namespace SiteServer.CMS.Provider
 
         private static async Task UpdateConfigVersionAsync()
         {
-            var configInfo = await DataProvider.ConfigDao.GetConfigAsync();
+            var configInfo = await DataProvider.ConfigDao.GetAsync();
 
-            if (configInfo != null)
+            if (configInfo.Id > 0)
             {
                 configInfo.DatabaseVersion = SystemManager.ProductVersion;
                 configInfo.UpdateDate = DateTime.UtcNow;

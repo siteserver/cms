@@ -29,7 +29,7 @@ namespace SiteServer.CMS.StlParser
             }
             else if (createType == ECreateType.Content)
             {
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 await CreateContentAsync(site, channelInfo, contentId);
             }
@@ -49,7 +49,7 @@ namespace SiteServer.CMS.StlParser
 
         private static async Task CreateContentsAsync(int siteId, int channelId)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
 
             var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
@@ -64,7 +64,7 @@ namespace SiteServer.CMS.StlParser
 
         private static async Task CreateChannelAsync(int siteId, int channelId)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
 
             if (!await ChannelManager.IsCreatableAsync(site, channelInfo)) return;
@@ -409,7 +409,7 @@ namespace SiteServer.CMS.StlParser
 
         private static async Task CreateFileAsync(int siteId, int fileTemplateId)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             var templateInfo = await TemplateManager.GetTemplateAsync(siteId, fileTemplateId);
             if (templateInfo == null || templateInfo.Type != TemplateType.FileTemplate)
             {
@@ -427,7 +427,7 @@ namespace SiteServer.CMS.StlParser
 
         private static async Task CreateSpecialAsync(int siteId, int specialId)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             var templateInfoList = await SpecialManager.GetTemplateListAsync(site, specialId);
             foreach (var templateInfo in templateInfoList)
             {

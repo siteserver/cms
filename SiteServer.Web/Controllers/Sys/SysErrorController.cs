@@ -2,10 +2,11 @@
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    [OpenApiIgnore]
+    
     public class SysErrorController : ApiController
     {
         private const string Route = "sys/errors/{id}";

@@ -7,7 +7,7 @@ using SiteServer.CMS.UEditor;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    [OpenApiIgnore]
+    
     public class SysUEditorController : ApiController
     {
         [HttpGet, Route(ApiRouteUEditor.Route)]

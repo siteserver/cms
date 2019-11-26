@@ -161,7 +161,7 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.ContentDao.UpdateTrashContentsAsync(SiteId, channelId, tableName, contentIdList).GetAwaiter().GetResult();
 
                         //引用内容，需要删除
-                        //var siteTableNameList = SiteManager.GetTableNameList();
+                        //var siteTableNameList = DataProvider.SiteDao.GetTableNameList();
                         //foreach (var siteTableName in siteTableNameList)
                         //{
                         //    var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(siteTableName, contentIdList);

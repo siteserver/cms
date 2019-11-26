@@ -41,18 +41,18 @@ namespace SiteServer.CMS.Api.V1
 
             if (siteId > 0)
             {
-                Site = await SiteManager.GetSiteAsync(siteId);
+                Site = await DataProvider.SiteDao.GetAsync(siteId);
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                Site = await SiteManager.GetSiteByDirectoryAsync(siteDir);
+                Site = await DataProvider.SiteDao.GetSiteByDirectoryAsync(siteDir);
             }
             else
             {
-                Site = await SiteManager.GetSiteByIsRootAsync();
+                Site = await DataProvider.SiteDao.GetSiteByIsRootAsync();
                 if (Site == null)
                 {
-                    var siteList = await SiteManager.GetSiteListAsync();
+                    var siteList = await DataProvider.SiteDao.GetSiteListAsync();
                     if (siteList != null && siteList.Count > 0)
                     {
                         Site = siteList[0];

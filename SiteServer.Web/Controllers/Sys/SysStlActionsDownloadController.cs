@@ -13,7 +13,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    [OpenApiIgnore]
+    
     public class SysStlActionsDownloadController : ApiController
     {
         [HttpGet]
@@ -22,7 +22,7 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
 
                 if (!string.IsNullOrEmpty(request.GetQueryString("siteId")) && !string.IsNullOrEmpty(request.GetQueryString("fileUrl")) && string.IsNullOrEmpty(request.GetQueryString("contentId")))
                 {
@@ -35,7 +35,7 @@ namespace SiteServer.API.Controllers.Sys
                         return;
                     }
 
-                    var site = await SiteManager.GetSiteAsync(siteId);
+                    var site = await DataProvider.SiteDao.GetAsync(siteId);
                     var filePath = PathUtility.MapPath(site, fileUrl);
                     var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
                     if (EFileSystemTypeUtils.IsDownload(fileType))
@@ -77,7 +77,7 @@ namespace SiteServer.API.Controllers.Sys
                     var channelId = request.GetQueryInt("channelId");
                     var contentId = request.GetQueryInt("contentId");
                     var fileUrl = WebConfigUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
-                    var site = await SiteManager.GetSiteAsync(siteId);
+                    var site = await DataProvider.SiteDao.GetAsync(siteId);
                     var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                     var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
 

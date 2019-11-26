@@ -11,7 +11,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Config
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/configHome")]
     public class PagesConfigHomeController : ApiController
     {
@@ -23,14 +23,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 return Ok(new
                 {
@@ -51,14 +51,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 config.IsHomeClosed = request.GetPostBool("isHomeClosed");
                 config.HomeTitle = request.GetPostString("homeTitle");
@@ -97,9 +97,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }

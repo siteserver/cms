@@ -8,13 +8,13 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    [OpenApiIgnore]
+    
     public class SysPackagesDownloadController : ApiController
     {
         [HttpPost, Route(ApiRouteDownload.Route)]
         public async Task<IHttpActionResult> Main()
         {
-            var request = await AuthenticatedRequest.GetRequestAsync();
+            var request = await AuthenticatedRequest.GetAuthAsync();
 
             if (!request.IsAdminLoggin)
             {

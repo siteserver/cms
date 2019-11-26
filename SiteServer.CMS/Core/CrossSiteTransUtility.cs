@@ -24,7 +24,7 @@ namespace SiteServer.CMS.Core
                 {
                     if (transType == ECrossSiteTransType.AllParentSite)
                     {
-                        var parentSiteId = await SiteManager.GetParentSiteIdAsync(site.Id);
+                        var parentSiteId = await DataProvider.SiteDao.GetParentSiteIdAsync(site.Id);
                         if (parentSiteId != 0)
                         {
                             isCrossSiteTrans = true;
@@ -42,7 +42,7 @@ namespace SiteServer.CMS.Core
                     {
                         if (channel.TransSiteId > 0)
                         {
-                            var theSite = await SiteManager.GetSiteAsync(channel.TransSiteId);
+                            var theSite = await DataProvider.SiteDao.GetAsync(channel.TransSiteId);
                             if (theSite != null)
                             {
                                 isCrossSiteTrans = true;
@@ -51,7 +51,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (transType == ECrossSiteTransType.ParentSite)
                     {
-                        var parentSiteId = await SiteManager.GetParentSiteIdAsync(site.Id);
+                        var parentSiteId = await DataProvider.SiteDao.GetParentSiteIdAsync(site.Id);
                         if (parentSiteId != 0)
                         {
                             isCrossSiteTrans = true;
@@ -96,11 +96,11 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    theSiteId = await SiteManager.GetParentSiteIdAsync(site.Id);
+                    theSiteId = await DataProvider.SiteDao.GetParentSiteIdAsync(site.Id);
                 }
                 if (theSiteId > 0)
                 {
-                    var theSite = await SiteManager.GetSiteAsync(theSiteId);
+                    var theSite = await DataProvider.SiteDao.GetAsync(theSiteId);
                     if (theSite != null)
                     {
                         var listitem = new ListItem(theSite.SiteName, theSite.Id.ToString());
@@ -110,15 +110,15 @@ namespace SiteServer.CMS.Core
             }
             else if (channelInfo.TransType == ECrossSiteTransType.AllParentSite)
             {
-                var siteIdList = await SiteManager.GetSiteIdListAsync();
+                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync();
 
                 var allParentSiteIdList = new List<int>();
-                await SiteManager.GetAllParentSiteIdListAsync(allParentSiteIdList, siteIdList, site.Id);
+                await DataProvider.SiteDao.GetAllParentSiteIdListAsync(allParentSiteIdList, siteIdList, site.Id);
 
                 foreach (var psId in siteIdList)
                 {
                     if (psId == site.Id) continue;
-                    var psInfo = await SiteManager.GetSiteAsync(psId);
+                    var psInfo = await DataProvider.SiteDao.GetAsync(psId);
                     var show = psInfo.Root || allParentSiteIdList.Contains(psInfo.Id);
                     if (show)
                     {
@@ -130,11 +130,11 @@ namespace SiteServer.CMS.Core
             }
             else if (channelInfo.TransType == ECrossSiteTransType.AllSite)
             {
-                var siteIdList = await SiteManager.GetSiteIdListAsync();
+                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync();
 
                 foreach (var psId in siteIdList)
                 {
-                    var psInfo = await SiteManager.GetSiteAsync(psId);
+                    var psInfo = await DataProvider.SiteDao.GetAsync(psId);
                     var listitem = new ListItem(psInfo.SiteName, psId.ToString());
                     if (psInfo.Root) listitem.Selected = true;
                     siteIdDropDownList.Items.Add(listitem);
@@ -183,7 +183,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    await ChannelManager.AddListItemsForAddContentAsync(channelIdListBox.Items, await SiteManager.GetSiteAsync(psId), false, permissionsImpl);
+                    await ChannelManager.AddListItemsForAddContentAsync(channelIdListBox.Items, await DataProvider.SiteDao.GetAsync(psId), false, permissionsImpl);
                 }
             }
         }
@@ -209,18 +209,18 @@ namespace SiteServer.CMS.Core
 
                     if (channel.TransType == ECrossSiteTransType.SelfSite)
                     {
-                        site = await SiteManager.GetSiteAsync(siteId);
+                        site = await DataProvider.SiteDao.GetAsync(siteId);
                     }
                     else if (channel.TransType == ECrossSiteTransType.SpecifiedSite)
                     {
-                        site = await SiteManager.GetSiteAsync(channel.TransSiteId);
+                        site = await DataProvider.SiteDao.GetAsync(channel.TransSiteId);
                     }
                     else
                     {
-                        var parentSiteId = await SiteManager.GetParentSiteIdAsync(siteId);
+                        var parentSiteId = await DataProvider.SiteDao.GetParentSiteIdAsync(siteId);
                         if (parentSiteId != 0)
                         {
-                            site = await SiteManager.GetSiteAsync(parentSiteId);
+                            site = await DataProvider.SiteDao.GetAsync(parentSiteId);
                         }
                     }
 

@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
+using SiteServer.CMS.Caching;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Parsers;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -18,8 +20,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                var isApiAuthorized = request.IsApiAuthenticated && await AccessTokenManager.IsScopeAsync(request.ApiToken, AccessTokenManager.ScopeStl);
+                var request = await AuthenticatedRequest.GetAuthAsync();
+                var isApiAuthorized = request.IsApiAuthenticated && await DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeStl);
 
                 var stlRequest = new StlRequest();
                 await stlRequest.LoadAsync(request, isApiAuthorized);

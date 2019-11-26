@@ -5,6 +5,8 @@ using System.Text;
 using System.Data;
 using System.Drawing;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -666,6 +668,20 @@ namespace SiteServer.Utils
             var comparer = StringComparer.OrdinalIgnoreCase;
             var caseInsensitiveDictionary = new NameValueCollection(comparer);
             return caseInsensitiveDictionary;
+        }
+
+        public static byte[] BinarySerialize(object obj)
+        {
+            using var stream = new MemoryStream();
+            new BinaryFormatter().Serialize(stream, obj);
+            var bytes = stream.ToArray();
+            return bytes;
+        }
+
+        public static T BinaryDeserialize<T>(byte[] bytes, T defaultValue = default(T)) where T : class
+        {
+            using var stream = new MemoryStream(bytes);
+            return new BinaryFormatter().Deserialize(stream) as T;
         }
     }
 }

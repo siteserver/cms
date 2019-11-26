@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             var retVal = new StringBuilder();
 
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
 
             var titleList = await DataProvider.ContentDao.GetValueListByStartStringAsync(tableName, channelId, ContentAttribute.Title, title, 10);

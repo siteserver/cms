@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
+            VerifySitePermissions(Constants.WebSitePermissions.Template);
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_fileName) ? $"添加{_name}" : $"编辑{_name}";
 

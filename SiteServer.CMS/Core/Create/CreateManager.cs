@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Core.Create
             }
             else if (createType == ECreateType.AllContent)
             {
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 
                 if (channelInfo != null)
@@ -42,7 +42,7 @@ namespace SiteServer.CMS.Core.Create
             else if (createType == ECreateType.Content)
             {
                 var tuple = DataProvider.ContentDao.GetValue(await ChannelManager.GetTableNameAsync(await 
-                    SiteManager.GetSiteAsync(siteId), channelId), contentId, ContentAttribute.Title);
+                    DataProvider.SiteDao.GetAsync(siteId), channelId), contentId, ContentAttribute.Title);
                 if (tuple != null)
                 {
                     name = tuple.Item2;

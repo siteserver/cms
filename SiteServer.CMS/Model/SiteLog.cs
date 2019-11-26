@@ -29,5 +29,5 @@ namespace SiteServer.CMS.Model
 
         [DataColumn]
         public string Summary { get; set; }
-	}
+    }
 }

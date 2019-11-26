@@ -32,7 +32,7 @@ namespace SiteServer.CMS.Core
         {
             try
             {
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
                 if (!config.IsLogError) return 0;
 
                 await DataProvider.ErrorLogDao.DeleteIfThresholdAsync();
@@ -122,7 +122,7 @@ stl: {stlContent}
 
         public static async Task AddSiteLogAsync(int siteId, int channelId, int contentId, Administrator adminInfo, string action, string summary)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (!config.IsLogSite) return;
 
             if (siteId <= 0)
@@ -174,7 +174,7 @@ stl: {stlContent}
 
         public static async Task AddAdminLogAsync(Administrator adminInfo, string action, string summary = "")
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (!config.IsLogAdmin) return;
 
             try
@@ -217,7 +217,7 @@ stl: {stlContent}
 
         public static async Task AddUserLogAsync(string userName, string actionType, string summary)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (!config.IsLogUser) return;
 
             try

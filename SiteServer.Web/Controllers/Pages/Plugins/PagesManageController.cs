@@ -11,7 +11,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/plugins/manage")]
     public class PagesManageController : ApiController
     {
@@ -25,9 +25,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -55,9 +55,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -81,9 +81,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -104,9 +104,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }

@@ -11,7 +11,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Utility
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/utilityCache")]
     public class PagesUtilityCacheController : ApiController
     {
@@ -22,9 +22,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }
@@ -84,9 +84,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Utility))
                 {
                     return Unauthorized();
                 }

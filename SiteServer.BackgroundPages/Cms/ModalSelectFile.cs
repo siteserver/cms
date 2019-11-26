@@ -143,7 +143,7 @@ namespace SiteServer.BackgroundPages.Cms
                     else if (directoryName.Equals("@"))
                     {
                         navigationBuilder.Append(
-                            $"<a href='{GetRedirectUrl(_rootPath)}'>{SiteManager.GetSiteAsync(SiteId).GetAwaiter().GetResult().SiteDir}</a>");
+                            $"<a href='{GetRedirectUrl(_rootPath)}'>{DataProvider.SiteDao.GetAsync(SiteId).GetAwaiter().GetResult().SiteDir}</a>");
                     }
                     else
                     {

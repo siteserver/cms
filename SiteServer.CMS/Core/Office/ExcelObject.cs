@@ -126,7 +126,7 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var userId in userIdList)
             {
-                var userInfo = await UserManager.GetUserByUserIdAsync(userId);
+                var userInfo = await UserManager.GetByUserIdAsync(userId);
 
                 rows.Add(new List<string>
                 {

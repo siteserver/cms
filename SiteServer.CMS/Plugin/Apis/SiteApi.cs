@@ -25,48 +25,48 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             if (siteId <= 0) return null;
 
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             return site == null ? null : PathUtility.GetSitePath(site);
         }
 
         public async Task<List<int>> GetSiteIdListAsync()
         {
-            return await SiteManager.GetSiteIdListAsync();
+            return await DataProvider.SiteDao.GetSiteIdListAsync();
         }
 
         public async Task<ISite> GetSiteAsync(int siteId)
         {
-            return await SiteManager.GetSiteAsync(siteId);
+            return await DataProvider.SiteDao.GetAsync(siteId);
         }
 
         //public List<int> GetSiteIdListByAdminName(string adminName)
         //{
         //    var permissionManager = PermissionManager.GetInstance(adminName);
-        //    return SiteManager.GetWritingSiteIdList(permissionManager);
+        //    return DataProvider.SiteDao.GetWritingSiteIdList(permissionManager);
         //}
 
         public async Task<string> GetSitePathAsync(int siteId, string virtualPath)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             return PathUtility.MapPath(site, virtualPath);
         }
 
         public async Task<string> GetSiteUrlAsync(int siteId)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             return PageUtility.GetSiteUrl(site, false);
         }
 
         public async Task<string> GetSiteUrlAsync(int siteId, string virtualPath)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             return PageUtility.ParseNavigationUrl(site, virtualPath, false);
         }
 
         public async Task<string> GetSiteUrlByFilePathAsync(string filePath)
         {
             var siteId = await Instance.GetSiteIdByFilePathAsync(filePath);
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             return await PageUtility.GetSiteUrlByPhysicalPathAsync(site, filePath, false);
         }
 
@@ -74,8 +74,8 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             if (sourceSiteId == targetSiteId) return;
 
-            var site = await SiteManager.GetSiteAsync(sourceSiteId);
-            var targetSite = await SiteManager.GetSiteAsync(targetSiteId);
+            var site = await DataProvider.SiteDao.GetAsync(sourceSiteId);
+            var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
             if (site == null || targetSite == null) return;
 
             foreach (var relatedUrl in relatedUrls)
@@ -89,13 +89,13 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task AddWaterMarkAsync(int siteId, string filePath)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             FileUtility.AddWaterMark(site, filePath);
         }
 
         public async Task<string> GetUploadFilePathAsync(int siteId, string fileName)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, PathUtils.GetExtension(fileName));
             var localFileName = PathUtility.GetUploadFileName(site, fileName);
             return PathUtils.Combine(localDirectoryPath, localFileName);

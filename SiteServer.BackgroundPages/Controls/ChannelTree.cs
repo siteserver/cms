@@ -19,13 +19,13 @@ namespace SiteServer.BackgroundPages.Controls
         {
             var builder = new StringBuilder();
 
-            var request = AuthenticatedRequest.GetRequestAsync().GetAwaiter().GetResult();
+            var request = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
 
             var siteId = TranslateUtils.ToInt(Page.Request.QueryString["siteId"]);
 
             if (siteId > 0)
             {
-                var site = SiteManager.GetSiteAsync(siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
                 if (site != null)
                 {
                     var contentModelPluginId = Page.Request.QueryString["contentModelPluginId"];

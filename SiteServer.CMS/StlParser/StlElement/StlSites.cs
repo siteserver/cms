@@ -8,6 +8,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -121,7 +122,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             while (dataSource.Read())
             {
                 var siteId = dataSource.GetInt32(0);
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
 
                 if (site != null)
                 {

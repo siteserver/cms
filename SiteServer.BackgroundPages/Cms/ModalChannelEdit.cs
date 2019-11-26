@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ChannelEdit))
+                if (!HasChannelPermissions(_channelId, Constants.ChannelPermissions.ChannelEdit))
                 {
                     PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
@@ -113,9 +113,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (PhChannelTemplateId.Visible)
                 {
-                    DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
+                    DdlChannelTemplateId.DataSource = DataProvider.TemplateDao
+                        .GetTemplateListByTypeAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
                 }
-                DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
+                DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
 
                 DataBind();
 

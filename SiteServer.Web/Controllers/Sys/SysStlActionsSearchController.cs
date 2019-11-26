@@ -20,7 +20,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    [OpenApiIgnore]
+    
     public class SysStlActionsSearchController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsSearch.Route)]
@@ -30,7 +30,7 @@ namespace SiteServer.API.Controllers.Sys
             var template = string.Empty;
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var form = GetPostCollection(request);
 
                 var isAllSites = request.GetPostBool(StlSearch.IsAllSites.ToLower());
@@ -65,7 +65,7 @@ namespace SiteServer.API.Controllers.Sys
                     CharsetType = ECharset.utf_8,
                     Default = false
                 };
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 pageInfo = await PageInfo.GetPageInfoAsync(siteId, 0, site, templateInfo, new Dictionary<string, object>());
                 pageInfo.User = request.User;
 

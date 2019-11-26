@@ -39,7 +39,7 @@ namespace SiteServer.CMS.ImportExport
         public static async Task BackupSiteAsync(int siteId, string filePath, string adminName)
         {
             var exportObject = new ExportObject(siteId, adminName);
-            var siteInfo = await SiteManager.GetSiteAsync(siteId);
+            var siteInfo = await DataProvider.SiteDao.GetAsync(siteId);
 
             var siteTemplateDir = PathUtils.GetFileNameWithoutExtension(filePath);
             var siteTemplatePath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), siteTemplateDir);
@@ -68,7 +68,7 @@ namespace SiteServer.CMS.ImportExport
         {
             var importObject = new ImportObject(siteId, administratorName);
 
-            var siteInfo = await SiteManager.GetSiteAsync(siteId);
+            var siteInfo = await DataProvider.SiteDao.GetAsync(siteId);
 
             var siteTemplatePath = path;
             if (isZip)

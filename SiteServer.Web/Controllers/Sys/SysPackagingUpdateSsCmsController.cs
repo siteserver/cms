@@ -9,13 +9,13 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    [OpenApiIgnore]
+    
     public class SysPackagesUpdateSsCmsController : ApiController
     {
         [HttpPost, Route(ApiRouteUpdateSsCms.Route)]
         public async Task<IHttpActionResult> Main()
         {
-            var request = await AuthenticatedRequest.GetRequestAsync();
+            var request = await AuthenticatedRequest.GetAuthAsync();
 
             var isDownload = TranslateUtils.ToBool(await DataProvider.DbCacheDao.GetValueAndRemoveAsync(PackageUtils.CacheKeySsCmsIsDownload));
 
@@ -36,7 +36,7 @@ namespace SiteServer.API.Controllers.Sys
             }
 
             WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
-                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.ApiPrefix, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
+                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.Redis, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
                 WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), WebUtils.GetSiteFilesPath(string.Empty), true);

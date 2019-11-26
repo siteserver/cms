@@ -312,7 +312,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    var config = await ConfigManager.GetInstanceAsync();
+                    var config = await DataProvider.ConfigDao.GetAsync();
 
                     retVal = $@"
 <embed src=""{SiteFilesAssets.GetUrl(config.ApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
@@ -327,7 +327,7 @@ namespace SiteServer.CMS.Core
         {
             if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             string retVal;
             if (isStlEntity)
@@ -363,7 +363,7 @@ namespace SiteServer.CMS.Core
         {
             if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             string retVal;
             if (isStlEntity)

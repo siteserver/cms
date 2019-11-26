@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -21,7 +24,7 @@ namespace SiteServer.CMS.Core
             
         }
 
-        public static async Task<AuthenticatedRequest> GetRequestAsync()
+        public static async Task<AuthenticatedRequest> GetAuthAsync()
         {
             var authRequest = new AuthenticatedRequest();
             try
@@ -31,7 +34,7 @@ namespace SiteServer.CMS.Core
                 var apiToken = authRequest.ApiToken;
                 if (!string.IsNullOrEmpty(apiToken))
                 {
-                    var tokenInfo = await AccessTokenManager.GetAccessTokenInfoAsync(apiToken);
+                    var tokenInfo = await DataProvider.AccessTokenDao.GetAccessTokenInfoAsync(apiToken);
                     if (tokenInfo != null)
                     {
                         if (!string.IsNullOrEmpty(tokenInfo.AdminName))
@@ -54,7 +57,7 @@ namespace SiteServer.CMS.Core
                     var tokenImpl = UserApi.Instance.ParseAccessToken(userToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
-                        var user = await UserManager.GetUserByUserIdAsync(tokenImpl.UserId);
+                        var user = await UserManager.GetByUserIdAsync(tokenImpl.UserId);
                         if (user != null && !user.Locked && user.Checked && user.UserName == tokenImpl.UserName)
                         {
                             authRequest.User = user;
@@ -482,7 +485,7 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(userName)) return null;
 
-            var user = await UserManager.GetUserByUserNameAsync(userName);
+            var user = await UserManager.GetByUserNameAsync(userName);
             if (user == null || user.Locked || !user.Checked) return null;
 
             User = user;
@@ -519,7 +522,7 @@ namespace SiteServer.CMS.Core
             var redirect = false;
             var redirectUrl = string.Empty;
 
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             if (checkInstall && string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
@@ -597,6 +600,48 @@ namespace SiteServer.CMS.Core
             }
 
             return new AccessTokenImpl();
+        }
+
+        public async Task CheckAdminLoggin(HttpRequestMessage request)
+        {
+            if (!IsAdminLoggin)
+            {
+                Unauthorized(request);
+            }
+        }
+
+        public async Task CheckSettingsPermissions(HttpRequestMessage request, params string[] permissions)
+        {
+            if (!IsAdminLoggin ||
+                !await AdminPermissionsImpl.HasSystemPermissionsAsync(permissions))
+            {
+                Unauthorized(request);
+            }
+        }
+
+        public async Task CheckSitePermissionsAsync(HttpRequestMessage request, int siteId, params string[] permissions)
+        {
+            if (!IsAdminLoggin ||
+                !await AdminPermissionsImpl.HasSitePermissionsAsync(siteId, permissions))
+            {
+                Unauthorized(request);
+            }
+        }
+
+        public void NotFound(HttpRequestMessage request)
+        {
+            throw new HttpResponseException(request.CreateErrorResponse(
+                HttpStatusCode.NotFound,
+                Constants.NotFound
+            ));
+        }
+
+        public void Unauthorized(HttpRequestMessage request)
+        {
+            throw new HttpResponseException(request.CreateErrorResponse(
+                HttpStatusCode.Unauthorized,
+                Constants.Unauthorized
+            ));
         }
     }
 }

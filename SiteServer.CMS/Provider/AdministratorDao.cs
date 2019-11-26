@@ -28,6 +28,11 @@ namespace SiteServer.CMS.Provider
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
+        private class Attr
+        {
+            public static string SiteIdCollection = nameof(SiteIdCollection);
+        }
+
         public async Task UpdateLastActivityDateAndCountOfFailedLoginAsync(Administrator administrator)
         {
             if (administrator == null) return;
@@ -76,14 +81,14 @@ namespace SiteServer.CMS.Provider
             AdminManager.UpdateCache(administrator);
         }
 
-        public async Task UpdateSiteIdCollectionAsync(Administrator administrator, string siteIdCollection)
+        public async Task UpdateSiteIdCollectionAsync(Administrator administrator, List<int> siteIds)
         {
             if (administrator == null) return;
 
-            administrator.SiteIdCollection = siteIdCollection;
+            administrator.SiteIds = siteIds;
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(Administrator.SiteIdCollection), administrator.SiteIdCollection)
+                .Set(Attr.SiteIdCollection, string.Join(",", administrator.SiteIds))
                 .Where(nameof(Administrator.Id), administrator.Id)
             );
 
@@ -94,17 +99,17 @@ namespace SiteServer.CMS.Provider
         {
             if (administrator == null) return null;
 
-            var siteIdListLatestAccessed = TranslateUtils.StringCollectionToIntList(administrator.SiteIdCollection);
+            var siteIdListLatestAccessed = administrator.SiteIds;
             if (administrator.SiteId != siteId || siteIdListLatestAccessed.FirstOrDefault() != siteId)
             {
                 siteIdListLatestAccessed.Remove(siteId);
                 siteIdListLatestAccessed.Insert(0, siteId);
 
-                administrator.SiteIdCollection = TranslateUtils.ObjectCollectionToString(siteIdListLatestAccessed);
+                administrator.SiteIds = siteIdListLatestAccessed;
                 administrator.SiteId = siteId;
 
                 await _repository.UpdateAsync(Q
-                    .Set(nameof(Administrator.SiteIdCollection), administrator.SiteIdCollection)
+                    .Set(Attr.SiteIdCollection, string.Join(",", administrator.SiteIds))
                     .Set(nameof(Administrator.SiteId), administrator.SiteId)
                     .Where(nameof(Administrator.Id), administrator.Id)
                 );
@@ -385,7 +390,7 @@ namespace SiteServer.CMS.Provider
                 {
                     return (false, "用户名不能为空");
                 }
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
                 if (adminEntityToUpdate.UserName.Length < config.AdminUserNameMinLength)
                 {
                     return (false, $"用户名长度必须大于等于{config.AdminUserNameMinLength}");
@@ -417,7 +422,7 @@ namespace SiteServer.CMS.Provider
 
         private async Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string password, string email, string mobile)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             if (string.IsNullOrEmpty(userName))
             {
@@ -498,7 +503,7 @@ namespace SiteServer.CMS.Provider
                 .Set(nameof(Administrator.CountOfLogin), administrator.CountOfLogin)
                 .Set(nameof(Administrator.CountOfFailedLogin), administrator.CountOfFailedLogin)
                 .Set(nameof(Administrator.IsLockedOut), administrator.Locked.ToString())
-                .Set(nameof(Administrator.SiteIdCollection), administrator.SiteIdCollection)
+                .Set(Attr.SiteIdCollection, string.Join(",", administrator.SiteIds))
                 .Set(nameof(Administrator.SiteId), administrator.SiteId)
                 .Set(nameof(Administrator.DisplayName), administrator.DisplayName)
                 .Set(nameof(Administrator.Mobile), administrator.Mobile)
@@ -515,7 +520,7 @@ namespace SiteServer.CMS.Provider
 
         public async Task<(bool IsValid, string ErrorMessage)> ChangePasswordAsync(Administrator adminEntity, string password)
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             if (string.IsNullOrEmpty(password))
             {
@@ -562,7 +567,7 @@ namespace SiteServer.CMS.Provider
                 return (false, userName, "此账号被锁定，无法登录");
             }
 
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             if (config.IsAdminLockLogin)
             {

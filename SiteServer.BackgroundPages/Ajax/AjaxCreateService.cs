@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retVal = new NameValueCollection();
-            var request = AuthenticatedRequest.GetRequestAsync().GetAwaiter().GetResult();
+            var request = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
 
             if (type == TypeGetCountArray)
             {
@@ -121,7 +121,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在导入数据...");//存储消息
@@ -188,7 +188,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheCurrentCountKey, "4");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection($"站点 <strong>{site.SiteName}<strong> 创建成功!", string.Empty,
                         $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
@@ -223,7 +223,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息

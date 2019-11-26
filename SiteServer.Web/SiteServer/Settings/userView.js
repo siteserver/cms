@@ -3,7 +3,10 @@
 var data = {
   pageLoad: false,
   pageAlert: null,
-  userId: utils.getQueryInt('userId'),
+  pageType: utils.getQueryString('pageType'),
+  userId: parseInt(utils.getQueryString('userId') || '0'),
+  userName: utils.getQueryString('userName'),
+  returnUrl: utils.getQueryString('returnUrl'),
   user: null,
   groupName: null
 };
@@ -12,10 +15,15 @@ var methods = {
   getConfig: function () {
     var $this = this;
 
-    $api.get($url + '?userId=' + $this.userId).then(function (response) {
+    $api.get($url, {
+      params: {
+        userId: this.userId,
+        userName: this.userName
+      }
+    }).then(function (response) {
       var res = response.data;
 
-      $this.user = res.value;
+      $this.user = res.user;
       $this.groupName = res.groupName;
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);

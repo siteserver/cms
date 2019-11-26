@@ -172,7 +172,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var value = string.Empty;
                     if (content.UserId > 0)
                     {
-                        var userInfo = await UserManager.GetUserByUserIdAsync(content.UserId);
+                        var userInfo = await UserManager.GetByUserIdAsync(content.UserId);
                         if (userInfo != null)
                         {
                             value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;

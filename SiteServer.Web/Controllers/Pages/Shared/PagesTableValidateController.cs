@@ -8,7 +8,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Shared
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/shared/tableValidate")]
     public class PagesTableValidateController : ApiController
     {
@@ -19,7 +19,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetQueryString("tableName");
@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetPostString("tableName");

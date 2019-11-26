@@ -384,7 +384,7 @@ namespace SiteServer.CMS.Provider
             var channelEntity = await ChannelManager.GetChannelAsync(siteId, channelId);
             if (channelEntity == null) return;
 
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channelEntity);
             var idList = new List<int>();
             if (channelEntity.ChildrenCount > 0)

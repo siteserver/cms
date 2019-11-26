@@ -1,46 +1,45 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/userView")]
-    public class PagesUserViewController : ApiController
+    public partial class PagesUserViewController : ApiController
     {
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public async Task<IHttpActionResult> Get()
+        public async Task<GetResult> Get([FromUri] GetRequest request)
         {
-            try
+            var auth = await AuthenticatedRequest.GetAuthAsync();
+            await auth.CheckAdminLoggin(Request);
+
+            CMS.Model.User user = null;
+            if (request.UserId > 0)
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
-                {
-                    return Unauthorized();
-                }
-
-                var userId = request.GetQueryInt("userId");
-                var user = await UserManager.GetUserByUserIdAsync(userId);
-                if (user == null) return NotFound();
-
-                var groupName = await UserGroupManager.GetUserGroupNameAsync(user.GroupId);
-
-                return Ok(new
-                {
-                    Value = user,
-                    GroupName = groupName
-                });
+                user = await UserManager.GetByUserIdAsync(request.UserId);
             }
-            catch (Exception ex)
+            else if (!string.IsNullOrEmpty(request.UserName))
             {
-                return InternalServerError(ex);
+                user = await UserManager.GetByUserNameAsync(request.UserName);
             }
+
+            if (user == null)
+            {
+                auth.NotFound(Request);
+            }
+
+            var groupName = await UserGroupManager.GetUserGroupNameAsync(user.GroupId);
+
+            return new GetResult
+            {
+                User = user,
+                GroupName = groupName
+            };
         }
     }
 }

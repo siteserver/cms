@@ -5,10 +5,11 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/siteUrl")]
     public class PagesSiteUrlController : ApiController
     {
@@ -21,22 +22,22 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
 
                 var rootSiteId = await DataProvider.SiteDao.GetIdByIsRootAsync();
-                var siteIdList = await SiteManager.GetSiteIdListAsync(0);
+                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync(0);
                 var sites = new List<CMS.Model.Site>();
                 foreach (var siteId in siteIdList)
                 {
-                    sites.Add(await SiteManager.GetSiteAsync(siteId));
+                    sites.Add(await DataProvider.SiteDao.GetAsync(siteId));
                 }
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 return Ok(new
                 {
@@ -57,9 +58,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -76,7 +77,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     separatedWebUrl = separatedWebUrl + "/";
                 }
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
 
                 site.IsSeparatedWeb = isSeparatedWeb;
                 site.SeparatedWebUrl = separatedWebUrl;
@@ -88,11 +89,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 await DataProvider.SiteDao.UpdateAsync(site);
                 await request.AddSiteLogAsync(siteId, "修改站点访问地址");
 
-                var siteIdList = await SiteManager.GetSiteIdListAsync(0);
+                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync(0);
                 var sites = new List<CMS.Model.Site>();
                 foreach (var id in siteIdList)
                 {
-                    sites.Add(await SiteManager.GetSiteAsync(id));
+                    sites.Add(await DataProvider.SiteDao.GetAsync(id));
                 }
 
                 return Ok(new
@@ -111,9 +112,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -121,7 +122,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 var isSeparatedApi = request.GetPostBool("isSeparatedApi");
                 var separatedApiUrl = request.GetPostString("separatedApiUrl");
 
-                var config = await ConfigManager.GetInstanceAsync();
+                var config = await DataProvider.ConfigDao.GetAsync();
 
                 config.IsSeparatedApi = isSeparatedApi;
                 config.SeparatedApiUrl = separatedApiUrl;

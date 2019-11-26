@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.API.Controllers.Pages
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/syncDatabase")]
     public class PagesSyncDatabaseController : ApiController
     {
@@ -17,7 +18,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                //var request = await AuthenticatedRequest.GetRequestAsync();
+                //var request = await AuthenticatedRequest.GetAuthAsync();
                 //if (!request.IsAdminLoggin || !request.AdminPermissions.IsSuperAdmin())
                 //{
                 //    return Unauthorized();

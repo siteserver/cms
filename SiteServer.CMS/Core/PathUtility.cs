@@ -24,7 +24,7 @@ namespace SiteServer.CMS.Core
 
         public static async Task<string> GetSitePathAsync(int siteId, params string[] paths)
         {
-            var site = await SiteManager.GetSiteAsync(siteId);
+            var site = await DataProvider.SiteDao.GetAsync(siteId);
             return GetSitePath(site, paths);
         }
 
@@ -220,7 +220,7 @@ namespace SiteServer.CMS.Core
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty) return null;
 
-            var siteList = await SiteManager.GetSiteListAsync();
+            var siteList = await DataProvider.SiteDao.GetSiteListAsync();
 
             Site headquarter = null;
             foreach (var site in siteList)
@@ -252,7 +252,7 @@ namespace SiteServer.CMS.Core
                 return string.Empty;
             }
 
-            var siteList = await SiteManager.GetSiteListAsync();
+            var siteList = await DataProvider.SiteDao.GetSiteListAsync();
             foreach (var site in siteList)
             {
                 if (site?.Root!= false) continue;
@@ -274,7 +274,7 @@ namespace SiteServer.CMS.Core
         public static async Task<int> GetCurrentSiteIdAsync()
         {
             int siteId;
-            var siteIdList = await SiteManager.GetSiteIdListAsync();
+            var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync();
             if (siteIdList.Count == 1)
             {
                 siteId = siteIdList[0];

@@ -29,7 +29,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 return PageUtils.GetAdminUrl(relatedUrl.Substring(1));
             }
 
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
 
             return PageUtility.GetSiteFilesUrl(config.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));
         }

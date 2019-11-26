@@ -8,6 +8,7 @@ using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages
@@ -393,7 +394,7 @@ namespace SiteServer.BackgroundPages
                 var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
                 var connectionString = GetConnectionString(true);
 
-                WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, "api", "SiteServer", "Home", StringUtils.GetShortGuid(), false);
+                WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, string.Empty, "SiteServer", "Home", StringUtils.GetShortGuid(), false);
 
                 DataProvider.Reset();
 

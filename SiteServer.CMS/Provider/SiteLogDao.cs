@@ -4,10 +4,12 @@ using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
+using SqlKata;
 
 namespace SiteServer.CMS.Provider
 {
@@ -33,7 +35,7 @@ namespace SiteServer.CMS.Provider
 
         public async Task DeleteIfThresholdAsync()
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (!config.IsTimeThreshold) return;
 
             var days = config.TimeThreshold;
@@ -44,99 +46,67 @@ namespace SiteServer.CMS.Provider
             );
         }
 
-        public async Task DeleteAsync(List<int> idList)
-        {
-            if (idList == null || idList.Count <= 0) return;
-
-            await _repository.DeleteAsync(Q
-                .WhereIn(nameof(ErrorLog.Id), idList)
-            );
-        }
-
         public async Task DeleteAllAsync()
         {
             await _repository.DeleteAsync();
         }
 
-        public string GetSelectCommend()
+        public async Task<int> GetCountAsync(List<int> siteIds, string logType, string userName, string keyword, string dateFrom, string dateTo)
         {
-            return "SELECT Id, SiteId, ChannelId, ContentId, UserName, IpAddress, AddDate, Action, Summary FROM siteserver_SiteLog";
+            return await _repository.CountAsync(GetQuery(siteIds, logType, userName, keyword, dateFrom, dateTo));
         }
 
-        public string GetSelectCommend(int siteId, string logType, string userName, string keyword, string dateFrom, string dateTo)
+        public async Task<IEnumerable<SiteLog>> GetAllAsync(List<int> siteIds, string logType, string userName, string keyword, string dateFrom, string dateTo, int offset, int limit)
         {
-            if (siteId == 0 && (string.IsNullOrEmpty(logType) || StringUtils.EqualsIgnoreCase(logType, "All")) && string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
+            var query = GetQuery(siteIds, logType, userName, keyword, dateFrom, dateTo);
+            query.Offset(offset).Limit(limit);
+            return await _repository.GetAllAsync(query);
+        }
+
+        public Query GetQuery(List<int> siteIds, string logType, string userName, string keyword, string dateFrom, string dateTo)
+        {
+            var query = Q.OrderByDesc(nameof(SiteLog.Id));
+
+            if (siteIds != null && siteIds.Count > 0)
             {
-                return GetSelectCommend();
+                query.WhereIn(nameof(SiteLog.SiteId), siteIds);
             }
 
-            var whereString = new StringBuilder("WHERE ");
-
-            var isWhere = false;
-
-            if (siteId > 0)
+            if (!string.IsNullOrEmpty(logType))
             {
-                isWhere = true;
-                whereString.AppendFormat("(SiteId = {0})", siteId);
-            }
-
-            if (!string.IsNullOrEmpty(logType) && !StringUtils.EqualsIgnoreCase(logType, "All"))
-            {
-                if (isWhere)
-                {
-                    whereString.Append(" AND ");
-                }
-                isWhere = true;
-
                 if (StringUtils.EqualsIgnoreCase(logType, "Channel"))
                 {
-                    whereString.Append("(ChannelId > 0 AND ContentId = 0)");
+                    query.Where(nameof(SiteLog.ChannelId), ">", 0).Where(nameof(SiteLog.ContentId), 0);
                 }
-                else if (StringUtils.EqualsIgnoreCase(logType, "Body"))
+                else if (StringUtils.EqualsIgnoreCase(logType, "Content"))
                 {
-                    whereString.Append("(ChannelId > 0 AND ContentId > 0)");
+                    query.Where(nameof(SiteLog.ChannelId), ">", 0).Where(nameof(SiteLog.ContentId), ">", 0);
                 }
             }
 
             if (!string.IsNullOrEmpty(userName))
             {
-                if (isWhere)
-                {
-                    whereString.Append(" AND ");
-                }
-                isWhere = true;
-                whereString.AppendFormat("(UserName = '{0}')", userName);
+                query.Where(nameof(SiteLog.UserName), userName);
             }
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                if (isWhere)
-                {
-                    whereString.Append(" AND ");
-                }
-                isWhere = true;
-                whereString.AppendFormat("(Action LIKE '%{0}%' OR Summary LIKE '%{0}%')", AttackUtils.FilterSql(keyword));
+                var like = $"%{keyword}%";
+                query.Where(q =>
+                    q.WhereLike(nameof(SiteLog.Action), like).OrWhereLike(nameof(SiteLog.Summary), like)
+                );
             }
 
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                if (isWhere)
-                {
-                    whereString.Append(" AND ");
-                }
-                isWhere = true;
-                whereString.Append($"(AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))})");
+                query.WhereDate(nameof(SiteLog.AddDate), ">=", TranslateUtils.ToDateTime(dateFrom));
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                if (isWhere)
-                {
-                    whereString.Append(" AND ");
-                }
-                whereString.Append($"(AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo))})");
+                query.WhereDate(nameof(SiteLog.AddDate), "<=", TranslateUtils.ToDateTime(dateTo));
             }
 
-            return "SELECT Id, SiteId, ChannelId, ContentId, UserName, IpAddress, AddDate, Action, Summary FROM siteserver_SiteLog " + whereString;
+            return query;
         }
     }
 }

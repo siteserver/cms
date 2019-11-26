@@ -4,10 +4,11 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/settings/userPassword")]
     public class PagesUserPasswordController : ApiController
     {
@@ -18,15 +19,15 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
                 var userId = request.GetQueryInt("userId");
-                var user = await UserManager.GetUserByUserIdAsync(userId);
+                var user = await UserManager.GetByUserIdAsync(userId);
                 if (user == null) return NotFound();
 
                 return Ok(new
@@ -45,15 +46,15 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
                 var userId = request.GetQueryInt("userId");
-                var user = await UserManager.GetUserByUserIdAsync(userId);
+                var user = await UserManager.GetByUserIdAsync(userId);
                 if (user == null) return NotFound();
 
                 var password = request.GetPostString("password");

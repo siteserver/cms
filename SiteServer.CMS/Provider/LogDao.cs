@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -32,18 +33,9 @@ namespace SiteServer.CMS.Provider
             await _repository.InsertAsync(log);
         }
 
-        public async Task DeleteAsync(List<int> idList)
-        {
-            if (idList == null || idList.Count <= 0) return;
-
-            await _repository.DeleteAsync(Q
-                .WhereIn(nameof(Log.Id), idList)
-            );
-        }
-
         public async Task DeleteIfThresholdAsync()
         {
-            var config = await ConfigManager.GetInstanceAsync();
+            var config = await DataProvider.ConfigDao.GetAsync();
             if (!config.IsTimeThreshold) return;
 
             var days = config.TimeThreshold;
@@ -61,7 +53,8 @@ namespace SiteServer.CMS.Provider
 
         private Query GetQuery(string userName, string keyword, string dateFrom, string dateTo)
         {
-            var query = Q.NewQuery();
+            var query = Q.OrderByDesc(nameof(Log.Id));
+
             if (string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
             {
                 return query;
@@ -100,66 +93,8 @@ namespace SiteServer.CMS.Provider
         public async Task<IEnumerable<Log>> GetAllAsync(string userName, string keyword, string dateFrom, string dateTo, int offset, int limit)
         {
             var query = GetQuery(userName, keyword, dateFrom, dateTo);
-            query.Offset(offset).Limit(limit).OrderByDesc(nameof(Log.Id));
+            query.Offset(offset).Limit(limit);
             return await _repository.GetAllAsync(query);
-        }
-
-        public async Task<int> GetCountAsync()
-        {
-            return await _repository.CountAsync();
-        }
-
-        public string GetSelectCommend()
-        {
-            return GetSelectCommend(string.Empty, string.Empty, string.Empty, string.Empty);
-        }
-
-        public string GetSelectCommend(string userName, string keyword, string dateFrom, string dateTo)
-        {
-            if (string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
-            {
-                return GetSelectCommend();
-            }
-
-            var whereString = new StringBuilder("WHERE ");
-
-            var isWhere = false;
-
-            if (!string.IsNullOrEmpty(userName))
-            {
-                isWhere = true;
-                whereString.AppendFormat("(UserName = '{0}')", AttackUtils.FilterSql(userName));
-            }
-
-            if (!string.IsNullOrEmpty(keyword))
-            {
-                if (isWhere)
-                {
-                    whereString.Append(" AND ");
-                }
-                isWhere = true;
-                whereString.AppendFormat("(Action LIKE '%{0}%' OR Summary LIKE '%{0}%')", AttackUtils.FilterSql(keyword));
-            }
-
-            if (!string.IsNullOrEmpty(dateFrom))
-            {
-                if (isWhere)
-                {
-                    whereString.Append(" AND ");
-                }
-                isWhere = true;
-                whereString.Append($"(AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))})");
-            }
-            if (!string.IsNullOrEmpty(dateTo))
-            {
-                if (isWhere)
-                {
-                    whereString.Append(" AND ");
-                }
-                whereString.Append($"(AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo))})");
-            }
-
-            return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_Log " + whereString;
         }
 
         public async Task<DateTimeOffset> GetLastRemoveLogDateAsync()
@@ -176,10 +111,6 @@ namespace SiteServer.CMS.Provider
         /// <summary>
         /// 统计管理员actionType的操作次数
         /// </summary>
-        /// <param name="dateFrom"></param>
-        /// <param name="dateTo"></param>
-        /// <param name="xType"></param>
-        /// <param name="actionType"></param>
         /// <returns></returns>
         public Dictionary<DateTime, int> GetAdminLoginDictionaryByDate(DateTime dateFrom, DateTime dateTo, string xType, string actionType)
         {

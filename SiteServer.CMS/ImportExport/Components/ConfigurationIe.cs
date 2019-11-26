@@ -28,7 +28,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
 		public async Task ExportAsync()
 		{
-			var site = await SiteManager.GetSiteAsync(_siteId);
+			var site = await DataProvider.SiteDao.GetAsync(_siteId);
 
 			var feed = AtomUtility.GetEmptyFeed();
 
@@ -116,7 +116,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
-			var site = await SiteManager.GetSiteAsync(_siteId);
+			var site = await DataProvider.SiteDao.GetAsync(_siteId);
 
             site.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements,
                 "SettingsXml", site.ToString());

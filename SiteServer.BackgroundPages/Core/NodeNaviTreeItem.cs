@@ -191,7 +191,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_isNodeTree && _siteId != 0)
             {
-                var site = SiteManager.GetSiteAsync(_siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteDao.GetAsync(_siteId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append("&nbsp;");
                 htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(site, ChannelManager.GetChannelAsync(_siteId, _channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());
@@ -290,7 +290,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_isNodeTree && _siteId != 0)
             {
-                var site = SiteManager.GetSiteAsync(_siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteDao.GetAsync(_siteId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append("&nbsp;");
                 htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(site, ChannelManager.GetChannelAsync(_siteId, _channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());

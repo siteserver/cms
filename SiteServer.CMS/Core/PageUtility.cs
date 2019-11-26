@@ -32,7 +32,7 @@ namespace SiteServer.CMS.Core
             if (site == null)
             {
                 var siteId = await PathUtility.GetCurrentSiteIdAsync();
-                site = await SiteManager.GetSiteAsync(siteId);
+                site = await DataProvider.SiteDao.GetAsync(siteId);
             }
             if (string.IsNullOrEmpty(physicalPath)) return site.WebUrl;
 
@@ -183,7 +183,7 @@ namespace SiteServer.CMS.Core
                 {
                     var targetChannelId = sourceId;
                     var targetSiteId = await StlChannelCache.GetSiteIdAsync(targetChannelId);
-                    var targetSite = await SiteManager.GetSiteAsync(targetSiteId);
+                    var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
                     var targetChannelInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
 
                     var contentInfo = await ContentManager.GetContentInfoAsync(targetSite, targetChannelInfo, referenceId);
@@ -195,7 +195,7 @@ namespace SiteServer.CMS.Core
                     {
                         return await GetContentUrlByIdAsync(targetSite, contentInfo, false);
                     }
-                    var siteTmp = await SiteManager.GetSiteAsync(contentInfo.SiteId);
+                    var siteTmp = await DataProvider.SiteDao.GetAsync(contentInfo.SiteId);
                     return await GetContentUrlByIdAsync(siteTmp, contentInfo, false);
                 }
                 else
@@ -208,7 +208,7 @@ namespace SiteServer.CMS.Core
                         return await GetContentUrlByIdAsync(site, channelId, referenceId, 0, 0, linkUrl, false);
                     }
                     var targetSiteId = await StlChannelCache.GetSiteIdAsync(channelId);
-                    var targetSite = await SiteManager.GetSiteAsync(targetSiteId);
+                    var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
                     return await GetContentUrlByIdAsync(targetSite, channelId, referenceId, 0, 0, linkUrl, false);
                 }
             }
@@ -236,7 +236,7 @@ namespace SiteServer.CMS.Core
                 {
                     var targetChannelId = sourceId;
                     var targetSiteId = await StlChannelCache.GetSiteIdAsync(targetChannelId);
-                    var targetSite = await SiteManager.GetSiteAsync(targetSiteId);
+                    var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
                     var targetChannelInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
 
                     var contentInfo = await ContentManager.GetContentInfoAsync(targetSite, targetChannelInfo, referenceId);
@@ -248,7 +248,7 @@ namespace SiteServer.CMS.Core
                     {
                         return await GetContentUrlByIdAsync(targetSite, contentInfo.ChannelId, contentInfo.Id, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.LinkUrl, false);
                     }
-                    var siteTmp = await SiteManager.GetSiteAsync(contentInfo.SiteId);
+                    var siteTmp = await DataProvider.SiteDao.GetAsync(contentInfo.SiteId);
                     return await GetContentUrlByIdAsync(siteTmp, contentInfo.ChannelId, contentInfo.Id, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.LinkUrl, false);
                 }
                 else

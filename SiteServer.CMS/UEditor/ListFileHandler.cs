@@ -60,7 +60,7 @@ namespace SiteServer.CMS.UEditor
             var buildingList = new List<String>();
             try
             {
-                var site = SiteManager.GetSiteAsync(SiteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteDao.GetAsync(SiteId).GetAwaiter().GetResult();
                 var sitePath = PathUtility.GetSitePath(site); // 本站点物理路径
                 var applicationPath = WebConfigUtils.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\'); // 系统物理路径
                 if (UploadType == EUploadType.Image)

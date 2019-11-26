@@ -10,7 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Config
 {
-    [OpenApiIgnore]
+    
     [RoutePrefix("pages/cms/configSite")]
     public class PagesConfigSiteController : ApiController
     {
@@ -22,16 +22,16 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, ConfigManager.WebSitePermissions.Configration))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, Constants.WebSitePermissions.Configuration))
                 {
                     return Unauthorized();
                 }
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
 
                 return Ok(new
                 {
@@ -51,16 +51,16 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, ConfigManager.WebSitePermissions.Configration))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, Constants.WebSitePermissions.Configuration))
                 {
                     return Unauthorized();
                 }
 
-                var site = await SiteManager.GetSiteAsync(siteId);
+                var site = await DataProvider.SiteDao.GetAsync(siteId);
 
                 var siteName = request.GetPostString("siteName");
                 var charset = ECharsetUtils.GetEnumType(request.GetPostString("charset"));
@@ -104,9 +104,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
         {
             try
             {
-                var request = await AuthenticatedRequest.GetRequestAsync();
+                var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(ConfigManager.SettingsPermissions.Config))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
