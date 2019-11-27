@@ -137,7 +137,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             var ltlContentUpdate = (Literal)e.Item.FindControl("ltlContentUpdate");
 
             ltlUserName.Text = userName;
-            ltlDisplayName.Text = AdminManager.GetDisplayNameAsync(userName).GetAwaiter().GetResult();
+            ltlDisplayName.Text = DataProvider.AdministratorDao.GetDisplayNameAsync(userName).GetAwaiter().GetResult();
 
             ltlContentAdd.Text = addCount == 0 ? "0" : $"<strong>{addCount}</strong>";
             ltlContentUpdate.Text = updateCount == 0 ? "0" : $"<strong>{updateCount}</strong>";

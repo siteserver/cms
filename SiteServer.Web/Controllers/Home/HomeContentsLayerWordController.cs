@@ -191,7 +191,7 @@ namespace SiteServer.API.Controllers.Home
 
                     contentInfo.Title = formCollection[ContentAttribute.Title];
 
-                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(tableName, site, channelInfo, contentInfo);
+                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channelInfo, contentInfo);
 
                     contentIdList.Add(contentInfo.Id);
                 }

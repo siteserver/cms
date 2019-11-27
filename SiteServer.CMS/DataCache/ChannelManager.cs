@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Enumerations;
@@ -667,7 +666,7 @@ namespace SiteServer.CMS.DataCache
             if (isShowContentNum)
             {
                 var adminId = await adminPermissions.GetAdminIdAsync(site.Id, channel.Id);
-                var count = await ContentManager.GetCountAsync(site, channel, adminId);
+                var count = await DataProvider.ContentDao.GetCountAsync(site, channel, adminId);
                 retVal = string.Concat(retVal, " (", count, ")");
             }
 
@@ -839,17 +838,17 @@ namespace SiteServer.CMS.DataCache
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExists)
             {
-                var count = await ContentManager.GetCountAsync(site, channel, true);
+                var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
                 isCreatable = count != 0;
             }
             else if (linkType == ELinkType.LinkToOnlyOneContent)
             {
-                var count = await ContentManager.GetCountAsync(site, channel, true);
+                var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
                 isCreatable = count != 1;
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
             {
-                var count = await ContentManager.GetCountAsync(site, channel, true);
+                var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
                 if (count != 0 && count != 1)
                 {
                     isCreatable = true;
@@ -857,7 +856,7 @@ namespace SiteServer.CMS.DataCache
             }
             else if (linkType == ELinkType.LinkToFirstContent)
             {
-                var count = await ContentManager.GetCountAsync(site, channel, true);
+                var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
                 isCreatable = count < 1;
             }
             else if (linkType == ELinkType.NoLinkIfChannelNotExists)

@@ -6,7 +6,6 @@ using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -65,10 +64,9 @@ namespace SiteServer.BackgroundPages.Cms
                         if (targetChannelId != 0)
                         {
                             var targetChannelInfo = ChannelManager.GetChannelAsync(targetSiteId, targetChannelId).GetAwaiter().GetResult();
-                            var targetTableName = ChannelManager.GetTableNameAsync(targetSite, targetChannelId).GetAwaiter().GetResult();
                             foreach (var contentId in _contentIdList)
                             {
-                                var contentInfo = ContentManager.GetContentInfoAsync(Site, _channelId, contentId).GetAwaiter().GetResult();
+                                var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channelId, contentId).GetAwaiter().GetResult();
                                 FileUtility.MoveFileByContentInfo(Site, targetSite, contentInfo);
                                 contentInfo.SiteId = targetSiteId;
                                 contentInfo.SourceId = contentInfo.ChannelId;
@@ -77,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 contentInfo.Checked = targetSite.IsCrossSiteTransChecked;
                                 contentInfo.CheckedLevel = 0;
 
-                                DataProvider.ContentDao.InsertAsync(targetTableName, targetSite, targetChannelInfo, contentInfo).GetAwaiter().GetResult();
+                                DataProvider.ContentDao.InsertAsync(targetSite, targetChannelInfo, contentInfo).GetAwaiter().GetResult();
                             }
                         }
                     }

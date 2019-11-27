@@ -95,7 +95,7 @@ namespace SiteServer.CMS.Core
             await AddTagsAsync(tagsToAdd, siteId, contentId);
         }
 
-        public static async Task RemoveTagsAsync(int siteId, List<int> contentIdList)
+        public static async Task RemoveTagsAsync(int siteId, IEnumerable<int> contentIdList)
         {
             foreach (var contentId in contentIdList)
             {

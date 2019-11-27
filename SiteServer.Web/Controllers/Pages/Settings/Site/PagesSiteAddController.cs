@@ -203,7 +203,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 {
                     var siteIdList = await request.AdminPermissionsImpl.GetSiteIdListAsync() ?? new List<int>();
                     siteIdList.Add(siteId);
-                    var adminInfo = await AdminManager.GetByUserIdAsync(request.AdminId);
+                    var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(request.AdminId);
                     await DataProvider.AdministratorDao.UpdateSiteIdCollectionAsync(adminInfo, siteIdList);
                 }
 

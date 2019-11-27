@@ -3,12 +3,10 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using System.Threading.Tasks;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Enumerations;
@@ -28,7 +26,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 contentItemInfo = pageInfo.ContentItems.Peek();
             }
             if (contentItemInfo == null) return string.Empty;
-            var contentInfo = await ContentManager.GetContentInfoAsync(pageInfo.Site, contentItemInfo.ChannelId,
+            var contentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, contentItemInfo.ChannelId,
                 contentItemInfo.ContentId);
 
             var contextInfo = contextInfoRef.Clone();

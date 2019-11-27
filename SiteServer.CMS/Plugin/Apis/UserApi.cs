@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Provider;
 using SiteServer.Plugin;
@@ -15,36 +14,36 @@ namespace SiteServer.CMS.Plugin.Apis
         private UserApi() { }
 
         private static UserApi _instance;
-        public static UserApi Instance => _instance ?? (_instance = new UserApi());
+        public static UserApi Instance => _instance ??= new UserApi();
 
         public IUser NewInstance()
         {
             return new User();
         }
 
-        public async Task<IUser> GetUserByUserIdAsync(int userId)
+        public async Task<IUser> GetByUserIdAsync(int userId)
         {
-            return await UserManager.GetByUserIdAsync(userId);
+            return await DataProvider.UserDao.GetByUserIdAsync(userId);
         }
 
-        public async Task<IUser> GetUserByUserNameAsync(string userName)
+        public async Task<IUser> GetByUserNameAsync(string userName)
         {
-            return await UserManager.GetByUserNameAsync(userName);
+            return await DataProvider.UserDao.GetByUserNameAsync(userName);
         }
 
-        public async Task<IUser> GetUserByEmailAsync(string email)
+        public async Task<IUser> GetByEmailAsync(string email)
         {
-            return await UserManager.GetByEmailAsync(email);
+            return await DataProvider.UserDao.GetByEmailAsync(email);
         }
 
-        public async Task<IUser> GetUserByMobileAsync(string mobile)
+        public async Task<IUser> GetByMobileAsync(string mobile)
         {
-            return await UserManager.GetByMobileAsync(mobile);
+            return await DataProvider.UserDao.GetByMobileAsync(mobile);
         }
 
-        public async Task<IUser> GetUserByAccountAsync(string account)
+        public async Task<IUser> GetByAccountAsync(string account)
         {
-            return await UserManager.GetByAccountAsync(account);
+            return await DataProvider.UserDao.GetByAccountAsync(account);
         }
 
         public async Task<bool> IsUserNameExistsAsync(string userName)

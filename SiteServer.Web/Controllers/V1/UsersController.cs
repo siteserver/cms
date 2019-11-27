@@ -55,7 +55,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = await UserManager.GetByUserIdAsync(valid.UserId)
+                    Value = await DataProvider.UserDao.GetByUserIdAsync(valid.UserId)
                 });
             }
             catch (Exception ex)
@@ -83,7 +83,7 @@ namespace SiteServer.API.Controllers.V1
 
                 if (body == null) return BadRequest("Could not read user from body");
 
-                var user = await UserManager.GetByUserIdAsync(id);
+                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 var valid = await DataProvider.UserDao.UpdateAsync(user, body);
@@ -118,11 +118,8 @@ namespace SiteServer.API.Controllers.V1
                              await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await UserManager.GetByUserIdAsync(id);
-                if (user == null) return NotFound();
-
                 request.UserLogout();
-                await DataProvider.UserDao.DeleteAsync(user);
+                var user = await DataProvider.UserDao.DeleteAsync(id);
 
                 return Ok(new
                 {
@@ -152,7 +149,7 @@ namespace SiteServer.API.Controllers.V1
 
                 if (!await DataProvider.UserDao.IsExistsAsync(id)) return NotFound();
 
-                var user = await UserManager.GetByUserIdAsync(id);
+                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
 
                 return Ok(new
                 {
@@ -169,9 +166,9 @@ namespace SiteServer.API.Controllers.V1
         [HttpGet, Route(RouteUserAvatar)]
         public async Task<IHttpActionResult> GetAvatar(int id)
         {
-            var user = await UserManager.GetByUserIdAsync(id);
+            var user = await DataProvider.UserDao.GetByUserIdAsync(id);
 
-            var avatarUrl = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : UserManager.DefaultAvatarUrl;
+            var avatarUrl = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : DataProvider.UserDao.DefaultAvatarUrl;
             avatarUrl = PageUtils.AddProtocolToUrl(avatarUrl);
 
             return Ok(new
@@ -194,7 +191,7 @@ namespace SiteServer.API.Controllers.V1
                              await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await UserManager.GetByUserIdAsync(id);
+                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 foreach (string name in HttpContext.Current.Request.Files)
@@ -206,8 +203,8 @@ namespace SiteServer.API.Controllers.V1
                         return BadRequest("Could not read image from body");
                     }
 
-                    var fileName = UserManager.GetUserUploadFileName(postFile.FileName);
-                    var filePath = UserManager.GetUserUploadPath(user.Id, fileName);
+                    var fileName = DataProvider.UserDao.GetUserUploadFileName(postFile.FileName);
+                    var filePath = DataProvider.UserDao.GetUserUploadPath(user.Id, fileName);
                     
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
@@ -217,7 +214,7 @@ namespace SiteServer.API.Controllers.V1
                     DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                     postFile.SaveAs(filePath);
 
-                    user.AvatarUrl = UserManager.GetUserUploadUrl(user.Id, fileName);
+                    user.AvatarUrl = DataProvider.UserDao.GetUserUploadUrl(user.Id, fileName);
 
                     await DataProvider.UserDao.UpdateAsync(user);
                 }
@@ -330,7 +327,7 @@ namespace SiteServer.API.Controllers.V1
                              await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await UserManager.GetByUserIdAsync(id);
+                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 var retVal = await DataProvider.UserLogDao.InsertAsync(user.UserName, log);
@@ -361,7 +358,7 @@ namespace SiteServer.API.Controllers.V1
                              await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await UserManager.GetByUserIdAsync(id);
+                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 var top = request.GetQueryInt("top", 20);
@@ -393,7 +390,7 @@ namespace SiteServer.API.Controllers.V1
                              await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await UserManager.GetByUserIdAsync(id);
+                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 var password = request.GetPostString("password");

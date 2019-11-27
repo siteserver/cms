@@ -100,7 +100,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
 
                 if (isReCalculate)
                 {
-                    DataProvider.ContentDao.SetAutoPageContentToSite(site);
+                    await DataProvider.ContentDao.SetAutoPageContentToSiteAsync(site);
                 }
 
                 await request.AddSiteLogAsync(siteId, "修改内容设置");

@@ -4,7 +4,6 @@ using Datory;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 
@@ -30,13 +29,11 @@ namespace SiteServer.CMS.Provider
             group.Taxis = await GetMaxTaxisAsync(group.SiteId) + 1;
 
             await _repository.InsertAsync(group);
-            ChannelGroupManager.ClearCache();
         }
 
 		public async Task UpdateAsync(ChannelGroup group) 
 		{
             await _repository.UpdateAsync(group);
-            ChannelGroupManager.ClearCache();
         }
 
         public async Task DeleteAsync(int siteId, string groupName)
@@ -53,8 +50,6 @@ namespace SiteServer.CMS.Provider
                 channelInfo.GroupNames.Remove(groupName);
                 await DataProvider.ChannelDao.UpdateAsync(channelInfo);
 		    }
-
-		    ChannelGroupManager.ClearCache();
         }
 
         private async Task<int> GetTaxisAsync(int siteId, string groupName)
@@ -104,8 +99,6 @@ namespace SiteServer.CMS.Provider
                 await SetTaxisAsync(siteId, groupName, higherTaxis);
                 await SetTaxisAsync(siteId, higherGroupName, taxis);
             }
-
-            ChannelGroupManager.ClearCache();
         }
 
         public async Task UpdateTaxisToDownAsync(int siteId, string groupName)
@@ -130,33 +123,42 @@ namespace SiteServer.CMS.Provider
                 await SetTaxisAsync(siteId, groupName, lowerTaxis);
                 await SetTaxisAsync(siteId, lowerGroupName, taxis);
             }
-
-            ChannelGroupManager.ClearCache();
         }
 
-	    public async Task<Dictionary<int, List<ChannelGroup>>> GetAllChannelGroupsAsync()
-	    {
-            var allDict = new Dictionary<int, List<ChannelGroup>>();
+        public async Task<bool> IsExistsAsync(int siteId, string groupName)
+        {
+            return await _repository.ExistsAsync(Q
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+                .Where(nameof(ChannelGroup.GroupName), groupName)
+            );
+        }
 
-            var groupList = await _repository.GetAllAsync(Q
+        public async Task<ChannelGroup> GetAsync(int siteId, string groupName)
+        {
+            return await _repository.GetAsync(Q
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+                .Where(nameof(ChannelGroup.GroupName), groupName)
+            );
+        }
+
+        public async Task<IEnumerable<string>> GetGroupNameListAsync(int siteId)
+        {
+            return await _repository.GetAllAsync<string>(Q
+                .Select(nameof(ChannelGroup.GroupName))
+                .Where(nameof(ChannelGroup.SiteId), siteId)
                 .OrderByDesc(nameof(ChannelGroup.Taxis))
-                .OrderBy(nameof(ChannelGroup.GroupName)));
+                .OrderBy(nameof(ChannelGroup.GroupName))
 
-            foreach (var group in groupList)
-            {
-                allDict.TryGetValue(group.SiteId, out var list);
+            );
+        }
 
-                if (list == null)
-                {
-                    list = new List<ChannelGroup>();
-                }
-
-                list.Add(group);
-
-                allDict[group.SiteId] = list;
-            }
-
-            return allDict;
+        public async Task<IEnumerable<ChannelGroup>> GetChannelGroupListAsync(int siteId)
+        {
+            return await _repository.GetAllAsync(Q
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+                .OrderByDesc(nameof(ChannelGroup.Taxis))
+                .OrderBy(nameof(ChannelGroup.GroupName))
+            );
         }
     }
 }

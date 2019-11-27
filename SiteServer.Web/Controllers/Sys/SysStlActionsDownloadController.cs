@@ -7,7 +7,6 @@ using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 
@@ -79,9 +78,9 @@ namespace SiteServer.API.Controllers.Sys
                     var fileUrl = WebConfigUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
                     var site = await DataProvider.SiteDao.GetAsync(siteId);
                     var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-                    var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
 
-                    DataProvider.ContentDao.AddDownloads(await ChannelManager.GetTableNameAsync(site, channelInfo), channelId, contentId);
+                    await DataProvider.ContentDao.AddDownloadsAsync(await ChannelManager.GetTableNameAsync(site, channelInfo), channelId, contentId);
 
                     if (!string.IsNullOrEmpty(contentInfo?.Get<string>(ContentAttribute.FileUrl)))
                     {

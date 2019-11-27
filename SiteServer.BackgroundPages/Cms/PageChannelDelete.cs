@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -52,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                 var adminId = AuthRequest.AdminPermissionsImpl.GetAdminIdAsync(SiteId, channelId).GetAwaiter().GetResult();
                 var displayName = channelInfo.ChannelName;
-                var count = ContentManager.GetCountAsync(Site, channelInfo, adminId).GetAwaiter().GetResult();
+                var count = DataProvider.ContentDao.GetCountAsync(Site, channelInfo, adminId).GetAwaiter().GetResult();
                 if (count > 0)
                 {
                     displayName += $"({count})";
@@ -121,7 +120,7 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var channelId in channelIdListToDelete)
                     {
                         var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
-                        var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
+                        var contentIdList = DataProvider.ContentDao.GetContentIdListAsync(tableName, channelId).GetAwaiter().GetResult();
                         DeleteManager.DeleteContentsAsync(Site, channelId, contentIdList).GetAwaiter().GetResult();
                         DataProvider.ContentDao.UpdateTrashContentsAsync(SiteId, channelId, tableName, contentIdList).GetAwaiter().GetResult();
                     }

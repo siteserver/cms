@@ -4,14 +4,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Api.V1;
-using SiteServer.CMS.Caching;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Provider;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -61,7 +58,6 @@ namespace SiteServer.API.Controllers.V1
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
                 var checkedLevel = request.GetPostInt("checkedLevel");
 
-                var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
                 var adminName = request.AdminName;
 
                 var isChecked = checkedLevel >= site.CheckContentLevel;
@@ -93,7 +89,7 @@ namespace SiteServer.API.Controllers.V1
                     CheckedLevel = checkedLevel
                 };
 
-                contentInfo.Id = await DataProvider.ContentDao.InsertAsync(tableName, site, channelInfo, contentInfo);
+                contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channelInfo, contentInfo);
 
                 foreach (var service in await PluginManager.GetServicesAsync())
                 {
@@ -164,7 +160,7 @@ namespace SiteServer.API.Controllers.V1
 
                 var adminName = request.AdminName;
 
-                var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, id);
+                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
                 foreach (var attribute in attributes)
@@ -257,7 +253,7 @@ namespace SiteServer.API.Controllers.V1
 
                 var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
 
-                var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, id);
+                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
                 await ContentUtility.DeleteAsync(tableName, site, channelId, id);
@@ -310,7 +306,7 @@ namespace SiteServer.API.Controllers.V1
                 if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                     Constants.ChannelPermissions.ContentView)) return Unauthorized();
 
-                var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, id);
+                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
                 return Ok(new
@@ -365,7 +361,7 @@ namespace SiteServer.API.Controllers.V1
                 var value = new List<IDictionary<string, object>>();
                 foreach (var tuple in tupleList)
                 {
-                    var contentInfo = await ContentManager.GetContentInfoAsync(site, tuple.Item1, tuple.Item2);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, tuple.Item1, tuple.Item2);
                     if (contentInfo != null)
                     {
                         value.Add(contentInfo.ToDictionary());
@@ -426,7 +422,7 @@ namespace SiteServer.API.Controllers.V1
                 var value = new List<IDictionary<string, object>>();
                 foreach(var (contentChannelId, contentId) in list)
                 {
-                    var contentInfo = await ContentManager.GetContentInfoAsync(site, contentChannelId, contentId);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, contentChannelId, contentId);
                     if (contentInfo != null)
                     {
                         value.Add(contentInfo.ToDictionary());

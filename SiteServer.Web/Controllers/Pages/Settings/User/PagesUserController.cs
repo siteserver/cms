@@ -76,8 +76,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                 var id = request.GetPostInt("id");
 
-                var user = await UserManager.GetByUserIdAsync(id);
-                await DataProvider.UserDao.DeleteAsync(user);
+                var user = await DataProvider.UserDao.DeleteAsync(id);
 
                 await request.AddAdminLogAsync("删除用户", $"用户:{user.UserName}");
 
@@ -259,7 +258,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                 var id = request.GetPostInt("id");
 
-                var user = await UserManager.GetByUserIdAsync(id);
+                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
 
                 await DataProvider.UserDao.LockAsync(new List<int>
                 {
@@ -293,7 +292,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                 var id = request.GetPostInt("id");
 
-                var user = await UserManager.GetByUserIdAsync(id);
+                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
 
                 await DataProvider.UserDao.UnLockAsync(new List<int>
                 {

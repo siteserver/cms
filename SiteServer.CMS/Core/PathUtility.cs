@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
@@ -715,7 +714,7 @@ namespace SiteServer.CMS.Core
             public static async Task<string> ParseAsync(Site site, int channelId, int contentId)
             {
                 var contentFilePathRule = await GetContentFilePathRuleAsync(site, channelId);
-                var contentInfo = await ContentManager.GetContentInfoAsync(site, channelId, contentId);
+                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelId, contentId);
                 var filePath = await ParseContentPathAsync(site, channelId, contentInfo, contentFilePathRule);
                 return filePath;
             }
@@ -749,7 +748,7 @@ namespace SiteServer.CMS.Core
                     else if (StringUtils.EqualsIgnoreCase(element, Sequence))
                     {
                         var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
-                        value = StlContentCache.GetSequence(tableName, channelId, contentId).ToString();
+                        value = DataProvider.ContentDao.GetSequence(tableName, channelId, contentId).ToString();
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ParentRule))//继承父级设置 20151113 sessionliang
                     {
@@ -990,7 +989,7 @@ namespace SiteServer.CMS.Core
 
         public static async Task<string> GetContentPageFilePathAsync(Site site, int channelId, int contentId, int currentPageIndex)
         {
-            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelId, contentId);
+            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelId, contentId);
             return await GetContentPageFilePathAsync(site, channelId, contentInfo, currentPageIndex);
         }
 

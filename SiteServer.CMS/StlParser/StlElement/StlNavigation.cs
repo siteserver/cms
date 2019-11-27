@@ -6,7 +6,6 @@ using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -141,12 +140,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var taxis = contentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
                         var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
-                        //var siblingContentId = DataProvider.ContentDao.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
-                        var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var siblingContentId = DataProvider.ContentDao.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
-                            //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
-                            var siblingContentInfo = await ContentManager.GetContentInfoAsync(pageInfo.Site, contextInfo.ChannelId, siblingContentId);
+                            var siblingContentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, contextInfo.ChannelId, siblingContentId);
                             var url = await PageUtility.GetContentUrlAsync(pageInfo.Site, siblingContentInfo, pageInfo.IsLocal);
                             if (url.Equals(PageUtils.UnclickedUrl))
                             {
@@ -218,8 +215,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var taxis = contentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
                         var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
-                        //var siblingContentId = DataProvider.ContentDao.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
-                        var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var siblingContentId = DataProvider.ContentDao.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             isSuccess = true;

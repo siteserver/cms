@@ -155,8 +155,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var nodeInfo = await ChannelManager.GetChannelAsync(contextInfo.Site.Id, contextInfo.ChannelId);
                         var tableName = await ChannelManager.GetTableNameAsync(contextInfo.Site, nodeInfo);
 
-                        //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
-                        flashUrl = StlContentCache.GetValue(tableName, contentId, type);
+                        flashUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
                     }
                     else
                     {

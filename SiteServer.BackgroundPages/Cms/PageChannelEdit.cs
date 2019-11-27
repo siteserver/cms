@@ -133,7 +133,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ELinkTypeUtils.AddListItems(DdlLinkType);
                 ETaxisTypeUtils.AddListItemsForChannelEdit(DdlTaxisType);
 
-                ControlUtils.AddListControlItems(CblNodeGroupNameCollection, ChannelGroupManager.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult());
+                ControlUtils.AddListControlItems(CblNodeGroupNameCollection, DataProvider.ChannelGroupDao.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult());
                 //CblNodeGroupNameCollection.DataSource = DataProvider.ChannelGroupDao.GetDataSource(SiteId);
 
                 DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();

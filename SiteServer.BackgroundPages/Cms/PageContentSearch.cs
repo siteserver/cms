@@ -164,7 +164,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else if (AuthRequest.IsQueryExists("IsRestoreAll"))
                 {
-                    DataProvider.ContentDao.UpdateRestoreContentsByTrash(SiteId, _channelId, tableName);
+                    DataProvider.ContentDao.UpdateRestoreContentsByTrashAsync(SiteId, tableName).GetAwaiter().GetResult();
                     await AuthRequest.AddSiteLogAsync( SiteId, "从回收站还原所有内容");
                     SuccessMessage("成功还原所有内容!");
                 }

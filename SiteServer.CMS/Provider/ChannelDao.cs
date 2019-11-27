@@ -287,7 +287,7 @@ namespace SiteServer.CMS.Provider
 
             await DataProvider.SiteDao.InsertAsync(site);
 
-            var adminEntity = await AdminManager.GetByUserNameAsync(administratorName);
+            var adminEntity = await DataProvider.AdministratorDao.GetByUserNameAsync(administratorName);
             await DataProvider.AdministratorDao.UpdateSiteIdAsync(adminEntity, channel.Id);
 
             await _repository.UpdateAsync(Q

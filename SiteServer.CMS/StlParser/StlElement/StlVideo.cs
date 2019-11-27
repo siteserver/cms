@@ -109,12 +109,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var contentInfo = await contextInfo.GetContentAsync();
                         if (contentInfo == null)
                         {
-                            videoUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, type);
+                            videoUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
                                 if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                                 {
-                                    videoUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
+                                    videoUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
                                 }
                             }
                         }

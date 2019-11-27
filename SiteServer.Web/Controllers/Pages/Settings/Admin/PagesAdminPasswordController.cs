@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
@@ -23,7 +21,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var userId = request.GetQueryInt("userId");
                 if (userId == 0) userId = request.AdminId;
                 if (!request.IsAdminLoggin) return Unauthorized();
-                var adminInfo = await AdminManager.GetByUserIdAsync(userId);
+                var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
                     ! await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
@@ -51,7 +49,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var userId = request.GetQueryInt("userId");
                 if (userId == 0) userId = request.AdminId;
                 if (!request.IsAdminLoggin) return Unauthorized();
-                var adminInfo = await AdminManager.GetByUserIdAsync(userId);
+                var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
                     !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))

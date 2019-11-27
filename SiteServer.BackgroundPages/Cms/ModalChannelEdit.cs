@@ -108,7 +108,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ETaxisTypeUtils.AddListItemsForChannelEdit(DdlTaxisType);
 
-                ControlUtils.AddListControlItems(CblNodeGroupNameCollection, ChannelGroupManager.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult());
+                ControlUtils.AddListControlItems(CblNodeGroupNameCollection, DataProvider.ChannelGroupDao.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult());
                 //CblNodeGroupNameCollection.DataSource = DataProvider.ChannelGroupDao.GetDataSource(SiteId);
 
                 if (PhChannelTemplateId.Visible)

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.Utils;
 
@@ -57,7 +55,7 @@ namespace SiteServer.API.Controllers.Home
 
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
                     var isTop = contentInfo.Top;
@@ -65,14 +63,14 @@ namespace SiteServer.API.Controllers.Home
                     {
                         if (isUp)
                         {
-                            if (DataProvider.ContentDao.SetTaxisToUp(tableName, channelId, contentId, isTop) == false)
+                            if (await DataProvider.ContentDao.SetTaxisToUpAsync(tableName, channelId, contentId, isTop) == false)
                             {
                                 break;
                             }
                         }
                         else
                         {
-                            if (DataProvider.ContentDao.SetTaxisToDown(tableName, channelId, contentId, isTop) == false)
+                            if (await DataProvider.ContentDao.SetTaxisToDownAsync(tableName, channelId, contentId, isTop) == false)
                             {
                                 break;
                             }

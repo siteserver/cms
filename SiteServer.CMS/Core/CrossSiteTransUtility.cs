@@ -3,7 +3,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
@@ -249,9 +248,7 @@ namespace SiteServer.CMS.Core
 
         public static async Task TransContentInfoAsync(Site site, Channel channel, int contentId, Site targetSite, int targetChannelId)
         {
-            var targetTableName = await ChannelManager.GetTableNameAsync(targetSite, targetChannelId);
-
-            var contentInfo = await ContentManager.GetContentInfoAsync(site, channel, contentId);
+            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channel, contentId);
             FileUtility.MoveFileByContentInfo(site, targetSite, contentInfo);
             contentInfo.SiteId = targetSite.Id;
             contentInfo.SourceId = channel.Id;
@@ -262,7 +259,7 @@ namespace SiteServer.CMS.Core
             //复制
             if (Equals(channel.TransDoneType, ETranslateContentType.Copy))
             {
-                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
+                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy);
             }
             //引用地址
             else if (Equals(channel.TransDoneType, ETranslateContentType.Reference))
@@ -271,7 +268,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = channel.Id;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
+                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.Reference);
             }
             //引用内容
             else if (Equals(channel.TransDoneType, ETranslateContentType.ReferenceContent))
@@ -280,51 +277,48 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = channel.Id;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
+                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.ReferenceContent);
             }
 
-            if (!string.IsNullOrEmpty(targetTableName))
+            await DataProvider.ContentDao.InsertAsync(targetSite, channel, contentInfo);
+
+            #region 复制资源
+            //资源：图片，文件，视频
+            if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.ImageUrl)))
             {
-                await DataProvider.ContentDao.InsertAsync(targetTableName, targetSite, channel, contentInfo);
+                //修改图片
+                var sourceImageUrl = PathUtility.MapPath(site, contentInfo.Get<string>(ContentAttribute.ImageUrl));
+                CopyReferenceFiles(targetSite, sourceImageUrl, site);
 
-                #region 复制资源
-                //资源：图片，文件，视频
-                if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.ImageUrl)))
-                {
-                    //修改图片
-                    var sourceImageUrl = PathUtility.MapPath(site, contentInfo.Get<string>(ContentAttribute.ImageUrl));
-                    CopyReferenceFiles(targetSite, sourceImageUrl, site);
-
-                }
-                else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl))))
-                {
-                    var sourceImageUrls = TranslateUtils.StringCollectionToStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl)));
-
-                    foreach (string imageUrl in sourceImageUrls)
-                    {
-                        var sourceImageUrl = PathUtility.MapPath(site, imageUrl);
-                        CopyReferenceFiles(targetSite, sourceImageUrl, site);
-                    }
-                }
-                if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.FileUrl)))
-                {
-                    //修改附件
-                    var sourceFileUrl = PathUtility.MapPath(site, contentInfo.Get<string>(ContentAttribute.FileUrl));
-                    CopyReferenceFiles(targetSite, sourceFileUrl, site);
-
-                }
-                else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl))))
-                {
-                    var sourceFileUrls = TranslateUtils.StringCollectionToStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl)));
-
-                    foreach (string fileUrl in sourceFileUrls)
-                    {
-                        var sourceFileUrl = PathUtility.MapPath(site, fileUrl);
-                        CopyReferenceFiles(targetSite, sourceFileUrl, site);
-                    }
-                }
-                #endregion
             }
+            else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl))))
+            {
+                var sourceImageUrls = TranslateUtils.StringCollectionToStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl)));
+
+                foreach (string imageUrl in sourceImageUrls)
+                {
+                    var sourceImageUrl = PathUtility.MapPath(site, imageUrl);
+                    CopyReferenceFiles(targetSite, sourceImageUrl, site);
+                }
+            }
+            if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.FileUrl)))
+            {
+                //修改附件
+                var sourceFileUrl = PathUtility.MapPath(site, contentInfo.Get<string>(ContentAttribute.FileUrl));
+                CopyReferenceFiles(targetSite, sourceFileUrl, site);
+
+            }
+            else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl))))
+            {
+                var sourceFileUrls = TranslateUtils.StringCollectionToStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl)));
+
+                foreach (string fileUrl in sourceFileUrls)
+                {
+                    var sourceFileUrl = PathUtility.MapPath(site, fileUrl);
+                    CopyReferenceFiles(targetSite, sourceFileUrl, site);
+                }
+            }
+            #endregion
         }
 
         private static void CopyReferenceFiles(Site targetSite, string sourceUrl, Site sourceSite)

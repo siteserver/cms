@@ -10,13 +10,13 @@ namespace SiteServer.CMS.Core.Create
 {
     public static class DeleteManager
     {
-        public static async Task DeleteContentsByPageAsync(Site site, List<int> channelIdList)
+        public static async Task DeleteContentsByPageAsync(Site site, IEnumerable<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
                 var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
-                var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
-                if (contentIdList.Count > 0)
+                var contentIdList = await DataProvider.ContentDao.GetContentIdListAsync(tableName, channelId);
+                if (contentIdList != null)
                 {
                     foreach (var contentId in contentIdList)
                     {
@@ -29,7 +29,7 @@ namespace SiteServer.CMS.Core.Create
             }
         }
 
-        public static async Task DeleteContentsAsync(Site site, int channelId, List<int> contentIdList)
+        public static async Task DeleteContentsAsync(Site site, int channelId, IEnumerable<int> contentIdList)
         {
             foreach (var contentId in contentIdList)
             {
@@ -43,7 +43,7 @@ namespace SiteServer.CMS.Core.Create
             FileUtils.DeleteFileIfExists(filePath);
         }
 
-        public static async Task DeleteChannelsAsync(Site site, List<int> channelIdList)
+        public static async Task DeleteChannelsAsync(Site site, IEnumerable<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
@@ -52,15 +52,12 @@ namespace SiteServer.CMS.Core.Create
                 FileUtils.DeleteFileIfExists(filePath);
 
                 var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
-                var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
-                if (contentIdList.Count > 0)
-                {
-                    await DeleteContentsAsync(site, channelId, contentIdList);
-                }
+                var contentIdList = await DataProvider.ContentDao.GetContentIdListAsync(tableName, channelId);
+                await DeleteContentsAsync(site, channelId, contentIdList);
             }
         }
 
-        public static async Task DeleteChannelsByPageAsync(Site site, List<int> channelIdList)
+        public static async Task DeleteChannelsByPageAsync(Site site, IEnumerable<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
@@ -94,7 +91,7 @@ namespace SiteServer.CMS.Core.Create
             }
         }
 
-        public static async Task DeleteFilesAsync(Site site, List<int> templateIdList)
+        public static async Task DeleteFilesAsync(Site site, IEnumerable<int> templateIdList)
         {
             foreach (var templateId in templateIdList)
             {

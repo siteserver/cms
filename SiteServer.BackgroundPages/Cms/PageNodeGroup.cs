@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(Constants.WebSitePermissions.Configuration);    
 
-            RptContents.DataSource = ChannelGroupManager.GetChannelGroupListAsync(SiteId).GetAwaiter().GetResult();
+            RptContents.DataSource = DataProvider.ChannelGroupDao.GetChannelGroupListAsync(SiteId).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 

@@ -156,7 +156,6 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
                 var styleList = await TableStyleManager.GetContentStyleListAsync(site, channelInfo);
                 var isChecked = checkedLevel >= site.CheckContentLevel;
 
@@ -187,7 +186,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
                     contentInfo.Title = formCollection[ContentAttribute.Title];
 
-                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(tableName, site, channelInfo, contentInfo);
+                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channelInfo, contentInfo);
 
                     contentIdList.Add(contentInfo.Id);
                 }

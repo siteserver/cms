@@ -35,7 +35,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 Administrator adminInfo;
                 if (userId > 0)
                 {
-                    adminInfo = await AdminManager.GetByUserIdAsync(userId);
+                    adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
                     if (adminInfo == null) return NotFound();
                 }
                 else
@@ -63,7 +63,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
-                var adminInfo = await AdminManager.GetByUserIdAsync(userId);
+                var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
                     !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
@@ -82,8 +82,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                         return BadRequest("Could not read image from body");
                     }
 
-                    var fileName = AdminManager.GetUserUploadFileName(postFile.FileName);
-                    var filePath = AdminManager.GetUserUploadPath(userId, fileName);
+                    var fileName = DataProvider.AdministratorDao.GetUserUploadFileName(postFile.FileName);
+                    var filePath = DataProvider.AdministratorDao.GetUserUploadPath(userId, fileName);
 
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
@@ -92,7 +92,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                     postFile.SaveAs(filePath);
 
-                    avatarUrl = AdminManager.GetUserUploadUrl(userId, fileName);
+                    avatarUrl = DataProvider.AdministratorDao.GetUserUploadUrl(userId, fileName);
                 }
 
                 return Ok(new
@@ -124,7 +124,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 Administrator adminInfo;
                 if (userId > 0)
                 {
-                    adminInfo = await AdminManager.GetByUserIdAsync(userId);
+                    adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
                     if (adminInfo == null) return NotFound();
                 }
                 else

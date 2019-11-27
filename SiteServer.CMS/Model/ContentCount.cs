@@ -1,6 +1,6 @@
-﻿namespace SiteServer.CMS.Core
+﻿namespace SiteServer.CMS.Model
 {
-    public class ContentCountInfo
+    public class ContentCount
     {
         public int SiteId { get; set; }
         public int ChannelId { get; set; }

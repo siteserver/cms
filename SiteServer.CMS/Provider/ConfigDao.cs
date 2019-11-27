@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
+using Microsoft.Extensions.Caching.Distributed;
+using SiteServer.CMS.Caching;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 
@@ -9,10 +11,14 @@ namespace SiteServer.CMS.Provider
     public partial class ConfigDao : IRepository
     {
         private readonly Repository<Config> _repository;
+        private readonly IDistributedCache _cache;
+        private readonly string _cacheKey;
 
         public ConfigDao()
         {
             _repository = new Repository<Config>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            _cache = CacheManager.Cache;
+            _cacheKey = _cache.GetEntityKey(this);
         }
 
         public IDatabase Database => _repository.Database;

@@ -7,7 +7,6 @@ using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.StlParser;
 using SiteServer.Utils;
@@ -74,7 +73,7 @@ namespace SiteServer.API.Controllers.Sys
                     }
                     else if (contentId != 0)
                     {
-                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                         redirectUrl = await PageUtility.GetContentUrlAsync(site, contentInfo, false);
                     }
                     else if (channelId != 0)

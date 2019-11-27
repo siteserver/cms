@@ -111,7 +111,7 @@ namespace SiteServer.CMS.Context
 			}
 		}
 
-        public static void AddListControlItems(ListControl listControl, List<string> list)
+        public static void AddListControlItems(ListControl listControl, IEnumerable<string> list)
         {
             if (listControl == null) return;
 

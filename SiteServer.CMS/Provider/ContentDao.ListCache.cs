@@ -4,19 +4,20 @@ using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SqlKata;
 
-namespace SiteServer.CMS.DataCache.Content
+namespace SiteServer.CMS.Provider
 {
-    public static partial class ContentManager
+    public partial class ContentDao
     {
         private static class ListCache
         {
             private static readonly object LockObject = new object();
-            private static readonly string CachePrefix = DataCacheManager.GetCacheKey(nameof(ContentManager), nameof(ListCache));
+            private static readonly string CachePrefix = DataCacheManager.GetCacheKey(nameof(ContentDao), nameof(ListCache));
 
             private static string GetCacheKey(int channelId, int adminId)
             {
@@ -45,7 +46,7 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static void Set(Model.Content content)
+            public static void Set(Content content)
             {
                 var contentIdList = GetContentIdList(content.ChannelId, 0);
                 if (!contentIdList.Contains(content.Id))
@@ -61,7 +62,7 @@ namespace SiteServer.CMS.DataCache.Content
             }
         }
 
-        public static async Task<List<(int ChannelId, int ContentId)>> GetChannelContentIdListAsync(Site site, Channel channel, int adminId, bool isAllContents, int offset, int limit)
+        public async Task<List<(int ChannelId, int ContentId)>> GetChannelContentIdListAsync(Site site, Channel channel, int adminId, bool isAllContents, int offset, int limit)
         {
             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
 
@@ -91,24 +92,22 @@ namespace SiteServer.CMS.DataCache.Content
                 return channelContentIdList.Skip(offset).Take(limit).ToList();
             }
 
-            var query = Q.NewQuery();
-            await DataProvider.ContentDao.QueryWhereAsync(query, site, channel, adminId, isAllContents);
-            DataProvider.ContentDao.QueryOrder(query, channel, string.Empty, isAllContents);
-            query.Offset(offset).Limit(limit);
+            var query = Q.Offset(offset).Limit(limit);
+            await QueryWhereAsync(query, site, channel, adminId, isAllContents);
+            QueryOrder(query, channel, string.Empty, isAllContents);
 
             if (channelContentIdList.Count == offset)
             {
-                var dict = ContentCache.GetContentDict(channel.Id);
+                var repository = new Repository<Content>(_db, tableName);
+                var pageContentList = await GetContentListAsync(repository, query);
 
-                var pageContentList = await DataProvider.ContentDao.GetContentListAsync(tableName, query);
-
-                //var pageContentInfoList = await DataProvider.ContentDao.GetContentInfoListAsync(tableName, await DataProvider.ContentDao.GetCacheWhereStringAsync(site, channel, adminId, isAllContents),
-                //    DataProvider.ContentDao.GetOrderString(channel, string.Empty, isAllContents), offset, limit);
+                //var pageContentInfoList = await GetContentInfoListAsync(tableName, await GetCacheWhereStringAsync(site, channel, adminId, isAllContents),
+                //    GetOrderString(channel, string.Empty, isAllContents), offset, limit);
 
                 foreach (var content in pageContentList)
                 {
                     ListCache.Set(content);
-                    dict[content.Id] = content;
+                    await SetEntityCacheAsync(repository, content);
                 }
 
                 var pageContentIdList = pageContentList.Select(x => (x.ChannelId, x.Id)).ToList();
@@ -116,11 +115,11 @@ namespace SiteServer.CMS.DataCache.Content
                 return pageContentIdList;
             }
 
-            var minList = await DataProvider.ContentDao.GetContentMinListAsync(tableName, query);
+            var minList = await GetContentMinListAsync(tableName, query);
             return minList.Select(x => (x.ChannelId, x.Id)).ToList();
 
-            //return DataProvider.ContentDao.GetCacheChannelContentIdList(tableName, await DataProvider.ContentDao.GetCacheWhereStringAsync(site, channel, adminId, isAllContents),
-            //    DataProvider.ContentDao.GetOrderString(channel, string.Empty, isAllContents), offset, limit);
+            //return GetCacheChannelContentIdList(tableName, await GetCacheWhereStringAsync(site, channel, adminId, isAllContents),
+            //    GetOrderString(channel, string.Empty, isAllContents), offset, limit);
         }
     }
 }

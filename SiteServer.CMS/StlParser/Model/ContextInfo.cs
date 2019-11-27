@@ -1,7 +1,7 @@
 using System.Collections.Specialized;
 using System.Threading.Tasks;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.StlParser.Model
@@ -85,7 +85,7 @@ namespace SiteServer.CMS.StlParser.Model
         {
             if (_content != null) return _content;
             if (ContentId <= 0) return null;
-            _content = await ContentManager.GetContentInfoAsync(Site, ChannelId, ContentId);
+            _content = await DataProvider.ContentDao.GetAsync(Site, ChannelId, ContentId);
             return _content;
         }
         public void SetContentInfo(Content value)

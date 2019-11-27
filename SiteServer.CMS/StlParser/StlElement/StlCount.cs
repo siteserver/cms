@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Stl;
@@ -115,7 +116,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 foreach (var theChannelId in channelIdList)
                 {
                     var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, theChannelId);
-                    count += await StlContentCache.GetCountOfContentAddAsync(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, ETriState.True);
+                    count += await DataProvider.ContentDao.GetCountOfContentAddAsync(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, ETriState.True);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))

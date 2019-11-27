@@ -116,7 +116,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
                     }
 
                     var fileName = postFile.FileName;
-                    var filePath = UserManager.GetHomeUploadPath(fileName);
+                    var filePath = DataProvider.UserDao.GetHomeUploadPath(fileName);
 
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
@@ -125,7 +125,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
 
                     postFile.SaveAs(filePath);
 
-                    homeLogoUrl = PageUtils.AddProtocolToUrl(UserManager.GetHomeUploadUrl(fileName));
+                    homeLogoUrl = PageUtils.AddProtocolToUrl(DataProvider.UserDao.GetHomeUploadUrl(fileName));
                 }
 
                 return Ok(new

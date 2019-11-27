@@ -78,13 +78,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (contentInfo == null)
                     {
                         //playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, type);
-                        playUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, type);
+                        playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
                                 //playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, ContentAttribute.VideoUrl);
-                                playUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
+                                playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
                             }
                         }
                         if (string.IsNullOrEmpty(playUrl))
@@ -92,7 +92,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.FileUrl))
                             {
                                 //playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, ContentAttribute.FileUrl);
-                                playUrl = StlContentCache.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.FileUrl);
+                                playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.FileUrl);
                             }
                         }
                     }

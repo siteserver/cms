@@ -8,14 +8,13 @@ using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 
 namespace SiteServer.CMS.Core.Office
 {
     public static class ExcelObject
     {
         public static async Task CreateExcelFileForContentsAsync(string filePath, Site site,
-            Channel channel, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
+            Channel channel, IEnumerable<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -35,15 +34,15 @@ namespace SiteServer.CMS.Core.Office
                 }
             }
 
-            if (contentIdList == null || contentIdList.Count == 0)
+            if (contentIdList == null)
             {
-                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channel.Id, isPeriods,
+                contentIdList = await DataProvider.ContentDao.GetContentIdListAsync(tableName, channel.Id, isPeriods,
                     startDate, endDate, checkedState);
             }
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = await ContentManager.GetContentInfoAsync(site, channel, contentId);
+                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channel, contentId);
                 if (contentInfo != null)
                 {
                     var row = new List<string>();
@@ -73,7 +72,7 @@ namespace SiteServer.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var columns = await ContentManager.GetContentColumnsAsync(site, channel, true);
+            var columns = await DataProvider.ContentDao.GetContentColumnsAsync(site, channel, true);
 
             foreach (var column in columns)
             {
@@ -126,7 +125,7 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var userId in userIdList)
             {
-                var userInfo = await UserManager.GetByUserIdAsync(userId);
+                var userInfo = await DataProvider.UserDao.GetByUserIdAsync(userId);
 
                 rows.Add(new List<string>
                 {
@@ -162,7 +161,7 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var userId in userIdList)
             {
-                var administrator = await AdminManager.GetByUserIdAsync(userId);
+                var administrator = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
 
                 rows.Add(new List<string>
                 {

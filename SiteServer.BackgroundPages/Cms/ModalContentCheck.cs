@@ -8,7 +8,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using Content = SiteServer.CMS.Model.Content;
 
@@ -133,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = ContentManager.GetContentInfoAsync(Site, channelInfo, contentId).GetAwaiter().GetResult();
+                    var contentInfo = DataProvider.ContentDao.GetAsync(Site, channelInfo, contentId).GetAwaiter().GetResult();
                     if (contentInfo != null)
                     {
                         if (CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
@@ -167,12 +166,6 @@ namespace SiteServer.BackgroundPages.Cms
                 var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
                 var contentIdList = idsDictionaryToCheck[channelId];
                 DataProvider.ContentDao.UpdateIsCheckedAsync(tableName, SiteId, channelId, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text).GetAwaiter().GetResult();
-            }
-
-            if (translateChannelId > 0)
-            {
-                var tableName = ChannelManager.GetTableNameAsync(Site, translateChannelId).GetAwaiter().GetResult();
-                ContentManager.RemoveCache(tableName, translateChannelId);
             }
 
             AuthRequest.AddSiteLogAsync(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text).GetAwaiter().GetResult();

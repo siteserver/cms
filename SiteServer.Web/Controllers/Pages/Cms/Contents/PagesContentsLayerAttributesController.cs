@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
@@ -46,7 +45,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                         foreach (var channelContentId in channelContentIds)
                         {
                             var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, channelContentId.Id);
+                            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, channelContentId.Id);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -78,7 +77,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                         foreach (var channelContentId in channelContentIds)
                         {
                             var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, channelContentId.Id);
+                            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, channelContentId.Id);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -108,7 +107,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     foreach (var channelContentId in channelContentIds)
                     {
                         var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, channelContentId.Id);
+                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         contentInfo.Hits = hits;

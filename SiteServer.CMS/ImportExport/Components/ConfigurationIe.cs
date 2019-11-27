@@ -68,19 +68,17 @@ namespace SiteServer.CMS.ImportExport.Components
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultFileTemplateName, fileTemplateName);
 			}
 
-			var channelGroupList = await ChannelGroupManager.GetChannelGroupListAsync(site.Id);
-            channelGroupList.Reverse();
+			var channelGroupList = await DataProvider.ChannelGroupDao.GetChannelGroupListAsync(site.Id);
 
-			foreach (var channelGroup in channelGroupList)
+            foreach (var channelGroup in channelGroupList)
 			{
 				var entry = ChannelGroupIe.Export(channelGroup);
                 feed.Entries.Add(entry);
 			}
 
-			var contentGroupList = await ContentGroupManager.GetContentGroupListAsync(site.Id);
-            contentGroupList.Reverse();
+			var contentGroupList = await DataProvider.ContentGroupDao.GetContentGroupsAsync(site.Id);
 
-			foreach (var contentGroup in contentGroupList)
+            foreach (var contentGroup in contentGroupList)
 			{
 				var entry = ContentGroupIe.Export(contentGroup);
 				feed.Entries.Add(entry);

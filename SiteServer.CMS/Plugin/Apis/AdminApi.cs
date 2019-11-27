@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
@@ -14,31 +12,31 @@ namespace SiteServer.CMS.Plugin.Apis
         private AdminApi() { }
 
         private static AdminApi _instance;
-        public static AdminApi Instance => _instance ?? (_instance = new AdminApi());
+        public static AdminApi Instance => _instance ??= new AdminApi();
 
-        public async Task<IAdministrator> GetAdminInfoByUserIdAsync(int userId)
+        public async Task<IAdministrator> GetByUserIdAsync(int userId)
         {
-            return await AdminManager.GetByUserIdAsync(userId);
+            return await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
         }
 
-        public async Task<IAdministrator> GetAdminInfoByUserNameAsync(string userName)
+        public async Task<IAdministrator> GetByUserNameAsync(string userName)
         {
-            return await AdminManager.GetByUserNameAsync(userName);
+            return await DataProvider.AdministratorDao.GetByUserNameAsync(userName);
         }
 
-        public async Task<IAdministrator> GetAdminInfoByEmailAsync(string email)
+        public async Task<IAdministrator> GetByEmailAsync(string email)
         {
-            return await AdminManager.GetByEmailAsync(email);
+            return await DataProvider.AdministratorDao.GetByEmailAsync(email);
         }
 
-        public async Task<IAdministrator> GetAdminInfoByMobileAsync(string mobile)
+        public async Task<IAdministrator> GetByMobileAsync(string mobile)
         {
-            return await AdminManager.GetByMobileAsync(mobile);
+            return await DataProvider.AdministratorDao.GetByMobileAsync(mobile);
         }
 
-        public async Task<IAdministrator> GetAdminInfoByAccountAsync(string account)
+        public async Task<IAdministrator> GetByAccountAsync(string account)
         {
-            return await AdminManager.GetByAccountAsync(account);
+            return await DataProvider.AdministratorDao.GetByAccountAsync(account);
         }
 
         public async Task<IEnumerable<string>> GetUserNameListAsync()
@@ -48,7 +46,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task<IPermissions> GetPermissionsAsync(string userName)
         {
-            var adminInfo = await AdminManager.GetByUserNameAsync(userName);
+            var adminInfo = await DataProvider.AdministratorDao.GetByUserNameAsync(userName);
             return new PermissionsImpl(adminInfo);
         }
 

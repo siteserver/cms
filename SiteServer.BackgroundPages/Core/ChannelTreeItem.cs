@@ -8,7 +8,6 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
 
@@ -146,7 +145,7 @@ namespace SiteServer.BackgroundPages.Core
 
                 htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(_site, _channel).GetAwaiter().GetResult());
 
-                var count = ContentManager.GetCountAsync(_site, _channel, adminId).GetAwaiter().GetResult();
+                var count = DataProvider.ContentDao.GetCountAsync(_site, _channel, adminId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append(
                     $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span>");

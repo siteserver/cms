@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
@@ -237,7 +235,7 @@ namespace SiteServer.API.Controllers.Home
             var channels = new List<object>();
             object site = null;
             object channel = null;
-            List<string> groupNames = null;
+            IEnumerable<string> groupNames = null;
             List<string> tagNames = null;
             Content content = null;
             List<TableStyle> styles = null;
@@ -293,7 +291,7 @@ namespace SiteServer.API.Controllers.Home
                         SiteUrl = PageUtility.GetSiteUrl(siteInfo, false)
                     };
 
-                    groupNames = await ContentGroupManager.GetGroupNameListAsync(siteInfo.Id);
+                    groupNames = await DataProvider.ContentGroupDao.GetGroupNamesAsync(siteInfo.Id);
                     tagNames = new List<string>();
                 }
 
@@ -315,7 +313,7 @@ namespace SiteServer.API.Controllers.Home
                         //checkedLevels.Insert(0, new KeyValuePair<int, string>(CheckManager.LevelInt.NotChange, CheckManager.Level.NotChange));
                         //checkedLevel = CheckManager.LevelInt.NotChange;
 
-                        content = await ContentManager.GetContentInfoAsync(siteInfo, channelInfo, requestContentId);
+                        content = await DataProvider.ContentDao.GetAsync(siteInfo, channelInfo, requestContentId);
                         if (content != null &&
                             (content.SiteId != siteInfo.Id || content.ChannelId != channelInfo.Id))
                         {

@@ -31,7 +31,6 @@ namespace SiteServer.BackgroundPages.Cms
 
             var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
             var channelInfo = ChannelManager.GetChannelAsync(siteId, channelId).GetAwaiter().GetResult();
-            var tableName = ChannelManager.GetTableNameAsync(site, channelInfo).GetAwaiter().GetResult();
             var styleList = TableStyleManager.GetContentStyleListAsync(site, channelInfo).GetAwaiter().GetResult();
 
             var form = AuthRequest.HttpRequest.Form;
@@ -79,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            contentInfo.Id = DataProvider.ContentDao.InsertPreviewAsync(tableName, site, channelInfo, contentInfo).GetAwaiter().GetResult();
+            contentInfo.Id = DataProvider.ContentDao.InsertPreviewAsync(site, channelInfo, contentInfo).GetAwaiter().GetResult();
 
             return new
             {

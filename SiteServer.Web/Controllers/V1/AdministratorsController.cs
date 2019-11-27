@@ -124,7 +124,7 @@ namespace SiteServer.API.Controllers.V1
 
                 if (!await DataProvider.AdministratorDao.IsExistsAsync(id)) return NotFound();
 
-                var administrator = await DataProvider.AdministratorDao.GetByIdAsync(id);
+                var administrator = await DataProvider.AdministratorDao.GetByUserIdAsync(id);
 
                 return Ok(new
                 {
@@ -173,7 +173,7 @@ namespace SiteServer.API.Controllers.V1
 
             if (!isValid)
             {
-                adminInfo = await AdminManager.GetByUserNameAsync(userName);
+                adminInfo = await DataProvider.AdministratorDao.GetByUserNameAsync(userName);
                 if (adminInfo != null)
                 {
                     await DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLoginAsync(adminInfo); // 记录最后登录时间、失败次数+1
@@ -185,7 +185,7 @@ namespace SiteServer.API.Controllers.V1
                 ));
             }
 
-            adminInfo = await AdminManager.GetByUserNameAsync(userName);
+            adminInfo = await DataProvider.AdministratorDao.GetByUserNameAsync(userName);
             await DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLoginAsync(adminInfo); // 记录最后登录时间、失败次数清零
             var accessToken = await context.AdminLoginAsync(adminInfo.UserName, request.IsAutoLogin);
             var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
@@ -263,7 +263,7 @@ namespace SiteServer.API.Controllers.V1
                     return BadRequest(valid1.ErrorMessage);
                 }
 
-                var adminInfo = await AdminManager.GetByUserNameAsync(valid1.UserName);
+                var adminInfo = await DataProvider.AdministratorDao.GetByUserNameAsync(valid1.UserName);
 
                 var valid2 = await DataProvider.AdministratorDao.ChangePasswordAsync(adminInfo, newPassword);
                 if (!valid2.IsValid)

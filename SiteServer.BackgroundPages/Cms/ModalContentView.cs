@@ -5,7 +5,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
 using Content = SiteServer.CMS.Model.Content;
@@ -57,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
             _contentId = AuthRequest.GetQueryInt("id");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            _content = ContentManager.GetContentInfoAsync(Site, channelInfo, _contentId).GetAwaiter().GetResult();
+            _content = DataProvider.ContentDao.GetAsync(Site, channelInfo, _contentId).GetAwaiter().GetResult();
 
             if (IsPostBack) return;
 
@@ -83,16 +82,16 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             LtlLastEditDate.Text = DateUtils.GetDateAndTimeString(_content.LastEditDate);
-            LtlAddUserName.Text = AdminManager.GetDisplayNameAsync(_content.AddUserName).GetAwaiter().GetResult();
-            LtlLastEditUserName.Text = AdminManager.GetDisplayNameAsync(_content.LastEditUserName).GetAwaiter().GetResult();
+            LtlAddUserName.Text = DataProvider.AdministratorDao.GetDisplayNameAsync(_content.AddUserName).GetAwaiter().GetResult();
+            LtlLastEditUserName.Text = DataProvider.AdministratorDao.GetDisplayNameAsync(_content.LastEditUserName).GetAwaiter().GetResult();
 
             LtlContentLevel.Text = CheckManager.GetCheckState(Site, _content);
 
-            if (_content.ReferenceId > 0 && _content.Get<string>(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+            if (_content.ReferenceId > 0 && ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, _content.TranslateContentType))
             {
                 var referenceSiteId = DataProvider.ChannelDao.GetSiteIdAsync(_content.SourceId).GetAwaiter().GetResult();
                 var referenceSite = DataProvider.SiteDao.GetAsync(referenceSiteId).GetAwaiter().GetResult();
-                var referenceContentInfo = ContentManager.GetContentInfoAsync(referenceSite, _content.SourceId, _content.ReferenceId).GetAwaiter().GetResult();
+                var referenceContentInfo = DataProvider.ContentDao.GetAsync(referenceSite, _content.SourceId, _content.ReferenceId).GetAwaiter().GetResult();
 
                 if (referenceContentInfo != null)
                 {

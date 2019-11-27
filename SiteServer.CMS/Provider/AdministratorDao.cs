@@ -5,21 +5,24 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using Microsoft.Extensions.Caching.Distributed;
+using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class AdministratorDao : IRepository
+    public partial class AdministratorDao : IRepository
     {
         private readonly Repository<Administrator> _repository;
+        private readonly IDistributedCache _cache;
 
         public AdministratorDao()
         {
             _repository = new Repository<Administrator>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            _cache = CacheManager.Cache;
         }
 
         public IDatabase Database => _repository.Database;
@@ -28,9 +31,9 @@ namespace SiteServer.CMS.Provider
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private class Attr
+        private static class Attr
         {
-            public static string SiteIdCollection = nameof(SiteIdCollection);
+            public static readonly string SiteIdCollection = nameof(SiteIdCollection);
         }
 
         public async Task UpdateLastActivityDateAndCountOfFailedLoginAsync(Administrator administrator)
@@ -46,7 +49,7 @@ namespace SiteServer.CMS.Provider
                 .Where(nameof(Administrator.Id), administrator.Id)
             );
 
-            AdminManager.UpdateCache(administrator);
+            await RemoveCacheAsync(administrator);
         }
 
         public async Task UpdateLastActivityDateAsync(Administrator administrator)
@@ -60,7 +63,7 @@ namespace SiteServer.CMS.Provider
                 .Where(nameof(Administrator.Id), administrator.Id)
             );
 
-            AdminManager.UpdateCache(administrator);
+            await RemoveCacheAsync(administrator);
         }
 
         public async Task UpdateLastActivityDateAndCountOfLoginAsync(Administrator administrator)
@@ -78,7 +81,7 @@ namespace SiteServer.CMS.Provider
                 .Where(nameof(Administrator.Id), administrator.Id)
             );
 
-            AdminManager.UpdateCache(administrator);
+            await RemoveCacheAsync(administrator);
         }
 
         public async Task UpdateSiteIdCollectionAsync(Administrator administrator, List<int> siteIds)
@@ -92,7 +95,7 @@ namespace SiteServer.CMS.Provider
                 .Where(nameof(Administrator.Id), administrator.Id)
             );
 
-            AdminManager.UpdateCache(administrator);
+            await RemoveCacheAsync(administrator);
         }
 
         public async Task<List<int>> UpdateSiteIdAsync(Administrator administrator, int siteId)
@@ -114,7 +117,7 @@ namespace SiteServer.CMS.Provider
                     .Where(nameof(Administrator.Id), administrator.Id)
                 );
 
-                AdminManager.UpdateCache(administrator);
+                await RemoveCacheAsync(administrator);
             }
 
             return siteIdListLatestAccessed;
@@ -132,77 +135,36 @@ namespace SiteServer.CMS.Provider
                 .Where(nameof(Administrator.Id), administrator.Id)
             );
 
-            AdminManager.RemoveCache(administrator);
+            await RemoveCacheAsync(administrator);
         }
 
-        public async Task DeleteAsync(Administrator administrator)
+        public async Task LockAsync(IList<string> userNameList)
         {
-            if (administrator == null) return;
+            foreach (var userName in userNameList)
+            {
+                var admin = await GetByUserNameAsync(userName);
+                await RemoveCacheAsync(admin);
+            }
 
-            await _repository.DeleteAsync(administrator.Id);
-
-            AdminManager.RemoveCache(administrator);
-        }
-
-        public async Task LockAsync(IEnumerable<string> userNameList)
-        {
             await _repository.UpdateAsync(Q
                 .Set(nameof(Administrator.IsLockedOut), true.ToString())
                 .WhereIn(nameof(Administrator.UserName), userNameList)
             );
-
-            AdminManager.ClearCache();
         }
 
-        public async Task UnLockAsync(IEnumerable<string> userNameList)
+        public async Task UnLockAsync(IList<string> userNameList)
         {
+            foreach (var userName in userNameList)
+            {
+                var admin = await GetByUserNameAsync(userName);
+                await RemoveCacheAsync(admin);
+            }
+
             await _repository.UpdateAsync(Q
                 .Set(nameof(Administrator.IsLockedOut), false.ToString())
                 .Set(nameof(Administrator.CountOfFailedLogin), 0)
                 .WhereIn(nameof(Administrator.UserName), userNameList)
             );
-
-            AdminManager.ClearCache();
-        }
-
-        public async Task<Administrator> GetByIdAsync(int id)
-        {
-            var admin = await _repository.GetAsync(id);
-            return admin;
-        }
-
-        private async Task<Administrator> GetByAccountAsync(string account)
-        {
-            var administratorEntity = await GetByUserNameAsync(account);
-            if (administratorEntity != null) return administratorEntity;
-            if (StringUtils.IsMobile(account)) return await GetByMobileAsync(account);
-            if (StringUtils.IsEmail(account)) return await GetByEmailAsync(account);
-
-            return null;
-        }
-
-        public async Task<Administrator> GetByUserIdAsync(int userId)
-        {
-            var admin = await _repository.GetAsync(userId);
-            return admin;
-        }
-
-        public async Task<Administrator> GetByUserNameAsync(string userName)
-        {
-            var admin = await _repository.GetAsync(Q.Where(nameof(Administrator.UserName), userName));
-            return admin;
-        }
-
-        public async Task<Administrator> GetByMobileAsync(string mobile)
-        {
-            var admin = await _repository.GetAsync(Q.Where(nameof(Administrator.Mobile), mobile));
-            return admin;
-        }
-
-        public async Task<Administrator> GetByEmailAsync(string email)
-        {
-            var admin = await _repository.GetAsync(Q.Where(nameof(Administrator.Email), email));
-            return admin;
         }
 
         public async Task<int> GetCountAsync(string creatorUserName, string role, int lastActivityDate, string keyword)
@@ -493,7 +455,9 @@ namespace SiteServer.CMS.Provider
 
         public async Task<(bool IsValid, string ErrorMessage)> UpdateAsync(Administrator administrator)
         {
-            var admin = await GetByIdAsync(administrator.Id);
+            var admin = await GetByUserIdAsync(administrator.Id);
+            await RemoveCacheAsync(admin);
+
             var valid = await UpdateValidateAsync(admin, administrator.UserName, administrator.Email, administrator.Mobile);
             if (!valid.IsValid) return valid;
 
@@ -512,8 +476,6 @@ namespace SiteServer.CMS.Provider
                 .Set(nameof(Administrator.UserName), administrator.UserName)
                 .Where(nameof(Administrator.Id), administrator.Id)
             );
-
-            AdminManager.UpdateCache(administrator);
 
             return (true, string.Empty);
         }
@@ -667,11 +629,13 @@ namespace SiteServer.CMS.Provider
 
         public async Task<Administrator> DeleteAsync(int id)
         {
-            var adminEntityToDelete = await GetByIdAsync(id);
+            var admin = await GetByUserIdAsync(id);
 
             await _repository.DeleteAsync(id);
 
-            return adminEntityToDelete;
+            await RemoveCacheAsync(admin);
+
+            return admin;
         }
     }
 }

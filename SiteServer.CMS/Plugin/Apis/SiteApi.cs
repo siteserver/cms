@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Plugin.Apis
         private SiteApi() { }
 
         private static SiteApi _instance;
-        public static SiteApi Instance => _instance ?? (_instance = new SiteApi());
+        public static SiteApi Instance => _instance ??= new SiteApi();
 
         public async Task<int> GetSiteIdByFilePathAsync(string path)
         {

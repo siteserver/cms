@@ -53,7 +53,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     }
                 }
 
-                var list = await DataProvider.AccessTokenDao.GetAccessTokenInfoListAsync();
+                var list = await DataProvider.AccessTokenDao.GetAccessTokenListAsync();
 
                 return Ok(new
                 {
@@ -84,7 +84,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var id = request.GetPostInt("id");
 
                 await DataProvider.AccessTokenDao.DeleteAsync(id);
-                var list = await DataProvider.AccessTokenDao.GetAccessTokenInfoListAsync();
+                var list = await DataProvider.AccessTokenDao.GetAccessTokenListAsync();
 
                 return Ok(new
                 {
@@ -145,7 +145,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     await request.AddAdminLogAsync("新增API密钥", $"Access Token:{tokenInfo.Title}");
                 }
 
-                var list = await DataProvider.AccessTokenDao.GetAccessTokenInfoListAsync();
+                var list = await DataProvider.AccessTokenDao.GetAccessTokenListAsync();
 
                 return Ok(new
                 {

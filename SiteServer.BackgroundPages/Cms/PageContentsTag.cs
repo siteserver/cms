@@ -9,7 +9,6 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using Content = SiteServer.CMS.Model.Content;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
@@ -46,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentId = AuthRequest.GetQueryInt("contentId");
                 var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
 
-                var contentInfo = ContentManager.GetContentInfoAsync(Site, channelInfo, contentId).GetAwaiter().GetResult();
+                var contentInfo = DataProvider.ContentDao.GetAsync(Site, channelInfo, contentId).GetAwaiter().GetResult();
                 
                 var tagList = TranslateUtils.StringCollectionToStringList(contentInfo.Tags, ' ');
                 if (tagList.Contains(_tag))

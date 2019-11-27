@@ -4,8 +4,8 @@ using System.Data;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
@@ -129,7 +129,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var contentId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
                 var channelId = Convert.ToInt32(row[nameof(ContentAttribute.ChannelId)]);
 
-                var contentInfo = await ContentManager.GetContentInfoAsync(pageInfo.Site, channelId, contentId);
+                var contentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, channelId, contentId);
 
                 if (contentInfo != null)
                 {

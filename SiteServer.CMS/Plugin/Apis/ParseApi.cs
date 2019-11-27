@@ -16,7 +16,7 @@ namespace SiteServer.CMS.Plugin.Apis
         private ParseApi() { }
 
         private static ParseApi _instance;
-        public static ParseApi Instance => _instance ?? (_instance = new ParseApi());
+        public static ParseApi Instance => _instance ??= new ParseApi();
 
         public Dictionary<string, string> GetStlElements(string html, List<string> stlElementNames)
         {

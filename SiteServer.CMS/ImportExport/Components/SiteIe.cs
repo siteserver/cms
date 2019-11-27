@@ -5,7 +5,6 @@ using SiteServer.CMS.Context.Atom.Atom.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
 
@@ -140,7 +139,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, channelId, orderByString);
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                     //ContentUtility.PutImagePaths(site, contentInfo as BackgroundContentInfo, collection);
                     var entry = _contentIe.ExportContentInfo(contentInfo);
                     feed.Entries.Add(entry);

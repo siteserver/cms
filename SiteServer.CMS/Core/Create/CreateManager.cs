@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
@@ -31,7 +30,7 @@ namespace SiteServer.CMS.Core.Create
                 
                 if (channelInfo != null)
                 {
-                    var count = await ContentManager.GetCountAsync(site, channelInfo, true);
+                    var count = await DataProvider.ContentDao.GetCountAsync(site, channelInfo, true);
                     if (count > 0)
                     {
                         pageCount = count;
@@ -41,11 +40,11 @@ namespace SiteServer.CMS.Core.Create
             }
             else if (createType == ECreateType.Content)
             {
-                var tuple = DataProvider.ContentDao.GetValue(await ChannelManager.GetTableNameAsync(await 
+                var title = DataProvider.ContentDao.GetValue(await ChannelManager.GetTableNameAsync(await 
                     DataProvider.SiteDao.GetAsync(siteId), channelId), contentId, ContentAttribute.Title);
-                if (tuple != null)
+                if (!string.IsNullOrEmpty(title))
                 {
-                    name = tuple.Item2;
+                    name = title;
                     pageCount = 1;
                 }
             }

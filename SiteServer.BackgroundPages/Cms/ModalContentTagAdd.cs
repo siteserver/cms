@@ -74,11 +74,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                                 ContentTagUtils.UpdateTagsAsync(string.Empty, TbTags.Text, SiteId, contentId).GetAwaiter().GetResult();
 
-                                var tuple = DataProvider.ContentDao.GetValue(Site.TableName, contentId, ContentAttribute.Tags);
+                                var tags = DataProvider.ContentDao.GetValue(Site.TableName, contentId, ContentAttribute.Tags);
 
-                                if (tuple != null)
+                                if (!string.IsNullOrEmpty(tags))
                                 {
-                                    var contentTagList = TranslateUtils.StringCollectionToStringList(tuple.Item2);
+                                    var contentTagList = TranslateUtils.StringCollectionToStringList(tags);
                                     contentTagList.Remove(_tagName);
                                     foreach (var theTag in tagCollection)
                                     {
@@ -87,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
                                             contentTagList.Add(theTag);
                                         }
                                     }
-                                    DataProvider.ContentDao.Update(Site.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
+                                    DataProvider.ContentDao.UpdateAsync(Site.TableName, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList)).GetAwaiter().GetResult();
                                 }
                             }
                         }

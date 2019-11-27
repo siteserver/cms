@@ -304,20 +304,20 @@ namespace SiteServer.CMS.StlParser.Utility
             var tableName = await ChannelManager.GetTableNameAsync(site, nodeInfo);
 
             var sqlWhereString = await ChannelManager.IsContentModelPluginAsync(site, nodeInfo)
-                ? await StlContentCache.GetStlWhereStringAsync(site.Id, listInfo.GroupContent, listInfo.GroupContentNot,
+                ? await DataProvider.ContentDao.GetStlWhereStringAsync(site.Id, listInfo.GroupContent, listInfo.GroupContentNot,
                     listInfo.Tags, listInfo.IsTopExists, listInfo.IsTop, listInfo.Where)
-                : await StlContentCache.GetStlWhereStringAsync(site.Id, listInfo.GroupContent,
+                : await DataProvider.ContentDao.GetStlWhereStringAsync(site.Id, listInfo.GroupContent,
                     listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile,
                     listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor,
                     listInfo.Where);
 
-            return await StlContentCache.GetStlSqlStringCheckedAsync(tableName, site.Id, channelId, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, sqlWhereString, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot);
+            return await DataProvider.ContentDao.GetStlSqlStringCheckedAsync(tableName, site.Id, channelId, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, sqlWhereString, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot);
         }
 
         public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
-            var sqlWhereString = StlContentCache.GetStlWhereStringBySearch(groupContent, groupContentNot, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
-            var sqlString = StlContentCache.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString);
+            var sqlWhereString = DataProvider.ContentDao.GetStlWhereStringBySearch(groupContent, groupContentNot, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
+            var sqlString = DataProvider.ContentDao.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString);
 
             return sqlString;
         }
@@ -331,7 +331,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (isRelatedContents && contentId > 0)
             {
-                var tagCollection = StlContentCache.GetValue(tableName, contentId, ContentAttribute.Tags);
+                var tagCollection = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
                     var contentIdList = await StlTagCache.GetContentIdListByTagCollectionAsync(TranslateUtils.StringCollectionToStringList(tagCollection), site.Id);
@@ -365,15 +365,15 @@ namespace SiteServer.CMS.StlParser.Utility
             }
 
             var sqlWhereString = await PluginManager.IsExistsAsync(nodeInfo.ContentModelPluginId)
-                ? await StlContentCache.GetStlWhereStringAsync(site.Id, groupContent, groupContentNot,
+                ? await DataProvider.ContentDao.GetStlWhereStringAsync(site.Id, groupContent, groupContentNot,
                     tags, isTopExists, isTop, where)
-                : await StlContentCache.GetStlWhereStringAsync(site.Id, groupContent,
+                : await DataProvider.ContentDao.GetStlWhereStringAsync(site.Id, groupContent,
                     groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile,
                     isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
                     where);
 
             var channelIdList = await ChannelManager.GetChannelIdListAsync(nodeInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
-            return StlContentCache.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
+            return DataProvider.ContentDao.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
         }
 
         public static async Task<List<MinContentInfo>> GetMinContentInfoListAsync(Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)

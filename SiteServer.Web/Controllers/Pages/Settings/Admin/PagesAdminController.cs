@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
@@ -82,7 +79,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                         administratorInfo.LastActivityDate,
                         administratorInfo.CountOfLogin,
                         administratorInfo.Locked,
-                        Roles = await AdminManager.GetRolesAsync(administratorInfo.UserName)
+                        Roles = await DataProvider.AdministratorDao.GetRolesAsync(administratorInfo.UserName)
                     });
                 }
 
@@ -121,7 +118,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var roles = await DataProvider.RoleDao.GetRoleNameListAsync();
                 var allSites = await DataProvider.SiteDao.GetSiteListAsync();
 
-                var adminInfo = await AdminManager.GetByUserIdAsync(adminId);
+                var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(adminId);
                 var adminRoles = await DataProvider.AdministratorsInRolesDao.GetRolesForUserAsync(adminInfo.UserName);
                 string adminLevel;
                 var checkedSites = new List<int>();
@@ -184,7 +181,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var checkedSites = request.GetPostObject<List<int>>("checkedSites");
                 var checkedRoles = request.GetPostObject<List<string>>("checkedRoles");
 
-                var adminInfo = await AdminManager.GetByUserIdAsync(adminId);
+                var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(adminId);
 
                 await DataProvider.AdministratorsInRolesDao.RemoveUserAsync(adminInfo.UserName);
                 if (adminLevel == "SuperAdmin")
@@ -213,7 +210,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 return Ok(new
                 {
                     Value = true,
-                    Roles = await AdminManager.GetRolesAsync(adminInfo.UserName)
+                    Roles = await DataProvider.AdministratorDao.GetRolesAsync(adminInfo.UserName)
                 });
             }
             catch (Exception ex)
@@ -236,9 +233,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 var id = request.GetPostInt("id");
 
-                var adminInfo = await AdminManager.GetByUserIdAsync(id);
+                var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(id);
                 await DataProvider.AdministratorsInRolesDao.RemoveUserAsync(adminInfo.UserName);
-                await DataProvider.AdministratorDao.DeleteAsync(adminInfo);
+                await DataProvider.AdministratorDao.DeleteAsync(adminInfo.Id);
 
                 await request.AddAdminLogAsync("删除管理员", $"管理员:{adminInfo.UserName}");
 
@@ -267,7 +264,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 var id = request.GetPostInt("id");
 
-                var adminInfo = await AdminManager.GetByUserIdAsync(id);
+                var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(id);
 
                 await DataProvider.AdministratorDao.LockAsync(new List<string>
                 {
@@ -301,7 +298,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 var id = request.GetPostInt("id");
 
-                var adminInfo = await AdminManager.GetByUserIdAsync(id);
+                var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(id);
 
                 await DataProvider.AdministratorDao.UnLockAsync(new List<string>
                 {

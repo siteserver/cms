@@ -5,7 +5,6 @@ using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
@@ -48,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                    var contentInfo = await ContentManager.GetContentInfoAsync(site, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();

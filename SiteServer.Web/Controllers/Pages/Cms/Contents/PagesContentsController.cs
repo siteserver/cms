@@ -5,7 +5,6 @@ using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Model;
@@ -52,10 +51,10 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
-                var columns = await ContentManager.GetContentColumnsAsync(site, channelInfo, false);
+                var columns = await DataProvider.ContentDao.GetContentColumnsAsync(site, channelInfo, false);
 
                 var pageContentInfoList = new List<Content>();
-                var count = await ContentManager.GetCountAsync(site, channelInfo, adminId, isAllContents);
+                var count = await DataProvider.ContentDao.GetCountAsync(site, channelInfo, adminId, isAllContents);
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
                 if (pages == 0) pages = 1;
 
@@ -64,12 +63,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     var offset = site.PageSize * (page - 1);
                     var limit = site.PageSize;
 
-                    var pageContentIds = await ContentManager.GetChannelContentIdListAsync(site, channelInfo, adminId, isAllContents, offset, limit);
+                    var pageContentIds = await DataProvider.ContentDao.GetChannelContentIdListAsync(site, channelInfo, adminId, isAllContents, offset, limit);
 
                     var sequence = offset + 1;
                     foreach (var channelContentId in pageContentIds)
                     {
-                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
+                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
                         if (contentInfo == null) continue;
 
                         var menus = await PluginMenuManager.GetContentMenusAsync(pluginIds, contentInfo);
@@ -78,7 +77,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                         var channelName = await ChannelManager.GetChannelNameNavigationAsync(siteId, channelId, channelContentId.ChannelId);
                         contentInfo.Set("ChannelName", channelName);
 
-                        pageContentInfoList.Add(await ContentManager.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
+                        pageContentInfoList.Add(await DataProvider.ContentDao.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
                     }
                 }
 

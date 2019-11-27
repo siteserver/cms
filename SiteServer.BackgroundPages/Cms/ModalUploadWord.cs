@@ -77,7 +77,6 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (fileNames.Count > 1)
             {
-                var tableName = ChannelManager.GetTableNameAsync(Site, _channel).GetAwaiter().GetResult();
                 var styleList = TableStyleManager.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
 
                 foreach (var fileName in fileNames)
@@ -106,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                             contentInfo.Title = formCollection[ContentAttribute.Title];
 
-                            contentInfo.Id = DataProvider.ContentDao.InsertAsync(tableName, Site, _channel, contentInfo).GetAwaiter().GetResult();
+                            contentInfo.Id = DataProvider.ContentDao.InsertAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
 
                             CreateManager.CreateContentAsync(SiteId, _channel.Id, contentInfo.Id).GetAwaiter().GetResult();
                             CreateManager.TriggerContentChangedEventAsync(SiteId, _channel.Id).GetAwaiter().GetResult();

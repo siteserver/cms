@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Plugin.Apis
         private UtilsApi() { }
 
         private static UtilsApi _instance;
-        public static UtilsApi Instance => _instance ?? (_instance = new UtilsApi());
+        public static UtilsApi Instance => _instance ??= new UtilsApi();
 
         public string Encrypt(string inputString)
         {

@@ -3,30 +3,31 @@ using System.Linq;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 
-namespace SiteServer.CMS.DataCache.Content
+namespace SiteServer.CMS.Provider
 {
-    public static partial class ContentManager
+    public partial class ContentDao
     {
         private static class CountCache
         {
             private static readonly object LockObject = new object();
             private static readonly string CacheKey =
-                DataCacheManager.GetCacheKey(nameof(ContentManager)) + "." + nameof(CountCache);
+                DataCacheManager.GetCacheKey(nameof(ContentDao)) + "." + nameof(CountCache);
 
-            private static Dictionary<string, List<ContentCountInfo>> GetAllContentCounts()
+            private static Dictionary<string, List<ContentCount>> GetAllContentCounts()
             {
                 lock (LockObject)
                 {
-                    var retVal = DataCacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CacheKey);
+                    var retVal = DataCacheManager.Get<Dictionary<string, List<ContentCount>>>(CacheKey);
                     if (retVal != null) return retVal;
 
-                    retVal = DataCacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CacheKey);
+                    retVal = DataCacheManager.Get<Dictionary<string, List<ContentCount>>>(CacheKey);
                     if (retVal == null)
                     {
-                        retVal = new Dictionary<string, List<ContentCountInfo>>();
+                        retVal = new Dictionary<string, List<ContentCount>>();
                         DataCacheManager.Insert(CacheKey, retVal);
                     }
 
@@ -34,9 +35,9 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            private static IList<ContentCountInfo> GetContentCountInfoList(string tableName)
+            private static IList<ContentCount> GetContentCountInfoList(string tableName)
             {
-                if (string.IsNullOrEmpty(tableName)) return new List<ContentCountInfo>();
+                if (string.IsNullOrEmpty(tableName)) return new List<ContentCount>();
 
                 var dict = GetAllContentCounts();
                 dict.TryGetValue(tableName, out var countList);
@@ -59,7 +60,7 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static void Add(string tableName, Model.Content content)
+            public static void Add(string tableName, Content content)
             {
                 if (string.IsNullOrEmpty(tableName) || content == null) return;
 
@@ -75,7 +76,7 @@ namespace SiteServer.CMS.DataCache.Content
                     }
                     else
                     {
-                        countInfo = new ContentCountInfo
+                        countInfo = new ContentCount
                         {
                             SiteId = content.SiteId,
                             ChannelId = content.ChannelId,
@@ -89,7 +90,7 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static bool IsChanged(Model.Content contentInfo1, Model.Content contentInfo2)
+            public static bool IsChanged(Content contentInfo1, Content contentInfo2)
             {
                 if (contentInfo1 == null || contentInfo2 == null) return true;
 
@@ -100,7 +101,7 @@ namespace SiteServer.CMS.DataCache.Content
                        contentInfo1.AdminId != contentInfo2.AdminId;
             }
 
-            public static void Remove(string tableName, Model.Content content)
+            public static void Remove(string tableName, Content content)
             {
                 if (string.IsNullOrEmpty(tableName) || content == null) return;
 
@@ -215,22 +216,22 @@ namespace SiteServer.CMS.DataCache.Content
             }
         }
 
-        public static async Task<int> GetCountIsCheckedAsync(Site site)
+        public async Task<int> GetCountIsCheckedAsync(Site site)
         {
             return await CountCache.GetSiteCountIsCheckedAsync(site);
         }
 
-        public static async Task<int> GetCountCheckingAsync(Site site)
+        public async Task<int> GetCountCheckingAsync(Site site)
         {
             return await CountCache.GetSiteCountIsCheckingAsync(site);
         }
 
-        public static async Task<int> GetCountAsync(Site site, Channel channel, int adminId, bool isAllContents = false)
+        public async Task<int> GetCountAsync(Site site, Channel channel, int adminId, bool isAllContents = false)
         {
             return await CountCache.GetChannelCountAsync(site, channel, adminId, isAllContents);
         }
 
-        public static async Task<int> GetCountAsync(Site site, Channel channel, bool isChecked)
+        public async Task<int> GetCountAsync(Site site, Channel channel, bool isChecked)
         {
             return await CountCache.GetChannelCountByIsCheckedAsync(site, channel, isChecked);
         }

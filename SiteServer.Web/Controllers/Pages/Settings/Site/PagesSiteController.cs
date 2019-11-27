@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.Utils;
 
@@ -204,10 +201,6 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 }
 
                 await DataProvider.SiteDao.UpdateAsync(site);
-                if (isTableChanged)
-                {
-                    ContentManager.RemoveCountCache(tableName);
-                }
 
                 await request.AddAdminLogAsync("修改站点属性", $"站点:{site.SiteName}");
 

@@ -27,7 +27,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 }
 
                 var userId = request.GetQueryInt("userId");
-                var user = await UserManager.GetByUserIdAsync(userId);
+                var user = await DataProvider.UserDao.GetByUserIdAsync(userId);
                 if (user == null) return NotFound();
 
                 return Ok(new
@@ -54,7 +54,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 }
 
                 var userId = request.GetQueryInt("userId");
-                var user = await UserManager.GetByUserIdAsync(userId);
+                var user = await DataProvider.UserDao.GetByUserIdAsync(userId);
                 if (user == null) return NotFound();
 
                 var password = request.GetPostString("password");

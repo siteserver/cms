@@ -38,12 +38,12 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var tuple = DataProvider.ContentDao.GetValue(Site.TableName, contentId, ContentAttribute.Tags);
-                            if (tuple != null)
+                            var tags = DataProvider.ContentDao.GetValue(Site.TableName, contentId, ContentAttribute.Tags);
+                            if (!string.IsNullOrEmpty(tags))
                             {
-                                var contentTagList = TranslateUtils.StringCollectionToStringList(tuple.Item2);
+                                var contentTagList = TranslateUtils.StringCollectionToStringList(tags);
                                 contentTagList.Remove(tagName);
-                                DataProvider.ContentDao.Update(Site.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
+                                DataProvider.ContentDao.UpdateAsync(Site.TableName, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList)).GetAwaiter().GetResult();
                             }
                         }
                     }

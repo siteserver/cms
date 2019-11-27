@@ -2,7 +2,6 @@
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
@@ -213,7 +212,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (isOriginal)
             {
-                if (content.ReferenceId > 0 && content.SourceId > 0 && content.Get<string>(ContentAttribute.TranslateContentType) == ETranslateContentType.Reference.ToString())
+                if (content.ReferenceId > 0 && content.SourceId > 0 && ETranslateContentTypeUtils.Equals(ETranslateContentType.Reference, content.TranslateContentType))
                 {
                     var targetChannelId = content.SourceId;
                     //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
@@ -222,7 +221,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var targetNodeInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
 
                     //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, content.ReferenceId);
-                    var targetContentInfo = await ContentManager.GetContentInfoAsync(targetSite, targetNodeInfo, content.ReferenceId);
+                    var targetContentInfo = await DataProvider.ContentDao.GetAsync(targetSite, targetNodeInfo, content.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                     {
                         //标题可以使用自己的

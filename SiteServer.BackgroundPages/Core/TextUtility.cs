@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.AddUserName + ":" + content.AddUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = await AdminManager.GetDisplayNameAsync(content.AddUserName);
+                        value = await DataProvider.AdministratorDao.GetDisplayNameAsync(content.AddUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
@@ -39,35 +39,35 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.LastEditUserName + ":" + content.LastEditUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = await AdminManager.GetDisplayNameAsync(content.LastEditUserName);
+                        value = await DataProvider.AdministratorDao.GetDisplayNameAsync(content.LastEditUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.CheckUserName))
+            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.CheckUserName)))
             {
-                var checkUserName = content.Get<string>(ContentAttribute.CheckUserName);
+                var checkUserName = content.CheckUserName;
                 if (!string.IsNullOrEmpty(checkUserName))
                 {
-                    var key = ContentAttribute.CheckUserName + ":" + checkUserName;
+                    var key = nameof(Content.CheckUserName) + ":" + checkUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = await AdminManager.GetDisplayNameAsync(checkUserName);
+                        value = await DataProvider.AdministratorDao.GetDisplayNameAsync(checkUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.CheckDate))
+            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.CheckDate)))
             {
-                var checkDate = content.Get(ContentAttribute.CheckDate, DateTime.MinValue);
-                if (checkDate != DateTime.MinValue)
+                var checkDate = content.CheckDate;
+                if (checkDate != null)
                 {
                     value = DateUtils.GetDateAndTimeString(checkDate);
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.CheckReasons))
+            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.CheckReasons)))
             {
-                value = content.Get<string>(ContentAttribute.CheckReasons);
+                value = content.CheckReasons;
             }
             else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.AddDate))
             {

@@ -34,12 +34,12 @@ namespace SiteServer.CMS.Core
                 var apiToken = authRequest.ApiToken;
                 if (!string.IsNullOrEmpty(apiToken))
                 {
-                    var tokenInfo = await DataProvider.AccessTokenDao.GetAccessTokenInfoAsync(apiToken);
+                    var tokenInfo = await DataProvider.AccessTokenDao.GetByTokenAsync(apiToken);
                     if (tokenInfo != null)
                     {
                         if (!string.IsNullOrEmpty(tokenInfo.AdminName))
                         {
-                            var adminInfo = await AdminManager.GetByUserNameAsync(tokenInfo.AdminName);
+                            var adminInfo = await DataProvider.AdministratorDao.GetByUserNameAsync(tokenInfo.AdminName);
                             if (adminInfo != null && !adminInfo.Locked)
                             {
                                 authRequest.Administrator = adminInfo;
@@ -57,7 +57,7 @@ namespace SiteServer.CMS.Core
                     var tokenImpl = UserApi.Instance.ParseAccessToken(userToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
-                        var user = await UserManager.GetByUserIdAsync(tokenImpl.UserId);
+                        var user = await DataProvider.UserDao.GetByUserIdAsync(tokenImpl.UserId);
                         if (user != null && !user.Locked && user.Checked && user.UserName == tokenImpl.UserName)
                         {
                             authRequest.User = user;
@@ -72,7 +72,7 @@ namespace SiteServer.CMS.Core
                     var tokenImpl = AdminApi.Instance.ParseAccessToken(adminToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
-                        var adminInfo = await AdminManager.GetByUserIdAsync(tokenImpl.UserId);
+                        var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(tokenImpl.UserId);
                         if (adminInfo != null && !adminInfo.Locked && adminInfo.UserName == tokenImpl.UserName)
                         {
                             authRequest.Administrator = adminInfo;
@@ -384,7 +384,7 @@ namespace SiteServer.CMS.Core
                     var groupInfo = UserGroupManager.GetUserGroupAsync(User.GroupId).GetAwaiter().GetResult();
                     if (groupInfo != null)
                     {
-                        Administrator = AdminManager.GetByUserNameAsync(groupInfo.AdminName).GetAwaiter().GetResult();
+                        Administrator = DataProvider.AdministratorDao.GetByUserNameAsync(groupInfo.AdminName).GetAwaiter().GetResult();
                     }
                 }
 
@@ -443,7 +443,7 @@ namespace SiteServer.CMS.Core
         public async Task<string> AdminLoginAsync(string userName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(userName)) return null;
-            var adminInfo = await AdminManager.GetByUserNameAsync(userName);
+            var adminInfo = await DataProvider.AdministratorDao.GetByUserNameAsync(userName);
             if (adminInfo == null || adminInfo.Locked) return null;
 
             Administrator = adminInfo;
@@ -485,7 +485,7 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(userName)) return null;
 
-            var user = await UserManager.GetByUserNameAsync(userName);
+            var user = await DataProvider.UserDao.GetByUserNameAsync(userName);
             if (user == null || user.Locked || !user.Checked) return null;
 
             User = user;

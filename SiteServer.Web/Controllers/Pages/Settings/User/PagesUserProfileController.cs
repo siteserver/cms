@@ -35,7 +35,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 CMS.Model.User user;
                 if (userId > 0)
                 {
-                    user = await UserManager.GetByUserIdAsync(userId);
+                    user = await DataProvider.UserDao.GetByUserIdAsync(userId);
                     if (user == null) return NotFound();
                 }
                 else
@@ -68,7 +68,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 }
 
                 var userId = request.GetQueryInt("userId");
-                var user = await UserManager.GetByUserIdAsync(userId);
+                var user = await DataProvider.UserDao.GetByUserIdAsync(userId);
                 if (user == null) return NotFound();
 
                 var avatarUrl = string.Empty;
@@ -82,8 +82,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                         return BadRequest("Could not read image from body");
                     }
 
-                    var fileName = UserManager.GetUserUploadFileName(postFile.FileName);
-                    var filePath = UserManager.GetUserUploadPath(userId, fileName);
+                    var fileName = DataProvider.UserDao.GetUserUploadFileName(postFile.FileName);
+                    var filePath = DataProvider.UserDao.GetUserUploadPath(userId, fileName);
 
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
@@ -92,7 +92,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                     postFile.SaveAs(filePath);
 
-                    avatarUrl = UserManager.GetUserUploadUrl(userId, fileName);
+                    avatarUrl = DataProvider.UserDao.GetUserUploadUrl(userId, fileName);
                 }
 
                 return Ok(new
@@ -123,7 +123,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 CMS.Model.User user;
                 if (userId > 0)
                 {
-                    user = await UserManager.GetByUserIdAsync(userId);
+                    user = await DataProvider.UserDao.GetByUserIdAsync(userId);
                     if (user == null) return NotFound();
                 }
                 else

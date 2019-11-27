@@ -8,56 +8,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
 
-namespace SiteServer.CMS.DataCache.Content
+namespace SiteServer.CMS.Provider
 {
-    public static partial class ContentManager
+    public partial class ContentDao
     {
-        public static void RemoveCache(string tableName, int channelId)
-        {
-            ListCache.Remove(channelId);
-            ContentCache.Remove(channelId);
-            CountCache.Clear(tableName);
-            StlContentCache.ClearCache();
-        }
 
-        public static void RemoveCountCache(string tableName)
-        {
-            CountCache.Clear(tableName);
-            StlContentCache.ClearCache();
-        }
-
-        public static async Task InsertCacheAsync(Site site, Channel channel, Model.Content content)
+        private async Task InsertCacheAsync(Site site, Channel channel, Content content)
         {
             if (content.SourceId == SourceManager.Preview) return;
 
-            var dict = ContentCache.GetContentDict(content.ChannelId);
-            dict[content.Id] = content;
-
             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
             CountCache.Add(tableName, content);
-
-            StlContentCache.ClearCache();
         }
 
-        public static async Task UpdateCacheAsync(Site site, Channel channel, Model.Content content)
+        private async Task UpdateCacheAsync(Site site, Channel channel, Content content)
         {
-            var dict = ContentCache.GetContentDict(channel.Id);
-
             ListCache.Remove(channel.Id);
 
             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
             CountCache.Remove(tableName, content);
             CountCache.Add(tableName, content);
-
-            dict[content.Id] = content;
-
-            StlContentCache.ClearCache();
         }
 
-        public static async Task<List<ContentColumn>> GetContentColumnsAsync(Site site, Channel channel, bool includeAll)
+        public async Task<List<ContentColumn>> GetContentColumnsAsync(Site site, Channel channel, bool includeAll)
         {
             var columns = new List<ContentColumn>();
 
@@ -140,11 +117,11 @@ namespace SiteServer.CMS.DataCache.Content
             return columns;
         }
 
-        public static async Task<Model.Content> CalculateAsync(int sequence, Model.Content content, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
+        public async Task<Content> CalculateAsync(int sequence, Content content, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
         {
             if (content == null) return null;
 
-            var retVal = new Model.Content(content.ToDictionary());
+            var retVal = new Content(content.ToDictionary());
 
             foreach (var column in columns)
             {
@@ -159,7 +136,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var value = string.Empty;
                     if (content.AdminId > 0)
                     {
-                        var adminInfo = await AdminManager.GetByUserIdAsync(content.AdminId);
+                        var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(content.AdminId);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
@@ -172,7 +149,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var value = string.Empty;
                     if (content.UserId > 0)
                     {
-                        var userInfo = await UserManager.GetByUserIdAsync(content.UserId);
+                        var userInfo = await DataProvider.UserDao.GetByUserIdAsync(content.UserId);
                         if (userInfo != null)
                         {
                             value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;
@@ -189,7 +166,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var value = string.Empty;
                     if (!string.IsNullOrEmpty(content.AddUserName))
                     {
-                        var adminInfo = await AdminManager.GetByUserNameAsync(content.AddUserName);
+                        var adminInfo = await DataProvider.AdministratorDao.GetByUserNameAsync(content.AddUserName);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
@@ -202,7 +179,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var value = string.Empty;
                     if (!string.IsNullOrEmpty(content.LastEditUserName))
                     {
-                        var adminInfo = await AdminManager.GetByUserNameAsync(content.LastEditUserName);
+                        var adminInfo = await DataProvider.AdministratorDao.GetByUserNameAsync(content.LastEditUserName);
                         if (adminInfo != null)
                         {
                             value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
@@ -247,14 +224,13 @@ namespace SiteServer.CMS.DataCache.Content
             return retVal;
         }
 
-        public static bool IsCreatable(Channel channel, Model.Content content)
+        public bool IsCreatable(Channel channel, Content content)
         {
             if (channel == null || content == null) return false;
 
             //引用链接，不需要生成内容页；引用内容，需要生成内容页；
             if (content.ReferenceId > 0 &&
-                ETranslateContentTypeUtils.GetEnumType(content.Get<string>(ContentAttribute.TranslateContentType)) !=
-                ETranslateContentType.ReferenceContent)
+                !ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, content.TranslateContentType))
             {
                 return false;
             }

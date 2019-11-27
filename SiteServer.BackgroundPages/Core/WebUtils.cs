@@ -1,15 +1,10 @@
-﻿using System.Text;
-using System.Threading.Tasks;
-using SiteServer.Utils;
+﻿using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -48,11 +43,11 @@ namespace SiteServer.BackgroundPages.Core
             }
             if (content.ReferenceId > 0)
             {
-                if (content.Get<string>(ContentAttribute.TranslateContentType) == ETranslateContentType.ReferenceContent.ToString())
+                if (ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, content.TranslateContentType))
                 {
                     image += "&nbsp;<img src='../pic/icon/reference.png' title='引用内容' align='absmiddle' border=0 />(引用内容)";
                 }
-                else if (content.Get<string>(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+                else if (ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, content.TranslateContentType))
                 {
                     image += "&nbsp;<img src='../pic/icon/reference.png' title='引用地址' align='absmiddle' border=0 />(引用地址)";
                 }

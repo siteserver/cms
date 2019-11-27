@@ -61,12 +61,6 @@ namespace SiteServer.CMS.Model
         public const string NavigationUrl = nameof(NavigationUrl);
         public const string CheckState = nameof(CheckState);
 
-        // 附加字段
-        public const string CheckUserName = nameof(CheckUserName);                  //审核者
-        public const string CheckDate = nameof(CheckDate);                          //审核时间
-        public const string CheckReasons = nameof(CheckReasons);                    //审核原因
-        public const string TranslateContentType = nameof(TranslateContentType);    //转移内容类型
-
         public static readonly Lazy<List<string>> AllAttributes = new Lazy<List<string>>(() => new List<string>
         {
             Id,
@@ -128,18 +122,6 @@ namespace SiteServer.CMS.Model
             IsColor,
             AddDate,
             LinkUrl
-        });
-
-        public static readonly Lazy<List<string>> IncludedAttributes = new Lazy<List<string>>(() => new List<string>
-        {
-            Sequence,
-            PageContent,
-            NavigationUrl,
-            CheckState,
-            CheckUserName,
-            CheckDate,
-            CheckReasons,
-            TranslateContentType
         });
 
         public static readonly Lazy<List<string>> CalculateAttributes = new Lazy<List<string>>(() => new List<string>

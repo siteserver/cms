@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 
@@ -39,7 +38,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
                 contentInfo.Set(ContentAttribute.CheckState, CheckManager.GetCheckState(site, contentInfo));

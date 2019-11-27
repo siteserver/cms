@@ -11,7 +11,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
@@ -45,7 +44,6 @@ namespace SiteServer.BackgroundPages.Cms
 
         private Channel _channel;
         private List<TableStyle> _styleList;
-        private string _tableName;
 
         protected override bool IsSinglePage => true;
 
@@ -85,7 +83,6 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
-            _tableName = ChannelManager.GetTableNameAsync(Site, _channel).GetAwaiter().GetResult();
             Content content = null;
             _styleList = TableStyleManager.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
 
@@ -94,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (contentId > 0)
             {
                 //content = ContentManager.GetContentInfo(Site, _channel, contentId);
-                content = DataProvider.ContentDao.GetContentAsync(_tableName, contentId).GetAwaiter().GetResult();
+                content = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
             }
 
             var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : content?.Get<string>(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));
@@ -131,7 +128,7 @@ namespace SiteServer.BackgroundPages.Cms
                 TbAddDate.DateTime = DateTime.Now;
                 TbAddDate.Now = true;
 
-                var contentGroupNameList = ContentGroupManager.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult();
+                var contentGroupNameList = DataProvider.ContentGroupDao.GetGroupNamesAsync(SiteId).GetAwaiter().GetResult();
                 foreach (var groupName in contentGroupNameList)
                 {
                     var item = new ListItem(groupName, groupName);
@@ -307,12 +304,12 @@ namespace SiteServer.BackgroundPages.Cms
                             contentInfo.CheckedLevel = 0;
                         }
 
-                        contentInfo.Set(ContentAttribute.CheckUserName, AuthRequest.AdminName);
-                        contentInfo.Set(ContentAttribute.CheckDate, DateUtils.GetDateAndTimeString(DateTime.Now));
-                        contentInfo.Set(ContentAttribute.CheckReasons, string.Empty);
+                        contentInfo.CheckUserName = AuthRequest.AdminName;
+                        contentInfo.CheckDate = DateTime.Now;
+                        contentInfo.CheckReasons = string.Empty;
                     }
 
-                    contentInfo.Id = DataProvider.ContentDao.InsertAsync(_tableName, Site, _channel, contentInfo).GetAwaiter().GetResult();
+                    contentInfo.Id = DataProvider.ContentDao.InsertAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
 
                     ContentTagUtils.UpdateTagsAsync(string.Empty, TbTags.Text, SiteId, contentInfo.Id).GetAwaiter().GetResult();
 
@@ -335,7 +332,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                var contentInfo = ContentManager.GetContentInfoAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                 try
                 {
                     contentInfo.LastEditUserName = AuthRequest.AdminName;

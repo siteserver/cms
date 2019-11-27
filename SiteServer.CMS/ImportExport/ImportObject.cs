@@ -262,7 +262,7 @@ namespace SiteServer.CMS.ImportExport
             var site = await DataProvider.SiteDao.GetAsync(_siteId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
 
-            var taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, channel.Id, false);
+            var taxis = await DataProvider.ContentDao.GetMaxTaxisAsync(tableName, channel.Id, false);
 
             await ImportContentsAsync(channel, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
         }
@@ -278,7 +278,7 @@ namespace SiteServer.CMS.ImportExport
             var site = await DataProvider.SiteDao.GetAsync(_siteId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
 
-            var taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, channel.Id, false);
+            var taxis = await DataProvider.ContentDao.GetMaxTaxisAsync(tableName, channel.Id, false);
 
             return await ImportContentsAsync(channel, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
         }
@@ -342,12 +342,12 @@ namespace SiteServer.CMS.ImportExport
                     }
                     else
                     {
-                        contentInfo.Id = await DataProvider.ContentDao.InsertAsync(tableName, site, channelInfo, contentInfo);
+                        contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(tableName, site, channelInfo, contentInfo);
+                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channelInfo, contentInfo);
                 }
                 //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
             }
@@ -387,12 +387,12 @@ namespace SiteServer.CMS.ImportExport
                     }
                     else
                     {
-                        contentInfo.Id = await DataProvider.ContentDao.InsertAsync(tableName, site, channel, contentInfo);
+                        contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channel, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(tableName, site, channel, contentInfo);
+                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channel, contentInfo);
                 }
             }
 
@@ -467,12 +467,12 @@ namespace SiteServer.CMS.ImportExport
                     }
                     else
                     {
-                        contentInfo.Id = await DataProvider.ContentDao.InsertAsync(tableName, site, channelInfo, contentInfo);
+                        contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(tableName, site, channelInfo, contentInfo);
+                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channelInfo, contentInfo);
                 }
 
                 //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
@@ -513,12 +513,12 @@ namespace SiteServer.CMS.ImportExport
                 }
                 else
                 {
-                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(tableName, site, channel, contentInfo);
+                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channel, contentInfo);
                 }
             }
             else
             {
-                contentInfo.Id = await DataProvider.ContentDao.InsertAsync(tableName, site, channel, contentInfo);
+                contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channel, contentInfo);
             }
 
             return new List<int>

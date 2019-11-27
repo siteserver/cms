@@ -6,7 +6,6 @@ using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 
@@ -36,7 +35,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
                 var site = await DataProvider.SiteDao.GetAsync(siteId);
                 var parent = await ChannelManager.GetChannelAsync(siteId, parentId);
                 var countDict = new Dictionary<int, int>();
-                countDict[parent.Id] = await ContentManager.GetCountAsync(site, parent, true);
+                countDict[parent.Id] = await DataProvider.ContentDao.GetCountAsync(site, parent, true);
 
                 var channelInfoList = new List<Channel>();
 
@@ -54,7 +53,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
 
                     var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                     channelInfoList.Add(channelInfo);
-                    countDict[channelInfo.Id] = await ContentManager.GetCountAsync(site, channelInfo, true);
+                    countDict[channelInfo.Id] = await DataProvider.ContentDao.GetCountAsync(site, channelInfo, true);
                 }
 
                 return Ok(new

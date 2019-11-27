@@ -10,22 +10,23 @@ namespace SiteServer.Utils
     {
         public static bool IsMobile(string val)
         {
-            return Regex.IsMatch(val, @"^1[3456789]\d{9}$", RegexOptions.IgnoreCase);
+            return !string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^1[3456789]\d{9}$", RegexOptions.IgnoreCase);
         }
 
         public static bool IsEmail(string val)
         {
-            return Regex.IsMatch(val, @"^\w+([-_+.]\w+)*@\w+([-_.]\w+)*\.\w+([-_.]\w+)*$", RegexOptions.IgnoreCase);
+            return !string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^\w+([-_+.]\w+)*@\w+([-_.]\w+)*\.\w+([-_.]\w+)*$", RegexOptions.IgnoreCase);
         }
 
         public static bool IsNumber(string val)
         {
-            const string formatNumber = "^[0-9]+$";
-            return Regex.IsMatch(val, formatNumber);
+            return !string.IsNullOrEmpty(val) && Regex.IsMatch(val, "^[0-9]+$");
         }
 
         public static bool IsDateTime(string val)
         {
+            if (string.IsNullOrEmpty(val)) return false;
+
             const string formatDate = @"^((((1[6-9]|[2-9]\d)\d{2})-(0?[13578]|1[02])-(0?[1-9]|[12]\d|3[01]))|(((1[6-9]|[2-9]\d)\d{2})-(0?[13456789]|1[012])-(0?[1-9]|[12]\d|30))|(((1[6-9]|[2-9]\d)\d{2})-0?2-(0?[1-9]|1\d|2[0-8]))|(((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))-0?2-29-))$";
             const string formatDateTime = @"^((((1[6-9]|[2-9]\d)\d{2})-(0?[13578]|1[02])-(0?[1-9]|[12]\d|3[01]))|(((1[6-9]|[2-9]\d)\d{2})-(0?[13456789]|1[012])-(0?[1-9]|[12]\d|30))|(((1[6-9]|[2-9]\d)\d{2})-0?2-(0?[1-9]|1\d|2[0-8]))|(((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))-0?2-29-)) (20|21|22|23|[0-1]?\d):[0-5]?\d:[0-5]?\d$";
 
@@ -34,7 +35,7 @@ namespace SiteServer.Utils
 
         public static bool In(string strCollection, int inInt)
         {
-            return In(strCollection, inInt.ToString());
+            return !string.IsNullOrEmpty(strCollection) && In(strCollection, inInt.ToString());
         }
 
         public static bool In(string strCollection, string inStr)

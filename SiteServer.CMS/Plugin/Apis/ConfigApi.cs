@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Plugin.Apis
         private ConfigApi() { }
 
         private static ConfigApi _instance;
-        public static ConfigApi Instance => _instance ?? (_instance = new ConfigApi());
+        public static ConfigApi Instance => _instance ??= new ConfigApi();
 
         public async Task<bool> SetConfigAsync(string pluginId, int siteId, object config)
         {

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
@@ -39,7 +38,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var contentGroupNameList = await ContentGroupManager.GetGroupNameListAsync(siteId);
+                var contentGroupNameList = await DataProvider.ContentGroupDao.GetGroupNamesAsync(siteId);
 
                 return Ok(new
                 {
@@ -82,7 +81,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     foreach (var channelContentId in channelContentIds)
                     {
                         var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, channelContentId.Id);
+                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -102,7 +101,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     foreach (var channelContentId in channelContentIds)
                     {
                         var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, channelContentId.Id);
+                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -126,7 +125,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                         Description = AttackUtils.FilterXss(description)
                     };
 
-                    if (await ContentGroupManager.IsExistsAsync(siteId, groupInfo.GroupName))
+                    if (await DataProvider.ContentGroupDao.IsExistsAsync(siteId, groupInfo.GroupName))
                     {
                         await DataProvider.ContentGroupDao.UpdateAsync(groupInfo);
                         await request.AddSiteLogAsync(siteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
@@ -140,7 +139,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     foreach (var channelContentId in channelContentIds)
                     {
                         var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, channelContentId.Id);
+                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);

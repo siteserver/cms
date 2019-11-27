@@ -7,7 +7,6 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
@@ -49,7 +48,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                    var contentInfo = await ContentManager.GetContentInfoAsync(site, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -120,12 +119,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                    var contentInfo = await ContentManager.GetContentInfoAsync(site, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
-                    contentInfo.Set(ContentAttribute.CheckUserName, request.AdminName);
-                    contentInfo.Set(ContentAttribute.CheckDate, DateTime.Now);
-                    contentInfo.Set(ContentAttribute.CheckReasons, reasons);
+                    contentInfo.CheckUserName = request.AdminName;
+                    contentInfo.CheckDate = DateTime.Now;
+                    contentInfo.CheckReasons = reasons;
 
                     contentInfo.Checked = isChecked;
                     contentInfo.CheckedLevel = checkedLevel;
@@ -157,13 +156,6 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     };
 
                     await DataProvider.ContentCheckDao.InsertAsync(checkInfo);
-                }
-
-                if (isTranslate && translateChannelId > 0)
-                {
-                    ContentManager.RemoveCache(tableName, channelId);
-                    var translateTableName = await ChannelManager.GetTableNameAsync(site, translateChannelId);
-                    ContentManager.RemoveCache(translateTableName, translateChannelId);
                 }
 
                 await request.AddSiteLogAsync(siteId, "批量审核内容");

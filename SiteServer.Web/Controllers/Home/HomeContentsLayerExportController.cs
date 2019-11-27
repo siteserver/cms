@@ -7,7 +7,6 @@ using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
@@ -44,7 +43,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var columns = await ContentManager.GetContentColumnsAsync(site, channelInfo, true);
+                var columns = await DataProvider.ContentDao.GetContentColumnsAsync(site, channelInfo, true);
 
                 var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, site, siteId);
                 var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
@@ -97,12 +96,12 @@ namespace SiteServer.API.Controllers.Home
 
                 var adminId = await request.AdminPermissionsImpl.GetAdminIdAsync(siteId, channelId);
 
-                var columns = await ContentManager.GetContentColumnsAsync(site, channelInfo, true);
+                var columns = await DataProvider.ContentDao.GetContentColumnsAsync(site, channelInfo, true);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
                 var contentInfoList = new List<Content>();
-                var count = await ContentManager.GetCountAsync(site, channelInfo, adminId, true);
+                var count = await DataProvider.ContentDao.GetCountAsync(site, channelInfo, adminId, true);
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
                 if (pages == 0) pages = 1;
 
@@ -113,13 +112,13 @@ namespace SiteServer.API.Controllers.Home
                         var offset = site.PageSize * (page - 1);
                         var limit = site.PageSize;
 
-                        var pageContentIds = await ContentManager.GetChannelContentIdListAsync(site, channelInfo, adminId, true, offset, limit);
+                        var pageContentIds = await DataProvider.ContentDao.GetChannelContentIdListAsync(site, channelInfo, adminId, true, offset, limit);
 
                         var sequence = offset + 1;
 
                         foreach (var channelContentId in pageContentIds)
                         {
-                            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
+                            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
                             if (contentInfo == null) continue;
 
                             if (!isAllCheckedLevel)
@@ -143,7 +142,7 @@ namespace SiteServer.API.Controllers.Home
                                 }
                             }
 
-                            contentInfoList.Add(await ContentManager.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
+                            contentInfoList.Add(await DataProvider.ContentDao.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
                         }
                     }
 

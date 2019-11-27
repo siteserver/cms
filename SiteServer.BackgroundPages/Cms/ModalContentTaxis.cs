@@ -67,22 +67,22 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var contentId in _contentIdList)
             {
-                var tuple = DataProvider.ContentDao.GetValue(_tableName, contentId, ContentAttribute.IsTop);
-                if (tuple == null) continue;
+                var isTop = DataProvider.ContentDao.GetValue(_tableName, contentId, ContentAttribute.IsTop);
+                if (string.IsNullOrEmpty(isTop)) continue;
 
-                var isTop = TranslateUtils.ToBool(tuple.Item2);
+                var top = TranslateUtils.ToBool(isTop);
                 for (var i = 1; i <= taxisNum; i++)
                 {
                     if (isUp)
                     {
-                        if (DataProvider.ContentDao.SetTaxisToUp(_tableName, _channelId, contentId, isTop) == false)
+                        if (DataProvider.ContentDao.SetTaxisToUpAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
                         {
                             break;
                         }
                     }
                     else
                     {
-                        if (DataProvider.ContentDao.SetTaxisToDown(_tableName, _channelId, contentId, isTop) == false)
+                        if (DataProvider.ContentDao.SetTaxisToDownAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
                         {
                             break;
                         }

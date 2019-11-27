@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
@@ -155,7 +154,7 @@ namespace SiteServer.CMS.Core
 
         public static async Task<string> GetContentUrlAsync(Site site, Channel channel, int contentId, bool isLocal)
         {
-            var contentInfo = await ContentManager.GetContentInfoAsync(site, channel, contentId);
+            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channel, contentId);
             return await GetContentUrlByIdAsync(site, contentInfo, isLocal);
         }
 
@@ -177,7 +176,7 @@ namespace SiteServer.CMS.Core
             var referenceId = contentCurrent.ReferenceId;
             var linkUrl = contentCurrent.Get<string>(ContentAttribute.LinkUrl);
             var channelId = contentCurrent.ChannelId;
-            if (referenceId > 0 && contentCurrent.Get<string>(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+            if (referenceId > 0 && ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, contentCurrent.TranslateContentType))
             {
                 if (sourceId > 0 && (ChannelManager.IsExistsAsync(site.Id, sourceId).GetAwaiter().GetResult() || await ChannelManager.IsExistsAsync(sourceId)))
                 {
@@ -186,7 +185,7 @@ namespace SiteServer.CMS.Core
                     var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
                     var targetChannelInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
 
-                    var contentInfo = await ContentManager.GetContentInfoAsync(targetSite, targetChannelInfo, referenceId);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(targetSite, targetChannelInfo, referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
                     {
                         return PageUtils.UnclickedUrl;
@@ -201,8 +200,8 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
-                    channelId = StlContentCache.GetChannelId(tableName, referenceId);
-                    linkUrl = StlContentCache.GetValue(tableName, referenceId, ContentAttribute.LinkUrl);
+                    channelId = DataProvider.ContentDao.GetChannelId(tableName, referenceId);
+                    linkUrl = DataProvider.ContentDao.GetValue(tableName, referenceId, ContentAttribute.LinkUrl);
                     if (ChannelManager.IsExistsAsync(site.Id, channelId).GetAwaiter().GetResult())
                     {
                         return await GetContentUrlByIdAsync(site, channelId, referenceId, 0, 0, linkUrl, false);
@@ -228,9 +227,9 @@ namespace SiteServer.CMS.Core
                 return ApiRoutePreview.GetContentUrl(site.Id, channelId, contentId);
             }
 
-            var contentInfoCurrent = await ContentManager.GetContentInfoAsync(site, channelId, contentId);
+            var contentInfoCurrent = await DataProvider.ContentDao.GetAsync(site, channelId, contentId);
 
-            if (referenceId > 0 && contentInfoCurrent.Get<string>(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+            if (referenceId > 0 && ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, contentInfoCurrent.TranslateContentType))
             {
                 if (sourceId > 0 && (ChannelManager.IsExistsAsync(site.Id, sourceId).GetAwaiter().GetResult() || await ChannelManager.IsExistsAsync(sourceId)))
                 {
@@ -239,7 +238,7 @@ namespace SiteServer.CMS.Core
                     var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
                     var targetChannelInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
 
-                    var contentInfo = await ContentManager.GetContentInfoAsync(targetSite, targetChannelInfo, referenceId);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(targetSite, targetChannelInfo, referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
                     {
                         return PageUtils.UnclickedUrl;
@@ -254,8 +253,8 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
-                    channelId = StlContentCache.GetChannelId(tableName, referenceId);
-                    linkUrl = StlContentCache.GetValue(tableName, referenceId, ContentAttribute.LinkUrl);
+                    channelId = DataProvider.ContentDao.GetChannelId(tableName, referenceId);
+                    linkUrl = DataProvider.ContentDao.GetValue(tableName, referenceId, ContentAttribute.LinkUrl);
                     return await GetContentUrlByIdAsync(site, channelId, referenceId, 0, 0, linkUrl, false);
                 }
             }
@@ -324,16 +323,16 @@ namespace SiteServer.CMS.Core
                 {
                     if (linkType == ELinkType.NoLinkIfContentNotExists)
                     {
-                        var count = await ContentManager.GetCountAsync(site, channel, true);
+                        var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
                         url = count == 0 ? PageUtils.UnclickedUrl : await GetChannelUrlNotComputedAsync(site, channel.Id, isLocal);
                     }
                     else if (linkType == ELinkType.LinkToOnlyOneContent)
                     {
-                        var count = await ContentManager.GetCountAsync(site, channel, true);
+                        var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
                         if (count == 1)
                         {
                             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
-                            var contentId = StlContentCache.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channel.DefaultTaxisType)));
+                            var contentId = DataProvider.ContentDao.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channel.DefaultTaxisType)));
                             url = await GetContentUrlAsync(site, channel, contentId, isLocal);
                         }
                         else
@@ -343,7 +342,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
                     {
-                        var count = await ContentManager.GetCountAsync(site, channel, true);
+                        var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
                         if (count == 0)
                         {
                             url = PageUtils.UnclickedUrl;
@@ -351,7 +350,7 @@ namespace SiteServer.CMS.Core
                         else if (count == 1)
                         {
                             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
-                            var contentId = StlContentCache.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channel.DefaultTaxisType)));
+                            var contentId = DataProvider.ContentDao.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channel.DefaultTaxisType)));
                             url = await GetContentUrlAsync(site, channel, contentId, isLocal);
                         }
                         else
@@ -361,12 +360,11 @@ namespace SiteServer.CMS.Core
                     }
                     else if (linkType == ELinkType.LinkToFirstContent)
                     {
-                        var count = await ContentManager.GetCountAsync(site, channel, true);
+                        var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
                         if (count >= 1)
                         {
                             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
-                            var contentId = StlContentCache.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channel.DefaultTaxisType)));
-                            //var contentId = StlCacheManager.FirstContentId.GetValue(site, node);
+                            var contentId = DataProvider.ContentDao.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channel.DefaultTaxisType)));
                             url = await GetContentUrlAsync(site, channel, contentId, isLocal);
                         }
                         else
@@ -376,12 +374,11 @@ namespace SiteServer.CMS.Core
                     }
                     else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent)
                     {
-                        var count = await ContentManager.GetCountAsync(site, channel, true);
+                        var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
                         if (count >= 1)
                         {
                             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
-                            var contentId = StlContentCache.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channel.DefaultTaxisType)));
-                            //var contentId = StlCacheManager.FirstContentId.GetValue(site, node);
+                            var contentId = DataProvider.ContentDao.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channel.DefaultTaxisType)));
                             url = await GetContentUrlAsync(site, channel, contentId, isLocal);
                         }
                         else

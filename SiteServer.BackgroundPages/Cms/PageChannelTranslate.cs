@@ -10,7 +10,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
 
@@ -143,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
 		    str = string.Concat(str, channel.LastNode ? "└" : "├");
 		    str = string.Concat(str, channel.ChannelName);
 		    var adminId = AuthRequest.AdminPermissionsImpl.GetAdminIdAsync(SiteId, channel.Id).GetAwaiter().GetResult();
-            var count = ContentManager.GetCountAsync(Site, channel, adminId).GetAwaiter().GetResult();
+            var count = DataProvider.ContentDao.GetCountAsync(Site, channel, adminId).GetAwaiter().GetResult();
             if (count != 0)
             {
                 str = $"{str} ({count})";

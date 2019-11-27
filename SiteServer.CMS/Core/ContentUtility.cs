@@ -12,7 +12,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using Content = SiteServer.CMS.Model.Content;
 using TableStyle = SiteServer.CMS.Model.TableStyle;
@@ -294,115 +293,115 @@ namespace SiteServer.CMS.Core
             {
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.LinkUrl,
+                    AttributeName = nameof(Content.LinkUrl),
                     DisplayName = "外部链接",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.AddDate,
+                    AttributeName = nameof(Content.AddDate),
                     DisplayName = "添加时间",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.LastEditDate,
+                    AttributeName = nameof(Content.LastEditDate),
                     DisplayName = "最后修改时间",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.AddUserName,
+                    AttributeName = nameof(Content.AddUserName),
                     DisplayName = "添加人",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.LastEditUserName,
+                    AttributeName = nameof(Content.LastEditUserName),
                     DisplayName = "最后修改人",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.GroupNameCollection,
+                    AttributeName = nameof(Content.GroupNameCollection),
                     DisplayName = "内容组",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.Tags,
+                    AttributeName = nameof(Content.Tags),
                     DisplayName = "标签",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.AdminId,
+                    AttributeName = nameof(Content.AdminId),
                     DisplayName = "管理员",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.UserId,
+                    AttributeName = nameof(Content.UserId),
                     DisplayName = "投稿用户",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.SourceId,
+                    AttributeName = nameof(Content.SourceId),
                     DisplayName = "来源标识",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.Hits,
+                    AttributeName = nameof(Content.Hits),
                     DisplayName = "点击量",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.HitsByDay,
+                    AttributeName = nameof(Content.HitsByDay),
                     DisplayName = "日点击",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.HitsByWeek,
+                    AttributeName = nameof(Content.HitsByWeek),
                     DisplayName = "周点击",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.HitsByMonth,
+                    AttributeName = nameof(Content.HitsByMonth),
                     DisplayName = "月点击",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.LastHitsDate,
+                    AttributeName = nameof(Content.LastHitsDate),
                     DisplayName = "最后点击时间",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.Downloads,
+                    AttributeName = nameof(Content.Downloads),
                     DisplayName = "下载量",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.CheckUserName,
+                    AttributeName = nameof(Content.CheckUserName),
                     DisplayName = "审核人",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.CheckDate,
+                    AttributeName = nameof(Content.CheckDate),
                     DisplayName = "审核时间",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = ContentAttribute.CheckReasons,
+                    AttributeName = nameof(Content.CheckReasons),
                     DisplayName = "审核原因",
                     Taxis = taxis
                 },
@@ -529,7 +528,7 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(tableName) || site == null || channelId <= 0 || contentId <= 0) return;
             
-            DataProvider.ContentDao.Delete(tableName, site.Id, channelId, contentId);
+            await DataProvider.ContentDao.DeleteAsync(tableName, site.Id, contentId);
 
             await ContentTagUtils.RemoveTagsAsync(site.Id, contentId);
 
@@ -544,8 +543,6 @@ namespace SiteServer.CMS.Core
                     await LogUtils.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
                 }
             }
-
-            ContentManager.RemoveCache(tableName, channelId);
         }
 
         public static async Task TranslateAsync(Site site, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType)
@@ -554,12 +551,11 @@ namespace SiteServer.CMS.Core
 
             var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
             var targetChannelInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
-            var targetTableName = await ChannelManager.GetTableNameAsync(targetSite, targetChannelInfo);
 
             var channelInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
 
-            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
 
             if (contentInfo == null) return;
 
@@ -570,9 +566,8 @@ namespace SiteServer.CMS.Core
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
-                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
-                //content.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
-                var theContentId = await DataProvider.ContentDao.InsertAsync(targetTableName, targetSite, targetChannelInfo, contentInfo);
+                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy);
+                var theContentId = await DataProvider.ContentDao.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var service in await PluginManager.GetServicesAsync())
                 {
@@ -596,10 +591,9 @@ namespace SiteServer.CMS.Core
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
-                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
-                //content.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
+                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.Cut);
 
-                var newContentId = await DataProvider.ContentDao.InsertAsync(targetTableName, targetSite, targetChannelInfo, contentInfo);
+                var newContentId = await DataProvider.ContentDao.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var service in await PluginManager.GetServicesAsync())
                 {
@@ -628,9 +622,9 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
+                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.Reference);
                 //content.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
-                int theContentId = await DataProvider.ContentDao.InsertAsync(targetTableName, targetSite, targetChannelInfo, contentInfo);
+                int theContentId = await DataProvider.ContentDao.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 await CreateManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, theContentId);
                 await CreateManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
@@ -645,8 +639,8 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
-                var theContentId = await DataProvider.ContentDao.InsertAsync(targetTableName, targetSite, targetChannelInfo, contentInfo);
+                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.ReferenceContent);
+                var theContentId = await DataProvider.ContentDao.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var service in await PluginManager.GetServicesAsync())
                 {

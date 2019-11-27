@@ -4,7 +4,6 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -39,7 +38,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
                 var title = contentInfo.Title;

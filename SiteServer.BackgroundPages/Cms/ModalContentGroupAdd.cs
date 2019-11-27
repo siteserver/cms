@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
 				if (AuthRequest.IsQueryExists("GroupName"))
 				{
                     var groupName = AuthRequest.GetQueryString("GroupName");
-                    var contentGroupInfo = ContentGroupManager.GetContentGroupAsync(SiteId, groupName).GetAwaiter().GetResult();
+                    var contentGroupInfo = DataProvider.ContentGroupDao.GetContentGroupAsync(SiteId, groupName).GetAwaiter().GetResult();
 					if (contentGroupInfo != null)
 					{
                         TbContentGroupName.Text = contentGroupInfo.GroupName;
@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			else
 			{
-				if (ContentGroupManager.IsExistsAsync(SiteId, TbContentGroupName.Text).GetAwaiter().GetResult())
+				if (DataProvider.ContentGroupDao.IsExistsAsync(SiteId, TbContentGroupName.Text).GetAwaiter().GetResult())
 				{
                     FailMessage("内容组添加失败，内容组名称已存在！");
 				}

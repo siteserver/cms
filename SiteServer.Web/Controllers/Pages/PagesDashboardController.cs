@@ -7,8 +7,6 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Packaging;
 using SiteServer.Utils;
 
@@ -70,7 +68,7 @@ namespace SiteServer.API.Controllers.Pages
                 {
                     foreach(var site in await DataProvider.SiteDao.GetSiteListAsync())
                     {
-                        var count = await ContentManager.GetCountCheckingAsync(site);
+                        var count = await DataProvider.ContentDao.GetCountCheckingAsync(site);
                         if (count > 0)
                         {
                             checkingList.Add(new
@@ -89,7 +87,7 @@ namespace SiteServer.API.Controllers.Pages
                         var site = await DataProvider.SiteDao.GetAsync(siteId);
                         if (site == null) continue;
 
-                        var count = await ContentManager.GetCountCheckingAsync(site);
+                        var count = await DataProvider.ContentDao.GetCountCheckingAsync(site);
                         if (count > 0)
                         {
                             checkingList.Add(new

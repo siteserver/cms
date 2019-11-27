@@ -26,11 +26,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
             Administrator admin = null;
             if (request.UserId > 0)
             {
-                admin = await AdminManager.GetByUserIdAsync(request.UserId);
+                admin = await DataProvider.AdministratorDao.GetByUserIdAsync(request.UserId);
             }
             else if (!string.IsNullOrEmpty(request.UserName))
             {
-                admin = await AdminManager.GetByUserNameAsync(request.UserName);
+                admin = await DataProvider.AdministratorDao.GetByUserNameAsync(request.UserName);
             }
 
             if (admin == null)
@@ -60,7 +60,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
             var roleNames = string.Empty;
             if (isOrdinaryAdmin)
             {
-                roleNames = await AdminManager.GetRolesAsync(admin.UserName);
+                roleNames = await DataProvider.AdministratorDao.GetRolesAsync(admin.UserName);
             }
 
             return new GetResult

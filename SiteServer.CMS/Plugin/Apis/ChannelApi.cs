@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Plugin.Apis
         private ChannelApi() { }
 
         private static ChannelApi _instance;
-        public static ChannelApi Instance => _instance ?? (_instance = new ChannelApi());
+        public static ChannelApi Instance => _instance ??= new ChannelApi();
 
         public async Task<IChannel> GetChannelAsync(int siteId, int channelId)
         {

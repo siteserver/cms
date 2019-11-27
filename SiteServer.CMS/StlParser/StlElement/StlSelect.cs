@@ -4,7 +4,6 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -307,7 +306,7 @@ selObj.selectedIndex=0;
                 {
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = await ContentManager.GetContentInfoAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                         var title = WebUtils.MaxLengthText(contentInfo.Title, titleWordNum);
                         var url = await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, false);
                         if (!string.IsNullOrEmpty(queryString))

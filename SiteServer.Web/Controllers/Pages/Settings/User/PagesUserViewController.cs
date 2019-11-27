@@ -21,11 +21,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
             CMS.Model.User user = null;
             if (request.UserId > 0)
             {
-                user = await UserManager.GetByUserIdAsync(request.UserId);
+                user = await DataProvider.UserDao.GetByUserIdAsync(request.UserId);
             }
             else if (!string.IsNullOrEmpty(request.UserName))
             {
-                user = await UserManager.GetByUserNameAsync(request.UserName);
+                user = await DataProvider.UserDao.GetByUserNameAsync(request.UserName);
             }
 
             if (user == null)

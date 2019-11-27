@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 
@@ -45,7 +43,7 @@ namespace SiteServer.API.Controllers.Home
                 var retVal = new List<IDictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -113,12 +111,12 @@ namespace SiteServer.API.Controllers.Home
                 var contentInfoList = new List<Content>();
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
-                    contentInfo.Set(ContentAttribute.CheckUserName, request.AdminName);
-                    contentInfo.Set(ContentAttribute.CheckDate, DateTime.Now);
-                    contentInfo.Set(ContentAttribute.CheckReasons, reasons);
+                    contentInfo.CheckUserName = request.AdminName;
+                    contentInfo.CheckDate = DateTime.Now;
+                    contentInfo.CheckReasons = reasons;
 
                     contentInfo.Checked = isChecked;
                     contentInfo.CheckedLevel = checkedLevel;
@@ -150,13 +148,6 @@ namespace SiteServer.API.Controllers.Home
                     };
 
                     await DataProvider.ContentCheckDao.InsertAsync(checkInfo);
-                }
-
-                if (isTranslate && translateChannelId > 0)
-                {
-                    ContentManager.RemoveCache(tableName, channelId);
-                    var translateTableName = await ChannelManager.GetTableNameAsync(site, translateChannelId);
-                    ContentManager.RemoveCache(translateTableName, translateChannelId);
                 }
 
                 await request.AddSiteLogAsync(siteId, "批量审核内容");

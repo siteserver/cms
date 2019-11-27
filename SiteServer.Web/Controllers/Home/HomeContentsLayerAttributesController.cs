@@ -4,7 +4,6 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -51,7 +50,7 @@ namespace SiteServer.API.Controllers.Home
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -82,7 +81,7 @@ namespace SiteServer.API.Controllers.Home
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -111,7 +110,7 @@ namespace SiteServer.API.Controllers.Home
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         contentInfo.Hits = hits;

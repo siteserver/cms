@@ -5,13 +5,13 @@ using System.Web.UI;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -229,8 +229,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (contextInfo.ContextType == EContextType.Content)
                 {
                     var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
-                    //var groupContents = TranslateUtils.StringCollectionToStringList(DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
-                    var groupContents = TranslateUtils.StringCollectionToStringList(StlContentCache.GetValue(tableName, contextInfo.ContentId, ContentAttribute.GroupNameCollection));
+                    var groupContents = TranslateUtils.StringCollectionToStringList(DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.GroupNameCollection));
                     isSuccess = TestTypeValues(testOperate, testValue, groupContents);
                 }
             }
@@ -792,13 +791,12 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfContents, testTypeStr))
             {
-                var count = await ContentManager.GetCountAsync(pageInfo.Site, channel, true);
+                var count = await DataProvider.ContentDao.GetCountAsync(pageInfo.Site, channel, true);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfImageContents, testTypeStr))
             {
-                //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.SiteId, channel.ChannelId);
-                var count = await StlContentCache.GetCountCheckedImageAsync(pageInfo.SiteId, channel.Id);
+                var count = await DataProvider.ContentDao.GetCountCheckedImageAsync(pageInfo.SiteId, channel.Id);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(nameof(Channel.LinkUrl), testTypeStr))
@@ -821,8 +819,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             if (contentInfo == null)
             {
                 var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
-                //theValue = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, testTypeStr);
-                theValue = StlContentCache.GetValue(tableName, contextInfo.ContentId, testTypeStr);
+                theValue = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, testTypeStr);
             }
             else
             {

@@ -7,7 +7,6 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Model;
@@ -54,7 +53,7 @@ namespace SiteServer.CMS.StlParser
 
             var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
-            var contentIdList = StlContentCache.GetContentIdListChecked(tableName, channelId, orderByString);
+            var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, channelId, orderByString);
 
             foreach (var contentId in contentIdList)
             {
@@ -214,7 +213,7 @@ namespace SiteServer.CMS.StlParser
 
         private static async Task CreateContentAsync(Site site, Channel channel, int contentId)
         {
-            var contentInfo = await ContentManager.GetContentInfoAsync(site, channel, contentId);
+            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channel, contentId);
 
             if (contentInfo == null)
             {
@@ -227,7 +226,7 @@ namespace SiteServer.CMS.StlParser
                 return;
             }
 
-            if (!ContentManager.IsCreatable(channel, contentInfo)) return;
+            if (!DataProvider.ContentDao.IsCreatable(channel, contentInfo)) return;
 
             if (site.IsCreateStaticContentByAddDate &&
                 contentInfo.AddDate < site.CreateStaticContentAddDate)

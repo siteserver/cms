@@ -7,7 +7,6 @@ using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -63,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = ContentManager.GetContentInfoAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                            var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -98,7 +97,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = ContentManager.GetContentInfoAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                            var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -133,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idList)
                     {
-                        var contentInfo = ContentManager.GetContentInfoAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                        var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                         if (contentInfo != null)
                         {
                             contentInfo.Hits = hits;
@@ -151,7 +150,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idList)
                     {
-                        var contentInfo = ContentManager.GetContentInfoAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                        var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                         if (contentInfo != null)
                         {
                             contentInfo.Downloads = downloads;

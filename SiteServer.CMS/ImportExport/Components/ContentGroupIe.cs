@@ -29,7 +29,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             var groupName = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(ContentGroup.GroupName), "ContentGroupName" });
             if (string.IsNullOrEmpty(groupName)) return true;
-            if (await ContentGroupManager.IsExistsAsync(siteId, groupName)) return true;
+            if (await DataProvider.ContentGroupDao.IsExistsAsync(siteId, groupName)) return true;
 
             var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Taxis)));
             var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Description));

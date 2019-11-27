@@ -29,7 +29,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
 	        var groupName = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(ChannelGroup.GroupName), "NodeGroupName" });
 	        if (string.IsNullOrEmpty(groupName)) return true;
-	        if (await ChannelGroupManager.IsExistsAsync(siteId, groupName)) return true;
+	        if (await DataProvider.ChannelGroupDao.IsExistsAsync(siteId, groupName)) return true;
 
 	        var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ChannelGroup.Taxis)));
 	        var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ChannelGroup.Description));

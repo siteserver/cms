@@ -5,7 +5,6 @@ using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
@@ -176,7 +175,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var targetNodeInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
 
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                            var targetContentInfo = await ContentManager.GetContentInfoAsync(targetSite, targetNodeInfo, contentInfo.ReferenceId);
+                            var targetContentInfo = await DataProvider.ContentDao.GetAsync(targetSite, targetNodeInfo, contentInfo.ReferenceId);
                             if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                             {
                                 contentInfo = targetContentInfo;
@@ -186,7 +185,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo == null)
                     {
-                        contentInfo = await ContentManager.GetContentInfoAsync(pageInfo.Site, contextInfo.ChannelId, contentId);
+                        contentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, contextInfo.ChannelId, contentId);
                     }
 
                     if (contentInfo != null)

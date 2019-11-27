@@ -8,16 +8,16 @@ namespace SiteServer.CMS.Provider
 {
     public partial class ConfigDao
     {
-        private readonly string _cacheKey = CacheManager.Cache.GetKey(nameof(Config));
+        
 
         private async Task RemoveCacheAsync()
         {
-            await CacheManager.Cache.RemoveAsync(_cacheKey);
+            await _cache.RemoveAsync(_cacheKey);
         }
 
         public async Task<Config> GetAsync()
         {
-            return await CacheManager.Cache.GetOrCreateAsync(_cacheKey,
+            return await _cache.GetOrCreateAsync(_cacheKey,
                 async options =>
                 {
                     Config info;

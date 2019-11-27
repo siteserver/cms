@@ -6,7 +6,6 @@ using SiteServer.CMS.Context;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using Content = SiteServer.CMS.Model.Content;
 
@@ -48,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
             _contentId = AuthRequest.GetQueryInt("contentID");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            var contentInfo = ContentManager.GetContentInfoAsync(Site, _channelId, _contentId).GetAwaiter().GetResult();
+            var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channelId, _contentId).GetAwaiter().GetResult();
 
             var (isChecked, checkedLevel) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, SiteId).GetAwaiter().GetResult();
             BtnCheck.Visible = CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isChecked, checkedLevel);
@@ -74,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlCheckDate = (Literal)e.Item.FindControl("ltlCheckDate");
             var ltlReasons = (Literal)e.Item.FindControl("ltlReasons");
 
-            ltlUserName.Text = AdminManager.GetDisplayNameAsync(checkInfo.UserName).GetAwaiter().GetResult();
+            ltlUserName.Text = DataProvider.AdministratorDao.GetDisplayNameAsync(checkInfo.UserName).GetAwaiter().GetResult();
             ltlCheckDate.Text = DateUtils.GetDateAndTimeString(checkInfo.CheckDate);
             ltlReasons.Text = checkInfo.Reasons;
         }

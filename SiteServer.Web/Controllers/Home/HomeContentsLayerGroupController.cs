@@ -4,7 +4,6 @@ using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 
@@ -39,7 +38,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var contentGroupNameList = await ContentGroupManager.GetGroupNameListAsync(siteId);
+                var contentGroupNameList = await DataProvider.ContentGroupDao.GetGroupNamesAsync(siteId);
 
                 return Ok(new
                 {
@@ -85,7 +84,7 @@ namespace SiteServer.API.Controllers.Home
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -104,7 +103,7 @@ namespace SiteServer.API.Controllers.Home
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -128,7 +127,7 @@ namespace SiteServer.API.Controllers.Home
                         Description = AttackUtils.FilterXss(description)
                     };
 
-                    if (await ContentGroupManager.IsExistsAsync(siteId, groupInfo.GroupName))
+                    if (await DataProvider.ContentGroupDao.IsExistsAsync(siteId, groupInfo.GroupName))
                     {
                         await DataProvider.ContentGroupDao.UpdateAsync(groupInfo);
                         await request.AddSiteLogAsync(siteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
@@ -141,7 +140,7 @@ namespace SiteServer.API.Controllers.Home
 
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);

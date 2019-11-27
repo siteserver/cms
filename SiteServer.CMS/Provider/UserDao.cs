@@ -4,23 +4,26 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using Microsoft.Extensions.Caching.Distributed;
+using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
-using SiteServer.CMS.DataCache;
 using SqlKata;
 
 namespace SiteServer.CMS.Provider
 {
-    public class UserDao : DataProviderBase, IRepository
+    public partial class UserDao : DataProviderBase, IRepository
     {
         private readonly Repository<User> _repository;
+        private readonly IDistributedCache _cache;
 
         public UserDao()
         {
             _repository = new Repository<User>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            _cache = CacheManager.Cache;
         }
 
         public IDatabase Database => _repository.Database;
@@ -31,7 +34,7 @@ namespace SiteServer.CMS.Provider
         private async Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string email, string mobile, string password, string ipAddress)
         {
             var config = await DataProvider.ConfigDao.GetAsync();
-            if (!await UserManager.IsIpAddressCachedAsync(ipAddress))
+            if (!await IsIpAddressCachedAsync(ipAddress))
             {
                 return (false, $"同一IP在{config.UserRegistrationMinMinutes}分钟内只能注册一次");
             }
@@ -153,7 +156,7 @@ namespace SiteServer.CMS.Provider
 
                 user.Id = await InsertWithoutValidationAsync(user, password, EPasswordFormat.Encrypted, passwordSalt);
 
-                await UserManager.CacheIpAddressAsync(ipAddress);
+                await CacheIpAddressAsync(ipAddress);
 
                 return (user.Id, string.Empty);
             }
@@ -219,14 +222,13 @@ namespace SiteServer.CMS.Provider
             if (user == null) return;
 
             var userEntityDb = await _repository.GetAsync(user.Id);
+            await RemoveCacheAsync(userEntityDb);
 
             user.Password = userEntityDb.Password;
             user.PasswordFormat = userEntityDb.PasswordFormat;
             user.PasswordSalt = userEntityDb.PasswordSalt;
 
             await _repository.UpdateAsync(user);
-
-            UserManager.UpdateCache(user);
         }
 
         private async Task UpdateLastActivityDateAndCountOfFailedLoginAsync(User user)
@@ -242,7 +244,7 @@ namespace SiteServer.CMS.Provider
                 .Where(nameof(User.Id), user.Id)
             );
 
-            UserManager.UpdateCache(user);
+            await RemoveCacheAsync(user);
         }
 
         public async Task UpdateLastActivityDateAndCountOfLoginAsync(User user)
@@ -260,7 +262,7 @@ namespace SiteServer.CMS.Provider
                 .Where(nameof(User.Id), user.Id)
             );
 
-            UserManager.UpdateCache(user);
+            await RemoveCacheAsync(user);
         }
 
         private static string EncodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
@@ -350,8 +352,10 @@ namespace SiteServer.CMS.Provider
 
         private async Task ChangePasswordAsync(string userName, EPasswordFormat passwordFormat, string passwordSalt, string password)
         {
-            var user = await UserManager.GetByUserNameAsync(userName);
+            var user = await GetByUserNameAsync(userName);
             if (user == null) return;
+
+            await RemoveCacheAsync(user);
 
             user.LastResetPasswordDate = DateTime.Now;
 
@@ -364,97 +368,49 @@ namespace SiteServer.CMS.Provider
             );
 
             await LogUtils.AddUserLogAsync(userName, "修改密码", string.Empty);
-
-            UserManager.UpdateCache(user);
         }
 
-        public async Task CheckAsync(List<int> idList)
+        public async Task CheckAsync(IList<int> idList)
         {
+            foreach (var userId in idList)
+            {
+                var user = await GetByUserIdAsync(userId);
+                await RemoveCacheAsync(user);
+            }
+
             await _repository.UpdateAsync(Q
                 .Set(nameof(User.IsChecked), true.ToString())
                 .WhereIn(nameof(User.Id), idList)
             );
-
-            UserManager.ClearCache();
         }
 
-        public async Task LockAsync(List<int> idList)
+        public async Task LockAsync(IList<int> idList)
         {
+            foreach (var userId in idList)
+            {
+                var user = await GetByUserIdAsync(userId);
+                await RemoveCacheAsync(user);
+            }
+
             await _repository.UpdateAsync(Q
                 .Set(nameof(User.IsLockedOut), true.ToString())
                 .WhereIn(nameof(User.Id), idList)
             );
-
-            UserManager.ClearCache();
         }
 
-        public async Task UnLockAsync(List<int> idList)
+        public async Task UnLockAsync(IList<int> idList)
         {
+            foreach (var userId in idList)
+            {
+                var user = await GetByUserIdAsync(userId);
+                await RemoveCacheAsync(user);
+            }
+
             await _repository.UpdateAsync(Q
                 .Set(nameof(User.IsLockedOut), false.ToString())
                 .Set(nameof(User.CountOfFailedLogin), 0)
                 .WhereIn(nameof(User.Id), idList)
             );
-
-            UserManager.ClearCache();
-        }
-
-        private async Task<User> GetByAccountAsync(string account)
-        {
-            var userEntity = await GetByUserNameAsync(account);
-            if (userEntity != null) return userEntity;
-            if (StringUtils.IsMobile(account)) return await GetByMobileAsync(account);
-            if (StringUtils.IsEmail(account)) return await GetByEmailAsync(account);
-
-            return null;
-        }
-
-        public async Task<User> GetByUserNameAsync(string userName)
-        {
-            if (string.IsNullOrEmpty(userName)) return null;
-
-            var user = await _repository.GetAsync(Q.Where(nameof(User.UserName), userName));
-            if (user == null) return null;
-
-            UserManager.UpdateCache(user);
-
-            return user;
-        }
-
-        public async Task<User> GetByEmailAsync(string email)
-        {
-            if (string.IsNullOrEmpty(email)) return null;
-
-            var user = await _repository.GetAsync(Q.Where(nameof(User.Email), email));
-            if (user == null) return null;
-
-            UserManager.UpdateCache(user);
-
-            return user;
-        }
-
-        public async Task<User> GetByMobileAsync(string mobile)
-        {
-            if (string.IsNullOrEmpty(mobile)) return null;
-
-            var user = await _repository.GetAsync(Q.Where(nameof(User.Mobile), mobile));
-            if (user == null) return null;
-
-            UserManager.UpdateCache(user);
-
-            return user;
-        }
-
-        public async Task<User> GetByUserIdAsync(int id)
-        {
-            if (id <= 0) return null;
-
-            var user = await _repository.GetAsync(id);
-            if (user == null) return null;
-
-            UserManager.UpdateCache(user);
-
-            return user;
         }
 
         public async Task<bool> IsUserNameExistsAsync(string userName)
@@ -719,27 +675,12 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             return await _repository.CountAsync(query);
         }
 
-        public async Task<List<User>> GetUsersAsync(ETriState state, int groupId, int dayOfLastActivity, string keyword, string order, int offset, int limit)
+        public async Task<IEnumerable<User>> GetUsersAsync(ETriState state, int groupId, int dayOfLastActivity, string keyword, string order, int offset, int limit)
         {
-            var list = new List<User>();
-
             var query = GetQuery(state, groupId, dayOfLastActivity, keyword, order);
-            query
-                .Select(nameof(User.Id))
-                .Offset(offset)
-                .Limit(limit);
+            query.Offset(offset).Limit(limit);
 
-            var dbList = await _repository.GetAllAsync<int>(query);
-
-            if (dbList != null)
-            {
-                foreach (var userId in dbList)
-                {
-                    list.Add(await UserManager.GetByUserIdAsync(userId));
-                }
-            }
-
-            return list;
+            return await _repository.GetAllAsync(query);
         }
 
         public async Task<bool> IsExistsAsync(int id)
@@ -747,11 +688,14 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             return await _repository.ExistsAsync(id);
         }
 
-        public async Task DeleteAsync(User user)
+        public async Task<User> DeleteAsync(int userId)
         {
-            await _repository.DeleteAsync(user.Id);
-            
-            UserManager.RemoveCache(user);
+            var user = await GetByUserIdAsync(userId);
+            await RemoveCacheAsync(user);
+
+            await _repository.DeleteAsync(userId);
+
+            return user;
         }
     }
 }

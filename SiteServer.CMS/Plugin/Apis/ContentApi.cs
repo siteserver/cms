@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Plugin.Apis
         private ContentApi() { }
 
         private static ContentApi _instance;
-        public static ContentApi Instance => _instance ?? (_instance = new ContentApi());
+        public static ContentApi Instance => _instance ??= new ContentApi();
 
         public async Task<IContent> GetContentInfoAsync(int siteId, int channelId, int contentId)
         {
@@ -24,7 +24,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
 
             //return ContentManager.GetContentInfo(site, channel, contentId);
-            return await DataProvider.ContentDao.GetContentAsync(await ChannelManager.GetTableNameAsync(site, channelInfo), contentId);
+            return await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
         }
 
         //public async Task<List<IContent>> GetContentInfoListAsync(int siteId, int channelId, string whereString, string orderString, int limit, int offset)
@@ -137,8 +137,8 @@ namespace SiteServer.CMS.Plugin.Apis
             var site = await DataProvider.SiteDao.GetAsync(siteId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
 
-            var tuple = DataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
-            return tuple?.Item2;
+            var value = DataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
+            return value;
         }
 
         public IContent NewInstance(int siteId, int channelId)
@@ -172,9 +172,8 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             var site = await DataProvider.SiteDao.GetAsync(siteId);
             var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-            var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
 
-            return await DataProvider.ContentDao.InsertAsync(tableName, site, channelInfo, (Content)contentInfo);
+            return await DataProvider.ContentDao.InsertAsync(site, channelInfo, (Content)contentInfo);
         }
 
         public async Task UpdateAsync(int siteId, int channelId, IContent contentInfo)
@@ -193,11 +192,11 @@ namespace SiteServer.CMS.Plugin.Apis
             await DataProvider.ContentDao.UpdateTrashContentsAsync(siteId, channelId, tableName, contentIdList);
         }
 
-        public async Task<IList<int>> GetContentIdListAsync(int siteId, int channelId)
+        public async Task<IEnumerable<int>> GetContentIdListAsync(int siteId, int channelId)
         {
             var site = await DataProvider.SiteDao.GetAsync(siteId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
-            return DataProvider.ContentDao.GetContentIdListCheckedByChannelId(tableName, siteId, channelId);
+            return await DataProvider.ContentDao.GetContentIdListCheckedByChannelIdAsync(tableName, siteId, channelId);
         }
 
         public async Task<string> GetContentUrlAsync(int siteId, int channelId, int contentId)

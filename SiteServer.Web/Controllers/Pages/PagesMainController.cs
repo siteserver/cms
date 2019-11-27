@@ -169,7 +169,7 @@ namespace SiteServer.API.Controllers.Pages
                 }
                 else
                 {
-                    var siteIdList = await AdminManager.GetLatestTop10SiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
+                    var siteIdList = await DataProvider.AdministratorDao.GetLatestTop10SiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
                     foreach (var siteId in siteIdList)
                     {
                         var site = await DataProvider.SiteDao.GetAsync(siteId);

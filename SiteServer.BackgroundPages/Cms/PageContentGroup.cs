@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(Constants.WebSitePermissions.Configuration);
 
-            RptContents.DataSource = ContentGroupManager.GetContentGroupListAsync(SiteId).GetAwaiter().GetResult();
+            RptContents.DataSource = DataProvider.ContentGroupDao.GetContentGroupsAsync(SiteId).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 

@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
                 //x轴信息
                 SetXHashtable(key, site.SiteName);
                 //y轴信息
-                SetYHashtable(key, DataProvider.ContentDao.GetTotalHits(site.TableName, siteId));
+                SetYHashtable(key, DataProvider.ContentDao.GetTotalHitsAsync(site.TableName, siteId).GetAwaiter().GetResult());
             }
 
             RptContents.DataSource = siteIdList;

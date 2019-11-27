@@ -2,18 +2,14 @@
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
 using System.Threading.Tasks;
-using Datory;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Provider;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -425,12 +421,12 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.Equals(StlParserUtility.CountOfContents.ToLower()))
             {
-                var count = await ContentManager.GetCountAsync(pageInfo.Site, channel, true);
+                var count = await DataProvider.ContentDao.GetCountAsync(pageInfo.Site, channel, true);
                 parsedContent = count.ToString();
             }
             else if (type.Equals(StlParserUtility.CountOfImageContents.ToLower()))
             { 
-                var count = await StlContentCache.GetCountCheckedImageAsync(pageInfo.SiteId, channel.Id);
+                var count = await DataProvider.ContentDao.GetCountCheckedImageAsync(pageInfo.SiteId, channel.Id);
                 parsedContent = count.ToString();
             }
             else

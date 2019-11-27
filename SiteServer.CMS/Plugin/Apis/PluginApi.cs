@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Plugin.Apis
         private PluginApi() { }
 
         private static PluginApi _instance;
-        public static PluginApi Instance => _instance ?? (_instance = new PluginApi());
+        public static PluginApi Instance => _instance ??= new PluginApi();
 
         public async Task<string> GetPluginUrlAsync(string pluginId, string relatedUrl = "")
         {

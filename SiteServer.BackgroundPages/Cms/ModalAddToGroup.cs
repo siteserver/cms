@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (_isContent)
                 {
-                    var contentGroupNameList = ContentGroupManager.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult();
+                    var contentGroupNameList = DataProvider.ContentGroupDao.GetGroupNamesAsync(SiteId).GetAwaiter().GetResult();
                     foreach (var groupName in contentGroupNameList)
                     {
                         var item = new ListItem(groupName, groupName);
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var nodeGroupNameList = ChannelGroupManager.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult();
+                    var nodeGroupNameList = DataProvider.ChannelGroupDao.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult();
                     foreach (var groupName in nodeGroupNameList)
                     {
                         var item = new ListItem(groupName, groupName);
@@ -119,7 +119,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             foreach (var contentId in contentIdArrayList)
                             {
-                                DataProvider.ContentDao.AddContentGroupList(tableName, contentId, groupNameList);
+                                DataProvider.ContentDao.AddContentGroupListAsync(tableName, contentId, groupNameList).GetAwaiter().GetResult();
                             }
                         }
                     }

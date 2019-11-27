@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context.Atom.Atom.Core;
 using SiteServer.CMS.Context.Atom.Atom.Core.Collections;
@@ -8,7 +9,6 @@ using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -114,7 +114,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, channel.Id, true) + 1;
+                        taxis = await DataProvider.ContentDao.GetMaxTaxisAsync(tableName, channel.Id, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
@@ -179,7 +179,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = await DataProvider.ContentDao.InsertWithTaxisAsync(tableName, _site, channel, contentInfo, taxis);
+                        var contentId = await DataProvider.ContentDao.InsertWithTaxisAsync(_site, channel, contentInfo, taxis);
                         contentIdList.Add(contentId);
 
                         await ContentTagUtils.UpdateTagsAsync(string.Empty, tags, _site.Id, contentId);
@@ -234,7 +234,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, channel.Id, true) + 1;
+                        taxis = await DataProvider.ContentDao.GetMaxTaxisAsync(tableName, channel.Id, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
@@ -301,7 +301,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = await DataProvider.ContentDao.InsertWithTaxisAsync(tableName, _site, channel, contentInfo, taxis);
+                        var contentId = await DataProvider.ContentDao.InsertWithTaxisAsync(_site, channel, contentInfo, taxis);
 
                         contentIdList.Add(contentId);
 
@@ -322,24 +322,24 @@ namespace SiteServer.CMS.ImportExport.Components
             return contentIdList;
         }
 
-        public async Task<bool> ExportContentsAsync(Site site, int channelId, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
+        public async Task<bool> ExportContentsAsync(Site site, int channelId, IEnumerable<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
             var channelInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
             var feed = AtomUtility.GetEmptyFeed();
 
-            if (contentIdList == null || contentIdList.Count == 0)
+            if (contentIdList == null)
             {
                 var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
-                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
+                contentIdList = await DataProvider.ContentDao.GetContentIdListAsync(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
             }
-            if (contentIdList.Count == 0) return false;
+            if (!contentIdList.Any()) return false;
 
             var collection = new NameValueCollection();
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = await ContentManager.GetContentInfoAsync(site, channelInfo, contentId);
+                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
                 try
                 {
                     ContentUtility.PutImagePaths(site, contentInfo, collection);

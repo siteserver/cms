@@ -6,8 +6,6 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Enumerations;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
@@ -80,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = ContentManager.GetContentInfoAsync(Site, channelId, contentId).GetAwaiter().GetResult();
+                        var contentInfo = DataProvider.ContentDao.GetAsync(Site, channelId, contentId).GetAwaiter().GetResult();
                         if (contentInfo != null)
                         {
                             builder.Append(
