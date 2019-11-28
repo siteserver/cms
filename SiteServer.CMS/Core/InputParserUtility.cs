@@ -326,8 +326,7 @@ namespace SiteServer.CMS.Core
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId, contentId,
-                    fileUrl);
+                retVal = PageUtility.ParseNavigationUrl(siteInfo, fileUrl, true);
             }
             else
             {
@@ -360,7 +359,7 @@ namespace SiteServer.CMS.Core
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
+                retVal = PageUtility.ParseNavigationUrl(siteInfo, fileUrl, true);
             }
             else
             {

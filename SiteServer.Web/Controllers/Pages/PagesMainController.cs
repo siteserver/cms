@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -112,7 +113,7 @@ namespace SiteServer.API.Controllers.Pages
                     permissionList.AddRange(channelPermissions);
                 }
 
-                var topMenus = GetTopMenus(siteInfo, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions);
+                var topMenus = GetTopMenus(siteInfo, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions, permissionList);
                 var siteMenus =
                     GetLeftMenus(siteInfo, ConfigManager.TopMenu.IdSite, isSuperAdmin, permissionList);
                 var pluginMenus = GetLeftMenus(siteInfo, string.Empty, isSuperAdmin, permissionList);
@@ -149,7 +150,7 @@ namespace SiteServer.API.Controllers.Pages
             }
         }
 
-        private static List<Tab> GetTopMenus(SiteInfo siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
+        private static List<Tab> GetTopMenus(SiteInfo siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions, List<string> permissionList)
         {
             var menus = new List<Tab>();
 
@@ -210,6 +211,42 @@ namespace SiteServer.API.Controllers.Pages
                     tab.Children = tabs.ToArray();
 
                     menus.Add(tab);
+                }
+            }
+            else
+            {
+                foreach (var tab in TabManager.GetTopMenuTabs())
+                {
+                    if (!TabManager.IsValid(tab, permissionList)) continue;
+
+                    var tabToAdd = new Tab
+                    {
+                        Id = tab.Id,
+                        Name = tab.Name,
+                        Text = tab.Text,
+                        Target = tab.Target,
+                        Href = tab.Href
+                    };
+                    var tabs = TabManager.GetTabList(tab.Id, 0);
+                    var tabsToAdd = new List<Tab>();
+                    foreach (var menu in tabs)
+                    {
+                        if (!TabManager.IsValid(menu, permissionList)) continue;
+
+                        var menuToAdd = new Tab
+                        {
+                            Id = menu.Id,
+                            Name = menu.Name,
+                            Text = menu.Text,
+                            Target = menu.Target,
+                            Href = menu.Href,
+                            Children = menu.Children.Where(child => TabManager.IsValid(child, permissionList)).ToArray()
+                        };
+                        tabsToAdd.Add(menuToAdd);
+                    }
+                    tabToAdd.Children = tabsToAdd.ToArray();
+
+                    menus.Add(tabToAdd);
                 }
             }
 

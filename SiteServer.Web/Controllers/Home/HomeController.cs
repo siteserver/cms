@@ -36,7 +36,7 @@ namespace SiteServer.API.Controllers.Home
                     return Ok(GetRegister(request));
                 }
                 if (pageName == PageNameIndex)
-                {   
+                {
                     return Ok(GetIndex(request));
                 }
                 if (pageName == PageNameProfile)

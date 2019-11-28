@@ -66,15 +66,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     var pageContentIds = ContentManager.GetChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents, offset, limit);
 
                     var sequence = offset + 1;
-                    foreach (var channelContentId in pageContentIds)
+                    foreach (var (contentChannelId, contentId) in pageContentIds)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelContentId.ChannelId, channelContentId.ContentId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelId, contentId);
                         if (contentInfo == null) continue;
 
                         var menus = PluginMenuManager.GetContentMenus(pluginIds, contentInfo);
                         contentInfo.Set("PluginMenus", menus);
 
-                        var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId, channelContentId.ChannelId);
+                        var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId, contentChannelId);
                         contentInfo.Set("ChannelName", channelName);
 
                         pageContentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
