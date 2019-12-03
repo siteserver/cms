@@ -3,8 +3,8 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
 
 namespace SiteServer.CMS.Context.Images
 {

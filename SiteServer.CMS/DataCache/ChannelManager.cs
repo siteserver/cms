@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
-using SiteServer.Utils;
-using TableStyle = SiteServer.CMS.Model.TableStyle;
+using SiteServer.CMS.Repositories;
+using TableStyle = SiteServer.Abstractions.TableStyle;
 
 namespace SiteServer.CMS.DataCache
 {
@@ -70,7 +68,7 @@ namespace SiteServer.CMS.DataCache
 
                 if (dict != null) return dict;
 
-                dict = await DataProvider.ChannelDao.GetChannelDictionaryBySiteIdAsync(siteId);
+                dict = await DataProvider.ChannelRepository.GetChannelDictionaryBySiteIdAsync(siteId);
                 Update(allDict, dict, siteId);
                 return dict;
             }
@@ -172,7 +170,7 @@ namespace SiteServer.CMS.DataCache
                 }
                 else
                 {
-                    channel = channelInfoList.FirstOrDefault(x => (x.ParentId == parentId || TranslateUtils.StringCollectionToIntList(x.ParentsPath).Contains(parentId)) && x.ChannelName == channelName);
+                    channel = channelInfoList.FirstOrDefault(x => (x.ParentId == parentId || StringUtils.GetIntList(x.ParentsPath).Contains(parentId)) && x.ChannelName == channelName);
 
 //                    sqlString = $@"SELECT Id
 //FROM siteserver_Channel 
@@ -330,7 +328,7 @@ namespace SiteServer.CMS.DataCache
 
         public static async Task<bool> IsExistsAsync(int channelId)
         {
-            var list = await DataProvider.SiteDao.GetSiteIdListAsync();
+            var list = await DataProvider.SiteRepository.GetSiteIdListAsync();
             foreach (var siteId in list)
             {
                 var nodeInfo = await GetChannelAsync(siteId, channelId);
@@ -503,7 +501,7 @@ namespace SiteServer.CMS.DataCache
             var indexOf = -1;
             if (!string.IsNullOrEmpty(parentsPath))
             {
-                channelIdList = TranslateUtils.StringCollectionToIntList(parentsPath);
+                channelIdList = StringUtils.GetIntList(parentsPath);
                 indexOf = channelIdList.IndexOf(currentChannelId);
             }
             channelIdList.Add(channelId);
@@ -666,7 +664,7 @@ namespace SiteServer.CMS.DataCache
             if (isShowContentNum)
             {
                 var adminId = await adminPermissions.GetAdminIdAsync(site.Id, channel.Id);
-                var count = await DataProvider.ContentDao.GetCountAsync(site, channel, adminId);
+                var count = await DataProvider.ContentRepository.GetCountAsync(site, channel, adminId);
                 retVal = string.Concat(retVal, " (", count, ")");
             }
 
@@ -838,17 +836,17 @@ namespace SiteServer.CMS.DataCache
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExists)
             {
-                var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
+                var count = await DataProvider.ContentRepository.GetCountAsync(site, channel);
                 isCreatable = count != 0;
             }
             else if (linkType == ELinkType.LinkToOnlyOneContent)
             {
-                var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
+                var count = await DataProvider.ContentRepository.GetCountAsync(site, channel);
                 isCreatable = count != 1;
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
             {
-                var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
+                var count = await DataProvider.ContentRepository.GetCountAsync(site, channel);
                 if (count != 0 && count != 1)
                 {
                     isCreatable = true;
@@ -856,7 +854,7 @@ namespace SiteServer.CMS.DataCache
             }
             else if (linkType == ELinkType.LinkToFirstContent)
             {
-                var count = await DataProvider.ContentDao.GetCountAsync(site, channel, true);
+                var count = await DataProvider.ContentRepository.GetCountAsync(site, channel);
                 isCreatable = count < 1;
             }
             else if (linkType == ELinkType.NoLinkIfChannelNotExists)

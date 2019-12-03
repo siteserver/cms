@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -33,13 +32,13 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
                 contentInfo.Set(ContentAttribute.CheckState, CheckManager.GetCheckState(site, contentInfo));

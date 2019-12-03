@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageConfigurationUploadImage" %>
+﻿<%@ Page Async="true" Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageConfigurationUploadImage" %>
 <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>

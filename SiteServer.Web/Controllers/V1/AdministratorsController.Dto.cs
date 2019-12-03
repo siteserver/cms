@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
-using System.Web.Http;
-using SiteServer.CMS.Api.V1;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.API.Controllers.V1
 {

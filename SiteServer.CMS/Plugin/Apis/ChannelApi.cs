@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.Plugin.Apis
 {
-    public class ChannelApi : IChannelApi
+    public class ChannelApi
     {
         private ChannelApi() { }
 
         private static ChannelApi _instance;
         public static ChannelApi Instance => _instance ??= new ChannelApi();
 
-        public async Task<IChannel> GetChannelAsync(int siteId, int channelId)
+        public async Task<Channel> GetChannelAsync(int siteId, int channelId)
         {
             return await ChannelManager.GetChannelAsync(siteId, channelId);
         }
@@ -37,7 +38,7 @@ namespace SiteServer.CMS.Plugin.Apis
             return 0;
         }
 
-        public IChannel NewInstance(int siteId)
+        public Channel NewInstance(int siteId)
         {
             return new Channel
             {
@@ -47,9 +48,9 @@ namespace SiteServer.CMS.Plugin.Apis
             };
         }
 
-        public async Task<int> InsertAsync(int siteId, IChannel nodeInfo)
+        public async Task<int> InsertAsync(int siteId, Channel nodeInfo)
         {
-            return await DataProvider.ChannelDao.InsertAsync((Channel)nodeInfo);
+            return await DataProvider.ChannelRepository.InsertAsync((Channel)nodeInfo);
         }
 
         public async Task<List<int>> GetChannelIdListAsync(int siteId)
@@ -101,20 +102,20 @@ namespace SiteServer.CMS.Plugin.Apis
             return await ChannelManager.GetChannelNameAsync(siteId, channelId);
         }
 
-        public async Task UpdateAsync(int siteId, IChannel channelInfo)
+        public async Task UpdateAsync(int siteId, Channel channelInfo)
         {
             if (channelInfo == null) return;
-            await DataProvider.ChannelDao.UpdateAsync((Channel)channelInfo);
+            await DataProvider.ChannelRepository.UpdateAsync((Channel)channelInfo);
         }
 
         public async Task DeleteAsync(int siteId, int channelId)
         {
-            await DataProvider.ChannelDao.DeleteAsync(siteId, channelId);
+            await DataProvider.ChannelRepository.DeleteAsync(siteId, channelId);
         }
 
         public async Task<string> GetChannelUrlAsync(int siteId, int channelId)
         {
-            var site = await DataProvider.SiteDao.GetAsync(siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
             return await PageUtility.GetChannelUrlAsync(site, await ChannelManager.GetChannelAsync(siteId, channelId), false);
         }
     }

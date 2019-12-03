@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+
 
 namespace SiteServer.CMS.Plugin
 {
     public static class PluginContentManager
     {
-        public static async Task<List<IMetadata>> GetContentModelPluginsAsync()
+        public static async Task<List<IPackageMetadata>> GetContentModelPluginsAsync()
         {
-            var list = new List<IMetadata>();
+            var list = new List<IPackageMetadata>();
 
             foreach (var service in await PluginManager.GetServicesAsync())
             {
@@ -44,9 +43,9 @@ namespace SiteServer.CMS.Plugin
             return list;
         }
 
-        public static async Task<List<IMetadata>> GetAllContentRelatedPluginsAsync(bool includeContentTable)
+        public static async Task<List<IPackageMetadata>> GetAllContentRelatedPluginsAsync(bool includeContentTable)
         {
-            var list = new List<IMetadata>();
+            var list = new List<IPackageMetadata>();
 
             foreach (var service in await PluginManager.GetServicesAsync())
             {

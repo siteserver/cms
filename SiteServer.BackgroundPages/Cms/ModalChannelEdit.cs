@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -103,20 +100,20 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (PhLinkType.Visible)
                 {
-                    ELinkTypeUtils.AddListItems(DdlLinkType);
+                    ELinkTypeUtilsExtensions.AddListItems(DdlLinkType);
                 }
 
-                ETaxisTypeUtils.AddListItemsForChannelEdit(DdlTaxisType);
+                ETaxisTypeUtilsExtensions.AddListItemsForChannelEdit(DdlTaxisType);
 
-                ControlUtils.AddListControlItems(CblNodeGroupNameCollection, DataProvider.ChannelGroupDao.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult());
-                //CblNodeGroupNameCollection.DataSource = DataProvider.ChannelGroupDao.GetDataSource(SiteId);
+                ControlUtils.AddListControlItems(CblNodeGroupNameCollection, DataProvider.ChannelGroupRepository.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult());
+                //CblNodeGroupNameCollection.DataSource = DataProvider.ChannelGroupRepository.GetDataSource(SiteId);
 
                 if (PhChannelTemplateId.Visible)
                 {
-                    DdlChannelTemplateId.DataSource = DataProvider.TemplateDao
+                    DdlChannelTemplateId.DataSource = DataProvider.TemplateRepository
                         .GetTemplateListByTypeAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
                 }
-                DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
+                DdlContentTemplateId.DataSource = DataProvider.TemplateRepository.GetTemplateListByTypeAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
 
                 DataBind();
 
@@ -179,9 +176,9 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
 
-                if (!nodeInfo.IndexName.Equals(TbNodeIndexName.Text) && TbNodeIndexName.Text.Length != 0)
+                if (!nodeInfo.IndexName.Equals(TbNodeIndexName.Text) && !string.IsNullOrEmpty(TbNodeIndexName.Text))
                 {
-                    var nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameListAsync(SiteId).GetAwaiter().GetResult();
+                    var nodeIndexNameList = DataProvider.ChannelRepository.GetIndexNameListAsync(SiteId).GetAwaiter().GetResult();
                     if (nodeIndexNameList.Contains(TbNodeIndexName.Text))
                     {
                         FailMessage("栏目修改失败，栏目索引已存在！");
@@ -192,7 +189,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (PhFilePath.Visible)
                 {
                     TbFilePath.Text = TbFilePath.Text.Trim();
-                    if (!nodeInfo.FilePath.Equals(TbFilePath.Text) && TbFilePath.Text.Length != 0)
+                    if (!nodeInfo.FilePath.Equals(TbFilePath.Text) && !string.IsNullOrEmpty(TbFilePath.Text))
                     {
                         if (!DirectoryUtils.IsDirectoryNameCompliant(TbFilePath.Text))
                         {
@@ -205,7 +202,7 @@ namespace SiteServer.BackgroundPages.Cms
                             TbFilePath.Text = PageUtils.Combine(TbFilePath.Text, "index.html");
                         }
 
-                        var filePathArrayList = DataProvider.ChannelDao.GetAllFilePathBySiteIdAsync(SiteId).GetAwaiter().GetResult();
+                        var filePathArrayList = DataProvider.ChannelRepository.GetAllFilePathBySiteIdAsync(SiteId).GetAwaiter().GetResult();
                         if (filePathArrayList.Contains(TbFilePath.Text))
                         {
                             FailMessage("栏目修改失败，栏目页面路径已存在！");
@@ -268,7 +265,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 nodeInfo.ContentTemplateId = DdlContentTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue) : 0;
 
-                DataProvider.ChannelDao.UpdateAsync(nodeInfo).GetAwaiter().GetResult();
+                DataProvider.ChannelRepository.UpdateAsync(nodeInfo).GetAwaiter().GetResult();
 
                 AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "修改栏目", $"栏目:{nodeInfo.ChannelName}").GetAwaiter().GetResult();
 

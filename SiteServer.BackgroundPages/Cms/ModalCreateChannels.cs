@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 
@@ -35,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
             var isIncludeChildren = TranslateUtils.ToBool(DdlIsIncludeChildren.SelectedValue);
             var isCreateContents = TranslateUtils.ToBool(DdlIsCreateContents.SelectedValue);
 
-            foreach (var channelId in TranslateUtils.StringCollectionToIntList(_channelIdCollection))
+            foreach (var channelId in StringUtils.GetIntList(_channelIdCollection))
             {
                 CreateManager.CreateChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                 if (isCreateContents)

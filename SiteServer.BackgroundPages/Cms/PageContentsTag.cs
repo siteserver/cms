@@ -3,14 +3,14 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using Content = SiteServer.CMS.Model.Content;
+using SiteServer.CMS.Repositories;
+using Content = SiteServer.Abstractions.Content;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -45,16 +45,16 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentId = AuthRequest.GetQueryInt("contentId");
                 var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
 
-                var contentInfo = DataProvider.ContentDao.GetAsync(Site, channelInfo, contentId).GetAwaiter().GetResult();
+                var contentInfo = DataProvider.ContentRepository.GetAsync(Site, channelInfo, contentId).GetAwaiter().GetResult();
                 
-                var tagList = TranslateUtils.StringCollectionToStringList(contentInfo.Tags, ' ');
+                var tagList = StringUtils.GetStringList(contentInfo.Tags, ' ');
                 if (tagList.Contains(_tag))
                 {
                     tagList.Remove(_tag);
                 }
 
                 contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagList, " ");
-                DataProvider.ContentDao.UpdateAsync(Site, channelInfo, contentInfo).GetAwaiter().GetResult();
+                DataProvider.ContentRepository.UpdateAsync(Site, channelInfo, contentInfo).GetAwaiter().GetResult();
 
                 ContentTagUtils.RemoveTagsAsync(SiteId, contentId).GetAwaiter().GetResult();
 
@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             SpContents.ItemsPerPage = Site.PageSize;
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByContentTag(Site.TableName, _tag, siteId);
+            SpContents.SelectCommand = DataProvider.ContentRepository.GetSqlStringByContentTag(Site.TableName, _tag, siteId);
             SpContents.SortField = ContentAttribute.AddDate;
             SpContents.SortMode = SortMode.DESC;
 

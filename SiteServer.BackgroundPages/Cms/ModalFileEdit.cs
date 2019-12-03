@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
@@ -100,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             DdlCharset.Items.Add(new ListItem("默认", string.Empty));
-            ECharsetUtils.AddListItems(DdlCharset);
+            ECharsetUtilsExtensions.AddListItems(DdlCharset);
 
             if (_isCreate == false)
             {

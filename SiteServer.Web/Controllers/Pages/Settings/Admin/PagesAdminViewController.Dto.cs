@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Google.Protobuf.WellKnownTypes;
-using NSwag.Annotations;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Utils;
+﻿using SiteServer.Abstractions;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {

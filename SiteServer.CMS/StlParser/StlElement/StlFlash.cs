@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -155,7 +154,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var nodeInfo = await ChannelManager.GetChannelAsync(contextInfo.Site.Id, contextInfo.ChannelId);
                         var tableName = await ChannelManager.GetTableNameAsync(contextInfo.Site, nodeInfo);
 
-                        flashUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
+                        flashUrl = await DataProvider.ContentRepository.GetValueAsync(tableName, contentId, type);
                     }
                     else
                     {
@@ -212,9 +211,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
 
 //using System.Text;
-//using SiteServer.Utils;
+//using SiteServer.Abstractions;
 //using SiteServer.CMS.Core;
-//using SiteServer.CMS.Model.Attributes;
+//using SiteServer.Abstractions.Attributes;
 //using SiteServer.CMS.StlParser.Cache;
 //using SiteServer.CMS.StlParser.Model;
 //using SiteServer.CMS.StlParser.Parsers;
@@ -348,7 +347,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                        var node = await ChannelManager.GetChannelAsync(contextInfo.Site.Id, contextInfo.ChannelId);
 //                        var tableName = ChannelManager.GetTableName(contextInfo.Site, node);
 
-//                        //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
+//                        //picUrl = DataProvider.ContentRepository.GetValue(tableName, contentId, type);
 //                        picUrl = Body.GetValue(tableName, contentId, type);
 //                    }
 //                    else

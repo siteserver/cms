@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Web.UI;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages
 {
@@ -26,51 +24,10 @@ namespace SiteServer.BackgroundPages
 
         protected bool IsForbidden { get; private set; }
 
-        public AuthenticatedRequest AuthRequest { get; private set; }
-
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
             _messageType = messageType; 
             _message = ex != null ? $"{message}<!-- {ex} -->" : message;
-        }
-
-        protected override void OnInit(EventArgs e)
-        {
-            base.OnInit(e);
-
-            AuthRequest = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
-
-            if (!IsInstallerPage)
-            {
-                if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
-                {
-                    PageUtils.Redirect(PageUtils.GetAdminUrl("Installer"));
-                    return;
-                }
-
-                #if !DEBUG
-                if (SystemManager.Instance.IsInitialized && SystemManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
-                {
-                    PageUtils.Redirect("syncDatabase.cshtml");
-                    return;
-                }
-                #endif
-            }
-
-            if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页
-            {
-                if (!AuthRequest.IsAdminLoggin || AuthRequest.Administrator == null || AuthRequest.Administrator.Locked) // 检测管理员是否登录，检测管理员帐号是否被锁定
-                {
-                    IsForbidden = true;
-                    PageUtils.RedirectToLoginPage();
-                    return;
-                }
-            }
-
-            //防止csrf攻击
-            Response.AddHeader("X-Frame-Options", "SAMEORIGIN");
-            //tell Chrome to disable its XSS protection
-            Response.AddHeader("X-XSS-Protection", "0");
         }
 
         protected override void Render(HtmlTextWriter writer)
@@ -206,12 +163,6 @@ setTimeout(function() {{
 
         public void VerifySystemPermissions(params string[] permissionArray)
         {
-            if (AuthRequest.AdminPermissionsImpl.HasSystemPermissionsAsync(permissionArray).GetAwaiter().GetResult())
-            {
-                return;
-            }
-            AuthRequest.AdminLogout();
-            PageUtils.Redirect(PageUtils.GetAdminUrl(string.Empty));
         }
 
         public virtual void Submit_OnClick(object sender, EventArgs e)

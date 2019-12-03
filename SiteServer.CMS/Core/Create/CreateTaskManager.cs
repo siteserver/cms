@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiteServer.CMS.Enumerations;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Core.Create
 {
@@ -15,10 +15,10 @@ namespace SiteServer.CMS.Core.Create
         {
             lock (LockObject)
             {
-                if (task.CreateType == ECreateType.Content)
+                if (task.CreateType == CreateType.Content)
                 {
                     if (PendingTasks.Any(taskInfo =>
-                        taskInfo.CreateType == ECreateType.AllContent && taskInfo.ChannelId == task.ChannelId))
+                        taskInfo.CreateType == CreateType.AllContent && taskInfo.ChannelId == task.ChannelId))
                     {
                         return;
                     }
@@ -114,19 +114,19 @@ namespace SiteServer.CMS.Core.Create
             {
                 if (taskInfo.SiteId != siteId) continue;
                 
-                if (taskInfo.CreateType == ECreateType.Channel)
+                if (taskInfo.CreateType == CreateType.Channel)
                 {
                     channelsCount += taskInfo.PageCount;
                 }
-                else if (taskInfo.CreateType == ECreateType.Content || taskInfo.CreateType == ECreateType.AllContent)
+                else if (taskInfo.CreateType == CreateType.Content || taskInfo.CreateType == CreateType.AllContent)
                 {
                     contentsCount += taskInfo.PageCount;
                 }
-                else if (taskInfo.CreateType == ECreateType.File)
+                else if (taskInfo.CreateType == CreateType.File)
                 {
                     filesCount += taskInfo.PageCount;
                 }
-                else if (taskInfo.CreateType == ECreateType.Special)
+                else if (taskInfo.CreateType == CreateType.Special)
                 {
                     specialsCount += taskInfo.PageCount;
                 }

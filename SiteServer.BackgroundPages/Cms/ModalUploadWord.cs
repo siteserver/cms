@@ -2,15 +2,15 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using Content = SiteServer.CMS.Model.Content;
+using SiteServer.CMS.Repositories;
+using Content = SiteServer.Abstractions.Content;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var fileNames = TranslateUtils.StringCollectionToStringList(HihFileNames.Value);
+            var fileNames = StringUtils.GetStringList(HihFileNames.Value);
             if (fileNames.Count == 1)
             {
                 var fileName = fileNames[0];
@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                             contentInfo.Title = formCollection[ContentAttribute.Title];
 
-                            contentInfo.Id = DataProvider.ContentDao.InsertAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
+                            contentInfo.Id = DataProvider.ContentRepository.InsertAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
 
                             CreateManager.CreateContentAsync(SiteId, _channel.Id, contentInfo.Id).GetAwaiter().GetResult();
                             CreateManager.TriggerContentChangedEventAsync(SiteId, _channel.Id).GetAwaiter().GetResult();

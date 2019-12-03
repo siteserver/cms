@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.DataCache
 {
@@ -27,7 +27,7 @@ namespace SiteServer.CMS.DataCache
                 retVal = DataCacheManager.Get<List<UserMenu>>(CacheKey);
                 if (retVal == null)
                 {
-                    retVal = await DataProvider.UserMenuDao.GetUserMenuListAsync();
+                    retVal = await DataProvider.UserMenuRepository.GetUserMenuListAsync();
 
                     DataCacheManager.Insert(CacheKey, retVal);
                 }

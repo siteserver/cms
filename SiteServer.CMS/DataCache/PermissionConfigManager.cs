@@ -4,7 +4,7 @@ using System.Xml;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.DataCache
 {

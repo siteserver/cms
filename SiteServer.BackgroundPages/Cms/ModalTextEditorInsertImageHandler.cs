@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
             string filePath = null;
             string errorMessage = null;
 
-            var site = DataProvider.SiteDao.GetAsync(AuthRequest.SiteId).GetAwaiter().GetResult();
+            var site = DataProvider.SiteRepository.GetAsync(AuthRequest.SiteId).GetAwaiter().GetResult();
 
             if (fileCount > 0)
             {

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Utils;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
@@ -21,16 +18,16 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
         public async Task<GetResult> Get([FromUri] GetRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckAdminLoggin(Request);
+            auth.CheckAdminLoggin(Request);
 
             Administrator admin = null;
             if (request.UserId > 0)
             {
-                admin = await DataProvider.AdministratorDao.GetByUserIdAsync(request.UserId);
+                admin = await DataProvider.AdministratorRepository.GetByUserIdAsync(request.UserId);
             }
             else if (!string.IsNullOrEmpty(request.UserName))
             {
-                admin = await DataProvider.AdministratorDao.GetByUserNameAsync(request.UserName);
+                admin = await DataProvider.AdministratorRepository.GetByUserNameAsync(request.UserName);
             }
 
             if (admin == null)
@@ -53,14 +50,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var siteIdListWithPermissions = await permissions.GetSiteIdListAsync();
                 foreach (var siteId in siteIdListWithPermissions)
                 {
-                    siteNames.Add(await DataProvider.SiteDao.GetSiteNameAsync(await DataProvider.SiteDao.GetAsync(siteId)));
+                    siteNames.Add(await DataProvider.SiteRepository.GetSiteNameAsync(await DataProvider.SiteRepository.GetAsync(siteId)));
                 }
             }
             var isOrdinaryAdmin = !await permissions.IsSuperAdminAsync();
             var roleNames = string.Empty;
             if (isOrdinaryAdmin)
             {
-                roleNames = await DataProvider.AdministratorDao.GetRolesAsync(admin.UserName);
+                roleNames = await DataProvider.AdministratorRepository.GetRolesAsync(admin.UserName);
             }
 
             return new GetResult

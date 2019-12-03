@@ -4,12 +4,11 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.DataCache
 {
@@ -28,7 +27,7 @@ namespace SiteServer.CMS.DataCache
                 DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             }
 
-            await DataProvider.SpecialDao.DeleteAsync(site.Id, specialId);
+            await DataProvider.SpecialRepository.DeleteAsync(site.Id, specialId);
 
 	        return special;
 	    }
@@ -67,6 +66,7 @@ namespace SiteServer.CMS.DataCache
 	        {
 	            var directoryPath = GetSpecialDirectoryPath(site, special.Url);
 	            var srcDirectoryPath = GetSpecialSrcDirectoryPath(directoryPath);
+                if (!DirectoryUtils.IsDirectoryExists(srcDirectoryPath)) return list;
 
                 var htmlFilePaths = Directory.GetFiles(srcDirectoryPath, "*.html", SearchOption.AllDirectories);
                 foreach (var htmlFilePath in htmlFilePaths)
@@ -122,7 +122,7 @@ namespace SiteServer.CMS.DataCache
 
             if (specialDictionary == null)
             {
-                specialDictionary = await DataProvider.SpecialDao.GetSpecialDictionaryBySiteIdAsync(siteId);
+                specialDictionary = await DataProvider.SpecialRepository.GetSpecialDictionaryBySiteIdAsync(siteId);
 
                 if (specialDictionary != null)
                 {

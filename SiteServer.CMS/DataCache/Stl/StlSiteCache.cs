@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.DataCache.Stl
 {
@@ -16,7 +16,7 @@ namespace SiteServer.CMS.DataCache.Stl
             retVal = StlCacheManager.GetInt(cacheKey);
             if (retVal == -1)
             {
-                retVal = await DataProvider.SiteDao.GetIdByIsRootAsync();
+                retVal = await DataProvider.SiteRepository.GetIdByIsRootAsync();
                 StlCacheManager.Set(cacheKey, retVal);
             }
 
@@ -34,7 +34,7 @@ namespace SiteServer.CMS.DataCache.Stl
             if (retVal == -1)
             {
                 retVal =
-                    await DataProvider.SiteDao.GetIdBySiteDirAsync(siteDir);
+                    await DataProvider.SiteRepository.GetIdBySiteDirAsync(siteDir);
                 StlCacheManager.Set(cacheKey, retVal);
             }
 

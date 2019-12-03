@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.ImportExport
 {
@@ -39,7 +39,7 @@ namespace SiteServer.CMS.ImportExport
         public static async Task BackupSiteAsync(int siteId, string filePath, string adminName)
         {
             var exportObject = new ExportObject(siteId, adminName);
-            var siteInfo = await DataProvider.SiteDao.GetAsync(siteId);
+            var siteInfo = await DataProvider.SiteRepository.GetAsync(siteId);
 
             var siteTemplateDir = PathUtils.GetFileNameWithoutExtension(filePath);
             var siteTemplatePath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), siteTemplateDir);
@@ -58,7 +58,7 @@ namespace SiteServer.CMS.ImportExport
             await exportObject.ExportTablesAndStylesAsync(tableDirectoryPath);
             var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
             await exportObject.ExportConfigurationAsync(configurationFilePath);
-            exportObject.ExportMetadata(siteInfo.SiteName, siteInfo.WebUrl, string.Empty, string.Empty, metadataPath);
+            exportObject.ExportMetadata(siteInfo.SiteName, siteInfo.GetWebUrl(), string.Empty, string.Empty, metadataPath);
 
             ZipUtils.CreateZip(filePath, siteTemplatePath);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
@@ -68,7 +68,7 @@ namespace SiteServer.CMS.ImportExport
         {
             var importObject = new ImportObject(siteId, administratorName);
 
-            var siteInfo = await DataProvider.SiteDao.GetAsync(siteId);
+            var siteInfo = await DataProvider.SiteRepository.GetAsync(siteId);
 
             var siteTemplatePath = path;
             if (isZip)
@@ -87,18 +87,18 @@ namespace SiteServer.CMS.ImportExport
                 var channelIdList = await ChannelManager.GetChannelIdListAsync(await ChannelManager.GetChannelAsync(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
                 foreach (var channelId in channelIdList)
                 {
-                    await DataProvider.ChannelDao.DeleteAsync(siteId, channelId);
+                    await DataProvider.ChannelRepository.DeleteAsync(siteId, channelId);
                 }
             }
             if (isDeleteTemplates)
             {
                 var templateInfoList =
-                    await DataProvider.TemplateDao.GetTemplateListBySiteIdAsync(siteId);
+                    await DataProvider.TemplateRepository.GetTemplateListBySiteIdAsync(siteId);
                 foreach (var templateInfo in templateInfoList)
                 {
                     if (templateInfo.Default == false)
                     {
-                        await DataProvider.TemplateDao.DeleteAsync(siteId, templateInfo.Id);
+                        await DataProvider.TemplateRepository.DeleteAsync(siteId, templateInfo.Id);
                     }
                 }
             }

@@ -1,14 +1,13 @@
 ﻿using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -34,7 +33,7 @@ namespace SiteServer.API.Controllers.Sys
                         return;
                     }
 
-                    var site = await DataProvider.SiteDao.GetAsync(siteId);
+                    var site = await DataProvider.SiteRepository.GetAsync(siteId);
                     var filePath = PathUtility.MapPath(site, fileUrl);
                     var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
                     if (EFileSystemTypeUtils.IsDownload(fileType))
@@ -76,11 +75,11 @@ namespace SiteServer.API.Controllers.Sys
                     var channelId = request.GetQueryInt("channelId");
                     var contentId = request.GetQueryInt("contentId");
                     var fileUrl = WebConfigUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
-                    var site = await DataProvider.SiteDao.GetAsync(siteId);
+                    var site = await DataProvider.SiteRepository.GetAsync(siteId);
                     var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                    var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
 
-                    await DataProvider.ContentDao.AddDownloadsAsync(await ChannelManager.GetTableNameAsync(site, channelInfo), channelId, contentId);
+                    await DataProvider.ContentRepository.AddDownloadsAsync(await ChannelManager.GetTableNameAsync(site, channelInfo), channelId, contentId);
 
                     if (!string.IsNullOrEmpty(contentInfo?.Get<string>(ContentAttribute.FileUrl)))
                     {

@@ -3,10 +3,11 @@ using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Images;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -102,7 +103,7 @@ namespace SiteServer.BackgroundPages.Cms
                 Site.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
                 Site.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
 
-                DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.StlParser.Model;
@@ -9,7 +9,7 @@ using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -126,7 +126,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             StlCacheManager.ClearAll();
 
             var templateInfo = await TemplateManager.GetTemplateAsync(dynamicInfo.SiteId, dynamicInfo.TemplateId);
-            var siteInfo = await DataProvider.SiteDao.GetAsync(dynamicInfo.SiteId);
+            var siteInfo = await DataProvider.SiteRepository.GetAsync(dynamicInfo.SiteId);
             var pageInfo = await PageInfo.GetPageInfoAsync(dynamicInfo.ChannelId, dynamicInfo.ContentId, siteInfo,
                 templateInfo, new Dictionary<string, object>());
 

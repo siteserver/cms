@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Web;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Core
 {
@@ -83,7 +83,7 @@ namespace SiteServer.CMS.Core
             return true;
         }
 
-        private static Tab GetPluginTab(SiteServer.Plugin.Menu menu, string permission)
+        private static Tab GetPluginTab(SiteServer.Abstractions.Menu menu, string permission)
         {
             var tab = new Tab
             {
@@ -91,7 +91,7 @@ namespace SiteServer.CMS.Core
                 Text = menu.Text,
                 IconClass = menu.IconClass,
                 Selected = false,
-                Href = menu.Href,
+                Href = menu.Link,
                 Target = menu.Target,
                 Permissions = permission
             };
@@ -123,7 +123,7 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            var menus = new List<PluginMenu>();
+            var menus = new List<Menu>();
             if (siteId > 0 && topId == string.Empty)
             {
                 var siteMenus = await PluginMenuManager.GetSiteMenusAsync(siteId);

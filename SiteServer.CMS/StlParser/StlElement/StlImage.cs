@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
 using SiteServer.CMS.Context;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -169,13 +169,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                         if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0)
                         {
                             var targetChannelId = contentInfo.SourceId;
-                            //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
+                            //var targetSiteId = DataProvider.ChannelRepository.GetSiteId(targetChannelId);
                             var targetSiteId = await StlChannelCache.GetSiteIdAsync(targetChannelId);
-                            var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
+                            var targetSite = await DataProvider.SiteRepository.GetAsync(targetSiteId);
                             var targetNodeInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
 
-                            //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                            var targetContentInfo = await DataProvider.ContentDao.GetAsync(targetSite, targetNodeInfo, contentInfo.ReferenceId);
+                            //var targetContentInfo = DataProvider.ContentRepository.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
+                            var targetContentInfo = await DataProvider.ContentRepository.GetAsync(targetSite, targetNodeInfo, contentInfo.ReferenceId);
                             if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                             {
                                 contentInfo = targetContentInfo;
@@ -185,7 +185,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo == null)
                     {
-                        contentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, contextInfo.ChannelId, contentId);
+                        contentInfo = await DataProvider.ContentRepository.GetAsync(pageInfo.Site, contextInfo.ChannelId, contentId);
                     }
 
                     if (contentInfo != null)
@@ -201,7 +201,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             if (!string.IsNullOrEmpty(extendValues))
                             {
                                 var index = 2;
-                                foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                                foreach (var extendValue in StringUtils.GetStringList(extendValues))
                                 {
                                     if (index == no)
                                     {

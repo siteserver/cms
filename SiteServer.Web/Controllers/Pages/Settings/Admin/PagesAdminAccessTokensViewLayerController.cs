@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
@@ -27,7 +26,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     return Unauthorized();
                 }
 
-                var tokenInfo = await DataProvider.AccessTokenDao.GetAsync(id);
+                var tokenInfo = await DataProvider.AccessTokenRepository.GetAsync(id);
                 var accessToken = WebConfigUtils.DecryptStringBySecretKey(tokenInfo.Token);
 
                 return Ok(new
@@ -54,9 +53,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     return Unauthorized();
                 }
 
-                var accessTokenInfo = await DataProvider.AccessTokenDao.GetAsync(id);
+                var accessTokenInfo = await DataProvider.AccessTokenRepository.GetAsync(id);
 
-                var accessToken = WebConfigUtils.DecryptStringBySecretKey(await DataProvider.AccessTokenDao.RegenerateAsync(accessTokenInfo));
+                var accessToken = WebConfigUtils.DecryptStringBySecretKey(await DataProvider.AccessTokenRepository.RegenerateAsync(accessTokenInfo));
 
                 return Ok(new
                 {

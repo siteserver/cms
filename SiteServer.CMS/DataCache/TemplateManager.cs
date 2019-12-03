@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.DataCache
 {
@@ -167,7 +167,7 @@ namespace SiteServer.CMS.DataCache
 
             if (templateDictionary == null)
             {
-                templateDictionary = await DataProvider.TemplateDao.GetTemplateDictionaryBySiteIdAsync(siteId);
+                templateDictionary = await DataProvider.TemplateRepository.GetTemplateDictionaryBySiteIdAsync(siteId);
 
                 if (templateDictionary != null)
                 {
@@ -310,7 +310,7 @@ namespace SiteServer.CMS.DataCache
                     ContentLength = content.Length,
                     TemplateContent = content
                 };
-                await DataProvider.TemplateLogDao.InsertAsync(logInfo);
+                await DataProvider.TemplateLogRepository.InsertAsync(logInfo);
             }
         }
 

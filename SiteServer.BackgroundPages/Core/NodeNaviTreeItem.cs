@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -191,7 +191,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_isNodeTree && _siteId != 0)
             {
-                var site = DataProvider.SiteDao.GetAsync(_siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteRepository.GetAsync(_siteId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append("&nbsp;");
                 htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(site, ChannelManager.GetChannelAsync(_siteId, _channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());
@@ -290,7 +290,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_isNodeTree && _siteId != 0)
             {
-                var site = DataProvider.SiteDao.GetAsync(_siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteRepository.GetAsync(_siteId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append("&nbsp;");
                 htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(site, ChannelManager.GetChannelAsync(_siteId, _channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());

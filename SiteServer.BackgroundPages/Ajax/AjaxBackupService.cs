@@ -2,15 +2,14 @@
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web.UI;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -111,7 +110,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var eBackupType = EBackupTypeUtils.GetEnumType(backupType);
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 var filePath = PathUtility.GetBackupFilePath(site, eBackupType);
                 DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                 FileUtils.DeleteFileIfExists(filePath);

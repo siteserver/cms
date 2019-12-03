@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -17,7 +17,7 @@ namespace SiteServer.API.Controllers.Sys
         {
             var request = await AuthenticatedRequest.GetAuthAsync();
 
-            var isDownload = TranslateUtils.ToBool(await DataProvider.DbCacheDao.GetValueAndRemoveAsync(PackageUtils.CacheKeySsCmsIsDownload));
+            var isDownload = TranslateUtils.ToBool(await DataProvider.DbCacheRepository.GetValueAndRemoveAsync(PackageUtils.CacheKeySsCmsIsDownload));
 
             if (!isDownload)
             {

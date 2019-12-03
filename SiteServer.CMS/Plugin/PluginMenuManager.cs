@@ -6,9 +6,8 @@ using SiteServer.CMS.Api;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+
 
 namespace SiteServer.CMS.Plugin
 {
@@ -56,9 +55,9 @@ namespace SiteServer.CMS.Plugin
             return pageUrl;
         }
 
-        public static async Task<List<PluginMenu>> GetTopMenusAsync()
+        public static async Task<List<Menu>> GetTopMenusAsync()
         {
-            var menus = new List<PluginMenu>();
+            var menus = new List<Menu>();
 
             foreach (var service in await PluginManager.GetServicesAsync())
             {
@@ -95,9 +94,9 @@ namespace SiteServer.CMS.Plugin
             return menus;
         }
 
-        public static async Task<List<PluginMenu>> GetSiteMenusAsync(int siteId)
+        public static async Task<List<Menu>> GetSiteMenusAsync(int siteId)
         {
-            var menus = new List<PluginMenu>();
+            var menus = new List<Menu>();
 
             foreach (var service in await PluginManager.GetServicesAsync())
             {
@@ -134,9 +133,9 @@ namespace SiteServer.CMS.Plugin
             return menus;
         }
 
-        public static async Task<List<PluginMenu>> GetContentMenusAsync(List<string> pluginIds, Content content)
+        public static async Task<List<Menu>> GetContentMenusAsync(List<string> pluginIds, Content content)
         {
-            var menus = new List<PluginMenu>();
+            var menus = new List<Menu>();
             if (pluginIds == null || pluginIds.Count == 0) return menus;
 
             foreach (var service in await PluginManager.GetServicesAsync())
@@ -243,13 +242,13 @@ namespace SiteServer.CMS.Plugin
         //    });
         //}
 
-        private static PluginMenu GetMenu(string pluginId, int siteId, int channelId, int contentId, Menu metadataMenu, int i)
+        private static Menu GetMenu(string pluginId, int siteId, int channelId, int contentId, Menu metadataMenu, int i)
         {
-            var menu = new PluginMenu
+            var menu = new Menu
             {
                 Id = metadataMenu.Id,
                 Text = metadataMenu.Text,
-                Href = metadataMenu.Href,
+                Link = metadataMenu.Link,
                 Target = metadataMenu.Target,
                 IconClass = metadataMenu.IconClass,
                 PluginId = pluginId
@@ -259,9 +258,9 @@ namespace SiteServer.CMS.Plugin
             {
                 menu.Id = pluginId + i;
             }
-            if (!string.IsNullOrEmpty(menu.Href))
+            if (!string.IsNullOrEmpty(menu.Link))
             {
-                menu.Href = GetMenuHref(pluginId, menu.Href, siteId, channelId, contentId);
+                menu.Link = GetMenuHref(pluginId, menu.Link, siteId, channelId, contentId);
             }
             if (channelId == 0 && contentId == 0 && string.IsNullOrEmpty(menu.Target))
             {

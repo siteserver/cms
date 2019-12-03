@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Context
 {
@@ -511,7 +511,7 @@ namespace SiteServer.CMS.Context
         //            var select = (ListControl)control;
         //            if (select.Items.Count == 0)
         //            {
-        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemRepository.GetStyleItemInfoList(styleInfo.TableStyleId);
         //                if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
         //                {
         //                    foreach (var styleItemInfo in tableStyleItemInfoArrayList)
@@ -528,7 +528,7 @@ namespace SiteServer.CMS.Context
         //            var select = (HtmlSelect)control;
         //            if (select.Items.Count == 0)
         //            {
-        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemRepository.GetStyleItemInfoList(styleInfo.TableStyleId);
         //                if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
         //                {
         //                    foreach (var styleItemInfo in tableStyleItemInfoArrayList)
@@ -574,7 +574,7 @@ namespace SiteServer.CMS.Context
         //            var select = (ListControl)control;
         //            if (select.Items.Count == 0)
         //            {
-        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemRepository.GetStyleItemInfoList(styleInfo.TableStyleId);
         //                if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
         //                {
         //                    foreach (var styleItemInfo in tableStyleItemInfoArrayList)
@@ -591,7 +591,7 @@ namespace SiteServer.CMS.Context
         //            var select = (HtmlSelect)control;
         //            if (select.Items.Count == 0)
         //            {
-        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemRepository.GetStyleItemInfoList(styleInfo.TableStyleId);
         //                if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
         //                {
         //                    foreach (var styleItemInfo in tableStyleItemInfoArrayList)

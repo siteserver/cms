@@ -1,17 +1,16 @@
 ﻿using System;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using System.Text;
-using SiteServer.Utils;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -27,7 +26,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.AddUserName + ":" + content.AddUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = await DataProvider.AdministratorDao.GetDisplayNameAsync(content.AddUserName);
+                        value = await DataProvider.AdministratorRepository.GetDisplayNameAsync(content.AddUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
@@ -39,7 +38,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.LastEditUserName + ":" + content.LastEditUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = await DataProvider.AdministratorDao.GetDisplayNameAsync(content.LastEditUserName);
+                        value = await DataProvider.AdministratorRepository.GetDisplayNameAsync(content.LastEditUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
@@ -52,7 +51,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = nameof(Content.CheckUserName) + ":" + checkUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = await DataProvider.AdministratorDao.GetDisplayNameAsync(checkUserName);
+                        value = await DataProvider.AdministratorRepository.GetDisplayNameAsync(checkUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
@@ -212,7 +211,7 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandsHtml(Site site, List<PluginMenu> pluginMenus, Content content, string pageUrl, string administratorName, bool isEdit)
+        public static string GetCommandsHtml(Site site, List<Menu> pluginMenus, Content content, string pageUrl, string administratorName, bool isEdit)
         {
             var builder = new StringBuilder();
 
@@ -226,8 +225,8 @@ namespace SiteServer.BackgroundPages.Core
                 foreach (var menu in pluginMenus)
                 {
                     builder.Append(string.IsNullOrEmpty(menu.Target)
-                        ? $@"<a class=""m-l-5"" href=""javascript:;"" onclick=""{LayerUtils.GetOpenScript(menu.Text, menu.Href)}"">{menu.Text}</a>"
-                        : $@"<a class=""m-l-5"" href=""{menu.Href}"" target=""{menu.Target}"">{menu.Text}</a>");
+                        ? $@"<a class=""m-l-5"" href=""javascript:;"" onclick=""{LayerUtils.GetOpenScript(menu.Text, menu.Link)}"">{menu.Text}</a>"
+                        : $@"<a class=""m-l-5"" href=""{menu.Link}"" target=""{menu.Target}"">{menu.Text}</a>");
                 }
             }
 

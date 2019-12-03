@@ -2,14 +2,13 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -23,7 +22,7 @@ namespace SiteServer.API.Controllers.Sys
             var request = await AuthenticatedRequest.GetAuthAsync();
 
             var siteId = request.GetQueryInt("siteId");
-            var site = await DataProvider.SiteDao.GetAsync(siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
             try
             {
@@ -39,23 +38,23 @@ namespace SiteServer.API.Controllers.Sys
 
                 if (specialId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Special, 0, 0, 0, specialId);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, CreateType.Special, 0, 0, 0, specialId);
                 }
                 else if (fileTemplateId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.File, 0, 0, fileTemplateId, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, CreateType.File, 0, 0, fileTemplateId, 0);
                 }
                 else if (contentId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Content, channelId, contentId, 0, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, CreateType.Content, channelId, contentId, 0, 0);
                 }
                 else if (channelId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Channel, channelId, 0, 0, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, CreateType.Channel, channelId, 0, 0, 0);
                 }
                 else if (siteId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Channel, siteId, 0, 0, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, CreateType.Channel, siteId, 0, 0, 0);
                 }
 
                 if (isRedirect)
@@ -73,7 +72,7 @@ namespace SiteServer.API.Controllers.Sys
                     }
                     else if (contentId != 0)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                         redirectUrl = await PageUtility.GetContentUrlAsync(site, contentInfo, false);
                     }
                     else if (channelId != 0)

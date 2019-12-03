@@ -2,10 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -28,8 +26,8 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 var relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
 
-                var relatedFieldName = DataProvider.RelatedFieldDao.GetTitleAsync(relatedFieldId).GetAwaiter().GetResult();
-                DataProvider.RelatedFieldDao.DeleteAsync(relatedFieldId).GetAwaiter().GetResult();
+                var relatedFieldName = DataProvider.RelatedFieldRepository.GetTitleAsync(relatedFieldId).GetAwaiter().GetResult();
+                DataProvider.RelatedFieldRepository.DeleteAsync(relatedFieldId).GetAwaiter().GetResult();
                 AuthRequest.AddSiteLogAsync(SiteId, "删除联动字段", $"联动字段:{relatedFieldName}").GetAwaiter().GetResult();
                 SuccessDeleteMessage();
             }
@@ -38,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(Constants.WebSitePermissions.Configuration);
 
-            RptContents.DataSource = DataProvider.RelatedFieldDao.GetRelatedFieldListAsync(SiteId).GetAwaiter().GetResult();
+            RptContents.DataSource = DataProvider.RelatedFieldRepository.GetRelatedFieldListAsync(SiteId).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 

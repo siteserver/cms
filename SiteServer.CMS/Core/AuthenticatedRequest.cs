@@ -9,15 +9,15 @@ using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.Core
 {
-    public class AuthenticatedRequest : IAuthenticatedRequest
+    public class AuthenticatedRequest
     {
         private AuthenticatedRequest()
         {
@@ -34,12 +34,12 @@ namespace SiteServer.CMS.Core
                 var apiToken = authRequest.ApiToken;
                 if (!string.IsNullOrEmpty(apiToken))
                 {
-                    var tokenInfo = await DataProvider.AccessTokenDao.GetByTokenAsync(apiToken);
+                    var tokenInfo = await DataProvider.AccessTokenRepository.GetByTokenAsync(apiToken);
                     if (tokenInfo != null)
                     {
                         if (!string.IsNullOrEmpty(tokenInfo.AdminName))
                         {
-                            var adminInfo = await DataProvider.AdministratorDao.GetByUserNameAsync(tokenInfo.AdminName);
+                            var adminInfo = await DataProvider.AdministratorRepository.GetByUserNameAsync(tokenInfo.AdminName);
                             if (adminInfo != null && !adminInfo.Locked)
                             {
                                 authRequest.Administrator = adminInfo;
@@ -57,7 +57,7 @@ namespace SiteServer.CMS.Core
                     var tokenImpl = UserApi.Instance.ParseAccessToken(userToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
-                        var user = await DataProvider.UserDao.GetByUserIdAsync(tokenImpl.UserId);
+                        var user = await DataProvider.UserRepository.GetByUserIdAsync(tokenImpl.UserId);
                         if (user != null && !user.Locked && user.Checked && user.UserName == tokenImpl.UserName)
                         {
                             authRequest.User = user;
@@ -72,7 +72,7 @@ namespace SiteServer.CMS.Core
                     var tokenImpl = AdminApi.Instance.ParseAccessToken(adminToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
-                        var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(tokenImpl.UserId);
+                        var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(tokenImpl.UserId);
                         if (adminInfo != null && !adminInfo.Locked && adminInfo.UserName == tokenImpl.UserName)
                         {
                             authRequest.Administrator = adminInfo;
@@ -384,7 +384,7 @@ namespace SiteServer.CMS.Core
                     var groupInfo = UserGroupManager.GetUserGroupAsync(User.GroupId).GetAwaiter().GetResult();
                     if (groupInfo != null)
                     {
-                        Administrator = DataProvider.AdministratorDao.GetByUserNameAsync(groupInfo.AdminName).GetAwaiter().GetResult();
+                        Administrator = DataProvider.AdministratorRepository.GetByUserNameAsync(groupInfo.AdminName).GetAwaiter().GetResult();
                     }
                 }
 
@@ -394,7 +394,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public IPermissions UserPermissions => UserPermissionsImpl;
+        public PermissionsImpl UserPermissions => UserPermissionsImpl;
 
         private PermissionsImpl _adminPermissionsImpl;
 
@@ -410,7 +410,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public IPermissions AdminPermissions => AdminPermissionsImpl;
+        public PermissionsImpl AdminPermissions => AdminPermissionsImpl;
 
         #region Administrator
 
@@ -443,7 +443,7 @@ namespace SiteServer.CMS.Core
         public async Task<string> AdminLoginAsync(string userName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(userName)) return null;
-            var adminInfo = await DataProvider.AdministratorDao.GetByUserNameAsync(userName);
+            var adminInfo = await DataProvider.AdministratorRepository.GetByUserNameAsync(userName);
             if (adminInfo == null || adminInfo.Locked) return null;
 
             Administrator = adminInfo;
@@ -485,7 +485,7 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(userName)) return null;
 
-            var user = await DataProvider.UserDao.GetByUserNameAsync(userName);
+            var user = await DataProvider.UserRepository.GetByUserNameAsync(userName);
             if (user == null || user.Locked || !user.Checked) return null;
 
             User = user;
@@ -493,7 +493,7 @@ namespace SiteServer.CMS.Core
             var expiresAt = TimeSpan.FromDays(Constants.AccessTokenExpireDays);
             var accessToken = UserApi.Instance.GetAccessToken(UserId, UserName, expiresAt);
 
-            await DataProvider.UserDao.UpdateLastActivityDateAndCountOfLoginAsync(User);
+            await DataProvider.UserRepository.UpdateLastActivityDateAndCountOfLoginAsync(User);
             await LogUtils.AddUserLoginLogAsync(userName);
 
             if (isAutoLogin)
@@ -522,7 +522,7 @@ namespace SiteServer.CMS.Core
             var redirect = false;
             var redirectUrl = string.Empty;
 
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
 
             if (checkInstall && string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
@@ -602,7 +602,7 @@ namespace SiteServer.CMS.Core
             return new AccessTokenImpl();
         }
 
-        public async Task CheckAdminLoggin(HttpRequestMessage request)
+        public void CheckAdminLoggin(HttpRequestMessage request)
         {
             if (!IsAdminLoggin)
             {

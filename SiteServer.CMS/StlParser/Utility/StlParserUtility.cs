@@ -4,13 +4,12 @@ using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.Plugin;
+
 
 namespace SiteServer.CMS.StlParser.Utility
 {
@@ -400,7 +399,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var currentUrl = string.Empty;
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                currentUrl = site.WebUrl;
+                currentUrl = site.GetWebUrl();
             }
             else if (templateType == TemplateType.ContentTemplate)
             {

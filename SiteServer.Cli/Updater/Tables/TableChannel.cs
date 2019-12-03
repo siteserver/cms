@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Provider;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -112,9 +111,9 @@ namespace SiteServer.Cli.Updater.Tables
             Process = Process
         };
 
-        private static readonly string NewTableName = DataProvider.ChannelDao.TableName;
+        private static readonly string NewTableName = DataProvider.ChannelRepository.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.ChannelDao.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.ChannelRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>

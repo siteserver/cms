@@ -4,10 +4,9 @@ using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -48,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var channelId = AuthRequest.GetQueryInt("channelId");
             _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
-            _idList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
+            _idList = StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -62,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                            var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -81,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.Top = true;
                                 }
-                                DataProvider.ContentDao.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
+                                DataProvider.ContentRepository.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
                             }
                         }
 
@@ -97,7 +96,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                            var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -116,7 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.Top = false;
                                 }
-                                DataProvider.ContentDao.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
+                                DataProvider.ContentRepository.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
                             }
                         }
 
@@ -132,11 +131,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idList)
                     {
-                        var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                        var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                         if (contentInfo != null)
                         {
                             contentInfo.Hits = hits;
-                            DataProvider.ContentDao.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
+                            DataProvider.ContentRepository.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
                         }
                     }
 
@@ -150,11 +149,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idList)
                     {
-                        var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                        var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                         if (contentInfo != null)
                         {
                             contentInfo.Downloads = downloads;
-                            DataProvider.ContentDao.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
+                            DataProvider.ContentRepository.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
                         }
                     }
 

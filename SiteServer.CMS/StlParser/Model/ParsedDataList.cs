@@ -2,8 +2,7 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.StlParser.Model
 {

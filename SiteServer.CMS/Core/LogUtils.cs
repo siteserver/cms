@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.Core
@@ -32,12 +32,12 @@ namespace SiteServer.CMS.Core
         {
             try
             {
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
                 if (!config.IsLogError) return 0;
 
-                await DataProvider.ErrorLogDao.DeleteIfThresholdAsync();
+                await DataProvider.ErrorLogRepository.DeleteIfThresholdAsync();
 
-                return await DataProvider.ErrorLogDao.InsertAsync(log);
+                return await DataProvider.ErrorLogRepository.InsertAsync(log);
             }
             catch
             {
@@ -122,7 +122,7 @@ stl: {stlContent}
 
         public static async Task AddSiteLogAsync(int siteId, int channelId, int contentId, Administrator adminInfo, string action, string summary)
         {
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
             if (!config.IsLogSite) return;
 
             if (siteId <= 0)
@@ -133,7 +133,7 @@ stl: {stlContent}
             {
                 try
                 {
-                    await DataProvider.SiteLogDao.DeleteIfThresholdAsync();
+                    await DataProvider.SiteLogRepository.DeleteIfThresholdAsync();
 
                     if (!string.IsNullOrEmpty(action))
                     {
@@ -161,9 +161,9 @@ stl: {stlContent}
                         Summary = summary
                     };
 
-                    await DataProvider.SiteLogDao.InsertAsync(siteLogInfo);
+                    await DataProvider.SiteLogRepository.InsertAsync(siteLogInfo);
 
-                    await DataProvider.AdministratorDao.UpdateLastActivityDateAsync(adminInfo);
+                    await DataProvider.AdministratorRepository.UpdateLastActivityDateAsync(adminInfo);
                 }
                 catch (Exception ex)
                 {
@@ -174,12 +174,12 @@ stl: {stlContent}
 
         public static async Task AddAdminLogAsync(Administrator adminInfo, string action, string summary = "")
         {
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
             if (!config.IsLogAdmin) return;
 
             try
             {
-                await DataProvider.LogDao.DeleteIfThresholdAsync();
+                await DataProvider.LogRepository.DeleteIfThresholdAsync();
 
                 if (!string.IsNullOrEmpty(action))
                 {
@@ -200,9 +200,9 @@ stl: {stlContent}
                     Summary = summary
                 };
 
-                await DataProvider.LogDao.InsertAsync(logInfo);
+                await DataProvider.LogRepository.InsertAsync(logInfo);
 
-                await DataProvider.AdministratorDao.UpdateLastActivityDateAsync(adminInfo);
+                await DataProvider.AdministratorRepository.UpdateLastActivityDateAsync(adminInfo);
             }
             catch (Exception ex)
             {
@@ -217,12 +217,12 @@ stl: {stlContent}
 
         public static async Task AddUserLogAsync(string userName, string actionType, string summary)
         {
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
             if (!config.IsLogUser) return;
 
             try
             {
-                await DataProvider.UserLogDao.DeleteIfThresholdAsync();
+                await DataProvider.UserLogRepository.DeleteIfThresholdAsync();
 
                 if (!string.IsNullOrEmpty(summary))
                 {
@@ -239,7 +239,7 @@ stl: {stlContent}
                     Summary = summary
                 };
 
-                await DataProvider.UserLogDao.InsertAsync(userLogInfo);
+                await DataProvider.UserLogRepository.InsertAsync(userLogInfo);
             }
             catch (Exception ex)
             {

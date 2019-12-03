@@ -4,10 +4,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -672,7 +672,7 @@ namespace SiteServer.BackgroundPages.Controls
 
         private int GetQueryVirtualCount()
         {
-            var recCount = DataProvider.DatabaseDao.GetPageTotalCount(SelectCommand);
+            var recCount = DataProvider.DatabaseRepository.GetPageTotalCount(SelectCommand);
             //            SqlConnection conn = new SqlConnection(ConnectionString);
             //            SqlCommand cmd = new SqlCommand(cmdText, conn);
             //IDbConnection conn = SqlUtils.GetIDbConnection(DataProvider.ADOType, ConnectionString);

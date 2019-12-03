@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
@@ -27,7 +26,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 }
 
                 var userId = request.GetQueryInt("userId");
-                var user = await DataProvider.UserDao.GetByUserIdAsync(userId);
+                var user = await DataProvider.UserRepository.GetByUserIdAsync(userId);
                 if (user == null) return NotFound();
 
                 return Ok(new
@@ -54,11 +53,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 }
 
                 var userId = request.GetQueryInt("userId");
-                var user = await DataProvider.UserDao.GetByUserIdAsync(userId);
+                var user = await DataProvider.UserRepository.GetByUserIdAsync(userId);
                 if (user == null) return NotFound();
 
                 var password = request.GetPostString("password");
-                var valid = await DataProvider.UserDao.ChangePasswordAsync(user.UserName, password);
+                var valid = await DataProvider.UserRepository.ChangePasswordAsync(user.UserName, password);
                 if (!valid.IsValid)
                 {
                     return BadRequest($"更改密码失败：{valid.ErrorMessage}");

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.DataCache
 {
@@ -26,7 +26,7 @@ namespace SiteServer.CMS.DataCache
                 retVal = DataCacheManager.Get<List<UserGroup>>(CacheKey);
                 if (retVal == null)
                 {
-                    retVal = await DataProvider.UserGroupDao.GetUserGroupListAsync() ?? new List<UserGroup>();
+                    retVal = await DataProvider.UserGroupRepository.GetUserGroupListAsync() ?? new List<UserGroup>();
 
                     DataCacheManager.Insert(CacheKey, retVal);
                 }

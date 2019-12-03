@@ -2,10 +2,9 @@
 using System.Text;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -103,7 +102,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             if (contextInfo.ContextType == EContextType.Content && contentInfo != null)
             {
                 var tagInfoList2 = new List<ContentTag>();
-                var tagNameList = TranslateUtils.StringCollectionToStringList(contentInfo.Tags.Trim().Replace(" ", ","));
+                var tagNameList = StringUtils.GetStringList(contentInfo.Tags.Trim().Replace(" ", ","));
                 foreach (var tagName in tagNameList)
                 {
                     if (!string.IsNullOrEmpty(tagName))

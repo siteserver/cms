@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
-using Content = SiteServer.CMS.Model.Content;
-using TableStyle = SiteServer.CMS.Model.TableStyle;
+using SiteServer.CMS.Repositories;
+using Content = SiteServer.Abstractions.Content;
+using TableStyle = SiteServer.Abstractions.TableStyle;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -56,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
             _contentId = AuthRequest.GetQueryInt("id");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            _content = DataProvider.ContentDao.GetAsync(Site, channelInfo, _contentId).GetAwaiter().GetResult();
+            _content = DataProvider.ContentRepository.GetAsync(Site, channelInfo, _contentId).GetAwaiter().GetResult();
 
             if (IsPostBack) return;
 
@@ -82,16 +81,16 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             LtlLastEditDate.Text = DateUtils.GetDateAndTimeString(_content.LastEditDate);
-            LtlAddUserName.Text = DataProvider.AdministratorDao.GetDisplayNameAsync(_content.AddUserName).GetAwaiter().GetResult();
-            LtlLastEditUserName.Text = DataProvider.AdministratorDao.GetDisplayNameAsync(_content.LastEditUserName).GetAwaiter().GetResult();
+            LtlAddUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(_content.AddUserName).GetAwaiter().GetResult();
+            LtlLastEditUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(_content.LastEditUserName).GetAwaiter().GetResult();
 
             LtlContentLevel.Text = CheckManager.GetCheckState(Site, _content);
 
             if (_content.ReferenceId > 0 && ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, _content.TranslateContentType))
             {
-                var referenceSiteId = DataProvider.ChannelDao.GetSiteIdAsync(_content.SourceId).GetAwaiter().GetResult();
-                var referenceSite = DataProvider.SiteDao.GetAsync(referenceSiteId).GetAwaiter().GetResult();
-                var referenceContentInfo = DataProvider.ContentDao.GetAsync(referenceSite, _content.SourceId, _content.ReferenceId).GetAwaiter().GetResult();
+                var referenceSiteId = DataProvider.ChannelRepository.GetSiteIdAsync(_content.SourceId).GetAwaiter().GetResult();
+                var referenceSite = DataProvider.SiteRepository.GetAsync(referenceSiteId).GetAwaiter().GetResult();
+                var referenceContentInfo = DataProvider.ContentRepository.GetAsync(referenceSite, _content.SourceId, _content.ReferenceId).GetAwaiter().GetResult();
 
                 if (referenceContentInfo != null)
                 {

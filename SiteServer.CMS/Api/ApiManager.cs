@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.Api
 {
@@ -26,8 +25,8 @@ namespace SiteServer.CMS.Api
 
         public static async Task<string> GetApiUrlAsync(string route = "")
         {
-            var config = await DataProvider.ConfigDao.GetAsync();
-            return PageUtils.Combine(config.ApiUrl, route);
+            var config = await DataProvider.ConfigRepository.GetAsync();
+            return PageUtils.Combine(config.GetApiUrl(), route);
         }
 
         public static string GetInnerApiUrl(string route)

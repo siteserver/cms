@@ -3,10 +3,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -34,7 +34,7 @@ namespace SiteServer.API.Controllers.Sys
 
             jsonString.Append("[");
 
-            var list = await DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoListAsync(relatedFieldId, parentId);
+            var list = await DataProvider.RelatedFieldItemRepository.GetRelatedFieldItemInfoListAsync(relatedFieldId, parentId);
             if (list.Any())
             {
                 foreach (var itemInfo in list)

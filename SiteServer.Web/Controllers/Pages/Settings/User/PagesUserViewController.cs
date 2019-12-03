@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
@@ -16,16 +16,16 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         public async Task<GetResult> Get([FromUri] GetRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckAdminLoggin(Request);
+            auth.CheckAdminLoggin(Request);
 
-            CMS.Model.User user = null;
+            Abstractions.User user = null;
             if (request.UserId > 0)
             {
-                user = await DataProvider.UserDao.GetByUserIdAsync(request.UserId);
+                user = await DataProvider.UserRepository.GetByUserIdAsync(request.UserId);
             }
             else if (!string.IsNullOrEmpty(request.UserName))
             {
-                user = await DataProvider.UserDao.GetByUserNameAsync(request.UserName);
+                user = await DataProvider.UserRepository.GetByUserNameAsync(request.UserName);
             }
 
             if (user == null)

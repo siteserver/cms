@@ -2,14 +2,12 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -74,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             var parentWithChildren = new Hashtable();
             foreach (var siteId in siteIdList)
             {
-                var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteRepository.GetAsync(siteId).GetAwaiter().GetResult();
                 if (site.ParentId == 0)
                 {
                     mySystemInfoArrayList.Add(site);
@@ -99,7 +97,7 @@ namespace SiteServer.BackgroundPages.Cms
             var targetChannelId = AuthRequest.GetQueryInt("TargetChannelId");
             if (targetChannelId > 0)
             {
-                var siteName = DataProvider.SiteDao.GetAsync(_targetSiteId).GetAwaiter().GetResult().SiteName;
+                var siteName = DataProvider.SiteRepository.GetAsync(_targetSiteId).GetAwaiter().GetResult().SiteName;
                 var nodeNames = ChannelManager.GetChannelNameNavigationAsync(_targetSiteId, targetChannelId).GetAwaiter().GetResult();
                 if (_targetSiteId != SiteId)
                 {
@@ -123,7 +121,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     ["linkUrl"] = GetRedirectUrl(_targetSiteId, string.Empty)
                 };
-                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(DataProvider.SiteDao.GetAsync(_targetSiteId).GetAwaiter().GetResult(), string.Empty, ELoadingType.ChannelClickSelect, additional));
+                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(DataProvider.SiteRepository.GetAsync(_targetSiteId).GetAwaiter().GetResult(), string.Empty, ELoadingType.ChannelClickSelect, additional));
 
                 var channelIdList = ChannelManager.GetChannelIdListAsync(nodeInfo, EScopeType.Children, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
 

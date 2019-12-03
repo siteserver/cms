@@ -4,10 +4,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -102,10 +102,10 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             var retVal = new StringBuilder();
 
-            var site = await DataProvider.SiteDao.GetAsync(siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
 
-            var titleList = await DataProvider.ContentDao.GetValueListByStartStringAsync(tableName, channelId, ContentAttribute.Title, title, 10);
+            var titleList = await DataProvider.ContentRepository.GetValueListByStartStringAsync(tableName, channelId, ContentAttribute.Title, title, 10);
             if (titleList.Count > 0)
             {
                 foreach (var value in titleList)
@@ -123,7 +123,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             var retVal = new StringBuilder();
 
-            var tagList = await DataProvider.ContentTagDao.GetTagListByStartStringAsync(siteId, tag, 10);
+            var tagList = await DataProvider.ContentTagRepository.GetTagListByStartStringAsync(siteId, tag, 10);
             if (tagList.Count > 0)
             {
                 foreach (var value in tagList)

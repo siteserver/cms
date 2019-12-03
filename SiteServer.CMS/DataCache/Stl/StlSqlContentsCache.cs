@@ -1,5 +1,5 @@
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.DataCache.Stl
 {
@@ -21,7 +21,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retVal = StlCacheManager.Get<string>(cacheKey);
                 if (retVal == null)
                 {
-                    retVal = DataProvider.DatabaseDao.GetSelectSqlStringByQueryString(connectionString,
+                    retVal = DataProvider.DatabaseRepository.GetSelectSqlStringByQueryString(connectionString,
                     queryString, startNum, totalNum, orderByString);
                     StlCacheManager.Set(cacheKey, retVal);
                 }

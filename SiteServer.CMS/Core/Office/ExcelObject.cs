@@ -1,5 +1,4 @@
-﻿using SiteServer.Utils;
-using SiteServer.CMS.Model;
+﻿using SiteServer.Abstractions;
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.Core.Office
 {
@@ -36,13 +36,13 @@ namespace SiteServer.CMS.Core.Office
 
             if (contentIdList == null)
             {
-                contentIdList = await DataProvider.ContentDao.GetContentIdListAsync(tableName, channel.Id, isPeriods,
+                contentIdList = await DataProvider.ContentRepository.GetContentIdListAsync(tableName, channel.Id, isPeriods,
                     startDate, endDate, checkedState);
             }
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channel, contentId);
+                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channel, contentId);
                 if (contentInfo != null)
                 {
                     var row = new List<string>();
@@ -72,7 +72,7 @@ namespace SiteServer.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var columns = await DataProvider.ContentDao.GetContentColumnsAsync(site, channel, true);
+            var columns = await DataProvider.ContentRepository.GetContentColumnsAsync(site, channel, true);
 
             foreach (var column in columns)
             {
@@ -117,15 +117,15 @@ namespace SiteServer.CMS.Core.Office
             };
             var rows = new List<List<string>>();
 
-            var userIdList = (await DataProvider.UserDao.GetIdListAsync(checkedState != ETriState.False)).ToList();
+            var userIdList = (await DataProvider.UserRepository.GetIdListAsync(checkedState != ETriState.False)).ToList();
             if (checkedState == ETriState.All)
             {
-                userIdList.AddRange(await DataProvider.UserDao.GetIdListAsync(false));
+                userIdList.AddRange(await DataProvider.UserRepository.GetIdListAsync(false));
             }
 
             foreach (var userId in userIdList)
             {
-                var userInfo = await DataProvider.UserDao.GetByUserIdAsync(userId);
+                var userInfo = await DataProvider.UserRepository.GetByUserIdAsync(userId);
 
                 rows.Add(new List<string>
                 {
@@ -157,11 +157,11 @@ namespace SiteServer.CMS.Core.Office
             };
             var rows = new List<List<string>>();
 
-            var userIdList = await DataProvider.AdministratorDao.GetUserIdListAsync();
+            var userIdList = await DataProvider.AdministratorRepository.GetUserIdListAsync();
 
             foreach (var userId in userIdList)
             {
-                var administrator = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
+                var administrator = await DataProvider.AdministratorRepository.GetByUserIdAsync(userId);
 
                 rows.Add(new List<string>
                 {

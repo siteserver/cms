@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.Cli.Updater.Tables.GovInteract
 {
@@ -260,22 +258,23 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
         private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
-            columns.AddRange(DataProvider.ContentDao.TableColumns);
+            var repository = new Repository<Content>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            columns.AddRange(repository.TableColumns);
             columns.AddRange(NewColumns);
 
             foreach (var tableColumnInfo in oldColumns)
             {
                 if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
                 {
-                    tableColumnInfo.AttributeName = nameof(CMS.Model.Content.ChannelId);
+                    tableColumnInfo.AttributeName = nameof(Abstractions.Content.ChannelId);
                 }
                 else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
                 {
-                    tableColumnInfo.AttributeName = nameof(CMS.Model.Content.SiteId);
+                    tableColumnInfo.AttributeName = nameof(Abstractions.Content.SiteId);
                 }
                 else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
                 {
-                    tableColumnInfo.AttributeName = nameof(CMS.Model.Content.GroupNameCollection);
+                    tableColumnInfo.AttributeName = nameof(Abstractions.Content.GroupNameCollection);
                 }
 
                 if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
@@ -301,9 +300,9 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(CMS.Model.Content.ChannelId), nameof(NodeId)},
-                {nameof(CMS.Model.Content.SiteId), nameof(PublishmentSystemId)},
-                {nameof(CMS.Model.Content.GroupNameCollection), nameof(ContentGroupNameCollection)}
+                {nameof(Abstractions.Content.ChannelId), nameof(NodeId)},
+                {nameof(Abstractions.Content.SiteId), nameof(PublishmentSystemId)},
+                {nameof(Abstractions.Content.GroupNameCollection), nameof(ContentGroupNameCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

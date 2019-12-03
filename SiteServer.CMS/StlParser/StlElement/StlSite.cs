@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
+
 using System.Threading.Tasks;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -161,11 +161,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
 		    if (!string.IsNullOrEmpty(siteName))
 		    {
-		        site = await DataProvider.SiteDao.GetSiteBySiteNameAsync(siteName);
+		        site = await DataProvider.SiteRepository.GetSiteBySiteNameAsync(siteName);
 		    }
 		    else if (!string.IsNullOrEmpty(siteDir))
 		    {
-		        site = await DataProvider.SiteDao.GetSiteByDirectoryAsync(siteDir);
+		        site = await DataProvider.SiteRepository.GetSiteByDirectoryAsync(siteDir);
 		    }
 
 		    if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
@@ -207,14 +207,14 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.Site.WebUrl;
+                parsedContent = pageInfo.Site.GetWebUrl();
             }
             else if (pageInfo.Site.Get<string>(type) != null)
             {
                 parsedContent = pageInfo.Site.Get<string>(type);
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
-                    var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.SiteDao.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
+                    var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.SiteRepository.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
 
                     // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                     if (styleInfo.Id > 0)

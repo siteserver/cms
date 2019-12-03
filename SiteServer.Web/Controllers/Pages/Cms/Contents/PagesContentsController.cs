@@ -5,10 +5,10 @@ using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -37,7 +37,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -51,10 +51,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
-                var columns = await DataProvider.ContentDao.GetContentColumnsAsync(site, channelInfo, false);
+                var columns = await DataProvider.ContentRepository.GetContentColumnsAsync(site, channelInfo, false);
 
                 var pageContentInfoList = new List<Content>();
-                var count = await DataProvider.ContentDao.GetCountAsync(site, channelInfo, adminId, isAllContents);
+                var count = isAllContents
+                    ? await DataProvider.ContentRepository.GetCountAllAsync(site, channelInfo, adminId)
+                    : await DataProvider.ContentRepository.GetCountAsync(site, channelInfo, adminId);
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
                 if (pages == 0) pages = 1;
 
@@ -63,12 +65,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     var offset = site.PageSize * (page - 1);
                     var limit = site.PageSize;
 
-                    var pageContentIds = await DataProvider.ContentDao.GetChannelContentIdListAsync(site, channelInfo, adminId, isAllContents, offset, limit);
+                    var pageContentIds = await DataProvider.ContentRepository.GetChannelContentIdListAsync(site, channelInfo, adminId, isAllContents, offset, limit);
 
                     var sequence = offset + 1;
                     foreach (var channelContentId in pageContentIds)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
                         if (contentInfo == null) continue;
 
                         var menus = await PluginMenuManager.GetContentMenusAsync(pluginIds, contentInfo);
@@ -77,7 +79,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                         var channelName = await ChannelManager.GetChannelNameNavigationAsync(siteId, channelId, channelContentId.ChannelId);
                         contentInfo.Set("ChannelName", channelName);
 
-                        pageContentInfoList.Add(await DataProvider.ContentDao.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
+                        pageContentInfoList.Add(await DataProvider.ContentRepository.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
                     }
                 }
 
@@ -124,7 +126,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 foreach (var channelContentId in channelContentIds)

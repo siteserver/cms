@@ -274,6 +274,8 @@
     <Compile Include="Controllers\Pages\Cms\Special\PagesSpecialEditorController.cs" />
     <Compile Include="Controllers\Pages\Cms\Special\PagesSpecialAddLayerController.cs" />
     <Compile Include="Controllers\Pages\Cms\Special\PagesSpecialController.cs" />
+    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesController.cs" />
+    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesController.Dto.cs" />
     <Compile Include="Controllers\Pages\PagesRedirectController.cs" />
     <Compile Include="Controllers\Pages\PagesLoadingController.cs" />
     <Compile Include="Controllers\Pages\PagesUpdateSystemController.cs" />
@@ -287,6 +289,14 @@
     <Compile Include="Controllers\Pages\Plugins\PagesManageController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesViewController.cs" />
     <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminViewController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisSiteController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisSiteController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisUserController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisUserController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisAdminWorkController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisAdminLoginController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisAdminWorkController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisAdminLoginController.Dto.cs" />
     <Compile Include="Controllers\Pages\Settings\Config\PagesConfigAdminController.cs" />
     <Compile Include="Controllers\Pages\Settings\Config\PagesConfigHomeController.cs" />
     <Compile Include="Controllers\Pages\Settings\Config\PagesConfigHomeMenuController.cs" />
@@ -363,9 +373,9 @@
       <Project>{c6df816e-0eb3-4e71-b446-0b24bbb2f6f0}</Project>
       <Name>Datory</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SiteServer.Plugin\SiteServer.Plugin.csproj">
-      <Project>{89bc9704-79a7-41ba-838f-afda1b9db82a}</Project>
-      <Name>SiteServer.Plugin</Name>
+    <ProjectReference Include="..\SiteServer.Abstractions\SiteServer.Abstractions.csproj">
+      <Project>{3dd23021-88f3-4646-92ea-a60cb7ce4026}</Project>
+      <Name>SiteServer.Abstractions</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.BackgroundPages\SiteServer.BackgroundPages.csproj">
       <Project>{6aa1713a-3b77-4b20-b8c7-fcb6de556f64}</Project>
@@ -374,10 +384,6 @@
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
       <Name>SiteServer.CMS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
-      <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>
-      <Name>SiteServer.Utils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

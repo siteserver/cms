@@ -2,12 +2,10 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using NSwag.Annotations;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
@@ -35,7 +33,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 Administrator adminInfo;
                 if (userId > 0)
                 {
-                    adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
+                    adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(userId);
                     if (adminInfo == null) return NotFound();
                 }
                 else
@@ -63,7 +61,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
-                var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
+                var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
                     !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
@@ -82,8 +80,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                         return BadRequest("Could not read image from body");
                     }
 
-                    var fileName = DataProvider.AdministratorDao.GetUserUploadFileName(postFile.FileName);
-                    var filePath = DataProvider.AdministratorDao.GetUserUploadPath(userId, fileName);
+                    var fileName = DataProvider.AdministratorRepository.GetUserUploadFileName(postFile.FileName);
+                    var filePath = DataProvider.AdministratorRepository.GetUserUploadPath(userId, fileName);
 
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
@@ -92,7 +90,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                     postFile.SaveAs(filePath);
 
-                    avatarUrl = DataProvider.AdministratorDao.GetUserUploadUrl(userId, fileName);
+                    avatarUrl = DataProvider.AdministratorRepository.GetUserUploadUrl(userId, fileName);
                 }
 
                 return Ok(new
@@ -124,7 +122,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 Administrator adminInfo;
                 if (userId > 0)
                 {
-                    adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
+                    adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(userId);
                     if (adminInfo == null) return NotFound();
                 }
                 else
@@ -147,12 +145,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 }
                 else
                 {
-                    if (adminInfo.Mobile != mobile && !string.IsNullOrEmpty(mobile) && await DataProvider.AdministratorDao.IsMobileExistsAsync(mobile))
+                    if (adminInfo.Mobile != mobile && !string.IsNullOrEmpty(mobile) && await DataProvider.AdministratorRepository.IsMobileExistsAsync(mobile))
                     {
                         return BadRequest("资料修改失败，手机号码已存在");
                     }
 
-                    if (adminInfo.Email != email && !string.IsNullOrEmpty(email) && await DataProvider.AdministratorDao.IsEmailExistsAsync(email))
+                    if (adminInfo.Email != email && !string.IsNullOrEmpty(email) && await DataProvider.AdministratorRepository.IsEmailExistsAsync(email))
                     {
                         return BadRequest("资料修改失败，邮箱地址已存在");
                     }
@@ -165,7 +163,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 if (adminInfo.Id == 0)
                 {
-                    var valid = await DataProvider.AdministratorDao.InsertAsync(adminInfo, password);
+                    var valid = await DataProvider.AdministratorRepository.InsertAsync(adminInfo, password);
                     if (!valid.IsValid)
                     {
                         return BadRequest($"管理员添加失败：{valid.ErrorMessage}");
@@ -174,7 +172,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 }
                 else
                 {
-                    var valid = await DataProvider.AdministratorDao.UpdateAsync(adminInfo);
+                    var valid = await DataProvider.AdministratorRepository.UpdateAsync(adminInfo);
                     if (!valid.IsValid)
                     {
                         return BadRequest($"管理员修改失败：{valid.ErrorMessage}");

@@ -1,15 +1,14 @@
 ﻿using System.Text;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
+
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -252,7 +251,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.Equals(nameof(Channel.ContentRelatedPluginIds).ToLower()))
             {
-                parsedContent = string.Join(",", channel.ContentRelatedPluginIds);
+                parsedContent = StringUtils.Join(channel.ContentRelatedPluginIds);
             }
             else if (type.Equals(nameof(Channel.ParentId).ToLower()))
             {
@@ -290,7 +289,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.Equals(nameof(Channel.GroupNames).ToLower()))
             {
-                parsedContent = string.Join(",", channel.GroupNames);
+                parsedContent = StringUtils.Join(channel.GroupNames);
             }
             else if (type.Equals(nameof(Channel.Taxis).ToLower()))
             {
@@ -421,19 +420,19 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.Equals(StlParserUtility.CountOfContents.ToLower()))
             {
-                var count = await DataProvider.ContentDao.GetCountAsync(pageInfo.Site, channel, true);
+                var count = await DataProvider.ContentRepository.GetCountAsync(pageInfo.Site, channel);
                 parsedContent = count.ToString();
             }
             else if (type.Equals(StlParserUtility.CountOfImageContents.ToLower()))
             { 
-                var count = await DataProvider.ContentDao.GetCountCheckedImageAsync(pageInfo.SiteId, channel.Id);
+                var count = await DataProvider.ContentRepository.GetCountCheckedImageAsync(pageInfo.SiteId, channel.Id);
                 parsedContent = count.ToString();
             }
             else
             {
                 var attributeName = type;
 
-                var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.ChannelDao.TableName, attributeName, TableStyleManager.GetRelatedIdentities(channel));
+                var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.ChannelRepository.TableName, attributeName, TableStyleManager.GetRelatedIdentities(channel));
                 // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                 if (styleInfo.Id > 0)
                 {

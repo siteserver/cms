@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(Constants.WebSitePermissions.Create);
 
-            var specialInfoList = DataProvider.SpecialDao.GetSpecialListAsync(SiteId).GetAwaiter().GetResult();
+            var specialInfoList = DataProvider.SpecialRepository.GetSpecialListAsync(SiteId).GetAwaiter().GetResult();
 
             foreach (var specialInfo in specialInfoList)
             {

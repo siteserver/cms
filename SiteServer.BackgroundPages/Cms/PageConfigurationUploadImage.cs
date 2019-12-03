@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -84,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
 		    {
-		        DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+		        DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
 
 		        AuthRequest.AddSiteLogAsync(SiteId, "修改图片上传设置").GetAwaiter().GetResult();
 

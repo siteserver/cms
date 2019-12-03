@@ -3,11 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Utility
 {
@@ -92,7 +91,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
                 }
 
                 CacheUtils.ClearAll();
-                await DataProvider.DbCacheDao.ClearAsync();
+                await DataProvider.DbCacheRepository.ClearAsync();
 
                 var parameterList = new List<KeyValuePair<string, string>>();
                 foreach (var key in CacheUtils.AllKeys)

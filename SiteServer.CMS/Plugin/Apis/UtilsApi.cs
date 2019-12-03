@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
-    public class UtilsApi : IUtilsApi
+    public class UtilsApi
     {
         private UtilsApi() { }
 
@@ -81,12 +80,12 @@ namespace SiteServer.CMS.Plugin.Apis
             return TranslateUtils.JsonDeserialize(json, defaultValue);
         }
 
-        public IAuthenticatedRequest GetAuthenticatedRequest(HttpRequestMessage request)
+        public AuthenticatedRequest GetAuthenticatedRequest(HttpRequestMessage request)
         {
             throw new System.NotImplementedException();
         }
 
-        public async Task<IAuthenticatedRequest> GetRequestAsync()
+        public async Task<AuthenticatedRequest> GetRequestAsync()
         {
             return await AuthenticatedRequest.GetAuthAsync();
         }

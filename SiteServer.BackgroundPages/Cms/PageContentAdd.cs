@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -11,13 +11,11 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
-using Content = SiteServer.CMS.Model.Content;
-using TableStyle = SiteServer.CMS.Model.TableStyle;
+using SiteServer.CMS.Repositories;
+using Content = SiteServer.Abstractions.Content;
+using TableStyle = SiteServer.Abstractions.TableStyle;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -91,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (contentId > 0)
             {
                 //content = ContentManager.GetContentInfo(Site, _channel, contentId);
-                content = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                content = DataProvider.ContentRepository.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
             }
 
             var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : content?.Get<string>(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));
@@ -113,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
                     PhTranslate.Visible = true;
                     BtnTranslate.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
-                    ETranslateContentTypeUtils.AddListItems(DdlTranslateType, true);
+                    ETranslateContentTypeUtilsExtensions.AddListItems(DdlTranslateType, true);
                     ControlUtils.SelectSingleItem(DdlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
                 }
                 else
@@ -128,7 +126,7 @@ namespace SiteServer.BackgroundPages.Cms
                 TbAddDate.DateTime = DateTime.Now;
                 TbAddDate.Now = true;
 
-                var contentGroupNameList = DataProvider.ContentGroupDao.GetGroupNamesAsync(SiteId).GetAwaiter().GetResult();
+                var contentGroupNameList = DataProvider.ContentGroupRepository.GetGroupNamesAsync(SiteId).GetAwaiter().GetResult();
                 foreach (var groupName in contentGroupNameList)
                 {
                     var item = new ListItem(groupName, groupName);
@@ -183,7 +181,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     AcAttributes.Attributes = attributes;
 
-                    ControlUtils.SelectSingleItem(RblContentLevel, Site.CheckContentDefaultLevel.ToString());
+                    //ControlUtils.SelectSingleItem(RblContentLevel, Site.CheckContentDefaultLevel.ToString());
                 }
                 else if (content != null)
                 {
@@ -215,7 +213,7 @@ namespace SiteServer.BackgroundPages.Cms
                         TbAddDate.DateTime = content.AddDate.Value;
                     }
                     
-                    ControlUtils.SelectMultiItems(CblContentGroups, TranslateUtils.StringCollectionToStringList(content.GroupNameCollection));
+                    ControlUtils.SelectMultiItems(CblContentGroups, StringUtils.GetStringList(content.GroupNameCollection));
 
                     AcAttributes.Attributes = content.ToDictionary();
 
@@ -309,7 +307,7 @@ namespace SiteServer.BackgroundPages.Cms
                         contentInfo.CheckReasons = string.Empty;
                     }
 
-                    contentInfo.Id = DataProvider.ContentDao.InsertAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
+                    contentInfo.Id = DataProvider.ContentRepository.InsertAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
 
                     ContentTagUtils.UpdateTagsAsync(string.Empty, TbTags.Text, SiteId, contentInfo.Id).GetAwaiter().GetResult();
 
@@ -332,7 +330,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                 try
                 {
                     contentInfo.LastEditUserName = AuthRequest.AdminName;
@@ -383,7 +381,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    DataProvider.ContentDao.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
+                    DataProvider.ContentRepository.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
 
                     ContentUtility.TranslateAsync(Site, _channel.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName).GetAwaiter().GetResult();
 
@@ -404,10 +402,10 @@ namespace SiteServer.BackgroundPages.Cms
                     //var tableList = DataProvider.TableDao.GetTableCollectionInfoListCreatedInDb();
                     //foreach (var table in tableList)
                     //{
-                    //    var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(table.TableName, sourceContentIdList);
+                    //    var targetContentIdList = DataProvider.ContentRepository.GetReferenceIdList(table.TableName, sourceContentIdList);
                     //    foreach (var targetContentId in targetContentIdList)
                     //    {
-                    //        var targetContentInfo = DataProvider.ContentDao.GetContentInfo(table.TableName, targetContentId);
+                    //        var targetContentInfo = DataProvider.ContentRepository.GetContentInfo(table.TableName, targetContentId);
                     //        if (targetContentInfo == null || targetContentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString()) continue;
 
                     //        contentInfo.Id = targetContentId;
@@ -417,10 +415,10 @@ namespace SiteServer.BackgroundPages.Cms
                     //        contentInfo.ReferenceId = targetContentInfo.ReferenceId;
                     //        contentInfo.Taxis = targetContentInfo.Taxis;
                     //        contentInfo.Set(ContentAttribute.TranslateContentType, targetContentInfo.GetString(ContentAttribute.TranslateContentType));
-                    //        DataProvider.ContentDao.Update(table.TableName, contentInfo);
+                    //        DataProvider.ContentRepository.Update(table.TableName, contentInfo);
 
                     //        //资源：图片，文件，视频
-                    //        var targetSite = DataProvider.SiteDao.GetSite(targetContentInfo.SiteId);
+                    //        var targetSite = DataProvider.SiteRepository.GetSite(targetContentInfo.SiteId);
                     //        var bgContentInfo = contentInfo as BackgroundContentInfo;
                     //        var bgTargetContentInfo = targetContentInfo as BackgroundContentInfo;
                     //        if (bgTargetContentInfo != null && bgContentInfo != null)
@@ -433,7 +431,7 @@ namespace SiteServer.BackgroundPages.Cms
                     //            }
                     //            else if (bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)) != bgTargetContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)))
                     //            {
-                    //                var sourceImageUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
+                    //                var sourceImageUrls = StringUtils.GetStringList(bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
 
                     //                foreach (string imageUrl in sourceImageUrls)
                     //                {
@@ -450,7 +448,7 @@ namespace SiteServer.BackgroundPages.Cms
                     //            }
                     //            else if (bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)) != bgTargetContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)))
                     //            {
-                    //                var sourceFileUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
+                    //                var sourceFileUrls = StringUtils.GetStringList(bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
 
                     //                foreach (var fileUrl in sourceFileUrls)
                     //                {

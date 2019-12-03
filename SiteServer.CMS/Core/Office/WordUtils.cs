@@ -1,11 +1,10 @@
 ﻿using System;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using Word.Plugin;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.Core.Office
 {
@@ -59,7 +58,7 @@ namespace SiteServer.CMS.Core.Office
                 }
                 else
                 {
-                    var site = await DataProvider.SiteDao.GetAsync(siteId);
+                    var site = await DataProvider.SiteRepository.GetAsync(siteId);
                     var imageFileNameArrayList = RegexUtils.GetOriginalImageSrcs(parsedContent);
                     if (imageFileNameArrayList != null && imageFileNameArrayList.Count > 0)
                     {

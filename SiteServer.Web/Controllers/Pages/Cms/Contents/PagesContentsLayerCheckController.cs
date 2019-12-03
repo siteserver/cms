@@ -7,9 +7,9 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -38,7 +38,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -48,7 +48,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = await DataProvider.ContentRepository.GetAsync(site, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -102,7 +102,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -119,7 +119,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = await DataProvider.ContentRepository.GetAsync(site, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     contentInfo.CheckUserName = request.AdminName;
@@ -133,11 +133,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     {
                         var translateChannelInfo = await ChannelManager.GetChannelAsync(siteId, translateChannelId);
                         contentInfo.ChannelId = translateChannelInfo.Id;
-                        await DataProvider.ContentDao.UpdateAsync(site, translateChannelInfo, contentInfo);
+                        await DataProvider.ContentRepository.UpdateAsync(site, translateChannelInfo, contentInfo);
                     }
                     else
                     {
-                        await DataProvider.ContentDao.UpdateAsync(site, contentChannelInfo, contentInfo);
+                        await DataProvider.ContentRepository.UpdateAsync(site, contentChannelInfo, contentInfo);
                     }
 
                     contentInfoList.Add(contentInfo);
@@ -155,7 +155,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                         Reasons = reasons
                     };
 
-                    await DataProvider.ContentCheckDao.InsertAsync(checkInfo);
+                    await DataProvider.ContentCheckRepository.InsertAsync(checkInfo);
                 }
 
                 await request.AddSiteLogAsync(siteId, "批量审核内容");

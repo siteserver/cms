@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
@@ -29,15 +28,15 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     return Unauthorized();
                 }
 
-                var rootSiteId = await DataProvider.SiteDao.GetIdByIsRootAsync();
-                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync(0);
-                var sites = new List<CMS.Model.Site>();
+                var rootSiteId = await DataProvider.SiteRepository.GetIdByIsRootAsync();
+                var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync(0);
+                var sites = new List<Abstractions.Site>();
                 foreach (var siteId in siteIdList)
                 {
-                    sites.Add(await DataProvider.SiteDao.GetAsync(siteId));
+                    sites.Add(await DataProvider.SiteRepository.GetAsync(siteId));
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 return Ok(new
                 {
@@ -77,7 +76,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     separatedWebUrl = separatedWebUrl + "/";
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
                 site.IsSeparatedWeb = isSeparatedWeb;
                 site.SeparatedWebUrl = separatedWebUrl;
@@ -86,14 +85,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 site.SeparatedAssetsUrl = separatedAssetsUrl;
                 site.AssetsDir = assetsDir;
 
-                await DataProvider.SiteDao.UpdateAsync(site);
+                await DataProvider.SiteRepository.UpdateAsync(site);
                 await request.AddSiteLogAsync(siteId, "修改站点访问地址");
 
-                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync(0);
-                var sites = new List<CMS.Model.Site>();
+                var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync(0);
+                var sites = new List<Abstractions.Site>();
                 foreach (var id in siteIdList)
                 {
-                    sites.Add(await DataProvider.SiteDao.GetAsync(id));
+                    sites.Add(await DataProvider.SiteRepository.GetAsync(id));
                 }
 
                 return Ok(new
@@ -122,12 +121,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 var isSeparatedApi = request.GetPostBool("isSeparatedApi");
                 var separatedApiUrl = request.GetPostString("separatedApiUrl");
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 config.IsSeparatedApi = isSeparatedApi;
                 config.SeparatedApiUrl = separatedApiUrl;
 
-                await DataProvider.ConfigDao.UpdateAsync(config);
+                await DataProvider.ConfigRepository.UpdateAsync(config);
 
                 await request.AddAdminLogAsync("修改API访问地址");
 

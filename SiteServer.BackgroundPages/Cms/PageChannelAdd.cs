@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -114,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 CacAttributes.Attributes = new Dictionary<string, object>();
 
-                TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", Site.WebUrl));
+                TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", Site.GetWebUrl()));
 
                 var showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, true, TbChannelFilePathRule.ClientID);
                 BtnCreateChannelRule.Attributes.Add("onclick", showPopWinString);
@@ -128,17 +125,17 @@ namespace SiteServer.BackgroundPages.Cms
                 showPopWinString = ModalUploadImage.GetOpenWindowString(SiteId, TbImageUrl.ClientID);
                 BtnUploadImage.Attributes.Add("onclick", showPopWinString);
 
-                ELinkTypeUtils.AddListItems(DdlLinkType);
+                ELinkTypeUtilsExtensions.AddListItems(DdlLinkType);
 
-                ETaxisTypeUtils.AddListItemsForChannelEdit(DdlTaxisType);
+                ETaxisTypeUtilsExtensions.AddListItemsForChannelEdit(DdlTaxisType);
                 ControlUtils.SelectSingleItem(DdlTaxisType, ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc));
 
-                ControlUtils.AddListControlItems(CblNodeGroupNameCollection, DataProvider.ChannelGroupDao.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult());
-                //CblNodeGroupNameCollection.DataSource = DataProvider.ChannelGroupDao.GetDataSource(SiteId);
+                ControlUtils.AddListControlItems(CblNodeGroupNameCollection, DataProvider.ChannelGroupRepository.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult());
+                //CblNodeGroupNameCollection.DataSource = DataProvider.ChannelGroupRepository.GetDataSource(SiteId);
 
-                DdlChannelTemplateId.DataSource = DataProvider.TemplateDao
+                DdlChannelTemplateId.DataSource = DataProvider.TemplateRepository
                     .GetTemplateListByTypeAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
-                DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
+                DdlContentTemplateId.DataSource = DataProvider.TemplateRepository.GetTemplateListByTypeAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
 
                 DataBind();
 
@@ -228,7 +225,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (!string.IsNullOrEmpty(indexName))
                 {
-                    var indexNameList = DataProvider.ChannelDao.GetIndexNameListAsync(SiteId).GetAwaiter().GetResult();
+                    var indexNameList = DataProvider.ChannelRepository.GetIndexNameListAsync(SiteId).GetAwaiter().GetResult();
                     if (indexNameList.Contains(indexName))
                     {
                         FailMessage("栏目添加失败，栏目索引已存在！");
@@ -249,7 +246,7 @@ namespace SiteServer.BackgroundPages.Cms
                         filePath = PageUtils.Combine(filePath, "index.html");
                     }
 
-                    var filePathList = DataProvider.ChannelDao.GetAllFilePathBySiteIdAsync(SiteId).GetAwaiter().GetResult();
+                    var filePathList = DataProvider.ChannelRepository.GetAllFilePathBySiteIdAsync(SiteId).GetAwaiter().GetResult();
                     if (filePathList.Contains(filePath))
                     {
                         FailMessage("栏目添加失败，栏目页面路径已存在！");
@@ -317,7 +314,7 @@ namespace SiteServer.BackgroundPages.Cms
                 channelInfo.ContentTemplateId = contentTemplateId;
 
                 channelInfo.AddDate = DateTime.Now;
-                insertChannelId = DataProvider.ChannelDao.InsertAsync(channelInfo).GetAwaiter().GetResult();
+                insertChannelId = DataProvider.ChannelRepository.InsertAsync(channelInfo).GetAwaiter().GetResult();
                 //栏目选择投票样式后，内容
             }
             catch (Exception ex)

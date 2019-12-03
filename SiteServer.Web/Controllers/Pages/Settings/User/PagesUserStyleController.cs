@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
@@ -28,7 +28,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                     return Unauthorized();
                 }
 
-                var allAttributes = DataProvider.UserDao.TableColumns.Select(x => x.AttributeName).ToList();
+                var allAttributes = DataProvider.UserRepository.TableColumns.Select(x => x.AttributeName).ToList();
 
                 var list = new List<object>();
                 foreach (var style in await TableStyleManager.GetUserStyleListAsync())
@@ -48,7 +48,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 return Ok(new
                 {
                     Value = list,
-                    DataProvider.UserDao.TableName,
+                    DataProvider.UserRepository.TableName,
                     RelatedIdentities = TableStyleManager.EmptyRelatedIdentities
                 });
             }
@@ -72,9 +72,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                 var attributeName = request.GetPostString("attributeName");
 
-                await DataProvider.TableStyleDao.DeleteAsync(0, DataProvider.UserDao.TableName, attributeName);
+                await DataProvider.TableStyleRepository.DeleteAsync(0, DataProvider.UserRepository.TableName, attributeName);
 
-                var allAttributes = DataProvider.UserDao.TableColumns.Select(x => x.AttributeName).ToList();
+                var allAttributes = DataProvider.UserRepository.TableColumns.Select(x => x.AttributeName).ToList();
 
                 var list = new List<object>();
                 foreach (var style in await TableStyleManager.GetUserStyleListAsync())

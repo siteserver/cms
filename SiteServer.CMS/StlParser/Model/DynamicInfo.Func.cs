@@ -1,14 +1,14 @@
 ﻿using System.Web;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Core;
+
 
 namespace SiteServer.CMS.StlParser.Model
 {
     public partial class DynamicInfo
     {
-        public static DynamicInfo GetDynamicInfo(IAuthenticatedRequest request, User user)
+        public static DynamicInfo GetDynamicInfo(AuthenticatedRequest request, User user)
         {
             var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(WebConfigUtils.DecryptStringBySecretKey(request.GetPostString("value")));
             if (dynamicInfo.ChannelId == 0)

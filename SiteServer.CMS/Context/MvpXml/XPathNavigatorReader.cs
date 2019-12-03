@@ -256,7 +256,7 @@ namespace SiteServer.CMS.Context.MvpXml
 					attribute = _navigator.GetAttribute(name, namespaceURI);
 				}
 				// The navigator will return String.Empty instead of null for non-existent attributes.
-				if (attribute.Length != 0)
+				if (!string.IsNullOrEmpty(attribute))
 					return attribute;
 				return null;
 			}

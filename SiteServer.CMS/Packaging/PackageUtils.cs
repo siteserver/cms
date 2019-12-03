@@ -5,7 +5,7 @@ using System.Linq;
 using NuGet.Packaging;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Packaging
 {
@@ -15,7 +15,7 @@ namespace SiteServer.CMS.Packaging
     public class PackageUtils
     {
         public const string PackageIdSsCms = "SS.CMS";
-        public const string PackageIdSiteServerPlugin = "SiteServer.Plugin";
+        public const string PackageIdSiteServerPlugin = "SiteServer.Abstractions";
         public const string VersionDev = "0.0.0";
 
         public const string CacheKeySsCmsIsDownload = nameof(CacheKeySsCmsIsDownload);

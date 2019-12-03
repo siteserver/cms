@@ -4,8 +4,9 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -43,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var theTemplateType = TemplateTypeUtils.GetEnumType(templateType);
 
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateListByTypeAsync(siteId, theTemplateType).GetAwaiter().GetResult();
+            var templateInfoList = DataProvider.TemplateRepository.GetTemplateListByTypeAsync(siteId, theTemplateType).GetAwaiter().GetResult();
 
             foreach (var templateInfo in templateInfoList)
             {

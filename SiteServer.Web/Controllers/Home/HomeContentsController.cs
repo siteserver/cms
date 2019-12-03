@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin;
-using SiteServer.Utils;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -35,7 +34,7 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -43,12 +42,12 @@ namespace SiteServer.API.Controllers.Home
 
                 var adminId = await request.AdminPermissionsImpl.GetAdminIdAsync(siteId, channelId);
 
-                var columns = await DataProvider.ContentDao.GetContentColumnsAsync(site, channelInfo, false);
+                var columns = await DataProvider.ContentRepository.GetContentColumnsAsync(site, channelInfo, false);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
                 var pageContentInfoList = new List<Content>();
-                var count = await DataProvider.ContentDao.GetCountAsync(site, channelInfo, adminId, true);
+                var count = await DataProvider.ContentRepository.GetCountAllAsync(site, channelInfo, adminId);
 
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
                 if (pages == 0) pages = 1;
@@ -58,18 +57,18 @@ namespace SiteServer.API.Controllers.Home
                     var offset = site.PageSize * (page - 1);
                     var limit = site.PageSize;
 
-                    var pageContentIds = await DataProvider.ContentDao.GetChannelContentIdListAsync(site, channelInfo, adminId, true, offset, limit);
+                    var pageContentIds = await DataProvider.ContentRepository.GetChannelContentIdListAsync(site, channelInfo, adminId, true, offset, limit);
 
                     var sequence = offset + 1;
                     foreach (var channelContentId in pageContentIds)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
                         if (contentInfo == null) continue;
 
                         var channelName = await ChannelManager.GetChannelNameNavigationAsync(siteId, channelId, channelContentId.ChannelId);
                         contentInfo.Set("ChannelName", channelName);
 
-                        pageContentInfoList.Add(await DataProvider.ContentDao.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
+                        pageContentInfoList.Add(await DataProvider.ContentRepository.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
                     }
                 }
 

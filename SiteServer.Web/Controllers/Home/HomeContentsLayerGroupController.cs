@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -32,13 +31,13 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var contentGroupNameList = await DataProvider.ContentGroupDao.GetGroupNamesAsync(siteId);
+                var contentGroupNameList = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(siteId);
 
                 return Ok(new
                 {
@@ -61,9 +60,9 @@ namespace SiteServer.API.Controllers.Home
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                var contentIdList = StringUtils.GetIntList(request.GetPostString("contentIds"));
                 var pageType = request.GetPostString("pageType");
-                var groupNames = TranslateUtils.StringCollectionToStringList(request.GetPostString("groupNames"));
+                var groupNames = StringUtils.GetStringList(request.GetPostString("groupNames"));
                 var groupName = request.GetPostString("groupName");
                 var description = request.GetPostString("description");
 
@@ -74,7 +73,7 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -84,17 +83,17 @@ namespace SiteServer.API.Controllers.Home
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
-                        var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
+                        var list = StringUtils.GetStringList(contentInfo.GroupNameCollection);
                         foreach (var name in groupNames)
                         {
                             if (!list.Contains(name)) list.Add(name);
                         }
                         contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
 
-                        await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
+                        await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
                     await request.AddSiteLogAsync(siteId, "批量设置内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
@@ -103,17 +102,17 @@ namespace SiteServer.API.Controllers.Home
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
-                        var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
+                        var list = StringUtils.GetStringList(contentInfo.GroupNameCollection);
                         foreach (var name in groupNames)
                         {
                             if (list.Contains(name)) list.Remove(name);
                         }
                         contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
 
-                        await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
+                        await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
                     await request.AddSiteLogAsync(siteId, "批量取消内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
@@ -127,27 +126,27 @@ namespace SiteServer.API.Controllers.Home
                         Description = AttackUtils.FilterXss(description)
                     };
 
-                    if (await DataProvider.ContentGroupDao.IsExistsAsync(siteId, groupInfo.GroupName))
+                    if (await DataProvider.ContentGroupRepository.IsExistsAsync(siteId, groupInfo.GroupName))
                     {
-                        await DataProvider.ContentGroupDao.UpdateAsync(groupInfo);
+                        await DataProvider.ContentGroupRepository.UpdateAsync(groupInfo);
                         await request.AddSiteLogAsync(siteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
                     }
                     else
                     {
-                        await DataProvider.ContentGroupDao.InsertAsync(groupInfo);
+                        await DataProvider.ContentGroupRepository.InsertAsync(groupInfo);
                         await request.AddSiteLogAsync(siteId, "添加内容组", $"内容组:{groupInfo.GroupName}");
                     }
 
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
-                        var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
+                        var list = StringUtils.GetStringList(contentInfo.GroupNameCollection);
                         if (!list.Contains(groupInfo.GroupName)) list.Add(groupInfo.GroupName);
                         contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
 
-                        await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
+                        await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
                     await request.AddSiteLogAsync(siteId, "批量设置内容组", $"内容组:{groupInfo.GroupName}");

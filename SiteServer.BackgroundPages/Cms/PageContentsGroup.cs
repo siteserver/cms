@@ -3,14 +3,14 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using Content = SiteServer.CMS.Model.Content;
+using SiteServer.CMS.Repositories;
+using Content = SiteServer.Abstractions.Content;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -47,15 +47,15 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var contentId = AuthRequest.GetQueryInt("contentId");
 
-                var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
-                var groupList = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
+                var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                var groupList = StringUtils.GetStringList(contentInfo.GroupNameCollection);
                 if (groupList.Contains(_contentGroupName))
                 {
                     groupList.Remove(_contentGroupName);
                 }
 
                 contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(groupList);
-                DataProvider.ContentDao.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
+                DataProvider.ContentRepository.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
                 AuthRequest.AddSiteLogAsync(SiteId, "移除内容", $"内容:{contentInfo.Title}").GetAwaiter().GetResult();
                 SuccessMessage("移除成功");
                 AddWaitAndRedirectScript(PageUrl);
@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             SpContents.ItemsPerPage = Site.PageSize;
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByContentGroup(_tableName, _contentGroupName, siteId);
+            SpContents.SelectCommand = DataProvider.ContentRepository.GetSqlStringByContentGroup(_tableName, _contentGroupName, siteId);
             SpContents.SortField = ContentAttribute.AddDate;
             SpContents.SortMode = SortMode.DESC;
 

@@ -6,15 +6,12 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using SiteServer.CMS.Api;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Packaging;
-using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -193,20 +190,20 @@ namespace SiteServer.CMS.Plugin
 
         public static async Task LoadPluginsAsync(string applicationPhysicalPath)
         {
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
 
-            SiteServer.Plugin.Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, config.ApiUrl), new ApiCollectionImpl
-            {
-                AdminApi = AdminApi.Instance,
-                ConfigApi = ConfigApi.Instance,
-                ContentApi = ContentApi.Instance,
-                ChannelApi = ChannelApi.Instance,
-                ParseApi = ParseApi.Instance,
-                PluginApi = PluginApi.Instance,
-                SiteApi = SiteApi.Instance,
-                UserApi = UserApi.Instance,
-                UtilsApi = UtilsApi.Instance
-            });
+            //Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, config.GetApiUrl()), new ApiCollectionImpl
+            //{
+            //    AdminApi = AdminApi.Instance,
+            //    ConfigApi = ConfigApi.Instance,
+            //    ContentApi = ContentApi.Instance,
+            //    ChannelApi = ChannelApi.Instance,
+            //    ParseApi = ParseApi.Instance,
+            //    PluginApi = PluginApi.Instance,
+            //    SiteApi = SiteApi.Instance,
+            //    UserApi = UserApi.Instance,
+            //    UtilsApi = UtilsApi.Instance
+            //});
 
             _pluginInfoListRunnable = await GetPluginInfoListRunnableAsync();
         }
@@ -216,7 +213,7 @@ namespace SiteServer.CMS.Plugin
             PluginManagerCache.Clear();
         }
 
-        public static async Task<IMetadata> GetMetadataAsync(string pluginId)
+        public static async Task<IPackageMetadata> GetMetadataAsync(string pluginId)
         {
             var dict = await PluginManagerCache.GetPluginSortedListAsync();
             PluginInstance pluginInfo;
@@ -369,7 +366,7 @@ namespace SiteServer.CMS.Plugin
                     ).Select(pluginInfo => pluginInfo.Plugin).ToList();
         }
 
-        public static async Task<IMetadata> GetEnabledPluginMetadataAsync<T>(string pluginId) where T : PluginBase
+        public static async Task<IPackageMetadata> GetEnabledPluginMetadataAsync<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
@@ -620,7 +617,7 @@ namespace SiteServer.CMS.Plugin
             if (pluginInfo != null)
             {
                 pluginInfo.IsDisabled = isDisabled;
-                await DataProvider.PluginDao.UpdateIsDisabledAsync(pluginId, isDisabled);
+                await DataProvider.PluginRepository.UpdateIsDisabledAsync(pluginId, isDisabled);
                 ClearCache();
             }
         }
@@ -631,7 +628,7 @@ namespace SiteServer.CMS.Plugin
             if (pluginInfo != null)
             {
                 pluginInfo.Taxis = taxis;
-                await DataProvider.PluginDao.UpdateTaxisAsync(pluginId, taxis);
+                await DataProvider.PluginRepository.UpdateTaxisAsync(pluginId, taxis);
                 ClearCache();
             }
         }

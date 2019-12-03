@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.Plugin;
+
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -162,7 +163,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.Site.WebUrl;
+                parsedContent = pageInfo.Site.GetWebUrl();
             }
             else if (type.ToLower().Equals(TypeDate.ToLower()))
             {
@@ -196,7 +197,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     parsedContent = pageInfo.Site.Get<string>(type);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.SiteDao.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
+                        var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.SiteRepository.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
 
                         // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                         if (styleInfo.Id > 0)

@@ -4,12 +4,11 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Images;
-using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -89,7 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
             else
             {
                 Site.ConfigSelectFileCurrentUrl = _currentRootPath;
-                DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 
@@ -143,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
                     else if (directoryName.Equals("@"))
                     {
                         navigationBuilder.Append(
-                            $"<a href='{GetRedirectUrl(_rootPath)}'>{DataProvider.SiteDao.GetAsync(SiteId).GetAwaiter().GetResult().SiteDir}</a>");
+                            $"<a href='{GetRedirectUrl(_rootPath)}'>{DataProvider.SiteRepository.GetAsync(SiteId).GetAwaiter().GetResult().SiteDir}</a>");
                     }
                     else
                     {
@@ -419,7 +418,7 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				var fileModifyDateTime = fileInfo.LastWriteTime;
 				var linkUrl = PageUtils.Combine(directoryUrl, fileInfo.Name);
-				var attachmentUrl = linkUrl.Replace(Site.WebUrl, "@");
+				var attachmentUrl = linkUrl.Replace(Site.GetWebUrl(), "@");
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.SiteId, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(SiteId, attachmentUrl,_hiddenClientId);
                 string trHtml =

@@ -4,11 +4,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.UEditor
 {
@@ -38,7 +37,7 @@ namespace SiteServer.CMS.UEditor
                 });
                 return;
             }
-            var site = DataProvider.SiteDao.GetAsync(SiteId).GetAwaiter().GetResult();
+            var site = DataProvider.SiteRepository.GetAsync(SiteId).GetAwaiter().GetResult();
 
             Crawlers = Sources.Select(x => new Crawler(x, site, Server)).ToArray();
             WriteJson(new

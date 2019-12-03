@@ -4,7 +4,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory;
 using NDesk.Options;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.Cli.Core
 {

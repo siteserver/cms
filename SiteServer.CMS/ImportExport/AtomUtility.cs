@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using SiteServer.CMS.Context.Atom.Atom.AdditionalElements;
 using SiteServer.CMS.Context.Atom.Atom.AdditionalElements.DublinCore;
 using SiteServer.CMS.Context.Atom.Atom.Core;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.ImportExport
 {

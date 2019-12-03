@@ -2,11 +2,11 @@
 using System.Web.UI;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
+
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -228,7 +228,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     connectionString = WebConfigUtils.ConnectionString;
                 }
 
-                //parsedContent = DataProvider.DatabaseDao.GetString(connectionString, queryString);
+                //parsedContent = DataProvider.DatabaseRepository.GetString(connectionString, queryString);
                 parsedContent = StlDatabaseCache.GetString(connectionString, queryString);
             }
 

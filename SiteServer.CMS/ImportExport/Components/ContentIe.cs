@@ -5,11 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context.Atom.Atom.Core;
 using SiteServer.CMS.Context.Atom.Atom.Core.Collections;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -114,7 +114,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = await DataProvider.ContentDao.GetMaxTaxisAsync(tableName, channel.Id, true) + 1;
+                        taxis = await DataProvider.ContentRepository.GetMaxTaxisAsync(tableName, channel.Id, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
@@ -158,13 +158,13 @@ namespace SiteServer.CMS.ImportExport.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                        var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                         if (existsIDs.Count > 0)
                         {
                             foreach (var id in existsIDs)
                             {
                                 contentInfo.Id = id;
-                                await DataProvider.ContentDao.UpdateAsync(_site, channel, contentInfo);
+                                await DataProvider.ContentRepository.UpdateAsync(_site, channel, contentInfo);
                             }
                         }
                         else
@@ -179,7 +179,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = await DataProvider.ContentDao.InsertWithTaxisAsync(_site, channel, contentInfo, taxis);
+                        var contentId = await DataProvider.ContentRepository.InsertWithTaxisAsync(_site, channel, contentInfo, taxis);
                         contentIdList.Add(contentId);
 
                         await ContentTagUtils.UpdateTagsAsync(string.Empty, tags, _site.Id, contentId);
@@ -234,7 +234,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = await DataProvider.ContentDao.GetMaxTaxisAsync(tableName, channel.Id, true) + 1;
+                        taxis = await DataProvider.ContentRepository.GetMaxTaxisAsync(tableName, channel.Id, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
@@ -280,13 +280,13 @@ namespace SiteServer.CMS.ImportExport.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                        var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                         if (existsIDs.Count > 0)
                         {
                             foreach (int id in existsIDs)
                             {
                                 contentInfo.Id = id;
-                                await DataProvider.ContentDao.UpdateAsync(_site, channel, contentInfo);
+                                await DataProvider.ContentRepository.UpdateAsync(_site, channel, contentInfo);
                             }
                         }
                         else
@@ -301,7 +301,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = await DataProvider.ContentDao.InsertWithTaxisAsync(_site, channel, contentInfo, taxis);
+                        var contentId = await DataProvider.ContentRepository.InsertWithTaxisAsync(_site, channel, contentInfo, taxis);
 
                         contentIdList.Add(contentId);
 
@@ -331,7 +331,7 @@ namespace SiteServer.CMS.ImportExport.Components
             if (contentIdList == null)
             {
                 var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
-                contentIdList = await DataProvider.ContentDao.GetContentIdListAsync(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
+                contentIdList = await DataProvider.ContentRepository.GetContentIdListAsync(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
             }
             if (!contentIdList.Any()) return false;
 
@@ -339,7 +339,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                 try
                 {
                     ContentUtility.PutImagePaths(site, contentInfo, collection);

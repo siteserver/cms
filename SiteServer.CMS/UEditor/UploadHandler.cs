@@ -1,11 +1,11 @@
-﻿using SiteServer.Utils;
+﻿using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using System;
 using System.IO;
 using System.Linq;
 using System.Web;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.UEditor
 {
@@ -75,7 +75,7 @@ namespace SiteServer.CMS.UEditor
             //var localPath = Server.MapPath(savePath);
 
             var currentType = PathUtils.GetExtension(Result.OriginFileName);
-            var siteInfo = DataProvider.SiteDao.GetAsync(SiteId).GetAwaiter().GetResult();
+            var siteInfo = DataProvider.SiteRepository.GetAsync(SiteId).GetAwaiter().GetResult();
             var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, UploadType);
             var localFileName = PathUtility.GetUploadFileName(siteInfo, uploadFileName);
             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);

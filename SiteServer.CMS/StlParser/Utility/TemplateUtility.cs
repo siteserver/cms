@@ -1,15 +1,13 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
@@ -26,7 +24,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 contentItemInfo = pageInfo.ContentItems.Peek();
             }
             if (contentItemInfo == null) return string.Empty;
-            var contentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, contentItemInfo.ChannelId,
+            var contentInfo = await DataProvider.ContentRepository.GetAsync(pageInfo.Site, contentItemInfo.ChannelId,
                 contentItemInfo.ContentId);
 
             var contextInfo = contextInfoRef.Clone();
@@ -42,7 +40,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var prePageContentId = pageInfo.PageContentId;
             if (contentInfo.SiteId != pageInfo.SiteId)
             {
-                var siteInfo = await DataProvider.SiteDao.GetAsync(contentInfo.SiteId);
+                var siteInfo = await DataProvider.SiteRepository.GetAsync(contentInfo.SiteId);
                 contextInfo.Site = siteInfo;
                 pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
             }
@@ -53,7 +51,7 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 foreach (var itemTypes in selectedItems.AllKeys)
                 {
-                    var itemTypeArrayList = TranslateUtils.StringCollectionToStringList(itemTypes);
+                    var itemTypeArrayList = StringUtils.GetStringList(itemTypes);
                     var isTrue = true;
                     foreach (var itemType in itemTypeArrayList)
                     {
@@ -283,7 +281,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
             var siteId = SqlUtils.EvalInt(itemContainer.SiteItem.DataItem, nameof(Site.Id));
-            var siteInfo = await DataProvider.SiteDao.GetAsync(siteId);
+            var siteInfo = await DataProvider.SiteRepository.GetAsync(siteId);
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContainerClientId = containerClientId;

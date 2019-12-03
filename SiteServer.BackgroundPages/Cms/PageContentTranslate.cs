@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -78,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = DataProvider.ContentDao.GetAsync(Site, channelId, contentId).GetAwaiter().GetResult();
+                        var contentInfo = DataProvider.ContentRepository.GetAsync(Site, channelId, contentId).GetAwaiter().GetResult();
                         if (contentInfo != null)
                         {
                             builder.Append(
@@ -91,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             BtnTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
-            ETranslateContentTypeUtils.AddListItems(RblTranslateType, isCut);
+            ETranslateContentTypeUtilsExtensions.AddListItems(RblTranslateType, isCut);
             ControlUtils.SelectSingleItem(RblTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
         }
 

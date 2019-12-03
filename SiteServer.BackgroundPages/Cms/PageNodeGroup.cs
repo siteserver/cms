@@ -2,10 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -29,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 			
 				try
 				{
-                    DataProvider.ChannelGroupDao.DeleteAsync(SiteId, groupName).GetAwaiter().GetResult();
+                    DataProvider.ChannelGroupRepository.DeleteAsync(SiteId, groupName).GetAwaiter().GetResult();
 
                     AuthRequest.AddSiteLogAsync(SiteId, "删除栏目组", $"栏目组:{groupName}").GetAwaiter().GetResult();
 				}
@@ -46,10 +44,10 @@ namespace SiteServer.BackgroundPages.Cms
                 switch (direction.ToUpper())
                 {
                     case "UP":
-                        DataProvider.ChannelGroupDao.UpdateTaxisToUpAsync(SiteId, groupName).GetAwaiter().GetResult();
+                        DataProvider.ChannelGroupRepository.UpdateTaxisToUpAsync(SiteId, groupName).GetAwaiter().GetResult();
                         break;
                     case "DOWN":
-                        DataProvider.ChannelGroupDao.UpdateTaxisToDownAsync(SiteId, groupName).GetAwaiter().GetResult();
+                        DataProvider.ChannelGroupRepository.UpdateTaxisToDownAsync(SiteId, groupName).GetAwaiter().GetResult();
                         break;
                 }
                 AddWaitAndRedirectScript(GetRedirectUrl(SiteId));
@@ -59,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(Constants.WebSitePermissions.Configuration);    
 
-            RptContents.DataSource = DataProvider.ChannelGroupDao.GetChannelGroupListAsync(SiteId).GetAwaiter().GetResult();
+            RptContents.DataSource = DataProvider.ChannelGroupRepository.GetChannelGroupListAsync(SiteId).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 

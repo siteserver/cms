@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.Plugin
 {
@@ -38,16 +37,16 @@ namespace SiteServer.CMS.Plugin
             var tableName = service.ContentTableName;
 
             var tableColumns = new List<TableColumn>();
-            tableColumns.AddRange(DataProvider.ContentDao.TableColumns);
+            tableColumns.AddRange(DataProvider.ContentRepository.GetTableColumns(tableName));
             tableColumns.AddRange(service.ContentTableColumns);
 
-            if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+            if (!await WebConfigUtils.Database.IsTableExistsAsync(tableName))
             {
-                DataProvider.ContentDao.CreateContentTable(tableName, tableColumns);
+                await DataProvider.ContentRepository.CreateContentTableAsync(tableName, tableColumns);
             }
             else
             {
-                await DataProvider.DatabaseDao.AlterSystemTableAsync(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
+                await DataProvider.DatabaseRepository.AlterSystemTableAsync(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
             }
 
             await ContentTableCreateOrUpdateStylesAsync(tableName, service.ContentInputStyles);
@@ -205,11 +204,11 @@ namespace SiteServer.CMS.Plugin
             {
                 if (styleInfo.Id == 0)
                 {
-                    await DataProvider.TableStyleDao.InsertAsync(styleInfo);
+                    await DataProvider.TableStyleRepository.InsertAsync(styleInfo);
                 }
                 else
                 {
-                    await DataProvider.TableStyleDao.UpdateAsync(styleInfo);
+                    await DataProvider.TableStyleRepository.UpdateAsync(styleInfo);
                 }
             }
         }

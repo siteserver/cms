@@ -2,9 +2,8 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -161,7 +160,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 if (!string.IsNullOrEmpty(extendValues))
                                 {
                                     var index = 2;
-                                    foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                                    foreach (var extendValue in StringUtils.GetStringList(extendValues))
                                     {
                                         if (index == no)
                                         {

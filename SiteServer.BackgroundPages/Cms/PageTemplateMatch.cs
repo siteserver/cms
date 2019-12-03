@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -142,8 +141,8 @@ namespace SiteServer.BackgroundPages.Cms
                 LbChannelId.Items.Add(listitem);
 			}
 
-            LbChannelTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
-            LbContentTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
+            LbChannelTemplateId.DataSource = DataProvider.TemplateRepository.GetTemplateListByTypeAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
+            LbContentTemplateId.DataSource = DataProvider.TemplateRepository.GetTemplateListByTypeAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
             DataBind();
 
 			ControlUtils.SelectMultiItems(LbChannelId, selectedChannelIdList);
@@ -256,7 +255,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                         channelInfo.ChannelTemplateId = templateId;
-                        DataProvider.ChannelDao.UpdateChannelTemplateIdAsync(channelInfo).GetAwaiter().GetResult();
+                        DataProvider.ChannelRepository.UpdateChannelTemplateIdAsync(channelInfo).GetAwaiter().GetResult();
                     }
                 }
                 else
@@ -265,7 +264,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                         channelInfo.ContentTemplateId = templateId;
-                        DataProvider.ChannelDao.UpdateContentTemplateIdAsync(channelInfo).GetAwaiter().GetResult();
+                        DataProvider.ChannelRepository.UpdateContentTemplateIdAsync(channelInfo).GetAwaiter().GetResult();
                     }
                 }
 			}
@@ -308,8 +307,8 @@ namespace SiteServer.BackgroundPages.Cms
 		    if (!Page.IsPostBack || !Page.IsValid || !Validate(false, false)) return;
 
 		    var defaultChannelTemplateId = TemplateManager.GetDefaultTemplateIdAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
-		    var relatedFileNameList = DataProvider.TemplateDao.GetRelatedFileNameListAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
-		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameListAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
+		    var relatedFileNameList = DataProvider.TemplateRepository.GetRelatedFileNameListAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
+		    var templateNameList = DataProvider.TemplateRepository.GetTemplateNameListAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
 		    foreach (ListItem item in LbChannelId.Items)
 		    {
 		        if (!item.Selected) continue;
@@ -354,11 +353,11 @@ namespace SiteServer.BackgroundPages.Cms
 		            {
 		                continue;
 		            }
-		            var insertedTemplateId = DataProvider.TemplateDao.InsertAsync(templateInfo, string.Empty, AuthRequest.AdminName).GetAwaiter().GetResult();
+		            var insertedTemplateId = DataProvider.TemplateRepository.InsertAsync(templateInfo, string.Empty, AuthRequest.AdminName).GetAwaiter().GetResult();
 		            if (nodeInfo.ParentId > 0)
 		            {
 		                nodeInfo.ChannelTemplateId = insertedTemplateId;
-		                DataProvider.ChannelDao.UpdateChannelTemplateIdAsync(nodeInfo).GetAwaiter().GetResult();
+		                DataProvider.ChannelRepository.UpdateChannelTemplateIdAsync(nodeInfo).GetAwaiter().GetResult();
 
                         //TemplateManager.UpdateChannelTemplateId(SiteId, channelId, insertedTemplateId);
                         //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(channelId, insertedTemplateID);
@@ -378,8 +377,8 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid || !Validate(false, false)) return;
 
-		    var relatedFileNameList = DataProvider.TemplateDao.GetRelatedFileNameListAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
-		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameListAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
+		    var relatedFileNameList = DataProvider.TemplateRepository.GetRelatedFileNameListAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
+		    var templateNameList = DataProvider.TemplateRepository.GetTemplateNameListAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
 		    foreach (ListItem item in LbChannelId.Items)
 		    {
 		        if (!item.Selected) continue;
@@ -408,13 +407,13 @@ namespace SiteServer.BackgroundPages.Cms
 		        {
 		            continue;
 		        }
-		        var insertedTemplateId = DataProvider.TemplateDao.InsertAsync(templateInfo, string.Empty, AuthRequest.AdminName).GetAwaiter().GetResult();
+		        var insertedTemplateId = DataProvider.TemplateRepository.InsertAsync(templateInfo, string.Empty, AuthRequest.AdminName).GetAwaiter().GetResult();
 		        var childChannelIdList = ChannelManager.GetChannelIdListAsync(ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult(), EScopeType.Descendant, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
                 foreach (var childChannelId in childChannelIdList)
 		        {
 		            var childChannelInfo = ChannelManager.GetChannelAsync(SiteId, childChannelId).GetAwaiter().GetResult();
                     childChannelInfo.ChannelTemplateId = insertedTemplateId;
-		            DataProvider.ChannelDao.UpdateChannelTemplateIdAsync(childChannelInfo).GetAwaiter().GetResult();
+		            DataProvider.ChannelRepository.UpdateChannelTemplateIdAsync(childChannelInfo).GetAwaiter().GetResult();
 
                     //TemplateManager.UpdateChannelTemplateId(SiteId, childChannelId, insertedTemplateId);
                     //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(childChannelId, insertedTemplateID);
@@ -433,8 +432,8 @@ namespace SiteServer.BackgroundPages.Cms
 		    if (!Page.IsPostBack || !Page.IsValid || !Validate(false, false)) return;
 
 		    var defaultContentTemplateId = TemplateManager.GetDefaultTemplateIdAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
-            var relatedFileNameList = DataProvider.TemplateDao.GetRelatedFileNameListAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
-		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameListAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
+            var relatedFileNameList = DataProvider.TemplateRepository.GetRelatedFileNameListAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
+		    var templateNameList = DataProvider.TemplateRepository.GetTemplateNameListAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
 		    foreach (ListItem item in LbChannelId.Items)
 		    {
 		        if (!item.Selected) continue;
@@ -475,11 +474,11 @@ namespace SiteServer.BackgroundPages.Cms
 		            {
 		                continue;
 		            }
-		            var insertedTemplateId = DataProvider.TemplateDao.InsertAsync(templateInfo, string.Empty, AuthRequest.AdminName).GetAwaiter().GetResult();
+		            var insertedTemplateId = DataProvider.TemplateRepository.InsertAsync(templateInfo, string.Empty, AuthRequest.AdminName).GetAwaiter().GetResult();
 
 		            var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                     channelInfo.ContentTemplateId = insertedTemplateId;
-		            DataProvider.ChannelDao.UpdateContentTemplateIdAsync(channelInfo).GetAwaiter().GetResult();
+		            DataProvider.ChannelRepository.UpdateContentTemplateIdAsync(channelInfo).GetAwaiter().GetResult();
 
                     //TemplateManager.UpdateContentTemplateId(SiteId, channelId, insertedTemplateId);
                     //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(channelId, insertedTemplateID);
@@ -497,8 +496,8 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid || !Validate(false, false)) return;
 
-		    var relatedFileNameList = DataProvider.TemplateDao.GetRelatedFileNameListAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
-		    var templateNameList = DataProvider.TemplateDao.GetTemplateNameListAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
+		    var relatedFileNameList = DataProvider.TemplateRepository.GetRelatedFileNameListAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
+		    var templateNameList = DataProvider.TemplateRepository.GetTemplateNameListAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
 		    foreach (ListItem item in LbChannelId.Items)
 		    {
 		        if (!item.Selected) continue;
@@ -527,13 +526,13 @@ namespace SiteServer.BackgroundPages.Cms
 		        {
 		            continue;
 		        }
-		        var insertedTemplateId = DataProvider.TemplateDao.InsertAsync(templateInfo, string.Empty, AuthRequest.AdminName).GetAwaiter().GetResult();
+		        var insertedTemplateId = DataProvider.TemplateRepository.InsertAsync(templateInfo, string.Empty, AuthRequest.AdminName).GetAwaiter().GetResult();
                 var childChannelIdList = ChannelManager.GetChannelIdListAsync(ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult(), EScopeType.Descendant, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
                 foreach (var childChannelId in childChannelIdList)
 		        {
 		            var childChannelInfo = ChannelManager.GetChannelAsync(SiteId, childChannelId).GetAwaiter().GetResult();
                     childChannelInfo.ContentTemplateId = insertedTemplateId;
-		            DataProvider.ChannelDao.UpdateContentTemplateIdAsync(childChannelInfo).GetAwaiter().GetResult();
+		            DataProvider.ChannelRepository.UpdateContentTemplateIdAsync(childChannelInfo).GetAwaiter().GetResult();
 
                     //TemplateManager.UpdateContentTemplateId(SiteId, childChannelId, insertedTemplateId);
                     //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(childChannelId, insertedTemplateID);

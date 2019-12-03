@@ -1,6 +1,5 @@
 ﻿using System.Text;
-using SiteServer.Utils;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using SiteServer.BackgroundPages.Ajax;
@@ -8,8 +7,8 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -41,7 +40,7 @@ namespace SiteServer.BackgroundPages.Core
             
             //为后台栏目树中的首页和外链栏目添加图标
             if (_channel.ParentId == 0) _contentModelIconClass = "ion-ios-home";
-            else if (_channel.LinkUrl.Length != 0) _contentModelIconClass = "ion-link";
+            else if (!string.IsNullOrEmpty(_channel.LinkUrl)) _contentModelIconClass = "ion-link";
             else _contentModelIconClass = "ion-folder";
 
             _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
@@ -145,7 +144,7 @@ namespace SiteServer.BackgroundPages.Core
 
                 htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(_site, _channel).GetAwaiter().GetResult());
 
-                var count = DataProvider.ContentDao.GetCountAsync(_site, _channel, adminId).GetAwaiter().GetResult();
+                var count = DataProvider.ContentRepository.GetCountAsync(_site, _channel, adminId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append(
                     $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span>");

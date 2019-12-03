@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Special
 {
@@ -30,8 +31,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
-                var specialInfoList = await DataProvider.SpecialDao.GetSpecialListAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
+                var specialInfoList = await DataProvider.SpecialRepository.GetSpecialListAsync(siteId);
 
                 return Ok(new
                 {
@@ -61,14 +62,14 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 var specialInfo = await SpecialManager.DeleteSpecialAsync(site, specialId);
 
                 await request.AddSiteLogAsync(siteId,
                     "删除专题",
                     $"专题名称:{specialInfo.Title}");
 
-                var specialInfoList = await DataProvider.SpecialDao.GetSpecialListAsync(siteId);
+                var specialInfoList = await DataProvider.SpecialRepository.GetSpecialListAsync(siteId);
 
                 return Ok(new
                 {
@@ -98,7 +99,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 var specialInfo = await SpecialManager.GetSpecialAsync(siteId, specialId);
 
                 var directoryPath = SpecialManager.GetSpecialDirectoryPath(site, specialInfo.Url);

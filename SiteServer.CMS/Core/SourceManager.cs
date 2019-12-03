@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.Core
 {
@@ -25,8 +26,8 @@ namespace SiteServer.CMS.Core
             }
             if (sourceId <= 0) return string.Empty;
 
-            var sourceSiteId = await DataProvider.ChannelDao.GetSiteIdAsync(sourceId);
-            var siteInfo = await DataProvider.SiteDao.GetAsync(sourceSiteId);
+            var sourceSiteId = await DataProvider.ChannelRepository.GetSiteIdAsync(sourceId);
+            var siteInfo = await DataProvider.SiteRepository.GetAsync(sourceSiteId);
             if (siteInfo == null) return "内容转移";
 
             var nodeNames = await ChannelManager.GetChannelNameNavigationAsync(siteInfo.Id, sourceId);

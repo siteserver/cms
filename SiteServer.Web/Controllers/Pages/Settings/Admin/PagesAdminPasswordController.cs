@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
@@ -21,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var userId = request.GetQueryInt("userId");
                 if (userId == 0) userId = request.AdminId;
                 if (!request.IsAdminLoggin) return Unauthorized();
-                var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
+                var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
                     ! await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
@@ -49,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var userId = request.GetQueryInt("userId");
                 if (userId == 0) userId = request.AdminId;
                 if (!request.IsAdminLoggin) return Unauthorized();
-                var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(userId);
+                var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
                     !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
@@ -58,7 +59,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 }
 
                 var password = request.GetPostString("password");
-                var valid = await DataProvider.AdministratorDao.ChangePasswordAsync(adminInfo, password);
+                var valid = await DataProvider.AdministratorRepository.ChangePasswordAsync(adminInfo, password);
                 if (!valid.IsValid)
                 {
                     return BadRequest($"更改密码失败：{valid.ErrorMessage}");

@@ -12,18 +12,19 @@
     <Product>SiteServer CMS</Product>
     <Description>SiteServer.Cli</Description>
     <PackageLicense>GPL-3.0</PackageLicense>
-    <PackageProjectUrl>https://github.com/siteserver/SiteServer.Plugin</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/siteserver/SiteServer.Abstractions</PackageProjectUrl>
     <PackageIconUrl>https://www.siteserver.cn/assets/images/favicon.png</PackageIconUrl>
     <Copyright>Copyright © SiteServer CMS 2019</Copyright>
     <PackageTags>SiteServer CMS Plugin</PackageTags>
-    <RepositoryUrl>https://github.com/siteserver/SiteServer.Plugin</RepositoryUrl>
+    <RepositoryUrl>https://github.com/siteserver/SiteServer.Abstractions</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Add netstandard2.0 support</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Datory\src\Datory\Datory.csproj" />
+    <ProjectReference Include="..\SiteServer.Abstractions\SiteServer.Abstractions.csproj" />
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj" />
-    <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj" />
   </ItemGroup>
 
   <ItemGroup>

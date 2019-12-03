@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using SiteServer.Plugin;
+using SiteServer.Abstractions;
+
 
 namespace SiteServer.CMS.Core
 {

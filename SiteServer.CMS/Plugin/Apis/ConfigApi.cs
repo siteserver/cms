@@ -2,12 +2,13 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.Plugin.Apis
 {
-    public class ConfigApi : IConfigApi
+    public class ConfigApi
     {
         private ConfigApi() { }
 
@@ -27,7 +28,7 @@ namespace SiteServer.CMS.Plugin.Apis
             {
                 if (config == null)
                 {
-                    await DataProvider.PluginConfigDao.DeleteAsync(pluginId, siteId, name);
+                    await DataProvider.PluginConfigRepository.DeleteAsync(pluginId, siteId, name);
                 }
                 else
                 {
@@ -36,7 +37,7 @@ namespace SiteServer.CMS.Plugin.Apis
                         NullValueHandling = NullValueHandling.Ignore
                     };
                     var json = JsonConvert.SerializeObject(config, Formatting.Indented, settings);
-                    if (await DataProvider.PluginConfigDao.IsExistsAsync(pluginId, siteId, name))
+                    if (await DataProvider.PluginConfigRepository.IsExistsAsync(pluginId, siteId, name))
                     {
                         var configInfo = new PluginConfig
                         {
@@ -46,7 +47,7 @@ namespace SiteServer.CMS.Plugin.Apis
                             ConfigName = name,
                             ConfigValue = json
                         };
-                        await DataProvider.PluginConfigDao.UpdateAsync(configInfo);
+                        await DataProvider.PluginConfigRepository.UpdateAsync(configInfo);
                     }
                     else
                     {
@@ -58,7 +59,7 @@ namespace SiteServer.CMS.Plugin.Apis
                             ConfigName = name,
                             ConfigValue = json
                         };
-                        await DataProvider.PluginConfigDao.InsertAsync(configInfo);
+                        await DataProvider.PluginConfigRepository.InsertAsync(configInfo);
                     }
                 }
             }
@@ -76,7 +77,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
             try
             {
-                var value = await DataProvider.PluginConfigDao.GetValueAsync(pluginId, siteId, name);
+                var value = await DataProvider.PluginConfigRepository.GetValueAsync(pluginId, siteId, name);
                 if (!string.IsNullOrEmpty(value))
                 {
                     return JsonConvert.DeserializeObject<T>(value);
@@ -95,7 +96,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
             try
             {
-                await DataProvider.PluginConfigDao.DeleteAsync(pluginId, siteId, name);
+                await DataProvider.PluginConfigRepository.DeleteAsync(pluginId, siteId, name);
             }
             catch (Exception ex)
             {

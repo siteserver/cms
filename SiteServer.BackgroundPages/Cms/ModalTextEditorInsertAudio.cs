@@ -4,8 +4,9 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.LitJson;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -120,7 +121,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (isAutoPlay != Site.ConfigUEditorAudioIsAutoPlay)
             {
                 Site.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
-                DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
             }
 
             var script = "parent." + UEditorUtils.GetInsertAudioScript(_attributeName, playUrl, Site);

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Create
 {
@@ -32,10 +32,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
 
                 var siteId = request.SiteId;
                 var parentId = request.GetQueryInt("parentId");
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 var parent = await ChannelManager.GetChannelAsync(siteId, parentId);
-                var countDict = new Dictionary<int, int>();
-                countDict[parent.Id] = await DataProvider.ContentDao.GetCountAsync(site, parent, true);
+                var countDict = new Dictionary<int, int>
+                {
+                    [parent.Id] = await DataProvider.ContentRepository.GetCountAsync(site, parent)
+                };
 
                 var channelInfoList = new List<Channel>();
 
@@ -53,7 +55,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
 
                     var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                     channelInfoList.Add(channelInfo);
-                    countDict[channelInfo.Id] = await DataProvider.ContentDao.GetCountAsync(site, channelInfo, true);
+                    countDict[channelInfo.Id] = await DataProvider.ContentRepository.GetCountAsync(site, channelInfo);
                 }
 
                 return Ok(new
@@ -126,12 +128,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
 
                 if (parameter.Scope == "1month" || parameter.Scope == "1day" || parameter.Scope == "2hours")
                 {
-                    var site = await DataProvider.SiteDao.GetAsync(parameter.SiteId);
+                    var site = await DataProvider.SiteRepository.GetAsync(parameter.SiteId);
                     var tableName = site.TableName;
 
                     if (parameter.Scope == "1month")
                     {
-                        var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 720);
+                        var lastEditList = DataProvider.ContentRepository.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 720);
                         foreach (var channelId in lastEditList)
                         {
                             if (selectedChannelIdList.Contains(channelId))
@@ -142,7 +144,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
                     }
                     else if (parameter.Scope == "1day")
                     {
-                        var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 24);
+                        var lastEditList = DataProvider.ContentRepository.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 24);
                         foreach (var channelId in lastEditList)
                         {
                             if (selectedChannelIdList.Contains(channelId))
@@ -153,7 +155,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
                     }
                     else if (parameter.Scope == "2hours")
                     {
-                        var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 2);
+                        var lastEditList = DataProvider.ContentRepository.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 2);
                         foreach (var channelId in lastEditList)
                         {
                             if (selectedChannelIdList.Contains(channelId))

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -33,21 +31,21 @@ namespace SiteServer.BackgroundPages.Cms
 
                 try
                 {
-                    var contentIdList = DataProvider.ContentTagDao.GetContentIdListByTagAsync(tagName, SiteId).GetAwaiter().GetResult();
+                    var contentIdList = DataProvider.ContentTagRepository.GetContentIdListByTagAsync(tagName, SiteId).GetAwaiter().GetResult();
                     if (contentIdList.Count > 0)
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var tags = DataProvider.ContentDao.GetValue(Site.TableName, contentId, ContentAttribute.Tags);
+                            var tags = DataProvider.ContentRepository.GetValueAsync(Site.TableName, contentId, ContentAttribute.Tags).GetAwaiter().GetResult();
                             if (!string.IsNullOrEmpty(tags))
                             {
-                                var contentTagList = TranslateUtils.StringCollectionToStringList(tags);
+                                var contentTagList = StringUtils.GetStringList(tags);
                                 contentTagList.Remove(tagName);
-                                DataProvider.ContentDao.UpdateAsync(Site.TableName, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList)).GetAwaiter().GetResult();
+                                DataProvider.ContentRepository.UpdateAsync(Site.TableName, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList)).GetAwaiter().GetResult();
                             }
                         }
                     }
-                    DataProvider.ContentTagDao.DeleteTagAsync(tagName, SiteId).GetAwaiter().GetResult();
+                    DataProvider.ContentTagRepository.DeleteTagAsync(tagName, SiteId).GetAwaiter().GetResult();
                     AuthRequest.AddSiteLogAsync(SiteId, "删除内容标签", $"内容标签:{tagName}").GetAwaiter().GetResult();
                     SuccessDeleteMessage();
                 }
@@ -60,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = Site.PageSize;
 
-            SpContents.SelectCommand = DataProvider.ContentTagDao.GetSqlString(SiteId, 0, true, 0);
+            SpContents.SelectCommand = DataProvider.ContentTagRepository.GetSqlString(SiteId, 0, true, 0);
             SpContents.SortField = nameof(ContentTag.UseNum);
             SpContents.SortMode = SortMode.DESC;
 

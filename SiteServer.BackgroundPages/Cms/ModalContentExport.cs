@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -71,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 if (!string.IsNullOrEmpty(Site.ConfigExportDisplayAttributes))
                 {
-                    var displayAttributes = TranslateUtils.StringCollectionToStringList(Site.ConfigExportDisplayAttributes);
+                    var displayAttributes = StringUtils.GetStringList(Site.ConfigExportDisplayAttributes);
                     ControlUtils.SelectMultiItems(CblDisplayAttributes, displayAttributes);
                 }
                 if (!string.IsNullOrEmpty(Site.ConfigExportIsChecked))
@@ -85,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
                 Site.ConfigExportPeriods = DdlPeriods.SelectedValue;
                 Site.ConfigExportDisplayAttributes = ControlUtils.GetSelectedListControlValueCollection(CblDisplayAttributes);
                 Site.ConfigExportIsChecked = DdlIsChecked.SelectedValue;
-                DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
             }
         }
 

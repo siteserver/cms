@@ -3,11 +3,11 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using Content = SiteServer.CMS.Model.Content;
+using SiteServer.CMS.Repositories;
+using Content = SiteServer.Abstractions.Content;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
             _contentId = AuthRequest.GetQueryInt("contentID");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channelId, _contentId).GetAwaiter().GetResult();
+            var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channelId, _contentId).GetAwaiter().GetResult();
 
             var (isChecked, checkedLevel) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, SiteId).GetAwaiter().GetResult();
             BtnCheck.Visible = CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isChecked, checkedLevel);
@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
             LtlTitle.Text = contentInfo.Title;
             LtlState.Text = CheckManager.GetCheckState(Site, contentInfo);
 
-            var checkInfoList = DataProvider.ContentCheckDao.GetCheckListAsync(_tableName, _contentId).GetAwaiter().GetResult();
+            var checkInfoList = DataProvider.ContentCheckRepository.GetCheckListAsync(_tableName, _contentId).GetAwaiter().GetResult();
             if (checkInfoList.Any())
             {
                 PhCheckReasons.Visible = true;
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlCheckDate = (Literal)e.Item.FindControl("ltlCheckDate");
             var ltlReasons = (Literal)e.Item.FindControl("ltlReasons");
 
-            ltlUserName.Text = DataProvider.AdministratorDao.GetDisplayNameAsync(checkInfo.UserName).GetAwaiter().GetResult();
+            ltlUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(checkInfo.UserName).GetAwaiter().GetResult();
             ltlCheckDate.Text = DateUtils.GetDateAndTimeString(checkInfo.CheckDate);
             ltlReasons.Text = checkInfo.Reasons;
         }

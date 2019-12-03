@@ -2,45 +2,42 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
+
 
 namespace SiteServer.CMS.StlParser
 {
     public static class FileSystemObjectAsync
     {
-        public static async Task ExecuteAsync(int siteId, ECreateType createType, int channelId, int contentId,
+        public static async Task ExecuteAsync(int siteId, CreateType createType, int channelId, int contentId,
             int fileTemplateId, int specialId)
         {
-            if (createType == ECreateType.Channel)
+            if (createType == CreateType.Channel)
             {
                 await CreateChannelAsync(siteId, channelId);
             }
-            else if (createType == ECreateType.Content)
+            else if (createType == CreateType.Content)
             {
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 await CreateContentAsync(site, channelInfo, contentId);
             }
-            else if (createType == ECreateType.AllContent)
+            else if (createType == CreateType.AllContent)
             {
                 await CreateContentsAsync(siteId, channelId);
             }
-            else if (createType == ECreateType.File)
+            else if (createType == CreateType.File)
             {
                 await CreateFileAsync(siteId, fileTemplateId);
             }
-            else if (createType == ECreateType.Special)
+            else if (createType == CreateType.Special)
             {
                 await CreateSpecialAsync(siteId, specialId);
             }
@@ -48,12 +45,12 @@ namespace SiteServer.CMS.StlParser
 
         private static async Task CreateContentsAsync(int siteId, int channelId)
         {
-            var site = await DataProvider.SiteDao.GetAsync(siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
             var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
 
             var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
-            var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, channelId, orderByString);
+            var contentIdList = DataProvider.ContentRepository.GetContentIdListChecked(tableName, channelId, orderByString);
 
             foreach (var contentId in contentIdList)
             {
@@ -63,7 +60,7 @@ namespace SiteServer.CMS.StlParser
 
         private static async Task CreateChannelAsync(int siteId, int channelId)
         {
-            var site = await DataProvider.SiteDao.GetAsync(siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
             var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
 
             if (!await ChannelManager.IsCreatableAsync(site, channelInfo)) return;
@@ -213,7 +210,7 @@ namespace SiteServer.CMS.StlParser
 
         private static async Task CreateContentAsync(Site site, Channel channel, int contentId)
         {
-            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channel, contentId);
+            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channel, contentId);
 
             if (contentInfo == null)
             {
@@ -226,7 +223,7 @@ namespace SiteServer.CMS.StlParser
                 return;
             }
 
-            if (!DataProvider.ContentDao.IsCreatable(channel, contentInfo)) return;
+            if (!ContentUtility.IsCreatable(channel, contentInfo)) return;
 
             if (site.IsCreateStaticContentByAddDate &&
                 contentInfo.AddDate < site.CreateStaticContentAddDate)
@@ -408,7 +405,7 @@ namespace SiteServer.CMS.StlParser
 
         private static async Task CreateFileAsync(int siteId, int fileTemplateId)
         {
-            var site = await DataProvider.SiteDao.GetAsync(siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
             var templateInfo = await TemplateManager.GetTemplateAsync(siteId, fileTemplateId);
             if (templateInfo == null || templateInfo.Type != TemplateType.FileTemplate)
             {
@@ -426,7 +423,7 @@ namespace SiteServer.CMS.StlParser
 
         private static async Task CreateSpecialAsync(int siteId, int specialId)
         {
-            var site = await DataProvider.SiteDao.GetAsync(siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
             var templateInfoList = await SpecialManager.GetTemplateListAsync(site, specialId);
             foreach (var templateInfo in templateInfoList)
             {

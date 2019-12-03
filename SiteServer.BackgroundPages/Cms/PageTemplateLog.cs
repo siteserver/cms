@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -35,10 +33,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (AuthRequest.IsQueryExists("Delete"))
             {
-                var arraylist = TranslateUtils.StringCollectionToIntList(Request.QueryString["IDCollection"]);
+                var arraylist = StringUtils.GetIntList(Request.QueryString["IDCollection"]);
                 try
                 {
-                    DataProvider.TemplateLogDao.DeleteAsync(arraylist).GetAwaiter().GetResult();
+                    DataProvider.TemplateLogRepository.DeleteAsync(arraylist).GetAwaiter().GetResult();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -50,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = Constants.PageSize;
 
-            SpContents.SelectCommand = DataProvider.TemplateLogDao.GetSelectCommend(SiteId, _templateId);
+            SpContents.SelectCommand = DataProvider.TemplateLogRepository.GetSelectCommend(SiteId, _templateId);
 
             SpContents.SortField = nameof(TemplateLog.Id);
             SpContents.SortMode = SortMode.DESC;

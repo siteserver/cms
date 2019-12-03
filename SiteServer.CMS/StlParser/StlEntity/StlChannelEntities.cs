@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
+
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
@@ -60,7 +59,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 var channelId = contextInfo.ChannelId;
                 if (!string.IsNullOrEmpty(channelIndex))
                 {
-                    //channelId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                    //channelId = DataProvider.ChannelRepository.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     channelId = await ChannelManager.GetChannelIdByIndexNameAsync(pageInfo.SiteId, channelIndex);
                     if (channelId == 0)
                     {
@@ -138,7 +137,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(Group, attributeName))//栏目组别
                 {
-                    parsedContent = string.Join(",", nodeInfo.GroupNames);
+                    parsedContent = StringUtils.Join(nodeInfo.GroupNames);
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ChannelItem != null)
                 {
@@ -154,10 +153,10 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else
                 {
-                    //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, node.ChannelId));
+                    //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.ChannelRepository.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, node.ChannelId));
                     //parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.Site, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
 
-                    var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.ChannelDao.TableName, attributeName, TableStyleManager.GetRelatedIdentities(nodeInfo));
+                    var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.ChannelRepository.TableName, attributeName, TableStyleManager.GetRelatedIdentities(nodeInfo));
                     if (styleInfo.Id > 0)
                     {
                         parsedContent = GetValue(attributeName, nodeInfo, false, styleInfo.DefaultValue);

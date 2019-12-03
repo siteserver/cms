@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using Datory;
 using SiteServer.CMS.Context;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.Core
 {
@@ -258,7 +258,7 @@ namespace SiteServer.CMS.Core
 
 	    public static List<KeyValuePair<InputType, string>> GetInputTypes(string tableName)
 	    {
-	        if (tableName == DataProvider.UserDao.TableName)
+	        if (tableName == DataProvider.UserRepository.TableName)
 	        {
 	            return new List<KeyValuePair<InputType, string>>
 	            {

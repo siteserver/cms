@@ -4,12 +4,12 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using Content = SiteServer.CMS.Model.Content;
+using SiteServer.CMS.Repositories;
+using Content = SiteServer.Abstractions.Content;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
-                    var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                    var title = DataProvider.ContentRepository.GetValueAsync(tableName, contentId, ContentAttribute.Title).GetAwaiter().GetResult();
                     titles.Append(title + "<br />");
                 }
             }
@@ -132,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.GetAsync(Site, channelInfo, contentId).GetAwaiter().GetResult();
+                    var contentInfo = DataProvider.ContentRepository.GetAsync(Site, channelInfo, contentId).GetAwaiter().GetResult();
                     if (contentInfo != null)
                     {
                         if (CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages.Cms
                             contentIdListToCheck.Add(contentId);
                         }
 
-                        //DataProvider.ContentDao.Update(Site, channel, contentInfo);
+                        //DataProvider.ContentRepository.Update(Site, channel, contentInfo);
 
                         //CreateManager.CreateContent(SiteId, contentInfo.ChannelId, contentId);
                         //CreateManager.TriggerContentChangedEvent(SiteId, contentInfo.ChannelId);
@@ -165,7 +165,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
                 var contentIdList = idsDictionaryToCheck[channelId];
-                DataProvider.ContentDao.UpdateIsCheckedAsync(tableName, SiteId, channelId, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text).GetAwaiter().GetResult();
+                DataProvider.ContentRepository.UpdateIsCheckedAsync(tableName, SiteId, channelId, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text).GetAwaiter().GetResult();
             }
 
             AuthRequest.AddSiteLogAsync(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text).GetAwaiter().GetResult();

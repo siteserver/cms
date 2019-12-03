@@ -3,14 +3,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -229,7 +228,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -316,7 +315,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -377,7 +376,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -496,7 +495,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))

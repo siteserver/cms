@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.DataCache.Stl
 {
@@ -21,7 +19,7 @@ namespace SiteServer.CMS.DataCache.Stl
             retVal = StlCacheManager.Get<List<int>>(cacheKey);
             if (retVal == null)
             {
-                retVal = await DataProvider.ContentTagDao.GetContentIdListByTagCollectionAsync(tagCollection, siteId);
+                retVal = await DataProvider.ContentTagRepository.GetContentIdListByTagCollectionAsync(tagCollection, siteId);
                 StlCacheManager.Set(cacheKey, retVal);
             }
 
@@ -38,7 +36,7 @@ namespace SiteServer.CMS.DataCache.Stl
             retVal = StlCacheManager.Get<List<ContentTag>>(cacheKey);
             if (retVal == null)
             {
-                retVal = await DataProvider.ContentTagDao.GetTagListAsync(siteId, contentId, isOrderByCount, totalNum);
+                retVal = await DataProvider.ContentTagRepository.GetTagListAsync(siteId, contentId, isOrderByCount, totalNum);
                 StlCacheManager.Set(cacheKey, retVal);
             }
 

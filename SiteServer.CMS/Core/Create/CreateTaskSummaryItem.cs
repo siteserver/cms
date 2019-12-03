@@ -1,4 +1,4 @@
-﻿using SiteServer.CMS.Enumerations;
+﻿using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Core.Create
 {
@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Core.Create
             contentId = taskInfo.ContentId;
             fileTemplateId = taskInfo.FileTemplateId;
             specialId = taskInfo.SpecialId;
-            type = ECreateTypeUtils.GetText(taskInfo.CreateType);
+            type = taskInfo.CreateType.GetDisplayName();
             name = taskInfo.Name;
             this.timeSpan = timeSpan;
             this.isPending = isPending;
@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Core.Create
             contentId = logInfo.ContentId;
             fileTemplateId = logInfo.FileTemplateId;
             specialId = logInfo.SpecialId;
-            type = ECreateTypeUtils.GetText(logInfo.CreateType);
+            type = logInfo.CreateType.GetDisplayName();
             name = logInfo.TaskName;
             timeSpan = logInfo.TimeSpan;
             isPending = false;

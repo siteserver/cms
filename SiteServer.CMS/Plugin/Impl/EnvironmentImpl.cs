@@ -1,9 +1,9 @@
 ﻿using Datory;
-using SiteServer.Plugin;
+
 
 namespace SiteServer.CMS.Plugin.Impl
 {
-    public class EnvironmentImpl: IEnvironment
+    public class EnvironmentImpl
     {
         public EnvironmentImpl(DatabaseType databaseType, string connectionString, string homeDirectory, string adminDirectory, string physicalApplicationPath, string apiUrl)
         {

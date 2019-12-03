@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
                         ParentId = _parentId,
                         Taxis = 0
                     }; 
-                    DataProvider.RelatedFieldItemDao.InsertAsync(itemInfo).GetAwaiter().GetResult();
+                    DataProvider.RelatedFieldItemRepository.InsertAsync(itemInfo).GetAwaiter().GetResult();
                 }
 
                 isChanged = true;

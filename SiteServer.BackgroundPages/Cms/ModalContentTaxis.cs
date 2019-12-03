@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -39,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
-            _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
+            _contentIdList = StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
             _tableName = ChannelManager.GetTableNameAsync(Site, _channelId).GetAwaiter().GetResult();
 
             if (IsPostBack) return;
@@ -67,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var contentId in _contentIdList)
             {
-                var isTop = DataProvider.ContentDao.GetValue(_tableName, contentId, ContentAttribute.IsTop);
+                var isTop = DataProvider.ContentRepository.GetValueAsync(_tableName, contentId, ContentAttribute.IsTop).GetAwaiter().GetResult();
                 if (string.IsNullOrEmpty(isTop)) continue;
 
                 var top = TranslateUtils.ToBool(isTop);
@@ -75,14 +73,14 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (isUp)
                     {
-                        if (DataProvider.ContentDao.SetTaxisToUpAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
+                        if (DataProvider.ContentRepository.SetTaxisToUpAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
                         {
                             break;
                         }
                     }
                     else
                     {
-                        if (DataProvider.ContentDao.SetTaxisToDownAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
+                        if (DataProvider.ContentRepository.SetTaxisToDownAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
                         {
                             break;
                         }

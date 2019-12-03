@@ -3,11 +3,12 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 TbLinkUrl.Text = channelInfo.LinkUrl;
 
-                ELinkTypeUtils.AddListItems(DdlLinkType);
+                ELinkTypeUtilsExtensions.AddListItems(DdlLinkType);
                 ControlUtils.SelectSingleItem(DdlLinkType, channelInfo.LinkType);
 
                 TbFilePath.Text = string.IsNullOrEmpty(channelInfo.FilePath) ? PageUtility.GetInputChannelUrlAsync(Site, channelInfo, false).GetAwaiter().GetResult() : channelInfo.FilePath;
@@ -99,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
                             TbFilePath.Text = PageUtils.Combine(TbFilePath.Text, "index.html");
                         }
 
-                        var filePathArrayList = DataProvider.ChannelDao.GetAllFilePathBySiteIdAsync(SiteId).GetAwaiter().GetResult();
+                        var filePathArrayList = DataProvider.ChannelRepository.GetAllFilePathBySiteIdAsync(SiteId).GetAwaiter().GetResult();
                         if (filePathArrayList.Contains(TbFilePath.Text))
                         {
                             FailMessage("栏目修改失败，栏目页面路径已存在！");
@@ -155,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
                 channelInfo.IsChannelCreatable = TranslateUtils.ToBool(RblIsChannelCreatable.SelectedValue);
                 channelInfo.IsContentCreatable = TranslateUtils.ToBool(RblIsContentCreatable.SelectedValue);
 
-                DataProvider.ChannelDao.UpdateAsync(channelInfo).GetAwaiter().GetResult();
+                DataProvider.ChannelRepository.UpdateAsync(channelInfo).GetAwaiter().GetResult();
 
                 CreateManager.CreateChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
 

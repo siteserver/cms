@@ -5,8 +5,8 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.Core
 {
@@ -18,14 +18,14 @@ namespace SiteServer.CMS.Core
 
             foreach (var tagName in tags)
             {
-                var tagInfo = await DataProvider.ContentTagDao.GetTagAsync(siteId, tagName);
+                var tagInfo = await DataProvider.ContentTagRepository.GetTagAsync(siteId, tagName);
                 if (tagInfo != null)
                 {
                     if (!tagInfo.ContentIds.Contains(contentId))
                     {
                         tagInfo.ContentIds.Add(contentId);
                         tagInfo.UseNum = tagInfo.ContentIds.Count;
-                        await DataProvider.ContentTagDao.UpdateAsync(tagInfo);
+                        await DataProvider.ContentTagRepository.UpdateAsync(tagInfo);
                     }
                 }
                 else
@@ -38,7 +38,7 @@ namespace SiteServer.CMS.Core
                         Tag = tagName,
                         UseNum = contentId > 0 ? 1 : 0
                     };
-                    await DataProvider.ContentTagDao.InsertAsync(tagInfo);
+                    await DataProvider.ContentTagRepository.InsertAsync(tagInfo);
                 }
             }
         }
@@ -49,7 +49,7 @@ namespace SiteServer.CMS.Core
 
             foreach (var tagName in tags)
             {
-                var tagInfo = await DataProvider.ContentTagDao.GetTagAsync(siteId, tagName);
+                var tagInfo = await DataProvider.ContentTagRepository.GetTagAsync(siteId, tagName);
                 if (tagInfo == null) continue;
 
                 tagInfo.ContentIds.Remove(contentId);
@@ -57,11 +57,11 @@ namespace SiteServer.CMS.Core
 
                 if (tagInfo.UseNum == 0)
                 {
-                    await DataProvider.ContentTagDao.DeleteTagAsync(tagName, siteId);
+                    await DataProvider.ContentTagRepository.DeleteTagAsync(tagName, siteId);
                 }
                 else
                 {
-                    await DataProvider.ContentTagDao.UpdateAsync(tagInfo);
+                    await DataProvider.ContentTagRepository.UpdateAsync(tagInfo);
                 }
             }
         }
@@ -105,14 +105,14 @@ namespace SiteServer.CMS.Core
 
         public static async Task RemoveTagsAsync(int siteId, int contentId)
         {
-            var tagInfoList = await DataProvider.ContentTagDao.GetTagListAsync(siteId, contentId);
+            var tagInfoList = await DataProvider.ContentTagRepository.GetTagListAsync(siteId, contentId);
             if (tagInfoList == null || tagInfoList.Count == 0) return;
 
             foreach (var tagInfo in tagInfoList)
             {
                 tagInfo.ContentIds.Remove(contentId);
                 tagInfo.UseNum = tagInfo.ContentIds.Count;
-                await DataProvider.ContentTagDao.UpdateAsync(tagInfo);
+                await DataProvider.ContentTagRepository.UpdateAsync(tagInfo);
             }
         }
 

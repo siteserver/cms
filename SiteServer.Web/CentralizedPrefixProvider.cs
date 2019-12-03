@@ -1,7 +1,7 @@
 ﻿using System.Web.Http.Controllers;
 using System.Web.Http.Routing;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.API
 {

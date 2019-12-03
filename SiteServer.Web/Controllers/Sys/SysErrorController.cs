@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -16,7 +15,7 @@ namespace SiteServer.API.Controllers.Sys
         {
             return Ok(new
             {
-                LogInfo = await DataProvider.ErrorLogDao.GetErrorLogAsync(id),
+                LogInfo = await DataProvider.ErrorLogRepository.GetErrorLogAsync(id),
                 Version = SystemManager.ProductVersion
             });
         }

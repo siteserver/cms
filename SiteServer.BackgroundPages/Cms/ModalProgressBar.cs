@@ -2,11 +2,10 @@
 using System.Collections.Specialized;
 using System.Web;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -125,7 +124,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (AuthRequest.IsQueryExists("CreateChannelsOneByOne") && AuthRequest.IsQueryExists("ChannelIDCollection"))
             {
-                foreach (var channelId in TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("ChannelIDCollection")))
+                foreach (var channelId in StringUtils.GetIntList(AuthRequest.GetQueryString("ChannelIDCollection")))
                 {
                     CreateManager.CreateChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                 }
@@ -136,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
             else if (AuthRequest.IsQueryExists("CreateContentsOneByOne") && AuthRequest.IsQueryExists("channelId") &&
                      AuthRequest.IsQueryExists("contentIdCollection"))
             {
-                foreach (var contentId in TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection")))
+                foreach (var contentId in StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection")))
                 {
                     CreateManager.CreateContentAsync(SiteId, AuthRequest.GetQueryInt("channelId"),
                         contentId).GetAwaiter().GetResult();

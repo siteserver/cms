@@ -5,12 +5,12 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -79,8 +79,8 @@ namespace SiteServer.BackgroundPages.Cms
                 PhContentRelatedPluginIds.Visible = false;
             }
 
-            DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
-            DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
+            DdlChannelTemplateId.DataSource = DataProvider.TemplateRepository.GetTemplateListByTypeAsync(SiteId, TemplateType.ChannelTemplate).GetAwaiter().GetResult();
+            DdlContentTemplateId.DataSource = DataProvider.TemplateRepository.GetTemplateListByTypeAsync(SiteId, TemplateType.ContentTemplate).GetAwaiter().GetResult();
 
             DdlChannelTemplateId.DataBind();
             DdlChannelTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));
@@ -147,7 +147,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             if (nodeIndexNameList == null)
                             {
-                                nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameListAsync(SiteId).GetAwaiter().GetResult().ToList();
+                                nodeIndexNameList = DataProvider.ChannelRepository.GetIndexNameListAsync(SiteId).GetAwaiter().GetResult().ToList();
                             }
                             if (nodeIndexNameList.IndexOf(nodeIndex) != -1)
                             {
@@ -170,7 +170,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var channelTemplateId = TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue);
                         var contentTemplateId = TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue);
 
-                        var insertedChannelId = DataProvider.ChannelDao.InsertAsync(SiteId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueStringList(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId).GetAwaiter().GetResult();
+                        var insertedChannelId = DataProvider.ChannelRepository.InsertAsync(SiteId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueStringList(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId).GetAwaiter().GetResult();
                         insertedChannelIdHashtable[count + 1] = insertedChannelId;
 
                         CreateManager.CreateChannelAsync(SiteId, insertedChannelId).GetAwaiter().GetResult();

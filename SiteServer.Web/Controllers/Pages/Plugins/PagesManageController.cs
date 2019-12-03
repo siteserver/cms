@@ -2,12 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
@@ -66,7 +65,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                 await request.AddAdminLogAsync("删除插件", $"插件:{pluginId}");
 
                 CacheUtils.ClearAll();
-                await DataProvider.DbCacheDao.ClearAsync();
+                await DataProvider.DbCacheRepository.ClearAsync();
 
                 return Ok();
             }
@@ -89,7 +88,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                 }
 
                 CacheUtils.ClearAll();
-                await DataProvider.DbCacheDao.ClearAsync();
+                await DataProvider.DbCacheRepository.ClearAsync();
 
                 return Ok();
             }
@@ -115,14 +114,14 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                 if (pluginInfo != null)
                 {
                     pluginInfo.IsDisabled = !pluginInfo.IsDisabled;
-                    await DataProvider.PluginDao.UpdateIsDisabledAsync(pluginId, pluginInfo.IsDisabled);
+                    await DataProvider.PluginRepository.UpdateIsDisabledAsync(pluginId, pluginInfo.IsDisabled);
                     PluginManager.ClearCache();
 
                     await request.AddAdminLogAsync(!pluginInfo.IsDisabled ? "禁用插件" : "启用插件", $"插件:{pluginId}");
                 }
 
                 CacheUtils.ClearAll();
-                await DataProvider.DbCacheDao.ClearAsync();
+                await DataProvider.DbCacheRepository.ClearAsync();
 
                 return Ok();
             }

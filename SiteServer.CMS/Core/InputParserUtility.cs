@@ -2,13 +2,11 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
-using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.Core
 {
@@ -64,7 +62,7 @@ namespace SiteServer.CMS.Core
             else if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)//选择类型
             {
                 var selectedTexts = new ArrayList();
-                var selectedValues = TranslateUtils.StringCollectionToStringList(content);
+                var selectedValues = StringUtils.GetStringList(content);
                 var styleItems = style.StyleItems;
                 if (styleItems != null)
                 {
@@ -137,7 +135,7 @@ namespace SiteServer.CMS.Core
             else if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)//选择类型
             {
                 var selectedTexts = new ArrayList();
-                var selectedValues = TranslateUtils.StringCollectionToStringList(value);
+                var selectedValues = StringUtils.GetStringList(value);
                 var styleItems = style.StyleItems;
                 if (styleItems != null)
                 {
@@ -169,7 +167,7 @@ namespace SiteServer.CMS.Core
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
-                        foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                        foreach (string extendValue in StringUtils.GetStringList(extendValues))
                         {
                             if (index == no)
                             {
@@ -194,7 +192,7 @@ namespace SiteServer.CMS.Core
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
-                        foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                        foreach (string extendValue in StringUtils.GetStringList(extendValues))
                         {
                             if (index == no)
                             {
@@ -219,7 +217,7 @@ namespace SiteServer.CMS.Core
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
-                        foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                        foreach (string extendValue in StringUtils.GetStringList(extendValues))
                         {
                             if (index == no)
                             {
@@ -312,10 +310,10 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    var config = await DataProvider.ConfigDao.GetAsync();
+                    var config = await DataProvider.ConfigRepository.GetAsync();
 
                     retVal = $@"
-<embed src=""{SiteFilesAssets.GetUrl(config.ApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
+<embed src=""{SiteFilesAssets.GetUrl(config.GetApiUrl(), SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
                         .ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
 ";
                 }
@@ -327,19 +325,19 @@ namespace SiteServer.CMS.Core
         {
             if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(config.ApiUrl, site.Id, channelId, contentId,
+                retVal = ApiRouteActionsDownload.GetUrl(config.GetApiUrl(), site.Id, channelId, contentId,
                     fileUrl);
             }
             else
             {
                 var stlAnchor = new HtmlAnchor();
                 ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(config.ApiUrl, site.Id, channelId,
+                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(config.GetApiUrl(), site.Id, channelId,
                     contentId, fileUrl);
                 stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml)
                     ? PageUtils.GetFileNameFromUrl(fileUrl)
@@ -363,18 +361,18 @@ namespace SiteServer.CMS.Core
         {
             if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(config.ApiUrl, site.Id, fileUrl);
+                retVal = ApiRouteActionsDownload.GetUrl(config.GetApiUrl(), site.Id, fileUrl);
             }
             else
             {
                 var stlAnchor = new HtmlAnchor();
                 ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(config.ApiUrl, site.Id, fileUrl);
+                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(config.GetApiUrl(), site.Id, fileUrl);
                 stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                 if (isLower)

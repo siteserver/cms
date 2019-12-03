@@ -5,18 +5,16 @@ using System.Data;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using Datory;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin;
-using Content = SiteServer.CMS.Model.Content;
-using TableStyle = SiteServer.CMS.Model.TableStyle;
+using SiteServer.CMS.Repositories;
+using Content = SiteServer.Abstractions.Content;
+using TableStyle = SiteServer.Abstractions.TableStyle;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -115,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
             var adminId = _isAdminOnly
                 ? AuthRequest.AdminId
                 : AuthRequest.AdminPermissionsImpl.GetAdminIdAsync(Site.Id, _channel.Id).GetAwaiter().GetResult();
-            var whereString = DataProvider.ContentDao.GetPagerWhereSqlStringAsync(Site, _channel,
+            var whereString = DataProvider.ContentRepository.GetPagerWhereSqlStringAsync(Site, _channel,
                 searchType, keyword,
                 dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, adminId,
                 AuthRequest.AdminPermissionsImpl.IsSiteAdminAsync().GetAwaiter().GetResult(), AuthRequest.AdminPermissionsImpl.GetChannelIdListAsync().GetAwaiter().GetResult(),
@@ -130,7 +128,7 @@ namespace SiteServer.BackgroundPages.Cms
                 OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc),
                 ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList),
                 WhereSqlString = whereString,
-                TotalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString),
+                TotalCount = DataProvider.DatabaseRepository.GetPageTotalCount(tableName, whereString),
                 
             };
 
@@ -140,9 +138,9 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (AuthRequest.IsQueryExists("IsDeleteAll"))
                 {
-                    //DataProvider.ContentDao.DeleteContentsByTrash(SiteId, _channelId, tableName);
+                    //DataProvider.ContentRepository.DeleteContentsByTrash(SiteId, _channelId, tableName);
 
-                    var list = DataProvider.ContentDao.GetContentIdListByTrash(SiteId, tableName);
+                    var list = DataProvider.ContentRepository.GetContentIdListByTrashAsync(SiteId, tableName).GetAwaiter().GetResult();
                     foreach (var (contentChannelId, contentId) in list)
                     {
                         ContentUtility.DeleteAsync(tableName, Site, contentChannelId, contentId).GetAwaiter().GetResult();
@@ -157,14 +155,14 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var channelId in idsDictionary.Keys)
                     {
                         var contentIdList = idsDictionary[channelId];
-                        DataProvider.ContentDao.UpdateTrashContentsAsync(SiteId, channelId, ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult(), contentIdList).GetAwaiter().GetResult();
+                        DataProvider.ContentRepository.UpdateTrashContentsAsync(SiteId, channelId, ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult(), contentIdList).GetAwaiter().GetResult();
                     }
                     await AuthRequest.AddSiteLogAsync(SiteId, "从回收站还原内容");
                     SuccessMessage("成功还原内容!");
                 }
                 else if (AuthRequest.IsQueryExists("IsRestoreAll"))
                 {
-                    DataProvider.ContentDao.UpdateRestoreContentsByTrashAsync(SiteId, tableName).GetAwaiter().GetResult();
+                    DataProvider.ContentRepository.UpdateRestoreContentsByTrashAsync(SiteId, tableName).GetAwaiter().GetResult();
                     await AuthRequest.AddSiteLogAsync( SiteId, "从回收站还原所有内容");
                     SuccessMessage("成功还原所有内容!");
                 }

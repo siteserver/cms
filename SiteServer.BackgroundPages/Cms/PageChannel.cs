@@ -2,13 +2,12 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -44,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (SiteId != channelId)
                 {
                     var isSubtract = AuthRequest.IsQueryExists("Subtract");
-                    DataProvider.ChannelDao.UpdateTaxisAsync(SiteId, channelId, isSubtract).GetAwaiter().GetResult();
+                    DataProvider.ChannelRepository.UpdateTaxisAsync(SiteId, channelId, isSubtract).GetAwaiter().GetResult();
 
                     AuthRequest.AddSiteLogAsync(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
                         $"栏目:{ChannelManager.GetChannelNameAsync(SiteId, channelId).GetAwaiter().GetResult()}").GetAwaiter().GetResult();

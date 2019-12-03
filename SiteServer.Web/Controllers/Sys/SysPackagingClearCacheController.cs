@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -22,7 +22,7 @@ namespace SiteServer.API.Controllers.Sys
             }
 
             CacheUtils.ClearAll();
-            await DataProvider.DbCacheDao.ClearAsync();
+            await DataProvider.DbCacheRepository.ClearAsync();
 
             return Ok(new {});
         }

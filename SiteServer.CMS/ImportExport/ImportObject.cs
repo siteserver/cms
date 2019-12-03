@@ -6,13 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context.Atom.Atom.Core;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
 using SiteServer.CMS.ImportExport.Components;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.ImportExport
 {
@@ -36,7 +35,7 @@ namespace SiteServer.CMS.ImportExport
         public async Task<NameValueCollection> GetTableNameCacheAsync()
         {
             NameValueCollection nameValueCollection = null;
-            var cacheValue = await DataProvider.DbCacheDao.GetValueAndRemoveAsync(GetTableNameNameValueCollectionDbCacheKey());
+            var cacheValue = await DataProvider.DbCacheRepository.GetValueAndRemoveAsync(GetTableNameNameValueCollectionDbCacheKey());
             if (!string.IsNullOrEmpty(cacheValue))
             {
                 nameValueCollection = TranslateUtils.ToNameValueCollection(cacheValue);
@@ -50,14 +49,14 @@ namespace SiteServer.CMS.ImportExport
             {
                 var cacheKey = GetTableNameNameValueCollectionDbCacheKey();
                 var cacheValue = TranslateUtils.NameValueCollectionToString(nameValueCollection);
-                await DataProvider.DbCacheDao.RemoveAndInsertAsync(cacheKey, cacheValue);
+                await DataProvider.DbCacheRepository.RemoveAndInsertAsync(cacheKey, cacheValue);
             }
         }
 
         public async Task RemoveDbCacheAsync()
         {
             var cacheKey = GetTableNameNameValueCollectionDbCacheKey();
-            await DataProvider.DbCacheDao.GetValueAndRemoveAsync(cacheKey);
+            await DataProvider.DbCacheRepository.GetValueAndRemoveAsync(cacheKey);
         }
 
         public async Task ImportFilesAsync(string siteTemplatePath, bool isOverride)
@@ -94,13 +93,13 @@ namespace SiteServer.CMS.ImportExport
             //}
             //string siteTemplateMetadataPath = PathUtils.Combine(FSO.SitePath, DirectoryUtility.SiteTemplates.SiteTemplateMetadata);
             //DirectoryUtils.DeleteDirectoryIfExists(siteTemplateMetadataPath);
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             await DirectoryUtility.ImportSiteFilesAsync(site, siteTemplatePath, isOverride);
         }
 
         public async Task ImportSiteContentAsync(string siteContentDirectoryPath, string filePath, bool isImportContents)
         {
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var siteIe = new SiteIe(site, siteContentDirectoryPath);
             await siteIe.ImportChannelsAndContentsAsync(filePath, isImportContents, false, 0, _adminName);
         }
@@ -170,7 +169,7 @@ namespace SiteServer.CMS.ImportExport
                 return;
             }
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var sitePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir);
 
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(uploadFilePath));
@@ -199,7 +198,7 @@ namespace SiteServer.CMS.ImportExport
         {
             var filePathList = GetSiteContentFilePathList(siteContentDirectoryPath);
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var siteIe = new SiteIe(site, siteContentDirectoryPath);
 
             Hashtable levelHashtable = null;
@@ -228,7 +227,7 @@ namespace SiteServer.CMS.ImportExport
         {
             var filePathList = GetSiteContentFilePathList(siteContentDirectoryPath);
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var siteIe = new SiteIe(site, siteContentDirectoryPath);
 
             var parentOrderString = "none";
@@ -259,10 +258,10 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
 
-            var taxis = await DataProvider.ContentDao.GetMaxTaxisAsync(tableName, channel.Id, false);
+            var taxis = await DataProvider.ContentRepository.GetMaxTaxisAsync(tableName, channel.Id, false);
 
             await ImportContentsAsync(channel, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
         }
@@ -275,10 +274,10 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
 
-            var taxis = await DataProvider.ContentDao.GetMaxTaxisAsync(tableName, channel.Id, false);
+            var taxis = await DataProvider.ContentRepository.GetMaxTaxisAsync(tableName, channel.Id, false);
 
             return await ImportContentsAsync(channel, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
         }
@@ -286,7 +285,7 @@ namespace SiteServer.CMS.ImportExport
         public async Task ImportContentsByCsvFileAsync(int channelId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
             var channelInfo = await ChannelManager.GetChannelAsync(_siteId, channelId);
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var contentInfoList = await ExcelObject.GetContentsByCsvFileAsync(csvFilePath, site, channelInfo);
             contentInfoList.Reverse();
 
@@ -331,23 +330,23 @@ namespace SiteServer.CMS.ImportExport
                 contentInfo.CheckedLevel = checkedLevel;
                 if (isOverride)
                 {
-                    var existsIds = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                    var existsIds = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                     if (existsIds.Count > 0)
                     {
                         foreach (var id in existsIds)
                         {
                             contentInfo.Id = id;
-                            await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
+                            await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channelInfo, contentInfo);
+                        contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channelInfo, contentInfo);
+                    contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channelInfo, contentInfo);
                 }
                 //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
             }
@@ -355,7 +354,7 @@ namespace SiteServer.CMS.ImportExport
 
         public async Task<List<int>> ImportContentsByCsvFileAsync(Channel channel, string csvFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var contentInfoList = await ExcelObject.GetContentsByCsvFileAsync(csvFilePath, site, channel);
             contentInfoList.Reverse();
 
@@ -376,23 +375,23 @@ namespace SiteServer.CMS.ImportExport
 
                 if (isOverride)
                 {
-                    var existsIds = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                    var existsIds = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                     if (existsIds.Count > 0)
                     {
                         foreach (var id in existsIds)
                         {
                             contentInfo.Id = id;
-                            await DataProvider.ContentDao.UpdateAsync(site, channel, contentInfo);
+                            await DataProvider.ContentRepository.UpdateAsync(site, channel, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channel, contentInfo);
+                        contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channel, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channel, contentInfo);
+                    contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channel, contentInfo);
                 }
             }
 
@@ -409,7 +408,7 @@ namespace SiteServer.CMS.ImportExport
 
             var channelInfo = await ChannelManager.GetChannelAsync(_siteId, channelId);
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var contentInfoList = TxtObject.GetContentListByTxtFile(directoryPath, site, channelInfo);
 
             if (importStart > 1 || importCount > 0)
@@ -456,23 +455,23 @@ namespace SiteServer.CMS.ImportExport
 
                 if (isOverride)
                 {
-                    var existsIDs = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                    var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                     if (existsIDs.Count > 0)
                     {
                         foreach (int id in existsIDs)
                         {
                             contentInfo.Id = id;
-                            await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
+                            await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channelInfo, contentInfo);
+                        contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channelInfo, contentInfo);
+                    contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channelInfo, contentInfo);
                 }
 
                 //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
@@ -481,7 +480,7 @@ namespace SiteServer.CMS.ImportExport
 
         public async Task<List<int>> ImportContentsByTxtFileAsync(Channel channel, string txtFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
 
             var contentInfo = new Content
@@ -502,23 +501,23 @@ namespace SiteServer.CMS.ImportExport
 
             if (isOverride)
             {
-                var existsIDs = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                 if (existsIDs.Count > 0)
                 {
                     foreach (var id in existsIDs)
                     {
                         contentInfo.Id = id;
-                        await DataProvider.ContentDao.UpdateAsync(site, channel, contentInfo);
+                        await DataProvider.ContentRepository.UpdateAsync(site, channel, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channel, contentInfo);
+                    contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channel, contentInfo);
                 }
             }
             else
             {
-                contentInfo.Id = await DataProvider.ContentDao.InsertAsync(site, channel, contentInfo);
+                contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channel, contentInfo);
             }
 
             return new List<int>
@@ -530,7 +529,7 @@ namespace SiteServer.CMS.ImportExport
         public async Task ImportContentsAsync(Channel channel, string siteContentDirectoryPath, bool isOverride, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var sitePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir);
             var contentIe = new ContentIe(site, siteContentDirectoryPath);
 
@@ -544,7 +543,7 @@ namespace SiteServer.CMS.ImportExport
         public async Task<List<int>> ImportContentsAsync(Channel channel, string siteContentDirectoryPath, bool isOverride, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var sitePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir);
             var contentIe = new ContentIe(site, siteContentDirectoryPath);
 

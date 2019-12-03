@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
+using SiteServer.Abstractions;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.Plugin;
+
 
 namespace SiteServer.CMS.Plugin.Impl
 {
-    public class ParseContextImpl: IParseContext
+    public class ParseContextImpl : IParseContext
     {
         public ParseContextImpl()
         {
@@ -63,7 +64,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public int ContentId { get; private set; }
 
-        public IContent ContentInfo { get; private set; }
+        public Content ContentInfo { get; private set; }
 
         public TemplateType TemplateType { get; private set; }
 

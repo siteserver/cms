@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -35,7 +35,7 @@ namespace SiteServer.API.Controllers.Sys
 
             if (StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSsCms))
             {
-                await DataProvider.DbCacheDao.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
+                await DataProvider.DbCacheRepository.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
             }
 
             return Ok();

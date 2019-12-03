@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -34,7 +34,7 @@ namespace SiteServer.API.Controllers.Pages
                 var specialId = request.GetPostInt("specialId");
                 var isLocal = request.GetPostBool("isLocal");
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 var url = string.Empty;
 
                 if (siteId > 0 && channelId > 0 && contentId > 0)
@@ -89,14 +89,14 @@ namespace SiteServer.API.Controllers.Pages
                 {
                     if (siteId == 0)
                     {
-                        siteId = await DataProvider.SiteDao.GetIdByIsRootAsync();
+                        siteId = await DataProvider.SiteRepository.GetIdByIsRootAsync();
                     }
                     if (siteId != 0)
                     {
-                        site = await DataProvider.SiteDao.GetAsync(siteId);
+                        site = await DataProvider.SiteRepository.GetAsync(siteId);
                         url = site.IsSeparatedWeb
                             ? ApiRoutePreview.GetSiteUrl(siteId)
-                            : site.WebUrl;
+                            : site.GetWebUrl();
                     }
                     else
                     {

@@ -2,11 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
@@ -28,7 +27,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                     return Unauthorized();
                 }
 
-                var adminNames = (await DataProvider.AdministratorDao.GetUserNameListAsync()).ToList();
+                var adminNames = (await DataProvider.AdministratorRepository.GetUserNameListAsync()).ToList();
                 adminNames.Insert(0, string.Empty);
 
                 return Ok(new
@@ -57,7 +56,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                 var id = request.GetPostInt("id");
 
-                await DataProvider.UserGroupDao.DeleteAsync(id);
+                await DataProvider.UserGroupRepository.DeleteAsync(id);
 
                 return Ok(new
                 {
@@ -95,17 +94,17 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                         AdminName = itemObj.AdminName
                     };
 
-                    await DataProvider.UserGroupDao.InsertAsync(groupInfo);
+                    await DataProvider.UserGroupRepository.InsertAsync(groupInfo);
 
                     await request.AddAdminLogAsync("新增用户组", $"用户组:{groupInfo.GroupName}");
                 }
                 else if (itemObj.Id == 0)
                 {
-                    var config = await DataProvider.ConfigDao.GetAsync();
+                    var config = await DataProvider.ConfigRepository.GetAsync();
 
                     config.UserDefaultGroupAdminName = itemObj.AdminName;
 
-                    await DataProvider.ConfigDao.UpdateAsync(config);
+                    await DataProvider.ConfigRepository.UpdateAsync(config);
 
                     UserGroupManager.ClearCache();
 
@@ -123,7 +122,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                     groupInfo.GroupName = itemObj.GroupName;
                     groupInfo.AdminName = itemObj.AdminName;
 
-                    await DataProvider.UserGroupDao.UpdateAsync(groupInfo);
+                    await DataProvider.UserGroupRepository.UpdateAsync(groupInfo);
 
                     await request.AddAdminLogAsync("修改用户组", $"用户组:{groupInfo.GroupName}");
                 }

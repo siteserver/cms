@@ -4,8 +4,8 @@ using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -37,8 +37,8 @@ namespace SiteServer.BackgroundPages.Controls
 
             if (Param.ControlToPaginate == null) return;
 
-            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(Param.TableName, Param.ReturnColumnNames, Param.WhereSqlString, Param.OrderSqlString, (Param.Page - 1) * Param.PageSize, Param.PageSize);
-            var dataSource = DataProvider.DatabaseDao.GetDataReader(WebConfigUtils.ConnectionString, sqlString);
+            var sqlString = DataProvider.DatabaseRepository.GetPageSqlString(Param.TableName, Param.ReturnColumnNames, Param.WhereSqlString, Param.OrderSqlString, (Param.Page - 1) * Param.PageSize, Param.PageSize);
+            var dataSource = DataProvider.DatabaseRepository.GetDataReader(WebConfigUtils.ConnectionString, sqlString);
 
             Param.ControlToPaginate.DataSource = dataSource;
             Param.ControlToPaginate.DataBind();

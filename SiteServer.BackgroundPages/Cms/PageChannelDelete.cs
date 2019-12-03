@@ -2,12 +2,13 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using System.Collections.Generic;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -40,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var channelIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
+            var channelIdList = StringUtils.GetIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
             channelIdList.Sort();
             channelIdList.Reverse();
             foreach (var channelId in channelIdList)
@@ -51,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                 var adminId = AuthRequest.AdminPermissionsImpl.GetAdminIdAsync(SiteId, channelId).GetAwaiter().GetResult();
                 var displayName = channelInfo.ChannelName;
-                var count = DataProvider.ContentDao.GetCountAsync(Site, channelInfo, adminId).GetAwaiter().GetResult();
+                var count = DataProvider.ContentRepository.GetCountAsync(Site, channelInfo, adminId).GetAwaiter().GetResult();
                 if (count > 0)
                 {
                     displayName += $"({count})";
@@ -86,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                var channelIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
+                var channelIdList = StringUtils.GetIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
                 channelIdList.Sort();
                 channelIdList.Reverse();
 
@@ -120,9 +121,9 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var channelId in channelIdListToDelete)
                     {
                         var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
-                        var contentIdList = DataProvider.ContentDao.GetContentIdListAsync(tableName, channelId).GetAwaiter().GetResult();
+                        var contentIdList = DataProvider.ContentRepository.GetContentIdListAsync(tableName, channelId).GetAwaiter().GetResult();
                         DeleteManager.DeleteContentsAsync(Site, channelId, contentIdList).GetAwaiter().GetResult();
-                        DataProvider.ContentDao.UpdateTrashContentsAsync(SiteId, channelId, tableName, contentIdList).GetAwaiter().GetResult();
+                        DataProvider.ContentRepository.UpdateTrashContentsAsync(SiteId, channelId, tableName, contentIdList).GetAwaiter().GetResult();
                     }
 
                     AuthRequest.AddSiteLogAsync(SiteId, "清空栏目下的内容", $"栏目:{builder}").GetAwaiter().GetResult();
@@ -142,8 +143,8 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var channelId in channelIdListToDelete)
                     {
                         var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
-                        DataProvider.ContentDao.UpdateTrashContentsByChannelIdAsync(SiteId, channelId, tableName).GetAwaiter().GetResult();
-                        DataProvider.ChannelDao.DeleteAsync(SiteId, channelId).GetAwaiter().GetResult();
+                        DataProvider.ContentRepository.UpdateTrashContentsByChannelIdAsync(SiteId, channelId, tableName).GetAwaiter().GetResult();
+                        DataProvider.ChannelRepository.DeleteAsync(SiteId, channelId).GetAwaiter().GetResult();
                     }
 
                     AuthRequest.AddSiteLogAsync(SiteId, "删除栏目", $"栏目:{builder}").GetAwaiter().GetResult();

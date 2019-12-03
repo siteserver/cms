@@ -2,8 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -39,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var itemInfo = DataProvider.RelatedFieldItemDao.GetAsync(_id).GetAwaiter().GetResult();
+            var itemInfo = DataProvider.RelatedFieldItemRepository.GetAsync(_id).GetAwaiter().GetResult();
             TbItemName.Text = itemInfo.ItemName;
             TbItemValue.Text = itemInfo.ItemValue;
         }
@@ -50,10 +49,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                var itemInfo = DataProvider.RelatedFieldItemDao.GetAsync(_id).GetAwaiter().GetResult();
+                var itemInfo = DataProvider.RelatedFieldItemRepository.GetAsync(_id).GetAwaiter().GetResult();
                 itemInfo.ItemName = TbItemName.Text;
                 itemInfo.ItemValue = TbItemValue.Text;
-                DataProvider.RelatedFieldItemDao.UpdateAsync(itemInfo).GetAwaiter().GetResult();
+                DataProvider.RelatedFieldItemRepository.UpdateAsync(itemInfo).GetAwaiter().GetResult();
 
                 isChanged = true;
             }

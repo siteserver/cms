@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -43,9 +43,9 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.RelatedFieldItemDao.TableName;
+        private static readonly string NewTableName = DataProvider.RelatedFieldItemRepository.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldItemDao.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldItemRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict = null;
 

@@ -1,15 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -122,7 +119,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             while (dataSource.Read())
             {
                 var siteId = dataSource.GetInt32(0);
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
                 if (site != null)
                 {

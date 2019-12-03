@@ -2,14 +2,12 @@
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web.UI;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -121,7 +119,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在导入数据...");//存储消息
@@ -188,7 +186,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheCurrentCountKey, "4");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection($"站点 <strong>{site.SiteName}<strong> 创建成功!", string.Empty,
                         $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
@@ -223,7 +221,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息

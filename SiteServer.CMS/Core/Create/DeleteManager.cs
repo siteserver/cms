@@ -2,9 +2,9 @@
 using System.IO;
 using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.Core.Create
 {
@@ -15,7 +15,7 @@ namespace SiteServer.CMS.Core.Create
             foreach (var channelId in channelIdList)
             {
                 var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
-                var contentIdList = await DataProvider.ContentDao.GetContentIdListAsync(tableName, channelId);
+                var contentIdList = await DataProvider.ContentRepository.GetContentIdListAsync(tableName, channelId);
                 if (contentIdList != null)
                 {
                     foreach (var contentId in contentIdList)
@@ -52,7 +52,7 @@ namespace SiteServer.CMS.Core.Create
                 FileUtils.DeleteFileIfExists(filePath);
 
                 var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
-                var contentIdList = await DataProvider.ContentDao.GetContentIdListAsync(tableName, channelId);
+                var contentIdList = await DataProvider.ContentRepository.GetContentIdListAsync(tableName, channelId);
                 await DeleteContentsAsync(site, channelId, contentIdList);
             }
         }

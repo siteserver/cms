@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Config
 {
@@ -28,7 +27,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
                 return Ok(new
                 {
@@ -56,7 +55,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
                 var isSaveImageInTextEditor = request.GetPostBool("isSaveImageInTextEditor", true);
                 var isAutoPageInTextEditor = request.GetPostBool("isAutoPageInTextEditor");
@@ -96,11 +95,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 }
                 site.CheckContentDefaultLevel = checkContentDefaultLevel;
 
-                await DataProvider.SiteDao.UpdateAsync(site);
+                await DataProvider.SiteRepository.UpdateAsync(site);
 
                 if (isReCalculate)
                 {
-                    await DataProvider.ContentDao.SetAutoPageContentToSiteAsync(site);
+                    await DataProvider.ContentRepository.SetAutoPageContentToSiteAsync(site);
                 }
 
                 await request.AddSiteLogAsync(siteId, "修改内容设置");

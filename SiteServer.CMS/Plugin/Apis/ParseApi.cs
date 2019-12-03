@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
+
 
 namespace SiteServer.CMS.Plugin.Apis
 {
-    public class ParseApi : IParseApi
+    public class ParseApi
     {
         private ParseApi() { }
 
@@ -30,7 +29,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task<string> ParseAttributeValueAsync(string attributeValue, IParseContext context)
         {
-            var site = await DataProvider.SiteDao.GetAsync(context.SiteId);
+            var site = await DataProvider.SiteRepository.GetAsync(context.SiteId);
             var templateInfo = new Template
             {
                 Id = context.TemplateId,
@@ -43,7 +42,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task<string> GetCurrentUrlAsync(IParseContext context)
         {
-            var site = await DataProvider.SiteDao.GetAsync(context.SiteId);
+            var site = await DataProvider.SiteRepository.GetAsync(context.SiteId);
             return await StlParserUtility.GetStlCurrentUrlAsync(site, context.ChannelId, context.ContentId,
                 (Content)context.ContentInfo, context.TemplateType, context.TemplateId, false);
         }

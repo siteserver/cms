@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -26,7 +25,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetQueryString("contentIds"));
+                var contentIdList = StringUtils.GetIntList(request.GetQueryString("contentIds"));
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
@@ -35,7 +34,7 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -44,7 +43,7 @@ namespace SiteServer.API.Controllers.Home
                 var retVal = new List<IDictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                    var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -74,7 +73,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                var contentIdList = StringUtils.GetIntList(request.GetPostString("contentIds"));
                 var isRetainFiles = request.GetPostBool("isRetainFiles");
 
                 if (!request.IsUserLoggin ||
@@ -84,7 +83,7 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -100,7 +99,7 @@ namespace SiteServer.API.Controllers.Home
                 if (contentIdList.Count == 1)
                 {
                     var contentId = contentIdList[0];
-                    var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                    var contentTitle = await DataProvider.ContentRepository.GetValueAsync(tableName, contentId, ContentAttribute.Title);
                     await request.AddSiteLogAsync(siteId, channelId, contentId, "删除内容",
                         $"栏目:{await ChannelManager.GetChannelNameNavigationAsync(siteId, channelId)},内容标题:{contentTitle}");
                 }
@@ -110,7 +109,7 @@ namespace SiteServer.API.Controllers.Home
                         $"栏目:{await ChannelManager.GetChannelNameNavigationAsync(siteId, channelId)},内容条数:{contentIdList.Count}");
                 }
 
-                await DataProvider.ContentDao.UpdateTrashContentsAsync(siteId, channelId, tableName, contentIdList);
+                await DataProvider.ContentRepository.UpdateTrashContentsAsync(siteId, channelId, tableName, contentIdList);
 
                 await CreateManager.TriggerContentChangedEventAsync(siteId, channelId);
 

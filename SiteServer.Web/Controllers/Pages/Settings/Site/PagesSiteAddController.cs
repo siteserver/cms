@@ -3,16 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Provider;
-using SiteServer.Utils;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
@@ -41,19 +36,19 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     new KeyValuePair<int, string>(0, "<无上级站点>")
                 };
 
-                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync();
-                var siteInfoList = new List<CMS.Model.Site>();
-                var parentWithChildren = new Dictionary<int, List<CMS.Model.Site>>();
+                var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
+                var siteInfoList = new List<Abstractions.Site>();
+                var parentWithChildren = new Dictionary<int, List<Abstractions.Site>>();
                 foreach (var siteId in siteIdList)
                 {
-                    var site = await DataProvider.SiteDao.GetAsync(siteId);
+                    var site = await DataProvider.SiteRepository.GetAsync(siteId);
                     if (site.ParentId == 0)
                     {
                         siteInfoList.Add(site);
                     }
                     else
                     {
-                        var children = new List<CMS.Model.Site>();
+                        var children = new List<Abstractions.Site>();
                         if (parentWithChildren.ContainsKey(site.ParentId))
                         {
                             children = parentWithChildren[site.ParentId];
@@ -62,14 +57,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                         parentWithChildren[site.ParentId] = children;
                     }
                 }
-                foreach (CMS.Model.Site site in siteInfoList)
+                foreach (Abstractions.Site site in siteInfoList)
                 {
                     AddSite(siteList, site, parentWithChildren, 0);
                 }
 
-                var tableNameList = await DataProvider.SiteDao.GetSiteTableNamesAsync();
+                var tableNameList = await DataProvider.SiteRepository.GetSiteTableNamesAsync();
 
-                var rootExists = await DataProvider.SiteDao.GetSiteByIsRootAsync() != null;
+                var rootExists = await DataProvider.SiteRepository.GetSiteByIsRootAsync() != null;
 
                 return Ok(new
                 {
@@ -85,7 +80,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             }
         }
 
-        private static void AddSite(List<KeyValuePair<int, string>> siteList, CMS.Model.Site site, Dictionary<int, List<CMS.Model.Site>> parentWithChildren, int level)
+        private static void AddSite(List<KeyValuePair<int, string>> siteList, Abstractions.Site site, Dictionary<int, List<Abstractions.Site>> parentWithChildren, int level)
         {
             if (level > 1) return;
             var padding = string.Empty;
@@ -148,7 +143,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     {
                         return BadRequest("文件夹名称不符合系统要求，请更改文件夹名称！");
                     }
-                    var list = await DataProvider.SiteDao.GetLowerSiteDirListAsync(parentId);
+                    var list = await DataProvider.SiteRepository.GetLowerSiteDirListAsync(parentId);
                     if (list.Contains(siteDir.ToLower()))
                     {
                         return BadRequest("已存在相同的发布路径，请更改文件夹名称！");
@@ -169,17 +164,18 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 else if (tableRule == ETableRule.HandWrite)
                 {
                     tableName = tableHandWrite;
-                    if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                    
+                    if (!await WebConfigUtils.Database.IsTableExistsAsync(tableName))
                     {
-                        DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        await DataProvider.ContentRepository.CreateContentTableAsync(tableName, DataProvider.ContentRepository.GetDefaultTableColumns(tableName));
                     }
                     else
                     {
-                        await DataProvider.DatabaseDao.AlterSystemTableAsync(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        await DataProvider.DatabaseRepository.AlterSystemTableAsync(tableName, DataProvider.ContentRepository.GetDefaultTableColumns(tableName));
                     }
                 }
 
-                var site = new CMS.Model.Site
+                var site = new Abstractions.Site
                 {
                     SiteName = siteName,
                     SiteDir = siteDir,
@@ -190,21 +186,21 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 site.IsCheckContentLevel = false;
                 site.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
 
-                var siteId = await DataProvider.ChannelDao.InsertSiteAsync(channelInfo, site, request.AdminName);
+                var siteId = await DataProvider.ChannelRepository.InsertSiteAsync(channelInfo, site, request.AdminName);
 
                 if (string.IsNullOrEmpty(tableName))
                 {
-                    tableName = ContentDao.GetContentTableName(siteId);
-                    DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
-                    await DataProvider.SiteDao.UpdateTableNameAsync(siteId, tableName);
+                    tableName = ContentRepository.GetContentTableName(siteId);
+                    await DataProvider.ContentRepository.CreateContentTableAsync(tableName, DataProvider.ContentRepository.GetDefaultTableColumns(tableName));
+                    await DataProvider.SiteRepository.UpdateTableNameAsync(siteId, tableName);
                 }
 
                 if (await request.AdminPermissionsImpl.IsSiteAdminAsync() && !await request.AdminPermissionsImpl.IsSuperAdminAsync())
                 {
                     var siteIdList = await request.AdminPermissionsImpl.GetSiteIdListAsync() ?? new List<int>();
                     siteIdList.Add(siteId);
-                    var adminInfo = await DataProvider.AdministratorDao.GetByUserIdAsync(request.AdminId);
-                    await DataProvider.AdministratorDao.UpdateSiteIdCollectionAsync(adminInfo, siteIdList);
+                    var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(request.AdminId);
+                    await DataProvider.AdministratorRepository.UpdateSiteIdCollectionAsync(adminInfo, siteIdList);
                 }
 
                 var siteTemplateDir = string.Empty;

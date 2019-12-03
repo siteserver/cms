@@ -1,6 +1,6 @@
 ﻿using Datory;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Plugin
 {

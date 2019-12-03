@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using NSwag.Annotations;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Config
 {
@@ -31,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
                 return Ok(new
                 {
@@ -60,7 +60,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
                 var siteName = request.GetPostString("siteName");
                 var charset = ECharsetUtils.GetEnumType(request.GetPostString("charset"));
@@ -73,17 +73,17 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 site.IsCreateDoubleClick = isCreateDoubleClick;
 
                 //修改所有模板编码
-                var templateInfoList = await DataProvider.TemplateDao.GetTemplateListBySiteIdAsync(siteId);
+                var templateInfoList = await DataProvider.TemplateRepository.GetTemplateListBySiteIdAsync(siteId);
                 foreach (var templateInfo in templateInfoList)
                 {
                     if (templateInfo.CharsetType == charset) continue;
 
                     var templateContent = TemplateManager.GetTemplateContent(site, templateInfo);
                     templateInfo.CharsetType = charset;
-                    await DataProvider.TemplateDao.UpdateAsync(site, templateInfo, templateContent, request.AdminName);
+                    await DataProvider.TemplateRepository.UpdateAsync(site, templateInfo, templateContent, request.AdminName);
                 }
 
-                await DataProvider.SiteDao.UpdateAsync(site);
+                await DataProvider.SiteRepository.UpdateAsync(site);
 
                 await request.AddSiteLogAsync(siteId, "修改站点设置");
 

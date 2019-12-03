@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.Plugin;
+
 
 namespace SiteServer.CMS.Core
 {
@@ -32,7 +33,7 @@ namespace SiteServer.CMS.Core
             }
             var visualInfo = new VisualInfo
             {
-                Site = await DataProvider.SiteDao.GetAsync(siteId),
+                Site = await DataProvider.SiteRepository.GetAsync(siteId),
                 ChannelId = channelId,
                 ContentId = contentId,
                 Template = null,

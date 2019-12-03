@@ -1,7 +1,7 @@
 using System;
 using System.Web.UI.WebControls;
 
-namespace SiteServer.CMS.Context.Enumerations
+namespace SiteServer.Abstractions
 {
     public enum EUserPasswordRestriction
     {

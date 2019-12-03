@@ -3,12 +3,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.DataCache
 {
@@ -26,7 +24,7 @@ namespace SiteServer.CMS.DataCache
                 retVal = DataCacheManager.Get<List<KeyValuePair<string, TableStyle>>>(CacheKey);
                 if (retVal == null)
                 {
-                    retVal = await DataProvider.TableStyleDao.GetAllTableStylesAsync();
+                    retVal = await DataProvider.TableStyleRepository.GetAllTableStylesAsync();
 
                     DataCacheManager.Insert(CacheKey, retVal);
                 }
@@ -73,9 +71,9 @@ namespace SiteServer.CMS.DataCache
                 }
             }
 
-            if (tableName == DataProvider.UserDao.TableName || tableName == DataProvider.ChannelDao.TableName || tableName == DataProvider.SiteDao.TableName)
+            if (tableName == DataProvider.UserRepository.TableName || tableName == DataProvider.ChannelRepository.TableName || tableName == DataProvider.SiteRepository.TableName)
             {
-                if (tableName == DataProvider.UserDao.TableName)
+                if (tableName == DataProvider.UserRepository.TableName)
                 {
                     var tableStyleAttributes = new List<string>
                     {
@@ -120,13 +118,13 @@ namespace SiteServer.CMS.DataCache
         public static async Task<List<TableStyle>> GetSiteStyleListAsync(int siteId)
         {
             var relatedIdentities = GetRelatedIdentities(siteId);
-            return await GetStyleListAsync(DataProvider.SiteDao.TableName, relatedIdentities);
+            return await GetStyleListAsync(DataProvider.SiteRepository.TableName, relatedIdentities);
         }
 
         public static async Task<List<TableStyle>> GetChannelStyleListAsync(Channel channel)
         {
             var relatedIdentities = GetRelatedIdentities(channel);
-            return await GetStyleListAsync(DataProvider.ChannelDao.TableName, relatedIdentities);
+            return await GetStyleListAsync(DataProvider.ChannelRepository.TableName, relatedIdentities);
         }
 
         public static async Task<List<TableStyle>> GetContentStyleListAsync(Site site, Channel channel)
@@ -139,7 +137,7 @@ namespace SiteServer.CMS.DataCache
         public static async Task<List<TableStyle>> GetUserStyleListAsync()
         {
             var relatedIdentities = EmptyRelatedIdentities;
-            return await GetStyleListAsync(DataProvider.UserDao.TableName, relatedIdentities);
+            return await GetStyleListAsync(DataProvider.UserRepository.TableName, relatedIdentities);
         }
 
         public static Dictionary<string, object> GetDefaultAttributes(List<TableStyle> styleList)
@@ -202,9 +200,9 @@ namespace SiteServer.CMS.DataCache
                 }
             }
 
-            if (tableName == DataProvider.UserDao.TableName || tableName == DataProvider.ChannelDao.TableName || tableName == DataProvider.SiteDao.TableName)
+            if (tableName == DataProvider.UserRepository.TableName || tableName == DataProvider.ChannelRepository.TableName || tableName == DataProvider.SiteRepository.TableName)
             {
-                if (tableName == DataProvider.UserDao.TableName)
+                if (tableName == DataProvider.UserRepository.TableName)
                 {
                     return GetDefaultUserTableStyle(tableName, attributeName);
                 }
@@ -340,7 +338,7 @@ namespace SiteServer.CMS.DataCache
                     channelIdCollection = "0," + channel.ParentsPath + "," + channel.Id;
                 }
 
-                list = TranslateUtils.StringCollectionToIntList(channelIdCollection);
+                list = StringUtils.GetIntList(channelIdCollection);
                 list.Reverse();
             }
             else
@@ -369,9 +367,9 @@ namespace SiteServer.CMS.DataCache
                 Horizontal = true
             };
 
-            if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Model.Content.Title)))
+            if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Title)))
             {
-                style.AttributeName = nameof(Model.Content.Title);
+                style.AttributeName = nameof(Content.Title);
                 style.DisplayName = "标题";
                 style.VeeValidate = "required";
                 style.Taxis = 1;

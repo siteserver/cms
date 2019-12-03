@@ -3,19 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.Utils", "SiteServer.Utils\SiteServer.Utils.csproj", "{2176D8BA-5F57-4C56-8E21-A09011517AE2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.CMS", "SiteServer.CMS\SiteServer.CMS.csproj", "{944127C3-915D-4F02-A534-64EC668C46EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.CMS", "SiteServer.CMS\SiteServer.CMS.csproj", "{944127C3-915D-4F02-A534-64EC668C46EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.BackgroundPages", "SiteServer.BackgroundPages\SiteServer.BackgroundPages.csproj", "{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.API", "SiteServer.Web\SiteServer.API.csproj", "{69C00F60-F28A-4CBC-B1A4-2DB73BB97471}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.Cli", "SiteServer.Cli\SiteServer.Cli.csproj", "{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.Plugin", "..\SiteServer.Plugin\SiteServer.Plugin.csproj", "{89BC9704-79A7-41BA-838F-AFDA1B9DB82A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.Cli", "SiteServer.Cli\SiteServer.Cli.csproj", "{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Datory", "..\Datory\src\Datory\Datory.csproj", "{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7087E39F-5DDF-4108-831C-2EBD8DEC3804}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{273FDE01-B4F1-4A5F-8E08-23D071ED7206}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.Abstractions", "SiteServer.Abstractions\SiteServer.Abstractions.csproj", "{3DD23021-88F3-4646-92EA-A60CB7CE4026}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.Abstractions.Tests", "tests\SiteServer.Abstractions.Tests\SiteServer.Abstractions.Tests.csproj", "{38F82B57-7D96-4BB0-9740-21E723D9E385}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +27,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2176D8BA-5F57-4C56-8E21-A09011517AE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2176D8BA-5F57-4C56-8E21-A09011517AE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2176D8BA-5F57-4C56-8E21-A09011517AE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2176D8BA-5F57-4C56-8E21-A09011517AE2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{944127C3-915D-4F02-A534-64EC668C46EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{944127C3-915D-4F02-A534-64EC668C46EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{944127C3-915D-4F02-A534-64EC668C46EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -43,17 +43,26 @@ Global
 		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{89BC9704-79A7-41BA-838F-AFDA1B9DB82A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{89BC9704-79A7-41BA-838F-AFDA1B9DB82A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{89BC9704-79A7-41BA-838F-AFDA1B9DB82A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{89BC9704-79A7-41BA-838F-AFDA1B9DB82A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DD23021-88F3-4646-92EA-A60CB7CE4026}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DD23021-88F3-4646-92EA-A60CB7CE4026}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DD23021-88F3-4646-92EA-A60CB7CE4026}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DD23021-88F3-4646-92EA-A60CB7CE4026}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38F82B57-7D96-4BB0-9740-21E723D9E385}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38F82B57-7D96-4BB0-9740-21E723D9E385}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38F82B57-7D96-4BB0-9740-21E723D9E385}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38F82B57-7D96-4BB0-9740-21E723D9E385}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0} = {273FDE01-B4F1-4A5F-8E08-23D071ED7206}
+		{3DD23021-88F3-4646-92EA-A60CB7CE4026} = {273FDE01-B4F1-4A5F-8E08-23D071ED7206}
+		{38F82B57-7D96-4BB0-9740-21E723D9E385} = {7087E39F-5DDF-4108-831C-2EBD8DEC3804}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16E9F7DE-60E7-4FB3-A3DB-38729FE5A04F}

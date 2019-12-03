@@ -2,9 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -86,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
                     Site.TemplatesAssetsCssDir = assetsDir;
                 }
 
-                DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
 
                 AuthRequest.AddSiteLogAsync(SiteId, "模板文件夹设置").GetAwaiter().GetResult();
 

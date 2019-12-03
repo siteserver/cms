@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Core;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.Plugin.Impl
 {
-    public class PermissionsImpl : IPermissions
+    public class PermissionsImpl
     {
         private readonly Administrator _adminInfo;
         private readonly string _rolesKey;
@@ -102,7 +101,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
             if (await IsSuperAdminAsync())
             {
-                siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync();
+                siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
             }
             else if (await IsSiteAdminAsync())
             {
@@ -243,7 +242,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 }
                 else
                 {
-                    _permissionList = await DataProvider.PermissionsInRolesDao.GetGeneralPermissionListAsync(roles);
+                    _permissionList = await DataProvider.PermissionsInRolesRepository.GetGeneralPermissionListAsync(roles);
                 }
 
                 DataCacheManager.InsertMinutes(_permissionListKey, _permissionList, 30);
@@ -260,7 +259,7 @@ namespace SiteServer.CMS.Plugin.Impl
             _roles = DataCacheManager.Get<List<string>>(_rolesKey);
             if (_roles == null)
             {
-                _roles = await DataProvider.AdministratorsInRolesDao.GetRolesForUserAsync(_adminInfo.UserName);
+                _roles = await DataProvider.AdministratorsInRolesRepository.GetRolesForUserAsync(_adminInfo.UserName);
                 DataCacheManager.InsertMinutes(_rolesKey, _roles, 30);
             }
 
@@ -297,11 +296,11 @@ namespace SiteServer.CMS.Plugin.Impl
                 else
                 {
                     var roles = await GetRolesAsync();
-                    _websitePermissionDict = await DataProvider.SitePermissionsDao.GetWebsitePermissionSortedListAsync(roles);
+                    _websitePermissionDict = await DataProvider.SitePermissionsRepository.GetWebsitePermissionSortedListAsync(roles);
                 }
                 DataCacheManager.InsertMinutes(_websitePermissionDictKey, _websitePermissionDict, 30);
             }
-            return _websitePermissionDict ?? (_websitePermissionDict = new Dictionary<int, List<string>>());
+            return _websitePermissionDict ??= new Dictionary<int, List<string>>();
         }
 
         private async Task<Dictionary<string, List<string>>> GetChannelPermissionDictAsync()
@@ -335,7 +334,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 }
                 else
                 {
-                    _channelPermissionDict = await DataProvider.SitePermissionsDao.GetChannelPermissionSortedListAsync(roles);
+                    _channelPermissionDict = await DataProvider.SitePermissionsRepository.GetChannelPermissionSortedListAsync(roles);
                 }
                 DataCacheManager.InsertMinutes(_channelPermissionDictKey, _channelPermissionDict, 30);
             }
@@ -366,7 +365,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 else
                 {
                     _channelPermissionListIgnoreChannelId =
-                        await DataProvider.SitePermissionsDao.GetChannelPermissionListIgnoreChannelIdAsync(roles);
+                        await DataProvider.SitePermissionsRepository.GetChannelPermissionListIgnoreChannelIdAsync(roles);
                 }
 
                 DataCacheManager.InsertMinutes(_channelPermissionListIgnoreChannelIdKey,
@@ -501,7 +500,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public async Task<int> GetAdminIdAsync(int siteId, int channelId)
         {
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
             if (!config.IsViewContentOnlySelf
                 || await IsSuperAdminAsync()
                 || await IsSiteAdminAsync()

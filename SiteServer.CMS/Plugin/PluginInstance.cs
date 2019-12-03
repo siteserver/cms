@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.Plugin
 {
@@ -40,7 +41,7 @@ namespace SiteServer.CMS.Plugin
                 InitTime = initTime
             };
 
-            var (isDisabled, taxis) = await DataProvider.PluginDao.SetIsDisabledAndTaxisAsync(instance.Id);
+            var (isDisabled, taxis) = await DataProvider.PluginRepository.SetIsDisabledAndTaxisAsync(instance.Id);
 
             instance.IsRunnable = plugin != null;
             instance.IsDisabled = isDisabled;

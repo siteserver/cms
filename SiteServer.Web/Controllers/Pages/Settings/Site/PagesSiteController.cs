@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Enumerations;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
@@ -27,26 +27,26 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     return Unauthorized();
                 }
 
-                var rootSiteId = await DataProvider.SiteDao.GetIdByIsRootAsync();
-                //var siteIdList = await DataProvider.SiteDao.GetSiteIdListOrderByLevelAsync();
+                var rootSiteId = await DataProvider.SiteRepository.GetIdByIsRootAsync();
+                //var siteIdList = await DataProvider.SiteRepository.GetSiteIdListOrderByLevelAsync();
                 //var sites = new List<Site>();
                 //foreach (var siteId in siteIdList)
                 //{
                     
-                //    var site = await DataProvider.SiteDao.GetAsync(siteId);
+                //    var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 //    if (string.IsNullOrEmpty(keyword) || site.SiteName.Contains(keyword) || site.TableName.Contains(keyword) || site.SiteDir.Contains(keyword))
                 //    {
                 //        sites.Add(site);
                 //    }
                 //}
-                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync(0);
-                var sites = new List<CMS.Model.Site>();
+                var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync(0);
+                var sites = new List<Abstractions.Site>();
                 foreach (var siteId in siteIdList)
                 {
-                    sites.Add(await DataProvider.SiteDao.GetAsync(siteId));
+                    sites.Add(await DataProvider.SiteRepository.GetAsync(siteId));
                 }
 
-                var tableNames = await DataProvider.SiteDao.GetSiteTableNamesAsync();
+                var tableNames = await DataProvider.SiteRepository.GetSiteTableNamesAsync();
 
                 return Ok(new
                 {
@@ -77,7 +77,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 var siteDir = request.GetPostString("siteDir");
                 var deleteFiles = request.GetPostBool("deleteFiles");
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (!StringUtils.EqualsIgnoreCase(site.SiteDir, siteDir))
                 {
                     return BadRequest("删除失败，请输入正确的文件夹名称");
@@ -92,13 +92,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     await DirectoryUtility.DeleteSiteFilesAsync(site);
                 }
                 await request.AddAdminLogAsync("删除站点", $"站点:{site.SiteName}");
-                await DataProvider.SiteDao.DeleteAsync(siteId);
+                await DataProvider.SiteRepository.DeleteAsync(siteId);
 
-                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync(0);
-                var sites = new List<CMS.Model.Site>();
+                var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync(0);
+                var sites = new List<Abstractions.Site>();
                 foreach (var id in siteIdList)
                 {
-                    sites.Add(await DataProvider.SiteDao.GetAsync(id));
+                    sites.Add(await DataProvider.SiteRepository.GetAsync(id));
                 }
 
                 return Ok(new
@@ -133,7 +133,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 var tableChoose = request.GetPostString("tableChoose");
                 var tableHandWrite = request.GetPostString("tableHandWrite");
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 site.SiteName = siteName;
                 site.Taxis = taxis;
 
@@ -150,13 +150,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                         return BadRequest("站点修改失败，请输入内容表名称");
                     }
                     tableName = tableHandWrite;
-                    if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                    if (!await WebConfigUtils.Database.IsTableExistsAsync(tableName))
                     {
-                        DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        await DataProvider.ContentRepository.CreateContentTableAsync(tableName, DataProvider.ContentRepository.GetDefaultTableColumns(tableName));
                     }
                     else
                     {
-                        await DataProvider.DatabaseDao.AlterSystemTableAsync(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        await DataProvider.DatabaseRepository.AlterSystemTableAsync(tableName, DataProvider.ContentRepository.GetDefaultTableColumns(tableName));
                     }
                 }
 
@@ -170,7 +170,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 {
                     if (!StringUtils.EqualsIgnoreCase(PathUtils.GetDirectoryName(site.SiteDir, false), siteDir))
                     {
-                        var list = DataProvider.SiteDao.GetLowerSiteDirListAsync(site.ParentId).GetAwaiter().GetResult();
+                        var list = DataProvider.SiteRepository.GetLowerSiteDirListAsync(site.ParentId).GetAwaiter().GetResult();
                         if (list.Contains(siteDir.ToLower()))
                         {
                             return BadRequest("站点修改失败，已存在相同的发布路径！");
@@ -179,7 +179,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                         var parentPsPath = WebConfigUtils.PhysicalApplicationPath;
                         if (site.ParentId > 0)
                         {
-                            var parentSite = await DataProvider.SiteDao.GetAsync(site.ParentId);
+                            var parentSite = await DataProvider.SiteRepository.GetAsync(site.ParentId);
                             parentPsPath = PathUtility.GetSitePath(parentSite);
                         }
                         DirectoryUtility.ChangeSiteDir(parentPsPath, site.SiteDir, siteDir);
@@ -187,7 +187,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
 
                     if (site.ParentId != parentId)
                     {
-                        var list = await DataProvider.SiteDao.GetLowerSiteDirListAsync(parentId);
+                        var list = await DataProvider.SiteRepository.GetLowerSiteDirListAsync(parentId);
                         if (list.Contains(siteDir.ToLower()))
                         {
                             return BadRequest("站点修改失败，已存在相同的发布路径！");
@@ -200,15 +200,15 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     site.SiteDir = siteDir;
                 }
 
-                await DataProvider.SiteDao.UpdateAsync(site);
+                await DataProvider.SiteRepository.UpdateAsync(site);
 
                 await request.AddAdminLogAsync("修改站点属性", $"站点:{site.SiteName}");
 
-                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync(0);
-                var sites = new List<CMS.Model.Site>();
+                var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync(0);
+                var sites = new List<Abstractions.Site>();
                 foreach (var id in siteIdList)
                 {
-                    sites.Add(await DataProvider.SiteDao.GetAsync(id));
+                    sites.Add(await DataProvider.SiteRepository.GetAsync(id));
                 }
 
                 return Ok(new

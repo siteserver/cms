@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+using EBackupType = SiteServer.Abstractions.EBackupType;
+using EBackupTypeUtils = SiteServer.Abstractions.EBackupTypeUtils;
+using EDateFormatType = SiteServer.Abstractions.EDateFormatType;
+using EDateFormatTypeUtils = SiteServer.Abstractions.EDateFormatTypeUtils;
+using InputType = SiteServer.Abstractions.InputType;
+using TemplateType = SiteServer.Abstractions.TemplateType;
 
 namespace SiteServer.CMS.Core
 {
@@ -23,7 +27,7 @@ namespace SiteServer.CMS.Core
 
         public static async Task<string> GetSitePathAsync(int siteId, params string[] paths)
         {
-            var site = await DataProvider.SiteDao.GetAsync(siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
             return GetSitePath(site, paths);
         }
 
@@ -219,7 +223,7 @@ namespace SiteServer.CMS.Core
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty) return null;
 
-            var siteList = await DataProvider.SiteDao.GetSiteListAsync();
+            var siteList = await DataProvider.SiteRepository.GetSiteListAsync();
 
             Site headquarter = null;
             foreach (var site in siteList)
@@ -251,7 +255,7 @@ namespace SiteServer.CMS.Core
                 return string.Empty;
             }
 
-            var siteList = await DataProvider.SiteDao.GetSiteListAsync();
+            var siteList = await DataProvider.SiteRepository.GetSiteListAsync();
             foreach (var site in siteList)
             {
                 if (site?.Root!= false) continue;
@@ -273,7 +277,7 @@ namespace SiteServer.CMS.Core
         public static async Task<int> GetCurrentSiteIdAsync()
         {
             int siteId;
-            var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync();
+            var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
             if (siteIdList.Count == 1)
             {
                 siteId = siteIdList[0];
@@ -380,7 +384,7 @@ namespace SiteServer.CMS.Core
             {
                 if (!PageUtils.IsProtocolUrl(originalImageSrc) ||
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, PageUtils.ApplicationPath) ||
-                    StringUtils.StartsWithIgnoreCase(originalImageSrc, site.WebUrl))
+                    StringUtils.StartsWithIgnoreCase(originalImageSrc, site.GetWebUrl()))
                     continue;
                 var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);
                 if (!EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName)) continue;
@@ -714,7 +718,7 @@ namespace SiteServer.CMS.Core
             public static async Task<string> ParseAsync(Site site, int channelId, int contentId)
             {
                 var contentFilePathRule = await GetContentFilePathRuleAsync(site, channelId);
-                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelId, contentId);
+                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelId, contentId);
                 var filePath = await ParseContentPathAsync(site, channelId, contentInfo, contentFilePathRule);
                 return filePath;
             }
@@ -748,7 +752,7 @@ namespace SiteServer.CMS.Core
                     else if (StringUtils.EqualsIgnoreCase(element, Sequence))
                     {
                         var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
-                        value = DataProvider.ContentDao.GetSequence(tableName, channelId, contentId).ToString();
+                        value = DataProvider.ContentRepository.GetSequence(tableName, channelId, contentId).ToString();
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ParentRule))//继承父级设置 20151113 sessionliang
                     {
@@ -989,7 +993,7 @@ namespace SiteServer.CMS.Core
 
         public static async Task<string> GetContentPageFilePathAsync(Site site, int channelId, int contentId, int currentPageIndex)
         {
-            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelId, contentId);
+            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelId, contentId);
             return await GetContentPageFilePathAsync(site, channelId, contentInfo, currentPageIndex);
         }
 

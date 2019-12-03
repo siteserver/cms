@@ -10,8 +10,7 @@ using NSwag.AspNet.WebApi;
 using Owin;
 using SiteServer.API;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 [assembly: OwinStartup(typeof(Startup))]
 

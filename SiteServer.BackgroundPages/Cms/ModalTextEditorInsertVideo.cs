@@ -4,8 +4,9 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.LitJson;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.StlElement;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -206,7 +207,7 @@ namespace SiteServer.BackgroundPages.Cms
                 Site.ConfigUEditorVideoPlayBy = playBy;
                 Site.ConfigUEditorVideoWidth = width;
                 Site.ConfigUEditorVideoHeight = height;
-                DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
             }
 
             var script = "parent." + UEditorUtils.GetInsertVideoScript(_attributeName, playUrl, imageUrl, Site);

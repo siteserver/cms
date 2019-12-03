@@ -6,8 +6,8 @@ using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -134,7 +134,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //var pageSqlString = DatabaseApi.Instance.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
                     var pageSqlString = StlDatabaseCache.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
 
-                    var dataSource = DataProvider.DatabaseDao.GetDataSource(pageSqlString);
+                    var dataSource = DataProvider.DatabaseRepository.GetDataSource(pageSqlString);
 
                     if (ListInfo.Layout == ELayout.None)
                     {

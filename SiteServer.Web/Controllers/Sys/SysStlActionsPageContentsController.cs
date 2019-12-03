@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -23,7 +23,7 @@ namespace SiteServer.API.Controllers.Sys
                 var request = await AuthenticatedRequest.GetAuthAsync();
 
                 var siteId = request.GetPostInt("siteId");
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 var pageChannelId = request.GetPostInt("pageChannelId");
                 var templateId = request.GetPostInt("templateId");
                 var totalNum = request.GetPostInt("totalNum");

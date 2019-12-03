@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
+
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
@@ -144,7 +145,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.SiteDao.TableName, attributeName, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
+                            var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.SiteRepository.TableName, attributeName, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
 
                             if (styleInfo.Id > 0)
                             {

@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context.Atom.Atom.Core;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -26,7 +25,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-			var templateInfoList = await DataProvider.TemplateDao.GetTemplateListBySiteIdAsync(_siteId);
+			var templateInfoList = await DataProvider.TemplateRepository.GetTemplateListBySiteIdAsync(_siteId);
 
 			foreach (var templateInfo in templateInfoList)
 			{
@@ -40,7 +39,7 @@ namespace SiteServer.CMS.ImportExport.Components
         {
             var feed = AtomUtility.GetEmptyFeed();
 
-            var templateInfoList = await DataProvider.TemplateDao.GetTemplateListBySiteIdAsync(_siteId);
+            var templateInfoList = await DataProvider.TemplateRepository.GetTemplateListBySiteIdAsync(_siteId);
 
             foreach (var templateInfo in templateInfoList)
             {
@@ -57,7 +56,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var entry = AtomUtility.GetEmptyEntry();
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
 
 			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Template.Id), "TemplateID" }, template.Id.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Template.SiteId), "PublishmentSystemID" }, template.SiteId.ToString());
@@ -80,7 +79,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			if (!FileUtils.IsFileExists(_filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
-		    var site = await DataProvider.SiteDao.GetAsync(_siteId);
+		    var site = await DataProvider.SiteRepository.GetAsync(_siteId);
 			foreach (AtomEntry entry in feed.Entries)
 			{
 				var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.TemplateName));
@@ -114,18 +113,18 @@ namespace SiteServer.CMS.ImportExport.Components
 			            srcTemplateInfo.CreatedFileFullName = templateInfo.CreatedFileFullName;
 			            srcTemplateInfo.CreatedFileExtName = templateInfo.CreatedFileExtName;
 			            srcTemplateInfo.Charset = templateInfo.Charset;
-			            await DataProvider.TemplateDao.UpdateAsync(site, srcTemplateInfo, templateContent, administratorName);
+			            await DataProvider.TemplateRepository.UpdateAsync(site, srcTemplateInfo, templateContent, administratorName);
 			            templateId = srcTemplateInfo.Id;
 			        }
 			        else
 			        {
-			            templateInfo.TemplateName = await DataProvider.TemplateDao.GetImportTemplateNameAsync(_siteId, templateInfo.TemplateName);
-			            templateId = await DataProvider.TemplateDao.InsertAsync(templateInfo, templateContent, administratorName);
+			            templateInfo.TemplateName = await DataProvider.TemplateRepository.GetImportTemplateNameAsync(_siteId, templateInfo.TemplateName);
+			            templateId = await DataProvider.TemplateRepository.InsertAsync(templateInfo, templateContent, administratorName);
 			        }
 			    }
 			    else
 			    {
-			        templateId = await DataProvider.TemplateDao.InsertAsync(templateInfo, templateContent, administratorName);
+			        templateId = await DataProvider.TemplateRepository.InsertAsync(templateInfo, templateContent, administratorName);
 			    }
 
 			    if (templateInfo.Type == TemplateType.FileTemplate)

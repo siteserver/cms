@@ -3,8 +3,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Controls
 {

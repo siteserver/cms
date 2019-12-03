@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
@@ -33,7 +33,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 }
 
                 var siteId = request.GetQueryInt("siteId");
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 var templateDir = site.Root ? "T_" + site.SiteName : "T_" + site.SiteDir.Replace("\\", "_");
 
                 return Ok(new
@@ -68,12 +68,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     return BadRequest("站点模板文件夹已存在，请更换站点模板文件夹！");
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 
                 var directories = new List<string>();
                 var files = new List<string>();
 
-                var siteDirList = await DataProvider.SiteDao.GetSiteDirListAsync(0);
+                var siteDirList = await DataProvider.SiteRepository.GetSiteDirListAsync(0);
                 var fileSystems = FileManager.GetFileSystemInfoExtendCollection(PathUtility.GetSitePath(site), true);
                 foreach (FileSystemInfoExtend fileSystem in fileSystems)
                 {
@@ -175,7 +175,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 var isSaveAllChannels = request.GetPostBool("isSaveAllChannels");
                 var checkedChannelIds = request.GetPostObject<IList<int>>("checkedChannelIds");
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
                 var siteTemplatePath = PathUtility.GetSiteTemplatesPath(templateDir);
                 var siteContentDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);

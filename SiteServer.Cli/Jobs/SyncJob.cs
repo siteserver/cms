@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
-using SiteServer.CMS.Core;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -33,9 +31,9 @@ namespace SiteServer.Cli.Jobs
                 { "to=", "指定需要恢复的配置文件Web.config路径或文件名",
                     v => _to = v },
                 { "includes=", "指定需要备份的表，多个表用英文逗号隔开，默认备份所有表",
-                    v => _includes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
+                    v => _includes = v == null ? null : StringUtils.GetStringList(v) },
                 { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
-                    v => _excludes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
+                    v => _excludes = v == null ? null : StringUtils.GetStringList(v) },
                 { "max-rows=", "指定需要备份的表的最大行数",
                     v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v) },
                 { "h|help",  "命令说明",
@@ -82,13 +80,14 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            await Console.Out.WriteLineAsync($"备份数据库类型: {WebConfigUtils.DatabaseType.Value}");
+            await Console.Out.WriteLineAsync($"备份数据库类型: {WebConfigUtils.DatabaseType.GetValue()}");
             await Console.Out.WriteLineAsync($"备份连接字符串: {WebConfigUtils.ConnectionString}");
             await Console.Out.WriteLineAsync($"备份文件夹: {treeInfo.DirectoryPath}");
 
-            if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            var (isConnectionWorks, errorMessage) = await WebConfigUtils.Database.IsConnectionWorksAsync();
+            if (!isConnectionWorks)
             {
-                await CliUtils.PrintErrorAsync($"系统无法连接到 {backupWebConfigPath} 中设置的数据库");
+                await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
                 return;
             }
 
@@ -118,11 +117,12 @@ namespace SiteServer.Cli.Jobs
                 await CliUtils.PrintErrorAsync($"{restoreWebConfigPath} 中数据库连接字符串 connectionString 未设置");
                 return;
             }
-            await Console.Out.WriteLineAsync($"恢复数据库类型: {WebConfigUtils.DatabaseType.Value}");
+            await Console.Out.WriteLineAsync($"恢复数据库类型: {WebConfigUtils.DatabaseType.GetValue()}");
             await Console.Out.WriteLineAsync($"恢复连接字符串: {WebConfigUtils.ConnectionString}");
-            if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            (isConnectionWorks, errorMessage) = await WebConfigUtils.Database.IsConnectionWorksAsync();
+            if (!isConnectionWorks)
             {
-                await CliUtils.PrintErrorAsync($"系统无法连接到 {restoreWebConfigPath} 中设置的数据库");
+                await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
                 return;
             }
 

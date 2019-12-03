@@ -5,11 +5,8 @@ using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -78,10 +75,7 @@ namespace SiteServer.BackgroundPages.Controls
                         {
                             try
                             {
-                                if (service.OnContentFormLoad(eventArgs, out var val))
-                                {
-                                    html = val;
-                                }
+                                html = service.OnContentFormLoad(eventArgs);
                             }
                             catch (Exception ex)
                             {

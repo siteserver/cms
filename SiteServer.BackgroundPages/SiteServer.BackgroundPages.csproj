@@ -493,34 +493,7 @@
     <Compile Include="PageInstaller.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\ModalManualUpdateSystem.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\ModalExportMessage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAnalysisAdminLogin.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAnalysisAdminWork.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAnalysisSite.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAnalysisSiteChannels.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAnalysisSiteHits.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAnalysisSiteHitsChannels.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAnalysisUser.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -530,17 +503,13 @@
       <Project>{c6df816e-0eb3-4e71-b446-0b24bbb2f6f0}</Project>
       <Name>Datory</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SiteServer.Plugin\SiteServer.Plugin.csproj">
-      <Project>{89bc9704-79a7-41ba-838f-afda1b9db82a}</Project>
-      <Name>SiteServer.Plugin</Name>
+    <ProjectReference Include="..\SiteServer.Abstractions\SiteServer.Abstractions.csproj">
+      <Project>{3dd23021-88f3-4646-92ea-a60cb7ce4026}</Project>
+      <Name>SiteServer.Abstractions</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
       <Name>SiteServer.CMS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
-      <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>
-      <Name>SiteServer.Utils</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

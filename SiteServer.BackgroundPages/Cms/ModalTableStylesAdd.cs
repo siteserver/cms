@@ -7,10 +7,9 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
-using SiteServer.Plugin;
-using TableStyle = SiteServer.CMS.Model.TableStyle;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
+using TableStyle = SiteServer.Abstractions.TableStyle;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -50,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _relatedIdentities = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("RelatedIdentities"));
+            _relatedIdentities = StringUtils.GetIntList(AuthRequest.GetQueryString("RelatedIdentities"));
             if (_relatedIdentities.Count == 0)
             {
                 _relatedIdentities.Add(0);
@@ -202,7 +201,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     style.StyleItems = new List<TableStyleItem>();
 
-                    var rapidValues = TranslateUtils.StringCollectionToStringList(TbRapidValues.Text);
+                    var rapidValues = StringUtils.GetStringList(TbRapidValues.Text);
                     foreach (var rapidValue in rapidValues)
                     {
                         var itemInfo = new TableStyleItem
@@ -226,7 +225,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (TableStyle style in styleArrayList)
                 {
                     attributeNames.Add(style.AttributeName);
-                    DataProvider.TableStyleDao.InsertAsync(style).GetAwaiter().GetResult();
+                    DataProvider.TableStyleRepository.InsertAsync(style).GetAwaiter().GetResult();
                 }
                 
 

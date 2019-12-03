@@ -2,11 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin.Impl;
-using Content = SiteServer.CMS.Model.Content;
+using Content = SiteServer.Abstractions.Content;
 
 namespace SiteServer.CMS.Core
 {
@@ -406,16 +404,9 @@ namespace SiteServer.CMS.Core
 	            listControl.Items.Add(listItem);
 	        }
 
-	        //if (content == null)
-	        //{
-	            ControlUtils.SelectSingleItem(listControl, checkedLevel.ToString());
-	        //}
-	        //else
-	        //{
-	        //    ControlUtils.SelectSingleItem(listControl,
-	        //        isCheckable ? LevelInt.NotChange.ToString() : checkedLevel.ToString());
-	        //}
-	    }
+            ControlUtils.SelectSingleItem(listControl,
+                isChecked ? checkContentLevel.ToString() : checkedLevel.ToString());
+        }
 
 	    public static void LoadContentLevelToList(ListControl listControl, Site site, bool isCheckOnly, bool isChecked, int checkedLevel)
 	    {

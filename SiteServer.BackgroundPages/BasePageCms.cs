@@ -1,9 +1,8 @@
 ﻿using System.Collections.Specialized;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages
 {
@@ -11,27 +10,32 @@ namespace SiteServer.BackgroundPages
 	{
         public bool HasChannelPermissions(int channelId, params string[] channelPermissionArray)
         {
-            return AuthRequest.AdminPermissionsImpl.HasChannelPermissionsAsync(SiteId, channelId, channelPermissionArray).GetAwaiter().GetResult();
+            return true;
+            //return AuthRequest.AdminPermissionsImpl.HasChannelPermissionsAsync(SiteId, channelId, channelPermissionArray).GetAwaiter().GetResult();
         }
 
         public bool HasChannelPermissionsIgnoreChannelId(params string[] channelPermissionArray)
         {
-            return AuthRequest.AdminPermissionsImpl.HasChannelPermissionsIgnoreChannelIdAsync(channelPermissionArray).GetAwaiter().GetResult();
+            return true;
+            //return AuthRequest.AdminPermissionsImpl.HasChannelPermissionsIgnoreChannelIdAsync(channelPermissionArray).GetAwaiter().GetResult();
         }
 
         public bool HasSitePermissions(params string[] websitePermissionArray)
         {
-            return AuthRequest.AdminPermissionsImpl.HasSitePermissionsAsync(SiteId, websitePermissionArray).GetAwaiter().GetResult();
+            return true;
+            //return AuthRequest.AdminPermissionsImpl.HasSitePermissionsAsync(SiteId, websitePermissionArray).GetAwaiter().GetResult();
         }
 
         public bool IsOwningChannelId(int channelId)
         {
-            return AuthRequest.AdminPermissionsImpl.IsOwningChannelIdAsync(channelId).GetAwaiter().GetResult();
+            return true;
+            //return AuthRequest.AdminPermissionsImpl.IsOwningChannelIdAsync(channelId).GetAwaiter().GetResult();
         }
 
         public bool IsDescendantOwningChannelId(int channelId)
         {
-            return AuthRequest.AdminPermissionsImpl.IsDescendantOwningChannelIdAsync(SiteId, channelId).GetAwaiter().GetResult();
+            return true;
+            //return AuthRequest.AdminPermissionsImpl.IsDescendantOwningChannelIdAsync(SiteId, channelId).GetAwaiter().GetResult();
         }
 
         private int _siteId = -1;
@@ -47,6 +51,21 @@ namespace SiteServer.BackgroundPages
             }
         }
 
+        private AuthenticatedRequest _authRequest;
+
+        public AuthenticatedRequest AuthRequest
+        {
+            get
+            {
+                if (_authRequest == null)
+                {
+                    _authRequest = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
+                }
+
+                return _authRequest;
+            }
+        }
+
         private Site _site;
 
 	    public Site Site
@@ -54,7 +73,7 @@ namespace SiteServer.BackgroundPages
 	        get
 	        {
 	            if (_site != null) return _site;
-	            _site = DataProvider.SiteDao.GetAsync(SiteId).GetAwaiter().GetResult();
+	            _site = DataProvider.SiteRepository.GetAsync(SiteId).GetAwaiter().GetResult();
 	            return _site;
 	        }
 	    }

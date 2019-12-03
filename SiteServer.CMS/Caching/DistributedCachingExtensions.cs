@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.Extensions.Caching.Distributed;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Caching
 {
@@ -45,6 +44,31 @@ namespace SiteServer.CMS.Caching
         public static string GetListKey(this IDistributedCache distributedCache, IRepository repository, string type)
         {
             return $"ss:{repository.TableName}:list:{type}";
+        }
+
+        public static string GetListKey(this IDistributedCache distributedCache, IRepository repository, string type, params string[] identities)
+        {
+            return $"ss:{repository.TableName}:list:{type}:{StringUtils.Join(identities, ":")}";
+        }
+
+        public static string GetCountKey(this IDistributedCache distributedCache, IRepository repository, int siteId)
+        {
+            return $"ss:{repository.TableName}:count:{siteId}";
+        }
+
+        public static string GetCountKey(this IDistributedCache distributedCache, IRepository repository, int siteId, int channelId)
+        {
+            return $"ss:{repository.TableName}:count:{siteId}:{channelId}";
+        }
+
+        public static string GetCountKey(this IDistributedCache distributedCache, IRepository repository, int siteId, int channelId, int adminId)
+        {
+            return $"ss:{repository.TableName}:count:{siteId}:{channelId}:{adminId}";
+        }
+
+        public static string GetCountKey(this IDistributedCache distributedCache, IRepository repository, int siteId, int channelId, params string[] identities)
+        {
+            return $"ss:{repository.TableName}:count:{siteId}:{channelId}:{StringUtils.Join(identities, ":")}";
         }
 
         public static async Task<T> GetOrCreateAsync<T>(this IDistributedCache distributedCache, string key, Func<DistributedCacheEntryOptions, Task<T>> factory) where T : class
@@ -90,24 +114,24 @@ namespace SiteServer.CMS.Caching
         {
             if (value != null)
             {
-                await distributedCache.SetAsync(key, TranslateUtils.BinarySerialize(value), new DistributedCacheEntryOptions(), default(CancellationToken));
+                await distributedCache.SetStringAsync(key, TranslateUtils.JsonSerialize(value), new DistributedCacheEntryOptions());
             }
         }
 
-        public static async Task SetAsync<T>(this IDistributedCache distributedCache, string key, T value, DistributedCacheEntryOptions options, CancellationToken token = default(CancellationToken))
+        public static async Task SetAsync<T>(this IDistributedCache distributedCache, string key, T value, DistributedCacheEntryOptions options, CancellationToken token = default)
         {
             if (value != null)
             {
-                await distributedCache.SetAsync(key, TranslateUtils.BinarySerialize(value), options, token);
+                await distributedCache.SetStringAsync(key, TranslateUtils.JsonSerialize(value), options, token);
             }
         }
 
-        public static async Task<T> GetAsync<T>(this IDistributedCache distributedCache, string key, CancellationToken token = default(CancellationToken)) where T : class
+        public static async Task<T> GetAsync<T>(this IDistributedCache distributedCache, string key, CancellationToken token = default) where T : class
         {
-            var result = await distributedCache.GetAsync(key, token);
+            var result = await distributedCache.GetStringAsync(key, token);
             if (result != null)
             {
-                return TranslateUtils.BinaryDeserialize<T>(result);
+                return TranslateUtils.JsonDeserialize<T>(result);
             }
             return null;
         }

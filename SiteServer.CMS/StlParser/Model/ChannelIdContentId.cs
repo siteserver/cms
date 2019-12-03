@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using SiteServer.Utils;
+﻿using System.Collections.Generic;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -15,7 +14,7 @@ namespace SiteServer.CMS.StlParser.Model
             var channelContentIds = new List<MinContentInfo>();
             if (!string.IsNullOrEmpty(channelContentIdsString))
             {
-                foreach (var channelContentId in TranslateUtils.StringCollectionToStringList(channelContentIdsString))
+                foreach (var channelContentId in StringUtils.GetStringList(channelContentIdsString))
                 {
                     var arr = channelContentId.Split('_');
                     if (arr.Length == 2)

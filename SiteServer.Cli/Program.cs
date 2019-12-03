@@ -10,8 +10,7 @@ using Quartz.Impl;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Jobs;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.Cli
 {
@@ -68,7 +67,7 @@ namespace SiteServer.Cli
                     }
                 }
             }
-            CommandName = string.Join(" ", commandNames);
+            CommandName = StringUtils.Join(commandNames, " ");
             CommandArgs = commandArgs.ToArray();
 
             Console.WriteLine("欢迎使用 SiteServer Cli 命令行工具");

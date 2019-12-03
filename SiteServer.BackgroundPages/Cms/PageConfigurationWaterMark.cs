@@ -2,10 +2,10 @@
 using System.Drawing.Text;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
             TbWaterMarkImagePath.Text = Site.WaterMarkImagePath;
                
             DdlIsWaterMark_SelectedIndexChanged(null, null);
-            TbWaterMarkImagePath.Attributes.Add("onchange", GetShowImageScript("preview_WaterMarkImagePath", Site.WebUrl));
+            TbWaterMarkImagePath.Attributes.Add("onchange", GetShowImageScript("preview_WaterMarkImagePath", Site.GetWebUrl()));
 
             var showPopWinString = ModalSelectImage.GetOpenWindowString(Site, TbWaterMarkImagePath.ClientID);
             BtnImageUrlSelect.Attributes.Add("onclick", showPopWinString);
@@ -131,7 +131,7 @@ namespace SiteServer.BackgroundPages.Cms
 				
 		    try
 		    {
-		        DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+		        DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
 		        AuthRequest.AddSiteLogAsync(SiteId, "修改图片水印设置").GetAwaiter().GetResult();
 		        SuccessMessage("图片水印设置修改成功！");
 		    }

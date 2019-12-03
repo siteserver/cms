@@ -2,11 +2,10 @@
 using System.Text;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -107,12 +106,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var contentInfo = await contextInfo.GetContentAsync();
                     if (contentInfo == null)
                     {
-                        playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, type);
+                        playUrl = await DataProvider.ContentRepository.GetValueAsync(pageInfo.Site.TableName, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
-                                playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
+                                playUrl = await DataProvider.ContentRepository.GetValueAsync(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
                             }
                         }
                     }

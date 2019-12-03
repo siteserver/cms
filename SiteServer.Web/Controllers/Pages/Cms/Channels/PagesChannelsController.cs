@@ -5,8 +5,8 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Dto.Request;
 using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Channels
 {
@@ -45,7 +45,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
             var auth = await AuthenticatedRequest.GetAuthAsync();
             await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.ChannelPermissions.ChannelAdd);
 
-            var site = await DataProvider.SiteDao.GetAsync(request.SiteId);
+            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) auth.NotFound(Request);
 
             //foreach (var channelId in request.ChannelIds)
@@ -65,7 +65,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
             var auth = await AuthenticatedRequest.GetAuthAsync();
             await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.WebSitePermissions.Content);
 
-            var site = await DataProvider.SiteDao.GetAsync(request.SiteId);
+            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null)
             {
                 auth.NotFound(Request);
@@ -88,7 +88,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
             var auth = await AuthenticatedRequest.GetAuthAsync();
             await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.WebSitePermissions.Content);
 
-            var site = await DataProvider.SiteDao.GetAsync(request.SiteId);
+            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null)
             {
                 auth.NotFound(Request);

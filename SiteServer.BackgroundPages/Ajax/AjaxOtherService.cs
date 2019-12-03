@@ -4,15 +4,13 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 using WebUtils = SiteServer.CMS.Context.WebUtils;
 
 namespace SiteServer.BackgroundPages.Ajax
@@ -408,7 +406,7 @@ namespace SiteServer.BackgroundPages.Ajax
                     await ChannelManager.GetChannelAsync(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children,
                     string.Empty, string.Empty, string.Empty);
 
-            var site = await DataProvider.SiteDao.GetAsync(siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
             var nameValueCollection = TranslateUtils.ToNameValueCollection(WebConfigUtils.DecryptStringBySecretKey(additional));
 

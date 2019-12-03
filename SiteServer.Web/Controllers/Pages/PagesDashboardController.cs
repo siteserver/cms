@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
-using SiteServer.Utils;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -32,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages
 
                 var lastActivityDate = request.Administrator.LastActivityDate ?? Constants.SqlMinValue;
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 return Ok(new
                 {
@@ -66,9 +65,9 @@ namespace SiteServer.API.Controllers.Pages
 
                 if (await request.AdminPermissionsImpl.IsSuperAdminAsync())
                 {
-                    foreach(var site in await DataProvider.SiteDao.GetSiteListAsync())
+                    foreach(var site in await DataProvider.SiteRepository.GetSiteListAsync())
                     {
-                        var count = await DataProvider.ContentDao.GetCountCheckingAsync(site);
+                        var count = await DataProvider.ContentRepository.GetCountCheckingAsync(site);
                         if (count > 0)
                         {
                             checkingList.Add(new
@@ -84,10 +83,10 @@ namespace SiteServer.API.Controllers.Pages
                 {
                     foreach (var siteId in request.Administrator.SiteIds)
                     {
-                        var site = await DataProvider.SiteDao.GetAsync(siteId);
+                        var site = await DataProvider.SiteRepository.GetAsync(siteId);
                         if (site == null) continue;
 
-                        var count = await DataProvider.ContentDao.GetCountCheckingAsync(site);
+                        var count = await DataProvider.ContentRepository.GetCountCheckingAsync(site);
                         if (count > 0)
                         {
                             checkingList.Add(new

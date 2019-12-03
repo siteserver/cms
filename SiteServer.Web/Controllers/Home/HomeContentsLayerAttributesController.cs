@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -23,7 +23,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                var contentIdList = StringUtils.GetIntList(request.GetPostString("contentIds"));
                 var pageType = request.GetPostString("pageType");
                 var isRecommend = request.GetPostBool("isRecommend");
                 var isHot = request.GetPostBool("isHot");
@@ -38,7 +38,7 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Home
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -69,7 +69,7 @@ namespace SiteServer.API.Controllers.Home
                             {
                                 contentInfo.Top = true;
                             }
-                            await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
+                            await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                         }
 
                         await request.AddSiteLogAsync(siteId, "设置内容属性");
@@ -81,7 +81,7 @@ namespace SiteServer.API.Controllers.Home
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -100,7 +100,7 @@ namespace SiteServer.API.Controllers.Home
                             {
                                 contentInfo.Top = false;
                             }
-                            await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
+                            await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                         }
 
                         await request.AddSiteLogAsync(siteId, "取消内容属性");
@@ -110,11 +110,11 @@ namespace SiteServer.API.Controllers.Home
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         contentInfo.Hits = hits;
-                        await DataProvider.ContentDao.UpdateAsync(site, channelInfo, contentInfo);
+                        await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
                     await request.AddSiteLogAsync(siteId, "设置内容点击量");

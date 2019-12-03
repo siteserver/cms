@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
             var attributesOfDisplay = ControlUtils.SelectedItemsValueToStringCollection(CblDisplayAttributes.Items);
             channelInfo.ContentAttributesOfDisplay = attributesOfDisplay;
 
-            DataProvider.ChannelDao.UpdateAsync(channelInfo).GetAwaiter().GetResult();
+            DataProvider.ChannelRepository.UpdateAsync(channelInfo).GetAwaiter().GetResult();
 
             AuthRequest.AddSiteLogAsync(SiteId, "设置内容显示项", $"显示项:{attributesOfDisplay}").GetAwaiter().GetResult();
 

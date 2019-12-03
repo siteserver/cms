@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
@@ -40,11 +39,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 if (roleId > 0)
                 {
-                    role = await DataProvider.RoleDao.GetRoleAsync(roleId);
+                    role = await DataProvider.RoleRepository.GetRoleAsync(roleId);
                     systemPermissionsInfoList =
-                        await DataProvider.SitePermissionsDao.GetSystemPermissionsListAsync(role.RoleName);
+                        await DataProvider.SitePermissionsRepository.GetSystemPermissionsListAsync(role.RoleName);
                     permissionList =
-                        await DataProvider.PermissionsInRolesDao.GetGeneralPermissionListAsync(new[] { role.RoleName });
+                        await DataProvider.PermissionsInRolesRepository.GetGeneralPermissionListAsync(new[] { role.RoleName });
                 }
 
                 var permissions = new List<Permission>();
@@ -68,7 +67,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     }
                 }
 
-                var siteList = new List<CMS.Model.Site>();
+                var siteList = new List<Abstractions.Site>();
                 var checkedSiteIdList = new List<int>();
                 foreach (var permissionSiteId in await request.AdminPermissionsImpl.GetSiteIdListAsync())
                 {
@@ -80,7 +79,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                         var listTwo = await request.AdminPermissionsImpl.GetSitePermissionsAsync(permissionSiteId);
                         if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                         {
-                            siteList.Add(await DataProvider.SiteDao.GetAsync(permissionSiteId));
+                            siteList.Add(await DataProvider.SiteRepository.GetAsync(permissionSiteId));
                         }
                     }
                 }
@@ -139,12 +138,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
             SitePermissions sitePermissionsInfo = null;
             if (roleId > 0)
             {
-                var roleInfo = await DataProvider.RoleDao.GetRoleAsync(roleId);
-                sitePermissionsInfo = await DataProvider.SitePermissionsDao.GetSystemPermissionsAsync(roleInfo.RoleName, siteId);
+                var roleInfo = await DataProvider.RoleRepository.GetRoleAsync(roleId);
+                sitePermissionsInfo = await DataProvider.SitePermissionsRepository.GetSystemPermissionsAsync(roleInfo.RoleName, siteId);
             }
             if (sitePermissionsInfo == null) sitePermissionsInfo = new SitePermissions();
 
-            var site = await DataProvider.SiteDao.GetAsync(siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
             var sitePermissions = new List<Permission>();
             var pluginPermissions = new List<Permission>();
             var channelPermissions = new List<Permission>();
@@ -376,12 +375,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 {
                     return BadRequest($"角色添加失败，{roleName}为系统角色！");
                 }
-                if (await DataProvider.RoleDao.IsRoleExistsAsync(roleName))
+                if (await DataProvider.RoleRepository.IsRoleExistsAsync(roleName))
                 {
                     return BadRequest("角色名称已存在，请更换角色名称！");
                 }
 
-                await DataProvider.RoleDao.InsertRoleAsync(new Role
+                await DataProvider.RoleRepository.InsertRoleAsync(new Role
                 {
                     RoleName = roleName,
                     CreatorUserName = request.AdminName,
@@ -396,7 +395,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                         RoleName = roleName,
                         GeneralPermissionList = generalPermissionList
                     };
-                    await DataProvider.PermissionsInRolesDao.InsertAsync(permissionsInRolesInfo);
+                    await DataProvider.PermissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
                 }
 
                 if (sitePermissionsInRolesInfoList != null && sitePermissionsInRolesInfoList.Count > 0)
@@ -404,7 +403,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     foreach (var sitePermissionsInfo in sitePermissionsInRolesInfoList)
                     {
                         sitePermissionsInfo.RoleName = roleName;
-                        await DataProvider.SitePermissionsDao.InsertAsync(sitePermissionsInfo);
+                        await DataProvider.SitePermissionsRepository.InsertAsync(sitePermissionsInfo);
                     }
                 }
 
@@ -441,21 +440,21 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var sitePermissionsInRolesInfoList =
                     request.GetPostObject<List<SitePermissions>>("sitePermissions");
 
-                var roleInfo = await DataProvider.RoleDao.GetRoleAsync(roleId);
+                var roleInfo = await DataProvider.RoleRepository.GetRoleAsync(roleId);
                 if (roleInfo.RoleName != roleName)
                 {
                     if (EPredefinedRoleUtils.IsPredefinedRole(roleName))
                     {
                         return BadRequest($"角色添加失败，{roleName}为系统角色！");
                     }
-                    if (await DataProvider.RoleDao.IsRoleExistsAsync(roleName))
+                    if (await DataProvider.RoleRepository.IsRoleExistsAsync(roleName))
                     {
                         return BadRequest("角色名称已存在，请更换角色名称！");
                     }
                 }
 
-                await DataProvider.PermissionsInRolesDao.DeleteAsync(roleInfo.RoleName);
-                await DataProvider.SitePermissionsDao.DeleteAsync(roleInfo.RoleName);
+                await DataProvider.PermissionsInRolesRepository.DeleteAsync(roleInfo.RoleName);
+                await DataProvider.SitePermissionsRepository.DeleteAsync(roleInfo.RoleName);
 
                 if (generalPermissionList != null && generalPermissionList.Count > 0)
                 {
@@ -465,7 +464,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                         RoleName = roleName,
                         GeneralPermissionList = generalPermissionList
                     };
-                    await DataProvider.PermissionsInRolesDao.InsertAsync(permissionsInRolesInfo);
+                    await DataProvider.PermissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
                 }
 
                 if (sitePermissionsInRolesInfoList != null && sitePermissionsInRolesInfoList.Count > 0)
@@ -473,14 +472,14 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     foreach (var sitePermissionsInfo in sitePermissionsInRolesInfoList)
                     {
                         sitePermissionsInfo.RoleName = roleName;
-                        await DataProvider.SitePermissionsDao.InsertAsync(sitePermissionsInfo);
+                        await DataProvider.SitePermissionsRepository.InsertAsync(sitePermissionsInfo);
                     }
                 }
 
                 roleInfo.RoleName = roleName;
                 roleInfo.Description = description;
 
-                await DataProvider.RoleDao.UpdateRoleAsync(roleInfo);
+                await DataProvider.RoleRepository.UpdateRoleAsync(roleInfo);
 
                 PermissionsImpl.ClearAllCache();
 

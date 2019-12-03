@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
@@ -32,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
 
                 var nameDict = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
-                foreach (var site in await DataProvider.SiteDao.GetSiteListAsync())
+                foreach (var site in await DataProvider.SiteRepository.GetSiteListAsync())
                 {
                     if (nameDict.ContainsKey(site.TableName))
                     {
@@ -74,7 +73,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 return Ok(new
                 {
                     Value = columns,
-                    Count = DataProvider.DatabaseDao.GetCount(tableName)
+                    Count = DataProvider.DatabaseRepository.GetCount(tableName)
                 });
             }
             catch (Exception ex)
@@ -102,7 +101,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 return Ok(new
                 {
                     Value = columns,
-                    Count = DataProvider.DatabaseDao.GetCount(tableName)
+                    Count = DataProvider.DatabaseRepository.GetCount(tableName)
                 });
             }
             catch (Exception ex)

@@ -2,13 +2,13 @@
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
-    public class PluginApi : IPluginApi
+    public class PluginApi
     {
         private PluginApi() { }
 
@@ -29,9 +29,9 @@ namespace SiteServer.CMS.Plugin.Apis
                 return PageUtils.GetAdminUrl(relatedUrl.Substring(1));
             }
 
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
 
-            return PageUtility.GetSiteFilesUrl(config.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));
+            return PageUtility.GetSiteFilesUrl(config.GetApiUrl(), PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));
         }
 
         public async Task<string> GetPluginApiUrlAsync(string pluginId)

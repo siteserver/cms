@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Datory;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.DataCache
 {
@@ -60,7 +60,7 @@ namespace SiteServer.CMS.DataCache
 
                 if (list != null) return list;
 
-                list = DataProvider.DatabaseDao.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName);
+                list = DataProvider.DatabaseRepository.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName);
                 Update(allDict, list, tableName);
                 return list;
             }

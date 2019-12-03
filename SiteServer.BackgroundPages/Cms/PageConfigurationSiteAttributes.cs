@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
-using TableStyle = SiteServer.CMS.Model.TableStyle;
+using SiteServer.CMS.Repositories;
+using TableStyle = SiteServer.Abstractions.TableStyle;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -118,7 +117,7 @@ namespace SiteServer.BackgroundPages.Cms
                 Site.Set(o.Key, o.Value);
             }
 
-            DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+            DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
 
             AuthRequest.AddSiteLogAsync(SiteId, "修改站点设置").GetAwaiter().GetResult();
 

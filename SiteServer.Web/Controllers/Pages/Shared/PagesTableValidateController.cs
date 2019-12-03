@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Shared
 {
@@ -24,7 +24,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
 
                 var tableName = request.GetQueryString("tableName");
                 var attributeName = request.GetQueryString("attributeName");
-                var relatedIdentities = TranslateUtils.StringCollectionToIntList(request.GetQueryString("relatedIdentities"));
+                var relatedIdentities = StringUtils.GetIntList(request.GetQueryString("relatedIdentities"));
 
                 var style = await TableStyleManager.GetTableStyleAsync(tableName, attributeName, relatedIdentities);
 
@@ -55,7 +55,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
 
                 var tableName = request.GetPostString("tableName");
                 var attributeName = request.GetPostString("attributeName");
-                var relatedIdentities = TranslateUtils.StringCollectionToIntList(request.GetPostString("relatedIdentities"));
+                var relatedIdentities = StringUtils.GetIntList(request.GetPostString("relatedIdentities"));
                 var value = request.GetPostString("value");
 
                 var style =
@@ -65,13 +65,13 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 //数据库中没有此项及父项的表样式 or 数据库中没有此项的表样式，但是有父项的表样式
                 if (style.Id == 0 && style.RelatedIdentity == 0 || style.RelatedIdentity != relatedIdentities[0])
                 {
-                    await DataProvider.TableStyleDao.InsertAsync(style);
+                    await DataProvider.TableStyleRepository.InsertAsync(style);
                     await request.AddAdminLogAsync("添加表单显示样式", $"字段名:{style.AttributeName}");
                 }
                 //数据库中有此项的表样式
                 else
                 {
-                    await DataProvider.TableStyleDao.UpdateAsync(style, false);
+                    await DataProvider.TableStyleRepository.UpdateAsync(style, false);
                     await request.AddAdminLogAsync("修改表单显示样式", $"字段名:{style.AttributeName}");
                 }
 

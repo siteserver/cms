@@ -4,13 +4,13 @@ using System.Linq;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             EFileSystemTypeUtils.AddWebPageListItems(DdlCreatedFileExtName);
 
-            ECharsetUtils.AddListItems(DdlCharset);
+            ECharsetUtilsExtensions.AddListItems(DdlCharset);
 
             if (AuthRequest.GetQueryInt("TemplateID") > 0)
             {
@@ -134,7 +134,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var templateLogId = AuthRequest.GetQueryInt("TemplateLogID");
                         if (templateLogId > 0)
                         {
-                            TbContent.Text = DataProvider.TemplateLogDao.GetTemplateContentAsync(templateLogId).GetAwaiter().GetResult();
+                            TbContent.Text = DataProvider.TemplateLogRepository.GetTemplateContentAsync(templateLogId).GetAwaiter().GetResult();
                             SuccessMessage("已导入历史版本的模板内容，点击确定保存模板");
                         }
                     }
@@ -162,7 +162,7 @@ namespace SiteServer.BackgroundPages.Cms
             var isCodeMirror = Site.ConfigTemplateIsCodeMirror;
             isCodeMirror = !isCodeMirror;
             Site.ConfigTemplateIsCodeMirror = isCodeMirror;
-            DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+            DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
 
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
@@ -191,7 +191,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        var templateInfo = TemplateManager.GetTemplateAsync(SiteId, templateId).GetAwaiter().GetResult();
 		        if (templateInfo.TemplateName != TbTemplateName.Text)
 		        {
-		            var templateNameList = DataProvider.TemplateDao.GetTemplateNameListAsync(SiteId, templateInfo.Type).GetAwaiter().GetResult();
+		            var templateNameList = DataProvider.TemplateRepository.GetTemplateNameListAsync(SiteId, templateInfo.Type).GetAwaiter().GetResult();
 		            if (templateNameList.Contains(TbTemplateName.Text))
 		            {
 		                FailMessage("模板修改失败，模板名称已存在！");
@@ -202,7 +202,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        var isChanged = false;
 		        if (PathUtils.RemoveExtension(templateInfo.RelatedFileName) != PathUtils.RemoveExtension(TbRelatedFileName.Text))//文件名改变
 		        {
-		            var fileNameList = DataProvider.TemplateDao.GetRelatedFileNameListAsync(SiteId, templateInfo.Type).GetAwaiter().GetResult();
+		            var fileNameList = DataProvider.TemplateRepository.GetRelatedFileNameListAsync(SiteId, templateInfo.Type).GetAwaiter().GetResult();
 		            foreach (var fileName in fileNameList)
 		            {
 		                var fileNameWithoutExtension = PathUtils.RemoveExtension(fileName);
@@ -243,7 +243,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        templateInfo.CreatedFileFullName = TbCreatedFileFullName.Text + DdlCreatedFileExtName.SelectedValue;
 		        templateInfo.CharsetType = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
 
-		        DataProvider.TemplateDao.UpdateAsync(Site, templateInfo, TbContent.Text, AuthRequest.AdminName).GetAwaiter().GetResult();
+		        DataProvider.TemplateRepository.UpdateAsync(Site, templateInfo, TbContent.Text, AuthRequest.AdminName).GetAwaiter().GetResult();
 		        if (previousTemplate != null)
 		        {
 		            FileUtils.DeleteFileIfExists(TemplateManager.GetTemplateFilePath(Site, previousTemplate));
@@ -258,13 +258,13 @@ namespace SiteServer.BackgroundPages.Cms
 		    }
 		    else
 		    {
-		        var templateNameList = DataProvider.TemplateDao.GetTemplateNameListAsync(SiteId, TemplateTypeUtils.GetEnumType(HihTemplateType.Value)).GetAwaiter().GetResult();
+		        var templateNameList = DataProvider.TemplateRepository.GetTemplateNameListAsync(SiteId, TemplateTypeUtils.GetEnumType(HihTemplateType.Value)).GetAwaiter().GetResult();
 		        if (templateNameList.Contains(TbTemplateName.Text))
 		        {
 		            FailMessage("模板添加失败，模板名称已存在！");
 		            return;
 		        }
-		        var fileNameList = DataProvider.TemplateDao.GetRelatedFileNameListAsync(SiteId, TemplateTypeUtils.GetEnumType(HihTemplateType.Value)).GetAwaiter().GetResult();
+		        var fileNameList = DataProvider.TemplateRepository.GetRelatedFileNameListAsync(SiteId, TemplateTypeUtils.GetEnumType(HihTemplateType.Value)).GetAwaiter().GetResult();
 		        if (StringUtils.ContainsIgnoreCase(fileNameList, TbRelatedFileName.Text))
 		        {
 		            FailMessage("模板添加失败，模板文件已存在！");
@@ -283,7 +283,7 @@ namespace SiteServer.BackgroundPages.Cms
 		            Default = false
 		        };
 
-		        templateInfo.Id = DataProvider.TemplateDao.InsertAsync(templateInfo, TbContent.Text, AuthRequest.AdminName).GetAwaiter().GetResult();
+		        templateInfo.Id = DataProvider.TemplateRepository.InsertAsync(templateInfo, TbContent.Text, AuthRequest.AdminName).GetAwaiter().GetResult();
 		        CreatePages(templateInfo);
 		        AuthRequest.AddSiteLogAsync(SiteId,
 		            $"添加{TemplateTypeUtils.GetText(templateInfo.Type)}",

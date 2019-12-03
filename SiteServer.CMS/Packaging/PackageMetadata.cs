@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using NuGet.Packaging;
 using NuGet.Versioning;
-using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Packaging
 {
-    public class PackageMetadata : IMetadata
+    public class PackageMetadata : SiteServer.Abstractions.IPackageMetadata
     {
         private readonly Dictionary<string, string> _metadata;
         private readonly IReadOnlyCollection<PackageDependencyGroup> _dependencyGroups;

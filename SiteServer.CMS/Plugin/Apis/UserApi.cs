@@ -3,90 +3,91 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Provider;
-using SiteServer.Plugin;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.Plugin.Apis
 {
-    public class UserApi : IUserApi
+    public class UserApi
     {
         private UserApi() { }
 
         private static UserApi _instance;
         public static UserApi Instance => _instance ??= new UserApi();
 
-        public IUser NewInstance()
+        public User NewInstance()
         {
             return new User();
         }
 
-        public async Task<IUser> GetByUserIdAsync(int userId)
+        public async Task<User> GetByUserIdAsync(int userId)
         {
-            return await DataProvider.UserDao.GetByUserIdAsync(userId);
+            return await DataProvider.UserRepository.GetByUserIdAsync(userId);
         }
 
-        public async Task<IUser> GetByUserNameAsync(string userName)
+        public async Task<User> GetByUserNameAsync(string userName)
         {
-            return await DataProvider.UserDao.GetByUserNameAsync(userName);
+            return await DataProvider.UserRepository.GetByUserNameAsync(userName);
         }
 
-        public async Task<IUser> GetByEmailAsync(string email)
+        public async Task<User> GetByEmailAsync(string email)
         {
-            return await DataProvider.UserDao.GetByEmailAsync(email);
+            return await DataProvider.UserRepository.GetByEmailAsync(email);
         }
 
-        public async Task<IUser> GetByMobileAsync(string mobile)
+        public async Task<User> GetByMobileAsync(string mobile)
         {
-            return await DataProvider.UserDao.GetByMobileAsync(mobile);
+            return await DataProvider.UserRepository.GetByMobileAsync(mobile);
         }
 
-        public async Task<IUser> GetByAccountAsync(string account)
+        public async Task<User> GetByAccountAsync(string account)
         {
-            return await DataProvider.UserDao.GetByAccountAsync(account);
+            return await DataProvider.UserRepository.GetByAccountAsync(account);
         }
 
         public async Task<bool> IsUserNameExistsAsync(string userName)
         {
-            return await DataProvider.UserDao.IsUserNameExistsAsync(userName);
+            return await DataProvider.UserRepository.IsUserNameExistsAsync(userName);
         }
 
         public async Task<bool> IsEmailExistsAsync(string email)
         {
-            return await DataProvider.UserDao.IsEmailExistsAsync(email);
+            return await DataProvider.UserRepository.IsEmailExistsAsync(email);
         }
 
         public async Task<bool> IsMobileExistsAsync(string mobile)
         {
-            return await DataProvider.UserDao.IsMobileExistsAsync(mobile);
+            return await DataProvider.UserRepository.IsMobileExistsAsync(mobile);
         }
 
-        public async Task<(bool Valid, string ErrorMessage)> InsertAsync(IUser user, string password)
+        public async Task<(bool Valid, string ErrorMessage)> InsertAsync(User user, string password)
         {
-            var valid = await DataProvider.UserDao.InsertAsync(user as User, password, PageUtils.GetIpAddress());
+            var valid = await DataProvider.UserRepository.InsertAsync(user as User, password, PageUtils.GetIpAddress());
             return (valid.UserId > 0, valid.ErrorMessage);
         }
 
         public async Task<(bool Valid, string UserName, string ErrorMessage)> ValidateAsync(string account, string password)
         {
-            var valid = await DataProvider.UserDao.ValidateAsync(account, password, false);
+            var valid = await DataProvider.UserRepository.ValidateAsync(account, password, false);
             return (valid.User != null, valid.UserName, valid.ErrorMessage);
         }
 
         public async Task<(bool Success, string ErrorMessage)> ChangePasswordAsync(string userName, string password)
         {
-            var valid = await DataProvider.UserDao.ChangePasswordAsync(userName, password);
+            var valid = await DataProvider.UserRepository.ChangePasswordAsync(userName, password);
             return (valid.IsValid, valid.ErrorMessage);
         }
 
-        public async Task UpdateAsync(IUser userInfo)
+        public async Task UpdateAsync(User userInfo)
         {
-            await DataProvider.UserDao.UpdateAsync(userInfo as User);
+            await DataProvider.UserRepository.UpdateAsync(userInfo as User);
         }
 
         public async Task<(bool Valid, string ErrorMessage)> IsPasswordCorrectAsync(string password)
         {
-            return await UserDao.IsPasswordCorrectAsync(password);
+            return await UserRepository.IsPasswordCorrectAsync(password);
         }
 
         public async Task AddLogAsync(string userName, string action, string summary)
@@ -94,9 +95,9 @@ namespace SiteServer.CMS.Plugin.Apis
             await LogUtils.AddUserLogAsync(userName, action, summary);
         }
 
-        public async Task<IEnumerable<ILog>> GetLogsAsync(string userName, int totalNum, string action = "")
+        public async Task<IEnumerable<UserLog>> GetLogsAsync(string userName, int totalNum, string action = "")
         {
-            return await DataProvider.UserLogDao.ListAsync(userName, totalNum, action);
+            return await DataProvider.UserLogRepository.ListAsync(userName, totalNum, action);
         }
 
         public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
@@ -109,7 +110,7 @@ namespace SiteServer.CMS.Plugin.Apis
             return AuthenticatedRequest.GetAccessToken(userId, userName, expiresAt);
         }
 
-        public IAccessToken ParseAccessToken(string accessToken)
+        public AccessTokenImpl ParseAccessToken(string accessToken)
         {
             return AuthenticatedRequest.ParseAccessToken(accessToken);
         }

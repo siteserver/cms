@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Special
 {
@@ -31,7 +32,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 var specialInfo = await SpecialManager.GetSpecialAsync(siteId, specialId);
 
                 if (specialInfo == null)

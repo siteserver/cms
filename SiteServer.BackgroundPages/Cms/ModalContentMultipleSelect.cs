@@ -6,17 +6,15 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
-using Content = SiteServer.CMS.Model.Content;
-using TableStyle = SiteServer.CMS.Model.TableStyle;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
+using Content = SiteServer.Abstractions.Content;
+using TableStyle = SiteServer.Abstractions.TableStyle;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -63,11 +61,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.SelectCommand = string.IsNullOrEmpty(AuthRequest.GetQueryString("channelId"))
-                ? DataProvider.ContentDao.GetSqlStringAsync(tableName, SiteId,
+                ? DataProvider.ContentRepository.GetSqlStringAsync(tableName, SiteId,
                     _channel.Id, AuthRequest.AdminPermissionsImpl.IsSiteAdminAsync().GetAwaiter().GetResult(),
                     AuthRequest.AdminPermissionsImpl.GetChannelIdListAsync().GetAwaiter().GetResult(), DdlSearchType.SelectedValue, TbKeyword.Text,
                     TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, false).GetAwaiter().GetResult()
-                : DataProvider.ContentDao.GetSqlStringAsync(tableName, SiteId,
+                : DataProvider.ContentRepository.GetSqlStringAsync(tableName, SiteId,
                     _channel.Id, AuthRequest.AdminPermissionsImpl.IsSiteAdminAsync().GetAwaiter().GetResult(),
                     AuthRequest.AdminPermissionsImpl.GetChannelIdListAsync().GetAwaiter().GetResult(), AuthRequest.GetQueryString("SearchType"),
                     AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"), true,
@@ -170,13 +168,13 @@ namespace SiteServer.BackgroundPages.Cms
             if (!string.IsNullOrEmpty(Request.Form["IDsCollection"]))
             {
                 var builder = new StringBuilder();
-                foreach (var pair in TranslateUtils.StringCollectionToStringList(Request.Form["IDsCollection"]))
+                foreach (var pair in StringUtils.GetStringList(Request.Form["IDsCollection"]))
                 {
                     var channelId = TranslateUtils.ToInt(pair.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(pair.Split('_')[1]);
 
                     var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
-                    var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                    var title = DataProvider.ContentRepository.GetValueAsync(tableName, contentId, ContentAttribute.Title).GetAwaiter().GetResult();
                     builder.Append($@"parent.{_jsMethod}('{title}', '{pair}');");
                 }
                 LayerUtils.CloseWithoutRefresh(Page, builder.ToString());

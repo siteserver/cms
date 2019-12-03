@@ -2,11 +2,11 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var templateInfo = TemplateManager.GetTemplateAsync(SiteId, templateId).GetAwaiter().GetResult();
                     if (templateInfo != null)
                     {
-                        DataProvider.TemplateDao.DeleteAsync(SiteId, templateId).GetAwaiter().GetResult();
+                        DataProvider.TemplateRepository.DeleteAsync(SiteId, templateId).GetAwaiter().GetResult();
                         AuthRequest.AddSiteLogAsync(SiteId,
                             $"删除{TemplateTypeUtils.GetText(templateInfo.Type)}",
                             $"模板名称:{templateInfo.TemplateName}").GetAwaiter().GetResult();
@@ -82,7 +82,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var templateInfo = TemplateManager.GetTemplateAsync(SiteId, templateId).GetAwaiter().GetResult();
                     if (templateInfo != null)
                     {
-                        DataProvider.TemplateDao.SetDefaultAsync(SiteId, templateId).GetAwaiter().GetResult();
+                        DataProvider.TemplateRepository.SetDefaultAsync(SiteId, templateId).GetAwaiter().GetResult();
                         AuthRequest.AddSiteLogAsync(SiteId,
                             $"设置默认{TemplateTypeUtils.GetText(templateInfo.Type)}",
                             $"模板名称:{templateInfo.TemplateName}").GetAwaiter().GetResult();
@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages.Cms
 ";
             }
 
-            RptContents.DataSource = DataProvider.TemplateDao.GetTemplateListAsync(SiteId, _keywords, _templateType).GetAwaiter().GetResult();
+            RptContents.DataSource = DataProvider.TemplateRepository.GetTemplateListAsync(SiteId, _keywords, _templateType).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -167,7 +167,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ltlFileName.Text = $"<a href='{url}' target='_blank'>{createdFileFullName}</a>";
             }
 
-            ltlUseCount.Text = DataProvider.ChannelDao.GetTemplateUseCount(SiteId, templateId, templateType, isDefault).ToString();
+            ltlUseCount.Text = DataProvider.ChannelRepository.GetTemplateUseCount(SiteId, templateId, templateType, isDefault).ToString();
 
             ltlTemplateType.Text = TemplateTypeUtils.GetText(templateType);
 

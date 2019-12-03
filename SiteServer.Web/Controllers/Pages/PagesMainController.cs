@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -37,7 +36,7 @@ namespace SiteServer.API.Controllers.Pages
                 if (redirect != null) return Ok(redirect);
 
                 var siteId = request.GetQueryInt("siteId");
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 var adminInfo = request.Administrator;
                 var permissions = request.AdminPermissionsImpl;
                 var isSuperAdmin = await permissions.IsSuperAdminAsync();
@@ -96,7 +95,7 @@ namespace SiteServer.API.Controllers.Pages
                     });
                 }
 
-                var siteIdListLatestAccessed = await DataProvider.AdministratorDao.UpdateSiteIdAsync(adminInfo, site.Id);
+                var siteIdListLatestAccessed = await DataProvider.AdministratorRepository.UpdateSiteIdAsync(adminInfo, site.Id);
 
                 var permissionList = await permissions.GetPermissionListAsync();
                 if (await permissions.HasSitePermissionsAsync(site.Id))
@@ -113,12 +112,12 @@ namespace SiteServer.API.Controllers.Pages
                     permissionList.AddRange(channelPermissions);
                 }
 
-                var topMenus = await GetTopMenusAsync(site, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions);
+                var topMenus = await GetTopMenusAsync(site, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions, permissionList);
                 var siteMenus =
                     await GetLeftMenusAsync(site, Constants.TopMenu.IdSite, isSuperAdmin, permissionList);
                 var pluginMenus = await GetLeftMenusAsync(site, string.Empty, isSuperAdmin, permissionList);
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 return Ok(new
                 {
@@ -152,7 +151,7 @@ namespace SiteServer.API.Controllers.Pages
             }
         }
 
-        private static async Task<List<Tab>> GetTopMenusAsync(Site siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
+        private static async Task<List<Tab>> GetTopMenusAsync(Site siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions, List<string> permissionList)
         {
             var menus = new List<Tab>();
 
@@ -169,10 +168,10 @@ namespace SiteServer.API.Controllers.Pages
                 }
                 else
                 {
-                    var siteIdList = await DataProvider.AdministratorDao.GetLatestTop10SiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
+                    var siteIdList = await DataProvider.AdministratorRepository.GetLatestTop10SiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
                     foreach (var siteId in siteIdList)
                     {
-                        var site = await DataProvider.SiteDao.GetAsync(siteId);
+                        var site = await DataProvider.SiteRepository.GetAsync(siteId);
                         if (site == null) continue;
 
                         siteMenus.Add(new Tab
@@ -213,6 +212,42 @@ namespace SiteServer.API.Controllers.Pages
                     tab.Children = tabs.ToArray();
 
                     menus.Add(tab);
+                }
+            }
+            else
+            {
+                foreach (var tab in TabManager.GetTopMenuTabs())
+                {
+                    if (!TabManager.IsValid(tab, permissionList)) continue;
+
+                    var tabToAdd = new Tab
+                    {
+                        Id = tab.Id,
+                        Name = tab.Name,
+                        Text = tab.Text,
+                        Target = tab.Target,
+                        Href = tab.Href
+                    };
+                    var tabs = await TabManager.GetTabListAsync(tab.Id, 0);
+                    var tabsToAdd = new List<Tab>();
+                    foreach (var menu in tabs)
+                    {
+                        if (!TabManager.IsValid(menu, permissionList)) continue;
+
+                        var menuToAdd = new Tab
+                        {
+                            Id = menu.Id,
+                            Name = menu.Name,
+                            Text = menu.Text,
+                            Target = menu.Target,
+                            Href = menu.Href,
+                            Children = menu.Children.Where(child => TabManager.IsValid(child, permissionList)).ToArray()
+                        };
+                        tabsToAdd.Add(menuToAdd);
+                    }
+                    tabToAdd.Children = tabsToAdd.ToArray();
+
+                    menus.Add(tabToAdd);
                 }
             }
 
@@ -297,7 +332,7 @@ namespace SiteServer.API.Controllers.Pages
                 }
 #endif
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 if (request.Administrator.LastActivityDate != null && config.IsAdminEnforceLogout)
                 {
@@ -370,7 +405,7 @@ namespace SiteServer.API.Controllers.Pages
             {
                 if (StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSsCms))
                 {
-                    await DataProvider.DbCacheDao.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
+                    await DataProvider.DbCacheRepository.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
                 }
             }
 

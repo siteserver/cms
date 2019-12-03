@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Shared
 {
@@ -27,7 +25,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
 
                 var tableName = request.GetQueryString("tableName");
                 var attributeName = request.GetQueryString("attributeName");
-                var relatedIdentities = TranslateUtils.StringCollectionToIntList(request.GetQueryString("relatedIdentities"));
+                var relatedIdentities = StringUtils.GetIntList(request.GetQueryString("relatedIdentities"));
 
                 var style = await TableStyleManager.GetTableStyleAsync(tableName, attributeName, relatedIdentities) ?? new TableStyle
                 {
@@ -68,7 +66,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                     }
 
                     isRapid = !isSelected && !isNotEquals;
-                    rapidValues = string.Join(",", list);
+                    rapidValues = StringUtils.Join(list);
                 }
 
                 return Ok(new
@@ -95,9 +93,9 @@ namespace SiteServer.API.Controllers.Pages.Shared
 
                 var tableName = request.GetPostString("tableName");
                 var attributeName = request.GetPostString("attributeName");
-                var relatedIdentities = TranslateUtils.StringCollectionToIntList(request.GetPostString("relatedIdentities"));
+                var relatedIdentities = StringUtils.GetIntList(request.GetPostString("relatedIdentities"));
                 var isRapid = request.GetPostBool("isRapid");
-                var rapidValues = TranslateUtils.StringCollectionToStringList(request.GetPostString("rapidValues"));
+                var rapidValues = StringUtils.GetStringList(request.GetPostString("rapidValues"));
                 var body = request.GetPostObject<TableStyle>("style");
 
                 var styleDatabase =
@@ -201,7 +199,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 }
             }
 
-            await DataProvider.TableStyleDao.InsertAsync(style);
+            await DataProvider.TableStyleRepository.InsertAsync(style);
 
             return (true, string.Empty);
         }
@@ -258,7 +256,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 }
             }
 
-            await DataProvider.TableStyleDao.UpdateAsync(style);
+            await DataProvider.TableStyleRepository.UpdateAsync(style);
             
             return (true, string.Empty);
         }

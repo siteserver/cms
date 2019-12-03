@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Text;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -63,7 +62,7 @@ namespace SiteServer.BackgroundPages.Core
                 rowHtml = $@"
 <tr treeItemLevel=""{node.ParentsCount + 1}"" onclick=""activeRow(this);return false;"">
     <td>{title}</td>
-    <td class=""text-nowrap"">{string.Join(",", node.GroupNames)}</td>
+    <td class=""text-nowrap"">{StringUtils.Join(node.GroupNames)}</td>
     <td class=""text-nowrap"">{node.IndexName}</td>
     <td class=""text-center"">{upLink}</td>
     <td class=""text-center"">{downLink}</td>
@@ -78,10 +77,10 @@ namespace SiteServer.BackgroundPages.Core
                 var endDate = TranslateUtils.ToDateTime(additional["EndDate"]);
 
                 var tableName = ChannelManager.GetTableNameAsync(site, node).GetAwaiter().GetResult();
-                var num = DataProvider.ContentDao.GetCountOfContentAddAsync(tableName, site.Id, node.Id, EScopeType.All, startDate, endDate, string.Empty, ETriState.All).GetAwaiter().GetResult();
+                var num = DataProvider.ContentRepository.GetCountOfContentAddAsync(tableName, site.Id, node.Id, EScopeType.All, startDate, endDate, string.Empty, ETriState.All).GetAwaiter().GetResult();
                 var contentAddNum = num == 0 ? "0" : $"<strong>{num}</strong>";
 
-                num = DataProvider.ContentDao.GetCountOfContentUpdateAsync(tableName, site.Id, node.Id, EScopeType.All, startDate, endDate, string.Empty).GetAwaiter().GetResult();
+                num = DataProvider.ContentRepository.GetCountOfContentUpdateAsync(tableName, site.Id, node.Id, EScopeType.All, startDate, endDate, string.Empty).GetAwaiter().GetResult();
                 var contentUpdateNum = num == 0 ? "0" : $"<strong>{num}</strong>";
 
                 rowHtml = $@"
@@ -124,7 +123,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
 
                 var nodeNameBuilder = new StringBuilder();
-                var channelIdList = TranslateUtils.StringCollectionToIntList(node.CreateChannelIdsIfContentChanged);
+                var channelIdList = StringUtils.GetIntList(node.CreateChannelIdsIfContentChanged);
                 foreach (var theChannelId in channelIdList)
                 {
                     var theNodeInfo = await ChannelManager.GetChannelAsync(site.Id, theChannelId);

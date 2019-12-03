@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin;
-using SiteServer.Utils;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -51,7 +51,7 @@ namespace SiteServer.API.Controllers.Home
                     return Ok(await GetContentAddAsync(request));
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 return Ok(new
                 {
@@ -68,7 +68,7 @@ namespace SiteServer.API.Controllers.Home
 
         private async Task<object> GetRegisterAsync(AuthenticatedRequest request)
         {
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
 
             return new
             {
@@ -119,7 +119,7 @@ namespace SiteServer.API.Controllers.Home
                 defaultPageUrl = await PluginMenuManager.GetHomeDefaultPageUrlAsync();
             }
 
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
 
             return new
             {
@@ -132,7 +132,7 @@ namespace SiteServer.API.Controllers.Home
 
         private async Task<object> GetProfileAsync(AuthenticatedRequest request)
         {
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
 
             return new
             {
@@ -159,7 +159,7 @@ namespace SiteServer.API.Controllers.Home
                 var siteIdList = await request.UserPermissionsImpl.GetSiteIdListAsync();
                 foreach (var siteId in siteIdList)
                 {
-                    var permissionSite = await DataProvider.SiteDao.GetAsync(siteId);
+                    var permissionSite = await DataProvider.SiteRepository.GetAsync(siteId);
                     if (requestSiteId == siteId)
                     {
                         site = permissionSite;
@@ -173,7 +173,7 @@ namespace SiteServer.API.Controllers.Home
 
                 if (site == null && siteIdList.Count > 0)
                 {
-                    site = await DataProvider.SiteDao.GetAsync(siteIdList[0]);
+                    site = await DataProvider.SiteRepository.GetAsync(siteIdList[0]);
                 }
 
                 if (site != null)
@@ -212,7 +212,7 @@ namespace SiteServer.API.Controllers.Home
                 }
             }
 
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
 
             return new
             {
@@ -249,7 +249,7 @@ namespace SiteServer.API.Controllers.Home
                 var siteIdList = await request.UserPermissionsImpl.GetSiteIdListAsync();
                 foreach (var siteId in siteIdList)
                 {
-                    var permissionSiteInfo = await DataProvider.SiteDao.GetAsync(siteId);
+                    var permissionSiteInfo = await DataProvider.SiteRepository.GetAsync(siteId);
                     if (requestSiteId == siteId)
                     {
                         siteInfo = permissionSiteInfo;
@@ -263,7 +263,7 @@ namespace SiteServer.API.Controllers.Home
 
                 if (siteInfo == null && siteIdList.Count > 0)
                 {
-                    siteInfo = await DataProvider.SiteDao.GetAsync(siteIdList[0]);
+                    siteInfo = await DataProvider.SiteRepository.GetAsync(siteIdList[0]);
                 }
 
                 if (siteInfo != null)
@@ -291,7 +291,7 @@ namespace SiteServer.API.Controllers.Home
                         SiteUrl = PageUtility.GetSiteUrl(siteInfo, false)
                     };
 
-                    groupNames = await DataProvider.ContentGroupDao.GetGroupNamesAsync(siteInfo.Id);
+                    groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(siteInfo.Id);
                     tagNames = new List<string>();
                 }
 
@@ -313,7 +313,7 @@ namespace SiteServer.API.Controllers.Home
                         //checkedLevels.Insert(0, new KeyValuePair<int, string>(CheckManager.LevelInt.NotChange, CheckManager.Level.NotChange));
                         //checkedLevel = CheckManager.LevelInt.NotChange;
 
-                        content = await DataProvider.ContentDao.GetAsync(siteInfo, channelInfo, requestContentId);
+                        content = await DataProvider.ContentRepository.GetAsync(siteInfo, channelInfo, requestContentId);
                         if (content != null &&
                             (content.SiteId != siteInfo.Id || content.ChannelId != channelInfo.Id))
                         {
@@ -333,7 +333,7 @@ namespace SiteServer.API.Controllers.Home
                 }
             }
 
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
 
             return new
             {

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context.Atom.Atom.Core;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -24,7 +23,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             var feed = ExportRelatedFieldInfo(relatedField);
 
-            var relatedFieldItemInfoList = await DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoListAsync(relatedField.Id, 0);
+            var relatedFieldItemInfoList = await DataProvider.RelatedFieldItemRepository.GetRelatedFieldItemInfoListAsync(relatedField.Id, 0);
 
             foreach (var relatedFieldItemInfo in relatedFieldItemInfoList)
 			{
@@ -61,7 +60,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             feed.Entries.Add(entry);
 
-            var relatedFieldItemInfoList = await DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoListAsync(relatedFieldItem.RelatedFieldId, relatedFieldItem.Id);
+            var relatedFieldItemInfoList = await DataProvider.RelatedFieldItemRepository.GetRelatedFieldItemInfoListAsync(relatedFieldItem.RelatedFieldId, relatedFieldItem.Id);
 
             foreach (var itemInfo in relatedFieldItemInfoList)
             {
@@ -93,20 +92,20 @@ namespace SiteServer.CMS.ImportExport.Components
                     Suffixes = suffixes
                 };
 
-                var srcRelatedFieldInfo = await DataProvider.RelatedFieldDao.GetRelatedFieldAsync(_siteId, title);
+                var srcRelatedFieldInfo = await DataProvider.RelatedFieldRepository.GetRelatedFieldAsync(_siteId, title);
                 if (srcRelatedFieldInfo != null)
                 {
                     if (overwrite)
                     {
-                        await DataProvider.RelatedFieldDao.DeleteAsync(srcRelatedFieldInfo.Id);
+                        await DataProvider.RelatedFieldRepository.DeleteAsync(srcRelatedFieldInfo.Id);
                     }
                     else
                     {
-                        relatedFieldInfo.Title = await DataProvider.RelatedFieldDao.GetImportTitleAsync(_siteId, relatedFieldInfo.Title);
+                        relatedFieldInfo.Title = await DataProvider.RelatedFieldRepository.GetImportTitleAsync(_siteId, relatedFieldInfo.Title);
                     }
                 }
 
-                var relatedFieldId = await DataProvider.RelatedFieldDao.InsertAsync(relatedFieldInfo);
+                var relatedFieldId = await DataProvider.RelatedFieldRepository.InsertAsync(relatedFieldInfo);
 
                 var lastInertedLevel = 1;
                 var lastInsertedParentId = 0;
@@ -131,7 +130,7 @@ namespace SiteServer.CMS.ImportExport.Components
                         ParentId = parentId,
                         Taxis = 0
                     };
-                    lastInsertedId = await DataProvider.RelatedFieldItemDao.InsertAsync(relatedFieldItemInfo);
+                    lastInsertedId = await DataProvider.RelatedFieldItemRepository.InsertAsync(relatedFieldItemInfo);
                     lastInsertedParentId = parentId;
                     lastInertedLevel = level;
 				}

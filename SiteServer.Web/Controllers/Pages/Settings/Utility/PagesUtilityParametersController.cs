@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Utility
 {
@@ -29,7 +28,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
                     return Unauthorized();
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 var parameterList = new List<KeyValuePair<string, string>>
                 {
@@ -41,9 +40,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
                     new KeyValuePair<string, string>(".NET 框架", SystemManager.TargetFramework),
                     new KeyValuePair<string, string>(".NET CLR 版本", SystemManager.EnvironmentVersion),
                     new KeyValuePair<string, string>("SiteServer CMS 版本", SystemManager.ProductVersion),
-                    new KeyValuePair<string, string>("SiteServer.Plugin 版本", SystemManager.PluginVersion),
+                    new KeyValuePair<string, string>("SiteServer.Abstractions 版本", SystemManager.PluginVersion),
                     new KeyValuePair<string, string>("最近升级时间", DateUtils.GetDateAndTimeString(config.UpdateDate)),
-                    new KeyValuePair<string, string>("数据库类型", WebConfigUtils.DatabaseType.Value),
+                    new KeyValuePair<string, string>("数据库类型", WebConfigUtils.DatabaseType.GetValue()),
                     new KeyValuePair<string, string>("数据库名称", SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
                 };
 

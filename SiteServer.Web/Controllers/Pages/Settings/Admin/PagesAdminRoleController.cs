@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
@@ -25,8 +26,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 }
 
                 var roleInfoList = await request.AdminPermissionsImpl.IsSuperAdminAsync()
-                    ? await DataProvider.RoleDao.GetRoleListAsync()
-                    : await DataProvider.RoleDao.GetRoleListByCreatorUserNameAsync(request.AdminName);
+                    ? await DataProvider.RoleRepository.GetRoleListAsync()
+                    : await DataProvider.RoleRepository.GetRoleListByCreatorUserNameAsync(request.AdminName);
 
                 return Ok(new
                 {
@@ -53,17 +54,17 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 var id = request.GetPostInt("id");
 
-                var roleInfo = await DataProvider.RoleDao.GetRoleAsync(id);
+                var roleInfo = await DataProvider.RoleRepository.GetRoleAsync(id);
 
-                await DataProvider.PermissionsInRolesDao.DeleteAsync(roleInfo.RoleName);
-                await DataProvider.SitePermissionsDao.DeleteAsync(roleInfo.RoleName);
-                await DataProvider.RoleDao.DeleteRoleAsync(roleInfo.Id);
+                await DataProvider.PermissionsInRolesRepository.DeleteAsync(roleInfo.RoleName);
+                await DataProvider.SitePermissionsRepository.DeleteAsync(roleInfo.RoleName);
+                await DataProvider.RoleRepository.DeleteRoleAsync(roleInfo.Id);
 
                 await request.AddAdminLogAsync("删除管理员角色", $"角色名称:{roleInfo.RoleName}");
 
                 var roleInfoList = await request.AdminPermissionsImpl.IsSuperAdminAsync()
-                    ? await DataProvider.RoleDao.GetRoleListAsync()
-                    : await DataProvider.RoleDao.GetRoleListByCreatorUserNameAsync(request.AdminName);
+                    ? await DataProvider.RoleRepository.GetRoleListAsync()
+                    : await DataProvider.RoleRepository.GetRoleListByCreatorUserNameAsync(request.AdminName);
 
                 return Ok(new
                 {

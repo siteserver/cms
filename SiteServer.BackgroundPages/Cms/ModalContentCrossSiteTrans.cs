@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -32,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "channelId", "contentIdCollection");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
-            _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
+            _contentIdList = StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
 
             if (IsPostBack) return;
 
@@ -53,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             var targetSiteId = int.Parse(DdlSiteId.SelectedValue);
-            var targetSite = DataProvider.SiteDao.GetAsync(targetSiteId).GetAwaiter().GetResult();
+            var targetSite = DataProvider.SiteRepository.GetAsync(targetSiteId).GetAwaiter().GetResult();
             try
             {
                 foreach (ListItem listItem in LbChannelId.Items)
@@ -66,7 +67,7 @@ namespace SiteServer.BackgroundPages.Cms
                             var targetChannelInfo = ChannelManager.GetChannelAsync(targetSiteId, targetChannelId).GetAwaiter().GetResult();
                             foreach (var contentId in _contentIdList)
                             {
-                                var contentInfo = DataProvider.ContentDao.GetAsync(Site, _channelId, contentId).GetAwaiter().GetResult();
+                                var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channelId, contentId).GetAwaiter().GetResult();
                                 FileUtility.MoveFileByContentInfo(Site, targetSite, contentInfo);
                                 contentInfo.SiteId = targetSiteId;
                                 contentInfo.SourceId = contentInfo.ChannelId;
@@ -75,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 contentInfo.Checked = targetSite.IsCrossSiteTransChecked;
                                 contentInfo.CheckedLevel = 0;
 
-                                DataProvider.ContentDao.InsertAsync(targetSite, targetChannelInfo, contentInfo).GetAwaiter().GetResult();
+                                DataProvider.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo).GetAwaiter().GetResult();
                             }
                         }
                     }

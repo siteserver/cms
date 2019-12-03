@@ -5,10 +5,9 @@ using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -29,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
             var channelId = AuthRequest.ChannelId;
             var contentId = AuthRequest.ContentId;
 
-            var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
+            var site = DataProvider.SiteRepository.GetAsync(siteId).GetAwaiter().GetResult();
             var channelInfo = ChannelManager.GetChannelAsync(siteId, channelId).GetAwaiter().GetResult();
             var styleList = TableStyleManager.GetContentStyleListAsync(site, channelInfo).GetAwaiter().GetResult();
 
@@ -78,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            contentInfo.Id = DataProvider.ContentDao.InsertPreviewAsync(site, channelInfo, contentInfo).GetAwaiter().GetResult();
+            contentInfo.Id = DataProvider.ContentRepository.InsertPreviewAsync(site, channelInfo, contentInfo).GetAwaiter().GetResult();
 
             return new
             {

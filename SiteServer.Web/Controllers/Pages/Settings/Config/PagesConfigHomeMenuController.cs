@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Config
 {
@@ -54,7 +53,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
 
                 var id = request.GetPostInt("id");
 
-                await DataProvider.UserMenuDao.DeleteAsync(id);
+                await DataProvider.UserMenuRepository.DeleteAsync(id);
 
                 return Ok(new
                 {
@@ -81,13 +80,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
 
                 if (menuInfo.Id == 0)
                 {
-                    await DataProvider.UserMenuDao.InsertAsync(menuInfo);
+                    await DataProvider.UserMenuRepository.InsertAsync(menuInfo);
 
                     await request.AddAdminLogAsync("新增用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
                 else if (menuInfo.Id > 0)
                 {
-                    await DataProvider.UserMenuDao.UpdateAsync(menuInfo);
+                    await DataProvider.UserMenuRepository.UpdateAsync(menuInfo);
 
                     await request.AddAdminLogAsync("修改用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
@@ -117,7 +116,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
 
                 foreach (var userMenuInfo in await UserMenuManager.GetAllUserMenuListAsync())
                 {
-                    await DataProvider.UserMenuDao.DeleteAsync(userMenuInfo.Id);
+                    await DataProvider.UserMenuRepository.DeleteAsync(userMenuInfo.Id);
                 }
 
                 await request.AddAdminLogAsync("重置用户菜单");

@@ -4,7 +4,8 @@ using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -32,13 +33,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelInfo, contentId);
+                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
                 var title = WebUtils.GetContentTitle(site, contentInfo, string.Empty);
@@ -46,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     CheckManager.GetCheckState(site, contentInfo);
 
                 var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
-                var contentChecks = await DataProvider.ContentCheckDao.GetCheckListAsync(tableName, contentId);
+                var contentChecks = await DataProvider.ContentCheckRepository.GetCheckListAsync(tableName, contentId);
 
                 return Ok(new
                 {

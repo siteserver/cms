@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using System.Text;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -66,7 +66,7 @@ namespace SiteServer.CMS.StlParser.Model
         {
             var pageInfo = new PageInfo();
 
-            var config = await DataProvider.ConfigDao.GetAsync();
+            var config = await DataProvider.ConfigRepository.GetAsync();
 
             pageInfo.Template = template;
             pageInfo.SiteId = site.Id;
@@ -79,7 +79,7 @@ namespace SiteServer.CMS.StlParser.Model
             pageInfo.Site = site;
             pageInfo.User = null;
             pageInfo._uniqueId = 1;
-            pageInfo.ApiUrl = config.ApiUrl;
+            pageInfo.ApiUrl = config.GetApiUrl();
 
             pageInfo.ChannelItems = new Stack<ChannelItemInfo>(5);
             pageInfo.ContentItems = new Stack<ContentItemInfo>(5);
@@ -351,7 +351,7 @@ wnd_frame.src=url;}}
             {
                 retVal = $@"
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsPageScript)}""></script>
-<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{Site.Id}', {Site.WebUrl.TrimEnd('/')}');</script>
+<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{Site.Id}', {Site.GetWebUrl().TrimEnd('/')}');</script>
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsUserScript)}""></script>";
             }
             else if (pageJsName == Const.JsInnerCalendar)

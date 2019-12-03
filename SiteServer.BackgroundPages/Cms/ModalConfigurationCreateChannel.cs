@@ -2,10 +2,10 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 //NodeManager.AddListItemsForAddContent(this.channelIdCollection.Items, base.Site, false);
                 ChannelManager.AddListItemsForCreateChannelAsync(LbChannelId.Items, Site, false, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
-                ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(nodeInfo.CreateChannelIdsIfContentChanged));
+                ControlUtils.SelectMultiItems(LbChannelId, StringUtils.GetStringList(nodeInfo.CreateChannelIdsIfContentChanged));
 			}
 		}
 
@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
                 nodeInfo.IsCreateChannelIfContentChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfContentChanged.SelectedValue);
                 nodeInfo.CreateChannelIdsIfContentChanged = ControlUtils.GetSelectedListControlValueCollection(LbChannelId);
 
-                DataProvider.ChannelDao.UpdateAsync(nodeInfo).GetAwaiter().GetResult();
+                DataProvider.ChannelRepository.UpdateAsync(nodeInfo).GetAwaiter().GetResult();
 
                 AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "设置栏目变动生成页面", $"栏目:{nodeInfo.ChannelName}").GetAwaiter().GetResult();
                 isSuccess = true;

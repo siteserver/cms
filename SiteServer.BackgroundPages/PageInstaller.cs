@@ -5,11 +5,11 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using Datory;
 using SiteServer.CMS.Context;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.BackgroundPages
 {
@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages
 
         public void DdlSqlDatabaseType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
+            var databaseType = TranslateUtils.ToEnum(DdlSqlDatabaseType.SelectedValue, DatabaseType.MySql);
             PhOracleDatabase.Visible = databaseType == DatabaseType.Oracle;
         }
 
@@ -185,7 +185,7 @@ namespace SiteServer.BackgroundPages
                 bool isConnectValid;
                 string errorMessage;
                 var databaseNameList = new List<string>();
-                var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
+                var databaseType = TranslateUtils.ToEnum(DdlSqlDatabaseType.SelectedValue, DatabaseType.MySql);
                 if (string.IsNullOrEmpty(TbSqlServer.Text))
                 {
                     isConnectValid = false;
@@ -209,7 +209,7 @@ namespace SiteServer.BackgroundPages
                 else
                 {
                     var connectionStringWithoutDatabaseName = GetConnectionString(databaseType == DatabaseType.Oracle);
-                    isConnectValid = DataProvider.DatabaseDao.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
+                    isConnectValid = DataProvider.DatabaseRepository.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
                 }
                 
                 if (isConnectValid)
@@ -320,7 +320,7 @@ namespace SiteServer.BackgroundPages
 
         private string GetConnectionString(bool isDatabaseName)
         {
-            var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
+            var databaseType = TranslateUtils.ToEnum(DdlSqlDatabaseType.SelectedValue, DatabaseType.MySql);
             var databaseName = string.Empty;
             if (isDatabaseName)
             {
@@ -391,7 +391,7 @@ namespace SiteServer.BackgroundPages
             try
             {
                 var isProtectData = TranslateUtils.ToBool(DdlIsProtectData.SelectedValue);
-                var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
+                var databaseType = TranslateUtils.ToEnum(DdlSqlDatabaseType.SelectedValue, DatabaseType.MySql);
                 var connectionString = GetConnectionString(true);
 
                 WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, string.Empty, "SiteServer", "Home", StringUtils.GetShortGuid(), false);

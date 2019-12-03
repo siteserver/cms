@@ -3,10 +3,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.Utils;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.Core
 {
@@ -23,7 +22,7 @@ namespace SiteServer.CMS.Core
                 {
                     if (transType == ECrossSiteTransType.AllParentSite)
                     {
-                        var parentSiteId = await DataProvider.SiteDao.GetParentSiteIdAsync(site.Id);
+                        var parentSiteId = await DataProvider.SiteRepository.GetParentSiteIdAsync(site.Id);
                         if (parentSiteId != 0)
                         {
                             isCrossSiteTrans = true;
@@ -41,7 +40,7 @@ namespace SiteServer.CMS.Core
                     {
                         if (channel.TransSiteId > 0)
                         {
-                            var theSite = await DataProvider.SiteDao.GetAsync(channel.TransSiteId);
+                            var theSite = await DataProvider.SiteRepository.GetAsync(channel.TransSiteId);
                             if (theSite != null)
                             {
                                 isCrossSiteTrans = true;
@@ -50,7 +49,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (transType == ECrossSiteTransType.ParentSite)
                     {
-                        var parentSiteId = await DataProvider.SiteDao.GetParentSiteIdAsync(site.Id);
+                        var parentSiteId = await DataProvider.SiteRepository.GetParentSiteIdAsync(site.Id);
                         if (parentSiteId != 0)
                         {
                             isCrossSiteTrans = true;
@@ -95,11 +94,11 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    theSiteId = await DataProvider.SiteDao.GetParentSiteIdAsync(site.Id);
+                    theSiteId = await DataProvider.SiteRepository.GetParentSiteIdAsync(site.Id);
                 }
                 if (theSiteId > 0)
                 {
-                    var theSite = await DataProvider.SiteDao.GetAsync(theSiteId);
+                    var theSite = await DataProvider.SiteRepository.GetAsync(theSiteId);
                     if (theSite != null)
                     {
                         var listitem = new ListItem(theSite.SiteName, theSite.Id.ToString());
@@ -109,15 +108,15 @@ namespace SiteServer.CMS.Core
             }
             else if (channelInfo.TransType == ECrossSiteTransType.AllParentSite)
             {
-                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync();
+                var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
 
                 var allParentSiteIdList = new List<int>();
-                await DataProvider.SiteDao.GetAllParentSiteIdListAsync(allParentSiteIdList, siteIdList, site.Id);
+                await DataProvider.SiteRepository.GetAllParentSiteIdListAsync(allParentSiteIdList, siteIdList, site.Id);
 
                 foreach (var psId in siteIdList)
                 {
                     if (psId == site.Id) continue;
-                    var psInfo = await DataProvider.SiteDao.GetAsync(psId);
+                    var psInfo = await DataProvider.SiteRepository.GetAsync(psId);
                     var show = psInfo.Root || allParentSiteIdList.Contains(psInfo.Id);
                     if (show)
                     {
@@ -129,11 +128,11 @@ namespace SiteServer.CMS.Core
             }
             else if (channelInfo.TransType == ECrossSiteTransType.AllSite)
             {
-                var siteIdList = await DataProvider.SiteDao.GetSiteIdListAsync();
+                var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
 
                 foreach (var psId in siteIdList)
                 {
-                    var psInfo = await DataProvider.SiteDao.GetAsync(psId);
+                    var psInfo = await DataProvider.SiteRepository.GetAsync(psId);
                     var listitem = new ListItem(psInfo.SiteName, psId.ToString());
                     if (psInfo.Root) listitem.Selected = true;
                     siteIdDropDownList.Items.Add(listitem);
@@ -149,7 +148,7 @@ namespace SiteServer.CMS.Core
 
             if (!isUseNodeNames)
             {
-                var channelIdList = TranslateUtils.StringCollectionToIntList(channel.TransChannelIds);
+                var channelIdList = StringUtils.GetIntList(channel.TransChannelIds);
                 foreach (var theChannelId in channelIdList)
                 {
                     var theNodeInfo = await ChannelManager.GetChannelAsync(psId, theChannelId);
@@ -164,7 +163,7 @@ namespace SiteServer.CMS.Core
             {
                 if (!string.IsNullOrEmpty(channel.TransChannelNames))
                 {
-                    var nodeNameArrayList = TranslateUtils.StringCollectionToStringList(channel.TransChannelNames);
+                    var nodeNameArrayList = StringUtils.GetStringList(channel.TransChannelNames);
                     var channelIdList = await ChannelManager.GetChannelIdListAsync(psId);
                     foreach (var nodeName in nodeNameArrayList)
                     {
@@ -182,7 +181,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    await ChannelManager.AddListItemsForAddContentAsync(channelIdListBox.Items, await DataProvider.SiteDao.GetAsync(psId), false, permissionsImpl);
+                    await ChannelManager.AddListItemsForAddContentAsync(channelIdListBox.Items, await DataProvider.SiteRepository.GetAsync(psId), false, permissionsImpl);
                 }
             }
         }
@@ -208,25 +207,25 @@ namespace SiteServer.CMS.Core
 
                     if (channel.TransType == ECrossSiteTransType.SelfSite)
                     {
-                        site = await DataProvider.SiteDao.GetAsync(siteId);
+                        site = await DataProvider.SiteRepository.GetAsync(siteId);
                     }
                     else if (channel.TransType == ECrossSiteTransType.SpecifiedSite)
                     {
-                        site = await DataProvider.SiteDao.GetAsync(channel.TransSiteId);
+                        site = await DataProvider.SiteRepository.GetAsync(channel.TransSiteId);
                     }
                     else
                     {
-                        var parentSiteId = await DataProvider.SiteDao.GetParentSiteIdAsync(siteId);
+                        var parentSiteId = await DataProvider.SiteRepository.GetParentSiteIdAsync(siteId);
                         if (parentSiteId != 0)
                         {
-                            site = await DataProvider.SiteDao.GetAsync(parentSiteId);
+                            site = await DataProvider.SiteRepository.GetAsync(parentSiteId);
                         }
                     }
 
                     if (site != null && !string.IsNullOrEmpty(channel.TransChannelIds))
                     {
                         var nodeNameBuilder = new StringBuilder();
-                        var channelIdArrayList = TranslateUtils.StringCollectionToIntList(channel.TransChannelIds);
+                        var channelIdArrayList = StringUtils.GetIntList(channel.TransChannelIds);
                         foreach (int channelId in channelIdArrayList)
                         {
                             var theNodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
@@ -248,7 +247,7 @@ namespace SiteServer.CMS.Core
 
         public static async Task TransContentInfoAsync(Site site, Channel channel, int contentId, Site targetSite, int targetChannelId)
         {
-            var contentInfo = await DataProvider.ContentDao.GetAsync(site, channel, contentId);
+            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channel, contentId);
             FileUtility.MoveFileByContentInfo(site, targetSite, contentInfo);
             contentInfo.SiteId = targetSite.Id;
             contentInfo.SourceId = channel.Id;
@@ -280,7 +279,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.ReferenceContent);
             }
 
-            await DataProvider.ContentDao.InsertAsync(targetSite, channel, contentInfo);
+            await DataProvider.ContentRepository.InsertAsync(targetSite, channel, contentInfo);
 
             #region 复制资源
             //资源：图片，文件，视频
@@ -293,7 +292,7 @@ namespace SiteServer.CMS.Core
             }
             else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl))))
             {
-                var sourceImageUrls = TranslateUtils.StringCollectionToStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl)));
+                var sourceImageUrls = StringUtils.GetStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl)));
 
                 foreach (string imageUrl in sourceImageUrls)
                 {
@@ -310,7 +309,7 @@ namespace SiteServer.CMS.Core
             }
             else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl))))
             {
-                var sourceFileUrls = TranslateUtils.StringCollectionToStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl)));
+                var sourceFileUrls = StringUtils.GetStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl)));
 
                 foreach (string fileUrl in sourceFileUrls)
                 {

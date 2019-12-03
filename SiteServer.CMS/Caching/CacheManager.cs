@@ -4,7 +4,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Options;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using StackExchange.Redis;
 
 namespace SiteServer.CMS.Caching
@@ -59,5 +59,7 @@ namespace SiteServer.CMS.Caching
 
             return (isSuccess, errorMessage);
         }
+
+        
     }
 }

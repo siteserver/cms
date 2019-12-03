@@ -4,9 +4,8 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -52,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (AuthRequest.IsQueryExists("RelatedFieldID"))
             {
                 var relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
-                var relatedFieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldAsync(relatedFieldId).GetAwaiter().GetResult();
+                var relatedFieldInfo = DataProvider.RelatedFieldRepository.GetRelatedFieldAsync(relatedFieldId).GetAwaiter().GetResult();
                 if (relatedFieldInfo != null)
                 {
                     TbRelatedFieldName.Text = relatedFieldInfo.Title;
@@ -138,7 +137,7 @@ namespace SiteServer.BackgroundPages.Cms
 				try
 				{
                     relatedFieldInfo.Id = AuthRequest.GetQueryInt("RelatedFieldID");
-                    DataProvider.RelatedFieldDao.UpdateAsync(relatedFieldInfo).GetAwaiter().GetResult();
+                    DataProvider.RelatedFieldRepository.UpdateAsync(relatedFieldInfo).GetAwaiter().GetResult();
                     AuthRequest.AddSiteLogAsync(SiteId, "修改联动字段", $"联动字段:{relatedFieldInfo.Title}").GetAwaiter().GetResult();
 					isChanged = true;
 				}
@@ -149,7 +148,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			else
 			{
-                var relatedFieldNameList = DataProvider.RelatedFieldDao.GetTitleListAsync(SiteId).GetAwaiter().GetResult();
+                var relatedFieldNameList = DataProvider.RelatedFieldRepository.GetTitleListAsync(SiteId).GetAwaiter().GetResult();
                 if (relatedFieldNameList.Contains(TbRelatedFieldName.Text))
 				{
                     FailMessage("联动字段添加失败，联动字段名称已存在！");
@@ -158,7 +157,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
 					try
 					{
-                        DataProvider.RelatedFieldDao.InsertAsync(relatedFieldInfo).GetAwaiter().GetResult();
+                        DataProvider.RelatedFieldRepository.InsertAsync(relatedFieldInfo).GetAwaiter().GetResult();
                         AuthRequest.AddSiteLogAsync(SiteId, "添加联动字段", $"联动字段:{relatedFieldInfo.Title}").GetAwaiter().GetResult();
 						isChanged = true;
 					}

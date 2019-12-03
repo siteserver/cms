@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
@@ -46,8 +46,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 var offset = request.GetQueryInt("offset");
                 var limit = request.GetQueryInt("limit");
 
-                var count = await DataProvider.UserDao.GetCountAsync(state, groupId, lastActivityDate, keyword);
-                var users = await DataProvider.UserDao.GetUsersAsync(state,groupId, lastActivityDate, keyword, order, offset, limit);
+                var count = await DataProvider.UserRepository.GetCountAsync(state, groupId, lastActivityDate, keyword);
+                var users = await DataProvider.UserRepository.GetUsersAsync(state,groupId, lastActivityDate, keyword, order, offset, limit);
 
                 return Ok(new
                 {
@@ -76,7 +76,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                 var id = request.GetPostInt("id");
 
-                var user = await DataProvider.UserDao.DeleteAsync(id);
+                var user = await DataProvider.UserRepository.DeleteAsync(id);
 
                 await request.AddAdminLogAsync("删除用户", $"用户:{user.UserName}");
 
@@ -144,7 +144,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                         if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password))
                         {
-                            var (userId, message) = await DataProvider.UserDao.InsertAsync(new CMS.Model.User
+                            var (userId, message) = await DataProvider.UserRepository.InsertAsync(new Abstractions.User
                             {
                                 UserName = userName,
                                 DisplayName = displayName,
@@ -226,7 +226,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                 var id = request.GetPostInt("id");
 
-                await DataProvider.UserDao.CheckAsync(new List<int>
+                await DataProvider.UserRepository.CheckAsync(new List<int>
                 {
                     id
                 });
@@ -258,9 +258,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                 var id = request.GetPostInt("id");
 
-                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
+                var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
 
-                await DataProvider.UserDao.LockAsync(new List<int>
+                await DataProvider.UserRepository.LockAsync(new List<int>
                 {
                     id
                 });
@@ -292,9 +292,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
                 var id = request.GetPostInt("id");
 
-                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
+                var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
 
-                await DataProvider.UserDao.UnLockAsync(new List<int>
+                await DataProvider.UserRepository.UnLockAsync(new List<int>
                 {
                     id
                 });

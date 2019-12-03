@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
@@ -128,7 +127,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                 }
 
                 CacheUtils.ClearAll();
-                await DataProvider.DbCacheDao.ClearAsync();
+                await DataProvider.DbCacheRepository.ClearAsync();
 
                 return Ok(new { });
             }

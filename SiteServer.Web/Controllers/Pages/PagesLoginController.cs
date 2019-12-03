@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -22,7 +21,7 @@ namespace SiteServer.API.Controllers.Pages
                 var redirect = await request.AdminRedirectCheckAsync(checkInstall: true, checkDatabaseVersion: true);
                 if (redirect != null) return Ok(redirect);
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 return Ok(new
                 {

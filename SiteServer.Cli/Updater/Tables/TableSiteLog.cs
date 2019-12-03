@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -54,9 +54,9 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.SiteLogDao.TableName;
+        private static readonly string NewTableName = DataProvider.SiteLogRepository.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.SiteLogDao.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.SiteLogRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>

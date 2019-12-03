@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using SiteServer.Plugin;
-using Menu = SiteServer.Plugin.Menu;
+using SiteServer.Abstractions;
+using Menu = SiteServer.Abstractions.Menu;
 
 namespace SiteServer.CMS.Plugin.Impl
 {
@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Plugin.Impl
     {
         public string PluginId { get; }
 
-        public IMetadata Metadata { get; }
+        public IPackageMetadata Metadata { get; }
 
         public string SystemDefaultPageUrl { get; private set; }
         public string HomeDefaultPageUrl { get; private set; }
@@ -19,7 +19,7 @@ namespace SiteServer.CMS.Plugin.Impl
         public List<Func<Menu>> SystemMenuFuncs { get; private set; }
         public List<Func<int, Menu>> SiteMenuFuncs { get; private set; }
         public List<Func<Menu>> HomeMenuFuncs { get; private set; }
-        public List<Func<IContent, Menu>> ContentMenuFuncs { get; private set; }
+        public List<Func<Content, Menu>> ContentMenuFuncs { get; private set; }
 
         public string ContentTableName { get; private set; }
         public bool IsApiAuthorization { get; private set; }
@@ -53,12 +53,11 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public event ContentFormLoadEventHandler ContentFormLoad;
 
-        public bool OnContentFormLoad(ContentFormLoadEventArgs e, out string html)
+        public string OnContentFormLoad(ContentFormLoadEventArgs e)
         {
-            html = null;
-            if (ContentFormLoad == null) return false;
-            html = ContentFormLoad.Invoke(this, e);
-            return true;
+            if (ContentFormLoad == null) return string.Empty;
+            var html = ContentFormLoad.Invoke(this, e);
+            return html;
         }
 
         public event EventHandler<ContentFormSubmitEventArgs> ContentFormSubmit;
@@ -74,7 +73,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public Dictionary<string, Func<IContentContext, string>> ContentColumns { get; private set; }
 
-        public ServiceImpl(IMetadata metadata)
+        public ServiceImpl(IPackageMetadata metadata)
         {
             PluginId = metadata.Id;
             Metadata = metadata;
@@ -122,11 +121,11 @@ namespace SiteServer.CMS.Plugin.Impl
             return this;
         }
 
-        public IService AddContentMenu(Func<IContent, Menu> menuFunc)
+        public IService AddContentMenu(Func<Content, Menu> menuFunc)
         {
             if (ContentMenuFuncs == null)
             {
-                ContentMenuFuncs = new List<Func<IContent, Menu>>();
+                ContentMenuFuncs = new List<Func<Content, Menu>>();
             }
 
             ContentMenuFuncs.Add(menuFunc);

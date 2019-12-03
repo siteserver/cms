@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context.Atom.Atom.Core;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -84,7 +84,7 @@ namespace SiteServer.CMS.ImportExport.Components
             var orderString = string.Empty;
             if (tableStyle.RelatedIdentity != 0)
             {
-                orderString = await DataProvider.ChannelDao.GetOrderStringInSiteAsync(tableStyle.RelatedIdentity);
+                orderString = await DataProvider.ChannelRepository.GetOrderStringInSiteAsync(tableStyle.RelatedIdentity);
             }
 
             AtomUtility.AddDcElement(feed.AdditionalElements, "OrderString", orderString);
@@ -216,9 +216,9 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 if (await TableStyleManager.IsExistsAsync(relatedIdentity, tableName, attributeName))
                 {
-                    await DataProvider.TableStyleDao.DeleteAsync(relatedIdentity, tableName, attributeName);
+                    await DataProvider.TableStyleRepository.DeleteAsync(relatedIdentity, tableName, attributeName);
                 }
-                await DataProvider.TableStyleDao.InsertAsync(styleInfo);
+                await DataProvider.TableStyleRepository.InsertAsync(styleInfo);
             }
         }
 
@@ -236,7 +236,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var tableName = PathUtils.GetDirectoryName(styleDirectoryPath, false);
                 if (tableName == "siteserver_PublishmentSystem")
                 {
-                    tableName = DataProvider.SiteDao.TableName;
+                    tableName = DataProvider.SiteRepository.TableName;
                 }
                 if (!string.IsNullOrEmpty(tableNameCollection?[tableName]))
                 {
@@ -263,7 +263,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                         var orderString = AtomUtility.GetDcElementContent(feed.AdditionalElements, "OrderString");
 
-                        var relatedIdentity = !string.IsNullOrEmpty(orderString) ? await DataProvider.ChannelDao.GetIdAsync(siteId, orderString) : siteId;
+                        var relatedIdentity = !string.IsNullOrEmpty(orderString) ? await DataProvider.ChannelRepository.GetIdAsync(siteId, orderString) : siteId;
 
                         if (relatedIdentity <= 0 || await TableStyleManager.IsExistsAsync(relatedIdentity, tableName, attributeName)) continue;
 
@@ -305,7 +305,7 @@ namespace SiteServer.CMS.ImportExport.Components
                             styleInfo.StyleItems = styleItems;
                         }
 
-                        await DataProvider.TableStyleDao.InsertAsync(styleInfo);
+                        await DataProvider.TableStyleRepository.InsertAsync(styleInfo);
                     }
                 }
             }

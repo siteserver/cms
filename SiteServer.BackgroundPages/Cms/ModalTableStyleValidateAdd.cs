@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
-using SiteServer.Plugin;
-using TableStyle = SiteServer.CMS.Model.TableStyle;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
+using TableStyle = SiteServer.Abstractions.TableStyle;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             _tableStyleId = AuthRequest.GetQueryInt("TableStyleID");
-            _relatedIdentities = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("RelatedIdentities"));
+            _relatedIdentities = StringUtils.GetIntList(AuthRequest.GetQueryString("RelatedIdentities"));
             if (_relatedIdentities.Count == 0)
             {
                 _relatedIdentities.Add(0);
@@ -123,17 +123,17 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var relatedIdentity = _relatedIdentities[0];
                     _style.RelatedIdentity = relatedIdentity;
-                    _style.Id = DataProvider.TableStyleDao.InsertAsync(_style).GetAwaiter().GetResult();
+                    _style.Id = DataProvider.TableStyleRepository.InsertAsync(_style).GetAwaiter().GetResult();
                 }
 
                 if (_style.Id > 0)
                 {
-                    DataProvider.TableStyleDao.UpdateAsync(_style).GetAwaiter().GetResult();
+                    DataProvider.TableStyleRepository.UpdateAsync(_style).GetAwaiter().GetResult();
                     AuthRequest.AddSiteLogAsync(SiteId, "修改表单验证", $"字段:{_style.AttributeName}").GetAwaiter().GetResult();
                 }
                 else
                 {
-                    DataProvider.TableStyleDao.InsertAsync(_style).GetAwaiter().GetResult();
+                    DataProvider.TableStyleRepository.InsertAsync(_style).GetAwaiter().GetResult();
                     AuthRequest.AddSiteLogAsync(SiteId, "新增表单验证", $"字段:{_style.AttributeName}").GetAwaiter().GetResult();
                 }
                 isChanged = true;

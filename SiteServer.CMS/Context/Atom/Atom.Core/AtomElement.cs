@@ -191,7 +191,7 @@ namespace SiteServer.CMS.Context.Atom.Atom.Core
 		/// <param name="message">The error message if the element is missing.</param>
 		protected internal void WriteElement(string localName, string input, bool required, string message)
 		{
-			if(input.Length != 0)
+			if(!string.IsNullOrEmpty(input))
 			{
 				this.Buffer.AppendFormat("<{0}>", localName);
 				this.Buffer.Append(input);
@@ -285,7 +285,7 @@ namespace SiteServer.CMS.Context.Atom.Atom.Core
 		/// <param name="message">The error message if the attribute is missing.</param>
 		protected internal void WriteAttribute(string localName, string input, bool required, string message)
 		{
-			if(input.Length != 0)
+			if(!string.IsNullOrEmpty(input))
 				this.Buffer.AppendFormat(" {0}=\"{1}\"", localName, input);
 			else if(required)
 				throw new RequiredAttributeNotFoundException(localName + " " + message);

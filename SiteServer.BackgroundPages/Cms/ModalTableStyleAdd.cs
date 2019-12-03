@@ -4,13 +4,12 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
-using TableStyle = SiteServer.CMS.Model.TableStyle;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
+using TableStyle = SiteServer.Abstractions.TableStyle;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -73,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             _tableStyleId = AuthRequest.GetQueryInt("TableStyleID");
-            _relatedIdentities = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("RelatedIdentities"));
+            _relatedIdentities = StringUtils.GetIntList(AuthRequest.GetQueryString("RelatedIdentities"));
             if (_relatedIdentities.Count == 0)
             {
                 _relatedIdentities.Add(0);
@@ -88,14 +87,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             InputTypeUtils.AddListItems(DdlInputType);
 
-            var relatedFieldInfoList = DataProvider.RelatedFieldDao.GetRelatedFieldListAsync(SiteId).GetAwaiter().GetResult();
+            var relatedFieldInfoList = DataProvider.RelatedFieldRepository.GetRelatedFieldListAsync(SiteId).GetAwaiter().GetResult();
             foreach (var rfInfo in relatedFieldInfoList)
             {
                 var listItem = new ListItem(rfInfo.Title, rfInfo.Id.ToString());
                 DdlRelatedFieldId.Items.Add(listItem);
             }
 
-            ERelatedFieldStyleUtils.AddListItems(DdlRelatedFieldStyle);
+            ERelatedFieldStyleUtilsExtensions.AddListItems(DdlRelatedFieldStyle);
 
             ControlUtils.SelectSingleItem(DdlIsRapid, _style.Id != 0 ? false.ToString() : true.ToString());
 
@@ -138,7 +137,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             DdlIsRapid.SelectedValue = (!isSelected && !isNotEquals).ToString();
-            TbRapidValues.Text = string.Join(",", list);
+            TbRapidValues.Text = StringUtils.Join(list);
 
             TbCustomizeLeft.Text = _style.CustomizeLeft;
             TbCustomizeRight.Text = _style.CustomizeRight;
@@ -322,7 +321,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var isRapid = TranslateUtils.ToBool(DdlIsRapid.SelectedValue);
                 if (isRapid)
                 {
-                    var rapidValues = TranslateUtils.StringCollectionToStringList(TbRapidValues.Text);
+                    var rapidValues = StringUtils.GetStringList(TbRapidValues.Text);
                     foreach (var rapidValue in rapidValues)
                     {
                         var itemInfo = new TableStyleItem
@@ -367,7 +366,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                DataProvider.TableStyleDao.UpdateAsync(_style).GetAwaiter().GetResult();
+                DataProvider.TableStyleRepository.UpdateAsync(_style).GetAwaiter().GetResult();
 
                 if (SiteId > 0)
                 {
@@ -432,7 +431,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var isRapid = TranslateUtils.ToBool(DdlIsRapid.SelectedValue);
                 if (isRapid)
                 {
-                    var rapidValues = TranslateUtils.StringCollectionToStringList(TbRapidValues.Text);
+                    var rapidValues = StringUtils.GetStringList(TbRapidValues.Text);
                     foreach (var rapidValue in rapidValues)
                     {
                         var itemInfo = new TableStyleItem
@@ -477,7 +476,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                DataProvider.TableStyleDao.InsertAsync(_style).GetAwaiter().GetResult();
+                DataProvider.TableStyleRepository.InsertAsync(_style).GetAwaiter().GetResult();
 
                 if (SiteId > 0)
                 {

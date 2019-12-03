@@ -2,15 +2,13 @@
 using System.Collections.Specialized;
 using System.Data;
 using System.Threading.Tasks;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
@@ -56,7 +54,7 @@ namespace SiteServer.CMS.StlParser.Utility
                     {
                         if (topLevel < nodeInfo.ParentsCount)
                         {
-                            var parentIdStrList = TranslateUtils.StringCollectionToStringList(nodeInfo.ParentsPath);
+                            var parentIdStrList = StringUtils.GetStringList(nodeInfo.ParentsPath);
                             if (parentIdStrList[topLevel] != null)
                             {
                                 var parentIdStr = parentIdStrList[topLevel];
@@ -73,7 +71,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     if (upLevel < nodeInfo.ParentsCount)
                     {
-                        var parentIdStrList = TranslateUtils.StringCollectionToStringList(nodeInfo.ParentsPath);
+                        var parentIdStrList = StringUtils.GetStringList(nodeInfo.ParentsPath);
                         if (parentIdStrList[upLevel] != null)
                         {
                             var parentIdStr = parentIdStrList[nodeInfo.ParentsCount - upLevel];
@@ -304,20 +302,20 @@ namespace SiteServer.CMS.StlParser.Utility
             var tableName = await ChannelManager.GetTableNameAsync(site, nodeInfo);
 
             var sqlWhereString = await ChannelManager.IsContentModelPluginAsync(site, nodeInfo)
-                ? await DataProvider.ContentDao.GetStlWhereStringAsync(site.Id, listInfo.GroupContent, listInfo.GroupContentNot,
+                ? await DataProvider.ContentRepository.GetStlWhereStringAsync(site.Id, listInfo.GroupContent, listInfo.GroupContentNot,
                     listInfo.Tags, listInfo.IsTopExists, listInfo.IsTop, listInfo.Where)
-                : await DataProvider.ContentDao.GetStlWhereStringAsync(site.Id, listInfo.GroupContent,
+                : await DataProvider.ContentRepository.GetStlWhereStringAsync(site.Id, listInfo.GroupContent,
                     listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile,
                     listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor,
                     listInfo.Where);
 
-            return await DataProvider.ContentDao.GetStlSqlStringCheckedAsync(tableName, site.Id, channelId, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, sqlWhereString, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot);
+            return await DataProvider.ContentRepository.GetStlSqlStringCheckedAsync(tableName, site.Id, channelId, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, sqlWhereString, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot);
         }
 
         public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
-            var sqlWhereString = DataProvider.ContentDao.GetStlWhereStringBySearch(groupContent, groupContentNot, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
-            var sqlString = DataProvider.ContentDao.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString);
+            var sqlWhereString = DataProvider.ContentRepository.GetStlWhereStringBySearch(groupContent, groupContentNot, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
+            var sqlString = DataProvider.ContentRepository.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString);
 
             return sqlString;
         }
@@ -331,10 +329,10 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (isRelatedContents && contentId > 0)
             {
-                var tagCollection = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Tags);
+                var tagCollection = await DataProvider.ContentRepository.GetValueAsync(tableName, contentId, ContentAttribute.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
-                    var contentIdList = await StlTagCache.GetContentIdListByTagCollectionAsync(TranslateUtils.StringCollectionToStringList(tagCollection), site.Id);
+                    var contentIdList = await StlTagCache.GetContentIdListByTagCollectionAsync(StringUtils.GetStringList(tagCollection), site.Id);
                     if (contentIdList.Count > 0)
                     {
                         contentIdList.Remove(contentId);
@@ -365,15 +363,15 @@ namespace SiteServer.CMS.StlParser.Utility
             }
 
             var sqlWhereString = await PluginManager.IsExistsAsync(nodeInfo.ContentModelPluginId)
-                ? await DataProvider.ContentDao.GetStlWhereStringAsync(site.Id, groupContent, groupContentNot,
+                ? await DataProvider.ContentRepository.GetStlWhereStringAsync(site.Id, groupContent, groupContentNot,
                     tags, isTopExists, isTop, where)
-                : await DataProvider.ContentDao.GetStlWhereStringAsync(site.Id, groupContent,
+                : await DataProvider.ContentRepository.GetStlWhereStringAsync(site.Id, groupContent,
                     groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile,
                     isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
                     where);
 
             var channelIdList = await ChannelManager.GetChannelIdListAsync(nodeInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
-            return DataProvider.ContentDao.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
+            return DataProvider.ContentRepository.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
         }
 
         public static async Task<List<MinContentInfo>> GetMinContentInfoListAsync(Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
@@ -414,7 +412,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
                 var sqlWhereString = StlChannelCache.GetWhereString(siteId, group, groupNot, isImageExists, isImage, where);
                 var channelIdList = await ChannelManager.GetChannelIdListAsync(nodeInfo, scopeType, string.Empty, string.Empty, string.Empty);
-                //ie = DataProvider.ChannelDao.GetStlDataSource(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
+                //ie = DataProvider.ChannelRepository.GetStlDataSource(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
                 ie = StlChannelCache.GetStlDataSet(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
             }
 
@@ -428,7 +426,7 @@ namespace SiteServer.CMS.StlParser.Utility
             if (isTotal)//从所有栏目中选择
             {
                 var sqlWhereString = StlChannelCache.GetWhereString(siteId, group, groupNot, isImageExists, isImage, where);
-                dataSet = DataProvider.ChannelDao.GetStlDataSetBySiteId(siteId, startNum, totalNum, sqlWhereString, orderByString);
+                dataSet = DataProvider.ChannelRepository.GetStlDataSetBySiteId(siteId, startNum, totalNum, sqlWhereString, orderByString);
             }
             else
             {
@@ -437,7 +435,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
                 var sqlWhereString = StlChannelCache.GetWhereString(siteId, group, groupNot, isImageExists, isImage, where);
                 var channelIdList = await ChannelManager.GetChannelIdListAsync(nodeInfo, scopeType, string.Empty, string.Empty, string.Empty);
-                dataSet = DataProvider.ChannelDao.GetStlDataSet(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
+                dataSet = DataProvider.ChannelRepository.GetStlDataSet(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
             }
             return dataSet;
         }
@@ -451,12 +449,12 @@ namespace SiteServer.CMS.StlParser.Utility
         public static DataSet GetPageSqlContentsDataSet(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
         {
             var sqlString = StlSqlContentsCache.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString);
-            return DataProvider.DatabaseDao.GetDataSet(connectionString, sqlString);
+            return DataProvider.DatabaseRepository.GetDataSet(connectionString, sqlString);
         }
 
         public static async Task<IDataReader> GetSitesDataSourceAsync(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
         {
-            return await DataProvider.SiteDao.GetStlDataSourceAsync(siteName, siteDir, startNum, totalNum, whereString, scopeType, orderByString);
+            return await DataProvider.SiteRepository.GetStlDataSourceAsync(siteName, siteDir, startNum, totalNum, whereString, scopeType, orderByString);
         }
     }
 }

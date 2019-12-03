@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
-using SiteServer.CMS.Caching;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Provider;
-using SiteServer.Utils;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
@@ -36,7 +32,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 if (await request.AdminPermissionsImpl.IsSuperAdminAsync())
                 {
-                    adminNames = (await DataProvider.AdministratorDao.GetUserNameListAsync()).ToList();
+                    adminNames = (await DataProvider.AdministratorRepository.GetUserNameListAsync()).ToList();
                 }
                 else
                 {
@@ -53,7 +49,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     }
                 }
 
-                var list = await DataProvider.AccessTokenDao.GetAccessTokenListAsync();
+                var list = await DataProvider.AccessTokenRepository.GetAccessTokenListAsync();
 
                 return Ok(new
                 {
@@ -83,8 +79,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 var id = request.GetPostInt("id");
 
-                await DataProvider.AccessTokenDao.DeleteAsync(id);
-                var list = await DataProvider.AccessTokenDao.GetAccessTokenListAsync();
+                await DataProvider.AccessTokenRepository.DeleteAsync(id);
+                var list = await DataProvider.AccessTokenRepository.GetAccessTokenListAsync();
 
                 return Ok(new
                 {
@@ -111,9 +107,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 if (itemObj.Id > 0)
                 {
-                    var tokenInfo = await DataProvider.AccessTokenDao.GetAsync(itemObj.Id);
+                    var tokenInfo = await DataProvider.AccessTokenRepository.GetAsync(itemObj.Id);
 
-                    if (tokenInfo.Title != itemObj.Title && await DataProvider.AccessTokenDao.IsTitleExistsAsync(itemObj.Title))
+                    if (tokenInfo.Title != itemObj.Title && await DataProvider.AccessTokenRepository.IsTitleExistsAsync(itemObj.Title))
                     {
                         return BadRequest("保存失败，已存在相同标题的API密钥！");
                     }
@@ -122,13 +118,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     tokenInfo.AdminName = itemObj.AdminName;
                     tokenInfo.Scopes = itemObj.Scopes;
 
-                    await DataProvider.AccessTokenDao.UpdateAsync(tokenInfo);
+                    await DataProvider.AccessTokenRepository.UpdateAsync(tokenInfo);
 
                     await request.AddAdminLogAsync("修改API密钥", $"Access Token:{tokenInfo.Title}");
                 }
                 else
                 {
-                    if (await DataProvider.AccessTokenDao.IsTitleExistsAsync(itemObj.Title))
+                    if (await DataProvider.AccessTokenRepository.IsTitleExistsAsync(itemObj.Title))
                     {
                         return BadRequest("保存失败，已存在相同标题的API密钥！");
                     }
@@ -140,12 +136,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                         Scopes = itemObj.Scopes
                     };
 
-                    await DataProvider.AccessTokenDao.InsertAsync(tokenInfo);
+                    await DataProvider.AccessTokenRepository.InsertAsync(tokenInfo);
 
                     await request.AddAdminLogAsync("新增API密钥", $"Access Token:{tokenInfo.Title}");
                 }
 
-                var list = await DataProvider.AccessTokenDao.GetAccessTokenListAsync();
+                var list = await DataProvider.AccessTokenRepository.GetAccessTokenListAsync();
 
                 return Ok(new
                 {

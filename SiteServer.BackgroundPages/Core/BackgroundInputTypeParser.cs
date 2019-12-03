@@ -4,20 +4,17 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Editors;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
-using TableStyle = SiteServer.CMS.Model.TableStyle;
+using SiteServer.CMS.Repositories;
+using TableStyle = SiteServer.Abstractions.TableStyle;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -341,7 +338,7 @@ $(function(){{
             var builder = new StringBuilder();
             var styleItems = style.StyleItems ?? new List<TableStyleItem>();
 
-            var selectedValues = TranslateUtils.StringCollectionToStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
+            var selectedValues = StringUtils.GetStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
 
             var validateAttributes = InputParserUtils.GetValidateAttributes(style.IsValidate, style.DisplayName, style.IsRequired, style.MinNum, style.MaxNum, style.ValidateType, style.RegExp, style.ErrorMessage);
             builder.Append($@"<select id=""{style.AttributeName}"" name=""{style.AttributeName}"" class=""form-control"" isListItem=""true"" multiple  {validateAttributes}>");
@@ -359,10 +356,10 @@ $(function(){{
         private static string ParseSelectCascading(IDictionary<string, object> attributes, Site site, TableStyle tableStyle, StringBuilder extraBuilder)
         {
             var attributeName = tableStyle.AttributeName;
-            var fieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldAsync(tableStyle.RelatedFieldId).GetAwaiter().GetResult();
+            var fieldInfo = DataProvider.RelatedFieldRepository.GetRelatedFieldAsync(tableStyle.RelatedFieldId).GetAwaiter().GetResult();
             if (fieldInfo == null) return string.Empty;
 
-            var list = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoListAsync(tableStyle.RelatedFieldId, 0).GetAwaiter().GetResult();
+            var list = DataProvider.RelatedFieldItemRepository.GetRelatedFieldItemInfoListAsync(tableStyle.RelatedFieldId, 0).GetAwaiter().GetResult();
 
             var prefixes = TranslateUtils.StringCollectionToStringCollection(fieldInfo.Prefixes);
             var suffixes = TranslateUtils.StringCollectionToStringCollection(fieldInfo.Suffixes);
@@ -487,7 +484,7 @@ $(document).ready(function(){{
                 RepeatColumns = style.Columns
             };
 
-            var selectedValues = TranslateUtils.StringCollectionToStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
+            var selectedValues = StringUtils.GetStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
 
             InputParserUtils.GetValidateAttributesForListItem(checkBoxList, style.IsValidate, style.DisplayName, style.IsRequired, style.MinNum, style.MaxNum, style.ValidateType, style.RegExp, style.ErrorMessage);
 
@@ -704,7 +701,7 @@ function add_{attributeName}(val,foucs){{
             var extendValues = TranslateUtils.Get<string>(attributes, extendAttributeName);
             if (!string.IsNullOrEmpty(extendValues))
             {
-                foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                foreach (var extendValue in StringUtils.GetStringList(extendValues))
                 {
                     if (!string.IsNullOrEmpty(extendValue))
                     {
@@ -785,7 +782,7 @@ function add_{attributeName}(val,foucs){{
             var extendValues = TranslateUtils.Get<string>(attributes, extendAttributeName);
             if (!string.IsNullOrEmpty(extendValues))
             {
-                foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                foreach (var extendValue in StringUtils.GetStringList(extendValues))
                 {
                     if (!string.IsNullOrEmpty(extendValue))
                     {
@@ -879,7 +876,7 @@ function add_{attributeName}(val,foucs){{
             var extendValues = TranslateUtils.Get<string>(attributes, extendAttributeName);
             if (!string.IsNullOrEmpty(extendValues))
             {
-                foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                foreach (var extendValue in StringUtils.GetStringList(extendValues))
                 {
                     if (!string.IsNullOrEmpty(extendValue))
                     {

@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var logDictionary = DataProvider.TemplateLogDao.GetLogIdWithNameDictionaryAsync(SiteId, _templateId).GetAwaiter().GetResult();
+            var logDictionary = DataProvider.TemplateLogRepository.GetLogIdWithNameDictionaryAsync(SiteId, _templateId).GetAwaiter().GetResult();
             if (logDictionary.Count > 0)
             {
                 PhContent.Visible = true;
@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     _logId = TranslateUtils.ToInt(DdlLogId.Items[0].Value);
                 }
-                TbContent.Text = DataProvider.TemplateLogDao.GetTemplateContentAsync(_logId).GetAwaiter().GetResult();
+                TbContent.Text = DataProvider.TemplateLogRepository.GetTemplateContentAsync(_logId).GetAwaiter().GetResult();
             }
             else
             {

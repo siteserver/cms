@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Core
 {

@@ -5,9 +5,9 @@ using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -37,7 +37,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -47,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = await ChannelManager.GetChannelAsync(siteId, channelContentId.ChannelId);
-                    var contentInfo = await DataProvider.ContentDao.GetAsync(site, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = await DataProvider.ContentRepository.GetAsync(site, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -62,7 +62,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var siteIdList = await request.AdminPermissions.GetSiteIdListAsync();
                 foreach (var permissionSiteId in siteIdList)
                 {
-                    var permissionSite = await DataProvider.SiteDao.GetAsync(permissionSiteId);
+                    var permissionSite = await DataProvider.SiteRepository.GetAsync(permissionSiteId);
                     sites.Add(new
                     {
                         permissionSite.Id,
@@ -152,7 +152,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);

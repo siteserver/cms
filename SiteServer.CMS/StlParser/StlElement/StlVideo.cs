@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -43,8 +42,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
-            var width = 0;
-            var height = 280;
+            var width = string.Empty;
+            var height = string.Empty;
             var isAutoPlay = true;
             var isControls = true;
             var isLoop = false;
@@ -67,11 +66,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Width))
                 {
-                    width = TranslateUtils.ToInt(value, width);
+                    width = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Height))
                 {
-                    height = TranslateUtils.ToInt(value, height);
+                    height = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsAutoPlay))
                 {
@@ -90,10 +89,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             return await ParseImplAsync(pageInfo, contextInfo, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
 		}
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, string imageUrl, int width, int height, bool isAutoPlay, bool isControls, bool isLoop)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, string imageUrl, string width, string height, bool isAutoPlay, bool isControls, bool isLoop)
         {
-            
-
             var videoUrl = string.Empty;
             if (!string.IsNullOrEmpty(playUrl))
             {
@@ -109,12 +106,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var contentInfo = await contextInfo.GetContentAsync();
                         if (contentInfo == null)
                         {
-                            videoUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, type);
+                            videoUrl = await DataProvider.ContentRepository.GetValueAsync(pageInfo.Site.TableName, contentId, type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
                                 if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                                 {
-                                    videoUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
+                                    videoUrl = await DataProvider.ContentRepository.GetValueAsync(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
                                 }
                             }
                         }
@@ -162,14 +159,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 dict.Add("poster", imageUrl);
             }
-            if (width > 0)
+            if (!string.IsNullOrEmpty(width))
             {
-                dict.Add("width", width.ToString());
+                dict.Add("width", width);
             }
-            if (height > 0)
-            {
-                dict.Add("height", height.ToString());
-            }
+            dict.Add("height", string.IsNullOrEmpty(height) ? "280" : height);
 
             return $@"<video {TranslateUtils.ToAttributesString(dict)}></video>";
         }

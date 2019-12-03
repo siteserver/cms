@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
+
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -71,11 +72,11 @@ namespace SiteServer.BackgroundPages.Cms
                 if (templateType == TemplateType.ContentTemplate)
                 {
                     var channelInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
-                    var count = DataProvider.ContentDao.GetCountAsync(Site, channelInfo, true).GetAwaiter().GetResult();
+                    var count = DataProvider.ContentRepository.GetCountAsync(Site, channelInfo).GetAwaiter().GetResult();
                     if (count > 0)
                     {
                         var tableName = ChannelManager.GetTableNameAsync(Site, channelInfo).GetAwaiter().GetResult();
-                        contentId = DataProvider.ContentDao.GetFirstContentIdAsync(tableName, channelId).GetAwaiter().GetResult();
+                        contentId = DataProvider.ContentRepository.GetFirstContentIdAsync(tableName, channelId).GetAwaiter().GetResult();
                     }
 
                     if (contentId == 0)

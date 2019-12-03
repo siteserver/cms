@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (!Page.IsPostBack || !Page.IsValid) return;
 
             var targetSiteId = int.Parse(DdlSiteId.SelectedValue);
-            var targetSite = DataProvider.SiteDao.GetAsync(targetSiteId).GetAwaiter().GetResult();
+            var targetSite = DataProvider.SiteRepository.GetAsync(targetSiteId).GetAwaiter().GetResult();
             try
             {
                 foreach (ListItem listItem in LbChannelId.Items)

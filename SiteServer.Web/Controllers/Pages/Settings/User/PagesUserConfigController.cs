@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
@@ -26,7 +25,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                     return Unauthorized();
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 return Ok(new
                 {
@@ -51,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                     return Unauthorized();
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 config.IsUserRegistrationAllowed = request.GetPostBool("isUserRegistrationAllowed");
                 config.IsUserRegistrationChecked = request.GetPostBool("isUserRegistrationChecked");
@@ -64,7 +63,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 config.UserLockLoginType = request.GetPostString("userLockLoginType");
                 config.UserLockLoginHours = request.GetPostInt("userLockLoginHours");
 
-                await DataProvider.ConfigDao.UpdateAsync(config);
+                await DataProvider.ConfigRepository.UpdateAsync(config);
 
                 await request.AddAdminLogAsync("修改用户设置");
 

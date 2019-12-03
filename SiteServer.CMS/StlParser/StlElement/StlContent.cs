@@ -1,15 +1,14 @@
 ﻿using System.Text;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
+
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -215,13 +214,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (content.ReferenceId > 0 && content.SourceId > 0 && ETranslateContentTypeUtils.Equals(ETranslateContentType.Reference, content.TranslateContentType))
                 {
                     var targetChannelId = content.SourceId;
-                    //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
+                    //var targetSiteId = DataProvider.ChannelRepository.GetSiteId(targetChannelId);
                     var targetSiteId = await StlChannelCache.GetSiteIdAsync(targetChannelId);
-                    var targetSite = await DataProvider.SiteDao.GetAsync(targetSiteId);
+                    var targetSite = await DataProvider.SiteRepository.GetAsync(targetSiteId);
                     var targetNodeInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
 
-                    //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, content.ReferenceId);
-                    var targetContentInfo = await DataProvider.ContentDao.GetAsync(targetSite, targetNodeInfo, content.ReferenceId);
+                    //var targetContentInfo = DataProvider.ContentRepository.GetContentInfo(tableStyle, tableName, content.ReferenceId);
+                    var targetContentInfo = await DataProvider.ContentRepository.GetAsync(targetSite, targetNodeInfo, content.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                     {
                         //标题可以使用自己的
@@ -357,7 +356,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var extendValues = content.Get<string>(extendAttributeName);
                         if (!string.IsNullOrEmpty(extendValues))
                         {
-                            foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                            foreach (var extendValue in StringUtils.GetStringList(extendValues))
                             {
                                 var newExtendValue = extendValue;
                                 sbParsedContent.Append(contextInfo.IsStlEntity
@@ -383,7 +382,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             if (!string.IsNullOrEmpty(extendValues))
                             {
                                 var index = 2;
-                                foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                                foreach (var extendValue in StringUtils.GetStringList(extendValues))
                                 {
                                     var newExtendValue = extendValue;
                                     if (index == num)
@@ -410,7 +409,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var extendValues = content.Get<string>(extendAttributeName);
                         if (!string.IsNullOrEmpty(extendValues))
                         {
-                            foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                            foreach (string extendValue in StringUtils.GetStringList(extendValues))
                             {
 
                                 sbParsedContent.Append(await InputParserUtility.GetVideoHtmlAsync(pageInfo.Site, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity));
@@ -434,7 +433,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             if (!string.IsNullOrEmpty(extendValues))
                             {
                                 var index = 2;
-                                foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                                foreach (string extendValue in StringUtils.GetStringList(extendValues))
                                 {
                                     if (index == num)
                                     {
@@ -463,7 +462,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var extendValues = content.Get<string>(extendAttributeName);
                             if (!string.IsNullOrEmpty(extendValues))
                             {
-                                foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                                foreach (string extendValue in StringUtils.GetStringList(extendValues))
                                 {
                                     sbParsedContent.Append(extendValue);
                                 }
@@ -478,7 +477,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var extendValues = content.Get<string>(extendAttributeName);
                             if (!string.IsNullOrEmpty(extendValues))
                             {
-                                foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                                foreach (string extendValue in StringUtils.GetStringList(extendValues))
                                 {
                                     sbParsedContent.Append(await InputParserUtility.GetFileHtmlWithCountAsync(pageInfo.Site, content.ChannelId, content.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
                                 }
@@ -505,7 +504,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 if (!string.IsNullOrEmpty(extendValues))
                                 {
                                     var index = 2;
-                                    foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                                    foreach (string extendValue in StringUtils.GetStringList(extendValues))
                                     {
                                         if (index == num)
                                         {
@@ -535,7 +534,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 if (!string.IsNullOrEmpty(extendValues))
                                 {
                                     var index = 2;
-                                    foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                                    foreach (string extendValue in StringUtils.GetStringList(extendValues))
                                     {
                                         if (index == num)
                                         {

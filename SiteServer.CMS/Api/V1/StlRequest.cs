@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+
 
 namespace SiteServer.CMS.Api.V1
 {
@@ -41,18 +38,18 @@ namespace SiteServer.CMS.Api.V1
 
             if (siteId > 0)
             {
-                Site = await DataProvider.SiteDao.GetAsync(siteId);
+                Site = await DataProvider.SiteRepository.GetAsync(siteId);
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                Site = await DataProvider.SiteDao.GetSiteByDirectoryAsync(siteDir);
+                Site = await DataProvider.SiteRepository.GetSiteByDirectoryAsync(siteDir);
             }
             else
             {
-                Site = await DataProvider.SiteDao.GetSiteByIsRootAsync();
+                Site = await DataProvider.SiteRepository.GetSiteByIsRootAsync();
                 if (Site == null)
                 {
-                    var siteList = await DataProvider.SiteDao.GetSiteListAsync();
+                    var siteList = await DataProvider.SiteRepository.GetSiteListAsync();
                     if (siteList != null && siteList.Count > 0)
                     {
                         Site = siteList[0];

@@ -2,9 +2,9 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -114,7 +114,7 @@ namespace SiteServer.BackgroundPages.Cms
             var isCodeMirror = Site.ConfigTemplateIsCodeMirror;
             isCodeMirror = !isCodeMirror;
             Site.ConfigTemplateIsCodeMirror = isCodeMirror;
-            DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+            DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
 
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;

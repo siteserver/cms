@@ -1,15 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport.Components;
-using SiteServer.CMS.Model;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Atom.Atom.Core;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.ImportExport
 {
@@ -28,8 +27,8 @@ namespace SiteServer.CMS.ImportExport
         {
             DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 
-            var siteDirList = await DataProvider.SiteDao.GetSiteDirListAsync(0);
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var siteDirList = await DataProvider.SiteRepository.GetSiteDirListAsync(0);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var sitePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir);
             var fileSystems = FileManager.GetFileSystemInfoExtendCollection(PathUtility.GetSitePath(site), true);
             foreach (FileSystemInfoExtend fileSystem in fileSystems)
@@ -84,7 +83,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(filesDirectoryPath);
             FileUtils.DeleteFileIfExists(filePath);
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var sitePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir);
             DirectoryUtils.Copy(sitePath, filesDirectoryPath);
 
@@ -98,7 +97,7 @@ namespace SiteServer.CMS.ImportExport
             var filePath = PathUtils.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = PathUtils.GetTemporaryFilesPath("TableStyle");
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             await TableStyleIe.SingleExportTableStylesAsync(tableName, site.Id, relatedIdentity, styleDirectoryPath);
             ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
@@ -121,7 +120,7 @@ namespace SiteServer.CMS.ImportExport
 
         public async Task ExportConfigurationAsync(string configurationFilePath)
         {
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var configIe = new ConfigurationIe(site.Id, configurationFilePath);
             await configIe.ExportAsync();
         }
@@ -132,7 +131,7 @@ namespace SiteServer.CMS.ImportExport
         /// <param name="filePath"></param>
         public async Task ExportTemplatesAsync(string filePath)
         {
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var templateIe = new TemplateIe(site.Id, filePath);
             await templateIe.ExportTemplatesAsync();
         }
@@ -141,9 +140,9 @@ namespace SiteServer.CMS.ImportExport
         {
             DirectoryUtils.CreateDirectoryIfNotExists(relatedFieldDirectoryPath);
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var relatedFieldIe = new RelatedFieldIe(site.Id, relatedFieldDirectoryPath);
-            var relatedFieldInfoList = await DataProvider.RelatedFieldDao.GetRelatedFieldListAsync(site.Id);
+            var relatedFieldInfoList = await DataProvider.RelatedFieldRepository.GetRelatedFieldListAsync(site.Id);
             foreach (var relatedFieldInfo in relatedFieldInfoList)
             {
                 await relatedFieldIe.ExportRelatedFieldAsync(relatedFieldInfo);
@@ -159,9 +158,9 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            var relatedFieldInfo = await DataProvider.RelatedFieldDao.GetRelatedFieldAsync(relatedFieldId);
+            var relatedFieldInfo = await DataProvider.RelatedFieldRepository.GetRelatedFieldAsync(relatedFieldId);
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
 
             var relatedFieldIe = new RelatedFieldIe(site.Id, directoryPath);
             await relatedFieldIe.ExportRelatedFieldAsync(relatedFieldInfo);
@@ -180,16 +179,16 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.CreateDirectoryIfNotExists(tableDirectoryPath);
             var styleIe = new TableStyleIe(tableDirectoryPath, _adminName);
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
-            var tableNameList = await DataProvider.SiteDao.GetTableNameListAsync(site);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
+            var tableNameList = await DataProvider.SiteRepository.GetTableNameListAsync(site);
 
             foreach (var tableName in tableNameList)
             {
                 await styleIe.ExportTableStylesAsync(site.Id, tableName);
             }
 
-            await styleIe.ExportTableStylesAsync(site.Id, DataProvider.ChannelDao.TableName);
-            await styleIe.ExportTableStylesAsync(site.Id, DataProvider.SiteDao.TableName);
+            await styleIe.ExportTableStylesAsync(site.Id, DataProvider.ChannelRepository.TableName);
+            await styleIe.ExportTableStylesAsync(site.Id, DataProvider.SiteRepository.TableName);
         }
 
 
@@ -207,7 +206,7 @@ namespace SiteServer.CMS.ImportExport
             foreach (int channelId in channelIdArrayList)
             {
                 var nodeInfo = await ChannelManager.GetChannelAsync(_siteId, channelId);
-                var parentIdArrayList = TranslateUtils.StringCollectionToIntList(nodeInfo.ParentsPath);
+                var parentIdArrayList = StringUtils.GetIntList(nodeInfo.ParentsPath);
                 foreach (int parentId in parentIdArrayList)
                 {
                     if (!includeChannelIdArrayList.Contains(parentId))
@@ -221,7 +220,7 @@ namespace SiteServer.CMS.ImportExport
                 }
             }
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
 
             var siteIe = new SiteIe(site, siteContentDirectoryPath);
             foreach (var channelId in allChannelIdList)
@@ -273,7 +272,7 @@ namespace SiteServer.CMS.ImportExport
                 }
             }
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var sitePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir);
             var siteIe = new SiteIe(site, siteContentDirectoryPath);
             foreach (var channelId in allChannelIdList)
@@ -320,7 +319,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
 
             var contentIe = new ContentIe(site, siteContentDirectoryPath);
             var isExport = await contentIe.ExportContentsAsync(site, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
@@ -340,7 +339,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var site = await DataProvider.SiteDao.GetAsync(_siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
 
             var contentIe = new ContentIe(site, siteContentDirectoryPath);
             var isExport = contentIe.ExportContents(site, contentInfoList);

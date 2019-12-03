@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
@@ -81,14 +81,14 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var parentsPath = nodeInfo.ParentsPath;
             var parentsCount = nodeInfo.ParentsCount;
-            if (parentsPath.Length != 0)
+            if (!string.IsNullOrEmpty(parentsPath))
             {
                 var nodePath = parentsPath;
                 if (isContainSelf)
                 {
                     nodePath = nodePath + "," + contextInfo.ChannelId;
                 }
-                var channelIdArrayList = TranslateUtils.StringCollectionToStringList(nodePath);
+                var channelIdArrayList = StringUtils.GetStringList(nodePath);
                 foreach (var channelIdStr in channelIdArrayList)
                 {
                     var currentId = int.Parse(channelIdStr);

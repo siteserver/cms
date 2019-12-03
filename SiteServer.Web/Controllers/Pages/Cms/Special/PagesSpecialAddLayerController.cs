@@ -2,11 +2,12 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Special
 {
@@ -34,7 +35,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
                     return Unauthorized();
                 }
 
-                CMS.Model.Special special = null;
+                Abstractions.Special special = null;
                 if (specialId > 0)
                 {
                     special = await SpecialManager.GetSpecialAsync(siteId, specialId);
@@ -127,8 +128,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
                 var isUploadOnly = request.GetPostBool("isUploadOnly");
                 var title = request.GetPostString("title");
                 var url = request.GetPostString("url");
-                var fileNames = TranslateUtils.StringCollectionToStringList(request.GetPostString("fileNames"));
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var fileNames = StringUtils.GetStringList(request.GetPostString("fileNames"));
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
                 if (!request.IsAdminLoggin ||
                     !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
@@ -143,13 +144,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
                     var oldDirectoryPath = string.Empty;
                     var newDirectoryPath = string.Empty;
 
-                    if (specialInfo.Title != title && await DataProvider.SpecialDao.IsTitleExistsAsync(siteId, title))
+                    if (specialInfo.Title != title && await DataProvider.SpecialRepository.IsTitleExistsAsync(siteId, title))
                     {
                         return BadRequest("专题修改失败，专题名称已存在！");
                     }
                     if (specialInfo.Url != url)
                     {
-                        if (await DataProvider.SpecialDao.IsUrlExistsAsync(siteId, url))
+                        if (await DataProvider.SpecialRepository.IsUrlExistsAsync(siteId, url))
                         {
                             return BadRequest("专题修改失败，专题访问地址已存在！");
                         }
@@ -160,7 +161,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
 
                     specialInfo.Title = title;
                     specialInfo.Url = url;
-                    await DataProvider.SpecialDao.UpdateAsync(specialInfo);
+                    await DataProvider.SpecialRepository.UpdateAsync(specialInfo);
 
                     if (oldDirectoryPath != newDirectoryPath)
                     {
@@ -195,11 +196,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
                 }
                 else if (specialId == 0)
                 {
-                    if (await DataProvider.SpecialDao.IsTitleExistsAsync(siteId, title))
+                    if (await DataProvider.SpecialRepository.IsTitleExistsAsync(siteId, title))
                     {
                         return BadRequest("专题添加失败，专题名称已存在！");
                     }
-                    if (await DataProvider.SpecialDao.IsUrlExistsAsync(siteId, url))
+                    if (await DataProvider.SpecialRepository.IsUrlExistsAsync(siteId, url))
                     {
                         return BadRequest("专题添加失败，专题访问地址已存在！");
                     }
@@ -226,7 +227,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
 
                     DirectoryUtils.Copy(srcDirectoryPath, directoryPath);
 
-                    specialId = await DataProvider.SpecialDao.InsertAsync(new CMS.Model.Special
+                    specialId = await DataProvider.SpecialRepository.InsertAsync(new Abstractions.Special
                     {
                         Id = 0,
                         SiteId = siteId,

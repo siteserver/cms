@@ -2,12 +2,12 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Config
 {
@@ -30,7 +30,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
                     return Unauthorized();
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 return Ok(new
                 {
@@ -58,7 +58,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
                     return Unauthorized();
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 config.IsHomeClosed = request.GetPostBool("isHomeClosed");
                 config.HomeTitle = request.GetPostString("homeTitle");
@@ -70,7 +70,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
                 config.IsHomeAgreement = request.GetPostBool("isHomeAgreement");
                 config.HomeAgreementHtml = request.GetPostString("homeAgreementHtml");
 
-                await DataProvider.ConfigDao.UpdateAsync(config);
+                await DataProvider.ConfigRepository.UpdateAsync(config);
 
 //                var config = $@"var $apiConfig = {{
 //    isSeparatedApi: {ApiManager.IsSeparatedApi.ToString().ToLower()},
@@ -116,7 +116,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
                     }
 
                     var fileName = postFile.FileName;
-                    var filePath = DataProvider.UserDao.GetHomeUploadPath(fileName);
+                    var filePath = DataProvider.UserRepository.GetHomeUploadPath(fileName);
 
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
@@ -125,7 +125,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
 
                     postFile.SaveAs(filePath);
 
-                    homeLogoUrl = PageUtils.AddProtocolToUrl(DataProvider.UserDao.GetHomeUploadUrl(fileName));
+                    homeLogoUrl = PageUtils.AddProtocolToUrl(DataProvider.UserRepository.GetHomeUploadUrl(fileName));
                 }
 
                 return Ok(new

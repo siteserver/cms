@@ -1,9 +1,8 @@
 ﻿using System.Web;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Editors;
-using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.UEditor;
+using EUploadType = SiteServer.CMS.Context.Enumerations.EUploadType;
 
 namespace SiteServer.API.Controllers.Sys
 {

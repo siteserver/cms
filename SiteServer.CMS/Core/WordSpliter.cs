@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.Core
 {
@@ -40,7 +41,7 @@ namespace SiteServer.CMS.Core
             {
                 var arrText = new SortedList();
 
-                var tagList = await DataProvider.ContentTagDao.GetTagListAsync(siteId);
+                var tagList = await DataProvider.ContentTagRepository.GetTagListAsync(siteId);
                 if (tagList.Any())
                 {
                     foreach (var line in tagList)

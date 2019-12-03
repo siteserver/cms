@@ -5,12 +5,10 @@ using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Provider;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -39,7 +37,7 @@ namespace SiteServer.API.Controllers.V1
                     user.Set(o.Key, o.Value);
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 if (!config.IsUserRegistrationGroup)
                 {
@@ -47,7 +45,7 @@ namespace SiteServer.API.Controllers.V1
                 }
                 var password = request.GetPostString("password");
 
-                var valid = await DataProvider.UserDao.InsertAsync(user, password, PageUtils.GetIpAddress());
+                var valid = await DataProvider.UserRepository.InsertAsync(user, password, PageUtils.GetIpAddress());
                 if (valid.UserId == 0)
                 {
                     return BadRequest(valid.ErrorMessage);
@@ -55,7 +53,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = await DataProvider.UserDao.GetByUserIdAsync(valid.UserId)
+                    Value = await DataProvider.UserRepository.GetByUserIdAsync(valid.UserId)
                 });
             }
             catch (Exception ex)
@@ -72,7 +70,7 @@ namespace SiteServer.API.Controllers.V1
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 var isAuth = request.IsApiAuthenticated && await
-                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
+                                 DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
@@ -83,10 +81,10 @@ namespace SiteServer.API.Controllers.V1
 
                 if (body == null) return BadRequest("Could not read user from body");
 
-                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
+                var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
-                var valid = await DataProvider.UserDao.UpdateAsync(user, body);
+                var valid = await DataProvider.UserRepository.UpdateAsync(user, body);
                 if (valid.User == null)
                 {
                     return BadRequest(valid.ErrorMessage);
@@ -111,7 +109,7 @@ namespace SiteServer.API.Controllers.V1
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 var isAuth = request.IsApiAuthenticated && await
-                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
+                                 DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
@@ -119,7 +117,7 @@ namespace SiteServer.API.Controllers.V1
                 if (!isAuth) return Unauthorized();
 
                 request.UserLogout();
-                var user = await DataProvider.UserDao.DeleteAsync(id);
+                var user = await DataProvider.UserRepository.DeleteAsync(id);
 
                 return Ok(new
                 {
@@ -140,16 +138,16 @@ namespace SiteServer.API.Controllers.V1
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 var isAuth = request.IsApiAuthenticated && await
-                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
+                                 DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
                              await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                if (!await DataProvider.UserDao.IsExistsAsync(id)) return NotFound();
+                if (!await DataProvider.UserRepository.IsExistsAsync(id)) return NotFound();
 
-                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
+                var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
 
                 return Ok(new
                 {
@@ -166,9 +164,9 @@ namespace SiteServer.API.Controllers.V1
         [HttpGet, Route(RouteUserAvatar)]
         public async Task<IHttpActionResult> GetAvatar(int id)
         {
-            var user = await DataProvider.UserDao.GetByUserIdAsync(id);
+            var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
 
-            var avatarUrl = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : DataProvider.UserDao.DefaultAvatarUrl;
+            var avatarUrl = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : DataProvider.UserRepository.DefaultAvatarUrl;
             avatarUrl = PageUtils.AddProtocolToUrl(avatarUrl);
 
             return Ok(new
@@ -184,14 +182,14 @@ namespace SiteServer.API.Controllers.V1
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 var isAuth = request.IsApiAuthenticated && await
-                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
+                                 DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
                              await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
+                var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 foreach (string name in HttpContext.Current.Request.Files)
@@ -203,8 +201,8 @@ namespace SiteServer.API.Controllers.V1
                         return BadRequest("Could not read image from body");
                     }
 
-                    var fileName = DataProvider.UserDao.GetUserUploadFileName(postFile.FileName);
-                    var filePath = DataProvider.UserDao.GetUserUploadPath(user.Id, fileName);
+                    var fileName = DataProvider.UserRepository.GetUserUploadFileName(postFile.FileName);
+                    var filePath = DataProvider.UserRepository.GetUserUploadPath(user.Id, fileName);
                     
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
@@ -214,9 +212,9 @@ namespace SiteServer.API.Controllers.V1
                     DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                     postFile.SaveAs(filePath);
 
-                    user.AvatarUrl = DataProvider.UserDao.GetUserUploadUrl(user.Id, fileName);
+                    user.AvatarUrl = DataProvider.UserRepository.GetUserUploadUrl(user.Id, fileName);
 
-                    await DataProvider.UserDao.UpdateAsync(user);
+                    await DataProvider.UserRepository.UpdateAsync(user);
                 }
 
                 return Ok(new
@@ -238,7 +236,7 @@ namespace SiteServer.API.Controllers.V1
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 var isAuth = request.IsApiAuthenticated && await 
-                             DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
+                             DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsAdminLoggin &&
                              await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
@@ -246,8 +244,8 @@ namespace SiteServer.API.Controllers.V1
                 var top = request.GetQueryInt("top", 20);
                 var skip = request.GetQueryInt("skip");
 
-                var users = await DataProvider.UserDao.GetUsersAsync( ETriState.All, 0, 0, null, null, skip, top);
-                var count = await DataProvider.UserDao.GetCountAsync();
+                var users = await DataProvider.UserRepository.GetUsersAsync( ETriState.All, 0, 0, null, null, skip, top);
+                var count = await DataProvider.UserRepository.GetCountAsync();
 
                 return Ok(new PageResponse(users, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
             }
@@ -269,7 +267,7 @@ namespace SiteServer.API.Controllers.V1
                 var password = request.GetPostString("password");
                 var isAutoLogin = request.GetPostBool("isAutoLogin");
 
-                var valid = await DataProvider.UserDao.ValidateAsync(account, password, true);
+                var valid = await DataProvider.UserRepository.ValidateAsync(account, password, true);
                 if (valid.User == null)
                 {
                     return BadRequest(valid.ErrorMessage);
@@ -320,17 +318,17 @@ namespace SiteServer.API.Controllers.V1
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 var isAuth = request.IsApiAuthenticated && await
-                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
+                                 DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
                              await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
+                var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
-                var retVal = await DataProvider.UserLogDao.InsertAsync(user.UserName, log);
+                var retVal = await DataProvider.UserLogRepository.InsertAsync(user.UserName, log);
 
                 return Ok(new
                 {
@@ -351,23 +349,23 @@ namespace SiteServer.API.Controllers.V1
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 var isAuth = request.IsApiAuthenticated && await
-                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
+                                 DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
                              await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
+                var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 var top = request.GetQueryInt("top", 20);
                 var skip = request.GetQueryInt("skip");
 
-                var logs = await DataProvider.UserLogDao.GetLogsAsync(user.UserName, skip, top);
+                var logs = await DataProvider.UserLogRepository.GetLogsAsync(user.UserName, skip, top);
 
                 return Ok(new PageResponse(logs, top, skip, request.HttpRequest.Url.AbsoluteUri)
-                    {Count = await DataProvider.UserDao.GetCountAsync()});
+                    {Count = await DataProvider.UserRepository.GetCountAsync()});
             }
             catch (Exception ex)
             {
@@ -383,25 +381,25 @@ namespace SiteServer.API.Controllers.V1
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 var isAuth = request.IsApiAuthenticated && await
-                                 DataProvider.AccessTokenDao.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
+                                 DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
                              await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var user = await DataProvider.UserDao.GetByUserIdAsync(id);
+                var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
                 var password = request.GetPostString("password");
                 var newPassword = request.GetPostString("newPassword");
 
-                if (!DataProvider.UserDao.CheckPassword(password, false, user.Password, EPasswordFormatUtils.GetEnumType(user.PasswordFormat), user.PasswordSalt))
+                if (!DataProvider.UserRepository.CheckPassword(password, false, user.Password, EPasswordFormatUtils.GetEnumType(user.PasswordFormat), user.PasswordSalt))
                 {
                     return BadRequest("原密码不正确，请重新输入");
                 }
 
-                var valid = await DataProvider.UserDao.ChangePasswordAsync(user.UserName, newPassword);
+                var valid = await DataProvider.UserRepository.ChangePasswordAsync(user.UserName, newPassword);
                 if (!valid.IsValid)
                 {
                     return BadRequest(valid.ErrorMessage);

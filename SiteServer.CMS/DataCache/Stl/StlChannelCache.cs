@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
-using SiteServer.CMS.Model;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.DataCache.Stl
 {
@@ -27,7 +26,7 @@ namespace SiteServer.CMS.DataCache.Stl
             retVal = StlCacheManager.GetInt(cacheKey);
             if (retVal == -1)
             {
-                retVal = await DataProvider.ChannelDao.GetSiteIdAsync(channelId);
+                retVal = await DataProvider.ChannelRepository.GetSiteIdAsync(channelId);
                 StlCacheManager.Set(cacheKey, retVal);
             }
 
@@ -44,7 +43,7 @@ namespace SiteServer.CMS.DataCache.Stl
             retVal = StlCacheManager.GetInt(cacheKey);
             if (retVal == -1)
             {
-                retVal = await DataProvider.ChannelDao.GetSequenceAsync(siteId, channelId);
+                retVal = await DataProvider.ChannelRepository.GetSequenceAsync(siteId, channelId);
                 StlCacheManager.Set(cacheKey, retVal);
             }
 
@@ -63,7 +62,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retVal = StlCacheManager.Get<DataSet>(cacheKey);
                 if (retVal == null)
                 {
-                    retVal = DataProvider.ChannelDao.GetStlDataSourceBySiteId(siteId, startNum, totalNum, whereString, orderByString);
+                    retVal = DataProvider.ChannelRepository.GetStlDataSourceBySiteId(siteId, startNum, totalNum, whereString, orderByString);
                     StlCacheManager.Set(cacheKey, retVal);
                 }
             }
@@ -83,7 +82,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retVal = StlCacheManager.Get<DataSet>(cacheKey);
                 if (retVal == null)
                 {
-                    retVal = DataProvider.ChannelDao.GetStlDataSet(channelIdList, startNum, totalNum, whereString, orderByString);
+                    retVal = DataProvider.ChannelRepository.GetStlDataSet(channelIdList, startNum, totalNum, whereString, orderByString);
                     StlCacheManager.Set(cacheKey, retVal);
                 }
             }
@@ -103,7 +102,7 @@ namespace SiteServer.CMS.DataCache.Stl
         //        retVal = StlCacheManager.GetInt(cacheKey);
         //        if (retVal == -1)
         //        {
-        //            retVal = DataProvider.ChannelDao.GetIdByIndexName(siteId, channelIndex);
+        //            retVal = DataProvider.ChannelRepository.GetIdByIndexName(siteId, channelIndex);
         //            StlCacheManager.Set(cacheKey, retVal);
         //        }
         //    }
@@ -121,7 +120,7 @@ namespace SiteServer.CMS.DataCache.Stl
             retVal = StlCacheManager.GetInt(cacheKey);
             if (retVal == -1)
             {
-                retVal = await DataProvider.ChannelDao.GetIdByParentIdAndTaxisAsync(parentId, taxis, isNextChannel);
+                retVal = await DataProvider.ChannelRepository.GetIdByParentIdAndTaxisAsync(parentId, taxis, isNextChannel);
                 StlCacheManager.Set(cacheKey, retVal);
             }
 
@@ -141,7 +140,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retVal = StlCacheManager.Get<string>(cacheKey);
                 if (retVal == null)
                 {
-                    retVal = DataProvider.ChannelDao.GetWhereString(groupContent, groupContentNot,
+                    retVal = DataProvider.ChannelRepository.GetWhereString(groupContent, groupContentNot,
                     isImageExists, isImage, where);
                     StlCacheManager.Set(cacheKey, retVal);
                 }
@@ -160,7 +159,7 @@ namespace SiteServer.CMS.DataCache.Stl
             retVal = StlCacheManager.Get<List<int>>(cacheKey);
             if (retVal == null)
             {
-                retVal = await DataProvider.ChannelDao.GetIdListByTotalNumAsync(channelIdList, totalNum, orderByString, whereString);
+                retVal = await DataProvider.ChannelRepository.GetIdListByTotalNumAsync(channelIdList, totalNum, orderByString, whereString);
                 StlCacheManager.Set(cacheKey, retVal);
             }
 
@@ -177,7 +176,7 @@ namespace SiteServer.CMS.DataCache.Stl
             retVal = StlCacheManager.Get<Channel>(cacheKey);
             if (retVal == null)
             {
-                retVal = await DataProvider.ChannelDao.GetChannelByLastAddDateAsyncTask(channelId);
+                retVal = await DataProvider.ChannelRepository.GetChannelByLastAddDateAsyncTask(channelId);
                 StlCacheManager.Set(cacheKey, retVal);
             }
 
@@ -194,7 +193,7 @@ namespace SiteServer.CMS.DataCache.Stl
             retVal = StlCacheManager.Get<Channel>(cacheKey);
             if (retVal == null)
             {
-                retVal = await DataProvider.ChannelDao.GetChannelByTaxisAsync(channelId);
+                retVal = await DataProvider.ChannelRepository.GetChannelByTaxisAsync(channelId);
                 StlCacheManager.Set(cacheKey, retVal);
             }
 

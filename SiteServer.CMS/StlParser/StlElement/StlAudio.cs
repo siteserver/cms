@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -77,22 +76,22 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var contentInfo = await contextInfo.GetContentAsync();
                     if (contentInfo == null)
                     {
-                        //playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, type);
-                        playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, type);
+                        //playUrl = DataProvider.ContentRepository.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, type);
+                        playUrl = await DataProvider.ContentRepository.GetValueAsync(pageInfo.Site.TableName, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
-                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, ContentAttribute.VideoUrl);
-                                playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
+                                //playUrl = DataProvider.ContentRepository.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, ContentAttribute.VideoUrl);
+                                playUrl = await DataProvider.ContentRepository.GetValueAsync(pageInfo.Site.TableName, contentId, ContentAttribute.VideoUrl);
                             }
                         }
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.FileUrl))
                             {
-                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, ContentAttribute.FileUrl);
-                                playUrl = DataProvider.ContentDao.GetValue(pageInfo.Site.TableName, contentId, ContentAttribute.FileUrl);
+                                //playUrl = DataProvider.ContentRepository.GetValue(pageInfo.Site.AuxiliaryTableForContent, contentId, ContentAttribute.FileUrl);
+                                playUrl = await DataProvider.ContentRepository.GetValueAsync(pageInfo.Site.TableName, contentId, ContentAttribute.FileUrl);
                             }
                         }
                     }

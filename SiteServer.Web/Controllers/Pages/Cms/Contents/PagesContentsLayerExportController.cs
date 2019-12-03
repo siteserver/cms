@@ -7,10 +7,10 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -37,13 +37,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var columns = await DataProvider.ContentDao.GetContentColumnsAsync(site, channelInfo, true);
+                var columns = await DataProvider.ContentRepository.GetContentColumnsAsync(site, channelInfo, true);
 
                 var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, site, siteId);
                 var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
@@ -91,7 +91,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -102,7 +102,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     : await request.AdminPermissionsImpl.GetAdminIdAsync(siteId, channelId);
                 var isAllContents = channelInfo.IsAllContents;
 
-                var columns = await DataProvider.ContentDao.GetContentColumnsAsync(site, channelInfo, true);
+                var columns = await DataProvider.ContentRepository.GetContentColumnsAsync(site, channelInfo, true);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
@@ -111,7 +111,10 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
                 if (channelContentIds.Count == 0)
                 {
-                    var count = await DataProvider.ContentDao.GetCountAsync(site, channelInfo, adminId, isAllContents);
+                    var count = isAllContents
+                        ? await DataProvider.ContentRepository.GetCountAllAsync(site, channelInfo, adminId)
+                        : await DataProvider.ContentRepository.GetCountAsync(site, channelInfo, adminId);
+
                     var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
                     if (pages == 0) pages = 1;
 
@@ -122,13 +125,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                             var offset = site.PageSize * (page - 1);
                             var limit = site.PageSize;
 
-                            var pageContentIds = await DataProvider.ContentDao.GetChannelContentIdListAsync(site, channelInfo, adminId, isAllContents, offset, limit);
+                            var pageContentIds = await DataProvider.ContentRepository.GetChannelContentIdListAsync(site, channelInfo, adminId, isAllContents, offset, limit);
 
                             var sequence = offset + 1;
 
                             foreach (var channelContentId in pageContentIds)
                             {
-                                var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
+                                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
                                 if (contentInfo == null) continue;
 
                                 if (!isAllCheckedLevel)
@@ -153,7 +156,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                                 }
 
                                 contentInfoList.Add(contentInfo);
-                                calculatedContentInfoList.Add(await DataProvider.ContentDao.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
+                                calculatedContentInfoList.Add(await DataProvider.ContentRepository.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
                             }
                         }
                     }
@@ -163,7 +166,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     var sequence = 1;
                     foreach (var channelContentId in channelContentIds)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         if (!isAllCheckedLevel)
@@ -188,7 +191,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                         }
 
                         contentInfoList.Add(contentInfo);
-                        calculatedContentInfoList.Add(await DataProvider.ContentDao.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
+                        calculatedContentInfoList.Add(await DataProvider.ContentRepository.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
                     }
                 }
 

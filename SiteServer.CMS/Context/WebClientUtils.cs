@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Net;
 using System.Text;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Context
 {

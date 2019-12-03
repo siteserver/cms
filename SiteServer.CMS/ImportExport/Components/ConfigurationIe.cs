@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context.Atom.Atom.Core;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -28,7 +27,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
 		public async Task ExportAsync()
 		{
-			var site = await DataProvider.SiteDao.GetAsync(_siteId);
+			var site = await DataProvider.SiteRepository.GetAsync(_siteId);
 
 			var feed = AtomUtility.GetEmptyFeed();
 
@@ -68,7 +67,7 @@ namespace SiteServer.CMS.ImportExport.Components
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultFileTemplateName, fileTemplateName);
 			}
 
-			var channelGroupList = await DataProvider.ChannelGroupDao.GetChannelGroupListAsync(site.Id);
+			var channelGroupList = await DataProvider.ChannelGroupRepository.GetChannelGroupListAsync(site.Id);
 
             foreach (var channelGroup in channelGroupList)
 			{
@@ -76,7 +75,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 feed.Entries.Add(entry);
 			}
 
-			var contentGroupList = await DataProvider.ContentGroupDao.GetContentGroupsAsync(site.Id);
+			var contentGroupList = await DataProvider.ContentGroupRepository.GetContentGroupsAsync(site.Id);
 
             foreach (var contentGroup in contentGroupList)
 			{
@@ -114,14 +113,14 @@ namespace SiteServer.CMS.ImportExport.Components
 
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
-			var site = await DataProvider.SiteDao.GetAsync(_siteId);
+			var site = await DataProvider.SiteRepository.GetAsync(_siteId);
 
             site.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements,
                 "SettingsXml", site.ToString());
             site.IsSeparatedWeb = false;
             site.IsCreateDoubleClick = false;
 
-            await DataProvider.SiteDao.UpdateAsync(site);
+            await DataProvider.SiteRepository.UpdateAsync(site);
 
 			var indexTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultIndexTemplateName);
 			if (!string.IsNullOrEmpty(indexTemplateName))
@@ -129,7 +128,7 @@ namespace SiteServer.CMS.ImportExport.Components
 				var indexTemplateId = await TemplateManager.GetTemplateIdByTemplateNameAsync(site.Id, TemplateType.IndexPageTemplate, indexTemplateName);
 				if (indexTemplateId != 0)
 				{
-					await DataProvider.TemplateDao.SetDefaultAsync(site.Id, indexTemplateId);
+					await DataProvider.TemplateRepository.SetDefaultAsync(site.Id, indexTemplateId);
 				}
 			}
 
@@ -139,7 +138,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var channelTemplateId = await TemplateManager.GetTemplateIdByTemplateNameAsync(site.Id, TemplateType.ChannelTemplate, channelTemplateName);
 				if (channelTemplateId != 0)
 				{
-					await DataProvider.TemplateDao.SetDefaultAsync(site.Id, channelTemplateId);
+					await DataProvider.TemplateRepository.SetDefaultAsync(site.Id, channelTemplateId);
 				}
 			}
 
@@ -149,7 +148,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var contentTemplateId = await TemplateManager.GetTemplateIdByTemplateNameAsync(site.Id, TemplateType.ContentTemplate, contentTemplateName);
 				if (contentTemplateId != 0)
 				{
-					await DataProvider.TemplateDao.SetDefaultAsync(site.Id, contentTemplateId);
+					await DataProvider.TemplateRepository.SetDefaultAsync(site.Id, contentTemplateId);
 				}
 			}
 
@@ -159,7 +158,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var fileTemplateId = await TemplateManager.GetTemplateIdByTemplateNameAsync(site.Id, TemplateType.FileTemplate, fileTemplateName);
 				if (fileTemplateId != 0)
 				{
-					await DataProvider.TemplateDao.SetDefaultAsync(site.Id, fileTemplateId);
+					await DataProvider.TemplateRepository.SetDefaultAsync(site.Id, fileTemplateId);
 				}
 			}
 

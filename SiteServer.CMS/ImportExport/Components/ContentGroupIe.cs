@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context.Atom.Atom.Core;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -29,11 +27,11 @@ namespace SiteServer.CMS.ImportExport.Components
 
             var groupName = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(ContentGroup.GroupName), "ContentGroupName" });
             if (string.IsNullOrEmpty(groupName)) return true;
-            if (await DataProvider.ContentGroupDao.IsExistsAsync(siteId, groupName)) return true;
+            if (await DataProvider.ContentGroupRepository.IsExistsAsync(siteId, groupName)) return true;
 
             var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Taxis)));
             var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Description));
-            await DataProvider.ContentGroupDao.InsertAsync(new ContentGroup
+            await DataProvider.ContentGroupRepository.InsertAsync(new ContentGroup
             {
                 GroupName = groupName, 
                 SiteId = siteId, 

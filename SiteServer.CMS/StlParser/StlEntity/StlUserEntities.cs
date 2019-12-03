@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Core;
-using SiteServer.Utils;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -62,7 +60,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.AvatarUrl), attributeName))
                 {
-                    parsedContent = DataProvider.UserDao.GetUserAvatarUrl(pageInfo.User);
+                    parsedContent = DataProvider.UserRepository.GetUserAvatarUrl(pageInfo.User);
                 }
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.Gender), attributeName))
                 {

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Images;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -35,7 +35,7 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -70,7 +70,7 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var path = string.Empty;
@@ -134,7 +134,7 @@ namespace SiteServer.API.Controllers.Home
                 var editorFixWidth = request.GetPostString("editorFixWidth");
                 var editorFixHeight = request.GetPostString("editorFixHeight");
                 var editorIsLinkToOriginal = request.GetPostBool("editorIsLinkToOriginal");
-                var filePaths = TranslateUtils.StringCollectionToStringList(request.GetPostString("filePaths"));
+                var filePaths = StringUtils.GetStringList(request.GetPostString("filePaths"));
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
@@ -143,7 +143,7 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
@@ -242,7 +242,7 @@ namespace SiteServer.API.Controllers.Home
 
                 if (changed)
                 {
-                    await DataProvider.SiteDao.UpdateAsync(site);
+                    await DataProvider.SiteRepository.UpdateAsync(site);
                 }
 
                 return Ok(new

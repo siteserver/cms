@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
@@ -10,7 +10,7 @@ using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -306,7 +306,7 @@ selObj.selectedIndex=0;
                 {
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = await DataProvider.ContentDao.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
                         var title = WebUtils.MaxLengthText(contentInfo.Title, titleWordNum);
                         var url = await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, false);
                         if (!string.IsNullOrEmpty(queryString))

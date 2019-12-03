@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
@@ -26,7 +25,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     return Unauthorized();
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 return Ok(new
                 {
@@ -51,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     return Unauthorized();
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 config.AdminUserNameMinLength =
                     request.GetPostInt("adminUserNameMinLength");
@@ -73,7 +72,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 config.IsAdminEnforceLogout = request.GetPostBool("isAdminEnforceLogout");
                 config.AdminEnforceLogoutMinutes = request.GetPostInt("adminEnforceLogoutMinutes");
 
-                await DataProvider.ConfigDao.UpdateAsync(config);
+                await DataProvider.ConfigRepository.UpdateAsync(config);
 
                 await request.AddAdminLogAsync("修改管理员设置");
 

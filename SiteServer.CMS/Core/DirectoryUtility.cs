@@ -1,10 +1,9 @@
 ﻿using System;
-using SiteServer.Utils;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.Core
 {
@@ -46,7 +45,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                var siteDirList = await DataProvider.SiteDao.GetSiteDirListAsync(0);
+                var siteDirList = await DataProvider.SiteRepository.GetSiteDirListAsync(0);
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(sitePath);
                 foreach (var subDirectoryPath in directoryPaths)
@@ -82,7 +81,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                var siteDirList = await DataProvider.SiteDao.GetSiteDirListAsync(0);
+                var siteDirList = await DataProvider.SiteRepository.GetSiteDirListAsync(0);
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(siteTemplatePath);
                 foreach (var subDirectoryPath in directoryPaths)
@@ -110,20 +109,20 @@ namespace SiteServer.CMS.Core
             string oldPsPath;
             if (oldParentSiteId != 0)
             {
-                var oldSite = await DataProvider.SiteDao.GetAsync(oldParentSiteId);
+                var oldSite = await DataProvider.SiteRepository.GetAsync(oldParentSiteId);
 
                 oldPsPath = PathUtils.Combine(PathUtility.GetSitePath(oldSite), siteDir);
             }
             else
             {
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 oldPsPath = PathUtility.GetSitePath(site);
             }
 
             string newPsPath;
             if (newParentSiteId != 0)
             {
-                var newSite = await DataProvider.SiteDao.GetAsync(newParentSiteId);
+                var newSite = await DataProvider.SiteRepository.GetAsync(newParentSiteId);
 
                 newPsPath = PathUtils.Combine(PathUtility.GetSitePath(newSite), siteDir);
             }
@@ -152,12 +151,12 @@ namespace SiteServer.CMS.Core
             {
                 var sitePath = PathUtility.GetSitePath(site);
 
-                await DataProvider.SiteDao.UpdateParentIdToZeroAsync(site.Id);
+                await DataProvider.SiteRepository.UpdateParentIdToZeroAsync(site.Id);
 
                 site.Root = true;
                 site.SiteDir = string.Empty;
 
-                await DataProvider.SiteDao.UpdateAsync(site);
+                await DataProvider.SiteRepository.UpdateAsync(site);
                 if (isMoveFiles)
                 {
                     DirectoryUtils.MoveDirectory(sitePath, WebConfigUtils.PhysicalApplicationPath, false);
@@ -173,7 +172,7 @@ namespace SiteServer.CMS.Core
                 site.Root = false;
                 site.SiteDir = siteDir;
 
-                await DataProvider.SiteDao.UpdateAsync(site);
+                await DataProvider.SiteRepository.UpdateAsync(site);
 
                 var psPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteDir);
                 DirectoryUtils.CreateDirectoryIfNotExists(psPath);

@@ -4,10 +4,10 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-        public string SiteUrl => Site.WebUrl;
+        public string SiteUrl => Site.GetWebUrl();
 
         public string RootUrl => PageUtils.ApplicationPath;
 
@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
             else
             {
                 Site.ConfigSelectImageCurrentUrl = _currentRootPath;
-                DataProvider.SiteDao.UpdateAsync(Site).GetAwaiter().GetResult();
+                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 

@@ -1,6 +1,6 @@
 using System.Data;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.DataCache.Stl
 {
@@ -20,7 +20,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retVal = StlCacheManager.GetInt(cacheKey);
                 if (retVal == -1)
                 {
-                    retVal = DataProvider.DatabaseDao.GetPageTotalCount(sqlString);
+                    retVal = DataProvider.DatabaseRepository.GetPageTotalCount(sqlString);
                     StlCacheManager.Set(cacheKey, retVal);
                 }
             }
@@ -40,7 +40,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retVal = StlCacheManager.Get<string>(cacheKey);
                 if (retVal == null)
                 {
-                    retVal = DataProvider.DatabaseDao.GetStlPageSqlString(sqlString, orderByString, totalNum, pageNum,
+                    retVal = DataProvider.DatabaseRepository.GetStlPageSqlString(sqlString, orderByString, totalNum, pageNum,
                     currentPageIndex);
                     StlCacheManager.Set(cacheKey, retVal);
                 }
@@ -61,7 +61,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retVal = StlCacheManager.Get<string>(cacheKey);
                 if (retVal == null)
                 {
-                    retVal = DataProvider.DatabaseDao.GetString(connectionString, queryString);
+                    retVal = DataProvider.DatabaseRepository.GetString(connectionString, queryString);
                     StlCacheManager.Set(cacheKey, retVal);
                 }
             }
@@ -81,7 +81,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retVal = StlCacheManager.Get<DataSet>(cacheKey);
                 if (retVal == null)
                 {
-                    retVal = DataProvider.DatabaseDao.GetDataSet(connectionString, queryString);
+                    retVal = DataProvider.DatabaseRepository.GetDataSet(connectionString, queryString);
                     StlCacheManager.Set(cacheKey, retVal);
                 }
             }
@@ -101,7 +101,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retVal = StlCacheManager.Get<DataTable>(cacheKey);
                 if (retVal == null)
                 {
-                    retVal = DataProvider.DatabaseDao.GetDataTable(connectionString, queryString);
+                    retVal = DataProvider.DatabaseRepository.GetDataTable(connectionString, queryString);
                     StlCacheManager.Set(cacheKey, retVal);
                 }
             }

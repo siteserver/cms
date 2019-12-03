@@ -1,13 +1,8 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Datory;
-using MySqlX.XDevAPI.Relational;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
-using SiteServer.Plugin;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -72,9 +67,9 @@ namespace SiteServer.Cli.Updater.Tables
             Process = Process
         };
 
-        private static readonly string NewTableName = DataProvider.TableStyleDao.TableName;
+        private static readonly string NewTableName = DataProvider.TableStyleRepository.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.TableStyleDao.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.TableStyleRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
@@ -85,8 +80,8 @@ namespace SiteServer.Cli.Updater.Tables
 
         private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
         {
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_PublishmentSystem"), DataProvider.SiteDao.TableName},
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_Node"), DataProvider.ChannelDao.TableName}
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_PublishmentSystem"), DataProvider.SiteRepository.TableName},
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_Node"), DataProvider.ChannelRepository.TableName}
         };
 
         private static Dictionary<string, object> Process(Dictionary<string, object> row)
@@ -95,7 +90,7 @@ namespace SiteServer.Cli.Updater.Tables
             {
                 if (isVisible != null && StringUtils.EqualsIgnoreCase(isVisible.ToString(), "False"))
                 {
-                    row[nameof(TableStyle.InputType)] = Plugin.InputType.Hidden.Value;
+                    row[nameof(TableStyle.InputType)] = Abstractions.InputType.Hidden.Value;
                 }
             }
 

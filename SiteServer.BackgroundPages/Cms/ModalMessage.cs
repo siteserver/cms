@@ -2,9 +2,9 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -82,7 +82,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (StringUtils.EqualsIgnoreCase(_type, TypePreviewImage))
             {
                 var siteId = AuthRequest.GetQueryInt("siteID");
-                var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteRepository.GetAsync(siteId).GetAwaiter().GetResult();
                 var textBoxClientId = AuthRequest.GetQueryString("textBoxClientID");
                 LtlHtml.Text = $@"
 <span id=""previewImage""></span>
@@ -107,7 +107,7 @@ if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png|\.webp$/i) != -1)
             else if (StringUtils.EqualsIgnoreCase(_type, TypePreviewVideo))
             {
                 var siteId = AuthRequest.GetQueryInt("siteID");
-                var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteRepository.GetAsync(siteId).GetAwaiter().GetResult();
                 var textBoxClientId = AuthRequest.GetQueryString("textBoxClientID");
 
                 LtlHtml.Text = $@"
@@ -133,7 +133,7 @@ if (videoUrl){{
             else if (StringUtils.EqualsIgnoreCase(_type, TypePreviewVideoByUrl))
             {
                 var siteId = AuthRequest.GetQueryInt("siteID");
-                var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteRepository.GetAsync(siteId).GetAwaiter().GetResult();
                 var videoUrl = AuthRequest.GetQueryString("videoUrl");
 
                 LtlHtml.Text = $@"

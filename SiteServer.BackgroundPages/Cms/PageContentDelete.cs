@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.GetAsync(Site, channelId, contentId).GetAwaiter().GetResult();
+                    var contentInfo = DataProvider.ContentRepository.GetAsync(Site, channelId, contentId).GetAwaiter().GetResult();
                     if (contentInfo != null)
                     {
                         builder.Append(
@@ -147,7 +147,7 @@ namespace SiteServer.BackgroundPages.Cms
                         if (contentIdList.Count == 1)
                         {
                             var contentId = contentIdList[0];
-                            var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                            var contentTitle = DataProvider.ContentRepository.GetValueAsync(tableName, contentId, ContentAttribute.Title).GetAwaiter().GetResult();
                             AuthRequest.AddSiteLogAsync(SiteId, channelId, contentId, "删除内容",
                                 $"栏目:{ChannelManager.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()},内容标题:{contentTitle}").GetAwaiter().GetResult();
                         }
@@ -157,17 +157,17 @@ namespace SiteServer.BackgroundPages.Cms
                                 $"栏目:{ChannelManager.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()},内容条数:{contentIdList.Count}").GetAwaiter().GetResult();
                         }
 
-                        DataProvider.ContentDao.UpdateTrashContentsAsync(SiteId, channelId, tableName, contentIdList).GetAwaiter().GetResult();
+                        DataProvider.ContentRepository.UpdateTrashContentsAsync(SiteId, channelId, tableName, contentIdList).GetAwaiter().GetResult();
 
                         //引用内容，需要删除
-                        //var siteTableNameList = DataProvider.SiteDao.GetTableNameList();
+                        //var siteTableNameList = DataProvider.SiteRepository.GetTableNameList();
                         //foreach (var siteTableName in siteTableNameList)
                         //{
-                        //    var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(siteTableName, contentIdList);
+                        //    var targetContentIdList = DataProvider.ContentRepository.GetReferenceIdList(siteTableName, contentIdList);
                         //    if (targetContentIdList.Count > 0)
                         //    {
                         //        var targetContentInfo = ContentManager.GetContentInfo(siteTableName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));
-                        //        DataProvider.ContentDao.DeleteContents(targetContentInfo.SiteId, siteTableName, targetContentIdList, targetContentInfo.ChannelId);
+                        //        DataProvider.ContentRepository.DeleteContents(targetContentInfo.SiteId, siteTableName, targetContentIdList, targetContentInfo.ChannelId);
                         //    }
                         //}
 
@@ -176,7 +176,7 @@ namespace SiteServer.BackgroundPages.Cms
                     else
                     {
                         SuccessMessage("成功从回收站清空内容！");
-                        //DataProvider.ContentDao.DeleteContents(SiteId, tableName, contentIdList, channelId);
+                        //DataProvider.ContentRepository.DeleteContents(SiteId, tableName, contentIdList, channelId);
 
                         foreach (var contentId in contentIdList)
                         {

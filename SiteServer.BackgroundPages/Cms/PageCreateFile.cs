@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using SiteServer.Utils;
-using SiteServer.BackgroundPages.Settings;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.Plugin;
+using SiteServer.CMS.Repositories;
+
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -25,7 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(Constants.WebSitePermissions.Create);
 
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateListByTypeAsync(SiteId, TemplateType.FileTemplate).GetAwaiter().GetResult();
+            var templateInfoList = DataProvider.TemplateRepository.GetTemplateListByTypeAsync(SiteId, TemplateType.FileTemplate).GetAwaiter().GetResult();
 
             foreach (var templateInfo in templateInfoList)
             {

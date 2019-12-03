@@ -4,19 +4,15 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
-using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -65,7 +61,7 @@ namespace SiteServer.API.Controllers.Sys
                     CharsetType = ECharset.utf_8,
                     Default = false
                 };
-                var site = await DataProvider.SiteDao.GetAsync(siteId);
+                var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 pageInfo = await PageInfo.GetPageInfoAsync(siteId, 0, site, templateInfo, new Dictionary<string, object>());
                 pageInfo.User = request.User;
 
@@ -80,7 +76,7 @@ namespace SiteServer.API.Controllers.Sys
                     var stlPageContentsElement = stlElement;
                     var stlPageContentsElementReplaceString = stlElement;
 
-                    var whereString = await DataProvider.ContentDao.GetWhereStringByStlSearchAsync(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form);
+                    var whereString = await DataProvider.ContentRepository.GetWhereStringByStlSearchAsync(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form);
 
                     var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, pageInfo, contextInfo, pageNum, site.TableName, whereString);
                     var (pageCount, totalNum) = await stlPageContents.GetPageCountAsync();

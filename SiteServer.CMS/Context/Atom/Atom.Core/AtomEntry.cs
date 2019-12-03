@@ -580,7 +580,7 @@ namespace SiteServer.CMS.Context.Atom.Atom.Core
 			XPathExpression expr;
 			XPathNodeIterator iter;
 
-			if(nav.NamespaceURI.Length != 0)
+			if(!string.IsNullOrEmpty(nav.NamespaceURI))
 			{
 				nsm = new XmlNamespaceManager(nav.NameTable);
 				nsm.AddNamespace(DefaultValues.AtomNSPrefix, DefaultValues.AtomNSUri.ToString());

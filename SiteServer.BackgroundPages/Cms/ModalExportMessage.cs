@@ -6,9 +6,8 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.Utils;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
@@ -104,7 +103,7 @@ namespace SiteServer.BackgroundPages.Cms
                     else if (_exportType == ExportTypeContentZip)
                     {
                         var channelId = AuthRequest.GetQueryInt("channelId");
-                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
+                        var contentIdCollection = StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
                         var isPeriods = AuthRequest.GetQueryBool("isPeriods");
                         var startDate = AuthRequest.GetQueryString("startDate");
                         var endDate = AuthRequest.GetQueryString("endDate");
@@ -114,8 +113,8 @@ namespace SiteServer.BackgroundPages.Cms
                     else if (_exportType == ExportTypeContentExcel)
                     {
                         var channelId = AuthRequest.GetQueryInt("channelId");
-                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
-                        var displayAttributes = TranslateUtils.StringCollectionToStringList(AuthRequest.GetQueryString("DisplayAttributes"));
+                        var contentIdCollection = StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
+                        var displayAttributes = StringUtils.GetStringList(AuthRequest.GetQueryString("DisplayAttributes"));
                         var isPeriods = AuthRequest.GetQueryBool("isPeriods");
                         var startDate = AuthRequest.GetQueryString("startDate");
                         var endDate = AuthRequest.GetQueryString("endDate");
@@ -124,7 +123,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else if (_exportType == ExportTypeChannel)
                     {
-                        var channelIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
+                        var channelIdList = StringUtils.GetIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
                         fileName = ExportChannel(channelIdList);
                     }
                     else if (_exportType == ExportTypeSingleTableStyle)

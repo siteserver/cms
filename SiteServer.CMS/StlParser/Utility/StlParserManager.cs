@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SiteServer.CMS.Core;
-using SiteServer.Utils;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.Plugin;
+
 
 namespace SiteServer.CMS.StlParser.Utility
 {
@@ -59,7 +57,7 @@ namespace SiteServer.CMS.StlParser.Utility
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
             var builder = new StringBuilder(template);
-            var site = await DataProvider.SiteDao.GetAsync(context.SiteId);
+            var site = await DataProvider.SiteRepository.GetAsync(context.SiteId);
             var templateInfo = new Template
             {
                 Id = context.TemplateId,
@@ -73,7 +71,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
         //public static void ParseInnerContent(StringBuilder builder, int siteId, int channelId, int contentId)
         //{
-        //    var site = DataProvider.SiteDao.GetSite(siteId);
+        //    var site = DataProvider.SiteRepository.GetSite(siteId);
         //    var pageInfo = new PageInfo(channelId, contentId, site, null, null);
         //    var contextInfo = new ContextInfo(pageInfo);
         //    ParseInnerContent(builder, pageInfo, contextInfo);

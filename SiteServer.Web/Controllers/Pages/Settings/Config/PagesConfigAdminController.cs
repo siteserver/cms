@@ -2,11 +2,10 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using NSwag.Annotations;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Config
 {
@@ -29,7 +28,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
                     return Unauthorized();
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 return Ok(new
                 {
@@ -55,13 +54,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
                     return Unauthorized();
                 }
 
-                var config = await DataProvider.ConfigDao.GetAsync();
+                var config = await DataProvider.ConfigRepository.GetAsync();
 
                 config.AdminTitle = request.GetPostString("adminTitle");
                 config.AdminLogoUrl = request.GetPostString("adminLogoUrl");
                 config.AdminWelcomeHtml = request.GetPostString("adminWelcomeHtml");
 
-                await DataProvider.ConfigDao.UpdateAsync(config);
+                await DataProvider.ConfigRepository.UpdateAsync(config);
 
                 await request.AddAdminLogAsync("修改管理后台设置");
 

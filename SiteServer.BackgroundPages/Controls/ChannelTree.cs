@@ -2,14 +2,11 @@
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Enumerations;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Utils;
+using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -25,7 +22,7 @@ namespace SiteServer.BackgroundPages.Controls
 
             if (siteId > 0)
             {
-                var site = DataProvider.SiteDao.GetAsync(siteId).GetAwaiter().GetResult();
+                var site = DataProvider.SiteRepository.GetAsync(siteId).GetAwaiter().GetResult();
                 if (site != null)
                 {
                     var contentModelPluginId = Page.Request.QueryString["contentModelPluginId"];

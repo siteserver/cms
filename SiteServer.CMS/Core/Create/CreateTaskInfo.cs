@@ -1,10 +1,10 @@
-using SiteServer.CMS.Enumerations;
+using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Core.Create
 {
     public class CreateTaskInfo
     {
-        public CreateTaskInfo(int id, string name, ECreateType createType, int siteId, int channelId, int contentId, int fileTemplateId, int specialId, int pageCount)
+        public CreateTaskInfo(int id, string name, CreateType createType, int siteId, int channelId, int contentId, int fileTemplateId, int specialId, int pageCount)
         {
             Id = id;
             Name = name;
@@ -20,7 +20,7 @@ namespace SiteServer.CMS.Core.Create
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public ECreateType CreateType { get; set; }
+        public CreateType CreateType { get; set; }
         public int SiteId { get; set; }
         public int ChannelId { get; set; }
         public int ContentId { get; set; }

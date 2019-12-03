@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Utils;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using TableStyle = SiteServer.CMS.Model.TableStyle;
+using SiteServer.CMS.Repositories;
+using TableStyle = SiteServer.Abstractions.TableStyle;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            _tableName = DataProvider.ChannelDao.TableName;
+            _tableName = DataProvider.ChannelRepository.TableName;
             var channelId = AuthRequest.GetQueryInt("channelId", SiteId);
             _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
             _redirectUrl = GetRedirectUrl(SiteId, channelId);
@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     try
                     {
-                        DataProvider.TableStyleDao.DeleteAsync(_channel.Id, _tableName, attributeName).GetAwaiter().GetResult();
+                        DataProvider.TableStyleRepository.DeleteAsync(_channel.Id, _tableName, attributeName).GetAwaiter().GetResult();
                         AuthRequest.AddSiteLogAsync(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}").GetAwaiter().GetResult();
                         SuccessDeleteMessage();
                     }

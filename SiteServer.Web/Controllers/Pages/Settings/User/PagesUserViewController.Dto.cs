@@ -11,7 +11,7 @@
 
         public class GetResult
         {
-            public CMS.Model.User User { get; set; }
+            public Abstractions.User User { get; set; }
             public string GroupName { get; set; }
         }
     }
