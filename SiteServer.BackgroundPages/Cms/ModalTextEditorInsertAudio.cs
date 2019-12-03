@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.LitJson;
-using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
 
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var fileExtName = PathUtils.GetExtension(filePath);
 
                         var isAllow = true;
-                        if (!PathUtility.IsVideoExtenstionAllowed(Site, fileExtName))
+                        if (!PathUtility.IsVideoExtensionAllowed(Site, fileExtName))
                         {
                             message = "此格式不允许上传，请选择有效的音频文件";
                             isAllow = false;

@@ -102,12 +102,12 @@ namespace SiteServer.CMS.Core
             var uploadDateFormatString = site.FileUploadDateFormatString;
             var uploadDirectoryName = site.FileUploadDirectoryName;
 
-            if (IsImageExtenstionAllowed(site, fileExtension))
+            if (IsImageExtensionAllowed(site, fileExtension))
             {
                 uploadDateFormatString = site.ImageUploadDateFormatString;
                 uploadDirectoryName = site.ImageUploadDirectoryName;
             }
-            else if (IsVideoExtenstionAllowed(site, fileExtension))
+            else if (IsVideoExtensionAllowed(site, fileExtension))
             {
                 uploadDateFormatString = site.VideoUploadDateFormatString;
                 uploadDirectoryName = site.VideoUploadDirectoryName;
@@ -192,11 +192,11 @@ namespace SiteServer.CMS.Core
             var fileExtension = PathUtils.GetExtension(filePath);
 
             var isUploadChangeFileName = site.IsFileUploadChangeFileName;
-            if (IsImageExtenstionAllowed(site, fileExtension))
+            if (IsImageExtensionAllowed(site, fileExtension))
             {
                 isUploadChangeFileName = site.IsImageUploadChangeFileName;
             }
-            else if (IsVideoExtenstionAllowed(site, fileExtension))
+            else if (IsVideoExtensionAllowed(site, fileExtension))
             {
                 isUploadChangeFileName = site.IsVideoUploadChangeFileName;
             }
@@ -1017,9 +1017,9 @@ namespace SiteServer.CMS.Core
             return filePath;
         }
 
-        public static bool IsImageExtenstionAllowed(Site site, string fileExtention)
+        public static bool IsImageExtensionAllowed(Site site, string fileExtention)
         {
-            return PathUtils.IsFileExtenstionAllowed(site.ImageUploadTypeCollection, fileExtention);
+            return PathUtils.IsFileExtensionAllowed(site.ImageUploadTypeCollection, fileExtention);
         }
 
         public static bool IsImageSizeAllowed(Site site, int contentLength)
@@ -1027,9 +1027,9 @@ namespace SiteServer.CMS.Core
             return contentLength <= site.ImageUploadTypeMaxSize * 1024;
         }
 
-        public static bool IsVideoExtenstionAllowed(Site site, string fileExtention)
+        public static bool IsVideoExtensionAllowed(Site site, string fileExtention)
         {
-            return PathUtils.IsFileExtenstionAllowed(site.VideoUploadTypeCollection, fileExtention);
+            return PathUtils.IsFileExtensionAllowed(site.VideoUploadTypeCollection, fileExtention);
         }
 
         public static bool IsVideoSizeAllowed(Site site, int contentLength)
@@ -1037,10 +1037,10 @@ namespace SiteServer.CMS.Core
             return contentLength <= site.VideoUploadTypeMaxSize * 1024;
         }
 
-        public static bool IsFileExtenstionAllowed(Site site, string fileExtention)
+        public static bool IsFileExtensionAllowed(Site site, string fileExtention)
         {
             var typeCollection = site.FileUploadTypeCollection + "," + site.ImageUploadTypeCollection + "," + site.VideoUploadTypeCollection;
-            return PathUtils.IsFileExtenstionAllowed(typeCollection, fileExtention);
+            return PathUtils.IsFileExtensionAllowed(typeCollection, fileExtention);
         }
 
         public static bool IsFileSizeAllowed(Site site, int contentLength)
@@ -1048,19 +1048,19 @@ namespace SiteServer.CMS.Core
             return contentLength <= site.FileUploadTypeMaxSize * 1024;
         }
 
-        public static bool IsUploadExtenstionAllowed(EUploadType uploadType, Site site, string fileExtention)
+        public static bool IsUploadExtensionAllowed(EUploadType uploadType, Site site, string fileExtention)
         {
             if (uploadType == EUploadType.Image)
             {
-                return IsImageExtenstionAllowed(site, fileExtention);
+                return IsImageExtensionAllowed(site, fileExtention);
             }
             else if (uploadType == EUploadType.Video)
             {
-                return IsVideoExtenstionAllowed(site, fileExtention);
+                return IsVideoExtensionAllowed(site, fileExtention);
             }
             else if (uploadType == EUploadType.File)
             {
-                return IsFileExtenstionAllowed(site, fileExtention);
+                return IsFileExtensionAllowed(site, fileExtention);
             }
             return false;
         }

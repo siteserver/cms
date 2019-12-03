@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (_isCreate == false)
             {
                 var fileExtName = PathUtils.GetExtension(_theFileName);
-                if (!PathUtility.IsFileExtenstionAllowed(Site, fileExtName))
+                if (!PathUtility.IsFileExtensionAllowed(Site, fileExtName))
                 {
                     FailMessage("此格式不允许创建，请选择有效的文件名");
                     return;
@@ -194,7 +194,7 @@ namespace SiteServer.BackgroundPages.Cms
             else
             {
                 var fileExtName = PathUtils.GetExtension(TbFileName.Text);
-                if (!PathUtility.IsFileExtenstionAllowed(Site, fileExtName))
+                if (!PathUtility.IsFileExtensionAllowed(Site, fileExtName))
                 {
                     FailMessage("此格式不允许创建，请选择有效的文件名");
                     return;

@@ -671,13 +671,13 @@ namespace SiteServer.CMS.DataCache
             return retVal;
         }
 
-        public static async Task<string> GetContentAttributesOfDisplayAsnyc(int siteId, int channelId)
+        public static async Task<string> GetContentAttributesOfDisplayAsync(int siteId, int channelId)
         {
             var nodeInfo = await GetChannelAsync(siteId, channelId);
             if (nodeInfo == null) return string.Empty;
             if (siteId != channelId && string.IsNullOrEmpty(nodeInfo.ContentAttributesOfDisplay))
             {
-                return await GetContentAttributesOfDisplayAsnyc(siteId, nodeInfo.ParentId);
+                return await GetContentAttributesOfDisplayAsync(siteId, nodeInfo.ParentId);
             }
             return nodeInfo.ContentAttributesOfDisplay;
         }

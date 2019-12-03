@@ -43,7 +43,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Datory\src\Datory\Datory.csproj" />
-    <ProjectReference Include="..\SiteServer.Abstractions\SiteServer.Abstractions.csproj" />
+    <ProjectReference Include="..\src\SiteServer.Abstractions\SiteServer.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var localFileName = PathUtility.GetUploadFileName(Site, filePath);
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-                if (!PathUtility.IsVideoExtenstionAllowed(Site, fileExtName))
+                if (!PathUtility.IsVideoExtensionAllowed(Site, fileExtName))
                 {
                     FailMessage("上传失败，上传视频格式不正确！");
                     return;

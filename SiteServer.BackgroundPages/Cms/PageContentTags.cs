@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.DataBind();
 
             var showPopWinString = ModalContentTagAdd.GetOpenWindowStringToAdd(SiteId);
-            BtnAddTag.Attributes.Add("onclick", showPopWinString);
+            BtnAddTag.Attributes.Add("onClick", showPopWinString);
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

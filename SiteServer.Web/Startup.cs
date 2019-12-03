@@ -8,9 +8,9 @@ using Microsoft.Owin;
 using NSwag.AspNet.Owin;
 using NSwag.AspNet.WebApi;
 using Owin;
+using SiteServer.Abstractions;
 using SiteServer.API;
 using SiteServer.CMS.Core;
-using SiteServer.Abstractions;
 
 [assembly: OwinStartup(typeof(Startup))]
 

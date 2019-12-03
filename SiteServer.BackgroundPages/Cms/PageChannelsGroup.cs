@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
 
@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (HasChannelPermissions(nodeInfo.Id, Constants.ChannelPermissions.ChannelEdit))
                 {
-                    ltlItemChannelName.Text = $@"<a href=""javascript:;"" onclick=""{ModalChannelEdit.GetOpenWindowString(nodeInfo.SiteId, nodeInfo.Id, GetRedirectUrl(nodeInfo.SiteId, _nodeGroupName))}"">{ltlItemChannelName.Text}</a>";
+                    ltlItemChannelName.Text = $@"<a href=""javascript:;"" onClick=""{ModalChannelEdit.GetOpenWindowString(nodeInfo.SiteId, nodeInfo.Id, GetRedirectUrl(nodeInfo.SiteId, _nodeGroupName))}"">{ltlItemChannelName.Text}</a>";
                 }
             }
         }

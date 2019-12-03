@@ -3,9 +3,8 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using NDesk.Options;
-using SiteServer.Cli.Core;
-
 using SiteServer.Abstractions;
+using SiteServer.Cli.Core;
 
 namespace SiteServer.Cli.Jobs
 {

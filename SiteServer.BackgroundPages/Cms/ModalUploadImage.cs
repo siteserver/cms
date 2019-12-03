@@ -3,11 +3,11 @@ using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Images;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -136,7 +136,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var localTitleFilePath = PathUtils.Combine(localDirectoryPath, localTitleFileName);
                 var localSmallFilePath = PathUtils.Combine(localDirectoryPath, localSmallFileName);
 
-                if (!PathUtility.IsImageExtenstionAllowed(Site, fileExtName))
+                if (!PathUtility.IsImageExtensionAllowed(Site, fileExtName))
                 {
                     FailMessage("上传失败，上传图片格式不正确！");
                     return;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -40,8 +40,8 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            BtnAdd.Attributes.Add("onclick", ModalRelatedFieldAdd.GetOpenWindowString(SiteId));
-            BtnImport.Attributes.Add("onclick", ModalImport.GetOpenWindowString(SiteId, ModalImport.TypeRelatedField));
+            BtnAdd.Attributes.Add("onClick", ModalRelatedFieldAdd.GetOpenWindowString(SiteId));
+            BtnImport.Attributes.Add("onClick", ModalImport.GetOpenWindowString(SiteId, ModalImport.TypeRelatedField));
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -63,12 +63,12 @@ namespace SiteServer.BackgroundPages.Cms
             ltlItemsUrl.Text = $@"<a href=""{urlItems}"">管理字段项</a>";
 
             ltlEditUrl.Text =
-                $@"<a href=""javascript:;"" onclick=""{ModalRelatedFieldAdd.GetOpenWindowString(
+                $@"<a href=""javascript:;"" onClick=""{ModalRelatedFieldAdd.GetOpenWindowString(
                     SiteId, relatedFieldInfo.Id)}"">编辑</a>";
             ltlExportUrl.Text =
-                $@"<a href=""javascript:;"" onclick=""{ModalExportMessage.GetOpenWindowStringToRelatedField(SiteId, relatedFieldInfo.Id)}"">导出</a>";
+                $@"<a href=""javascript:;"" onClick=""{ModalExportMessage.GetOpenWindowStringToRelatedField(SiteId, relatedFieldInfo.Id)}"">导出</a>";
             ltlDeleteUrl.Text =
-                $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithConfirm(
+                $@"<a href=""javascript:;"" onClick=""{PageUtils.GetRedirectStringWithConfirm(
                     PageUtils.GetCmsUrl(SiteId, nameof(PageRelatedField), new NameValueCollection
                     {
                         {"RelatedFieldID", relatedFieldInfo.Id.ToString()},

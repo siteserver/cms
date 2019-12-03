@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var fileName = fileNames[0];
                 if (!string.IsNullOrEmpty(fileName))
                 {
-                    var redirectUrl = WebUtils.GetContentAddUploadWordUrl(SiteId, _channel, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue), fileName, _returnUrl);
+                    var redirectUrl = WebUtils.GetContentAddUploadWordUrl(SiteId, _channel, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNegative(DdlContentLevel.SelectedValue), fileName, _returnUrl);
                     LayerUtils.CloseAndRedirect(Page, redirectUrl);
                 }
 
@@ -100,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
                             contentInfo.LastEditUserName = contentInfo.AddUserName;
                             contentInfo.LastEditDate = contentInfo.AddDate;
 
-                            contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
+                            contentInfo.CheckedLevel = TranslateUtils.ToIntWithNegative(DdlContentLevel.SelectedValue);
                             contentInfo.Checked = contentInfo.CheckedLevel >= Site.CheckContentLevel;
 
                             contentInfo.Title = formCollection[ContentAttribute.Title];

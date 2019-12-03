@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
@@ -116,7 +116,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlCheckType.SelectedValue);
+            var checkedLevel = TranslateUtils.ToIntWithNegative(DdlCheckType.SelectedValue);
 
             var isChecked = checkedLevel >= Site.CheckContentLevel;
 

@@ -665,7 +665,7 @@ namespace SiteServer.CMS.Core
             {
                 foreach (var ids in StringUtils.GetStringList(queryString["IDsCollection"]))
                 {
-                    var channelId = TranslateUtils.ToIntWithNagetive(ids.Split('_')[0]);
+                    var channelId = TranslateUtils.ToIntWithNegative(ids.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(ids.Split('_')[1]);
                     var contentIdList = new List<int>();
                     if (dic.ContainsKey(channelId))

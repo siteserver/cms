@@ -503,12 +503,12 @@
       <Project>{c6df816e-0eb3-4e71-b446-0b24bbb2f6f0}</Project>
       <Name>Datory</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiteServer.Abstractions\SiteServer.Abstractions.csproj">
-      <Project>{3dd23021-88f3-4646-92ea-a60cb7ce4026}</Project>
-      <Name>SiteServer.Abstractions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
+      <Name>SiteServer.CMS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\src\SiteServer.Abstractions\SiteServer.Abstractions.csproj">
+      <Project>{66353195-4727-453E-8303-17A6A8D0471D}</Project>
       <Name>SiteServer.CMS</Name>
     </ProjectReference>
   </ItemGroup>

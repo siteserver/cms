@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            BtnAddGroup.Attributes.Add("onclick", ModalNodeGroupAdd.GetOpenWindowString(SiteId));
+            BtnAddGroup.Attributes.Add("onClick", ModalNodeGroupAdd.GetOpenWindowString(SiteId));
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

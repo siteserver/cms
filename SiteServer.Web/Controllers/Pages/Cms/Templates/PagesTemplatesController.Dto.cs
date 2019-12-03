@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SiteServer.Abstractions;
 using SiteServer.API.Result;
 using SiteServer.CMS.Dto;
 using SiteServer.CMS.Dto.Request;
@@ -18,7 +17,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             public string DateTo { get; set; }
         }
 
-        public class SiteLogResult : SiteLog
+        public class SiteLogResult : Abstractions.SiteLog
         {
             public string WebUrl { get; set; }
 

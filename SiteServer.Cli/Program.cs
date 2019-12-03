@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using NDesk.Options;
 using Quartz;
 using Quartz.Impl;
+using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Jobs;
 using SiteServer.CMS.Plugin;
-using SiteServer.Abstractions;
 
 namespace SiteServer.Cli
 {

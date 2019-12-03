@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -16,6 +15,7 @@ using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Repositories;
 using Content = SiteServer.Abstractions.Content;
 using TableStyle = SiteServer.Abstractions.TableStyle;
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -109,7 +109,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (HasChannelPermissions(_channel.Id, Constants.ChannelPermissions.ContentTranslate))
                 {
                     PhTranslate.Visible = true;
-                    BtnTranslate.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
+                    BtnTranslate.Attributes.Add("onClick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
                     ETranslateContentTypeUtilsExtensions.AddListItems(DdlTranslateType, true);
                     ControlUtils.SelectSingleItem(DdlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
@@ -133,7 +133,7 @@ namespace SiteServer.BackgroundPages.Cms
                     CblContentGroups.Items.Add(item);
                 }
                 
-                BtnContentGroupAdd.Attributes.Add("onclick", ModalContentGroupAdd.GetOpenWindowString(SiteId));
+                BtnContentGroupAdd.Attributes.Add("onClick", ModalContentGroupAdd.GetOpenWindowString(SiteId));
 
                 LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(SiteId));
 
@@ -143,7 +143,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var (isChecked, checkedLevel) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, _channel.Id).GetAwaiter().GetResult();
                     if (AuthRequest.IsQueryExists("contentLevel"))
                     {
-                        checkedLevel = TranslateUtils.ToIntWithNagetive(AuthRequest.GetQueryString("contentLevel"));
+                        checkedLevel = TranslateUtils.ToIntWithNegative(AuthRequest.GetQueryString("contentLevel"));
                         isChecked = checkedLevel >= Site.CheckContentLevel;
                     }
 
@@ -274,7 +274,7 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.LinkUrl = TbLinkUrl.Text;
                     contentInfo.AddDate = TbAddDate.DateTime;
 
-                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
+                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNegative(RblContentLevel.SelectedValue);
                     
                     contentInfo.Checked = contentInfo.CheckedLevel >= Site.CheckContentLevel;
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(ContentTagUtils.ParseTagsString(TbTags.Text), " ");
@@ -361,7 +361,7 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.LinkUrl = TbLinkUrl.Text;
                     contentInfo.AddDate = TbAddDate.DateTime;
 
-                    var checkedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
+                    var checkedLevel = TranslateUtils.ToIntWithNegative(RblContentLevel.SelectedValue);
                     contentInfo.Checked = checkedLevel >= Site.CheckContentLevel;
                     contentInfo.CheckedLevel = checkedLevel;
 

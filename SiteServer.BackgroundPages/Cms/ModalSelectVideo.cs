@@ -4,10 +4,10 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -215,7 +215,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			foreach (FileSystemInfoExtend fileInfo in fileSystemInfoExtendCollection.Files)
 			{
-                if (!PathUtility.IsVideoExtenstionAllowed(Site, fileInfo.Type))
+                if (!PathUtility.IsVideoExtensionAllowed(Site, fileInfo.Type))
 				{
 					continue;
 				}

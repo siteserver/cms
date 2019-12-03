@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (HifFile.PostedFile == null || "" == HifFile.PostedFile.FileName) return;
 
             var isChecked = false;
-            var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
+            var checkedLevel = TranslateUtils.ToIntWithNegative(DdlContentLevel.SelectedValue);
             if (checkedLevel >= Site.CheckContentLevel)
             {
                 isChecked = true;

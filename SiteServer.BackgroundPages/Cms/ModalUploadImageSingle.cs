@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 
@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-                if (!PathUtility.IsImageExtenstionAllowed(Site, fileExtName))
+                if (!PathUtility.IsImageExtensionAllowed(Site, fileExtName))
                 {
                     FailMessage("上传失败，上传图片格式不正确！");
                     return;

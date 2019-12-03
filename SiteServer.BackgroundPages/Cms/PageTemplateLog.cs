@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(Constants.WebSitePermissions.Template);
 
-            BtnDelete.Attributes.Add("onclick",
+            BtnDelete.Attributes.Add("onClick",
                 PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
                     PageUtils.GetCmsUrl(SiteId, nameof(PageTemplateLog), new NameValueCollection
                     {
@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(TemplateLog.AddDate)));
             ltlContentLength.Text = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateLog.ContentLength)).ToString();
             ltlView.Text =
-                $@"<a href=""javascript:;"" onclick=""{ModalTemplateView.GetOpenWindowString(SiteId,
+                $@"<a href=""javascript:;"" onClick=""{ModalTemplateView.GetOpenWindowString(SiteId,
                     logId)}"">查看</a>";
         }
     }

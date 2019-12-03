@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
-using SiteServer.Cli.Core;
 using SiteServer.Abstractions;
+using SiteServer.Cli.Core;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.Cli.Jobs

@@ -1,7 +1,7 @@
 ﻿using System.IO;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.Abstractions;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
                 filePath = file.FileName;
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
 
-                if (!PathUtility.IsImageExtenstionAllowed(site, fileExtName))
+                if (!PathUtility.IsImageExtensionAllowed(site, fileExtName))
                 {
                     errorMessage = "上传失败，上传图片格式不正确！";
                 }

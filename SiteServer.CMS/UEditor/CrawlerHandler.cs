@@ -81,7 +81,7 @@ namespace SiteServer.CMS.UEditor
             //格式验证
             string uploadFileName = Path.GetFileName(SourceUrl);
             var currentType = PathUtils.GetExtension(uploadFileName);
-            if (!PathUtility.IsUploadExtenstionAllowed(EUploadType.Image, PubSystemInfo, currentType))
+            if (!PathUtility.IsUploadExtensionAllowed(EUploadType.Image, PubSystemInfo, currentType))
             {
                 State = "不允许的文件类型";
                 return this;

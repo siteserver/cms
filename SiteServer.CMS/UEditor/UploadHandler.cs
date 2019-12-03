@@ -83,7 +83,7 @@ namespace SiteServer.CMS.UEditor
             try
             {
                 //格式验证
-                if (!PathUtility.IsUploadExtenstionAllowed(UploadType, siteInfo, currentType))
+                if (!PathUtility.IsUploadExtensionAllowed(UploadType, siteInfo, currentType))
                 {
                     Result.State = UploadState.FileAccessError;
                     Result.ErrorMessage = "不允许的文件类型";

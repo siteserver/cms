@@ -2,12 +2,12 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -83,31 +83,31 @@ namespace SiteServer.BackgroundPages.Cms
             if (HasChannelPermissionsIgnoreChannelId(Constants.ChannelPermissions.ChannelAdd))
             {
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalChannelsAdd.GetOpenWindowString(SiteId, SiteId, GetRedirectUrl(SiteId, SiteId))}"">快速添加</a>
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onClick=""{ModalChannelsAdd.GetOpenWindowString(SiteId, SiteId, GetRedirectUrl(SiteId, SiteId))}"">快速添加</a>
 <a href=""{PageChannelAdd.GetRedirectUrl(SiteId, SiteId, GetRedirectUrl(SiteId, 0))}"" class=""btn btn-light text-secondary"">添加栏目</a>
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalChannelImport.GetOpenWindowString(SiteId, SiteId)}"">导 入</a>
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onClick=""{ModalChannelImport.GetOpenWindowString(SiteId, SiteId)}"">导 入</a>
 ");
             }
 
             builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalExportMessage.GetOpenWindowStringToChannel(SiteId, "ChannelIDCollection", "请选择需要导出的栏目！")}"">导 出</a>
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onClick=""{ModalExportMessage.GetOpenWindowStringToChannel(SiteId, "ChannelIDCollection", "请选择需要导出的栏目！")}"">导 出</a>
 ");
 
             if (HasChannelPermissionsIgnoreChannelId(Constants.ChannelPermissions.ChannelEdit))
             {
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalAddToGroup.GetOpenWindowStringToChannel(SiteId)}"">设置栏目组</a>
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onClick=""{ModalAddToGroup.GetOpenWindowStringToChannel(SiteId)}"">设置栏目组</a>
 ");
 
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalChannelTaxis.GetOpenWindowString(SiteId)}"">排 序</a>
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onClick=""{ModalChannelTaxis.GetOpenWindowString(SiteId)}"">排 序</a>
 ");
             }
 
             if (HasChannelPermissionsIgnoreChannelId(Constants.ChannelPermissions.ChannelTranslate))
             {
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onClick=""{
                         PageUtils.GetRedirectStringWithCheckBoxValue(
                             PageChannelTranslate.GetRedirectUrl(SiteId,
                                 GetRedirectUrl(SiteId, _currentChannelId)), "ChannelIDCollection",
@@ -119,7 +119,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (HasChannelPermissionsIgnoreChannelId(Constants.ChannelPermissions.ChannelDelete))
             {
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onClick=""{
                         PageUtils.GetRedirectStringWithCheckBoxValue(
                             PageChannelDelete.GetRedirectUrl(SiteId, GetRedirectUrl(SiteId, SiteId)), "ChannelIDCollection",
                             "ChannelIDCollection", "请选择需要删除的栏目！")
@@ -131,7 +131,7 @@ namespace SiteServer.BackgroundPages.Cms
                 HasChannelPermissionsIgnoreChannelId(Constants.ChannelPermissions.CreatePage))
             {
                 builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalCreateChannels.GetOpenWindowString(SiteId)}"">生 成</a>
+<a href=""javascript:;"" class=""btn btn-light text-secondary"" onClick=""{ModalCreateChannels.GetOpenWindowString(SiteId)}"">生 成</a>
 ");
             }
 

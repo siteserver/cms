@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -86,12 +86,12 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            BtnAdd.Attributes.Add("onclick", ModalRelatedFieldItemAdd.GetOpenWindowString(SiteId, _relatedFieldId, _parentId, _level));
+            BtnAdd.Attributes.Add("onClick", ModalRelatedFieldItemAdd.GetOpenWindowString(SiteId, _relatedFieldId, _parentId, _level));
 
             if (_level == 1)
             {
                 var urlReturn = PageRelatedField.GetRedirectUrl(SiteId);
-                BtnReturn.Attributes.Add("onclick", $"parent.location.href = '{urlReturn}';return false;");
+                BtnReturn.Attributes.Add("onClick", $"parent.location.href = '{urlReturn}';return false;");
             }
             else
             {
@@ -128,7 +128,7 @@ namespace SiteServer.BackgroundPages.Cms
             hlDown.NavigateUrl = GetRedirectUrl(SiteId, _relatedFieldId, _parentId, _level) + "&Down=True&ID=" + itemInfo.Id;
 
             ltlEditUrl.Text =
-                $@"<a href='javascript:;' onclick=""{ModalRelatedFieldItemEdit.GetOpenWindowString(
+                $@"<a href='javascript:;' onClick=""{ModalRelatedFieldItemEdit.GetOpenWindowString(
                     SiteId, _relatedFieldId, _parentId, _level, itemInfo.Id)}"">编辑</a>";
 
             ltlDeleteUrl.Text =

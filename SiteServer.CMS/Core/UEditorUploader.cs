@@ -38,7 +38,7 @@ namespace SiteServer.CMS.Core
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
                 //格式验证
-                if (!PathUtility.IsUploadExtenstionAllowed(uploadType, site, currentType))
+                if (!PathUtility.IsUploadExtensionAllowed(uploadType, site, currentType))
                 {
                     state = "不允许的文件类型";
                 }

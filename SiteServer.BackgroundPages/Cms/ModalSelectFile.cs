@@ -4,11 +4,11 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Images;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -242,11 +242,11 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetFileSystemIconUrl(Site site, FileSystemInfoExtend fileInfo, bool isLargeIcon)
         {
             EFileSystemType fileSystemType;
-            if (PathUtility.IsVideoExtenstionAllowed(site, fileInfo.Type))
+            if (PathUtility.IsVideoExtensionAllowed(site, fileInfo.Type))
             {
                 fileSystemType = EFileSystemType.Video;
             }
-            else if (PathUtility.IsImageExtenstionAllowed(site, fileInfo.Type))
+            else if (PathUtility.IsImageExtensionAllowed(site, fileInfo.Type))
             {
                 fileSystemType = EFileSystemType.Image;
             }

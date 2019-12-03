@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
@@ -11,6 +10,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Repositories;
 using TableStyle = SiteServer.Abstractions.TableStyle;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 LtlAttributes.Text = GetAttributesHtml(nameValueCollection);
 
-                BtnSubmit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm"));
+                BtnSubmit.Attributes.Add("onClick", InputParserUtils.GetValidateSubmitOnClickScript("myForm"));
             }
             else
             {

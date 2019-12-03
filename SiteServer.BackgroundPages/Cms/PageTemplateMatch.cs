@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
-
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -106,8 +105,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(Constants.WebSitePermissions.Template);
 
-            LbChannelTemplateId.Attributes.Add("onfocus", "$('#LbContentTemplateId option:selected').removeAttr('selected')");
-            LbContentTemplateId.Attributes.Add("onfocus", "$('#LbChannelTemplateId option:selected').removeAttr('selected')");
+            LbChannelTemplateId.Attributes.Add("onFocus", "$('#LbContentTemplateId option:selected').removeAttr('selected')");
+            LbContentTemplateId.Attributes.Add("onFocus", "$('#LbChannelTemplateId option:selected').removeAttr('selected')");
 
             BindListBox();
 

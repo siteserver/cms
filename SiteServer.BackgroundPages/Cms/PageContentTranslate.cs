@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
 using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             LtlContents.Text = builder.ToString();
 
-            BtnTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
+            BtnTranslateAdd.Attributes.Add("onClick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
             ETranslateContentTypeUtilsExtensions.AddListItems(RblTranslateType, isCut);
             ControlUtils.SelectSingleItem(RblTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));

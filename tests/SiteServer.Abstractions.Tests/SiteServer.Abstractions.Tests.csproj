@@ -26,8 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.console" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
@@ -42,7 +43,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Datory\src\Datory\Datory.csproj" />
-    <ProjectReference Include="..\..\SiteServer.Abstractions\SiteServer.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\SiteServer.Abstractions\SiteServer.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

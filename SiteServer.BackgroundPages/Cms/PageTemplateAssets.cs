@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -113,8 +113,8 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            BtnConfig.Attributes.Add("onclick", ModalTemplateAssetsConfig.GetOpenWindowString(SiteId, _type));
-            BtnAdd.Attributes.Add("onclick", $"location.href='{PageTemplateAssetsAdd.GetRedirectUrlToAdd(SiteId, _type)}';return false");
+            BtnConfig.Attributes.Add("onClick", ModalTemplateAssetsConfig.GetOpenWindowString(SiteId, _type));
+            BtnAdd.Attributes.Add("onClick", $"location.href='{PageTemplateAssetsAdd.GetRedirectUrlToAdd(SiteId, _type)}';return false");
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -134,7 +134,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlEdit.Text =
                 $@"<a href=""{PageTemplateAssetsAdd.GetRedirectUrlToEdit(SiteId, _type, fileName)}"">编辑</a>";
             ltlDelete.Text =
-                $@"<a href=""javascript:;"" onclick=""{AlertUtils.ConfirmDelete($"删除{_name}", $"此操作将删除{_name}，确认吗", $"{GetRedirectUrl(SiteId, _type)}&delete={true}&fileName={fileName}")}"">删除</a>";
+                $@"<a href=""javascript:;"" onClick=""{AlertUtils.ConfirmDelete($"删除{_name}", $"此操作将删除{_name}，确认吗", $"{GetRedirectUrl(SiteId, _type)}&delete={true}&fileName={fileName}")}"">删除</a>";
         }
 	}
 }

@@ -2,7 +2,6 @@
 using Quartz;
 using SiteServer.Abstractions;
 
-
 namespace SiteServer.Cli.Core
 {
     public class JobContextImpl : IJobContext

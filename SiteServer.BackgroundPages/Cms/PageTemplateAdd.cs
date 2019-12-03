@@ -4,13 +4,12 @@ using System.Linq;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
-using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
-
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -126,8 +125,8 @@ namespace SiteServer.BackgroundPages.Cms
                     TbCreatedFileFullName.Text = PathUtils.RemoveExtension(template.CreatedFileFullName);
 
                     LtlCommands.Text += $@"
-<button class=""btn"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateByTemplate(SiteId, template.Id)}"">生成页面</button>
-<button class=""btn"" onclick=""{ModalTemplateRestore.GetOpenWindowString(SiteId, template.Id, string.Empty)}"">还原历史版本</button>";
+<button class=""btn"" onClick=""{ModalProgressBar.GetOpenWindowStringWithCreateByTemplate(SiteId, template.Id)}"">生成页面</button>
+<button class=""btn"" onClick=""{ModalTemplateRestore.GetOpenWindowString(SiteId, template.Id, string.Empty)}"">还原历史版本</button>";
 
                     if (AuthRequest.GetQueryInt("TemplateLogID") > 0)
                     {

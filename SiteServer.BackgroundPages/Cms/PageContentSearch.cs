@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
             _channel = await ChannelManager.GetChannelAsync(SiteId, _channelId);
             var tableName = ChannelManager.GetTableNameAsync(Site, _channel).GetAwaiter().GetResult();
             _styleList = TableStyleManager.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
-            _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplayAsnyc(SiteId, _channelId).GetAwaiter().GetResult());
+            _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplayAsync(SiteId, _channelId).GetAwaiter().GetResult());
             _allStyleList = ContentUtility.GetAllTableStyleList(_styleList);
             _pluginIds = PluginContentManager.GetContentPluginIds(_channel);
             _pluginColumns = PluginContentManager.GetContentColumnsAsync(_pluginIds).GetAwaiter().GetResult();
@@ -206,7 +206,7 @@ namespace SiteServer.BackgroundPages.Cms
             LtlColumnsHead.Text += TextUtility.GetColumnsHeadHtml(_styleList, _pluginColumns, _attributesOfDisplay);
             
 
-            BtnSelect.Attributes.Add("onclick", ModalSelectColumns.GetOpenWindowString(SiteId, _channelId));
+            BtnSelect.Attributes.Add("onClick", ModalSelectColumns.GetOpenWindowString(SiteId, _channelId));
 
             if (_isTrashOnly)
             {
@@ -220,21 +220,21 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    BtnDelete.Attributes.Add("onclick", PageContentDelete.GetRedirectClickStringForMultiChannels(SiteId, true, PageUrl));
-                    BtnDeleteAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.AddQueryString(PageUrl, "IsDeleteAll", "True"), "确实要清空回收站吗?"));
+                    BtnDelete.Attributes.Add("onClick", PageContentDelete.GetRedirectClickStringForMultiChannels(SiteId, true, PageUrl));
+                    BtnDeleteAll.Attributes.Add("onClick", PageUtils.GetRedirectStringWithConfirm(PageUtils.AddQueryString(PageUrl, "IsDeleteAll", "True"), "确实要清空回收站吗?"));
                 }
-                BtnRestore.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageUtils.AddQueryString(PageUrl, "IsRestore", "True"), "IDsCollection", "IDsCollection", "请选择需要还原的内容！"));
-                BtnRestoreAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.AddQueryString(PageUrl, "IsRestoreAll", "True"), "确实要还原所有内容吗?"));
+                BtnRestore.Attributes.Add("onClick", PageUtils.GetRedirectStringWithCheckBoxValue(PageUtils.AddQueryString(PageUrl, "IsRestore", "True"), "IDsCollection", "IDsCollection", "请选择需要还原的内容！"));
+                BtnRestoreAll.Attributes.Add("onClick", PageUtils.GetRedirectStringWithConfirm(PageUtils.AddQueryString(PageUrl, "IsRestoreAll", "True"), "确实要还原所有内容吗?"));
             }
             else
             {
                 LtlColumnsHead.Text += @"<th class=""text-center text-nowrap"" width=""100"">操作</th>";
 
-                BtnAddToGroup.Attributes.Add("onclick", ModalAddToGroup.GetOpenWindowStringToContentForMultiChannels(SiteId));
+                BtnAddToGroup.Attributes.Add("onClick", ModalAddToGroup.GetOpenWindowStringToContentForMultiChannels(SiteId));
 
                 if (HasChannelPermissions(SiteId, Constants.ChannelPermissions.ContentCheck))
                 {
-                    BtnCheck.Attributes.Add("onclick", ModalContentCheck.GetOpenWindowStringForMultiChannels(SiteId, PageUrl));
+                    BtnCheck.Attributes.Add("onClick", ModalContentCheck.GetOpenWindowStringForMultiChannels(SiteId, PageUrl));
                     if (_isCheckOnly)
                     {
                         BtnCheck.CssClass = "btn m-r-5 btn-success";
@@ -251,7 +251,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    BtnTranslate.Attributes.Add("onclick", PageContentTranslate.GetRedirectClickStringForMultiChannels(SiteId, PageUrl));
+                    BtnTranslate.Attributes.Add("onClick", PageContentTranslate.GetRedirectClickStringForMultiChannels(SiteId, PageUrl));
                 }
 
                 if (!HasChannelPermissions(_channelId, Constants.ChannelPermissions.ContentDelete))
@@ -260,7 +260,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    BtnDelete.Attributes.Add("onclick", PageContentDelete.GetRedirectClickStringForMultiChannels(SiteId, false, PageUrl));
+                    BtnDelete.Attributes.Add("onClick", PageContentDelete.GetRedirectClickStringForMultiChannels(SiteId, false, PageUrl));
                 }
             }
         }
@@ -331,14 +331,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlStatus.Text = _isTrashOnly
                 ? checkState
-                : $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{
+                : $@"<a href=""javascript:;"" title=""设置内容状态"" onClick=""{
                         ModalCheckState.GetOpenWindowString(SiteId, contentInfo, PageUrl)
                     }"">{checkState}</a>";
 
             ltlSelect.Text = $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.ChannelId}_{contentInfo.Id}"" />";
         }
 
-        public void Search_OnClick(object sender, EventArgs e)
+        public void Search_onClick(object sender, EventArgs e)
         {
             PageUtils.Redirect(PageUrl);
         }

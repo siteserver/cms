@@ -4,9 +4,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
+using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater;
-using SiteServer.Abstractions;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.Cli.Jobs

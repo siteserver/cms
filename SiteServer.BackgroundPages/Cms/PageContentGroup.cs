@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.DataBind();
 
             var showPopWinString = ModalContentGroupAdd.GetOpenWindowString(SiteId);
-            BtnAddGroup.Attributes.Add("onclick", showPopWinString);
+            BtnAddGroup.Attributes.Add("onClick", showPopWinString);
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

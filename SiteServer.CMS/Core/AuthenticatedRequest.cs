@@ -227,7 +227,7 @@ namespace SiteServer.CMS.Core
         public int GetQueryInt(string name, int defaultValue = 0)
         {
             return !string.IsNullOrEmpty(HttpRequest.QueryString[name])
-                ? TranslateUtils.ToIntWithNagetive(HttpRequest.QueryString[name])
+                ? TranslateUtils.ToIntWithNegative(HttpRequest.QueryString[name])
                 : defaultValue;
         }
 
@@ -286,7 +286,7 @@ namespace SiteServer.CMS.Core
             var value = GetPostObject(name);
             if (value == null) return defaultValue;
             if (value is int) return (int)value;
-            return TranslateUtils.ToIntWithNagetive(value.ToString(), defaultValue);
+            return TranslateUtils.ToIntWithNegative(value.ToString(), defaultValue);
         }
 
         public decimal GetPostDecimal(string name, decimal defaultValue = 0)

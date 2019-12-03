@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Drawing.Text;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
@@ -72,10 +72,10 @@ namespace SiteServer.BackgroundPages.Cms
             TbWaterMarkImagePath.Attributes.Add("onchange", GetShowImageScript("preview_WaterMarkImagePath", Site.GetWebUrl()));
 
             var showPopWinString = ModalSelectImage.GetOpenWindowString(Site, TbWaterMarkImagePath.ClientID);
-            BtnImageUrlSelect.Attributes.Add("onclick", showPopWinString);
+            BtnImageUrlSelect.Attributes.Add("onClick", showPopWinString);
 
             showPopWinString = ModalUploadImageSingle.GetOpenWindowStringToTextBox(SiteId, TbWaterMarkImagePath.ClientID);
-            BtnImageUrlUpload.Attributes.Add("onclick", showPopWinString);
+            BtnImageUrlUpload.Attributes.Add("onClick", showPopWinString);
         }
 
 		private void LoadWaterMarkPosition (int selectPosition)

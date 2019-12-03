@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
                     FailMessage("此格式不允许上传，此文件夹只允许上传图片以及音视频文件！");
                     return;
                 }
-                if (_uploadType == EUploadType.File && !PathUtility.IsFileExtenstionAllowed(Site, fileExtName))
+                if (_uploadType == EUploadType.File && !PathUtility.IsFileExtensionAllowed(Site, fileExtName))
                 {
                     FailMessage("此格式不允许上传，请选择有效的文件！");
                     return;

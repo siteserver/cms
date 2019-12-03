@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
@@ -13,7 +12,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Repositories;
-
+using SiteServer.Abstractions;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -117,16 +116,16 @@ namespace SiteServer.BackgroundPages.Cms
                 TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", Site.GetWebUrl()));
 
                 var showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, true, TbChannelFilePathRule.ClientID);
-                BtnCreateChannelRule.Attributes.Add("onclick", showPopWinString);
+                BtnCreateChannelRule.Attributes.Add("onClick", showPopWinString);
 
                 showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, false, TbContentFilePathRule.ClientID);
-                BtnCreateContentRule.Attributes.Add("onclick", showPopWinString);
+                BtnCreateContentRule.Attributes.Add("onClick", showPopWinString);
 
                 showPopWinString = ModalSelectImage.GetOpenWindowString(Site, TbImageUrl.ClientID);
-                BtnSelectImage.Attributes.Add("onclick", showPopWinString);
+                BtnSelectImage.Attributes.Add("onClick", showPopWinString);
 
                 showPopWinString = ModalUploadImage.GetOpenWindowString(SiteId, TbImageUrl.ClientID);
-                BtnUploadImage.Attributes.Add("onclick", showPopWinString);
+                BtnUploadImage.Attributes.Add("onClick", showPopWinString);
 
                 ELinkTypeUtilsExtensions.AddListItems(DdlLinkType);
                 ETaxisTypeUtilsExtensions.AddListItemsForChannelEdit(DdlTaxisType);

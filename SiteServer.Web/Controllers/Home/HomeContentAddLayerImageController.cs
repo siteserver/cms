@@ -88,7 +88,7 @@ namespace SiteServer.API.Controllers.Home
                     path = PathUtils.Combine(localDirectoryPath, localFileName);
                     contentLength = file.ContentLength;
 
-                    if (!PathUtility.IsImageExtenstionAllowed(site, fileExtName))
+                    if (!PathUtility.IsImageExtensionAllowed(site, fileExtName))
                     {
                         return BadRequest("上传失败，上传图片格式不正确！");
                     }
