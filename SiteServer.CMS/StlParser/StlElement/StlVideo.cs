@@ -42,8 +42,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             var type = BackgroundContentAttribute.VideoUrl;
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
-            var width = 0;
-            var height = 280;
+            var width = string.Empty;
+            var height = string.Empty;
             var isAutoPlay = true;
             var isControls = true;
             var isLoop = false;
@@ -66,11 +66,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Width))
                 {
-                    width = TranslateUtils.ToInt(value, width);
+                    width = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Height))
                 {
-                    height = TranslateUtils.ToInt(value, height);
+                    height = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsAutoPlay))
                 {
@@ -89,10 +89,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             return ParseImpl(pageInfo, contextInfo, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, string imageUrl, int width, int height, bool isAutoPlay, bool isControls, bool isLoop)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, string imageUrl, string width, string height, bool isAutoPlay, bool isControls, bool isLoop)
         {
-            
-
             var videoUrl = string.Empty;
             if (!string.IsNullOrEmpty(playUrl))
             {
@@ -160,14 +158,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 dict.Add("poster", imageUrl);
             }
-            if (width > 0)
+            if (!string.IsNullOrEmpty(width))
             {
-                dict.Add("width", width.ToString());
+                dict.Add("width", width);
             }
-            if (height > 0)
-            {
-                dict.Add("height", height.ToString());
-            }
+            dict.Add("height", string.IsNullOrEmpty(height) ? "280" : height);
 
             return $@"<video {TranslateUtils.ToAttributesString(dict)}></video>";
         }

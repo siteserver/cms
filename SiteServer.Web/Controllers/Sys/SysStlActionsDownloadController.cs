@@ -79,7 +79,7 @@ namespace SiteServer.API.Controllers.Sys
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
-                    DataProvider.ContentDao.AddDownloads(ChannelManager.GetTableName(siteInfo, channelInfo), channelId, contentId);
+                    DataProvider.ContentDao.AddDownloads( siteId, ChannelManager.GetTableName(siteInfo, channelInfo), channelId, contentId);
 
                     if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
                     {

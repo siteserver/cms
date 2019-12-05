@@ -542,7 +542,7 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            ContentManager.RemoveCache(tableName, channelId);
+            ContentManager.RemoveCache(siteInfo.Id, channelId, tableName);
         }
 
         public static void Translate(SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType)

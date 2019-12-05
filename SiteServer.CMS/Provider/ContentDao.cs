@@ -262,8 +262,6 @@ namespace SiteServer.CMS.Provider
             {
                 connection.Execute(sqlString, parameters);
             }
-
-            ContentManager.RemoveCache(tableName, channelId);
         }
 
         public void UpdateIsChecked(string tableName, int siteId, int channelId, List<int> contentIdList, int translateChannelId, string userName, bool isChecked, int checkedLevel, string reasons)
@@ -298,7 +296,7 @@ namespace SiteServer.CMS.Provider
                 DataProvider.ContentCheckDao.Insert(checkInfo);
             }
 
-            ContentManager.RemoveCache(tableName, channelId);
+            ContentManager.RemoveCache(siteId, channelId, tableName);
         }
 
         
@@ -351,7 +349,7 @@ namespace SiteServer.CMS.Provider
 
             if (updateNum <= 0) return;
 
-            ContentManager.RemoveCache(tableName, channelId);
+            ContentManager.RemoveCache(siteId, channelId, tableName);
         }
 
         public void UpdateTrashContentsByChannelId(int siteId, int channelId, string tableName)
@@ -375,7 +373,7 @@ namespace SiteServer.CMS.Provider
 
             if (updateNum <= 0) return;
 
-            ContentManager.RemoveCache(tableName, channelId);
+            ContentManager.RemoveCache(siteId, channelId, tableName);
         }
 
         public void Delete(string tableName, int siteId, int channelId, int contentId)
@@ -485,7 +483,7 @@ namespace SiteServer.CMS.Provider
 
             if (deleteNum <= 0) return;
 
-            ContentManager.RemoveCache(tableName, channelId);
+            ContentManager.RemoveCache(siteId, channelId, tableName);
         }
 
         //public void DeletePreviewContents(int siteId, string tableName, ChannelInfo channelInfo)
@@ -523,18 +521,18 @@ namespace SiteServer.CMS.Provider
 
             if (updateNum <= 0) return;
 
-            ContentManager.RemoveCache(tableName, channelId);
+            ContentManager.RemoveCache(siteId, channelId, tableName);
         }
 
-        private void UpdateTaxis(int channelId, int id, int taxis, string tableName)
+        private void UpdateTaxis(int siteId, int channelId, int id, int taxis, string tableName)
         {
             var sqlString = $"UPDATE {tableName} SET Taxis = {taxis} WHERE Id = {id}";
             ExecuteNonQuery(sqlString);
 
-            ContentManager.RemoveCache(tableName, channelId);
+            ContentManager.RemoveCache(siteId, channelId, tableName);
         }
 
-        public void UpdateArrangeTaxis(string tableName, int channelId, string attributeName, bool isDesc)
+        public void UpdateArrangeTaxis(int siteId, string tableName, int channelId, string attributeName, bool isDesc)
         {
             var taxisDirection = isDesc ? "ASC" : "DESC";//升序,但由于页面排序是按Taxis的Desc排序的，所以这里sql里面的ASC/DESC取反
 
@@ -558,10 +556,10 @@ namespace SiteServer.CMS.Provider
 
             DataProvider.DatabaseDao.ExecuteSql(sqlList);
 
-            ContentManager.RemoveCache(tableName, channelId);
+            ContentManager.RemoveCache(siteId, channelId, tableName);
         }
 
-        public bool SetTaxisToUp(string tableName, int channelId, int contentId, bool isTop)
+        public bool SetTaxisToUp(int siteId, string tableName, int channelId, int contentId, bool isTop)
         {
             //Get Higher Taxis and Id
             var sqlString = SqlUtils.ToTopSqlString(tableName, "Id, Taxis",
@@ -588,15 +586,15 @@ namespace SiteServer.CMS.Provider
                 var selectedTaxis = GetTaxis(contentId, tableName);
 
                 //Set The Selected Class Taxis To Higher Level
-                UpdateTaxis(channelId, contentId, higherTaxis, tableName);
+                UpdateTaxis(siteId, channelId, contentId, higherTaxis, tableName);
                 //Set The Higher Class Taxis To Lower Level
-                UpdateTaxis(channelId, higherId, selectedTaxis, tableName);
+                UpdateTaxis(siteId, channelId, higherId, selectedTaxis, tableName);
                 return true;
             }
             return false;
         }
 
-        public bool SetTaxisToDown(string tableName, int channelId, int contentId, bool isTop)
+        public bool SetTaxisToDown(int siteId, string tableName, int channelId, int contentId, bool isTop)
         {
             //Get Lower Taxis and Id
             var sqlString = SqlUtils.ToTopSqlString(tableName, "Id, Taxis",
@@ -623,9 +621,9 @@ namespace SiteServer.CMS.Provider
                 var selectedTaxis = GetTaxis(contentId, tableName);
 
                 //Set The Selected Class Taxis To Lower Level
-                UpdateTaxis(channelId, contentId, lowerTaxis, tableName);
+                UpdateTaxis(siteId, channelId, contentId, lowerTaxis, tableName);
                 //Set The Lower Class Taxis To Higher Level
-                UpdateTaxis(channelId, lowerId, selectedTaxis, tableName);
+                UpdateTaxis(siteId, channelId, lowerId, selectedTaxis, tableName);
                 return true;
             }
             return false;
@@ -1557,13 +1555,13 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
             return dataset;
         }
 
-        public void AddDownloads(string tableName, int channelId, int contentId)
+        public void AddDownloads(int siteId, string tableName, int channelId, int contentId)
         {
             var sqlString =
                 $"UPDATE {tableName} SET {DataProvider.DatabaseApi.ToPlusSqlString(ContentAttribute.Downloads, 1)} WHERE Id = {contentId}";
             DataProvider.DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, sqlString);
 
-            ContentManager.RemoveCache(tableName, channelId);
+            ContentManager.RemoveCache(siteId, channelId, tableName);
         }
 
         private int GetTaxisToInsert(string tableName, int channelId, bool isTop)
@@ -2699,19 +2697,31 @@ GO");
             return list;
         }
 
-        public List<(int ChannelId, int ContentId)> GetCacheChannelContentIdList(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents, int offset, int limit)
+        public List<(int ChannelId, int ContentId)> GetCacheChannelContentIdList(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents)
         {
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
             return GetCacheChannelContentIdList(tableName, GetCacheWhereString(siteInfo, channelInfo, adminId, isAllContents),
-                GetOrderString(channelInfo, string.Empty, isAllContents), offset, limit);
+                GetOrderString(channelInfo, string.Empty, isAllContents));
         }
 
-        public List<(int ChannelId, int ContentId)> GetCacheChannelContentIdList(string tableName, string whereString, string orderString, int offset, int limit)
+        public string GetSqlString(string tableName, string columnNames, string whereSqlString, string orderSqlString)
+        {
+            var retVal = string.Empty;
+
+            if (string.IsNullOrEmpty(orderSqlString))
+            {
+                orderSqlString = "ORDER BY Id DESC";
+            }
+
+            return $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
+        }
+
+        public List<(int ChannelId, int ContentId)> GetCacheChannelContentIdList(string tableName, string whereString, string orderString)
         {
             var list = new List<(int ChannelId, int ContentId)>();
 
-            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, MinListColumns, whereString, orderString, offset, limit);
+            var sqlString = GetSqlString(tableName, MinListColumns, whereString, orderString);
 
             using (var rdr = ExecuteReader(sqlString))
             {

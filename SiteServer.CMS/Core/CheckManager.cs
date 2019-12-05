@@ -403,16 +403,9 @@ namespace SiteServer.CMS.Core
 	            listControl.Items.Add(listItem);
 	        }
 
-	        //if (contentInfo == null)
-	        //{
-	            ControlUtils.SelectSingleItem(listControl, checkedLevel.ToString());
-	        //}
-	        //else
-	        //{
-	        //    ControlUtils.SelectSingleItem(listControl,
-	        //        isCheckable ? LevelInt.NotChange.ToString() : checkedLevel.ToString());
-	        //}
-	    }
+            ControlUtils.SelectSingleItem(listControl,
+                isChecked ? checkContentLevel.ToString() : checkedLevel.ToString());
+        }
 
 	    public static void LoadContentLevelToList(ListControl listControl, SiteInfo siteInfo, bool isCheckOnly, bool isChecked, int checkedLevel)
 	    {

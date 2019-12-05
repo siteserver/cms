@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -100,7 +101,9 @@ namespace SiteServer.API.Controllers.Home
                 var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var contentInfoList = new List<ContentInfo>();
-                var count = ContentManager.GetCount(siteInfo, channelInfo, adminId, true);
+                var ccIds = DataProvider.ContentDao.GetCacheChannelContentIdList(siteInfo, channelInfo, adminId, true);
+                var count = ccIds.Count;
+
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
                 if (pages == 0) pages = 1;
 
@@ -110,12 +113,11 @@ namespace SiteServer.API.Controllers.Home
                     {
                         var offset = siteInfo.Additional.PageSize * (page - 1);
                         var limit = siteInfo.Additional.PageSize;
-
-                        var pageContentIds = ContentManager.GetChannelContentIdList(siteInfo, channelInfo, adminId, true, offset, limit);
+                        var pageCcIds = ccIds.Skip(offset).Take(limit).ToList();
 
                         var sequence = offset + 1;
 
-                        foreach (var channelContentId in pageContentIds)
+                        foreach (var channelContentId in pageCcIds)
                         {
                             var contentInfo = ContentManager.GetContentInfo(siteInfo, channelContentId.ChannelId, channelContentId.ContentId);
                             if (contentInfo == null) continue;

@@ -15,9 +15,9 @@ namespace SiteServer.CMS.DataCache.Content
 {
     public static partial class ContentManager
     {
-        public static void RemoveCache(string tableName, int channelId)
+        public static void RemoveCache(int siteId, int channelId, string tableName)
         {
-            ListCache.Remove(channelId);
+            RemoveListCache(siteId, channelId);
             ContentCache.Remove(channelId);
             CountCache.Clear(tableName);
             StlContentCache.ClearCache();
@@ -33,6 +33,8 @@ namespace SiteServer.CMS.DataCache.Content
         {
             if (contentInfo.SourceId == SourceManager.Preview) return;
 
+            RemoveListCache(siteInfo.Id, channelInfo.Id);
+
             var dict = ContentCache.GetContentDict(contentInfo.ChannelId);
             dict[contentInfo.Id] = contentInfo;
 
@@ -46,7 +48,7 @@ namespace SiteServer.CMS.DataCache.Content
         {
             var dict = ContentCache.GetContentDict(channelInfo.Id);
 
-            ListCache.Remove(channelInfo.Id);
+            RemoveListCache(siteInfo.Id, channelInfo.Id);
 
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
             CountCache.Remove(tableName, contentInfo);

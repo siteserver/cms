@@ -184,7 +184,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     AcAttributes.Attributes = attributes;
 
-                    ControlUtils.SelectSingleItem(RblContentLevel, SiteInfo.Additional.CheckContentDefaultLevel.ToString());
+                    //ControlUtils.SelectSingleItem(RblContentLevel, SiteInfo.Additional.CheckContentDefaultLevel.ToString());
                 }
                 else if (contentInfo != null)
                 {

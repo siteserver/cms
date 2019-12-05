@@ -64,14 +64,14 @@ namespace SiteServer.API.Controllers.Home
                     {
                         if (isUp)
                         {
-                            if (DataProvider.ContentDao.SetTaxisToUp(tableName, channelId, contentId, isTop) == false)
+                            if (DataProvider.ContentDao.SetTaxisToUp(siteId, tableName, channelId, contentId, isTop) == false)
                             {
                                 break;
                             }
                         }
                         else
                         {
-                            if (DataProvider.ContentDao.SetTaxisToDown(tableName, channelId, contentId, isTop) == false)
+                            if (DataProvider.ContentDao.SetTaxisToDown(siteId, tableName, channelId, contentId, isTop) == false)
                             {
                                 break;
                             }

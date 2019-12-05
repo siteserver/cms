@@ -173,7 +173,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (translateChannelId > 0)
             {
                 var tableName = ChannelManager.GetTableName(SiteInfo, translateChannelId);
-                ContentManager.RemoveCache(tableName, translateChannelId);
+                ContentManager.RemoveCache(SiteInfo.Id, translateChannelId, tableName);
             }
 
             AuthRequest.AddSiteLog(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);

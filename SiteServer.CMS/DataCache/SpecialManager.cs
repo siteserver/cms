@@ -65,6 +65,7 @@ namespace SiteServer.CMS.DataCache
 	        {
 	            var directoryPath = GetSpecialDirectoryPath(siteInfo, specialInfo.Url);
 	            var srcDirectoryPath = GetSpecialSrcDirectoryPath(directoryPath);
+                if (!DirectoryUtils.IsDirectoryExists(srcDirectoryPath)) return list;
 
                 var htmlFilePaths = Directory.GetFiles(srcDirectoryPath, "*.html", SearchOption.AllDirectories);
                 foreach (var htmlFilePath in htmlFilePaths)

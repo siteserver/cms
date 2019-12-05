@@ -214,24 +214,9 @@ namespace SiteServer.CMS.DataCache.Content
             }
         }
 
-        public static int GetCountIsChecked(SiteInfo siteInfo)
-        {
-            return CountCache.GetSiteCountIsChecked(siteInfo);
-        }
-
         public static int GetCountChecking(SiteInfo siteInfo)
         {
             return CountCache.GetSiteCountIsChecking(siteInfo);
-        }
-
-        public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents = false)
-        {
-            return CountCache.GetChannelCount(siteInfo, channelInfo, adminId, isAllContents);
-        }
-
-        public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
-        {
-            return CountCache.GetChannelCountByIsChecked(siteInfo, channelInfo, isChecked);
         }
     }
 }

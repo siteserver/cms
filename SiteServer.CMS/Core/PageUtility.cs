@@ -302,8 +302,13 @@ namespace SiteServer.CMS.Core
         {
             if (channelInfo == null) return string.Empty;
 
+            if (isLocal)
+            {
+                return ApiRoutePreview.GetChannelUrl(siteInfo.Id, channelInfo.Id);
+            }
+
             var url = string.Empty;
-            
+
             if (channelInfo.ParentId == 0)
             {
                 url = GetChannelUrlNotComputed(siteInfo, channelInfo.Id, isLocal);

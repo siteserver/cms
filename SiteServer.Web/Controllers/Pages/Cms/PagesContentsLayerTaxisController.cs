@@ -66,14 +66,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     {
                         if (isUp)
                         {
-                            if (DataProvider.ContentDao.SetTaxisToUp(tableName, channelContentId.ChannelId, channelContentId.Id, isTop) == false)
+                            if (DataProvider.ContentDao.SetTaxisToUp(siteId, tableName, channelContentId.ChannelId, channelContentId.Id, isTop) == false)
                             {
                                 break;
                             }
                         }
                         else
                         {
-                            if (DataProvider.ContentDao.SetTaxisToDown(tableName, channelContentId.ChannelId, channelContentId.Id, isTop) == false)
+                            if (DataProvider.ContentDao.SetTaxisToDown(siteId, tableName, channelContentId.ChannelId, channelContentId.Id, isTop) == false)
                             {
                                 break;
                             }

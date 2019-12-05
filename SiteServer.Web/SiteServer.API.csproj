@@ -277,6 +277,7 @@
     <Compile Include="Controllers\Pages\Settings\PagesAdminProfileController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesAdminViewController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesSiteAddController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesSiteTemplateOnlineController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesSiteTableController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesUserConfigController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesUserGroupController.cs" />

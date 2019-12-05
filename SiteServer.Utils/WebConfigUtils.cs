@@ -399,6 +399,8 @@ namespace SiteServer.Utils
 
         private static string GetConnectionString(DatabaseType databaseType, string connectionString)
         {
+            if (string.IsNullOrEmpty(connectionString)) return string.Empty;
+
             if (databaseType == DatabaseType.MySql)
             {
                 connectionString = connectionString.TrimEnd(';');

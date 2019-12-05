@@ -142,9 +142,9 @@ namespace SiteServer.API.Controllers.Home
 
                 if (isTranslate && translateChannelId > 0)
                 {
-                    ContentManager.RemoveCache(tableName, channelId);
+                    ContentManager.RemoveCache(siteId, channelId, tableName);
                     var translateTableName = ChannelManager.GetTableName(siteInfo, translateChannelId);
-                    ContentManager.RemoveCache(translateTableName, translateChannelId);
+                    ContentManager.RemoveCache(siteInfo.Id, translateChannelId, translateTableName);
                 }
 
                 request.AddSiteLog(siteId, "批量审核内容");
