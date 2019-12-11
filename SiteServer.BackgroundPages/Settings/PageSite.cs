@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
+            VerifySystemPermissions(ConfigManager.AppPermissions.SettingsSite);
 
             _hqSiteId = DataProvider.SiteDao.GetIdByIsRoot();
 

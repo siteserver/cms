@@ -203,6 +203,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\RequestExtensions.cs" />
+    <Compile Include="Controllers\V1\ContentsController.Dto.cs" />
     <None Include="packages.config" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -304,6 +306,7 @@
     <Compile Include="Controllers\V1\CaptchaController.cs" />
     <Compile Include="Controllers\V1\ChannelsController.cs" />
     <Compile Include="Controllers\V1\ContentsController.cs" />
+    <Compile Include="Controllers\V1\ContentsController.Utils.cs" />
     <Compile Include="Controllers\V1\PingController.cs" />
     <Compile Include="Controllers\V1\StlController.cs" />
     <Compile Include="Controllers\V1\UsersController.cs" />

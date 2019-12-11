@@ -124,7 +124,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.User);
+            VerifySystemPermissions(ConfigManager.AppPermissions.SettingsUser);
 
             DdlGroupId.Items.Add(new ListItem("<全部用户组>", "-1"));
             foreach (var groupInfo in UserGroupManager.GetUserGroupInfoList())

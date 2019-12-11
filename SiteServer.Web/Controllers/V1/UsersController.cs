@@ -66,7 +66,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var body = request.GetPostObject<Dictionary<string, object>>();
@@ -105,7 +105,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
@@ -137,7 +137,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 if (!DataProvider.UserDao.IsExists(id)) return NotFound();
@@ -181,7 +181,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
@@ -233,7 +233,7 @@ namespace SiteServer.API.Controllers.V1
                 var isAuth = request.IsApiAuthenticated &&
                              AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var top = request.GetQueryInt("top", 20);
@@ -317,7 +317,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
@@ -348,7 +348,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
@@ -379,7 +379,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);

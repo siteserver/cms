@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
@@ -403,8 +404,10 @@ namespace SiteServer.CMS.Core
 	            listControl.Items.Add(listItem);
 	        }
 
-            ControlUtils.SelectSingleItem(listControl,
-                isChecked ? checkContentLevel.ToString() : checkedLevel.ToString());
+            ControlUtils.SelectSingleItem(listControl, Math.Min(siteInfo.Additional.CheckContentDefaultLevel, checkedLevel).ToString());
+
+			//ControlUtils.SelectSingleItem(listControl,
+   //             isChecked ? checkContentLevel.ToString() : checkedLevel.ToString());
         }
 
 	    public static void LoadContentLevelToList(ListControl listControl, SiteInfo siteInfo, bool isCheckOnly, bool isChecked, int checkedLevel)

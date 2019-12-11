@@ -17,24 +17,75 @@ namespace SiteServer.CMS.DataCache
             public const string Management = "plugins_management";
         }
 
-        public static class SettingsPermissions
+        public static class AppPermissions
         {
-            public const string SiteAdd = "settings_siteAdd";
-            public const string Site = "settings_site";
-            public const string Admin = "settings_admin";
-            public const string User = "settings_user";
-            public const string Chart = "settings_chart";
-            public const string Log = "settings_log";
-            public const string Config = "settings_config";
-            public const string Utility = "settings_utility";
+            public const string PluginsAdd = "plugins_add";
+            public const string PluginsManagement = "plugins_management";
+            public const string SettingsSiteAdd = "settings_siteAdd";
+            public const string SettingsSite = "settings_site";
+            public const string SettingsSiteUrl = "settings_siteUrl";
+            public const string SettingsSiteTables = "settings_siteTables";
+            public const string SettingsSiteTemplates = "settings_siteTemplates";
+            public const string SettingsSiteTemplatesOnline = "settings_siteTemplatesOnline";
+            public const string SettingsAdmin = "settings_admin";
+            public const string SettingsAdminRole = "settings_adminRole";
+            public const string SettingsAdminConfig = "settings_adminConfig";
+            public const string SettingsAdminAccessTokens = "settings_adminAccessTokens";
+            public const string SettingsUser = "settings_user";
+            public const string SettingsUserGroup = "settings_userGroup";
+            public const string SettingsUserStyle = "settings_userStyle";
+            public const string SettingsUserConfig = "settings_userConfig";
+            public const string SettingsAnalysisSite = "settings_analysisSite";
+            public const string SettingsAnalysisAdminLogin = "settings_analysisAdminLogin";
+            public const string SettingsAnalysisAdminWork = "settings_analysisAdminWork";
+            public const string SettingsAnalysisUser = "settings_analysisUser";
+            public const string SettingsLogSite = "settings_logSite";
+            public const string SettingsLogAdmin = "settings_logAdmin";
+            public const string SettingsLogUser = "settings_logUser";
+            public const string SettingsLogError = "settings_logError";
+            public const string SettingsLogConfig = "settings_logConfig";
+            public const string SettingsConfigAdmin = "settings_configAdmin";
+            public const string SettingsConfigHome = "settings_configHome";
+            public const string SettingsConfigHomeMenu = "settings_configHomeMenu";
+            public const string SettingsUtilityCache = "settings_utilityCache";
+            public const string SettingsUtilityParameters = "settings_utilityParameters";
+            public const string SettingsUtilityEncrypt = "settings_utilityEncrypt";
+            public const string SettingsUtilityDbLogDelete = "settings_utilityDbLogDelete";
         }
 
-        public static class WebSitePermissions
+        public static class SitePermissions
         {
-            public const string Content = "cms_content";                            //信息管理
-            public const string Template = "cms_template";                          //显示管理
-            public const string Configration = "cms_configration";                  //设置管理
-            public const string Create = "cms_create";                              //生成管理
+            public const string Contents = "site_contents";
+            public const string Channels = "site_channels";
+            public const string ContentsSearch = "site_contentsSearch";
+            public const string ContentsWriting = "site_contentsWriting";
+            public const string ContentsMy = "site_contentsMy";
+            public const string ContentsTranslate = "site_contentsTranslate";
+            public const string ContentsCheck = "site_contentsCheck";
+            public const string ContentsTrash = "site_contentsTrash";
+            public const string Templates = "site_templates";
+            public const string Specials = "site_specials";
+            public const string TemplatesMatch = "site_templatesMatch";
+            public const string TemplatesIncludes = "site_templatesIncludes";
+            public const string TemplatesCss = "site_templatesCss";
+            public const string TemplatesJs = "site_templatesJs";
+            public const string TemplatesPreview = "site_templatesPreview";
+            public const string TemplatesReference = "site_templatesReference";
+            public const string ConfigSite = "site_configSite";
+            public const string ConfigAttributes = "site_configAttributes";
+            public const string ConfigContents = "site_configContents";
+            public const string ConfigGroups = "site_configGroups";
+            public const string ConfigTableStyles = "site_configTableStyles";
+            public const string ConfigUpload = "site_configUpload";
+            public const string ConfigCrossSiteTrans = "site_configCrossSiteTrans";
+            public const string ConfigCreateRule = "site_configCreateRule";
+            public const string CreateIndex = "site_createIndex";
+            public const string CreateChannels = "site_createChannels";
+            public const string CreateContents = "site_createContents";
+            public const string CreateFiles = "site_createFiles";
+            public const string CreateSpecials = "site_createSpecials";
+            public const string CreateAll = "site_createAll";
+            public const string CreateStatus = "site_createStatus";
         }
 
         public static class ChannelPermissions

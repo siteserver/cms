@@ -74,6 +74,7 @@
     }
   </script>
   <link rel="stylesheet" href="../assets/ueditor/third-party/xiumi/xiumi-ue-v5.css">
+  <link href="../assets/element-ui/theme-chalk/index.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -122,7 +123,7 @@
         </div>
       </div>
 
-      <div class="form-group form-row">
+      <div class="form-group form-row" style="display: none">
         <label class="col-1 col-form-label text-right text-truncate text-nowrap">标签</label>
         <div class="col-6">
           <asp:TextBox ID="TbTags" class="form-control" runat="server" />
@@ -130,6 +131,33 @@
         <div class="col-5">
           <asp:Literal ID="LtlTags" runat="server"></asp:Literal>
           <small class="form-text text-muted">请用空格或英文逗号分隔</small>
+        </div>
+      </div>
+
+      <div class="form-group form-row">
+        <label class="col-1 col-form-label text-right text-truncate text-nowrap">标签</label>
+        <div class="col-6">
+          <el-select
+            v-model="tagNames"
+            name="tagNames"
+            style="width: 100%;"
+            size="medium"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            placeholder="请选择内容标签">
+            <el-option
+              v-for="tagName in allTagNames"
+              :key="tagName"
+              :label="tagName"
+              :value="tagName">
+            </el-option>
+          </el-select>
+          <small class="form-text text-muted">输入文字后回车可以创建并选中选项中不存在的条目</small>
+        </div>
+        <div class="col-5">
+
         </div>
       </div>
 
@@ -171,7 +199,7 @@
           <label class="col-1 col-form-label text-right text-truncate text-nowrap">转移到</label>
           <div class="col-10">
             <span class="pull-left m-t-5" id="translateContainer"></span>
-            <asp:Button id="BtnTranslate" class="btn btn-sm pull-left" text="选择栏目" runat="server" />
+            <button onClick="utils.openLayer({title: '选择目标栏目', url: 'modalChannelMultipleSelect.aspx?siteId=<%=SiteId%>&isSiteSelect=True&jsMethod=translateNodeAdd', width: 650, height: 580});return false;" class="btn btn-sm pull-left">选择栏目</button>
           </div>
           <div class="col-1"></div>
         </div>
@@ -206,3 +234,20 @@
 </html>
 <!--#include file="../inc/foot.html"-->
 <script type="text/javascript" charset="utf-8" src="../assets/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js"></script>
+<script src="../assets/js/es6-promise.auto.min.js" type="text/javascript"></script>
+<script src="../assets/js/axios-0.17.1.min.js" type="text/javascript"></script>
+<script src="../assets/js/lodash-4.17.10.min.js" type="text/javascript"></script>
+<script src="../assets/js/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="../assets/js/layer/layer-3.1.1.js" type="text/javascript"></script>
+<script src="../assets/js/sweetalert2-7.28.4.all.min.js" type="text/javascript"></script>
+<script src="../assets/js/vue-2.5.16.min.js" type="text/javascript"></script>
+<script src="../assets/js/vee-validate-2.1.0.js" type="text/javascript"></script>
+<script src="../assets/js/vee-validate-locale-zh_CN-2.1.0.js" type="text/javascript"></script>
+<script src="../assets/element-ui/index.js"></script>
+<script src="../assets/js/apiUtils.js" type="text/javascript"></script>
+<script src="../assets/js/pageUtils.js" type="text/javascript"></script>
+<script src="../assets/js/utils.js" type="text/javascript"></script>
+<script type="text/javascript">
+  var apiUrl = '@Sys.InnerApiUrl';
+</script>
+<script src="pageContentAdd.js"></script>

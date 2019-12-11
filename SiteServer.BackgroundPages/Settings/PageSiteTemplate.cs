@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Page.IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
+            VerifySystemPermissions(ConfigManager.AppPermissions.SettingsSiteTemplates);
 
             _sortedlist = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
             var directoryList = new List<DirectoryInfo>();
@@ -155,7 +155,7 @@ namespace SiteServer.BackgroundPages.Settings
                     $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithSiteTemplateZip(0, dirInfo.Name)}"">压缩</a>";
             }
 
-            if (AuthRequest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
+            if (AuthRequest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.AppPermissions.SettingsSiteAdd))
             {
                 //var urlAdd = PageSiteAdd.GetRedirectUrl(dirInfo.Name, string.Empty);
                 var urlAdd = $"siteAdd.cshtml?type=create&createType=local&createTemplateId={dirInfo.Name}";

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
@@ -163,7 +164,7 @@ namespace SiteServer.BackgroundPages.Core
     审 核
 </a>");
                 }
-                if (permissionsImpl.HasSitePermissions(siteInfo.Id, ConfigManager.WebSitePermissions.Create) || permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.CreatePage))
+                if (permissionsImpl.HasSitePermissions(siteInfo.Id, ConfigManager.SitePermissions.CreateContents) || permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.CreatePage))
                 {
                     builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateContentsOneByOne(siteInfo.Id, channelInfo.Id)}"">
@@ -282,7 +283,7 @@ function detection_{attributeName}(){{
 ";
         }
 
-        public static string GetAutoCheckKeywordsScript(SiteInfo siteInfo)
+        public static string GetAutoCheckKeywordsScript(SiteInfo siteInfo, List<string> allTagNames, List<string> tagNames)
         {
             var isAutoCheckKeywords = siteInfo.Additional.IsAutoCheckKeywords.ToString().ToLower();
             var url = AjaxCmsService.GetDetectionReplaceUrl(siteInfo.Id);
@@ -296,6 +297,7 @@ function detection_{attributeName}(){{
 <script type=""text/javascript"">
 var bairongKeywordArray;
 function autoCheckKeywords() {{
+    $('#TbTags').val($vue.tagNames);
     if({isAutoCheckKeywords}) {{
         var pureText = {getPureText}
         var htmlContent = {getContent}
@@ -339,11 +341,10 @@ function autoReplaceKeywords() {{
     {setContent}
     $('#BtnSubmit').attr('onclick', '').click();
 }}
+var allTagNames = {TranslateUtils.JsonSerialize(allTagNames)};
+var tagNames = {TranslateUtils.JsonSerialize(tagNames)};
 </script>
 ";
-            
-
-
             return command;
         }
 

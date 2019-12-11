@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
+            VerifySitePermissions(ConfigManager.SitePermissions.TemplatesIncludes);
 
             LtlPageTitle.Text = $"{_name}管理";
             InfoMessage(tips);

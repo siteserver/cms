@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
+            VerifySitePermissions(ConfigManager.SitePermissions.ConfigTableStyles);
 
             //if (_totalLevel >= 5)
             //{

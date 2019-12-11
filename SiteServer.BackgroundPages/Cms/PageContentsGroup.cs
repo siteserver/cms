@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
+            VerifySitePermissions(ConfigManager.SitePermissions.ConfigGroups);
             LtlContentGroupName.Text = "内容组：" + _contentGroupName;
             SpContents.DataBind();
         }

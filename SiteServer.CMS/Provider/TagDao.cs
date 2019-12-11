@@ -127,6 +127,24 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
+        public List<string> GetTagNames(int siteId)
+        {
+            var list = new List<string>();
+
+            var sqlString =
+                $"SELECT DISTINCT Tag FROM siteserver_Tag WHERE SiteId = {siteId} ORDER BY Tag";
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    list.Add(GetString(rdr, 0));
+                }
+                rdr.Close();
+            }
+            return list;
+        }
+
         public string GetSqlString(int siteId, int contentId, bool isOrderByCount, int totalNum)
         {
             var whereString = GetWhereString(null, siteId, contentId);

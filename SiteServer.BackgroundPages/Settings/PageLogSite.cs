@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.Log);
+            VerifySystemPermissions(ConfigManager.AppPermissions.SettingsLogSite);
 
             if (SiteId == 0)
             {

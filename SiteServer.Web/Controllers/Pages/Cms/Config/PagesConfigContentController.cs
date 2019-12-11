@@ -21,7 +21,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Configration))
+                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.SitePermissions.ConfigContents))
                 {
                     return Unauthorized();
                 }
@@ -49,7 +49,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Configration))
+                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.SitePermissions.ConfigContents))
                 {
                     return Unauthorized();
                 }

@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.Chart);
+            VerifySystemPermissions(ConfigManager.AppPermissions.SettingsAnalysisAdminWork);
             
             foreach (var siteId in siteIdList)
             {

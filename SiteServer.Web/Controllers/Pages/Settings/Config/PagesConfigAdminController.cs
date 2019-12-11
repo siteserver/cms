@@ -23,7 +23,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
             {
                 var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.AppPermissions.SettingsConfigAdmin))
                 {
                     return Unauthorized();
                 }
@@ -47,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
             {
                 var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.AppPermissions.SettingsConfigAdmin))
                 {
                     return Unauthorized();
                 }
@@ -78,7 +78,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
             {
                 var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.AppPermissions.SettingsConfigAdmin))
                 {
                     return Unauthorized();
                 }

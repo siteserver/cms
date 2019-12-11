@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
+            VerifySitePermissions(ConfigManager.SitePermissions.CreateSpecials);
 
             var specialInfoList = DataProvider.SpecialDao.GetSpecialInfoList(SiteId);
 

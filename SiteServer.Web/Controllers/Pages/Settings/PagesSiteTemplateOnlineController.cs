@@ -19,13 +19,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
             {
                 var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.AppPermissions.SettingsSiteTemplatesOnline))
                 {
                     return Unauthorized();
                 }
 
                 var siteAddPermission =
-                    request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd);
+                    request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.AppPermissions.SettingsSiteAdd);
 
                 return Ok(new
                 {

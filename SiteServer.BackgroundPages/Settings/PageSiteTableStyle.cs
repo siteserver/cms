@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
+            VerifySystemPermissions(ConfigManager.AppPermissions.SettingsSiteTables);
 
             if (AuthRequest.IsQueryExists("DeleteStyle"))
             {

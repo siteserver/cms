@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
+                VerifySitePermissions(ConfigManager.SitePermissions.ConfigUpload);
 
                 TbFileUploadDirectoryName.Text = SiteInfo.Additional.FileUploadDirectoryName;
 

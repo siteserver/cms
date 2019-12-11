@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                VerifySystemPermissions(ConfigManager.SettingsPermissions.Utility);
+                VerifySystemPermissions(ConfigManager.AppPermissions.SettingsUtilityEncrypt);
             }
         }
 	}

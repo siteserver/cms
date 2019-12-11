@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
+            VerifySystemPermissions(ConfigManager.AppPermissions.SettingsSiteTables);
 
             RptContents.DataSource = SiteManager.GetSiteTableNames();
             RptContents.ItemDataBound += RptContents_ItemDataBound;

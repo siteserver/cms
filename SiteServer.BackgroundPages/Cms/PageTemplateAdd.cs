@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
+            VerifySitePermissions(ConfigManager.SitePermissions.Templates);
 
             LtlTemplateType.Text = TemplateTypeUtils.GetText(_templateType);
 

@@ -21,7 +21,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
             {
                 var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.SitePermissions.CreateStatus))
                 {
                     return Unauthorized();
                 }
@@ -49,7 +49,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var request = new AuthenticatedRequest();
                 var siteId = request.GetPostInt("siteId");
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Create))
+                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.SitePermissions.CreateStatus))
                 {
                     return Unauthorized();
                 }

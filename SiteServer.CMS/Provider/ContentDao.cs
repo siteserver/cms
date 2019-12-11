@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
@@ -17,6 +18,7 @@ using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
 using Datory;
+using SqlKata;
 
 namespace SiteServer.CMS.Provider
 {
@@ -2760,5 +2762,17 @@ GO");
         }
 
         #endregion
+
+        public IEnumerable<ChannelContentId> GetChannelContentIdList(string tableName, Query query)
+        {
+            var repository = new Repository(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName);
+            return repository.GetAll<ChannelContentId>(query);
+        }
+
+        public int GetTotalCount(string tableName, Query query)
+        {
+            var repository = new Repository(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName);
+            return repository.Count(query);
+        }
     }
 }

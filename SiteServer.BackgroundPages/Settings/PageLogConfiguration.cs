@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.Log);
+            VerifySystemPermissions(ConfigManager.AppPermissions.SettingsLogConfig);
 
             EBooleanUtils.AddListItems(RblIsTimeThreshold, "启用", "不启用");
             ControlUtils.SelectSingleItem(RblIsTimeThreshold, ConfigManager.SystemConfigInfo.IsTimeThreshold.ToString());

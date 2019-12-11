@@ -235,7 +235,7 @@ namespace SiteServer.CMS.Plugin.Impl
                     {
                         _permissionList = new List<string>
                         {
-                            ConfigManager.SettingsPermissions.Admin
+                            ConfigManager.AppPermissions.SettingsAdmin
                         };
                     }
                     else

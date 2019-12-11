@@ -45,7 +45,7 @@ namespace SiteServer.CMS.Model.Attributes
 
         public int CheckContentDefaultLevel
         {
-            get => GetInt(nameof(CheckContentDefaultLevel));
+            get => GetInt(nameof(CheckContentDefaultLevel), 1);
             set => Set(nameof(CheckContentDefaultLevel), value);
         }
 

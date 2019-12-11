@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.User);
+            VerifySystemPermissions(ConfigManager.AppPermissions.SettingsUser);
 
             LtlPageTitle.Text = _userId == 0 ? "添加用户" : "编辑用户";
 

@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            VerifySystemPermissions(ConfigManager.SettingsPermissions.Utility);
+            VerifySystemPermissions(ConfigManager.AppPermissions.SettingsUtilityParameters);
 
             var parameterList = new List<KeyValuePair<string, string>>
             {

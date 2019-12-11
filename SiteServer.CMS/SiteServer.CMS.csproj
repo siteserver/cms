@@ -210,6 +210,7 @@
     <Compile Include="Core\PathUtility.cs" />
     <Compile Include="Core\RoleManager.cs" />
     <Compile Include="DataCache\PermissionConfigManager.cs" />
+    <Compile Include="Model\ChannelContentId.cs" />
     <Compile Include="Model\ContentTagInfo.cs" />
     <Compile Include="Model\Enumerations\ETaxisType.cs" />
     <Compile Include="Core\AuthenticatedRequest.cs" />
