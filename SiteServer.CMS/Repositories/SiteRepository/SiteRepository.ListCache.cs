@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using Datory.Caching;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Caching;
 using SiteServer.CMS.Dto;
@@ -18,8 +19,8 @@ namespace SiteServer.CMS.Repositories
 
         private async Task<List<Cache>> GetCacheListAsync()
         {
-            var cacheKey = CacheManager.Cache.GetListKey(this, CacheTypeAll);
-            return await CacheManager.Cache.GetOrCreateAsync(cacheKey, async options =>
+            var cacheKey = CacheManager.GetListKey(TableName, CacheTypeAll);
+            return await _repository.Cache.GetOrCreateAsync(cacheKey, async () =>
             {
                 var sites = await _repository.GetAllAsync(Q
                     .Select(nameof(Site.Id), nameof(Site.SiteName), nameof(Site.SiteDir), nameof(Site.TableName), nameof(Site.IsRoot), nameof(Site.ParentId), nameof(Site.Taxis))
@@ -59,22 +60,17 @@ namespace SiteServer.CMS.Repositories
             });
         }
 
-        public async Task<List<Option<int>>> GetSiteOptionsAsync(int parentId)
+        public async Task<List<Cascade<int>>> GetSiteOptionsAsync(int parentId)
         {
-            var cacheKey = CacheManager.Cache.GetListKey(this, CacheTypeOptions);
-            return await CacheManager.Cache.GetOrCreateAsync(cacheKey, async options =>
+            var cacheKey = CacheManager.GetListKey(TableName, CacheTypeOptions);
+            return await _repository.Cache.GetOrCreateAsync(cacheKey, async () =>
             {
-                var optionList = new List<Option<int>>();
+                var optionList = new List<Cascade<int>>();
                 var siteList = await GetCacheListAsync(parentId);
 
                 foreach (var site in siteList)
                 {
-                    optionList.Add(new Option<int>
-                    {
-                        Label = site.SiteName,
-                        Value = site.Id,
-                        Children = await GetSiteOptionsAsync(site.Id)
-                    });
+                    optionList.Add(new Cascade<int>(site.Id, site.SiteName, await GetSiteOptionsAsync(site.Id)));
                 }
 
                 return optionList;
@@ -95,8 +91,8 @@ namespace SiteServer.CMS.Repositories
 
         private async Task RemoveCacheListAsync()
         {
-            await CacheManager.Cache.RemoveAsync(CacheManager.Cache.GetListKey(this, CacheTypeAll));
-            await CacheManager.Cache.RemoveAsync(CacheManager.Cache.GetListKey(this, CacheTypeOptions));
+            await _repository.Cache.RemoveAsync(CacheManager.GetListKey(TableName, CacheTypeAll));
+            await _repository.Cache.RemoveAsync(CacheManager.GetListKey(TableName, CacheTypeOptions));
         }
 
         private async Task<List<Cache>> GetCacheListAsync(int parentId)

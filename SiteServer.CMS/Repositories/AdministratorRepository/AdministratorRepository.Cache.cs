@@ -13,22 +13,22 @@ namespace SiteServer.CMS.Repositories
     {
         private string GetCacheKeyByUserId(int userId)
         {
-            return _cache.GetEntityKey(this, "userId", userId.ToString());
+            return CacheManager.GetEntityKey(TableName, "userId", userId.ToString());
         }
 
         private string GetCacheKeyByUserName(string userName)
         {
-            return _cache.GetEntityKey(this, "userName", userName);
+            return CacheManager.GetEntityKey(TableName, "userName", userName);
         }
 
         private string GetCacheKeyByMobile(string mobile)
         {
-            return _cache.GetEntityKey(this, "mobile", mobile);
+            return CacheManager.GetEntityKey(TableName, "mobile", mobile);
         }
 
         private string GetCacheKeyByEmail(string email)
         {
-            return _cache.GetEntityKey(this, "email", email);
+            return CacheManager.GetEntityKey(TableName, "email", email);
         }
 
         private async Task RemoveCacheAsync(Administrator admin)
@@ -69,7 +69,7 @@ namespace SiteServer.CMS.Repositories
             if (userId <= 0) return null;
 
             var cacheKey = GetCacheKeyByUserId(userId);
-            return await _cache.GetOrCreateAsync(cacheKey, async options => await _repository.GetAsync(userId));
+            return await _repository.GetAsync(userId, Q.CachingGet(cacheKey));
         }
 
         public async Task<Administrator> GetByUserNameAsync(string userName)
@@ -77,9 +77,10 @@ namespace SiteServer.CMS.Repositories
             if (string.IsNullOrWhiteSpace(userName)) return null;
 
             var cacheKey = GetCacheKeyByUserName(userName);
-            return await _cache.GetOrCreateAsync(cacheKey, async options => await _repository.GetAsync(Q
+            return await _repository.GetAsync(Q
                 .Where(nameof(Administrator.UserName), userName)
-            ));
+                .CachingGet(cacheKey)
+            );
         }
 
         public async Task<Administrator> GetByMobileAsync(string mobile)
@@ -87,9 +88,10 @@ namespace SiteServer.CMS.Repositories
             if (string.IsNullOrWhiteSpace(mobile)) return null;
 
             var cacheKey = GetCacheKeyByMobile(mobile);
-            return await _cache.GetOrCreateAsync(cacheKey, async options => await _repository.GetAsync(Q
+            return await _repository.GetAsync(Q
                 .Where(nameof(Administrator.Mobile), mobile)
-            ));
+                .CachingGet(cacheKey)
+            );
         }
 
         public async Task<Administrator> GetByEmailAsync(string email)
@@ -97,9 +99,10 @@ namespace SiteServer.CMS.Repositories
             if (string.IsNullOrWhiteSpace(email)) return null;
 
             var cacheKey = GetCacheKeyByEmail(email);
-            return await _cache.GetOrCreateAsync(cacheKey, async options => await _repository.GetAsync(Q
+            return await _repository.GetAsync(Q
                 .Where(nameof(Administrator.Email), email)
-            ));
+                .CachingGet(cacheKey)
+            );
         }
 
         public async Task<string> GetDisplayNameAsync(string userName)

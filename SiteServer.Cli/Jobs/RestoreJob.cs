@@ -162,22 +162,10 @@ namespace SiteServer.Cli.Jobs
 
                     if (await WebConfigUtils.Database.IsTableExistsAsync(tableName))
                     {
-                        DataProvider.DatabaseRepository.DropTable(tableName);
+                        await WebConfigUtils.Database.DropTableAsync(tableName);
                     }
 
-                    var (success, ex, sqlString) =
-                        await DataProvider.DatabaseRepository.CreateTableAsync(tableName, tableInfo.Columns);
-                    if (!success)
-                    {
-                        await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
-                        {
-                            DateTime = DateTime.Now,
-                            Detail = $"创建表 {tableName}: {sqlString}",
-                            Exception = ex
-                        });
-
-                        continue;
-                    }
+                    await WebConfigUtils.Database.CreateTableAsync(tableName, tableInfo.Columns);
 
                     if (tableInfo.RowFiles.Count > 0)
                     {

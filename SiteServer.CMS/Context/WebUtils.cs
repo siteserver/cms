@@ -192,7 +192,7 @@ namespace SiteServer.CMS.Context
             };
         }
 
-        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database, bool isOracleSid, string oraclePrivilege)
+        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database, bool isOracleSid, EOraclePrivilege oraclePrivilege)
         {
             var connectionString = string.Empty;
 
@@ -240,13 +240,12 @@ namespace SiteServer.CMS.Context
             {
                 var databaseName = isOracleSid ? $"SID={database}" : $"SERVICE_NAME={database}";
                 port = !isDefaultPort && port > 0 ? port : 1521;
-                var privilege = EOraclePrivilegeUtils.GetEnumType(oraclePrivilege);
                 var privilegeString = string.Empty;
-                if (privilege == EOraclePrivilege.SYSDBA)
+                if (oraclePrivilege == EOraclePrivilege.SYSDBA)
                 {
                     privilegeString = "DBA Privilege=SYSDBA;";
                 }
-                else if (privilege == EOraclePrivilege.SYSDBA)
+                else if (oraclePrivilege == EOraclePrivilege.SYSDBA)
                 {
                     privilegeString = "DBA Privilege=SYSOPER;";
                 }

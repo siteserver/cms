@@ -17,7 +17,7 @@ namespace SiteServer.CMS.Repositories
         {
             _repository = new Repository<Config>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
             _cache = CacheManager.Cache;
-            _cacheKey = _cache.GetEntityKey(this);
+            _cacheKey = CacheManager.GetEntityKey(TableName);
         }
 
         public IDatabase Database => _repository.Database;

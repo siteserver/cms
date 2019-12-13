@@ -301,6 +301,11 @@ namespace SiteServer.CMS.Core
         {
             if (channel == null) return string.Empty;
 
+            if (isLocal)
+            {
+                return ApiRoutePreview.GetChannelUrl(site.Id, channel.Id);
+            }
+
             var url = string.Empty;
             
             if (channel.ParentId == 0)

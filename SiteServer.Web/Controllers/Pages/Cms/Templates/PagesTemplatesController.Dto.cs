@@ -30,7 +30,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             public int ChannelTemplateCount { get; set; }
             public int ContentTemplateCount { get; set; }
             public int FileTemplateCount { get; set; }
-            public IEnumerable<Option<int>> SiteOptions { get; set; }
+            public IEnumerable<Select<int>> SiteOptions { get; set; }
         }
     }
 }

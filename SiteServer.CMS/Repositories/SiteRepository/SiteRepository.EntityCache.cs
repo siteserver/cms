@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Datory;
+using Datory.Caching;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context;
@@ -82,7 +83,7 @@ namespace SiteServer.CMS.Repositories
 
         private async Task RemoveCacheEntityAsync(int siteId)
         {
-            var cacheKey = CacheManager.Cache.GetEntityKey(this, siteId);
+            var cacheKey = CacheManager.GetEntityKey(TableName, siteId);
             await CacheManager.Cache.RemoveAsync(cacheKey);
         }
 
@@ -90,8 +91,8 @@ namespace SiteServer.CMS.Repositories
         {
             if (siteId == 0) return null;
 
-            var cacheKey = CacheManager.Cache.GetEntityKey(this, siteId);
-            return await CacheManager.Cache.GetOrCreateAsync(cacheKey, async options =>
+            var cacheKey = CacheManager.GetEntityKey(TableName, siteId);
+            return await CacheManager.Cache.GetOrCreateAsync(cacheKey, async () =>
                 await _repository.GetAsync<Site>(Q
                     .Where(nameof(Site.Id), siteId)
                 )

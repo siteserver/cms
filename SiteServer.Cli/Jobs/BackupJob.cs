@@ -6,6 +6,7 @@ using NDesk.Options;
 using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Repositories;
+using Datory;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -129,10 +130,11 @@ namespace SiteServer.Cli.Jobs
 
             foreach (var tableName in tableNames)
             {
+                var repository = new Repository(WebConfigUtils.Database, tableName);
                 var tableInfo = new TableInfo
                 {
-                    Columns = DataProvider.DatabaseRepository.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName),
-                    TotalCount = DataProvider.DatabaseRepository.GetCount(tableName),
+                    Columns = repository.TableColumns,
+                    TotalCount = await repository.CountAsync(),
                     RowFiles = new List<string>()
                 };
 

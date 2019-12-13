@@ -326,7 +326,7 @@ namespace SiteServer.BackgroundPages
             {
                 databaseName = databaseType == DatabaseType.Oracle ? TbOracleDatabase.Text : DdlSqlDatabaseName.SelectedValue;
             }
-            return WebUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName, TranslateUtils.ToBool(DdlIsOracleSid.SelectedValue), DdlOraclePrivilege.SelectedValue);
+            return WebUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName, TranslateUtils.ToBool(DdlIsOracleSid.SelectedValue), EOraclePrivilegeUtils.GetEnumType(DdlOraclePrivilege.SelectedValue));
         }
 
         private bool CheckLoginValid(out string errorMessage)

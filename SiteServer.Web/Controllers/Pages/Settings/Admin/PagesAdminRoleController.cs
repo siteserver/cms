@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
 
@@ -20,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdminRole))
                 {
                     return Unauthorized();
                 }
@@ -29,9 +31,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     ? await DataProvider.RoleRepository.GetRoleListAsync()
                     : await DataProvider.RoleRepository.GetRoleListByCreatorUserNameAsync(request.AdminName);
 
+                var roles = roleInfoList.Where(x => !EPredefinedRoleUtils.IsPredefinedRole(x.RoleName)).ToList();
+
                 return Ok(new
                 {
-                    Value = roleInfoList
+                    Value = roles
                 });
             }
             catch (Exception ex)
@@ -47,7 +51,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdminRole))
                 {
                     return Unauthorized();
                 }

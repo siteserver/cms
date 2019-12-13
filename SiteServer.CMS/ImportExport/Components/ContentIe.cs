@@ -93,7 +93,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     var groupNameCollection = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string>{ ContentAttribute.GroupNameCollection , "ContentGroupNameCollection" });
                     if (isCheckedBySettings)
                     {
-                        isChecked = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Checked));
+                        isChecked = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.IsChecked));
                         checkedLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.CheckedLevel));
                     }
                     var hits = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Hits));
@@ -213,7 +213,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     var groupNameCollection = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { ContentAttribute.GroupNameCollection, "ContentGroupNameCollection" });
                     if (isCheckedBySettings)
                     {
-                        isChecked = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Checked));
+                        isChecked = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.IsChecked));
                         checkedLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.CheckedLevel));
                     }
                     var hits = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Hits));
@@ -416,7 +416,7 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Tags, AtomUtility.Encrypt(content.Tags));
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.SourceId, content.SourceId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.ReferenceId, content.ReferenceId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Checked, content.Checked.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsChecked, content.Checked.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.CheckedLevel, content.CheckedLevel.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Hits, content.Hits.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.HitsByDay, content.HitsByDay.ToString());
@@ -430,7 +430,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Downloads, content.Downloads.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Title, AtomUtility.Encrypt(content.Title));
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsTop, content.IsTop.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsTop, content.Top.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsRecommend, content.Recommend.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsHot, content.Hot.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsColor, content.Color.ToString());

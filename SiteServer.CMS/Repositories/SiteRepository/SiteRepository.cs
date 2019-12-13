@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Datory;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
@@ -16,7 +17,7 @@ namespace SiteServer.CMS.Repositories
 
         public SiteRepository()
         {
-            _repository = new Repository<Site>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            _repository = new Repository<Site>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
         }
 
         public IDatabase Database => _repository.Database;

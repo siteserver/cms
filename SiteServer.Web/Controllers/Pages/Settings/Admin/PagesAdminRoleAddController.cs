@@ -26,7 +26,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdminRole))
                 {
                     return Unauthorized();
                 }
@@ -118,7 +118,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdminRole))
                 {
                     return Unauthorized();
                 }
@@ -176,70 +176,35 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 {
                     if (permission.Name == Constants.ChannelPermissions.ContentCheckLevel1)
                     {
-                        if (site.IsCheckContentLevel)
-                        {
-                            if (site.CheckContentLevel < 1)
-                            {
-                                continue;
-                            }
-                        }
-                        else
+                        if (site.CheckContentLevel < 1)
                         {
                             continue;
                         }
                     }
                     else if (permission.Name == Constants.ChannelPermissions.ContentCheckLevel2)
                     {
-                        if (site.IsCheckContentLevel)
-                        {
-                            if (site.CheckContentLevel < 2)
-                            {
-                                continue;
-                            }
-                        }
-                        else
+                        if (site.CheckContentLevel < 2)
                         {
                             continue;
                         }
                     }
                     else if (permission.Name == Constants.ChannelPermissions.ContentCheckLevel3)
                     {
-                        if (site.IsCheckContentLevel)
-                        {
-                            if (site.CheckContentLevel < 3)
-                            {
-                                continue;
-                            }
-                        }
-                        else
+                        if (site.CheckContentLevel < 3)
                         {
                             continue;
                         }
                     }
                     else if (permission.Name == Constants.ChannelPermissions.ContentCheckLevel4)
                     {
-                        if (site.IsCheckContentLevel)
-                        {
-                            if (site.CheckContentLevel < 4)
-                            {
-                                continue;
-                            }
-                        }
-                        else
+                        if (site.CheckContentLevel < 4)
                         {
                             continue;
                         }
                     }
                     else if (permission.Name == Constants.ChannelPermissions.ContentCheckLevel5)
                     {
-                        if (site.IsCheckContentLevel)
-                        {
-                            if (site.CheckContentLevel < 5)
-                            {
-                                continue;
-                            }
-                        }
-                        else
+                        if (site.CheckContentLevel < 5)
                         {
                             continue;
                         }
@@ -295,29 +260,25 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     {
                         if (permission.Name == channelPermission)
                         {
-                            if (channelPermission == Constants.ChannelPermissions.ContentCheck)
+                            if (channelPermission == Constants.ChannelPermissions.ContentCheckLevel1)
                             {
-                                if (site.IsCheckContentLevel) continue;
-                            }
-                            else if (channelPermission == Constants.ChannelPermissions.ContentCheckLevel1)
-                            {
-                                if (site.IsCheckContentLevel == false || site.CheckContentLevel < 1) continue;
+                                if (site.CheckContentLevel < 1) continue;
                             }
                             else if (channelPermission == Constants.ChannelPermissions.ContentCheckLevel2)
                             {
-                                if (site.IsCheckContentLevel == false || site.CheckContentLevel < 2) continue;
+                                if (site.CheckContentLevel < 2) continue;
                             }
                             else if (channelPermission == Constants.ChannelPermissions.ContentCheckLevel3)
                             {
-                                if (site.IsCheckContentLevel == false || site.CheckContentLevel < 3) continue;
+                                if ( site.CheckContentLevel < 3) continue;
                             }
                             else if (channelPermission == Constants.ChannelPermissions.ContentCheckLevel4)
                             {
-                                if (site.IsCheckContentLevel == false || site.CheckContentLevel < 4) continue;
+                                if (site.CheckContentLevel < 4) continue;
                             }
                             else if (channelPermission == Constants.ChannelPermissions.ContentCheckLevel5)
                             {
-                                if (site.IsCheckContentLevel == false || site.CheckContentLevel < 5) continue;
+                                if (site.CheckContentLevel < 5) continue;
                             }
 
                             channelPermissions.Add(new Permission
@@ -360,7 +321,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdminRole))
                 {
                     return Unauthorized();
                 }
@@ -429,7 +390,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdminRole))
                 {
                     return Unauthorized();
                 }

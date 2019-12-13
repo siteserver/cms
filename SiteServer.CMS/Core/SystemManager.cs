@@ -76,11 +76,11 @@ namespace SiteServer.CMS.Core
 
                 if (!await WebConfigUtils.Database.IsTableExistsAsync(provider.TableName))
                 {
-                    await DataProvider.DatabaseRepository.CreateTableAsync(provider.TableName, provider.TableColumns);
+                    await WebConfigUtils.Database.CreateTableAsync(provider.TableName, provider.TableColumns);
                 }
                 else
                 {
-                    await DataProvider.DatabaseRepository.AlterSystemTableAsync(provider.TableName, provider.TableColumns);
+                    await WebConfigUtils.Database.AlterTableAsync(provider.TableName, provider.TableColumns);
                 }
             }
         }
@@ -92,11 +92,11 @@ namespace SiteServer.CMS.Core
             {
                 if (!await WebConfigUtils.Database.IsTableExistsAsync(tableName))
                 {
-                    await DataProvider.DatabaseRepository.CreateTableAsync(tableName, DataProvider.ContentRepository.GetTableColumns(tableName));
+                    await WebConfigUtils.Database.CreateTableAsync(tableName, DataProvider.ContentRepository.GetTableColumns(tableName));
                 }
                 else
                 {
-                    await DataProvider.DatabaseRepository.AlterSystemTableAsync(tableName, DataProvider.ContentRepository.GetTableColumns(tableName), ContentAttribute.DropAttributes.Value);
+                    await WebConfigUtils.Database.AlterTableAsync(tableName, DataProvider.ContentRepository.GetTableColumns(tableName), ContentAttribute.DropAttributes.Value);
                 }
             }
         }

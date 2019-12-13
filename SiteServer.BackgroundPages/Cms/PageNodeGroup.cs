@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(Constants.WebSitePermissions.Configuration);    
+            VerifySitePermissions(Constants.SitePermissions.ConfigGroups);    
 
             RptContents.DataSource = DataProvider.ChannelGroupRepository.GetChannelGroupListAsync(SiteId).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;

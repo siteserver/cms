@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto.Result;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Templates
@@ -17,7 +16,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<SiteLogPageResult> List([FromBody] SearchRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.WebSitePermissions.Template);
+            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Templates);
 
             var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
             var count = await DataProvider.SiteLogRepository.GetCountAsync(siteIdList, request.LogType, request.UserName, request.Keyword, request.DateFrom, request.DateTo);
@@ -61,22 +60,6 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             };
 
             return result;
-        }
-
-        [HttpDelete, Route(Route)]
-        public async Task<DefaultResult> Delete()
-        {
-            var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSettingsPermissions(Request, Constants.SettingsPermissions.Log);
-
-            await DataProvider.SiteLogRepository.DeleteAllAsync();
-
-            await auth.AddAdminLogAsync("清空站点日志");
-
-            return new DefaultResult
-            {
-                Value = true
-            };
         }
     }
 }

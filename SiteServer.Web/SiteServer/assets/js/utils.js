@@ -173,11 +173,15 @@ var utils = {
       btn: null,
       title: config.title,
       area: [config.width + 'px', config.height + 'px'],
-      maxmin: true,
-      resize: true,
+      maxmin: !config.max,
+      resize: !config.max,
       shadeClose: true,
       content: config.url
     });
+
+    if (config.max) {
+      layer.full(index);
+    }
 
     return false;
   }

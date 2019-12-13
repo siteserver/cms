@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using Newtonsoft.Json;
 
 
 namespace SiteServer.Abstractions
 {
-    public class Content : Entity, IContentMin
+    public class Content : Entity
     {
         public Content()
         {
@@ -43,6 +44,7 @@ namespace SiteServer.Abstractions
         public int Taxis { get; set; }
 
         [DataColumn]
+        [JsonIgnore]
         public string GroupNameCollection { get; set; }
 
         [DataIgnore]
@@ -53,7 +55,15 @@ namespace SiteServer.Abstractions
         }
 
         [DataColumn]
+        [JsonIgnore]
         public string Tags { get; set; }
+
+        [DataIgnore]
+        public List<string> TagNames
+        {
+            get => StringUtils.GetStringList(Tags);
+            set => Tags = TranslateUtils.ObjectCollectionToString(value);
+        }
 
         [DataColumn] 
         public int SourceId { get; set; }
@@ -61,7 +71,8 @@ namespace SiteServer.Abstractions
         [DataColumn] 
         public int ReferenceId { get; set; }
 
-        [DataColumn] 
+        [DataColumn]
+        [JsonIgnore]
         public string IsChecked { get; set; }
 
         [DataIgnore]
@@ -124,16 +135,20 @@ namespace SiteServer.Abstractions
         }
 
         [DataColumn]
+        [JsonIgnore]
         public string IsTop { get; set; }
 
-        [DataColumn] 
-        private string IsRecommend { get; set; }
+        [DataColumn]
+        [JsonIgnore]
+        public string IsRecommend { get; set; }
 
-        [DataColumn] 
-        private string IsHot { get; set; }
+        [DataColumn]
+        [JsonIgnore]
+        public string IsHot { get; set; }
 
-        [DataColumn] 
-        private string IsColor { get; set; }
+        [DataColumn]
+        [JsonIgnore]
+        public string IsColor { get; set; }
 
         [DataColumn] 
         public string LinkUrl { get; set; }

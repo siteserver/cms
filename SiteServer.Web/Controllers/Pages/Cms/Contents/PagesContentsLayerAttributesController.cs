@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Repositories;
@@ -23,7 +24,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
                 var siteId = request.GetPostInt("siteId");
                 var channelContentIds =
-                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
+                    ChannelContentId.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
                 var pageType = request.GetPostString("pageType");
                 var isRecommend = request.GetPostBool("isRecommend");
                 var isHot = request.GetPostBool("isHot");
@@ -31,7 +32,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var isTop = request.GetPostBool("isTop");
                 var hits = request.GetPostInt("hits");
 
-                if (!request.IsAdminLoggin)
+                if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents))
                 {
                     return Unauthorized();
                 }

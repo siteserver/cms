@@ -109,7 +109,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
-            var allAttributeNameList = TableColumnManager.GetTableColumnNameList(tableName, DataType.Text);
+            var allAttributeNameList = await TableColumnManager.GetTableColumnNameListAsync(tableName, DataType.Text);
             var adminId = _isAdminOnly
                 ? AuthRequest.AdminId
                 : AuthRequest.AdminPermissionsImpl.GetAdminIdAsync(Site.Id, _channel.Id).GetAwaiter().GetResult();
@@ -232,7 +232,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 BtnAddToGroup.Attributes.Add("onClick", ModalAddToGroup.GetOpenWindowStringToContentForMultiChannels(SiteId));
 
-                if (HasChannelPermissions(SiteId, Constants.ChannelPermissions.ContentCheck))
+                if (HasChannelPermissions(SiteId, Constants.ChannelPermissions.ContentCheckLevel1))
                 {
                     BtnCheck.Attributes.Add("onClick", ModalContentCheck.GetOpenWindowStringForMultiChannels(SiteId, PageUrl));
                     if (_isCheckOnly)

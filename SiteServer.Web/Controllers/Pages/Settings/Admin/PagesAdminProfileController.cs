@@ -25,7 +25,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
                 if (request.AdminId != userId &&
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdmin))
                 {
                     return Unauthorized();
                 }
@@ -64,7 +64,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdmin))
                 {
                     return Unauthorized();
                 }
@@ -114,7 +114,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
                 if (request.AdminId != userId &&
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdmin))
                 {
                     return Unauthorized();
                 }

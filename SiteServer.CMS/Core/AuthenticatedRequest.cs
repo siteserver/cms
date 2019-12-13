@@ -10,6 +10,7 @@ using System.Web.Http;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Extensions;
 using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.Repositories;
@@ -606,7 +607,7 @@ namespace SiteServer.CMS.Core
         {
             if (!IsAdminLoggin)
             {
-                Unauthorized(request);
+                request.Unauthorized();
             }
         }
 
@@ -615,7 +616,7 @@ namespace SiteServer.CMS.Core
             if (!IsAdminLoggin ||
                 !await AdminPermissionsImpl.HasSystemPermissionsAsync(permissions))
             {
-                Unauthorized(request);
+                request.Unauthorized();
             }
         }
 
@@ -624,24 +625,8 @@ namespace SiteServer.CMS.Core
             if (!IsAdminLoggin ||
                 !await AdminPermissionsImpl.HasSitePermissionsAsync(siteId, permissions))
             {
-                Unauthorized(request);
+                request.Unauthorized();
             }
-        }
-
-        public void NotFound(HttpRequestMessage request)
-        {
-            throw new HttpResponseException(request.CreateErrorResponse(
-                HttpStatusCode.NotFound,
-                Constants.NotFound
-            ));
-        }
-
-        public void Unauthorized(HttpRequestMessage request)
-        {
-            throw new HttpResponseException(request.CreateErrorResponse(
-                HttpStatusCode.Unauthorized,
-                Constants.Unauthorized
-            ));
         }
     }
 }

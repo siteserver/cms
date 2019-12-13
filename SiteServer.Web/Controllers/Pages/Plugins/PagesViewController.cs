@@ -20,7 +20,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.PluginsPermissions.Add))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
                 {
                     return Unauthorized();
                 }

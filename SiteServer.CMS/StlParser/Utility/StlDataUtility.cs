@@ -371,21 +371,21 @@ namespace SiteServer.CMS.StlParser.Utility
                     where);
 
             var channelIdList = await ChannelManager.GetChannelIdListAsync(nodeInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
-            return DataProvider.ContentRepository.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
+            return await DataProvider.ContentRepository.GetStlDataSourceCheckedAsync(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
         }
 
-        public static async Task<List<MinContentInfo>> GetMinContentInfoListAsync(Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        public static async Task<List<ChannelContentId>> GetMinContentInfoListAsync(Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
             var dataSource = await GetContentsDataSourceAsync(site, channelId, contentId, groupContent, groupContentNot, tags,
                 isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isRelatedContents, startNum,
                 totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot,
                 isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, others);
 
-            var list = new List<MinContentInfo>();
+            var list = new List<ChannelContentId>();
 
             foreach (DataRow dataItem in dataSource.Tables[0].Rows)
             {
-                var minContentInfo = new MinContentInfo
+                var minContentInfo = new ChannelContentId
                 {
                     Id = (int) dataItem[ContentAttribute.Id],
                     ChannelId = (int) dataItem[ContentAttribute.ChannelId]

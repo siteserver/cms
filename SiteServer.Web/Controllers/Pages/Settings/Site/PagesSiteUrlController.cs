@@ -23,7 +23,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteUrl))
                 {
                     return Unauthorized();
                 }
@@ -59,7 +59,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteUrl))
                 {
                     return Unauthorized();
                 }
@@ -113,7 +113,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteUrl))
                 {
                     return Unauthorized();
                 }

@@ -145,7 +145,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 return (false, $@"显示样式添加失败：字段名""{body.AttributeName}""已存在");
             }
 
-            var style = TableColumnManager.IsAttributeNameExists(tableName, body.AttributeName) ? await TableStyleManager.GetTableStyleAsync(tableName, body.AttributeName, relatedIdentities) : new TableStyle();
+            var style = await TableColumnManager.IsAttributeNameExistsAsync(tableName, body.AttributeName) ? await TableStyleManager.GetTableStyleAsync(tableName, body.AttributeName, relatedIdentities) : new TableStyle();
 
             style.RelatedIdentity = relatedIdentity;
             style.TableName = tableName;

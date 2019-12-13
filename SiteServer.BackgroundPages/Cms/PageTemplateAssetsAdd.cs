@@ -49,8 +49,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "type");
             _type = AuthRequest.GetQueryString("type");
+
+            var permissions = string.Empty;
             if (_type == PageTemplateAssets.TypeInclude)
             {
+                permissions = Constants.SitePermissions.TemplatesIncludes;
                 _name = PageTemplateAssets.NameInclude;
                 _ext = PageTemplateAssets.ExtInclude;
                 _assetsDir = Site.TemplatesAssetsIncludeDir.Trim('/');
@@ -58,6 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (_type == PageTemplateAssets.TypeJs)
             {
+                permissions = Constants.SitePermissions.TemplatesJs;
                 _name = PageTemplateAssets.NameJs;
                 _ext = PageTemplateAssets.ExtJs;
                 _assetsDir = Site.TemplatesAssetsJsDir.Trim('/');
@@ -65,6 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (_type == PageTemplateAssets.TypeCss)
             {
+                permissions = Constants.SitePermissions.TemplatesCss;
                 _name = PageTemplateAssets.NameCss;
                 _ext = PageTemplateAssets.ExtCss;
                 _assetsDir = Site.TemplatesAssetsCssDir.Trim('/');
@@ -83,7 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(Constants.WebSitePermissions.Template);
+            VerifySitePermissions(permissions);
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_fileName) ? $"添加{_name}" : $"编辑{_name}";
 

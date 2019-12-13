@@ -137,7 +137,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(SiteId));
 
-                if (HasChannelPermissions(_channel.Id, Constants.ChannelPermissions.ContentCheck))
+                if (HasChannelPermissions(_channel.Id, Constants.ChannelPermissions.ContentCheckLevel1))
                 {
                     PhStatus.Visible = true;
                     var (isChecked, checkedLevel) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, _channel.Id).GetAwaiter().GetResult();

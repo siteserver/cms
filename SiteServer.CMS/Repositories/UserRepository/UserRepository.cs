@@ -16,12 +16,10 @@ namespace SiteServer.CMS.Repositories
     public partial class UserRepository : DataProviderBase, IRepository
     {
         private readonly Repository<User> _repository;
-        private readonly IDistributedCache _cache;
 
         public UserRepository()
         {
-            _repository = new Repository<User>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
-            _cache = CacheManager.Cache;
+            _repository = new Repository<User>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
         }
 
         public IDatabase Database => _repository.Database;
@@ -219,14 +217,15 @@ namespace SiteServer.CMS.Repositories
         {
             if (user == null) return;
 
-            var userEntityDb = await _repository.GetAsync(user.Id);
-            await RemoveCacheAsync(userEntityDb);
+            var cacheKey = GetCacheKeyByUserId(user.Id);
+
+            var userEntityDb = await _repository.GetAsync(user.Id, Q.CachingGet(cacheKey));
 
             user.Password = userEntityDb.Password;
             user.PasswordFormat = userEntityDb.PasswordFormat;
             user.PasswordSalt = userEntityDb.PasswordSalt;
 
-            await _repository.UpdateAsync(user);
+            await _repository.UpdateAsync(user, Q.CachingRemove(GetCacheKeysToRemove(userEntityDb)));
         }
 
         private async Task UpdateLastActivityDateAndCountOfFailedLoginAsync(User user)
@@ -240,9 +239,8 @@ namespace SiteServer.CMS.Repositories
                 .Set(nameof(User.LastActivityDate), user.LastActivityDate)
                 .Set(nameof(User.CountOfFailedLogin), user.CountOfFailedLogin)
                 .Where(nameof(User.Id), user.Id)
+                .CachingRemove(GetCacheKeysToRemove(user))
             );
-
-            await RemoveCacheAsync(user);
         }
 
         public async Task UpdateLastActivityDateAndCountOfLoginAsync(User user)
@@ -258,9 +256,8 @@ namespace SiteServer.CMS.Repositories
                 .Set(nameof(User.CountOfLogin), user.CountOfLogin)
                 .Set(nameof(User.CountOfFailedLogin), user.CountOfFailedLogin)
                 .Where(nameof(User.Id), user.Id)
+                .CachingRemove(GetCacheKeysToRemove(user))
             );
-
-            await RemoveCacheAsync(user);
         }
 
         private static string EncodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
@@ -353,8 +350,6 @@ namespace SiteServer.CMS.Repositories
             var user = await GetByUserNameAsync(userName);
             if (user == null) return;
 
-            await RemoveCacheAsync(user);
-
             user.LastResetPasswordDate = DateTime.Now;
 
             await _repository.UpdateAsync(Q
@@ -363,6 +358,7 @@ namespace SiteServer.CMS.Repositories
                 .Set(nameof(User.PasswordSalt), passwordSalt)
                 .Set(nameof(User.LastResetPasswordDate), user.LastResetPasswordDate)
                 .Where(nameof(User.Id), user.Id)
+                .CachingRemove(GetCacheKeysToRemove(user))
             );
 
             await LogUtils.AddUserLogAsync(userName, "修改密码", string.Empty);
@@ -370,44 +366,50 @@ namespace SiteServer.CMS.Repositories
 
         public async Task CheckAsync(IList<int> idList)
         {
+            var cacheKeys = new List<string>();
             foreach (var userId in idList)
             {
                 var user = await GetByUserIdAsync(userId);
-                await RemoveCacheAsync(user);
+                cacheKeys.AddRange(GetCacheKeysToRemove(user));
             }
 
             await _repository.UpdateAsync(Q
                 .Set(nameof(User.IsChecked), true.ToString())
                 .WhereIn(nameof(User.Id), idList)
+                .CachingRemove(cacheKeys.ToArray())
             );
         }
 
         public async Task LockAsync(IList<int> idList)
         {
+            var cacheKeys = new List<string>();
             foreach (var userId in idList)
             {
                 var user = await GetByUserIdAsync(userId);
-                await RemoveCacheAsync(user);
+                cacheKeys.AddRange(GetCacheKeysToRemove(user));
             }
 
             await _repository.UpdateAsync(Q
                 .Set(nameof(User.IsLockedOut), true.ToString())
                 .WhereIn(nameof(User.Id), idList)
+                .CachingRemove(cacheKeys.ToArray())
             );
         }
 
         public async Task UnLockAsync(IList<int> idList)
         {
+            var cacheKeys = new List<string>();
             foreach (var userId in idList)
             {
                 var user = await GetByUserIdAsync(userId);
-                await RemoveCacheAsync(user);
+                cacheKeys.AddRange(GetCacheKeysToRemove(user));
             }
 
             await _repository.UpdateAsync(Q
                 .Set(nameof(User.IsLockedOut), false.ToString())
                 .Set(nameof(User.CountOfFailedLogin), 0)
                 .WhereIn(nameof(User.Id), idList)
+                .CachingRemove(cacheKeys.ToArray())
             );
         }
 
@@ -689,9 +691,8 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
         public async Task<User> DeleteAsync(int userId)
         {
             var user = await GetByUserIdAsync(userId);
-            await RemoveCacheAsync(user);
 
-            await _repository.DeleteAsync(userId);
+            await _repository.DeleteAsync(userId, Q.CachingRemove(GetCacheKeysToRemove(user)));
 
             return user;
         }

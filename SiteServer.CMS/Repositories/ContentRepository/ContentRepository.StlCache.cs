@@ -453,9 +453,9 @@ namespace SiteServer.CMS.Repositories
             return DataProvider.DatabaseRepository.GetIntResult(sqlString) + 1;
         }
 
-        public DataSet GetStlDataSourceChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
+        public async Task<DataSet> GetStlDataSourceCheckedAsync(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
         {
-            return GetStlDataSourceChecked(tableName, channelIdList, startNum, totalNum, orderByString, whereString, others);
+            return await GetStlDataSourceCheckedAsync(tableName, channelIdList, startNum, totalNum, orderByString, whereString, others);
         }
 
         public async Task<int> GetCountCheckedImageAsync(int siteId, int channelId)

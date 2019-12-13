@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
@@ -74,7 +75,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
                 var channelContentIds =
-                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
+                    ChannelContentId.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
 
                 var exportType = request.GetPostString("exportType");
                 var isAllCheckedLevel = request.GetPostBool("isAllCheckedLevel");
@@ -111,9 +112,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
                 if (channelContentIds.Count == 0)
                 {
-                    var count = isAllContents
-                        ? await DataProvider.ContentRepository.GetCountAllAsync(site, channelInfo, adminId)
-                        : await DataProvider.ContentRepository.GetCountAsync(site, channelInfo, adminId);
+                    var ccIds = await DataProvider.ContentRepository.GetChannelContentIdListAsync(site, channelInfo,
+                        adminId, isAllContents);
+                    var count = ccIds.Count();
 
                     var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
                     if (pages == 0) pages = 1;
@@ -124,14 +125,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                         {
                             var offset = site.PageSize * (page - 1);
                             var limit = site.PageSize;
-
-                            var pageContentIds = await DataProvider.ContentRepository.GetChannelContentIdListAsync(site, channelInfo, adminId, isAllContents, offset, limit);
+                            var pageCcIds = ccIds.Skip(offset).Take(limit).ToList();
 
                             var sequence = offset + 1;
 
-                            foreach (var channelContentId in pageContentIds)
+                            foreach (var channelContentId in pageCcIds)
                             {
-                                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
+                                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
                                 if (contentInfo == null) continue;
 
                                 if (!isAllCheckedLevel)

@@ -25,7 +25,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Analysis
             public List<string> NewY { get; set; }
             public List<string> UpdateY { get; set; }
             public List<QueryResultItem> Items { get; set; }
-            public IEnumerable<Option<int>> SiteOptions { get; set; }
+            public IEnumerable<Cascade<int>> SiteOptions { get; set; }
             public int SiteId { get; set; }
         }
     }

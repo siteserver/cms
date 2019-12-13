@@ -14,6 +14,7 @@
   <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="assets/element-ui/theme-chalk/index.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body class="fixed-left widescreen" style="background-color: #eee">
@@ -30,18 +31,8 @@
             <i :class="{'ion-navicon': !isMobileMenu, 'ion-android-close': isMobileMenu}" style="font-size: 28px;color: #fff;"></i>
           </a>
           <ul v-if="isDesktop" id="topMenus" class="navigation-menu">
-            <li v-for="topMenu in topMenus" class="has-submenu">
-              <a :href="getHref(topMenu)" v-on:click="btnTopMenuClick(topMenu, $event)" :target="getTarget(topMenu)" v-html="topMenu.text"></a>
-              <ul v-if="topMenu.hasChildren" class="submenu">
-                <li v-for="parentMenu in topMenu.children" :class="{'has-submenu': parentMenu.children}">
-                  <a :href="getHref(parentMenu)" v-on:click="btnTopMenuClick(parentMenu, $event)" :target="getTarget(parentMenu)" v-html="parentMenu.text"></a>
-                  <ul v-if="parentMenu.hasChildren" class="submenu">
-                    <li v-for="childMenu in parentMenu.children">
-                      <a :href="getHref(childMenu)" v-on:click="btnTopMenuClick(childMenu, $event)" :target="getTarget(childMenu)" v-html="childMenu.text"></a>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
+            <li v-for="topMenu in menus" class="has-submenu">
+              <a href="javascript:;" v-on:click="btnTopMenuClick(topMenu, $event)" v-html="topMenu.text"></a>
             </li>
           </ul>
           <div v-if="isDesktop" class="menu-extras">
@@ -49,6 +40,7 @@
               <li v-if="newVersion" class="has-submenu dropdown">
                 <a href="javascript:;">
                   <i class="ion-email-unread text-warning"></i>
+                  <a v-if="updatePackages > 0" href="plugins/manage.cshtml?pageType=4" class="badge badge-warning" target="right">{{updatePackages}}</a>
                 </a>
                 <div class="submenu card bg-light text-dark" style="width: 19rem; z-index: 11; position: absolute;">
                   <div class="card-body" style="padding-bottom: 0;">
@@ -101,38 +93,43 @@
       <div v-if="isDesktop || isMobileMenu" class="left side-menu" :style="{width: leftMenuWidth}">
         <div id="sidebar" class="sidebar-inner">
           <div id="sidebar-menu">
-            <ul>
-              <li v-if="siteMenus.length > 0" class="text-muted menu-title">站点管理</li>
-              <li v-for="siteMenu in siteMenus" class="has_sub">
-                <a :href="getHref(siteMenu)" v-on:click="btnLeftMenuClick(siteMenu)" :target="getTarget(siteMenu)" :class="{'subdrop': siteMenu === activeParentMenu}">
-                  <i :class="(siteMenu.iconClass ? siteMenu.iconClass : 'ion-star')"></i>
-                  <span v-html="siteMenu.text"></span>
-                  <span v-if="siteMenu.hasChildren" class="menu-arrow"></span>
-                </a>
-                <ul v-if="siteMenu.hasChildren" class="list-unstyled" v-show="siteMenu === activeParentMenu">
-                  <li v-for="childMenu in siteMenu.children" :class="{'active': childMenu === activeChildMenu}">
-                    <a :href="getHref(childMenu)" :target="getTarget(childMenu)" v-on:click="btnLeftMenuClick(childMenu)">
-                      <i :class="childMenu.iconClass"></i> <span v-html="childMenu.text"></span> </a>
-                  </li>
-                </ul>
-              </li>
-              <li v-if="pluginMenus.length > 0" class="text-muted menu-title"> 站点插件 <a v-if="updatePackages > 0" href="plugins/manage.cshtml?pageType=4" class="badge badge-warning" target="right">{{updatePackages}}</a>
-              </li>
-              <li v-for="pluginMenu in pluginMenus" class="has_sub">
-                <a :href="getHref(pluginMenu)" v-on:click="btnLeftMenuClick(pluginMenu)" :target="getTarget(pluginMenu)"
-                  :class="{'subdrop': pluginMenu === activeParentMenu}">
-                  <i :class="(pluginMenu.iconClass ? pluginMenu.iconClass : 'ion-star')"></i>
-                  <span v-html="pluginMenu.text"></span>
-                  <span v-if="pluginMenu.hasChildren" class="menu-arrow"></span>
-                </a>
-                <ul v-if="pluginMenu.hasChildren" class="list-unstyled" v-show="pluginMenu === activeParentMenu">
-                  <li v-for="childMenu in pluginMenu.children" :class="{'active': childMenu === activeChildMenu}">
-                    <a :href="getHref(childMenu)" :target="getTarget(childMenu)" v-on:click="btnLeftMenuClick(childMenu)">
-                      <i :class="childMenu.iconClass"></i> <span v-html="childMenu.text"></span> </a>
-                  </li>
-                </ul>
-              </li>
-              <template v-if="!isDesktop && isMobileMenu" v-for="topMenu in topMenus">
+            <ul v-if="menu">
+              <template v-if="isDesktop && !isMobileMenu">
+                <li v-if="menu.id === 'SiteCurrent'" class="text-muted menu-title">
+                  <el-dropdown>
+                    <span class="el-dropdown-link" style="cursor: pointer;">
+                      {{ menu.text }}<i class="el-icon-arrow-down el-icon--right"></i>
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item>
+                        <a class="el-dropdown-link" :href="siteUrl" target="_blank">访问站点</a>
+                      </el-dropdown-item>
+                      <el-dropdown-item>
+                        <a class="el-dropdown-link" :href="previewUrl" target="_blank">预览站点</a>
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </li>
+                <li v-else class="text-muted menu-title">
+                  {{ menu.text }}
+                </li>
+
+                <li v-for="level1Menu in menu.children" class="has_sub" :class="{'active': level1Menu === activeChildMenu}">
+                  <a :href="getHref(level1Menu)" v-on:click="btnLeftMenuClick(level1Menu)" :target="getTarget(level1Menu)" :class="{'subdrop': level1Menu === activeParentMenu}">
+                    <i :class="(level1Menu.iconClass ? level1Menu.iconClass : 'ion-star')"></i>
+                    <span v-html="level1Menu.text"></span>
+                    <span v-if="level1Menu.hasChildren" class="menu-arrow"></span>
+                  </a>
+                  <ul v-if="level1Menu.hasChildren" class="list-unstyled" v-show="level1Menu === activeParentMenu">
+                    <li v-for="level2Menu in level1Menu.children" :class="{'active': level2Menu === activeChildMenu}">
+                      <a :href="getHref(level2Menu)" :target="getTarget(level2Menu)" v-on:click="btnLeftMenuClick(level2Menu)">
+                        <i :class="level2Menu.iconClass"></i> <span v-html="level2Menu.text"></span> </a>
+                    </li>
+                  </ul>
+                </li>
+              </template>
+
+              <template v-if="!isDesktop && isMobileMenu" v-for="topMenu in menus">
                 <li class="text-muted menu-title" v-html="topMenu.text"></li>
                 <li v-for="parentMenu in topMenu.children" class="has_sub">
                   <a :href="getHref(parentMenu)" v-on:click="btnLeftMenuClick(parentMenu)" :target="getTarget(parentMenu)"
@@ -188,6 +185,7 @@
 <script src="assets/js/apiUtils.js" type="text/javascript"></script>
 <script src="assets/js/utils.js" type="text/javascript"></script>
 <script src="assets/js/compareversion.js" type="text/javascript"></script>
+<script src="assets/element-ui/index.js"></script>
 <script type="text/javascript">
   var apiUrl = '@Sys.InnerApiUrl';
 </script>

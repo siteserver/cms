@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Dto;
 using SiteServer.CMS.Plugin.Impl;
 using Content = SiteServer.Abstractions.Content;
 
@@ -96,7 +97,198 @@ namespace SiteServer.CMS.Core
 	        public const string Fail1 = "终审退稿";
 	    }
 
-        public static List<KeyValuePair<int, string>> GetCheckedLevels(Site site, bool isChecked, int checkedLevel, bool includeFail)
+		public static List<Select<int>> GetCheckedLevelOptions(Site site, bool isChecked, int checkedLevel, bool includeFail)
+		{
+			var checkedLevels = new List<Select<int>>();
+
+			var checkContentLevel = site.CheckContentLevel;
+			if (isChecked)
+			{
+				checkedLevel = checkContentLevel;
+			}
+
+			checkedLevels.Add(new Select<int>(LevelInt.CaoGao, Level.CaoGao));
+			checkedLevels.Add(new Select<int>(LevelInt.DaiShen, Level.DaiShen));
+
+			if (checkContentLevel == 0 || checkContentLevel == 1)
+			{
+				if (isChecked)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass1, Level1.Pass1));
+				}
+			}
+			else if (checkContentLevel == 2)
+			{
+				if (checkedLevel >= 1)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass1, Level2.Pass1));
+				}
+
+				if (isChecked)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass2, Level2.Pass2));
+				}
+			}
+			else if (checkContentLevel == 3)
+			{
+				if (checkedLevel >= 1)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass1, Level3.Pass1));
+				}
+
+				if (checkedLevel >= 2)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass2, Level3.Pass2));
+				}
+
+				if (isChecked)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass3, Level3.Pass3));
+				}
+			}
+			else if (checkContentLevel == 4)
+			{
+				if (checkedLevel >= 1)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass1, Level4.Pass1));
+				}
+
+				if (checkedLevel >= 2)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass2, Level4.Pass2));
+				}
+
+				if (checkedLevel >= 3)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass3, Level4.Pass3));
+				}
+
+				if (isChecked)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass4, Level4.Pass4));
+				}
+			}
+			else if (checkContentLevel == 5)
+			{
+				if (checkedLevel >= 1)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass1, Level5.Pass1));
+				}
+
+				if (checkedLevel >= 2)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass2, Level5.Pass2));
+				}
+
+				if (checkedLevel >= 3)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass3, Level5.Pass3));
+				}
+
+				if (checkedLevel >= 4)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass4, Level5.Pass4));
+				}
+
+				if (isChecked)
+				{
+					checkedLevels.Add(new Select<int>(LevelInt.Pass5, Level5.Pass5));
+				}
+			}
+
+			if (includeFail)
+			{
+				if (checkContentLevel == 1)
+				{
+					if (isChecked)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail1, Level1.Fail1));
+					}
+				}
+				else if (checkContentLevel == 2)
+				{
+					if (checkedLevel >= 1)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail1, Level2.Fail1));
+					}
+
+					if (isChecked)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail2, Level2.Fail2));
+					}
+				}
+				else if (checkContentLevel == 3)
+				{
+					if (checkedLevel >= 1)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail1, Level3.Fail1));
+					}
+
+					if (checkedLevel >= 2)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail2, Level3.Fail2));
+					}
+
+					if (isChecked)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail3, Level3.Fail3));
+					}
+				}
+				else if (checkContentLevel == 4)
+				{
+					if (checkedLevel >= 1)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail1, Level4.Fail1));
+					}
+
+					if (checkedLevel >= 2)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail2, Level4.Fail2));
+					}
+
+					if (checkedLevel >= 3)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail3, Level4.Fail3));
+					}
+
+					if (isChecked)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail4, Level4.Fail4));
+					}
+				}
+				else if (checkContentLevel == 5)
+				{
+					if (checkedLevel >= 1)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail1, Level5.Fail1));
+					}
+
+					if (checkedLevel >= 2)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail2, Level5.Fail2));
+					}
+
+					if (checkedLevel >= 3)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail3, Level5.Fail3));
+					}
+
+					if (checkedLevel >= 4)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail4, Level5.Fail4));
+					}
+
+					if (isChecked)
+					{
+						checkedLevels.Add(new Select<int>(LevelInt.Fail5, Level5.Fail5));
+					}
+				}
+			}
+
+			return checkedLevels;
+		}
+
+		public static List<KeyValuePair<int, string>> GetCheckedLevels(Site site, bool isChecked, int checkedLevel, bool includeFail)
         {
             var checkedLevels = new List<KeyValuePair<int, string>>();
 
@@ -1026,69 +1218,59 @@ namespace SiteServer.CMS.Core
 
             var isChecked = false;
             var checkedLevel = 0;
-            if (site.IsCheckContentLevel == false)
-            {
-                if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheck))
-                {
-                    isChecked = true;
-                }
-            }
-            else
-            {
-                if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel5))
-                {
-                    isChecked = true;
-                }
-                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel4))
-                {
-                    if (site.CheckContentLevel <= 4)
-                    {
-                        isChecked = true;
-                    }
-                    else
-                    {
-                        checkedLevel = 4;
-                    }
-                }
-                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel3))
-                {
-                    if (site.CheckContentLevel <= 3)
-                    {
-                        isChecked = true;
-                    }
-                    else
-                    {
-                        checkedLevel = 3;
-                    }
-                }
-                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel2))
-                {
-                    if (site.CheckContentLevel <= 2)
-                    {
-                        isChecked = true;
-                    }
-                    else
-                    {
-                        checkedLevel = 2;
-                    }
-                }
-                else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel1))
-                {
-                    if (site.CheckContentLevel <= 1)
-                    {
-                        isChecked = true;
-                    }
-                    else
-                    {
-                        checkedLevel = 1;
-                    }
-                }
-                else
-                {
-                    checkedLevel = 0;
-                }
-            }
-            return new KeyValuePair<bool, int>(isChecked, checkedLevel);
+			if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel5))
+			{
+				isChecked = true;
+			}
+			else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel4))
+			{
+				if (site.CheckContentLevel <= 4)
+				{
+					isChecked = true;
+				}
+				else
+				{
+					checkedLevel = 4;
+				}
+			}
+			else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel3))
+			{
+				if (site.CheckContentLevel <= 3)
+				{
+					isChecked = true;
+				}
+				else
+				{
+					checkedLevel = 3;
+				}
+			}
+			else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel2))
+			{
+				if (site.CheckContentLevel <= 2)
+				{
+					isChecked = true;
+				}
+				else
+				{
+					checkedLevel = 2;
+				}
+			}
+			else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel1))
+			{
+				if (site.CheckContentLevel <= 1)
+				{
+					isChecked = true;
+				}
+				else
+				{
+					checkedLevel = 1;
+				}
+			}
+			else
+			{
+				checkedLevel = 0;
+			}
+			return new KeyValuePair<bool, int>(isChecked, checkedLevel);
         }
 
         public static async Task<(bool IsChecked, int UserCheckedLevel)> GetUserCheckLevelAsync(PermissionsImpl permissionsImpl, Site site, int channelId)

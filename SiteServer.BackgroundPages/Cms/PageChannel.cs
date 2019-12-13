@@ -127,7 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
 ");
             }
 
-            if (HasSitePermissions(Constants.WebSitePermissions.Create) ||
+            if (HasSitePermissions(Constants.SitePermissions.CreateChannels) ||
                 HasChannelPermissionsIgnoreChannelId(Constants.ChannelPermissions.CreatePage))
             {
                 builder.Append($@"

@@ -74,7 +74,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var body = request.GetPostObject<Dictionary<string, object>>();
@@ -113,7 +113,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 request.UserLogout();
@@ -142,7 +142,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 if (!await DataProvider.UserRepository.IsExistsAsync(id)) return NotFound();
@@ -186,7 +186,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
@@ -238,7 +238,7 @@ namespace SiteServer.API.Controllers.V1
                 var isAuth = request.IsApiAuthenticated && await 
                              DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeUsers) ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var top = request.GetQueryInt("top", 20);
@@ -322,7 +322,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
@@ -353,7 +353,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
@@ -385,7 +385,7 @@ namespace SiteServer.API.Controllers.V1
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
-                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.SettingsPermissions.User);
+                             await request.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser);
                 if (!isAuth) return Unauthorized();
 
                 var user = await DataProvider.UserRepository.GetByUserIdAsync(id);

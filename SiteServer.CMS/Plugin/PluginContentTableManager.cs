@@ -46,7 +46,7 @@ namespace SiteServer.CMS.Plugin
             }
             else
             {
-                await DataProvider.DatabaseRepository.AlterSystemTableAsync(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
+                await WebConfigUtils.Database.AlterTableAsync(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
             }
 
             await ContentTableCreateOrUpdateStylesAsync(tableName, service.ContentInputStyles);

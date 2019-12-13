@@ -6,6 +6,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Dto.Request;
 using SiteServer.CMS.Dto.Result;
+using SiteServer.CMS.Extensions;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Channels
@@ -24,12 +25,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
         public async Task<Channel> Get([FromUri] SiteRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.WebSitePermissions.Content);
+            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Channels);
 
             var channel = await ChannelManager.GetChannelAsync(request.SiteId, request.SiteId);
             if (channel == null)
             {
-                auth.NotFound(Request);
+                return Request.NotFound<Channel>();
             }
             else
             {
@@ -46,7 +47,10 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
             await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.ChannelPermissions.ChannelAdd);
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-            if (site == null) auth.NotFound(Request);
+            if (site == null)
+            {
+                return Request.NotFound<DefaultResult>();
+            }
 
             //foreach (var channelId in request.ChannelIds)
             //{
@@ -63,12 +67,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
         public async Task<DefaultResult> Taxis([FromBody] ChannelIdsRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.WebSitePermissions.Content);
+            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Channels);
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null)
             {
-                auth.NotFound(Request);
+                return Request.NotFound<DefaultResult>();
             }
 
             foreach (var channelId in request.ChannelIds)
@@ -86,12 +90,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
         public async Task<DefaultResult> Create([FromBody] ChannelIdsRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.WebSitePermissions.Content);
+            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Channels);
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null)
             {
-                auth.NotFound(Request);
+                return Request.NotFound<DefaultResult>();
             }
 
             foreach (var channelId in request.ChannelIds)

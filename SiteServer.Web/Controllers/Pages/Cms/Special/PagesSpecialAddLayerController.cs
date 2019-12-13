@@ -30,7 +30,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
 
                 if (!request.IsAdminLoggin ||
                     !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
-                        Constants.WebSitePermissions.Template))
+                        Constants.SitePermissions.Specials))
                 {
                     return Unauthorized();
                 }
@@ -65,7 +65,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
 
                 if (!request.IsAdminLoggin ||
                     !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
-                        Constants.WebSitePermissions.Template))
+                        Constants.SitePermissions.Specials))
                 {
                     return Unauthorized();
                 }
@@ -133,7 +133,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Special
 
                 if (!request.IsAdminLoggin ||
                     !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
-                        Constants.WebSitePermissions.Template))
+                        Constants.SitePermissions.Specials))
                 {
                     return Unauthorized();
                 }

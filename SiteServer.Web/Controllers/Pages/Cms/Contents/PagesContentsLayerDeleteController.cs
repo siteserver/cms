@@ -29,9 +29,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
                 var channelContentIds =
-                    MinContentInfo.ParseMinContentInfoList(request.GetQueryString("channelContentIds"));
+                    ChannelContentId.ParseMinContentInfoList(request.GetQueryString("channelContentIds"));
 
                 if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents) ||
                     !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         Constants.ChannelPermissions.ContentDelete))
                 {
@@ -80,10 +82,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
                 var channelContentIds =
-                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
+                    ChannelContentId.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
                 var isRetainFiles = request.GetPostBool("isRetainFiles");
 
                 if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents) ||
                     !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         Constants.ChannelPermissions.ContentDelete))
                 {

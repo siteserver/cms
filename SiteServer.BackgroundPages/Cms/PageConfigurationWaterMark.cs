@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(Constants.WebSitePermissions.Configuration);
+            VerifySitePermissions(Constants.SitePermissions.ConfigUpload);
 
             EBooleanUtils.AddListItems(DdlIsWaterMark);
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsWaterMark, Site.IsWaterMark.ToString());

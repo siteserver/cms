@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
+using Datory.Caching;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -18,7 +18,7 @@ namespace SiteServer.CMS.Repositories
         public async Task<Config> GetAsync()
         {
             return await _cache.GetOrCreateAsync(_cacheKey,
-                async options =>
+                async () =>
                 {
                     Config info;
 

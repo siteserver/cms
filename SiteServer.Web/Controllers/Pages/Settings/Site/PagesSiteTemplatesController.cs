@@ -9,7 +9,6 @@ using SiteServer.CMS.Core;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Site
 {
-    
     [RoutePrefix("pages/settings/siteTemplates")]
     public class PagesSiteTemplatesController : ApiController
     {
@@ -18,7 +17,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
         private const string RouteUnZip = "actions/unZip";
         private const string RouteUpload = "actions/upload";
 
-        private IHttpActionResult GetListResult()
+        private async Task<IHttpActionResult> GetListResultAsync(AuthenticatedRequest request)
         {
             var sortedList = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
             var siteTemplateInfoList = new List<SiteTemplateInfo>();
@@ -47,13 +46,16 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             }
 
             var siteTemplateUrl = StringUtils.TrimSlash(PageUtils.GetSiteTemplatesUrl(string.Empty));
+            var siteAddPermission =
+                await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteAdd);
 
             return Ok(new
             {
                 Value = true,
                 SiteTemplateInfoList = siteTemplateInfoList,
                 FileNameList = fileNameList,
-                SiteTemplateUrl = siteTemplateUrl
+                SiteTemplateUrl = siteTemplateUrl,
+                SiteAddPermission = siteAddPermission
             });
         }
 
@@ -64,12 +66,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteTemplates))
                 {
                     return Unauthorized();
                 }
 
-                return GetListResult();
+                return await GetListResultAsync(request);
             }
             catch (Exception ex)
             {
@@ -84,7 +86,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteTemplates))
                 {
                     return Unauthorized();
                 }
@@ -118,7 +120,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteTemplates))
                 {
                     return Unauthorized();
                 }
@@ -130,7 +132,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
 
                 ZipUtils.ExtractZip(zipFilePath, directoryPathToUnZip);
 
-                return GetListResult();
+                return await GetListResultAsync(request);
             }
             catch (Exception ex)
             {
@@ -145,7 +147,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteTemplates))
                 {
                     return Unauthorized();
                 }
@@ -182,7 +184,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteTemplates))
                 {
                     return Unauthorized();
                 }
@@ -216,7 +218,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
 
                 ZipUtils.ExtractZip(localFilePath, directoryPath);
 
-                return GetListResult();
+                return await GetListResultAsync(request);
             }
             catch (Exception ex)
             {

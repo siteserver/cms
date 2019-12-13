@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(Constants.WebSitePermissions.Create);
+            VerifySitePermissions(Constants.SitePermissions.CreateSpecials);
 
             var specialInfoList = DataProvider.SpecialRepository.GetSpecialListAsync(SiteId).GetAwaiter().GetResult();
 

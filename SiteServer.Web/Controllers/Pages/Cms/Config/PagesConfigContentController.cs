@@ -22,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, Constants.WebSitePermissions.Configuration))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, Constants.SitePermissions.ConfigContents))
                 {
                     return Unauthorized();
                 }
@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 var siteId = request.SiteId;
 
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, Constants.WebSitePermissions.Configuration))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId, Constants.SitePermissions.ConfigContents))
                 {
                     return Unauthorized();
                 }
@@ -63,7 +63,6 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 var isContentTitleBreakLine = request.GetPostBool("isContentTitleBreakLine", true);
                 var isContentSubTitleBreakLine = request.GetPostBool("isContentSubTitleBreakLine", true);
                 var isAutoCheckKeywords = request.GetPostBool("isAutoCheckKeywords", true);
-                var isCheckContentLevel = request.GetPostBool("isCheckContentLevel");
                 var checkContentLevel = request.GetPostInt("checkContentLevel");
                 var checkContentDefaultLevel = request.GetPostInt("checkContentDefaultLevel");
 
@@ -88,11 +87,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Config
                 site.IsContentSubTitleBreakLine = isContentSubTitleBreakLine;
                 site.IsAutoCheckKeywords = isAutoCheckKeywords;
 
-                site.IsCheckContentLevel = isCheckContentLevel;
-                if (site.IsCheckContentLevel)
-                {
-                    site.CheckContentLevel = checkContentLevel;
-                }
+                site.CheckContentLevel = checkContentLevel;
                 site.CheckContentDefaultLevel = checkContentDefaultLevel;
 
                 await DataProvider.SiteRepository.UpdateAsync(site);

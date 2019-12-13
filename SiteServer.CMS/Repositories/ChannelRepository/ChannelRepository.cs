@@ -4,10 +4,14 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 using Datory;
+using Datory.Caching;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Dto;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.Repositories
@@ -623,10 +627,12 @@ namespace SiteServer.CMS.Repositories
         public async Task<int> GetSequenceAsync(int siteId, int channelId)
         {
             var channelEntity = await ChannelManager.GetChannelAsync(siteId, channelId);
-            string sqlString =
-                $"SELECT COUNT(*) AS TotalNum FROM siteserver_Channel WHERE SiteId = {siteId} AND ParentId = {channelEntity.ParentId} AND Taxis > (SELECT Taxis FROM siteserver_Channel WHERE Id = {channelId})";
 
-            return DataProvider.DatabaseRepository.GetIntResult(sqlString) + 1;
+            return await _repository.CountAsync(Q
+                .Where(nameof(Channel.SiteId), siteId)
+                .Where(nameof(Channel.ParentId), channelEntity.ParentId)
+                .Where(nameof(Channel.Taxis), ">", channelEntity.Taxis)
+            ) + 1;
         }
 
         public async Task<IEnumerable<int>> GetIdListByTotalNumAsync(List<int> channelIdList, int totalNum, string orderByString, string whereString)
@@ -661,14 +667,16 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 
             var list = new List<int>();
 
-            using (var rdr = ExecuteReader(sqlString))
+            using (var connection = _repository.Database.GetConnection())
             {
+                using var rdr = await connection.ExecuteReaderAsync(sqlString);
                 while (rdr.Read())
                 {
                     list.Add(GetInt(rdr, 0));
                 }
                 rdr.Close();
             }
+
             return list;
         }
 

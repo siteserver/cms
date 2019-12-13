@@ -7,6 +7,9 @@ namespace SiteServer.Abstractions
     public static class ContentAttribute
     {
         public const string Id = nameof(Abstractions.Content.Id);
+        public const string Guid = nameof(Abstractions.Content.Guid);
+        public const string CreatedDate = nameof(Abstractions.Content.CreatedDate);
+        public const string LastModifiedDate = nameof(Abstractions.Content.LastModifiedDate);
         public const string ChannelId = nameof(Abstractions.Content.ChannelId);
         public const string SiteId = nameof(Abstractions.Content.SiteId);
         public const string AddUserName = nameof(Abstractions.Content.AddUserName);
@@ -19,7 +22,7 @@ namespace SiteServer.Abstractions
         public const string Tags = nameof(Abstractions.Content.Tags);
         public const string SourceId = nameof(Abstractions.Content.SourceId);
         public const string ReferenceId = nameof(Abstractions.Content.ReferenceId);
-        public const string Checked = nameof(Abstractions.Content.Checked);
+        public const string IsChecked = nameof(Abstractions.Content.IsChecked);
         public const string CheckedLevel = nameof(Abstractions.Content.CheckedLevel);
         public const string Hits = nameof(Abstractions.Content.Hits);
         public const string HitsByDay = nameof(Abstractions.Content.HitsByDay);
@@ -64,6 +67,9 @@ namespace SiteServer.Abstractions
         public static readonly Lazy<List<string>> AllAttributes = new Lazy<List<string>>(() => new List<string>
         {
             Id,
+            Guid,
+            CreatedDate,
+            LastModifiedDate,
             ChannelId,
             SiteId,
             AddUserName,
@@ -76,7 +82,7 @@ namespace SiteServer.Abstractions
             Tags,
             SourceId,
             ReferenceId,
-            Checked,
+            IsChecked,
             CheckedLevel,
             Hits,
             HitsByDay,
@@ -96,6 +102,9 @@ namespace SiteServer.Abstractions
         public static readonly Lazy<List<string>> MetadataAttributes = new Lazy<List<string>>(() => new List<string>
         {
             Id,
+            Guid,
+            CreatedDate,
+            LastModifiedDate,
             ChannelId,
             SiteId,
             AddUserName,
@@ -108,7 +117,7 @@ namespace SiteServer.Abstractions
             Tags,
             SourceId,
             ReferenceId,
-            Checked,
+            IsChecked,
             CheckedLevel,
             Hits,
             HitsByDay,
@@ -121,7 +130,8 @@ namespace SiteServer.Abstractions
             IsHot,
             IsColor,
             AddDate,
-            LinkUrl
+            LinkUrl,
+            SettingsXml
         });
 
         public static readonly Lazy<List<string>> CalculateAttributes = new Lazy<List<string>>(() => new List<string>

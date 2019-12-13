@@ -12,7 +12,6 @@ var data = {
   isContentTitleBreakLine: null,
   isContentSubTitleBreakLine: null,
   isAutoCheckKeywords: null,
-  isCheckContentLevel: null,
   checkContentLevel: null,
   checkContentDefaultLevel: null
 };
@@ -33,9 +32,8 @@ var methods = {
       $this.isContentTitleBreakLine = res.config.isContentTitleBreakLine;
       $this.isContentSubTitleBreakLine = res.config.isContentSubTitleBreakLine;
       $this.isAutoCheckKeywords = res.config.isAutoCheckKeywords;
-      $this.isCheckContentLevel = res.config.isCheckContentLevel;
 
-      $this.checkContentLevel = $this.isCheckContentLevel ? res.config.checkContentLevel : 1;
+      $this.checkContentLevel = res.config.checkContentLevel;
       $this.checkContentDefaultLevel = res.config.checkContentDefaultLevel;
 
       $this.pageType = 'list';
@@ -46,8 +44,6 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    $this.isCheckContentLevel = $this.checkContentLevel > 1;
-
     utils.loading(true);
     $api.post({
       isSaveImageInTextEditor: $this.isSaveImageInTextEditor,
@@ -56,7 +52,6 @@ var methods = {
       isContentTitleBreakLine: $this.isContentTitleBreakLine,
       isContentSubTitleBreakLine: $this.isContentSubTitleBreakLine,
       isAutoCheckKeywords: $this.isAutoCheckKeywords,
-      isCheckContentLevel: $this.isCheckContentLevel,
       checkContentLevel: $this.checkContentLevel,
       checkContentDefaultLevel: $this.checkContentDefaultLevel
     }, function (err, res) {

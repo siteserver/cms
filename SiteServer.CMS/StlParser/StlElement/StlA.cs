@@ -130,8 +130,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             string channelName, int upLevel, int topLevel, bool removeTarget, string href, string queryString,
             string host, Dictionary<string, string> attributes)
         {
-            string htmlId;
-            attributes.TryGetValue("id", out htmlId);
+            attributes.TryGetValue("id", out var htmlId);
 
             if (!string.IsNullOrEmpty(htmlId) && !string.IsNullOrEmpty(contextInfo.ContainerClientId))
             {

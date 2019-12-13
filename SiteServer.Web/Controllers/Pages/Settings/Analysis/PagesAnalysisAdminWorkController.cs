@@ -23,7 +23,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Analysis
         public async Task<QueryResult> List([FromBody] QueryRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSettingsPermissions(Request, Constants.SettingsPermissions.Analysis);
+            await auth.CheckSettingsPermissions(Request, Constants.AppPermissions.SettingsAnalysisAdminWork);
 
             var siteId = request.SiteId;
             var dateFrom = TranslateUtils.ToDateTime(request.DateFrom);

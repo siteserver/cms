@@ -7,6 +7,7 @@ using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
+using Datory;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Utility
 {
@@ -23,7 +24,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Utility))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUtilityParameters))
                 {
                     return Unauthorized();
                 }

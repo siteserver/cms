@@ -342,8 +342,12 @@ body.fixed-left .side-menu.left {
   border-top: 0;
 }
 
-#sidebar-menu ul ul li.active a {
+#sidebar-menu ul li.active a, #sidebar-menu ul ul li.active a {
   background: #ddd;
+  color: #00b19d;
+}
+
+#sidebar-menu ul li.active a i, #sidebar-menu ul ul li.active a i{
   color: #00b19d;
 }
 

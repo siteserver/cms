@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(Constants.WebSitePermissions.Template);
+            VerifySitePermissions(Constants.SitePermissions.TemplatesMatch);
 
             LbChannelTemplateId.Attributes.Add("onFocus", "$('#LbContentTemplateId option:selected').removeAttr('selected')");
             LbContentTemplateId.Attributes.Add("onFocus", "$('#LbChannelTemplateId option:selected').removeAttr('selected')");

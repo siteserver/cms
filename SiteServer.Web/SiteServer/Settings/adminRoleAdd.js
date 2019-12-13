@@ -12,9 +12,9 @@ var data = {
   checkedPermissions: null,
   systemCheckAll: false,
   isSystemIndeterminate: true,
-  siteInfoList: null,
+  siteList: null,
   checkedSiteIdList: null,
-  siteInfo: null,
+  site: null,
   
   permissionInfo: null
 };
@@ -41,15 +41,15 @@ var methods = {
           $this.checkedPermissions.push(res.permissions[i].name)
         }
       }
-      $this.siteInfoList = res.siteInfoList;
+      $this.siteList = res.siteList;
       $this.checkedSiteIdList = res.checkedSiteIdList || [];
 
       for (var i = 0; i < res.sitePermissionsList.length; i++){
         var permissionInfo = $this.getPermissionInfo(res.sitePermissionsList[i]);
-        for (var j = 0; j < res.siteInfoList.length; j++){
-          var siteInfo = res.siteInfoList[j];
-          if (siteInfo.id === permissionInfo.siteId) {
-            siteInfo.permissionInfo = permissionInfo;
+        for (var j = 0; j < res.siteList.length; j++){
+          var site = res.siteList[j];
+          if (site.id === permissionInfo.siteId) {
+            site.permissionInfo = permissionInfo;
           }
         }
       }
@@ -143,10 +143,10 @@ var methods = {
     };
   },
 
-  btnPermissionClick: function(siteInfo) {
-    this.siteInfo = siteInfo;
-    if (this.siteInfo.permissionInfo) {
-      this.permissionInfo = this.siteInfo.permissionInfo;
+  btnPermissionClick: function(site) {
+    this.site = site;
+    if (this.site.permissionInfo) {
+      this.permissionInfo = this.site.permissionInfo;
       this.pageType = 'permissions';
       return;
     }
@@ -154,14 +154,14 @@ var methods = {
     utils.loading(true);
     var $this = this;
 
-    $api.getAt(this.siteInfo.id, {
+    $api.getAt(this.site.id, {
       roleId: $roleId
     }, function (err, res) {
       utils.loading(false);
       if (err || !res || !res.value) return;
 
-      $this.siteInfo.permissionInfo = $this.getPermissionInfo(res);
-      $this.permissionInfo = $this.siteInfo.permissionInfo;
+      $this.site.permissionInfo = $this.getPermissionInfo(res);
+      $this.permissionInfo = $this.site.permissionInfo;
       $this.pageType = 'permissions';
     });
   },
@@ -250,14 +250,14 @@ var methods = {
     utils.loading(true);
 
     var sitePermissions = [];
-    for (var i = 0; i < this.siteInfoList.length; i++){
-      var siteInfo = this.siteInfoList[i];
-      if (siteInfo.permissionInfo) {
+    for (var i = 0; i < this.siteList.length; i++){
+      var site = this.siteList[i];
+      if (site.permissionInfo) {
         sitePermissions.push({
-          siteId: siteInfo.id,
-          channelIdCollection: _.join(siteInfo.permissionInfo.checkedChannelIdList, ','),
-          channelPermissions: _.join(siteInfo.permissionInfo.checkedChannelPermissions, ','),
-          websitePermissions: _.join(_.union(siteInfo.permissionInfo.checkedSitePermissions, siteInfo.permissionInfo.checkedPluginPermissions), ','),
+          siteId: site.id,
+          channelIdCollection: _.join(site.permissionInfo.checkedChannelIdList, ','),
+          channelPermissions: _.join(site.permissionInfo.checkedChannelPermissions, ','),
+          websitePermissions: _.join(_.union(site.permissionInfo.checkedSitePermissions, site.permissionInfo.checkedPluginPermissions), ','),
         });
       }
     }
@@ -327,8 +327,8 @@ var methods = {
   },
 
   btnSubmitClick: function () {
-    if (this.checkedSiteIdList.indexOf(this.siteInfo.id) === -1) {
-      this.checkedSiteIdList.push(this.siteInfo.id);
+    if (this.checkedSiteIdList.indexOf(this.site.id) === -1) {
+      this.checkedSiteIdList.push(this.site.id);
     }
     this.pageType = 'role';
   },

@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(Constants.WebSitePermissions.Configuration);
+            VerifySitePermissions(Constants.SitePermissions.ConfigTableStyles);
 
             RptContents.DataSource = DataProvider.RelatedFieldRepository.GetRelatedFieldListAsync(SiteId).GetAwaiter().GetResult();
             RptContents.ItemDataBound += RptContents_ItemDataBound;

@@ -25,20 +25,7 @@ namespace SiteServer.CMS.Repositories
     {
         private const int TaxisIsTopStartValue = 2000000000;
 
-        private static string MinListColumns { get; } = $"{nameof(IContentMin.Id)}, {nameof(IContentMin.ChannelId)}, {nameof(IContentMin.IsTop)}, {nameof(IContentMin.AddDate)}, {nameof(IContentMin.LastEditDate)}, {nameof(IContentMin.Taxis)}, {nameof(IContentMin.Hits)}, {nameof(IContentMin.HitsByDay)}, {nameof(IContentMin.HitsByWeek)}, {nameof(IContentMin.HitsByMonth)}";
-
-        private static string[] MinColumns { get; } = {
-            nameof(IContentMin.Id),
-            nameof(IContentMin.ChannelId),
-            nameof(IContentMin.IsTop),
-            nameof(IContentMin.AddDate),
-            nameof(IContentMin.LastEditDate),
-            nameof(IContentMin.Taxis),
-            nameof(IContentMin.Hits),
-            nameof(IContentMin.HitsByDay),
-            nameof(IContentMin.HitsByWeek),
-            nameof(IContentMin.HitsByMonth)
-        };
+        private static string MinListColumns { get; } = $"{nameof(Content.Id)}, {nameof(Content.ChannelId)}, {nameof(Content.IsTop)}, {nameof(Content.AddDate)}, {nameof(Content.LastEditDate)}, {nameof(Content.Taxis)}, {nameof(Content.Hits)}, {nameof(Content.HitsByDay)}, {nameof(Content.HitsByWeek)}, {nameof(Content.HitsByMonth)}";
 
         public static string GetContentTableName(int siteId)
         {
@@ -173,11 +160,6 @@ namespace SiteServer.CMS.Repositories
                     Reasons = reasons
                 });
             }
-
-            foreach (var contentId in contentIdList)
-            {
-                await RemoveEntityCacheAsync(repository, contentId);
-            }
         }
 
         public async Task SetAutoPageContentToSiteAsync(Site site)
@@ -200,9 +182,8 @@ namespace SiteServer.CMS.Repositories
                     await repository.UpdateAsync(Q
                         .Set(ContentAttribute.Content, content)
                         .Where(ContentAttribute.Id, contentId)
+                        .CachingRemove(GetCacheKey(tableName, contentId))
                     );
-
-                    await RemoveEntityCacheAsync(repository, contentId);
                 }
             }
         }
@@ -212,9 +193,11 @@ namespace SiteServer.CMS.Repositories
             if (string.IsNullOrEmpty(tableName)) return;
 
             var repository = GetRepository(tableName);
+
+            var cacheKeysToRemove = new List<string>();
             foreach (var contentId in contentIdList)
             {
-                await RemoveEntityCacheAsync(repository, contentId);
+                cacheKeysToRemove.Add(GetCacheKey(tableName, contentId));
             }
 
             var referenceIdList = await GetReferenceIdListAsync(tableName, contentIdList);
@@ -229,6 +212,7 @@ namespace SiteServer.CMS.Repositories
                     .SetRaw("ChannelId = -ChannelId")
                     .Where(ContentAttribute.SiteId, siteId)
                     .WhereIn(ContentAttribute.Id, contentIdList)
+                    .CachingRemove(cacheKeysToRemove.ToArray())
                 );
             }
         }
@@ -239,9 +223,10 @@ namespace SiteServer.CMS.Repositories
 
             var contentIdList = await GetContentIdListAsync(tableName, channelId);
             var repository = GetRepository(tableName);
+            var cacheKeys = new List<string>();
             foreach (var contentId in contentIdList)
             {
-                await RemoveEntityCacheAsync(repository, contentId);
+                cacheKeys.Add(GetCacheKey(tableName, contentId));
             }
 
             var referenceIdList = await GetReferenceIdListAsync(tableName, contentIdList);
@@ -256,6 +241,7 @@ namespace SiteServer.CMS.Repositories
                     .SetRaw("ChannelId = -ChannelId")
                     .Where(ContentAttribute.SiteId, siteId)
                     .Where(ContentAttribute.ChannelId, channelId)
+                    .CachingRemove(cacheKeys.ToArray())
                 );
             }
         }
@@ -277,11 +263,10 @@ namespace SiteServer.CMS.Repositories
             if (string.IsNullOrEmpty(tableName) || contentId <= 0) return;
 
             var repository = GetRepository(tableName);
-            await RemoveEntityCacheAsync(repository, contentId);
 
             await ContentTagUtils.RemoveTagsAsync(siteId, contentId);
 
-            await repository.DeleteAsync(contentId);
+            await repository.DeleteAsync(contentId, Q.CachingRemove(GetCacheKey(tableName, contentId)));
         }
 
         private async Task DeleteReferenceContentsAsync(int siteId, int channelId, string tableName, IEnumerable<int> contentIdList)
@@ -289,9 +274,10 @@ namespace SiteServer.CMS.Repositories
             if (string.IsNullOrEmpty(tableName) || contentIdList == null) return;
 
             var repository = GetRepository(tableName);
+            var cacheKeys = new List<string>();
             foreach (var contentId in contentIdList)
             {
-                await RemoveEntityCacheAsync(repository, contentId);
+                cacheKeys.Add(GetCacheKey(tableName, contentId));
             }
 
             await ContentTagUtils.RemoveTagsAsync(siteId, contentIdList);
@@ -300,6 +286,7 @@ namespace SiteServer.CMS.Repositories
                 .Where(ContentAttribute.SiteId, siteId)
                 .Where(ContentAttribute.ReferenceId, ">", 0)
                 .WhereIn(ContentAttribute.Id, contentIdList)
+                .CachingRemove(cacheKeys.ToArray())
             );
         }
 
@@ -328,9 +315,8 @@ namespace SiteServer.CMS.Repositories
                     .Set(nameof(Content.Taxis), taxis++)
                     .Set(nameof(Content.IsTop), isTop)
                     .Where(nameof(Content.Id), id)
+                    .CachingRemove(GetCacheKey(tableName, id))
                 );
-
-                await RemoveEntityCacheAsync(repository, id);
             }
         }
 
@@ -360,17 +346,16 @@ namespace SiteServer.CMS.Repositories
 
             if (higherId == 0) return false;
 
-            await RemoveEntityCacheAsync(repository, contentId);
-            await RemoveEntityCacheAsync(repository, higherId);
-
             await repository.UpdateAsync(Q
                 .Set(ContentAttribute.Taxis, higherTaxis)
                 .Where(ContentAttribute.Id, contentId)
+                .CachingRemove(GetCacheKey(tableName, contentId))
             );
 
             await repository.UpdateAsync(Q
                 .Set(ContentAttribute.Taxis, taxis)
                 .Where(ContentAttribute.Id, higherId)
+                .CachingRemove(GetCacheKey(tableName, higherId))
             );
 
             return true;
@@ -402,17 +387,16 @@ namespace SiteServer.CMS.Repositories
 
             if (lowerId == 0) return false;
 
-            await RemoveEntityCacheAsync(repository, contentId);
-            await RemoveEntityCacheAsync(repository, lowerId);
-
             await repository.UpdateAsync(Q
                 .Set(ContentAttribute.Taxis, lowerTaxis)
                 .Where(ContentAttribute.Id, contentId)
+                .CachingRemove(GetCacheKey(tableName, contentId))
             );
 
             await repository.UpdateAsync(Q
                 .Set(ContentAttribute.Taxis, taxis)
                 .Where(ContentAttribute.Id, lowerId)
+                .CachingRemove(GetCacheKey(tableName, lowerId))
             );
 
             return true;
@@ -474,19 +458,18 @@ namespace SiteServer.CMS.Repositories
                 await repository.UpdateAsync(Q
                     .Set(ContentAttribute.GroupNameCollection, content.GroupNameCollection)
                     .Where(nameof(Content.Id), contentId)
+                    .CachingRemove(GetCacheKey(tableName, contentId))
                 );
-
-                await RemoveEntityCacheAsync(repository, contentId);
             }
         }
 
         public async Task AddDownloadsAsync(string tableName, int channelId, int contentId)
         {
             var repository = GetRepository(tableName);
-            await RemoveEntityCacheAsync(repository, contentId);
 
             await repository.IncrementAsync(ContentAttribute.Downloads, Q
                 .Where(ContentAttribute.Id, contentId)
+                .CachingRemove(GetCacheKey(tableName, contentId))
             );
         }
 
@@ -497,15 +480,6 @@ namespace SiteServer.CMS.Repositories
                 .Select(ContentAttribute.Id)
                 .Where(ContentAttribute.ChannelId, ">", 0)
                 .WhereIn(ContentAttribute.ReferenceId, contentIdList)
-            );
-        }
-
-        public async Task<int> GetTotalHitsAsync(string tableName, int siteId)
-        {
-            var repository = GetRepository(tableName);
-            return await repository.SumAsync(ContentAttribute.Hits, Q
-                .Where(nameof(Content.IsChecked), true.ToString())
-                .Where(ContentAttribute.SiteId, siteId)
             );
         }
 
@@ -710,15 +684,19 @@ group by tmp.userName";
             content.LastEditDate = DateTime.Now;
 
             var repository = GetRepository(tableName);
-            await repository.UpdateAsync(content);
+            var cacheKey = GetCacheKey(tableName, content.Id);
+            await repository.UpdateAsync(content, Q.CachingRemove(cacheKey));
         }
 
         public async Task UpdateAsync(string tableName, int contentId, string name, string value)
         {
             var repository = GetRepository(tableName);
-            await RemoveEntityCacheAsync(repository, contentId);
 
-            await repository.UpdateAsync(Q.Set(name, value).Where(ContentAttribute.Id, contentId));
+            await repository.UpdateAsync(Q
+                .Set(name, value)
+                .Where(ContentAttribute.Id, contentId)
+                .CachingRemove(GetCacheKey(tableName, contentId))
+            );
         }
 
         public async Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, int channelId, EScopeType scope, DateTime begin, DateTime end, string userName)
@@ -787,7 +765,7 @@ group by tmp.userName";
             return list.Select(o => (Math.Abs(o.ChannelId), o.Id)).ToList();
         }
 
-        private DataSet GetStlDataSourceChecked(string tableName, List<int> channelIdList, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
+        private async Task<DataSet> GetStlDataSourceCheckedAsync(string tableName, List<int> channelIdList, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
@@ -797,7 +775,7 @@ group by tmp.userName";
 
             if (others != null && others.Count > 0)
             {
-                var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
+                var columnNameList = await TableColumnManager.GetTableColumnNameListAsync(tableName);
 
                 foreach (var attributeName in others.AllKeys)
                 {
@@ -1017,85 +995,101 @@ group by tmp.userName";
             return GetContentIdListChecked(tableName, channelId, 0, orderByFormatString, whereString);
         }
 
-        public async Task<(List<Tuple<int, int>> Tuples, int TotalCount)> ApiGetContentIdListBySiteIdAsync(string tableName, int siteId, ApiContentsParameters parameters)
+        public async Task<IEnumerable<ChannelContentId>> GetChannelContentIdListAsync(string tableName, Query query)
         {
-            var list = new List<Content>();
-
-            var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} > 0 AND {nameof(Content.IsChecked)} = '{true}'";
-            if (parameters.ChannelIds.Count > 0)
-            {
-                whereString += $" AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ObjectCollectionToString(parameters.ChannelIds)})";
-            }
-            if (!string.IsNullOrEmpty(parameters.ChannelGroup))
-            {
-                var channelIdList = await ChannelManager.GetChannelIdListAsync(siteId, parameters.ChannelGroup);
-                if (channelIdList.Count > 0)
-                {
-                    whereString += $" AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ObjectCollectionToString(channelIdList)})";
-                }
-            }
-            if (!string.IsNullOrEmpty(parameters.ContentGroup))
-            {
-                var contentGroup = parameters.ContentGroup;
-                whereString += $" AND ({ContentAttribute.GroupNameCollection} = '{AttackUtils.FilterSql(contentGroup)}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, contentGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + contentGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + contentGroup)})";
-            }
-            if (!string.IsNullOrEmpty(parameters.Tag))
-            {
-                var tag = parameters.Tag;
-                whereString += $" AND ({ContentAttribute.Tags} = '{AttackUtils.FilterSql(tag)}' OR {SqlUtils.GetInStr(ContentAttribute.Tags, tag + ",")} OR {SqlUtils.GetInStr(ContentAttribute.Tags, "," + tag + ",")} OR {SqlUtils.GetInStr(ContentAttribute.Tags, "," + tag)})";
-            }
-
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, siteId);
-            var orderString = GetOrderString(channelInfo, AttackUtils.FilterSql(parameters.OrderBy), false);
-            var dbArgs = new Dictionary<string, object>();
-
-            if (parameters.QueryString != null && parameters.QueryString.Count > 0)
-            {
-                var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
-
-                foreach (string attributeName in parameters.QueryString)
-                {
-                    if (!StringUtils.ContainsIgnoreCase(columnNameList, attributeName)) continue;
-
-                    var value = parameters.QueryString[attributeName];
-
-                    if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.IsChecked)) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
-                    {
-                        whereString += $" AND {attributeName} = '{TranslateUtils.ToBool(value)}'";
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Id) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.ReferenceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.SourceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.CheckedLevel))
-                    {
-                        whereString += $" AND {attributeName} = {TranslateUtils.ToInt(value)}";
-                    }
-                    else if (parameters.Likes.Contains(attributeName))
-                    {
-                        whereString += $" AND {attributeName} LIKE '%{AttackUtils.FilterSql(value)}%'";
-                    }
-                    else
-                    {
-                        whereString += $" AND {attributeName} = @{attributeName}";
-                        dbArgs.Add(attributeName, value);
-                    }
-                }
-            }
-
-            var totalCount = DataProvider.DatabaseRepository.GetPageTotalCount(tableName, whereString, dbArgs);
-            if (totalCount > 0 && parameters.Skip < totalCount)
-            {
-                var sqlString = DataProvider.DatabaseRepository.GetPageSqlString(tableName, MinListColumns, whereString, orderString, parameters.Skip, parameters.Top);
-
-                using var connection = _db.GetConnection();
-                list = connection.Query<Content>(sqlString, dbArgs).ToList();
-            }
-
-            var tupleList = new List<Tuple<int, int>>();
-            foreach (var contentInfo in list)
-            {
-                tupleList.Add(new Tuple<int, int>(contentInfo.ChannelId, contentInfo.Id));
-            }
-
-            return (tupleList, totalCount);
+            var repository = GetRepository(tableName);
+            return await repository.GetAllAsync<ChannelContentId>(query);
         }
+
+        public async Task<int> GetTotalCountAsync(string tableName, Query query)
+        {
+            var repository = GetRepository(tableName);
+            return await repository.CountAsync(query);
+        }
+
+        //public async Task<(List<ChannelContentId> ChannelContentIds, int TotalCount)> GetChannelContentIdListBySiteIdAsync(string tableName, int siteId, ApiContentsParameters parameters)
+        //{
+        //    var list = new List<Content>();
+
+        //    var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} > 0 AND {nameof(Content.IsChecked)} = '{true}'";
+        //    if (parameters.ChannelIds.Count > 0)
+        //    {
+        //        whereString += $" AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ObjectCollectionToString(parameters.ChannelIds)})";
+        //    }
+        //    if (!string.IsNullOrEmpty(parameters.ChannelGroup))
+        //    {
+        //        var channelIdList = await ChannelManager.GetChannelIdListAsync(siteId, parameters.ChannelGroup);
+        //        if (channelIdList.Count > 0)
+        //        {
+        //            whereString += $" AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ObjectCollectionToString(channelIdList)})";
+        //        }
+        //    }
+        //    if (!string.IsNullOrEmpty(parameters.ContentGroup))
+        //    {
+        //        var contentGroup = parameters.ContentGroup;
+        //        whereString += $" AND ({ContentAttribute.GroupNameCollection} = '{AttackUtils.FilterSql(contentGroup)}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, contentGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + contentGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + contentGroup)})";
+        //    }
+        //    if (!string.IsNullOrEmpty(parameters.Tag))
+        //    {
+        //        var tag = parameters.Tag;
+        //        whereString += $" AND ({ContentAttribute.Tags} = '{AttackUtils.FilterSql(tag)}' OR {SqlUtils.GetInStr(ContentAttribute.Tags, tag + ",")} OR {SqlUtils.GetInStr(ContentAttribute.Tags, "," + tag + ",")} OR {SqlUtils.GetInStr(ContentAttribute.Tags, "," + tag)})";
+        //    }
+
+        //    var channelInfo = await ChannelManager.GetChannelAsync(siteId, siteId);
+        //    var orderString = GetOrderString(channelInfo, AttackUtils.FilterSql(parameters.OrderBy), false);
+        //    var dbArgs = new Dictionary<string, object>();
+
+        //    if (parameters.QueryString != null && parameters.QueryString.Count > 0)
+        //    {
+        //        var columnNameList = await TableColumnManager.GetTableColumnNameListAsync(tableName);
+
+        //        foreach (string attributeName in parameters.QueryString)
+        //        {
+        //            if (!StringUtils.ContainsIgnoreCase(columnNameList, attributeName)) continue;
+
+        //            var value = parameters.QueryString[attributeName];
+
+        //            if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.IsChecked)) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
+        //            {
+        //                whereString += $" AND {attributeName} = '{TranslateUtils.ToBool(value)}'";
+        //            }
+        //            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Id) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.ReferenceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.SourceId) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.CheckedLevel))
+        //            {
+        //                whereString += $" AND {attributeName} = {TranslateUtils.ToInt(value)}";
+        //            }
+        //            else if (parameters.Likes.Contains(attributeName))
+        //            {
+        //                whereString += $" AND {attributeName} LIKE '%{AttackUtils.FilterSql(value)}%'";
+        //            }
+        //            else
+        //            {
+        //                whereString += $" AND {attributeName} = @{attributeName}";
+        //                dbArgs.Add(attributeName, value);
+        //            }
+        //        }
+        //    }
+
+        //    var totalCount = DataProvider.DatabaseRepository.GetPageTotalCount(tableName, whereString, dbArgs);
+        //    if (totalCount > 0 && parameters.Skip < totalCount)
+        //    {
+        //        var sqlString = DataProvider.DatabaseRepository.GetPageSqlString(tableName, MinListColumns, whereString, orderString, parameters.Skip, parameters.Top);
+
+        //        using var connection = _db.GetConnection();
+        //        list = connection.Query<Content>(sqlString, dbArgs).ToList();
+        //    }
+
+        //    var tupleList = new List<ChannelContentId>();
+        //    foreach (var contentInfo in list)
+        //    {
+        //        tupleList.Add(new ChannelContentId
+        //        {
+        //            ChannelId = contentInfo.ChannelId,
+        //            Id = contentInfo.Id
+        //        });
+        //    }
+
+        //    return (tupleList, totalCount);
+        //}
 
         public async Task<(IList<(int, int)> List, int TotalCount)> ApiGetContentIdListByChannelIdAsync(string tableName, int siteId, int channelId, int top, int skip, string like, string orderBy, NameValueCollection queryString)
         {
@@ -1111,7 +1105,7 @@ group by tmp.userName";
 
             if (queryString != null && queryString.Count > 0)
             {
-                var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
+                var columnNameList = await TableColumnManager.GetTableColumnNameListAsync(tableName);
 
                 foreach (string attributeName in queryString)
                 {
@@ -1149,17 +1143,6 @@ group by tmp.userName";
             }
 
             return (retVal, totalCount);
-        }
-
-        public string GetSelectCommandByHitsAnalysis(string tableName, int siteId)
-        {
-            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
-
-            var whereString = new StringBuilder();
-            whereString.Append($"AND IsChecked = '{true}' AND SiteId = {siteId} AND Hits > 0");
-            whereString.Append(orderByString);
-
-            return DataProvider.DatabaseRepository.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
         public async Task<string> GetWhereStringByStlSearchAsync(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)
@@ -1277,7 +1260,7 @@ group by tmp.userName";
                 var value = StringUtils.Trim(form[key]);
                 if (string.IsNullOrEmpty(value)) continue;
 
-                var columnInfo = TableColumnManager.GetTableColumnInfo(tableName, key);
+                var columnInfo = await TableColumnManager.GetTableColumnInfoAsync(tableName, key);
 
                 if (columnInfo != null && (columnInfo.DataType == DataType.VarChar || columnInfo.DataType == DataType.Text))
                 {
@@ -1323,7 +1306,7 @@ group by tmp.userName";
                 }
             }
 
-            return GetSqlStringByCondition(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isTrashContent);
+            return await GetSqlStringByConditionAsync(tableName, siteId, list, searchType, keyword, dateFrom, dateTo, checkedState, isTrashContent);
         }
 
         public string GetSqlStringByContentGroup(string tableName, string contentGroupName, int siteId)
@@ -1369,12 +1352,12 @@ group by tmp.userName";
             return string.Empty;
         }
 
-        private string GetSqlStringByCondition(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isTrashContent)
+        private async Task<string> GetSqlStringByConditionAsync(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isTrashContent)
         {
-            return GetSqlStringByCondition(tableName, siteId, channelIdList, searchType, keyword, dateFrom, dateTo, checkedState, isTrashContent, false, string.Empty);
+            return await GetSqlStringByConditionAsync(tableName, siteId, channelIdList, searchType, keyword, dateFrom, dateTo, checkedState, isTrashContent, false, string.Empty);
         }
 
-        private string GetSqlStringByCondition(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isTrashContent, bool isWritingOnly, string userNameOnly)
+        private async Task<string> GetSqlStringByConditionAsync(string tableName, int siteId, List<int> channelIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isTrashContent, bool isWritingOnly, string userNameOnly)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
@@ -1417,7 +1400,7 @@ group by tmp.userName";
             }
             else if (!string.IsNullOrEmpty(keyword))
             {
-                var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
+                var columnNameList = await TableColumnManager.GetTableColumnNameListAsync(tableName);
 
                 if (StringUtils.ContainsIgnoreCase(columnNameList, searchType))
                 {
@@ -1575,59 +1558,16 @@ group by tmp.userName";
             return $"WHERE {StringUtils.Join(whereList, " AND ")}";
         }
 
-        private string GetCreateContentTableSqlString(string tableName, List<TableColumn> tableColumns)
-        {
-            var sqlBuilder = new StringBuilder(DataProvider.DatabaseRepository.GetCreateTableSqlString(tableName, tableColumns));
-            sqlBuilder.AppendLine().Append("GO");
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                sqlBuilder.Append($@"
-CREATE INDEX `IX_{tableName}` ON `{tableName}`(`{ContentAttribute.IsTop}` DESC, `{ContentAttribute.Taxis}` DESC, `{ContentAttribute.Id}` DESC)
-GO
-CREATE INDEX `IX_{tableName}_Taxis` ON `{tableName}`(`{ContentAttribute.Taxis}` DESC)
-GO");
-            }
-            else
-            {
-                sqlBuilder.Append($@"
-CREATE INDEX IX_{tableName} ON {tableName}({ContentAttribute.IsTop} DESC, {ContentAttribute.Taxis} DESC, {ContentAttribute.Id} DESC)
-GO
-CREATE INDEX IX_{tableName}_Taxis ON {tableName}({ContentAttribute.Taxis} DESC)
-GO");
-            }
-
-            return sqlBuilder.ToString();
-        }
-
         public async Task CreateContentTableAsync(string tableName, List<TableColumn> columnInfoList)
         {
             var isDbExists = await WebConfigUtils.Database.IsTableExistsAsync(tableName);
             if (isDbExists) return;
 
-            var createTableSqlString = GetCreateContentTableSqlString(tableName, columnInfoList);
-
-            using var conn = _db.GetConnection();
-            conn.Open();
-            using var trans = conn.BeginTransaction();
-            try
-            {
-                var reader = new System.IO.StringReader(createTableSqlString);
-                string sql;
-                while (null != (sql = SqlUtils.ReadNextStatementFromStream(reader)))
-                {
-                    ExecuteNonQuery(trans, sql.Trim());
-                }
-
-                TableColumnManager.ClearCache();
-
-                trans.Commit();
-            }
-            catch
-            {
-                trans.Rollback();
-                throw;
-            }
+            await WebConfigUtils.Database.CreateTableAsync(tableName, columnInfoList);
+            await WebConfigUtils.Database.CreateIndexAsync(tableName, $"IX_{tableName}",
+                $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+            await WebConfigUtils.Database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis",
+                $"{ContentAttribute.Taxis} DESC");
         }
 
         private string GetOrderString(Channel channel, string orderBy, bool isAllContents)
@@ -1739,19 +1679,6 @@ GO");
             {
                 query.OrderByRandom(StringUtils.Guid());
             }
-        }
-
-        private async Task<IEnumerable<Content>> GetContentListAsync(Repository<Content> repository, Query query)
-        {
-            return await repository.GetAllAsync(query);
-        }
-
-        private async Task<IEnumerable<IContentMin>> GetContentMinListAsync(string tableName, Query query)
-        {
-            var repository = GetRepository(tableName);
-            var q = query.Clone();
-            q.Select(MinColumns);
-            return await repository.GetAllAsync<ContentMin>(q);
         }
     }
 }

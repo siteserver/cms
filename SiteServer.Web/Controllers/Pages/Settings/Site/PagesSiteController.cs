@@ -22,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSite))
                 {
                     return Unauthorized();
                 }
@@ -68,7 +68,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSite))
                 {
                     return Unauthorized();
                 }
@@ -119,7 +119,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSite))
                 {
                     return Unauthorized();
                 }
@@ -156,7 +156,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     }
                     else
                     {
-                        await DataProvider.DatabaseRepository.AlterSystemTableAsync(tableName, DataProvider.ContentRepository.GetDefaultTableColumns(tableName));
+                        await WebConfigUtils.Database.AlterTableAsync(tableName, DataProvider.ContentRepository.GetDefaultTableColumns(tableName));
                     }
                 }
 

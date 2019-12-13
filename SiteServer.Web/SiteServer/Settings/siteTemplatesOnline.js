@@ -1,4 +1,6 @@
-﻿var data = {
+﻿var $url = '/pages/settings/siteTemplatesOnline';
+
+var data = {
   pageLoad: false,
   pageAlert: null,
   page: parseInt(utils.getQueryString('page') || 1),
@@ -7,6 +9,7 @@
   price: utils.getQueryString('price'),
   order: utils.getQueryString('order'),
 
+  siteAddPermission: false,
   templateInfoList: null,
   count: null,
   pages: null,
@@ -68,6 +71,20 @@ var methods = {
     this.load();
   },
 
+  apiGetConfig: function () {
+    var $this = this;
+
+    $api.get($url).then(function (response) {
+      var res = response.data;
+
+      $this.siteAddPermission = res.siteAddPermission;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      $this.pageLoad = true;
+    });
+  },
+
   load: function () {
     var $this = this;
 
@@ -92,7 +109,7 @@ var methods = {
         $this.pageAlert = utils.getPageAlert(error);
       })
       .then(function () {
-        $this.pageLoad = true;
+        $this.apiGetConfig();
       });
   }
 };

@@ -10,12 +10,10 @@ namespace SiteServer.CMS.Repositories
     public partial class ContentGroupRepository : IRepository
     {
         private readonly Repository<ContentGroup> _repository;
-        private readonly IDistributedCache _cache;
 
         public ContentGroupRepository()
         {
-            _repository = new Repository<ContentGroup>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
-            _cache = CacheManager.Cache;
+            _repository = new Repository<ContentGroup>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
         }
 
         public IDatabase Database => _repository.Database;

@@ -5,6 +5,7 @@ using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
+using Datory;
 
 namespace SiteServer.Cli.Jobs
 {

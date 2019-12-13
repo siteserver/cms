@@ -98,24 +98,24 @@ namespace SiteServer.Abstractions
         [DataColumn]
         public string Description { get; set; }
 
-        [DataColumn(Text = true)]
+        [DataColumn(Text = true, Extend = true)]
         public string ExtendValues { get; set; }
 
         public IList<Channel> Children { get; set; }
 
         //是否可以添加栏目
-        public bool IsChannelAddable { get; set; }
+        public bool IsChannelAddable { get; set; } = true;
 
         //是否可以添加内容
-        public bool IsContentAddable { get; set; }
+        public bool IsContentAddable { get; set; } = true;
 
         //是否可以生成栏目
-        public bool IsChannelCreatable { get; set; }
+        public bool IsChannelCreatable { get; set; } = true;
 
         //是否可以生成内容
-        public bool IsContentCreatable { get; set; }
+        public bool IsContentCreatable { get; set; } = true;
 
-        public bool IsCreateChannelIfContentChanged { get; set; }
+        public bool IsCreateChannelIfContentChanged { get; set; } = true;
 
         public string CreateChannelIdsIfContentChanged { get; set; }
 

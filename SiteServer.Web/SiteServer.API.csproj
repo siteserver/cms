@@ -253,6 +253,10 @@
     <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsController.cs" />
     <Compile Include="Controllers\Pages\Cms\Config\PagesConfigContentController.cs" />
     <Compile Include="Controllers\Pages\Cms\Config\PagesConfigSiteController.cs" />
+    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorLayerWordController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorLayerWordController.cs" />
+    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerArrangeController.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerAttributesController.cs" />
@@ -275,6 +279,8 @@
     <Compile Include="Controllers\Pages\Cms\Special\PagesSpecialController.cs" />
     <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesController.cs" />
     <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesController.Dto.cs" />
+    <Compile Include="Controllers\Pages\PagesInstallController.Dto.cs" />
+    <Compile Include="Controllers\Pages\PagesInstallController.cs" />
     <Compile Include="Controllers\Pages\PagesRedirectController.cs" />
     <Compile Include="Controllers\Pages\PagesLoadingController.cs" />
     <Compile Include="Controllers\Pages\PagesUpdateSystemController.cs" />
@@ -308,6 +314,7 @@
     <Compile Include="Controllers\Pages\Settings\Log\PagesLogSiteController.cs" />
     <Compile Include="Controllers\Pages\Settings\Log\PagesLogConfigController.cs" />
     <Compile Include="Controllers\Pages\Settings\Log\PagesLogAdminController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Site\PagesSiteTemplatesOnlineController.cs" />
     <Compile Include="Controllers\Pages\Settings\Site\PagesSiteTemplatesController.cs" />
     <Compile Include="Controllers\Pages\Settings\Site\PagesSiteChangeRootController.cs" />
     <Compile Include="Controllers\Pages\Settings\Site\PagesSiteUrlController.cs" />
@@ -357,6 +364,8 @@
     <Compile Include="Controllers\V1\AdministratorsController.cs" />
     <Compile Include="Controllers\V1\CaptchaController.cs" />
     <Compile Include="Controllers\V1\ChannelsController.cs" />
+    <Compile Include="Controllers\V1\ContentsController.Utils.cs" />
+    <Compile Include="Controllers\V1\ContentsController.Dto.cs" />
     <Compile Include="Controllers\V1\ContentsController.cs" />
     <Compile Include="Controllers\V1\PingController.cs" />
     <Compile Include="Controllers\V1\StlController.cs" />
@@ -381,7 +390,7 @@
       <Name>SiteServer.CMS</Name>
     </ProjectReference>
     <ProjectReference Include="..\src\SiteServer.Abstractions\SiteServer.Abstractions.csproj">
-      <Project>{66353195-4727-453E-8303-17A6A8D0471D}</Project>
+      <Project>{66353195-4727-453e-8303-17a6a8d0471d}</Project>
       <Name>SiteServer.Abstractions</Name>
     </ProjectReference>
   </ItemGroup>

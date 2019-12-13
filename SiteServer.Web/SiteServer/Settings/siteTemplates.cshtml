@@ -12,7 +12,7 @@
   <a class="nav-link active" href="siteTemplates.cshtml">站点模板管理</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="siteTemplateOnline.cshtml">在线站点模板</a>
+  <a class="nav-link" href="siteTemplatesOnline.cshtml">在线站点模板</a>
 </li>
 }
 
@@ -47,6 +47,7 @@
           size="mini"
           v-on:click="btnZipClick(scope.row)">压缩</el-button>
         <el-button
+          v-if="siteAddPermission"
           size="mini"
           v-on:click="btnCreateClick(scope.row)">创建站点</el-button>
         <el-button

@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(Constants.WebSitePermissions.Configuration);
+            VerifySitePermissions(Constants.SitePermissions.ConfigTableStyles);
 
             //删除样式
             if (AuthRequest.IsQueryExists("DeleteStyle"))
@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlDisplayName.Text = style.DisplayName;
             ltlInputType.Text = InputTypeUtils.GetText(style.Type);
 
-            var columnInfo = TableColumnManager.GetTableColumnInfo(_tableName, style.AttributeName);
+            var columnInfo = TableColumnManager.GetTableColumnInfoAsync(_tableName, style.AttributeName).GetAwaiter().GetResult();
 
             ltlFieldType.Text = columnInfo != null ? $"真实 {DataTypeUtils.GetText(columnInfo.DataType)}" : "虚拟字段";
 

@@ -8,6 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Dto;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.Repositories;
@@ -93,6 +94,29 @@ namespace SiteServer.CMS.DataCache
             if (channelId == 0) channelId = siteId;
             dict?.TryGetValue(Math.Abs(channelId), out channel);
             return channel;
+        }
+
+        public static async Task<List<Cascade<int>>> GetChannelOptionsAsync(int siteId, int parentId = 0)
+        {
+            var list = new List<Cascade<int>>();
+
+            var dic = await ChannelManagerCache.GetChannelDictionaryBySiteIdAsync(siteId);
+
+            foreach (var channelInfo in dic.Values)
+            {
+                if (channelInfo == null) continue;
+                if (channelInfo.ParentId == parentId)
+                {
+                    list.Add(new Cascade<int>
+                    {
+                        Value = channelInfo.Id,
+                        Label = channelInfo.ChannelName,
+                        Children = await GetChannelOptionsAsync(siteId, channelInfo.Id)
+                    });
+                }
+            }
+
+            return list;
         }
 
         public static async Task<IList<Channel>> GetChildrenAsync(int siteId, int parentId)

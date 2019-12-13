@@ -24,8 +24,28 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
             try
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
+                var type = request.GetQueryString("type");
+
+                var permission = string.Empty;
+                if (type == "index")
+                {
+                    permission = Constants.SitePermissions.CreateIndex;
+                }
+                else if (type == "channels")
+                {
+                    permission = Constants.SitePermissions.CreateChannels;
+                }
+                else if (type == "contents")
+                {
+                    permission = Constants.SitePermissions.CreateContents;
+                }
+                else if (type == "all")
+                {
+                    permission = Constants.SitePermissions.CreateAll;
+                }
+
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.WebSitePermissions.Create))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, permission))
                 {
                     return Unauthorized();
                 }
@@ -88,8 +108,28 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
             try
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
+                var type = request.GetQueryString("type");
+
+                var permission = string.Empty;
+                if (type == "index")
+                {
+                    permission = Constants.SitePermissions.CreateIndex;
+                }
+                else if (type == "channels")
+                {
+                    permission = Constants.SitePermissions.CreateChannels;
+                }
+                else if (type == "contents")
+                {
+                    permission = Constants.SitePermissions.CreateContents;
+                }
+                else if (type == "all")
+                {
+                    permission = Constants.SitePermissions.CreateAll;
+                }
+
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(parameter.SiteId, Constants.WebSitePermissions.Create))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(parameter.SiteId, permission))
                 {
                     return Unauthorized();
                 }
@@ -197,7 +237,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(parameter.SiteId, Constants.WebSitePermissions.Create))
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(parameter.SiteId, Constants.SitePermissions.CreateAll))
                 {
                     return Unauthorized();
                 }

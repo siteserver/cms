@@ -8,6 +8,7 @@ var data = {
   siteTemplateInfoList: null,
   fileNameList: null,
   siteTemplateUrl: null,
+  siteAddPermission: false,
 
   uploadPanel: false,
   uploadLoading: false,
@@ -26,6 +27,7 @@ var methods = {
       $this.siteTemplateInfoList = res.siteTemplateInfoList;
       $this.fileNameList = res.fileNameList;
       $this.siteTemplateUrl = res.siteTemplateUrl;
+      $this.siteAddPermission = res.siteAddPermission;
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {

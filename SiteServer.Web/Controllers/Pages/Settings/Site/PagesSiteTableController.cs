@@ -24,7 +24,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteTables))
                 {
                     return Unauthorized();
                 }
@@ -63,12 +63,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteTables))
                 {
                     return Unauthorized();
                 }
 
-                var columns = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.MetadataAttributes.Value);
+                var columns = await TableColumnManager.GetTableColumnInfoListAsync(tableName, ContentAttribute.MetadataAttributes.Value);
 
                 return Ok(new
                 {
@@ -89,14 +89,12 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Site))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteTables))
                 {
                     return Unauthorized();
                 }
 
-                TableColumnManager.ClearCache();
-
-                var columns = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.MetadataAttributes.Value);
+                var columns = await TableColumnManager.GetTableColumnInfoListAsync(tableName, ContentAttribute.MetadataAttributes.Value);
 
                 return Ok(new
                 {

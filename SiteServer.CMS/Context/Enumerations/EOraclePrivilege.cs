@@ -1,7 +1,10 @@
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace SiteServer.CMS.Context.Enumerations
 {
+    [JsonConverter(typeof(StringEnumConverter))]
 	public enum EOraclePrivilege
 	{
 		Normal,

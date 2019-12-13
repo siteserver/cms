@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(Constants.WebSitePermissions.Configuration);
+            VerifySitePermissions(Constants.SitePermissions.ConfigGroups);
             LtlContentTag.Text = "标签：" + _tag;
             SpContents.DataBind();
         }

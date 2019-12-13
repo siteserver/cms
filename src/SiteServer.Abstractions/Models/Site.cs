@@ -41,9 +41,7 @@ namespace SiteServer.Abstractions
 
         public int PageSize { get; set; } = 30;
 
-        public bool IsCheckContentLevel { get; set; }
-
-        public int CheckContentLevel { get; set; }
+        public int CheckContentLevel { get; set; } = 1;
 
         public int CheckContentDefaultLevel { get; set; }
 

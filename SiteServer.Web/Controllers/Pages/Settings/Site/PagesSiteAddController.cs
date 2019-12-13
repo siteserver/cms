@@ -24,7 +24,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.SiteAdd))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteAdd))
                 {
                     return Unauthorized();
                 }
@@ -116,7 +116,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.SiteAdd))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSiteAdd))
                 {
                     return Unauthorized();
                 }
@@ -171,7 +171,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     }
                     else
                     {
-                        await DataProvider.DatabaseRepository.AlterSystemTableAsync(tableName, DataProvider.ContentRepository.GetDefaultTableColumns(tableName));
+                        await WebConfigUtils.Database.AlterTableAsync(tableName, DataProvider.ContentRepository.GetDefaultTableColumns(tableName));
                     }
                 }
 
@@ -181,10 +181,9 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     SiteDir = siteDir,
                     TableName = tableName,
                     ParentId = parentId,
-                    Root = root
+                    Root = root,
+                    Charset = ECharsetUtils.GetValue(ECharset.utf_8)
                 };
-                site.IsCheckContentLevel = false;
-                site.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
 
                 var siteId = await DataProvider.ChannelRepository.InsertSiteAsync(channelInfo, site, request.AdminName);
 

@@ -60,9 +60,9 @@ namespace SiteServer.Abstractions
             return Enum.TryParse<T>(value, true, out var result) ? result : defaultValue;
         }
 
-        public static IEnumerable<Enum> GetEnums(Enum e)
+        public static IEnumerable<T> GetEnums<T>()
         {
-            return Enum.GetValues(e.GetType()).Cast<Enum>();
+            return Enum.GetValues(typeof(T)).Cast<T>();
         }
 
         //添加枚举：(fileAttributes | FileAttributes.ReadOnly)   判断枚举：((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)   去除枚举：(fileAttributes ^ FileAttributes.ReadOnly)

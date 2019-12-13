@@ -11,12 +11,10 @@ namespace SiteServer.CMS.Repositories
     public partial class AccessTokenRepository : IRepository
     {
         private readonly Repository<AccessToken> _repository;
-        private readonly IDistributedCache _cache;
 
         public AccessTokenRepository()
         {
-            _repository = new Repository<AccessToken>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
-            _cache = CacheManager.Cache;
+            _repository = new Repository<AccessToken>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
         }
 
         public IDatabase Database => _repository.Database;
@@ -37,12 +35,8 @@ namespace SiteServer.CMS.Repositories
 
         public async Task<bool> UpdateAsync(AccessToken accessToken)
         {
-            var updated = await _repository.UpdateAsync(accessToken);
-            if (updated)
-            {
-                await RemoveCacheAsync(accessToken.Token);
-            }
-            return updated;
+            var cacheKey = GetCacheKeyByToken(accessToken.Token);
+            return await _repository.UpdateAsync(accessToken, Q.CachingRemove(cacheKey));
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -50,17 +44,20 @@ namespace SiteServer.CMS.Repositories
             var accessToken = await _repository.GetAsync(id);
             if (accessToken == null) return false;
 
-            var deleted = await _repository.DeleteAsync(id);
-            await RemoveCacheAsync(accessToken.Token);
-            return deleted;
+            var cacheKey = GetCacheKeyByToken(accessToken.Token);
+            return await _repository.DeleteAsync(Q
+                .Where(nameof(AccessToken.Id), id)
+                .CachingRemove(cacheKey)
+            ) == 1;
         }
 
         public async Task<string> RegenerateAsync(AccessToken accessToken)
         {
-            await RemoveCacheAsync(accessToken.Token);
+            var cacheKey = GetCacheKeyByToken(accessToken.Token);
+
             accessToken.Token = WebConfigUtils.EncryptStringBySecretKey(StringUtils.Guid());
 
-            await _repository.UpdateAsync(accessToken);
+            await _repository.UpdateAsync(accessToken, Q.CachingRemove(cacheKey));
 
             return accessToken.Token;
         }

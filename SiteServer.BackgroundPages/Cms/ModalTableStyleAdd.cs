@@ -403,7 +403,7 @@ namespace SiteServer.BackgroundPages.Cms
                 return false;
             }
 
-            _style = TableColumnManager.IsAttributeNameExists(_tableName, TbAttributeName.Text) ? TableStyleManager.GetTableStyleAsync(_tableName, TbAttributeName.Text, _relatedIdentities).GetAwaiter().GetResult() : new TableStyle();
+            _style = TableColumnManager.IsAttributeNameExistsAsync(_tableName, TbAttributeName.Text).GetAwaiter().GetResult() ? TableStyleManager.GetTableStyleAsync(_tableName, TbAttributeName.Text, _relatedIdentities).GetAwaiter().GetResult() : new TableStyle();
 
             _style.RelatedIdentity = relatedIdentity;
             _style.TableName = _tableName;

@@ -36,16 +36,6 @@ namespace SiteServer.CMS.Repositories
             return DataProvider.DatabaseApi.ExecuteDataset(connectionString, commandText);
         }
 
-        protected int ExecuteNonQuery(IDbTransaction trans, string commandText)
-        {
-            return DataProvider.DatabaseApi.ExecuteNonQuery(trans, commandText);
-        }
-
-        protected int ExecuteNonQuery(string commandText)
-        {
-            return DataProvider.DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, commandText);
-        }
-
         protected string GetString(IDataReader rdr, int i)
         {
             var value = rdr.IsDBNull(i) ? string.Empty : rdr.GetValue(i).ToString();

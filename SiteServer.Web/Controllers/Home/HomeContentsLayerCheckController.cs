@@ -29,7 +29,7 @@ namespace SiteServer.API.Controllers.Home
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                        Constants.ChannelPermissions.ContentCheck))
+                        Constants.ChannelPermissions.ContentCheckLevel1))
                 {
                     return Unauthorized();
                 }
@@ -90,7 +90,7 @@ namespace SiteServer.API.Controllers.Home
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                        Constants.ChannelPermissions.ContentCheck))
+                        Constants.ChannelPermissions.ContentCheckLevel1))
                 {
                     return Unauthorized();
                 }

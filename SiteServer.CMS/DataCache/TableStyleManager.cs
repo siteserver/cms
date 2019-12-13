@@ -100,7 +100,7 @@ namespace SiteServer.CMS.DataCache
             }
             else
             {
-                var columnNames = TableColumnManager.GetTableColumnNameList(tableName, ContentAttribute.MetadataAttributes.Value);
+                var columnNames = await TableColumnManager.GetTableColumnNameListAsync(tableName, ContentAttribute.MetadataAttributes.Value);
 
                 foreach (var columnName in columnNames)
                 {

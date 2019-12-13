@@ -43,12 +43,12 @@ namespace SiteServer.BackgroundPages.Cms
             _tableName = DataProvider.SiteRepository.TableName;
             _itemId = AuthRequest.GetQueryInt("itemID");
             _relatedIdentities = TableStyleManager.GetRelatedIdentities(SiteId);
-            _attributeNames = TableColumnManager.GetTableColumnNameList(_tableName);
+            _attributeNames = TableColumnManager.GetTableColumnNameListAsync(_tableName).GetAwaiter().GetResult();
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(Constants.WebSitePermissions.Configuration);
+            VerifySitePermissions(Constants.SitePermissions.ConfigTableStyles);
 
             //删除样式
             if (AuthRequest.IsQueryExists("DeleteStyle"))

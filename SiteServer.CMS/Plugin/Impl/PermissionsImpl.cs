@@ -237,7 +237,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 {
                     _permissionList = new List<string>
                     {
-                        Constants.SettingsPermissions.Admin
+                        Constants.AppPermissions.SettingsAdmin
                     };
                 }
                 else
@@ -504,7 +504,7 @@ namespace SiteServer.CMS.Plugin.Impl
             if (!config.IsViewContentOnlySelf
                 || await IsSuperAdminAsync()
                 || await IsSiteAdminAsync()
-                || await HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentCheck))
+                || await HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentCheckLevel1))
             {
                 return 0;
             }

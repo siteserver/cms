@@ -23,7 +23,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.User))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUserStyle))
                 {
                     return Unauthorized();
                 }
@@ -65,7 +65,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
+                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUserStyle))
                 {
                     return Unauthorized();
                 }

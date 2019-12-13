@@ -22,12 +22,14 @@ var data = {
   isSuperAdmin: null,
   packageList: null,
   packageIds: null,
-  topMenus: null,
-  siteMenus: null,
+  menus: null,
+  siteUrl: null,
+  previewUrl: null,
+  local: null,
+
+  menu: null,
   activeParentMenu: null,
   activeChildMenu: null,
-  pluginMenus: null,
-  local: null,
 
   newVersion: null,
   updatePackages: 0,
@@ -59,11 +61,12 @@ var methods = {
         $this.isSuperAdmin = res.isSuperAdmin;
         $this.packageList = res.packageList;
         $this.packageIds = res.packageIds;
-        $this.topMenus = res.topMenus;
-        $this.siteMenus = res.siteMenus;
-        $this.pluginMenus = res.pluginMenus;
+        $this.menus = res.menus;
+        $this.siteUrl = res.siteUrl;
+        $this.previewUrl = res.previewUrl;
         $this.local = res.local;
-        $this.activeParentMenu = $this.siteMenus[0];
+        $this.menu = $this.menus[0];
+        $this.activeParentMenu = $this.menus[0].children[0];
 
         document.title = $this.adminTitle;
       } else {
@@ -200,17 +203,8 @@ var methods = {
     return menu.target ? menu.target : "right";
   },
 
-  btnTopMenuClick: function (menu, e) {
-    if (menu.target == '_layer') {
-      utils.openLayer({
-        title: menu.text,
-        url: menu.href,
-        full: true
-      });
-      e.stopPropagation();
-      e.preventDefault();
-    }
-    return false;
+  btnTopMenuClick: function (menu) {
+    this.menu = menu;
   },
 
   btnLeftMenuClick: function (menu) {

@@ -22,8 +22,6 @@ namespace SiteServer.CMS.Repositories
 
         public abstract IDbDataAdapter GetDataAdapter();
 
-        protected abstract IDataParameter GetBlobParameter(IDbConnection connection, IDataParameter p);
-
 
         protected void AttachParameters(IDbCommand command, IDataParameter[] commandParameters)
         {
@@ -41,7 +39,7 @@ namespace SiteServer.CMS.Repositories
                         {
                             p.Value = DBNull.Value;
                         }
-                        command.Parameters.Add(p.DbType == DbType.Binary ? GetBlobParameter(command.Connection, p) : p);
+                        command.Parameters.Add(p);
                     }
                 }
             }
@@ -102,11 +100,6 @@ namespace SiteServer.CMS.Repositories
             {
                 AttachParameters(command, commandParameters);
             }
-        }
-
-        protected virtual void ClearCommand(IDbCommand command)
-        {
-            // do nothing by default
         }
 
         private DataSet ExecuteDataset(IDbCommand command)
@@ -223,12 +216,6 @@ namespace SiteServer.CMS.Repositories
             return returnVal;
         }
 
-        public int ExecuteNonQuery(string connectionString, string commandText)
-        {
-            // Pass through the call providing null for the set of IDataParameters
-            return ExecuteNonQuery(connectionString, commandText, null);
-        }
-
         public int ExecuteNonQuery(string connectionString, string commandText,
             params IDataParameter[] commandParameters)
         {
@@ -266,37 +253,6 @@ namespace SiteServer.CMS.Repositories
             return retVal;
         }
 
-        public int ExecuteNonQuery(IDbTransaction transaction, string commandText)
-        {
-            // Pass through the call providing null for the set of IDataParameters
-            return ExecuteNonQuery(transaction, commandText, null);
-        }
-
-        private int ExecuteNonQuery(IDbTransaction transaction, string commandText,
-            params IDataParameter[] commandParameters)
-        {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-            if (transaction != null && transaction.Connection == null)
-                throw new ArgumentException(
-                    "The transaction was rolled back or commited, please provide an open transaction.",
-                    nameof(transaction));
-
-            // Create a command and prepare it for execution
-            var cmd = transaction.Connection.CreateCommand();
-            bool mustCloseConnection;
-            PrepareCommand(cmd, transaction.Connection, transaction, commandText, commandParameters,
-                out mustCloseConnection);
-            CleanParameterSyntax(cmd);
-
-            // Finally, execute the command
-            var retVal = ExecuteNonQuery(cmd);
-
-            // Detach the IDataParameters from the command object, so they can be used again
-            // don't do this...screws up output parameters -- cjbreisch
-            // cmd.Parameters.Clear();
-            return retVal;
-        }
-
         protected IDataReader ExecuteReader(IDbCommand command, AdoConnectionOwnership connectionOwnership)
         {
             // Clean Up Parameter Syntax
@@ -314,8 +270,6 @@ namespace SiteServer.CMS.Repositories
             var dataReader = connectionOwnership == AdoConnectionOwnership.External
                 ? command.ExecuteReader()
                 : command.ExecuteReader(CommandBehavior.CloseConnection);
-
-            ClearCommand(command);
 
             return dataReader;
         }
@@ -342,8 +296,6 @@ namespace SiteServer.CMS.Repositories
                 // Create a reader
 
                 var dataReader = ExecuteReader(cmd, connectionOwnership);
-
-                ClearCommand(cmd);
 
                 return dataReader;
             }

@@ -28,9 +28,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
                 var channelContentIds =
-                    MinContentInfo.ParseMinContentInfoList(request.GetQueryString("channelContentIds"));
+                    ChannelContentId.ParseMinContentInfoList(request.GetQueryString("channelContentIds"));
 
                 if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents) ||
                     !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         Constants.ChannelPermissions.ContentTranslate))
                 {
@@ -106,6 +108,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
                 var siteId = request.GetQueryInt("siteId");
 
+                if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents))
+                {
+                    return Unauthorized();
+                }
+
                 var channels = new List<object>();
                 var channelIdList = await request.AdminPermissionsImpl.GetChannelIdListAsync(siteId,
                     Constants.ChannelPermissions.ContentAdd);
@@ -141,12 +150,14 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
                 var channelContentIds =
-                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
+                    ChannelContentId.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
                 var targetSiteId = request.GetPostInt("targetSiteId");
                 var targetChannelId = request.GetPostInt("targetChannelId");
                 var copyType = request.GetPostString("copyType");
 
                 if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents) ||
                     !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         Constants.ChannelPermissions.ContentTranslate))
                 {

@@ -26,6 +26,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var channelId = request.GetQueryInt("channelId");
 
                 if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents) ||
                     !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         Constants.ChannelPermissions.ContentDelete))
                 {
@@ -62,7 +64,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var siteId = request.GetPostInt("siteId");
                 //var channelId = request.GetPostInt("channelId");
                 var channelContentIds =
-                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
+                    ChannelContentId.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
                 var pageType = request.GetPostString("pageType");
                 var groupNames = StringUtils.GetStringList(request.GetPostString("groupNames"));
                 var groupName = request.GetPostString("groupName");

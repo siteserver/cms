@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Datory;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Caching;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -16,7 +17,7 @@ namespace SiteServer.CMS.Repositories
                 return repository;
             }
 
-            repository = new Repository<Content>(_db, tableName);
+            repository = new Repository<Content>(_db, tableName, CacheManager.Cache);
 
             TableNameRepositories[key] = repository;
             return repository;

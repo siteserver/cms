@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
-using SiteServer.Abstractions;
 
-namespace SiteServer.CMS.StlParser.Model
+namespace SiteServer.Abstractions
 {
-    public class MinContentInfo
+    public class ChannelContentId
     {
-        public int Id { get; set; }
-
         public int ChannelId { get; set; }
 
-        public static List<MinContentInfo> ParseMinContentInfoList(string channelContentIdsString)
+        public int Id { get; set; }
+
+        public static List<ChannelContentId> ParseMinContentInfoList(string channelContentIdsString)
         {
-            var channelContentIds = new List<MinContentInfo>();
+            var channelContentIds = new List<ChannelContentId>();
             if (!string.IsNullOrEmpty(channelContentIdsString))
             {
                 foreach (var channelContentId in StringUtils.GetStringList(channelContentIdsString))
@@ -19,7 +18,7 @@ namespace SiteServer.CMS.StlParser.Model
                     var arr = channelContentId.Split('_');
                     if (arr.Length == 2)
                     {
-                        channelContentIds.Add(new MinContentInfo
+                        channelContentIds.Add(new ChannelContentId
                         {
                             ChannelId = TranslateUtils.ToInt(arr[0]),
                             Id = TranslateUtils.ToInt(arr[1])

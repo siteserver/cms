@@ -37,7 +37,9 @@ var methods = {
         this.siteId +
         "&channelId=" +
         this.channelId +
-        "&contentIds=" +
+        "&channelContentIds=" +
+        this.channelId +
+        "_" +
         this.contentId,
       full: true
     });

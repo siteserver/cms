@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
 			{
-                VerifySitePermissions(Constants.WebSitePermissions.Configuration);
+                VerifySitePermissions(Constants.SitePermissions.ConfigAttributes);
 
                 TbSiteName.Text = Site.SiteName;
 

@@ -25,6 +25,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var channelId = request.GetQueryInt("channelId");
 
                 if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents) ||
                     !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         Constants.ChannelPermissions.ChannelEdit))
                 {
@@ -64,6 +66,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var channelId = request.GetPostInt("channelId");
 
                 if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents) ||
                     !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         Constants.ChannelPermissions.ChannelEdit))
                 {

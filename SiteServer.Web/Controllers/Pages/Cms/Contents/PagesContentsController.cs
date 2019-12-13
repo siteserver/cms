@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
@@ -31,6 +32,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var page = request.GetQueryInt("page");
 
                 if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents) ||
                     !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         Constants.ChannelPermissions.ContentView))
                 {
@@ -54,9 +57,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var columns = await DataProvider.ContentRepository.GetContentColumnsAsync(site, channelInfo, false);
 
                 var pageContentInfoList = new List<Content>();
-                var count = isAllContents
-                    ? await DataProvider.ContentRepository.GetCountAllAsync(site, channelInfo, adminId)
-                    : await DataProvider.ContentRepository.GetCountAsync(site, channelInfo, adminId);
+                var ccIds = await DataProvider.ContentRepository.GetChannelContentIdListAsync(site, channelInfo,
+                    adminId, isAllContents);
+                var count = ccIds.Count();
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
                 if (pages == 0) pages = 1;
 
@@ -64,13 +67,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 {
                     var offset = site.PageSize * (page - 1);
                     var limit = site.PageSize;
-
-                    var pageContentIds = await DataProvider.ContentRepository.GetChannelContentIdListAsync(site, channelInfo, adminId, isAllContents, offset, limit);
+                    var pageCcIds = ccIds.Skip(offset).Take(limit).ToList();
 
                     var sequence = offset + 1;
-                    foreach (var channelContentId in pageContentIds)
+                    foreach (var channelContentId in pageCcIds)
                     {
-                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.ContentId);
+                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         var menus = await PluginMenuManager.GetContentMenusAsync(pluginIds, contentInfo);
@@ -89,8 +91,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     IsDelete = await request.AdminPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ContentDelete),
                     IsEdit = await request.AdminPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ContentEdit),
                     IsTranslate = await request.AdminPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ContentTranslate),
-                    IsCheck = await request.AdminPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ContentCheck),
-                    IsCreate = await request.AdminPermissionsImpl.HasSitePermissionsAsync(site.Id, Constants.WebSitePermissions.Create) || await request.AdminPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.CreatePage),
+                    IsCheck = await request.AdminPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ContentCheckLevel1),
+                    IsCreate = await request.AdminPermissionsImpl.HasSitePermissionsAsync(site.Id, Constants.SitePermissions.CreateContents) || await request.AdminPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.CreatePage),
                     IsChannelEdit =await request.AdminPermissionsImpl.HasChannelPermissionsAsync(site.Id, channelInfo.Id, Constants.ChannelPermissions.ChannelEdit)
                 };
 
@@ -119,9 +121,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var request = await AuthenticatedRequest.GetAuthAsync();
 
                 var siteId = request.GetPostInt("siteId");
-                var channelContentIds = request.GetPostObject<List<MinContentInfo>>("channelContentIds");
+                var channelContentIds = request.GetPostObject<List<ChannelContentId>>("channelContentIds");
 
-                if (!request.IsAdminLoggin)
+                if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents))
                 {
                     return Unauthorized();
                 }

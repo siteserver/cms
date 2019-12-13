@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Extensions;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.Repositories;
 
@@ -32,13 +33,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
             if (admin == null)
             {
-                auth.NotFound(Request);
+                return Request.NotFound<GetResult>();
             }
 
             if (auth.AdminId != admin.Id &&
-                !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.SettingsPermissions.Admin))
+                !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdmin))
             {
-                auth.Unauthorized(Request);
+                return Request.Unauthorized<GetResult>();
             }
 
             var permissions = new PermissionsImpl(admin);

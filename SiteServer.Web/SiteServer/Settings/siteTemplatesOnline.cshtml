@@ -1,4 +1,5 @@
-﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+@section Navs{
 <li class="nav-item">
   <a class="nav-link" href="site.cshtml">站点管理</a>
 </li>
@@ -12,7 +13,7 @@
   <a class="nav-link" href="siteTemplates.cshtml">站点模板管理</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link active" href="siteTemplateOnline.cshtml">在线站点模板</a>
+  <a class="nav-link active" href="siteTemplatesOnline.cshtml">在线站点模板</a>
 </li>
 }
 
@@ -79,7 +80,7 @@
         </p>
         <div class="text-center">
           <a :href="getPreviewUrl(templateInfo.templateId)" target="_blank" class="btn btn-info mr-2">预览站点</a>
-          <a :href="'siteAdd.cshtml?type=create&createType=cloud&createTemplateId=' + templateInfo.templateId" class="btn btn-primary">创建站点</a>
+          <a v-if="siteAddPermission" :href="'siteAdd.cshtml?type=create&createType=cloud&createTemplateId=' + templateInfo.templateId" class="btn btn-primary">创建站点</a>
         </div>
       </div>
     </div>

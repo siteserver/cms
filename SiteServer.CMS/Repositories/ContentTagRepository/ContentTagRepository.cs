@@ -88,6 +88,7 @@ namespace SiteServer.CMS.Repositories
         public async Task<IEnumerable<string>> GetTagListAsync(int siteId)
         {
             return await _repository.GetAllAsync<string>(Q
+                .Select(nameof(ContentTag.Tag), nameof(ContentTag.UseNum))
                 .Where(nameof(ContentTag.SiteId), siteId)
                 .OrderByDesc(nameof(ContentTag.UseNum))
                 .Distinct()

@@ -112,12 +112,16 @@ namespace SiteServer.API.Controllers.Pages
                     permissionList.AddRange(channelPermissions);
                 }
 
-                var topMenus = await GetTopMenusAsync(site, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions, permissionList);
                 var siteMenus =
                     await GetLeftMenusAsync(site, Constants.TopMenu.IdSite, isSuperAdmin, permissionList);
                 var pluginMenus = await GetLeftMenusAsync(site, string.Empty, isSuperAdmin, permissionList);
+                siteMenus.AddRange(pluginMenus);
+                var menus = await GetTopMenusAsync(site, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions, permissionList, siteMenus);
 
                 var config = await DataProvider.ConfigRepository.GetAsync();
+
+                var siteUrl = PageUtility.GetSiteUrl(site, false);
+                var previewUrl = ApiRoutePreview.GetSiteUrl(site.Id);
 
                 return Ok(new
                 {
@@ -132,10 +136,10 @@ namespace SiteServer.API.Controllers.Pages
                     config.AdminTitle,
                     IsSuperAdmin = isSuperAdmin,
                     PackageList = packageList,
-                    PackageIds = packageIds,
-                    TopMenus = topMenus,
-                    SiteMenus = siteMenus,
-                    PluginMenus = pluginMenus,
+                    PackageIds = packageIds, 
+                    Menus = menus,
+                    SiteUrl = siteUrl,
+                    PreviewUrl = previewUrl,
                     Local = new
                     {
                         UserId = adminInfo.Id,
@@ -151,37 +155,37 @@ namespace SiteServer.API.Controllers.Pages
             }
         }
 
-        private static async Task<List<Tab>> GetTopMenusAsync(Site siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions, List<string> permissionList)
+        private static async Task<List<Tab>> GetTopMenusAsync(Site siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions, List<string> permissionList, List<Tab> siteMenus)
         {
             var menus = new List<Tab>();
 
             if (siteInfo != null && siteIdListWithPermissions.Contains(siteInfo.Id))
             {
-                var siteMenus = new List<Tab>();
-                if (siteIdListWithPermissions.Count == 1)
+                menus.Add(new Tab
                 {
-                    menus.Add(new Tab
-                    {
-                        Text = siteInfo.SiteName,
-                        Children = siteMenus.ToArray()
-                    });
-                }
-                else
+                    Id = Constants.TopMenu.SiteCurrent,
+                    Text = siteInfo.SiteName,
+                    Children = siteMenus.ToArray()
+                });
+
+                if (siteIdListWithPermissions.Count > 1)
                 {
+                    var allSiteMenus = new List<Tab>();
+
                     var siteIdList = await DataProvider.AdministratorRepository.GetLatestTop10SiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
                     foreach (var siteId in siteIdList)
                     {
                         var site = await DataProvider.SiteRepository.GetAsync(siteId);
                         if (site == null) continue;
 
-                        siteMenus.Add(new Tab
+                        allSiteMenus.Add(new Tab
                         {
                             Href = PageUtils.GetMainUrl(site.Id),
                             Target = "_top",
                             Text = site.SiteName
                         });
                     }
-                    siteMenus.Add(new Tab
+                    allSiteMenus.Add(new Tab
                     {
                         Href = ModalSiteSelect.GetRedirectUrl(siteInfo.Id),
                         Target = "_layer",
@@ -189,19 +193,13 @@ namespace SiteServer.API.Controllers.Pages
                     });
                     menus.Add(new Tab
                     {
-                        Text = siteInfo.SiteName,
+                        Id = Constants.TopMenu.SiteCurrent,
+                        Text = "切换站点",
                         Href = ModalSiteSelect.GetRedirectUrl(siteInfo.Id),
                         Target = "_layer",
-                        Children = siteMenus.ToArray()
+                        Children = allSiteMenus.ToArray()
                     });
                 }
-
-                var linkMenus = new List<Tab>
-                {
-                    new Tab {Href = PageUtility.GetSiteUrl(siteInfo, false), Target = "_blank", Text = "访问站点"},
-                    new Tab {Href = ApiRoutePreview.GetSiteUrl(siteInfo.Id), Target = "_blank", Text = "预览站点"}
-                };
-                menus.Add(new Tab {Text = "站点链接", Children = linkMenus.ToArray()});
             }
 
             if (isSuperAdmin)

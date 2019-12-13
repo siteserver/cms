@@ -94,16 +94,11 @@
       <td v-for="column in columns">
 
         <template v-if="column.attributeName === 'Title'">
-          <template v-if="content.isChecked">
-            <a :href="content.navigationUrl" v-html="content.title" target="_blank" v-on:click.stop></a>
-          </template>
-          <template v-else>
-            <a href="javascript:;" v-html="content.title" v-on:click="btnLayerClick({title: '查看内容', name: 'View', channelId: content.channelId, contentId: content.id, full: true}, $event)"></a>
-          </template>
-          <i v-if="content.isTop" class="text-primary fa fa-arrow-up" title="置顶"></i>
-          <i v-if="content.isRecommend" class="text-primary fa fa-star" title="推荐"></i>
-          <i v-if="content.isHot" class="text-primary fa fa-fire" title="热点"></i>
-          <i v-if="content.isColor" class="text-primary fa fa-eye" title="醒目"></i>
+          <a :href="getContentUrl(content)" v-html="content.title" target="_blank" v-on:click.stop></a>
+          <i v-if="content.top" class="text-primary fa fa-arrow-up" title="置顶"></i>
+          <i v-if="content.recommend" class="text-primary fa fa-star" title="推荐"></i>
+          <i v-if="content.hot" class="text-primary fa fa-fire" title="热点"></i>
+          <i v-if="content.color" class="text-primary fa fa-eye" title="醒目"></i>
           <a v-if="content.imageUrl" :href="content.imageUrl" target="_blank" v-on:click.stop><i
               class="text-primary fa fa-file-photo-o"></i></a>
           <a v-if="content.videoUrl" :href="content.videoUrl" target="_blank" v-on:click.stop><i
@@ -131,11 +126,11 @@
       <td class="text-center text-nowrap" style="width: 80px;">
         <a v-for="pluginMenu in content.pluginMenus" :target="pluginMenu.target" :href="(pluginMenu.target === '_layer' ? 'javascript:;' : getPluginMenuUrl(pluginMenu))"
           v-on:click="btnPluginMenuClick(pluginMenu, $event)" class="mr-2" v-html="pluginMenu.text"></a>
-        <a :href="getPageContentAddUrl(content)" v-on:click.stop>编辑</a>
+        <a href="javascript:;" v-on:click.stop="btnEditClick(content)">编辑</a>
       </td>
       <td class="text-center text-nowrap" style="width: 80px">
-        <a v-on:click="btnContentStateClick(content.id, $event)" href="javascript:;" :class="{'text-danger' : !content.isChecked}">
-          {{content.checkState }}
+        <a v-on:click="btnContentStateClick(content.id, $event)" href="javascript:;" :class="{'text-danger' : !content.checked}">
+          {{ content.checked ? '已审核' : '待审核' }}
         </a>
       </td>
       <td class="text-nowrap checkbox checkbox-primary">

@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            VerifySitePermissions(Constants.WebSitePermissions.Template);
+            VerifySitePermissions(Constants.SitePermissions.Templates);
 
             DdlTemplateType.Items.Add(new ListItem("<所有类型>", string.Empty));
             TemplateTypeUtils.AddListItems(DdlTemplateType);

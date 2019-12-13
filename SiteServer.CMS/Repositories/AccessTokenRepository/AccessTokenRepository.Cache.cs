@@ -9,27 +9,34 @@ namespace SiteServer.CMS.Repositories
     {
         private string GetCacheKeyByToken(string token)
         {
-            return _cache.GetEntityKey(this, "token", token);
+            return CacheManager.GetEntityKey(TableName, "token", token);
         }
 
-        private async Task RemoveCacheAsync(string token)
-        {
-            var cacheKey = GetCacheKeyByToken(token);
-            await _cache.RemoveAsync(cacheKey);
-        }
+        //private async Task RemoveCacheAsync(string token)
+        //{
+        //    var cacheKey = GetCacheKeyByToken(token);
+        //    await _cache.RemoveAsync(cacheKey);
+        //}
 
         public async Task<AccessToken> GetByTokenAsync(string token)
         {
             var cacheKey = GetCacheKeyByToken(token);
-            return await
-                _cache.GetOrCreateAsync(cacheKey, async entry =>
-                {
-                    var accessToken = await _repository.GetAsync(Q
-                        .Where(nameof(AccessToken.Token), WebConfigUtils.EncryptStringBySecretKey(token)) 
-                    );
 
-                    return accessToken;
-                });
+            return await _repository.GetAsync(Q
+                .Where(nameof(AccessToken.Token), WebConfigUtils.EncryptStringBySecretKey(token))
+                .CachingGet(cacheKey)
+            );
+
+            //var cacheKey = GetCacheKeyByToken(token);
+            //return await
+            //    _cache.GetOrCreateAsync(cacheKey, async entry =>
+            //    {
+            //        var accessToken = await _repository.GetAsync(Q
+            //            .Where(nameof(AccessToken.Token), WebConfigUtils.EncryptStringBySecretKey(token)) 
+            //        );
+
+            //        return accessToken;
+            //    });
         }
     }
 }

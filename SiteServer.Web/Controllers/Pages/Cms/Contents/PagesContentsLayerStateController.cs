@@ -27,6 +27,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var contentId = request.GetQueryInt("contentId");
 
                 if (!request.IsAdminLoggin ||
+                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
+                        Constants.SitePermissions.Contents) ||
                     !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                         Constants.ChannelPermissions.ContentView))
                 {
