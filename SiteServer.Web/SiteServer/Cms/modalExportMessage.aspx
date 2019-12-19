@@ -15,7 +15,7 @@
         <hr />
 
         <div class="text-right mr-1">
-          <button type="button" class="btn btn-default" onclick="window.parent.layer.closeAll()">关 闭</button>
+          <button type="button" class="btn btn-default" onclick="window.parent.utils.closeLayer()">关 闭</button>
         </div>
 
       </form>

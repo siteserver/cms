@@ -20,7 +20,6 @@ namespace SiteServer.API.Controllers.V1
     {
         private const string Route = "";
         private const string RouteCheck = "check";
-        private const string RouteSite = "{siteId:int}";
         private const string RouteChannel = "{siteId:int}/{channelId:int}";
         private const string RouteContent = "{siteId:int}/{channelId:int}/{id:int}";
 
@@ -329,11 +328,11 @@ namespace SiteServer.API.Controllers.V1
 
         [OpenApiOperation("获取内容API", "")]
         [HttpPost, Route(Route)]
-        public QueryResult GetChannelContents([FromBody] QueryRequest request)
+        public QueryResult GetContents([FromBody] QueryRequest request)
         {
             var req = new AuthenticatedRequest();
             var sourceId = req.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-            var channelId = request.ChannelId.HasValue ? request.ChannelId.Value : request.SiteId;
+            var channelId = request.ChannelId ?? request.SiteId;
 
             bool isAuth;
             if (sourceId == SourceManager.User)
@@ -387,7 +386,7 @@ namespace SiteServer.API.Controllers.V1
             var req = new AuthenticatedRequest();
 
             if (!req.IsApiAuthenticated ||
-                AccessTokenManager.IsScope(req.ApiToken, AccessTokenManager.ScopeContents))
+                !AccessTokenManager.IsScope(req.ApiToken, AccessTokenManager.ScopeContents))
             {
                 return Request.Unauthorized<CheckResult>();
             }

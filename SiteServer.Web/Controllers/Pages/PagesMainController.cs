@@ -233,6 +233,13 @@ namespace SiteServer.API.Controllers.Pages
                     {
                         if (!TabManager.IsValid(menu, permissionList)) continue;
 
+                        Tab[] children = null;
+                        if (menu.Children != null)
+                        {
+                            children = menu.Children.Where(child => TabManager.IsValid(child, permissionList))
+                                .ToArray();
+                        }
+
                         var menuToAdd = new Tab
                         {
                             Id = menu.Id,
@@ -240,7 +247,7 @@ namespace SiteServer.API.Controllers.Pages
                             Text = menu.Text,
                             Target = menu.Target,
                             Href = menu.Href,
-                            Children = menu.Children.Where(child => TabManager.IsValid(child, permissionList)).ToArray()
+                            Children = children
                         };
                         tabsToAdd.Add(menuToAdd);
                     }

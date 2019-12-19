@@ -33,7 +33,18 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                        ConfigManager.ChannelPermissions.ContentView))
+                        ConfigManager.ChannelPermissions.ContentView, 
+                        ConfigManager.ChannelPermissions.ContentAdd,
+                        ConfigManager.ChannelPermissions.ContentEdit,
+                        ConfigManager.ChannelPermissions.ContentDelete,
+                        ConfigManager.ChannelPermissions.ContentTranslate,
+                        ConfigManager.ChannelPermissions.ContentArrange,
+                        ConfigManager.ChannelPermissions.ContentCheck,
+                        ConfigManager.ChannelPermissions.ContentCheckLevel1,
+                        ConfigManager.ChannelPermissions.ContentCheckLevel2,
+                        ConfigManager.ChannelPermissions.ContentCheckLevel3,
+                        ConfigManager.ChannelPermissions.ContentCheckLevel4,
+                        ConfigManager.ChannelPermissions.ContentCheckLevel5))
                 {
                     return Unauthorized();
                 }
@@ -88,6 +99,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     IsDelete = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete),
                     IsEdit = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit),
                     IsTranslate = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate),
+                    IsArrange = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentArrange),
                     IsCheck = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck),
                     IsCreate = request.AdminPermissionsImpl.HasSitePermissions(siteInfo.Id, ConfigManager.SitePermissions.CreateContents) || request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.CreatePage),
                     IsChannelEdit = request.AdminPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit)

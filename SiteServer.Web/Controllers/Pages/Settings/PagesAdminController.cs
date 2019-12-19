@@ -112,7 +112,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                var roles = DataProvider.RoleDao.GetRoleNameList();
+                var roles = DataProvider.RoleDao.GetRoleNameList().Where(x => !EPredefinedRoleUtils.IsPredefinedRole(x)).ToList();
                 var allSites = SiteManager.GetSiteInfoList();
 
                 var adminInfo = AdminManager.GetAdminInfoByUserId(adminId);

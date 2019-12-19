@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTextBox(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("上传视频", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript2("上传视频", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadVideo), new NameValueCollection
             {
                 {"TextBoxClientID", textBoxClientId}
             }), 520, 220);

@@ -26,7 +26,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                        ConfigManager.ChannelPermissions.ContentEdit))
+                        ConfigManager.ChannelPermissions.ContentArrange))
                 {
                     return Unauthorized();
                 }

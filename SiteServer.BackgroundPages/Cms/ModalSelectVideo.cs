@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 	    public static string GetOpenWindowString(SiteInfo siteInfo, string textBoxClientId)
 	    {
-	        return LayerUtils.GetOpenScript("选择视频",
+	        return LayerUtils.GetOpenScript2("选择视频",
 	            PageUtils.GetCmsUrl(siteInfo.Id, nameof(ModalSelectVideo), new NameValueCollection
 	            {
 	                {"RootPath", "@"},

@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 	    public static string GetOpenWindowStringWithTextBox(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("裁切图片", PageUtils.GetCmsUrl(siteId, nameof(ModalCuttingImage), new NameValueCollection
+            return LayerUtils.GetOpenScript2("裁切图片", PageUtils.GetCmsUrl(siteId, nameof(ModalCuttingImage), new NameValueCollection
             {
                 {"textBoxClientID", textBoxClientId}
             }));

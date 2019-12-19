@@ -116,7 +116,7 @@
         <div class="col-6">
           <asp:CheckBoxList ID="CblContentGroups" RepeatDirection="Horizontal" class="checkbox checkbox-primary" RepeatColumns="5"
             runat="server" />
-          <asp:Button id="BtnContentGroupAdd" class="btn btn-sm" text="新增内容组" runat="server" />
+          <input type="button" onClick="utils.openLayer({title: '添加内容组', url: 'modalContentGroupAdd.aspx?siteId=<%=SiteId%>', width: 600, height: 300});return false;" class="btn btn-sm" value="新增内容组" />
         </div>
         <div class="col-5">
           
@@ -135,11 +135,10 @@
       </div>
 
       <div class="form-group form-row">
-        <label class="col-1 col-form-label text-right text-truncate text-nowrap">标签</label>
+        <label class="col-1 col-form-label text-right text-truncate text-nowrap"><a name="tagNames"></a>标签</label>
         <div class="col-6">
           <el-select
             v-model="tagNames"
-            name="tagNames"
             style="width: 100%;"
             size="medium"
             multiple
@@ -235,18 +234,13 @@
 <!--#include file="../inc/foot.html"-->
 <script type="text/javascript" charset="utf-8" src="../assets/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js"></script>
 <script src="../assets/js/es6-promise.auto.min.js" type="text/javascript"></script>
-<script src="../assets/js/axios-0.17.1.min.js" type="text/javascript"></script>
 <script src="../assets/js/lodash-4.17.10.min.js" type="text/javascript"></script>
-<script src="../assets/js/jquery-1.9.1.min.js" type="text/javascript"></script>
-<script src="../assets/js/layer/layer-3.1.1.js" type="text/javascript"></script>
 <script src="../assets/js/sweetalert2-7.28.4.all.min.js" type="text/javascript"></script>
 <script src="../assets/js/vue-2.5.16.min.js" type="text/javascript"></script>
 <script src="../assets/js/vee-validate-2.1.0.js" type="text/javascript"></script>
 <script src="../assets/js/vee-validate-locale-zh_CN-2.1.0.js" type="text/javascript"></script>
 <script src="../assets/element-ui/index.js"></script>
 <script src="../assets/js/apiUtils.js" type="text/javascript"></script>
-<script src="../assets/js/pageUtils.js" type="text/javascript"></script>
-<script src="../assets/js/utils.js" type="text/javascript"></script>
 <script type="text/javascript">
   var apiUrl = '@Sys.InnerApiUrl';
 </script>

@@ -385,18 +385,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
         private bool HasChannelPermissions(List<string> channelPermissionList, params string[] channelPermissions)
         {
-            if (IsSystemAdministrator)
-            {
-                return true;
-            }
-            foreach (var channelPermission in channelPermissions)
-            {
-                if (channelPermissionList.Contains(channelPermission))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return IsSystemAdministrator || channelPermissions.Any(channelPermissionList.Contains);
         }
 
         public bool HasChannelPermissions(int siteId, int channelId)

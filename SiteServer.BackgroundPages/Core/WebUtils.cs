@@ -216,7 +216,7 @@ namespace SiteServer.BackgroundPages.Core
 <a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentExport.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
     导 出
 </a>");
-                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentOrder))
+                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentArrange))
                 {
                     builder.Append($@"
 <a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentTidyUp.GetOpenWindowString(siteInfo.Id, channelInfo.Id, pageUrl)}"">
@@ -243,8 +243,10 @@ function getWordSpliter(){{
     var pureText = {UEditorUtils.GetPureTextScript(attributeName)}
 	$.post('{AjaxCmsService.GetWordSpliterUrl(siteInfo.Id)}&r=' + Math.random(), {{content:pureText}}, function(data) {{
 		if(data !=''){{
-            $('.nav-pills').children('li').eq(1).find('a').click();
-			$('#TbTags').val(data).focus();
+            //$('.nav-pills').children('li').eq(1).find('a').click();
+			//$('#TbTags').val(data).focus();
+            $vue.tagNames = data.split(' ');
+            location.hash = '#tagNames';
 		}}else{{
             {AlertUtils.Error("提取关键字", "对不起，内容不足，无法提取关键字")}
         }}

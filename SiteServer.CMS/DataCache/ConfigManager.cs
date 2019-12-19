@@ -95,7 +95,7 @@ namespace SiteServer.CMS.DataCache
             public const string ContentEdit = "cms_contentEdit";
             public const string ContentDelete = "cms_contentDelete";
             public const string ContentTranslate = "cms_contentTranslate";
-            public const string ContentOrder = "cms_contentOrder";
+            public const string ContentArrange = "cms_contentArrange";
             public const string ChannelAdd = "cms_channelAdd";
             public const string ChannelEdit = "cms_channelEdit";
             public const string ChannelDelete = "cms_channelDelete";

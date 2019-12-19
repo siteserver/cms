@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("导入Word", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorImportWord), new NameValueCollection
+            return LayerUtils.GetOpenScript2("导入Word", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorImportWord), new NameValueCollection
             {
                 {"AttributeName", attributeName}
             }), 600, 400);

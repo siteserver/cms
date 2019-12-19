@@ -22,7 +22,7 @@
     <i class="fa fa-toggle-on"></i>
     选项
   </button>
-  <button v-if="count > 0 && permissions.isEdit" v-on:click="btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350}, $event)"
+  <button v-if="count > 0 && permissions.isArrange" v-on:click="btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350}, $event)"
     class="btn btn-outline-primary btn-sm">
     <i class="fa fa-list-ol"></i>
     整理
@@ -168,7 +168,7 @@
     <i class="fa fa-upload"></i>
     导入
   </button>
-  <button v-if="count > 0 && permissions.isEdit" v-on:click="btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350}, $event)"
+  <button v-if="count > 0 && permissions.isArrange" v-on:click="btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350}, $event)"
     class="btn btn-outline-primary btn-sm">
     <i class="fa fa-list-ol"></i>
     整理

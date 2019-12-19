@@ -18,6 +18,11 @@ namespace SiteServer.Utils
             return GetOpenScript(title, pageUrl, 0, 0);
         }
 
+        public static string GetOpenScript2(string title, string pageUrl)
+        {
+            return GetOpenScript2(title, pageUrl, 0, 0);
+        }
+
         public static string GetOpenScript(string title, string pageUrl, int width, int height)
         {
             string areaWidth = $"'{width}px'";
@@ -36,6 +41,26 @@ namespace SiteServer.Utils
             }
             return
                 $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}'}}, area: [{areaWidth}, {areaHeight}], offset: [{offsetLeft}, {offsetRight}]}});return false;";
+        }
+
+        public static string GetOpenScript2(string title, string pageUrl, int width, int height)
+        {
+            string areaWidth = $"'{width}px'";
+            string areaHeight = $"'{height}px'";
+            var offsetLeft = "''";
+            var offsetRight = "''";
+            if (width == 0)
+            {
+                areaWidth = "($(window).width() - 50) +'px'";
+                offsetRight = "'25px'";
+            }
+            if (height == 0)
+            {
+                areaHeight = "($(window).height() - 50) +'px'";
+                offsetLeft = "'25px'";
+            }
+            return
+                $@"utils.openLayer({{title: '{title}', url: '{pageUrl}', width: {width}, height: {height}}});return false;";
         }
 
         public static string GetOpenScriptWithTextBoxValue(string title, string pageUrl, string textBoxId)

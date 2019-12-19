@@ -1,6 +1,8 @@
 ﻿using Datory;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 using SqlKata;
 
 namespace SiteServer.API.Controllers.V1
@@ -13,7 +15,11 @@ namespace SiteServer.API.Controllers.V1
 
             if (channelId.HasValue)
             {
-                query.Where(nameof(ContentInfo.ChannelId), channelId.Value);
+                //query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
+                var channel = ChannelManager.GetChannelInfo(siteId, channelId.Value);
+                var channelIds = ChannelManager.GetChannelIdList(channel, EScopeType.All);
+
+                query.WhereIn(nameof(ContentInfo.ChannelId), channelIds);
             }
 
             if (request.Checked.HasValue)

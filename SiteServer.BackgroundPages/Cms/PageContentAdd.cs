@@ -29,7 +29,6 @@ namespace SiteServer.BackgroundPages.Cms
         public AuxiliaryControl AcAttributes;
         public CheckBoxList CblContentAttributes;
         public CheckBoxList CblContentGroups;
-        public Button BtnContentGroupAdd;
         public RadioButtonList RblContentLevel;
         public TextBox TbTags;
         public Literal LtlTags;
@@ -133,8 +132,6 @@ namespace SiteServer.BackgroundPages.Cms
                     var item = new ListItem(groupName, groupName);
                     CblContentGroups.Items.Add(item);
                 }
-                
-                BtnContentGroupAdd.Attributes.Add("onclick", ModalContentGroupAdd.GetOpenWindowString(SiteId));
 
                 LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(SiteId));
 

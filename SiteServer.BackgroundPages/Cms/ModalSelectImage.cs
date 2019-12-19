@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(SiteInfo siteInfo, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("选择图片",
+            return LayerUtils.GetOpenScript2("选择图片",
                 PageUtils.GetCmsUrl(siteInfo.Id, nameof(ModalSelectImage), new NameValueCollection
                 {
                     {"RootPath", "@"},

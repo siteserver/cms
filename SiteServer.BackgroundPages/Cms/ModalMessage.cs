@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToPreviewImage(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("预览图片", PageUtils.GetCmsUrl(siteId, nameof(ModalMessage), new NameValueCollection
+            return LayerUtils.GetOpenScript2("预览图片", PageUtils.GetCmsUrl(siteId, nameof(ModalMessage), new NameValueCollection
             {
                 {"type", TypePreviewImage},
                 {"textBoxClientID", textBoxClientId}
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToPreviewVideo(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("预览视频", PageUtils.GetCmsUrl(siteId, nameof(ModalMessage), new NameValueCollection
+            return LayerUtils.GetOpenScript2("预览视频", PageUtils.GetCmsUrl(siteId, nameof(ModalMessage), new NameValueCollection
             {
                 {"type", TypePreviewVideo},
                 {"textBoxClientID", textBoxClientId}

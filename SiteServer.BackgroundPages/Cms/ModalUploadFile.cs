@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTextBox(int siteId, EUploadType uploadType, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("上传附件", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadFile), new NameValueCollection
+            return LayerUtils.GetOpenScript2("上传附件", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadFile), new NameValueCollection
             {
                 {"uploadType", EUploadTypeUtils.GetValue(uploadType)},
                 {"TextBoxClientID", textBoxClientId}
