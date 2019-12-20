@@ -179,18 +179,19 @@ namespace SiteServer.Utils
         {
             public const string Jquery = "components/jquery-1.9.1.min.js";
             public const string Lodash = "components/lodash-4.17.4.min.js";
-            public const string Vue = "components/vue-2.1.10.min.js";
             public const string JsCookie = "components/js.cookie.js";
             public const string StlClient = "components/stlClient.js";
         }
 
+        public class VueJs
+        {
+            public const string Vue = "vuejs/vue-2.5.16.min.js";
+            public const string ElementCss = "vuejs/element-ui/theme-chalk/index.css";
+            public const string ElementJs = "vuejs/element-ui/index.js";
+        }
+
         public class JQuery
         {
-            public class FancyBox
-            {
-                public const string Js = "jquery/fancybox/jquery.fancybox-1.3.4.pack.js";
-                public const string Css = "jquery/fancybox/jquery.fancybox-1.3.4.css";
-            }
 
             public class AjaxUpload
             {

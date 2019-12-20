@@ -63,6 +63,7 @@ namespace SiteServer.CMS.DataCache
             public const string ContentsTranslate = "site_contentsTranslate";
             public const string ContentsCheck = "site_contentsCheck";
             public const string ContentsTrash = "site_contentsTrash";
+            public const string Library = "site_library";
             public const string Templates = "site_templates";
             public const string Specials = "site_specials";
             public const string TemplatesMatch = "site_templatesMatch";

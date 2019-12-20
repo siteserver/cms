@@ -183,7 +183,6 @@ namespace SiteServer.CMS.StlParser.Model
         public class Const
         {
             public const string Jquery = "Jquery";
-            public const string Vue = "Vue";
             public const string JsCookie = "JsCookie";
             public const string StlClient = "StlClient";
 
@@ -214,6 +213,9 @@ namespace SiteServer.CMS.StlParser.Model
             public const string JsInnerCalendar = "Js_Inner_Calendar";
 
             public const string JsStaticAdFloating = "Js_Static_AdFloating";      //漂浮广告
+
+            public const string Vue = nameof(Vue);
+            public const string VueElement = nameof(VueElement);
         }
 
         private string GetJsCode(string pageJsName)
@@ -231,7 +233,17 @@ namespace SiteServer.CMS.StlParser.Model
             else if (pageJsName == Const.Vue)
             {
                 retVal =
-                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Vue)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VueJs.Vue)}"" type=""text/javascript""></script>";
+            }
+            else if (pageJsName == Const.VueElement)
+            {
+                retVal =
+                    $@"<link href=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VueJs.ElementCss)}"" rel=""stylesheet"" /><script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VueJs.ElementJs)}""></script>";
+            }
+            else if (pageJsName == Const.Vue)
+            {
+                retVal =
+                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VueJs.Vue)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.JsCookie)
             {

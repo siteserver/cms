@@ -1,5 +1,13 @@
 var $url = '/pages/main';
 
+function insertHtml(attributeName, html)
+{
+    if (html)
+    {
+      UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
+    }
+}
+
 var data = {
   allTagNames: null,
   tagNames: []

@@ -40,6 +40,7 @@ namespace SiteServer.Utils
         {
             public const string DirectoryName = "SiteFiles";
 
+            public const string Library = "Library";
             public const string BackupFiles = "BackupFiles";
             public const string TemporaryFiles = "TemporaryFiles";
             public const string Plugins = "Plugins";

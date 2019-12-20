@@ -235,8 +235,12 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetTextEditorCommands(SiteInfo siteInfo, string attributeName)
+        public static string GetTextEditorCommands(SiteInfo siteInfo, int channelId, string attributeName)
         {
+            var url = $"editorLayerImage.cshtml?siteId={siteInfo.Id}&channelId={channelId}&attributeName={attributeName}";
+            var insertImage = $@"utils.openLayer({{title: '插入图片', url: '{url}', width: 700, height: 500}});return false;";
+            url = $"editorLayerText.cshtml?siteId={siteInfo.Id}&channelId={channelId}&attributeName={attributeName}";
+            var insertText = $@"utils.openLayer({{title: '插入图文', url: '{url}', full: true}});return false;";
             return $@"
 <script type=""text/javascript"">
 function getWordSpliter(){{
@@ -276,13 +280,15 @@ function detection_{attributeName}(){{
 </script>
 <div class=""btn-group btn-group-sm"">
     <button class=""btn"" onclick=""{ModalTextEditorImportWord.GetOpenWindowString(siteInfo.Id, attributeName)}"">导入Word</button>
-    <button class=""btn"" onclick=""{ModalTextEditorInsertImage.GetOpenWindowString(siteInfo.Id, attributeName)}"">插入图片</button>
+    <button class=""btn"" onclick=""{insertImage}"">插入图片</button>
     <button class=""btn"" onclick=""{ModalTextEditorInsertVideo.GetOpenWindowString(siteInfo.Id, attributeName)}"">插入视频</button>
     <button class=""btn"" onclick=""{ModalTextEditorInsertAudio.GetOpenWindowString(siteInfo.Id, attributeName)}"">插入音频</button>
+    <button class=""btn"" onclick=""{insertText}"">插入图文</button>
     <button class=""btn"" onclick=""getWordSpliter();return false;"">提取关键字</button>
     <button class=""btn"" onclick=""detection_{attributeName}();return false;"">敏感词检测</button>
 </div>
 ";
+            //    <button class=""btn"" onclick=""{ModalTextEditorInsertImage.GetOpenWindowString(siteInfo.Id, attributeName)}"">插入图片</button>
         }
 
         public static string GetAutoCheckKeywordsScript(SiteInfo siteInfo, List<string> allTagNames, List<string> tagNames)

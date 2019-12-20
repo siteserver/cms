@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
                 {
-                    var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
+                    var commands = WebUtils.GetTextEditorCommands(SiteInfo, 0, styleInfo.AttributeName);
                     builder.Append($@"
 <div class=""form-group"">
     <label class=""control-label"">{styleInfo.DisplayName}</label>

@@ -301,6 +301,27 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         parsedContent = string.Format(formatString, parsedContent);
                     }
+
+                    pageInfo.AddPageHeadCodeIfNotExists(PageInfo.Const.Vue);
+                    pageInfo.AddPageHeadCodeIfNotExists(PageInfo.Const.VueElement);
+
+                    var elementId = $"ss_{pageInfo.UniqueId}";
+
+                    var scripts = $@"
+<script type=""text/javascript"">
+new Vue({{
+  el: ""#{elementId}"",
+  data: {{
+    show: false
+  }},
+  created: function () {{
+    this.show = true;
+  }}
+}});
+</script>
+";
+                    parsedContent = parsedContent.Replace(@"<img data-vue-type=""el-image""", " <el-image ");
+                    parsedContent = $@"<div id=""{elementId}"" style=""display: none"" :style=""{{display: show ? '' : 'none'}}"">{parsedContent}</div>{scripts}";
                 }
                 else if (ContentAttribute.PageContent.ToLower().Equals(type))
                 {

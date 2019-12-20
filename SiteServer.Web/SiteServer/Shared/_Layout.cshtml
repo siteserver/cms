@@ -37,7 +37,7 @@
 
         <hr />
 
-        <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+        <div v-if="this.pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
           <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
           <span v-html="pageAlert.html"></span>
         </div>
@@ -45,7 +45,7 @@
         @RenderBody()
       </div>
       } else {
-        <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+        <div v-if="this.pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
           <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
           <span v-html="pageAlert.html"></span>
         </div>

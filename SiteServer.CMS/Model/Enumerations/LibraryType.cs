@@ -12,10 +12,6 @@ namespace SiteServer.CMS.Model.Enumerations
     public enum LibraryType
     {
         Text,
-        Image,
-        Document,
-        Audio,
-        Video,
-        File
+        Image
     }
 }

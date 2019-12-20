@@ -18,6 +18,38 @@ var utils = {
     return decodeURIComponent(result[1]);
   },
 
+  notifyError: function (app, error) {
+    var message = error.message;
+    if (error.response && error.response.data) {
+      if (error.response.data.exceptionMessage) {
+        message = error.response.data.exceptionMessage;
+      } else if (error.response.data.message) {
+        message = error.response.data.message;
+      }
+    }
+
+    app.$notify.error({
+      title: '错误',
+      message: message
+    });
+  },
+
+  getQueryBoolean: function (name) {
+    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+    if (!result || result.length < 1) {
+      return false;
+    }
+    return result[1] === 'true' || result[1] === 'True';
+  },
+
+  getQueryInt: function (name) {
+    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+    if (!result || result.length < 1) {
+      return 0;
+    }
+    return parseInt(result[1]);
+  },
+
   getPageAlert: function (error) {
     var message = error.message;
     if (error.response && error.response.data) {
@@ -64,7 +96,7 @@ var utils = {
       config.height = $(window).height() - 50;
     }
 
-    layer.open({
+    var index = layer.open({
       type: 2,
       btn: null,
       title: config.title,
@@ -74,6 +106,10 @@ var utils = {
       shadeClose: true,
       content: config.url
     });
+
+    if (config.max) {
+      layer.full(index);
+    }
 
     return false;
   }

@@ -304,7 +304,9 @@ namespace SiteServer.CMS.Model
 	        var channelInfo = ChannelManager.GetChannelInfo(SiteId, ChannelId);
 	        var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
 
-	        foreach (var styleInfo in styleInfoList)
+            if (siteInfo == null || channelInfo == null || styleInfoList == null) return dict;
+
+            foreach (var styleInfo in styleInfoList)
 	        {
 	            if (styleInfo.InputType == InputType.Image || styleInfo.InputType == InputType.File || styleInfo.InputType == InputType.Video)
 	            {

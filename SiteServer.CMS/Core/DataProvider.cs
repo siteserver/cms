@@ -79,6 +79,15 @@ namespace SiteServer.CMS.Core
         private static KeywordDao _keywordDao;
         public static KeywordDao KeywordDao => _keywordDao ?? (_keywordDao = new KeywordDao());
 
+        private static LibraryGroupDao _libraryGroupDao;
+        public static LibraryGroupDao LibraryGroupDao => _libraryGroupDao ?? (_libraryGroupDao = new LibraryGroupDao());
+
+        private static LibraryImageDao _libraryImageDao;
+        public static LibraryImageDao LibraryImageDao => _libraryImageDao ?? (_libraryImageDao = new LibraryImageDao());
+
+        private static LibraryTextDao _libraryTextDao;
+        public static LibraryTextDao LibraryTextDao => _libraryTextDao ?? (_libraryTextDao = new LibraryTextDao());
+
         private static LogDao _logDao;
         public static LogDao LogDao => _logDao ?? (_logDao = new LogDao());
 
@@ -159,6 +168,9 @@ namespace SiteServer.CMS.Core
             _dbCacheDao = null;
             _errorLogDao = null;
             _keywordDao = null;
+            _libraryGroupDao = null;
+            _libraryImageDao = null;
+            _libraryTextDao = null;
             _logDao = null;
             _permissionsInRolesDao = null;
             _pluginConfigDao = null;
@@ -198,6 +210,9 @@ namespace SiteServer.CMS.Core
             DbCacheDao,
             ErrorLogDao,
             KeywordDao,
+            LibraryGroupDao,
+            LibraryImageDao,
+            LibraryTextDao,
             LogDao,
             PermissionsInRolesDao,
             PluginConfigDao,

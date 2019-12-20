@@ -729,5 +729,35 @@ namespace SiteServer.Utils
             var caseInsensitiveDictionary = new NameValueCollection(comparer);
             return caseInsensitiveDictionary;
         }
+
+        public static string Base64Encode(string unencodedText)
+        {
+            try
+            {
+                var encodedBytes = Encoding.UTF8.GetBytes(unencodedText);
+                return Convert.ToBase64String(encodedBytes);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return string.Empty;
+        }
+
+        public static string Base64Decode(string str)
+        {
+            try
+            {
+                var buff = Convert.FromBase64String(str);
+                return Encoding.UTF8.GetString(buff);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return string.Empty;
+        }
     }
 }

@@ -214,6 +214,10 @@
     <Compile Include="Model\ContentTagInfo.cs" />
     <Compile Include="Model\Enumerations\ETaxisType.cs" />
     <Compile Include="Core\AuthenticatedRequest.cs" />
+    <Compile Include="Model\Enumerations\LibraryType.cs" />
+    <Compile Include="Model\LibraryGroupInfo.cs" />
+    <Compile Include="Model\LibraryImageInfo.cs" />
+    <Compile Include="Model\LibraryTextInfo.cs" />
     <Compile Include="Plugin\Impl\PermissionsImpl.cs" />
     <Compile Include="DataCache\SiteManager.cs" />
     <Compile Include="Core\SiteTemplateManager.cs" />
@@ -368,6 +372,9 @@
     <Compile Include="Provider\DbCacheDao.cs" />
     <Compile Include="Provider\ErrorLogDao.cs" />
     <Compile Include="Provider\KeywordDao.cs" />
+    <Compile Include="Provider\LibraryTextDao.cs" />
+    <Compile Include="Provider\LibraryImageDao.cs" />
+    <Compile Include="Provider\LibraryGroupDao.cs" />
     <Compile Include="Provider\LogDao.cs" />
     <Compile Include="Provider\PermissionsInRolesDao.cs" />
     <Compile Include="Provider\PluginConfigDao.cs" />
@@ -397,6 +404,7 @@
     <Compile Include="DataCache\Core\StlCacheManager.cs" />
     <Compile Include="DataCache\Stl\StlSqlContentsCache.cs" />
     <Compile Include="DataCache\Stl\StlTagCache.cs" />
+    <Compile Include="StlParser\Editor\VueImage.cs" />
     <Compile Include="StlParser\FileSystemObjectAsync.cs" />
     <Compile Include="StlParser\Model\ChannelIdContentId.cs" />
     <Compile Include="StlParser\Model\ChannelItemInfo.cs" />

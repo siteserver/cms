@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Controls
 
                 if (styleInfo.InputType == InputType.TextEditor)
                 {
-                    var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
+                    var commands = WebUtils.GetTextEditorCommands(SiteInfo, ChannelId, styleInfo.AttributeName);
                     builder.Append($@"
 <div class=""form-group form-row"">
     <label class=""col-sm-1 col-form-label text-right text-truncate text-nowrap"">{styleInfo.DisplayName}</label>

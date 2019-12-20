@@ -4,6 +4,7 @@ using System.IO;
 using System.Web;
 using System.Text.RegularExpressions;
 using System.Linq;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {
@@ -11,6 +12,40 @@ namespace SiteServer.Utils
     {
         public const char SeparatorChar = '\\';
         public static readonly char[] InvalidPathChars = Path.GetInvalidPathChars();
+
+        public static bool IsExtension(string ext, params string[] extensions)
+        {
+            return extensions.Any(extension => StringUtils.EqualsIgnoreCase(ext, extension));
+        }
+
+        public static string GetLibraryFileName(string filePath)
+        {
+            return $"{StringUtils.GetShortGuid(false)}{GetExtension(filePath)}";
+        }
+
+        public static string GetLibraryVirtualPath(EUploadType uploadType, string fileName)
+        {
+            var uploadDirectoryName = string.Empty;
+
+            if (uploadType == EUploadType.Image)
+            {
+                uploadDirectoryName = "images";
+            }
+            else if (uploadType == EUploadType.Video)
+            {
+                uploadDirectoryName = "videos";
+            }
+            else if (uploadType == EUploadType.File)
+            {
+                uploadDirectoryName = "files";
+            }
+            else if (uploadType == EUploadType.Special)
+            {
+                uploadDirectoryName = "specials";
+            }
+
+            return $"/{DirectoryUtils.SiteFiles.DirectoryName}/{DirectoryUtils.SiteFiles.Library}/{uploadDirectoryName}/{DateTime.Now.Year}/{DateTime.Now.Month}/{fileName}";
+        }
 
         public static string Combine(params string[] paths)
         {
