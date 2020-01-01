@@ -7,11 +7,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         public class SubmitRequest
         {
             public int SiteId { get; set; }
-            public bool IsThumb { get; set; }
-            public int ThumbWidth { get; set; }
-            public int ThumbHeight { get; set; }
-            public bool IsLinkToOriginal { get; set; }
-            public List<string> FilePaths { get; set; }
+            public List<string> FileUrls { get; set; }
         }
 
         public class UploadResult

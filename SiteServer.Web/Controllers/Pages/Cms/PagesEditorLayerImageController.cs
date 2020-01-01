@@ -3,7 +3,6 @@ using System.IO;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.StlParser.Editor;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.Images;
@@ -107,17 +106,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     if (request.IsLinkToOriginal)
                     {
-                        var vueImage = new VueImage
-                        {
-                            ImageUrl = thumbnailUrl,
-                            PreviewUrl = imageUrl
-                        };
                         result.Add(new SubmitResult
                         {
                             ImageUrl = thumbnailUrl,
-                            PreviewUrl = imageUrl,
-                            VueType = "image",
-                            VueValue = TranslateUtils.Base64Encode(TranslateUtils.JsonSerialize(vueImage))
+                            PreviewUrl = imageUrl
                         });
                     }
                     else

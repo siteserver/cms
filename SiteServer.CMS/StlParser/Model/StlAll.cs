@@ -85,6 +85,10 @@ namespace SiteServer.CMS.StlParser.Model
                 typeof(StlLoading)
             },
             {
+                StlLibrary.ElementName,
+                typeof(StlLibrary)
+            },
+            {
                 StlLocation.ElementName,
                 typeof(StlLocation)
             },

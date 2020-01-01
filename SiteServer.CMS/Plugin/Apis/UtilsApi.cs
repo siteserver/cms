@@ -59,7 +59,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetApiUrl(string relatedUrl = "")
         {
-            return ApiManager.GetApiUrl(relatedUrl);
+            return ApiManager.GetInnerApiUrl(relatedUrl);
         }
 
         public void CreateZip(string zipFilePath, string directoryPath)

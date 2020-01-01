@@ -121,13 +121,19 @@
   </el-pagination>
 </div>
 
-<el-dialog title="图文展示方式" :visible.sync="isSubmitForm">
-  <el-form ref="submitForm" :model="submitForm" :rules="{
+<el-dialog title="图文展示方式" width="80%" :visible.sync="isSubmitForm">
+  <el-form ref="submitForm" size="small" :model="submitForm" :rules="{
     linkText: [
       { required: true, message: '请输入链接文字', trigger: 'blur' }
     ],
   }">
-    <el-form-item label="链接文字" prop="linkText">
+    <el-form-item label="展示方式" prop="type">
+      <el-radio-group v-model="submitForm.type">
+        <el-radio label="click">点击显示</el-radio>
+        <el-radio label="insert">直接显示</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item v-if="submitForm.type === 'click'" label="链接文字" prop="linkText">
       <el-input v-model="submitForm.linkText" autocomplete="off"></el-input>
     </el-form-item>
   </el-form>

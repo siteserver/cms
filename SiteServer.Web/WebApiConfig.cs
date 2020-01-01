@@ -16,7 +16,7 @@ namespace SiteServer.API
     {
         public static void Register(HttpConfiguration config)
         {
-            config.MapHttpAttributeRoutes(new CentralizedPrefixProvider(WebConfigUtils.ApiPrefix));
+            config.MapHttpAttributeRoutes(new CentralizedPrefixProvider("api"));
 
             config.Filters.Add(new JsonExceptionFilterAttribute());
 

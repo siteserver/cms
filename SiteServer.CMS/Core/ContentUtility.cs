@@ -524,9 +524,9 @@ namespace SiteServer.CMS.Core
 
         public static void Delete(string tableName, SiteInfo siteInfo, int channelId, int contentId)
         {
-            if (string.IsNullOrEmpty(tableName) || siteInfo == null || channelId <= 0 || contentId <= 0) return;
+            if (string.IsNullOrEmpty(tableName) || siteInfo == null || contentId <= 0) return;
             
-            DataProvider.ContentDao.Delete(tableName, siteInfo.Id, channelId, contentId);
+            DataProvider.ContentDao.Delete(tableName, siteInfo.Id, contentId);
 
             TagUtils.RemoveTags(siteInfo.Id, contentId);
 

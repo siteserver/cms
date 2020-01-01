@@ -10,6 +10,27 @@ var $apiCloud = axios.create({
 });
 
 var utils = {
+  alertDelete: function (config) {
+    if (!config) return false;
+
+    alert({
+        title: config.title,
+        text: config.text,
+        type: 'warning',
+        confirmButtonText: config.button || '删 除',
+        confirmButtonClass: 'btn btn-danger',
+        showCancelButton: true,
+        cancelButtonText: '取 消'
+      })
+      .then(function (result) {
+        if (result.value) {
+          config.callback();
+        }
+      });
+
+    return false;
+  },
+  
   getQueryString: function (name) {
     var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
     if (!result || result.length < 1) {

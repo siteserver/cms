@@ -29,8 +29,11 @@ namespace SiteServer.BackgroundPages.Core
             }
             else
             {
+                var layerUrl =
+                    $@"contentsLayerView.cshtml?siteId={siteInfo.Id}&channelId={-contentInfo.ChannelId}&contentId={contentInfo.Id}";
+                //ModalContentView.GetOpenWindowString(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl)
                 url =
-                    $@"<a href=""javascript:;"" onclick=""{ModalContentView.GetOpenWindowString(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl)}"">{displayString}</a>";
+                    $@"<a href=""javascript:;"" onclick=""{LayerUtils.GetOpenScript2("查看内容", layerUrl)}"">{displayString}</a>";
             }
 
             var image = string.Empty;

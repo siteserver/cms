@@ -37,31 +37,31 @@ namespace SiteServer.CMS.Api
             return route;
         }
 
-        public static string GetUrl(string pluginId, string routeResource = "", string routeId = "", string routeAction = "")
-        {
-            var apiUrl = ApiManager.GetApiUrl(Route);
-            apiUrl = apiUrl.Replace("{pluginId}", pluginId);
-            if (!string.IsNullOrEmpty(routeResource))
-            {
-                apiUrl = PageUtils.Combine(apiUrl, routeResource);
-                if (!string.IsNullOrEmpty(routeId))
-                {
-                    apiUrl = PageUtils.Combine(apiUrl, routeId);
-                    if (!string.IsNullOrEmpty(routeAction))
-                    {
-                        apiUrl = PageUtils.Combine(apiUrl, "actions", routeAction);
-                    }
-                }
-                else if (!string.IsNullOrEmpty(routeAction))
-                {
-                    apiUrl = PageUtils.Combine(apiUrl, "actions", routeAction);
-                }
-            }
-            else if (!string.IsNullOrEmpty(routeAction))
-            {
-                apiUrl = PageUtils.Combine(apiUrl, "actions", routeAction);
-            }
-            return apiUrl;
-        }
+        //public static string GetUrl(string pluginId, string routeResource = "", string routeId = "", string routeAction = "")
+        //{
+        //    var apiUrl = ApiManager.GetApiUrl(Route);
+        //    apiUrl = apiUrl.Replace("{pluginId}", pluginId);
+        //    if (!string.IsNullOrEmpty(routeResource))
+        //    {
+        //        apiUrl = PageUtils.Combine(apiUrl, routeResource);
+        //        if (!string.IsNullOrEmpty(routeId))
+        //        {
+        //            apiUrl = PageUtils.Combine(apiUrl, routeId);
+        //            if (!string.IsNullOrEmpty(routeAction))
+        //            {
+        //                apiUrl = PageUtils.Combine(apiUrl, "actions", routeAction);
+        //            }
+        //        }
+        //        else if (!string.IsNullOrEmpty(routeAction))
+        //        {
+        //            apiUrl = PageUtils.Combine(apiUrl, "actions", routeAction);
+        //        }
+        //    }
+        //    else if (!string.IsNullOrEmpty(routeAction))
+        //    {
+        //        apiUrl = PageUtils.Combine(apiUrl, "actions", routeAction);
+        //    }
+        //    return apiUrl;
+        //}
     }
 }

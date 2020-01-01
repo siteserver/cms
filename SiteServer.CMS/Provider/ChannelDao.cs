@@ -332,7 +332,7 @@ namespace SiteServer.CMS.Provider
         /// 更新发布系统下的所有节点的排序号
         /// </summary>
         /// <param name="siteId"></param>
-        private void UpdateWholeTaxisBySiteId(int siteId)
+        public void UpdateWholeTaxisBySiteId(int siteId)
         {
             if (siteId <= 0) return;
             var idList = new List<int>

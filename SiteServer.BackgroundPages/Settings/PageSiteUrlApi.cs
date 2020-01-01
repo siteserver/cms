@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PageSiteUrlApi : BasePage
+	public class PageSiteUrlApi : BasePageCms
     {
-        public RadioButtonList RblIsSeparatedApi;
-        public PlaceHolder PhSeparatedApi;
-        public TextBox TbSeparatedApiUrl;
+		public Repeater RptContents;
+
+        public static string GetRedirectUrl()
+        {
+            return PageUtils.GetSettingsUrl(nameof(PageSiteUrlApi), null);
+        }
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -20,26 +21,30 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.AppPermissions.SettingsSiteUrl);
 
-            EBooleanUtils.AddListItems(RblIsSeparatedApi, "API独立部署", "API与CMS部署在一起");
-            ControlUtils.SelectSingleItem(RblIsSeparatedApi, ConfigManager.SystemConfigInfo.IsSeparatedApi.ToString());
-            PhSeparatedApi.Visible = ConfigManager.SystemConfigInfo.IsSeparatedApi;
-            TbSeparatedApiUrl.Text = ConfigManager.SystemConfigInfo.SeparatedApiUrl;
+            var siteList = SiteManager.GetSiteIdListOrderByLevel();
+            RptContents.DataSource = siteList;
+            RptContents.ItemDataBound += DgContents_ItemDataBound;
+            RptContents.DataBind();
         }
 
-        public void RblIsSeparatedApi_SelectedIndexChanged(object sender, EventArgs e)
+        private static void DgContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            PhSeparatedApi.Visible = TranslateUtils.ToBool(RblIsSeparatedApi.SelectedValue);
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
+
+            var siteId = (int)e.Item.DataItem;
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+
+            var ltlName = (Literal)e.Item.FindControl("ltlName");
+            var ltlDir = (Literal)e.Item.FindControl("ltlDir");
+            var ltlApiUrl = (Literal)e.Item.FindControl("ltlApiUrl");
+            var ltlEditUrl = (Literal)e.Item.FindControl("ltlEditUrl");
+
+            ltlName.Text = SiteManager.GetSiteName(siteInfo);
+            ltlDir.Text = siteInfo.SiteDir;
+
+            ltlApiUrl.Text = $@"<a href=""{siteInfo.Additional.ApiUrl}/v1/ping"" target=""_blank"">{siteInfo.Additional.ApiUrl}</a>";
+
+            ltlEditUrl.Text = $@"<a href=""{PageSiteUrlApiConfig.GetRedirectUrl(siteId)}"">修改</a>";
         }
-
-        public override void Submit_OnClick(object sender, EventArgs e)
-        {
-            ConfigManager.SystemConfigInfo.IsSeparatedApi = TranslateUtils.ToBool(RblIsSeparatedApi.SelectedValue);
-            ConfigManager.SystemConfigInfo.SeparatedApiUrl = TbSeparatedApiUrl.Text;
-
-            DataProvider.ConfigDao.Update(ConfigManager.Instance);
-
-            AuthRequest.AddAdminLog("修改API访问地址");
-            SuccessUpdateMessage();
-        }
-    }
+	}
 }

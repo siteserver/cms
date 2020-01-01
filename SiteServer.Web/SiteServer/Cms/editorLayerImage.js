@@ -21,9 +21,10 @@ var data = {
 
 var methods = {
   insert: function(result) {
-    var html = '<img src="' + result.imageUrl + '" style="border: 0; max-width: 100%" /><br/>';
+    var html = '<img src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
     if (result.previewUrl) {
-      html = '<img data-vue-type="el-image" src="' + result.imageUrl + '" style="border: 0; max-width: 100%" /><br/>';
+      var vueHtml = '<el-image src="' + result.imageUrl + '" style="border: 0; max-width: 100%"></el-image>';
+      html = '<img data-vue="' + encodeURIComponent(vueHtml) + '" src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
     }
     parent.insertHtml(this.attributeName, html);
   },

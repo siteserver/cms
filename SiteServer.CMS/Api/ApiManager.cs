@@ -6,29 +6,18 @@ namespace SiteServer.CMS.Api
 {
     public static class ApiManager
     {
-        public static bool IsSeparatedApi => ConfigManager.SystemConfigInfo.IsSeparatedApi;
-
-        public static string ApiUrl => ConfigManager.SystemConfigInfo.ApiUrl;
-
-        public static string RootUrl => PageUtils.ApplicationPath;
-
-        private static string _innerApiUrl;
+        private static string innerApiUrl;
 
         public static string InnerApiUrl
         {
             get
             {
-                if (string.IsNullOrEmpty(_innerApiUrl))
+                if (string.IsNullOrEmpty(innerApiUrl))
                 {
-                    _innerApiUrl = PageUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
+                    innerApiUrl = PageUtils.ParseNavigationUrl("~/api");
                 }
-                return _innerApiUrl;
+                return innerApiUrl;
             }
-        }
-
-        public static string GetApiUrl(string route)
-        {
-            return PageUtils.Combine(ApiUrl, route);
         }
 
         public static string GetInnerApiUrl(string route)

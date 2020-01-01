@@ -378,9 +378,9 @@ namespace SiteServer.CMS.Provider
             ContentManager.RemoveCache(siteId, channelId, tableName);
         }
 
-        public void Delete(string tableName, int siteId, int channelId, int contentId)
+        public void Delete(string tableName, int siteId, int contentId)
         {
-            if (string.IsNullOrEmpty(tableName) || siteId <= 0 || channelId <= 0 || contentId <= 0) return;
+            if (string.IsNullOrEmpty(tableName) || siteId <= 0 || contentId <= 0) return;
 
             ExecuteNonQuery($"DELETE FROM {tableName} WHERE SiteId = {siteId} AND Id = {contentId}");
         }
@@ -646,7 +646,7 @@ namespace SiteServer.CMS.Provider
                     conn.Open();
                     using (var rdr = ExecuteReader(conn, sqlString))
                     {
-                        if (rdr.Read())
+                        if (rdr.Read() && !rdr.IsDBNull(0))
                         {
                             maxTaxis = GetInt(rdr, 0);
                         }
@@ -668,7 +668,7 @@ namespace SiteServer.CMS.Provider
                     conn.Open();
                     using (var rdr = ExecuteReader(conn, sqlString))
                     {
-                        if (rdr.Read())
+                        if (rdr.Read() && !rdr.IsDBNull(0))
                         {
                             maxTaxis = GetInt(rdr, 0);
                         }
@@ -2746,7 +2746,7 @@ GO");
 
             ContentInfo contentInfo = null;
 
-            var sqlWhere = $"WHERE {ContentAttribute.ChannelId} = {channelId} AND {ContentAttribute.Id} = {contentId}";
+            var sqlWhere = $"WHERE ({ContentAttribute.ChannelId} = {channelId} OR {ContentAttribute.ChannelId} = {-channelId}) AND {ContentAttribute.Id} = {contentId}";
             var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
             using (var rdr = ExecuteReader(sqlSelect))

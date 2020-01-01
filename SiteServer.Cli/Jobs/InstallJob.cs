@@ -106,7 +106,7 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            WebConfigUtils.UpdateWebConfig(WebConfigUtils.IsProtectData, WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.ApiPrefix, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory, StringUtils.GetShortGuid(), false);
+            WebConfigUtils.UpdateWebConfig(WebConfigUtils.IsProtectData, WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory, StringUtils.GetShortGuid(), false);
 
             DataProvider.Reset();
 

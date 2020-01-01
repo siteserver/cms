@@ -268,18 +268,54 @@ namespace SiteServer.CMS.Plugin
 
             if (metadataMenu.Menus != null && metadataMenu.Menus.Count > 0)
             {
-                var chlildren = new List<Menu>();
+                var children = new List<Menu>();
                 var x = 1;
                 foreach (var childMetadataMenu in metadataMenu.Menus)
                 {
                     var child = GetMenu(pluginId, siteId, channelId, contentId, childMetadataMenu, x++);
 
-                    chlildren.Add(child);
+                    children.Add(child);
                 }
-                menu.Menus = chlildren;
+                menu.Menus = children;
             }
 
             return menu;
+        }
+
+        public static Tab GetPluginTab(string pluginId, string prefix, Menu menu)
+        {
+            var tab = new Tab
+            {
+                Id = menu.Id,
+                Text = menu.Text,
+                IconClass = menu.IconClass,
+                Selected = false,
+                Href = menu.Href,
+                Target = menu.Target,
+                Permissions = string.Empty
+            };
+
+            var permissions = new List<string>();
+            if (menu.Menus != null && menu.Menus.Count > 0)
+            {
+                tab.Children = new Tab[menu.Menus.Count];
+                for (var i = 0; i < menu.Menus.Count; i++)
+                {
+                    var child = menu.Menus[i];
+                    var childPermission = GetMenuPermission(pluginId, menu.Text, child);
+                    permissions.Add(childPermission);
+
+                    tab.Children[i] = GetPluginTab(pluginId, menu.Text, child);
+                }
+            }
+            else
+            {
+                var permission = GetMenuPermission(pluginId, prefix, menu);
+                permissions.Add(permission);
+            }
+            tab.Permissions = TranslateUtils.ObjectCollectionToString(permissions);
+
+            return tab;
         }
 
         public static List<PermissionConfigManager.PermissionConfig> GetTopPermissions()
@@ -297,15 +333,37 @@ namespace SiteServer.CMS.Plugin
             return permissions;
         }
 
+        private static string GetMenuPermission(string pluginId, string prefix, Menu menu)
+        {
+            return string.IsNullOrEmpty(prefix) ? $"{pluginId}:{menu.Text}" : $"{pluginId}:{prefix}:{menu.Text}";
+        }
+
         public static List<PermissionConfigManager.PermissionConfig> GetSitePermissions(int siteId)
         {
             var permissions = new List<PermissionConfigManager.PermissionConfig>();
 
             foreach (var service in PluginManager.Services)
             {
-                if (service.SiteMenuFuncs != null)
+                if (service.SiteMenuFuncs == null) continue;
+
+                foreach (var menuFunc in service.SiteMenuFuncs)
                 {
-                    permissions.Add(new PermissionConfigManager.PermissionConfig(service.PluginId, $"{service.Metadata.Title}"));
+                    var metadataMenu = menuFunc.Invoke(siteId);
+                    if (metadataMenu == null) continue;
+                        
+                    if (metadataMenu.Menus != null && metadataMenu.Menus.Count > 0)
+                    {
+                        foreach (var menu in metadataMenu.Menus)
+                        {
+                            var permission = GetMenuPermission(service.PluginId, metadataMenu.Text, menu);
+                            permissions.Add(new PermissionConfigManager.PermissionConfig(permission, $"{service.Metadata.Title} -> {menu.Text}"));
+                        }
+                    }
+                    else
+                    {
+                        var permission = GetMenuPermission(service.PluginId, string.Empty, metadataMenu);
+                        permissions.Add(new PermissionConfigManager.PermissionConfig(permission, $"{service.Metadata.Title} -> {metadataMenu.Text}"));
+                    }
                 }
             }
 

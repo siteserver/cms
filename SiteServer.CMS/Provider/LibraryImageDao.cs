@@ -97,11 +97,16 @@ namespace SiteServer.CMS.Provider
             }
             if (!string.IsNullOrEmpty(keyword))
             {
-                if (!string.IsNullOrEmpty(keyword))
+                if (!string.IsNullOrEmpty(whereString))
                 {
                     whereString += " AND ";
                 }
-                whereString += $@"{nameof(LibraryImageInfo.Title)} LIKE %{keyword}%";
+                whereString += $@"{nameof(LibraryImageInfo.Title)} LIKE '%{keyword}%'";
+            }
+
+            if (!string.IsNullOrEmpty(whereString))
+            {
+                whereString = "WHERE " + whereString;
             }
 
             return DataProvider.DatabaseDao.GetPageTotalCount(TableName, whereString);
@@ -120,11 +125,16 @@ namespace SiteServer.CMS.Provider
             }
             if (!string.IsNullOrEmpty(keyword))
             {
-                if (!string.IsNullOrEmpty(keyword))
+                if (!string.IsNullOrEmpty(whereString))
                 {
                     whereString += " AND ";
                 }
-                whereString += $@"{nameof(LibraryImageInfo.Title)} LIKE %{keyword}%";
+                whereString += $@"{nameof(LibraryImageInfo.Title)} LIKE '%{keyword}%'";
+            }
+
+            if (!string.IsNullOrEmpty(whereString))
+            {
+                whereString = "WHERE " + whereString;
             }
 
             var sqlString = DataProvider.DatabaseDao.GetPageSqlString(TableName, $"{nameof(LibraryImageInfo.Id)}, {nameof(LibraryImageInfo.Title)}, { nameof(LibraryImageInfo.GroupId)}, { nameof(LibraryImageInfo.Url)}", whereString, orderString, perPage * (page - 1),
@@ -162,6 +172,46 @@ namespace SiteServer.CMS.Provider
             }
 
             return accessTokenInfo;
+        }
+
+        public string GetUrlByTitle(string name)
+        {
+            var content = string.Empty;
+
+            var sqlString = $@"SELECT 
+                        {nameof(LibraryImageInfo.Url)}
+                   FROM {TableName} WHERE {nameof(LibraryImageInfo.Title)} = '{name}'";
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    content = rdr.GetString(0);
+                }
+                rdr.Close();
+            }
+
+            return content;
+        }
+
+        public string GetUrlById(int id)
+        {
+            var content = string.Empty;
+
+            var sqlString = $@"SELECT 
+                        {nameof(LibraryImageInfo.Url)}
+                   FROM {TableName} WHERE {nameof(LibraryImageInfo.Id)} = {id}";
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    content = rdr.GetString(0);
+                }
+                rdr.Close();
+            }
+
+            return content;
         }
 
         private static LibraryImageInfo GetLibraryImageInfo(IDataRecord rdr)

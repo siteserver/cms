@@ -54,6 +54,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 return Request.BadRequest<LibraryTextInfo>("请填写图文正文");
             }
 
+            library.Content = PathUtils.SaveLibraryImage(library.Content);
             library.Id = DataProvider.LibraryTextDao.Insert(library);
 
             return library;

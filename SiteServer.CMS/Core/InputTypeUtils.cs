@@ -303,6 +303,8 @@ namespace SiteServer.CMS.Core
 
         private static string ParseString(string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
         {
+            if (string.IsNullOrEmpty(content)) return string.Empty;
+
             var parsedContent = content;
 
             if (!string.IsNullOrEmpty(replace))
@@ -341,7 +343,9 @@ namespace SiteServer.CMS.Core
 
                 if (!string.IsNullOrEmpty(formatString))
                 {
-                    parsedContent = string.Format(formatString, parsedContent);
+                    var date = TranslateUtils.ToDateTime(parsedContent);
+                    parsedContent = date.ToString(formatString);
+                    //parsedContent = string.Format(formatString, parsedContent);
                 }
 
                 if (isLower)

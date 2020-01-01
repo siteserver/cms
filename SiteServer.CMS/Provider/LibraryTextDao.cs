@@ -114,11 +114,16 @@ namespace SiteServer.CMS.Provider
             }
             if (!string.IsNullOrEmpty(keyword))
             {
-                if (!string.IsNullOrEmpty(keyword))
+                if (!string.IsNullOrEmpty(whereString))
                 {
                     whereString += " AND ";
                 }
-                whereString += $@"{nameof(LibraryTextInfo.Title)} LIKE %{keyword}%";
+                whereString += $@"{nameof(LibraryTextInfo.Title)} LIKE '%{keyword}%'";
+            }
+
+            if (!string.IsNullOrEmpty(whereString))
+            {
+                whereString = "WHERE " + whereString;
             }
 
             return DataProvider.DatabaseDao.GetPageTotalCount(TableName, whereString);
@@ -137,11 +142,16 @@ namespace SiteServer.CMS.Provider
             }
             if (!string.IsNullOrEmpty(keyword))
             {
-                if (!string.IsNullOrEmpty(keyword))
+                if (!string.IsNullOrEmpty(whereString))
                 {
                     whereString += " AND ";
                 }
-                whereString += $@"{nameof(LibraryTextInfo.Title)} LIKE %{keyword}%";
+                whereString += $@"{nameof(LibraryTextInfo.Title)} LIKE '%{keyword}%'";
+            }
+
+            if (!string.IsNullOrEmpty(whereString))
+            {
+                whereString = "WHERE " + whereString;
             }
 
             var sqlString = DataProvider.DatabaseDao.GetPageSqlString(TableName, $"{nameof(LibraryTextInfo.Id)}, {nameof(LibraryTextInfo.Title)}, { nameof(LibraryTextInfo.GroupId)}, { nameof(LibraryTextInfo.ImageUrl)}, {nameof(LibraryTextInfo.Summary)}, {nameof(LibraryTextInfo.Content)}", whereString, orderString, perPage * (page - 1),
@@ -181,6 +191,46 @@ namespace SiteServer.CMS.Provider
             }
 
             return accessTokenInfo;
+        }
+
+        public string GetContentByTitle(string name)
+        {
+            var content = string.Empty;
+
+            var sqlString = $@"SELECT 
+                        {nameof(LibraryTextInfo.Content)}
+                   FROM {TableName} WHERE {nameof(LibraryTextInfo.Title)} = '{name}'";
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    content = rdr.GetString(0);
+                }
+                rdr.Close();
+            }
+
+            return content;
+        }
+
+        public string GetContentById(int id)
+        {
+            var content = string.Empty;
+
+            var sqlString = $@"SELECT 
+                        {nameof(LibraryTextInfo.Content)}
+                   FROM {TableName} WHERE {nameof(LibraryTextInfo.Id)} = {id}";
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    content = rdr.GetString(0);
+                }
+                rdr.Close();
+            }
+
+            return content;
         }
 
         private static LibraryTextInfo GetLibraryTextInfo(IDataRecord rdr)

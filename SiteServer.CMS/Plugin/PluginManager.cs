@@ -196,7 +196,7 @@ namespace SiteServer.CMS.Plugin
         {
             WebConfigUtils.Load(applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
 
-            Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
+            Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, ApiManager.InnerApiUrl), new ApiCollectionImpl
             {
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,

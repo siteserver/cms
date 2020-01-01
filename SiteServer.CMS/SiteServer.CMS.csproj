@@ -404,7 +404,6 @@
     <Compile Include="DataCache\Core\StlCacheManager.cs" />
     <Compile Include="DataCache\Stl\StlSqlContentsCache.cs" />
     <Compile Include="DataCache\Stl\StlTagCache.cs" />
-    <Compile Include="StlParser\Editor\VueImage.cs" />
     <Compile Include="StlParser\FileSystemObjectAsync.cs" />
     <Compile Include="StlParser\Model\ChannelIdContentId.cs" />
     <Compile Include="StlParser\Model\ChannelItemInfo.cs" />
@@ -449,6 +448,7 @@
     <Compile Include="StlParser\StlElement\StlImage.cs" />
     <Compile Include="StlParser\StlElement\StlInclude.cs" />
     <Compile Include="StlParser\StlElement\StlItemTemplate.cs" />
+    <Compile Include="StlParser\StlElement\StlLibrary.cs" />
     <Compile Include="StlParser\StlElement\StlLoading.cs" />
     <Compile Include="StlParser\StlElement\StlLocation.cs" />
     <Compile Include="StlParser\StlElement\StlMarquee.cs" />
@@ -485,6 +485,7 @@
     <Compile Include="StlParser\StlEntity\StlStlEntities.cs" />
     <Compile Include="StlParser\StlEntity\StlUserEntities.cs" />
     <Compile Include="StlParser\Utility\DataListTemplate.cs" />
+    <Compile Include="StlParser\Utility\EditorUtility.cs" />
     <Compile Include="StlParser\Utility\PagerUtility.cs" />
     <Compile Include="StlParser\Utility\RepeaterTemplate.cs" />
     <Compile Include="StlParser\Utility\SeparatorTemplate.cs" />

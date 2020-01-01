@@ -26,13 +26,26 @@ var data = {
   isSubmitForm: false,
   submitForm: {
     textId: 0,
-    linkText: ''
+    type: 'click',
+    linkText: '详细说明'
   }
 };
 
 var methods = {
-  insert: function(result) {
-    var html = '<el-popover trigger="click">' + result.content + '<a href="javascript:;" slot="reference">' + result.linkText + '</a></el-popover>';
+  insert: function() {
+    var html = '<img src="../assets/editor-images/library.png" type="text" id="' + this.submitForm.textId + '">';
+    if (this.submitForm.type === 'click') {
+      var vueHtml = '' + 
+      '<el-popover' + 
+      '  width="600"' + 
+      '  trigger="click">' + 
+      '  ' + html +
+      '  <a href="javascript:;" slot="reference">' + this.submitForm.linkText + '</a>' + 
+      '</el-popover>'
+      html = vueHtml;
+      // html = '<a href="javascript:;" data-vue="' + encodeURIComponent(vueHtml) + '">' + this.submitForm.linkText + '</a>';
+    }
+    
     parent.insertHtml(this.attributeName, html);
   },
 
@@ -111,28 +124,30 @@ var methods = {
     this.$refs.submitForm.validate(function(valid) {
       if (valid) {
         utils.loading(true);
-        $api
-          .get($url + '/' + $this.submitForm.textId, {
-            params: {
-              siteId: $this.siteId
-            }
-          })
-          .then(function(response) {
-            var res = response.data;
 
-            $this.insert({
-              linkText: $this.submitForm.linkText,
-              content: res.content
-            });
-            $this.isSubmitForm = false;
-            utils.closeLayer();
-          })
-          .catch(function(error) {
-            utils.notifyError($this, error);
-          })
-          .then(function() {
-            utils.loading(false);
-          });
+        $this.insert();
+        $this.isSubmitForm = false;
+        utils.closeLayer();
+
+        // $api
+        //   .get($url + '/' + $this.submitForm.textId, {
+        //     params: {
+        //       siteId: $this.siteId
+        //     }
+        //   })
+        //   .then(function(response) {
+        //     var res = response.data;
+
+        //     $this.insert(res.content);
+        //     $this.isSubmitForm = false;
+        //     utils.closeLayer();
+        //   })
+        //   .catch(function(error) {
+        //     utils.notifyError($this, error);
+        //   })
+        //   .then(function() {
+        //     utils.loading(false);
+        //   });
       } else {
         return false;
       }

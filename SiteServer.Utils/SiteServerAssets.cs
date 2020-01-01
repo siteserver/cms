@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils

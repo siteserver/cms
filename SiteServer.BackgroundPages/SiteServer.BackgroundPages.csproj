@@ -587,13 +587,16 @@
     <Compile Include="Settings\PageSiteTemplate.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageSiteUrlApi.cs">
+    <Compile Include="Settings\PageSiteUrlApiConfig.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageSiteUrlAssets.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageSiteUrlAssetsConfig.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Settings\PageSiteUrlApi.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageSiteUrlWeb.cs">

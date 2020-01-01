@@ -4,6 +4,7 @@ obj/
 /contents/
 SiteFiles/BackupFiles/
 SiteFiles/Plugins/
+SiteFiles/Library/
 SiteFiles/packages/
 SiteFiles/SiteTemplates/
 SiteFiles/TemporaryFiles/
@@ -11,6 +12,7 @@ SiteFiles/UserFiles/
 SiteFiles/Administrators/
 Template
 /sapprft/
+/nppa/
 /Mullen/
 /Matthew/
 Web.config

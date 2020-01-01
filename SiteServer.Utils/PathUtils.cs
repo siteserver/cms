@@ -47,6 +47,38 @@ namespace SiteServer.Utils
             return $"/{DirectoryUtils.SiteFiles.DirectoryName}/{DirectoryUtils.SiteFiles.Library}/{uploadDirectoryName}/{DateTime.Now.Year}/{DateTime.Now.Month}/{fileName}";
         }
 
+        //将编辑器中图片上传至本机
+        public static string SaveLibraryImage(string content)
+        {
+            var originalImageSrcs = RegexUtils.GetOriginalImageSrcs(content);
+            foreach (var originalImageSrc in originalImageSrcs)
+            {
+                if (!PageUtils.IsProtocolUrl(originalImageSrc) ||
+                    StringUtils.StartsWithIgnoreCase(originalImageSrc, PageUtils.ApplicationPath))
+                    continue;
+                var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);
+                if (!EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName)) continue;
+
+                var fileName = GetLibraryFileName(originalImageSrc);
+                var virtualPath = GetLibraryVirtualPath(EUploadType.Image, fileName);
+                var filePath = Combine(WebConfigUtils.PhysicalApplicationPath, virtualPath);
+
+                try
+                {
+                    if (!FileUtils.IsFileExists(filePath))
+                    {
+                        WebClientUtils.SaveRemoteFileToLocal(originalImageSrc, filePath);
+                    }
+                    content = content.Replace(originalImageSrc, virtualPath);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            return content;
+        }
+
         public static string Combine(params string[] paths)
         {
             var retVal = string.Empty;

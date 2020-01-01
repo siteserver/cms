@@ -26,12 +26,12 @@ namespace SiteServer.CMS.Plugin.Apis
                 return PageUtils.GetAdminUrl(relatedUrl.Substring(1));
             }
 
-            return PageUtility.GetSiteFilesUrl(ApiManager.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));
+            return PageUtility.GetSiteFilesUrl(ApiManager.InnerApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));
         }
 
         public string GetPluginApiUrl(string pluginId)
         {
-            return ApiManager.GetApiUrl($"plugins/{pluginId}");
+            return ApiManager.GetInnerApiUrl($"plugins/{pluginId}");
         }
 
         public string GetPluginPath(string pluginId, string relatedPath = "")

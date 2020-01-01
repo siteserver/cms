@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SiteServer.CMS.StlParser.Editor;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -27,8 +26,6 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             public string ImageUrl { get; set; }
             public string PreviewUrl { get; set; }
-            public string VueType { get; set; }
-            public string VueValue { get; set; }
         }
     }
 }

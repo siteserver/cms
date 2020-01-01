@@ -311,7 +311,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     retVal = $@"
-<embed src=""{SiteFilesAssets.GetUrl(ApiManager.ApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
+<embed src=""{SiteFilesAssets.GetUrl(siteInfo.Additional.ApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
                         .ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
 ";
                 }
@@ -332,7 +332,7 @@ namespace SiteServer.CMS.Core
             {
                 var stlAnchor = new HtmlAnchor();
                 ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId,
+                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(siteInfo.Additional.ApiUrl, siteInfo.Id, channelId,
                     contentId, fileUrl);
                 stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml)
                     ? PageUtils.GetFileNameFromUrl(fileUrl)
@@ -365,7 +365,7 @@ namespace SiteServer.CMS.Core
             {
                 var stlAnchor = new HtmlAnchor();
                 ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
+                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(siteInfo.Additional.ApiUrl, siteInfo.Id, fileUrl);
                 stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                 if (isLower)

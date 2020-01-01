@@ -71,7 +71,8 @@ var methods = {
     setTimeout(function () {
       $this.editor = new FroalaEditor('textarea#content', {
         language: 'zh_cn',
-        heightMin: 390
+        heightMin: 390,
+        toolbarButtons: [['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript'], ['fontFamily', 'fontSize', 'textColor', 'backgroundColor'], ['inlineClass', 'inlineStyle', 'clearFormatting']]
       });
     }, 100);
   },
@@ -96,6 +97,7 @@ var methods = {
   },
 
   btnSaveClick: function() {
+    this.content = this.editor.html.get(true);
     var $this = this;
 
     if (!this.title) {
@@ -112,14 +114,20 @@ var methods = {
       $api
       .post($url, {
         title: this.title,
-        content: this.editor.html.get(true),
+        content: this.content,
         imageUrl: this.imageUrl,
         summary: this.summary
       })
       .then(function(response) {
         var res = response.data;
 
-        window.parent.location.reload();
+        var frmMain = parent.document.getElementById('frmMain');
+        var oDoc = frmMain.contentWindow || frmMain.contentDocument;
+        if (oDoc.document) {
+            oDoc = oDoc.document;
+        }
+        oDoc.location.reload();
+        utils.closeLayer();
       })
       .catch(function(error) {
         utils.notifyError($this, error);
@@ -131,14 +139,20 @@ var methods = {
       $api
       .put($url + '/' + this.textId, {
         title: this.title,
-        content: this.editor.html.get(true),
+        content: this.content,
         imageUrl: this.imageUrl,
         summary: this.summary
       })
       .then(function(response) {
         var res = response.data;
 
-        window.parent.location.reload();
+        var frmMain = parent.document.getElementById('frmMain');
+        var oDoc = frmMain.contentWindow || frmMain.contentDocument;
+        if (oDoc.document) {
+          oDoc = oDoc.document;
+        }
+        oDoc.location.reload();
+        utils.closeLayer();
       })
       .catch(function(error) {
         utils.notifyError($this, error);

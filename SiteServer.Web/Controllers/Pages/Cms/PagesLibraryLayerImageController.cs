@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
-using SiteServer.Utils.Images;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -56,73 +53,6 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 Path = filePath,
                 Url = virtualUrl
             };
-        }
-
-        [HttpPost, Route(Route)]
-        public List<SubmitResult> Submit([FromBody] SubmitRequest request)
-        {
-            var req = new AuthenticatedRequest();
-
-            if (!req.IsAdminLoggin ||
-                !req.AdminPermissionsImpl.HasSitePermissions(request.SiteId,
-                    ConfigManager.SitePermissions.Library))
-            {
-                return Request.Unauthorized<List<SubmitResult>>();
-            }
-
-            var site = SiteManager.GetSiteInfo(request.SiteId);
-            if (site == null) return Request.BadRequest<List<SubmitResult>>("无法确定内容对应的站点");
-
-            var result = new List<SubmitResult>();
-            foreach (var filePath in request.FilePaths)
-            {
-                if (string.IsNullOrEmpty(filePath)) continue;
-
-                var fileName = PathUtils.GetFileName(filePath);
-
-                var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, fileExtName);
-
-                var imageUrl = PageUtility.GetSiteUrlByPhysicalPath(site, filePath, true);
-
-                if (request.IsThumb)
-                {
-                    var localSmallFileName = Constants.SmallImageAppendix + fileName;
-                    var localSmallFilePath = PathUtils.Combine(localDirectoryPath, localSmallFileName);
-
-                    var thumbnailUrl = PageUtility.GetSiteUrlByPhysicalPath(site, localSmallFilePath, true);
-
-                    var width = request.ThumbWidth;
-                    var height = request.ThumbHeight;
-                    ImageUtils.MakeThumbnail(filePath, localSmallFilePath, width, height, true);
-
-                    if (request.IsLinkToOriginal)
-                    {
-                        result.Add(new SubmitResult
-                        {
-                            Url = imageUrl,
-                            ThumbUrl = thumbnailUrl
-                        });
-                    }
-                    else
-                    {
-                        FileUtils.DeleteFileIfExists(filePath);
-                        result.Add(new SubmitResult
-                        {
-                            Url = thumbnailUrl
-                        });
-                    }
-                }
-                else
-                {
-                    result.Add(new SubmitResult
-                    {
-                        Url = imageUrl
-                    });
-                }
-            }
-
-            return result;
         }
     }
 }

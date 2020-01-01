@@ -192,32 +192,16 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (!string.IsNullOrEmpty(type) && contextInfo.ItemContainer?.SqlItem != null)
             {
-                if (!string.IsNullOrEmpty(formatString))
-                {
-                    formatString = formatString.Trim();
-                    if (!formatString.StartsWith("{0"))
-                    {
-                        formatString = "{0:" + formatString;
-                    }
-                    if (!formatString.EndsWith("}"))
-                    {
-                        formatString = formatString + "}";
-                    }
-                }
-                else
-                {
-                    formatString = "{0}";
-                }
-
                 if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex))
                 {
                     var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.SqlItem.ItemIndex, type, contextInfo);
 
-                    parsedContent = !string.IsNullOrEmpty(formatString) ? string.Format(formatString, itemIndex) : itemIndex.ToString();
+                    parsedContent = itemIndex.ToString();
                 }
                 else
                 {
-                    parsedContent = DataBinder.Eval(contextInfo.ItemContainer.SqlItem.DataItem, type, formatString);
+                    var obj = DataBinder.Eval(contextInfo.ItemContainer.SqlItem.DataItem, type);
+                    parsedContent = obj != null ? obj.ToString() : string.Empty;
                 }
             }
             else if (!string.IsNullOrEmpty(queryString))

@@ -277,7 +277,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
 
-            var specialHtml = string.Empty;
+            string specialHtml;
             
             if (_isTrashOnly)
             {
@@ -296,8 +296,7 @@ namespace SiteServer.BackgroundPages.Cms
 {specialHtml}
 </td>";
 
-            string nodeName;
-            if (!_nameValueCacheDict.TryGetValue(contentInfo.ChannelId.ToString(), out nodeName))
+            if (!_nameValueCacheDict.TryGetValue(contentInfo.ChannelId.ToString(), out var nodeName))
             {
                 nodeName = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
                 _nameValueCacheDict[contentInfo.ChannelId.ToString()] = nodeName;

@@ -667,7 +667,7 @@ var stltree_isNodeTree = {isNodeTree};
                 _level = nodeInfo.ParentsCount - topParentsCount;
                 _currentChannelId = currentChannelId;
 
-                var treeDirectoryUrl = SiteFilesAssets.GetUrl(ApiManager.ApiUrl, "tree");
+                var treeDirectoryUrl = SiteFilesAssets.GetUrl(siteInfo.Additional.ApiUrl, "tree");
                 _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
                 _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
                 _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");

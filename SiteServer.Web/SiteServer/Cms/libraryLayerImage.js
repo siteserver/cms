@@ -7,48 +7,24 @@ var data = {
   uploadList: [],
   dialogImageUrl: '',
   dialogVisible: false,
-  form: {
-    siteId: utils.getQueryInt('siteId'),
-    isThumb: false,
-    thumbWidth: 500,
-    thumbHeight: 500,
-    isLinkToOriginal: true,
-    filePaths: []
-  }
+  fileUrls: []
 };
 
 var methods = {
   btnSubmitClick: function () {
     var $this = this;
 
-    if (this.form.filePaths.length === 0) {
+    if (this.fileUrls.length === 0) {
       this.$message.error('请选择需要插入的图片文件！');
       return false;
     }
 
-    utils.loading(true);
-    $api.post($url, this.form).then(function(response) {
-      var res = response.data;
+    for (var i = 0; i < this.fileUrls.length; i++) {
+      var fileUrl = this.fileUrls[i];
+      parent.insertHtml('<img src="' + fileUrl + '" border="0" /><br/>');
+    }
 
-      if (res && res.length > 0) {
-        for (var i = 0; i < res.length; i++) {
-          var result = res[i];
-          if (result.thumbUrl) {
-            parent.insertHtml('<a href="' + result.url + '" target="_blank"><img src="' + result.thumbUrl + '" border="0" /></a><br/>');
-          } else {
-            parent.insertHtml('<img src="' + result.url + '" border="0" /><br/>');
-          }
-        }
-      }
-      
-      parent.layer.closeAll();
-    })
-    .catch(function(error) {
-      $this.pageAlert = utils.getPageAlert(error);
-    })
-    .then(function() {
-      utils.loading(false);
-    });
+    parent.layer.closeAll();
   },
 
   btnCancelClick: function () {
@@ -76,7 +52,7 @@ var methods = {
   },
 
   uploadSuccess: function(res) {
-    this.form.filePaths.push(res.path);
+    this.fileUrls.push(res.url);
     utils.loading(false);
   },
 
@@ -88,7 +64,7 @@ var methods = {
 
   uploadRemove(file) {
     if (file.response) {
-      this.form.filePaths.splice(this.form.filePaths.indexOf(file.response.path), 1);
+      this.fileUrls.splice(this.fileUrls.indexOf(file.response.url), 1);
     }
   },
 

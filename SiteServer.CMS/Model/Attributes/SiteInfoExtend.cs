@@ -19,6 +19,20 @@ namespace SiteServer.CMS.Model.Attributes
 
         /****************站点设置********************/
 
+        public bool IsSeparatedApi
+        {
+            get => GetBool(nameof(IsSeparatedApi));
+            set => Set(nameof(IsSeparatedApi), value);
+        }
+
+        public string SeparatedApiUrl
+        {
+            get => GetString(nameof(SeparatedApiUrl));
+            set => Set(nameof(SeparatedApiUrl), value);
+        }
+
+        public string ApiUrl => IsSeparatedApi ? SeparatedApiUrl : PageUtils.ParseNavigationUrl("~/api");
+
         public string Charset
         {
             get => GetString(nameof(Charset), ECharsetUtils.GetValue(ECharset.utf_8));

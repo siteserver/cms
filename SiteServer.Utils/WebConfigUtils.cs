@@ -31,7 +31,6 @@ namespace SiteServer.Utils
             }
         }
 
-        public static string ApiPrefix { get; private set; }
         public static string AdminDirectory { get; private set; }
         public static string HomeDirectory { get; private set; }
         public static string SecretKey { get; private set; }
@@ -83,14 +82,6 @@ namespace SiteServer.Utils
                                     if (attrValue != null)
                                     {
                                         connectionString = attrValue.Value;
-                                    }
-                                }
-                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(ApiPrefix)))
-                                {
-                                    var attrValue = setting.Attributes["value"];
-                                    if (attrValue != null)
-                                    {
-                                        ApiPrefix = attrValue.Value;
                                     }
                                 }
                                 else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(AdminDirectory)))
@@ -145,10 +136,6 @@ namespace SiteServer.Utils
             IsProtectData = isProtectData;
             DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
             ConnectionString = GetConnectionString(DatabaseType, connectionString);
-            if (ApiPrefix == null)
-            {
-                ApiPrefix = "api";
-            }
             if (AdminDirectory == null)
             {
                 AdminDirectory = "SiteServer";
@@ -164,19 +151,19 @@ namespace SiteServer.Utils
             }
         }
 
-        public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString, string apiPrefix, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
+        public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
         {
             connectionString = GetConnectionString(databaseType, connectionString);
 
             var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
-            UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, apiPrefix, adminDirectory, homeDirectory, secretKey, isNightlyUpdate);
+            UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, adminDirectory, homeDirectory, secretKey, isNightlyUpdate);
 
             IsProtectData = isProtectData;
             DatabaseType = databaseType;
             ConnectionString = connectionString;
         }
 
-        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string apiPrefix, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
+        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
         {
             connectionString = GetConnectionString(databaseType, connectionString);
 
@@ -225,15 +212,6 @@ namespace SiteServer.Utils
                                     {
                                         attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value, secretKey);
                                     }
-                                    dirty = true;
-                                }
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(ApiPrefix)))
-                            {
-                                var attrValue = setting.Attributes["value"];
-                                if (attrValue != null)
-                                {
-                                    attrValue.Value = apiPrefix;
                                     dirty = true;
                                 }
                             }

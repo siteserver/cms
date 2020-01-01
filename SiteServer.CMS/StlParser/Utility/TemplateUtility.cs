@@ -42,8 +42,11 @@ namespace SiteServer.CMS.StlParser.Utility
             if (contentInfo.SiteId != pageInfo.SiteId)
             {
                 var siteInfo = SiteManager.GetSiteInfo(contentInfo.SiteId);
-                contextInfo.SiteInfo = siteInfo;
-                pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
+                if (siteInfo != null)
+                {
+                    contextInfo.SiteInfo = siteInfo;
+                    pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
+                }
             }
 
             var theTemplateString = string.Empty;

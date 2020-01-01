@@ -169,11 +169,6 @@
           <div v-else v-on:click="btnTitleClick(scope.row)" style="cursor: pointer; height: 22px; overflow: hidden;">{{ scope.row.title }}</div>
       </template>
     </el-table-column>
-    <el-table-column
-      prop="createdDate"
-      label="创建时间"
-      width="220">
-    </el-table-column>
     <el-table-column label="操作" width="250">
       <template slot-scope="scope">
           <el-button v-on:click="btnTitleClick(scope.row)" type="text" size="mini" icon="el-icon-edit" style="margin: 0 5px">重命名</el-button>

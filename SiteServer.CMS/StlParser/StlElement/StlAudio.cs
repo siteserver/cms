@@ -12,14 +12,16 @@ namespace SiteServer.CMS.StlParser.StlElement
         private StlAudio() { }
 		public const string ElementName = "stl:audio";
 
+        public const string EditorPlaceHolder = @"src=""../assets/editor-images/audio.png""";
+
         [StlAttribute(Title = "指定存储音频地址的内容字段，默认为VideoUrl")]
         private const string Type = nameof(Type);
 
         [StlAttribute(Title = "音频地址，优先级高于type属性")]
-        private const string PlayUrl = nameof(PlayUrl);
+        public const string PlayUrl = nameof(PlayUrl);
 
         [StlAttribute(Title = "是否自动播放")]
-        private const string IsAutoPlay = nameof(IsAutoPlay);
+        public const string IsAutoPlay = nameof(IsAutoPlay);
 
         [StlAttribute(Title = "是否预载入")]
         private const string IsPreload = nameof(IsPreload);
