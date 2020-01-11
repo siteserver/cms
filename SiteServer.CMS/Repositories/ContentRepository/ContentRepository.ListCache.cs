@@ -120,8 +120,7 @@ namespace SiteServer.CMS.Repositories
             await QueryWhereAsync(query, site, channel, adminId, isAllContents);
             QueryOrder(query, channel, string.Empty, isAllContents);
 
-            var ccIds = await repository.GetAllAsync<(int ChannelId, int ContentId)>(query);
-            return ccIds;
+            return await repository.GetAllAsync<(int ChannelId, int ContentId)>(query);
         }
 
         public async Task<int> GetCountAsync(Site site, Channel channel)

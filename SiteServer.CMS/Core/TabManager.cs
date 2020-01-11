@@ -83,29 +83,6 @@ namespace SiteServer.CMS.Core
             return true;
         }
 
-        private static Tab GetPluginTab(SiteServer.Abstractions.Menu menu, string permission)
-        {
-            var tab = new Tab
-            {
-                Id = menu.Id,
-                Text = menu.Text,
-                IconClass = menu.IconClass,
-                Selected = false,
-                Href = menu.Link,
-                Target = menu.Target,
-                Permissions = permission
-            };
-            if (menu.Menus != null && menu.Menus.Count > 0)
-            {
-                tab.Children = new Tab[menu.Menus.Count];
-                for (var i = 0; i < menu.Menus.Count; i++)
-                {
-                    tab.Children[i] = GetPluginTab(menu.Menus[i], permission);
-                }
-            }
-            return tab;
-        }
-
         public static async Task<List<Tab>> GetTabListAsync(string topId, int siteId)
         {
             var tabs = new List<Tab>();
@@ -154,7 +131,7 @@ namespace SiteServer.CMS.Core
 
                 if (isExists) continue;
 
-                tabs.Add(GetPluginTab(menu, menu.PluginId));
+                tabs.Add(PluginMenuManager.GetPluginTab(menu.PluginId, string.Empty, menu));
 
                 //if (string.IsNullOrEmpty(menu.ParentId))
                 //{

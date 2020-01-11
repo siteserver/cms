@@ -132,40 +132,40 @@ namespace SiteServer.CMS.Core
             return directoryPath;
         }
 
-        public static string GetUploadDirectoryPath(Site site, EUploadType uploadType)
+        public static string GetUploadDirectoryPath(Site site, UploadType uploadType)
         {
             return GetUploadDirectoryPath(site, DateTime.Now, uploadType);
         }
 
-        public static string GetUploadDirectoryPath(Site site, DateTime datetime, EUploadType uploadType)
+        public static string GetUploadDirectoryPath(Site site, DateTime datetime, UploadType uploadType)
         {
             var uploadDateFormatString = string.Empty;
             var uploadDirectoryName = string.Empty;
 
-            if (uploadType == EUploadType.Image)
+            if (uploadType == UploadType.Image)
             {
                 uploadDateFormatString = site.ImageUploadDateFormatString;
                 uploadDirectoryName = site.ImageUploadDirectoryName;
             }
-            else if (uploadType == EUploadType.Video)
+            else if (uploadType == UploadType.Audio)
+            {
+                uploadDateFormatString = site.AudioUploadDateFormatString;
+                uploadDirectoryName = site.AudioUploadDirectoryName;
+            }
+            else if (uploadType == UploadType.Video)
             {
                 uploadDateFormatString = site.VideoUploadDateFormatString;
                 uploadDirectoryName = site.VideoUploadDirectoryName;
             }
-            else if (uploadType == EUploadType.File)
+            else if (uploadType == UploadType.File)
             {
                 uploadDateFormatString = site.FileUploadDateFormatString;
                 uploadDirectoryName = site.FileUploadDirectoryName;
             }
-            else if (uploadType == EUploadType.Special)
+            else if (uploadType == UploadType.Special)
             {
                 uploadDateFormatString = site.FileUploadDateFormatString;
-                uploadDirectoryName = "/Special";
-            }
-            else if (uploadType == EUploadType.AdvImage)
-            {
-                uploadDateFormatString = site.FileUploadDateFormatString;
-                uploadDirectoryName = "/AdvImage";
+                uploadDirectoryName = "/special";
             }
 
             string directoryPath;
@@ -1048,32 +1048,32 @@ namespace SiteServer.CMS.Core
             return contentLength <= site.FileUploadTypeMaxSize * 1024;
         }
 
-        public static bool IsUploadExtensionAllowed(EUploadType uploadType, Site site, string fileExtention)
+        public static bool IsUploadExtensionAllowed(UploadType uploadType, Site site, string fileExtention)
         {
-            if (uploadType == EUploadType.Image)
+            if (uploadType == UploadType.Image)
             {
                 return IsImageExtensionAllowed(site, fileExtention);
             }
-            else if (uploadType == EUploadType.Video)
+            else if (uploadType == UploadType.Video)
             {
                 return IsVideoExtensionAllowed(site, fileExtention);
             }
-            else if (uploadType == EUploadType.File)
+            else if (uploadType == UploadType.File)
             {
                 return IsFileExtensionAllowed(site, fileExtention);
             }
             return false;
         }
 
-        public static bool IsUploadSizeAllowed(EUploadType uploadType, Site site, int contentLength)
+        public static bool IsUploadSizeAllowed(UploadType uploadType, Site site, int contentLength)
         {
             switch (uploadType)
             {
-                case EUploadType.Image:
+                case UploadType.Image:
                     return IsImageSizeAllowed(site, contentLength);
-                case EUploadType.Video:
+                case UploadType.Video:
                     return IsVideoSizeAllowed(site, contentLength);
-                case EUploadType.File:
+                case UploadType.File:
                     return IsFileSizeAllowed(site, contentLength);
             }
             return false;

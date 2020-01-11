@@ -18,9 +18,9 @@ namespace SiteServer.CMS.UEditor
         public UploadConfig UploadConfig { get; }
         public UploadResult Result { get; }
         public int SiteId { get; }
-        public EUploadType UploadType { get; }
+        public UploadType UploadType { get; }
 
-        public UploadHandler(HttpContext context, UploadConfig config, int siteId, EUploadType uploadType)
+        public UploadHandler(HttpContext context, UploadConfig config, int siteId, UploadType uploadType)
             : base(context)
         {
             UploadConfig = config;
@@ -95,7 +95,7 @@ namespace SiteServer.CMS.UEditor
                         Directory.CreateDirectory(Path.GetDirectoryName(localFilePath));
                     }
                     File.WriteAllBytes(localFilePath, uploadFileBytes);
-                    if (UploadType == EUploadType.Image)
+                    if (UploadType == UploadType.Image)
                     {
                         //添加水印
                         FileUtility.AddWaterMark(siteInfo, localFilePath);

@@ -89,6 +89,7 @@ namespace SiteServer.Abstractions
             public const string ContentsMy = "site_contentsMy";
             public const string ContentsTranslate = "site_contentsTranslate";
             public const string ContentsCheck = "site_contentsCheck";
+            public const string Library = "site_library";
             public const string ContentsTrash = "site_contentsTrash";
             public const string Templates = "site_templates";
             public const string Specials = "site_specials";
@@ -122,6 +123,7 @@ namespace SiteServer.Abstractions
             public const string ContentEdit = "cms_contentEdit";
             public const string ContentDelete = "cms_contentDelete";
             public const string ContentTranslate = "cms_contentTranslate";
+            public const string ContentArrange = "cms_contentArrange";
             public const string ChannelAdd = "cms_channelAdd";
             public const string ChannelEdit = "cms_channelEdit";
             public const string ChannelDelete = "cms_channelDelete";

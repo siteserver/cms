@@ -132,26 +132,6 @@
         </div>
       </div>
       <div class="form-group form-row">
-        <label class="col-sm-2 col-form-label text-right">可以添加栏目</label>
-        <div class="col-sm-4">
-          <asp:RadioButtonList ID="RblIsChannelAddable" RepeatDirection="Horizontal" class="radio radio-primary" runat="server">
-            <asp:ListItem Text="是" Value="True" Selected="True" />
-            <asp:ListItem Text="否" Value="False" />
-          </asp:RadioButtonList>
-        </div>
-        <div class="col-sm-6"></div>
-      </div>
-      <div class="form-group form-row">
-        <label class="col-sm-2 col-form-label text-right">可以添加内容</label>
-        <div class="col-sm-4">
-          <asp:RadioButtonList ID="RblIsContentAddable" RepeatDirection="Horizontal" class="radio radio-primary" runat="server">
-            <asp:ListItem Text="是" Value="True" Selected="True" />
-            <asp:ListItem Text="否" Value="False" />
-          </asp:RadioButtonList>
-        </div>
-        <div class="col-sm-6"></div>
-      </div>
-      <div class="form-group form-row">
         <label class="col-sm-2 col-form-label text-right">栏目图片地址</label>
         <div class="col-sm-4">
           <asp:TextBox ID="TbImageUrl" class="form-control" runat="server" />

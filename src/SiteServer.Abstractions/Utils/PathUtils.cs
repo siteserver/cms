@@ -45,6 +45,11 @@ namespace SiteServer.Abstractions
             return retVal;
         }
 
+        public static bool IsExtension(string ext, params string[] extensions)
+        {
+            return extensions.Any(extension => StringUtils.EqualsIgnoreCase(ext, extension));
+        }
+
         public static bool IsFilePath(string val)
         {
             try
@@ -201,8 +206,6 @@ namespace SiteServer.Abstractions
             return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
         }
 
-        
-
         public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory);
 
         public static string PhysicalSiteFilesPath => Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName);
@@ -215,6 +218,44 @@ namespace SiteServer.Abstractions
                 langPath = PathUtils.Combine(contentRootPath, $"lang/{Constants.DefaultLanguage}/{fileName}");
             }
             return langPath;
+        }
+
+        public static string GetLibraryVirtualDirectoryPath(UploadType uploadType)
+        {
+            var uploadDirectoryName = string.Empty;
+
+            if (uploadType == UploadType.Image)
+            {
+                uploadDirectoryName = "images";
+            }
+            else if (uploadType == UploadType.Audio)
+            {
+                uploadDirectoryName = "audio";
+            }
+            else if (uploadType == UploadType.Video)
+            {
+                uploadDirectoryName = "videos";
+            }
+            else if (uploadType == UploadType.File)
+            {
+                uploadDirectoryName = "files";
+            }
+            else if (uploadType == UploadType.Special)
+            {
+                uploadDirectoryName = "specials";
+            }
+
+            return $"/{DirectoryUtils.SiteFiles.DirectoryName}/{DirectoryUtils.SiteFiles.Library}/{uploadDirectoryName}/{DateTime.Now.Year}/{DateTime.Now.Month}";
+        }
+
+        public static string GetLibraryVirtualFilePath(UploadType uploadType, string fileName)
+        {
+            return GetLibraryVirtualDirectoryPath(uploadType) + "/" + fileName;
+        }
+
+        public static string GetLibraryFileName(string filePath)
+        {
+            return $"{StringUtils.GetShortGuid(false)}{GetExtension(filePath)}";
         }
     }
 }

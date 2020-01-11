@@ -9,84 +9,43 @@
   <meta name="renderer" content="webkit" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href="../assets/images/favicon.png" rel="icon" type="image/png">
-  <link href="../assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/bootstrap-4.1.0.min.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/element-ui/theme-chalk/index.css" rel="stylesheet" type="text/css" />
-  <style>
-    .nav .nav-link {font-weight: normal; border-radius: 1.25rem; font-size: 14px;}
-    .editable, .editable a, .editable span {
-      border-bottom: dashed 1px #0056b3 !important;
-    }
-    .drawer__content {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
-    .drawer__content form {
-        flex: 1;
-        margin-left: 20px;
-        margin-right: 20px;
-    }
-    .drawer__footer {
-        display: flex;
-        padding: 10px;
-    }
-    .drawer__footer button {
-        flex: 1;
-    }
-    form .tips {
-      color: rgb(144, 147, 153);
-      font-size: 12px;
-      margin: 5px 0;
-      padding: 0;
-      line-height: 18px;
-    }
-    .el-upload, .el-upload-dragger {
-      width: 100%;
-    }
-  </style>
+  <link href="../assets/css/element-ui.css" rel="stylesheet" type="text/css" />
   @if (IsSectionDefined("Styles")){ @RenderSection("Styles") }
 </head>
 
 <body>
-  <div id="main" class="m-t-15 m-b-15 m-l-15 m-r-15">
+  <div id="main">
 
-    <template v-if="pageLoad">
+    <div v-if="pageLoad" style="display: none" :style="{display: ''}">
       @if (IsSectionDefined("Navs")){
-      <div class="card-box">
-        <div class="mb-3">
-          <ul class="nav nav-pills nav-fill bg-muted m-b-20" style="border-radius: 1.25rem;">
-            @RenderSection("Navs")
-          </ul>
+        <div class="card-box">
+          <div class="mb-3">
+            <ul class="nav nav-pills nav-fill bg-muted m-b-20" style="border-radius: 1.25rem;">
+              @RenderSection("Navs")
+            </ul>
+          </div>
+    
+          <hr />
+    
+          <div v-if="this.pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+            <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
+            <span v-html="pageAlert.html"></span>
+          </div>
+    
+          @RenderBody()
         </div>
-
-        <hr />
-
-        <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
-          <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
-          <span v-html="pageAlert.html"></span>
-        </div>
-
+        } else {
+          <div v-if="this.pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+            <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
+            <span v-html="pageAlert.html"></span>
+          </div>
+          
         @RenderBody()
-      </div>
-      } else {
-        <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
-          <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
-          <span v-html="pageAlert.html"></span>
-        </div>
-        
-      @RenderBody()
-      }
-
-    </template>
-    <template v-else>
-      <div class="text-center" style="margin-top: 100px">
-        <img class="mt-3" src="../assets/images/loading.gif" />
-        <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
-      </div>
-    </template>
+        }
+    </div>
+    <div v-else style="height: 500px" v-loading="true" element-loading-text="页面加载中"></div>
 
   </div>
 </body>

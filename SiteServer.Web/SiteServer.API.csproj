@@ -59,6 +59,9 @@
     <Reference Include="HtmlSanitizer, Version=4.0.0.0, Culture=neutral, PublicKeyToken=61c49a1a9e79cc28, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlSanitizer.4.0.217\lib\net45\HtmlSanitizer.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.2.0.246, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.1.2.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -249,36 +252,56 @@
     <Compile Include="Controllers\Home\HomeContentsLayerViewController.cs" />
     <Compile Include="Controllers\Home\HomeContentsLayerWordController.cs" />
     <Compile Include="Controllers\Home\HomeController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Config\PagesConfigContentController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Config\PagesConfigSiteController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorLayerWordController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorLayerWordController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerArrangeController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerAttributesController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerCheckController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerOptionsController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerCopyController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerCutController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerDeleteController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerExportController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerGroupController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerImportController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerStateController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerTaxisController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerViewController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerWordController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Create\PagesCreateController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Create\PagesCreateStatusController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Special\PagesSpecialEditorController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Special\PagesSpecialAddLayerController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Special\PagesSpecialController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerTextController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerTextController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerImageController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerImageController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerVideoController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerVideoController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerWordController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerWordController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryTextController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryImageController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryTextController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryImageController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesChannelsController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesChannelsController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesConfigContentController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesConfigSiteController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerVideoController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerImageController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerVideoController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerImageController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerWordController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerWordController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerArrangeController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerAttributesController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCheckController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerOptionsController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCopyController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCutController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerDeleteController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerExportController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerGroupController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerImportController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerStateController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerTaxisController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerViewController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerWordController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesCreateController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesCreateStatusController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryEditorController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesSpecialEditorController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesSpecialAddLayerController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesSpecialController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesTemplateReferenceController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesTemplatesController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesTemplateReferenceController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesTemplatesController.Dto.cs" />
     <Compile Include="Controllers\Pages\PagesInstallController.Dto.cs" />
     <Compile Include="Controllers\Pages\PagesInstallController.cs" />
     <Compile Include="Controllers\Pages\PagesRedirectController.cs" />
@@ -291,6 +314,7 @@
     <Compile Include="Controllers\Pages\Plugins\PagesAddController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesAddLayerUploadController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesInstallController.cs" />
+    <Compile Include="Controllers\Pages\Plugins\PagesManageController.Dto.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesManageController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesViewController.cs" />
     <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminViewController.Dto.cs" />

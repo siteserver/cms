@@ -38,6 +38,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="NuGet.Packaging" Version="5.3.1" />
     <PackageReference Include="NuGet.Versioning" Version="5.3.1" />
+    <PackageReference Include="Open-Xml-PowerTools" Version="4.4.0" />
     <PackageReference Include="StackExchange.Redis.StrongName" Version="1.2.6" />
   </ItemGroup>
 
@@ -48,9 +49,6 @@
 
   <ItemGroup>
     <Reference Include="System.Web" />
-    <Reference Include="WordPlugin">
-      <HintPath>..\ref\WordPlugin.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

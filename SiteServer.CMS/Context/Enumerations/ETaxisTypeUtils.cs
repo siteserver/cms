@@ -1,5 +1,7 @@
-﻿using System.Web.UI.WebControls;
+﻿using System.Collections.Generic;
+using System.Web.UI.WebControls;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Dto;
 
 namespace SiteServer.CMS.Context.Enumerations
 {
@@ -49,5 +51,15 @@ namespace SiteServer.CMS.Context.Enumerations
             listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxisDesc, false));
         }
 
+        public static List<Select<string>> GetAllForChannel()
+        {
+            return new List<Select<string>>
+            {
+                new Select<string>(ETaxisType.OrderByTaxisDesc),
+                new Select<string>(ETaxisType.OrderByTaxis),
+                new Select<string>(ETaxisType.OrderByAddDateDesc),
+                new Select<string>(ETaxisType.OrderByAddDate)
+            };
+        }
     }
 }

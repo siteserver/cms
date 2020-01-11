@@ -51,7 +51,7 @@ namespace SiteServer.Abstractions
         public string IndexName { get; set; }
 
         [DataColumn]
-        public string GroupNameCollection { get; set; }
+        private string GroupNameCollection { get; set; }
 
         public List<string> GroupNames
         {
@@ -102,18 +102,6 @@ namespace SiteServer.Abstractions
         public string ExtendValues { get; set; }
 
         public IList<Channel> Children { get; set; }
-
-        //是否可以添加栏目
-        public bool IsChannelAddable { get; set; } = true;
-
-        //是否可以添加内容
-        public bool IsContentAddable { get; set; } = true;
-
-        //是否可以生成栏目
-        public bool IsChannelCreatable { get; set; } = true;
-
-        //是否可以生成内容
-        public bool IsContentCreatable { get; set; } = true;
 
         public bool IsCreateChannelIfContentChanged { get; set; } = true;
 

@@ -1,6 +1,9 @@
 ﻿@{ Layout = "../Shared/_Layout.cshtml"; }
 
 <div class="card-box">
+  <div v-if="type === 'all'" class="m-t-0 header-title">
+    一键生成
+  </div>
   <div v-if="type === 'channels'" class="m-t-0 header-title">
     生成栏目页
   </div>

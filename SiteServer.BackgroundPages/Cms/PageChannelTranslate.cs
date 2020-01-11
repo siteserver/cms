@@ -105,7 +105,6 @@ namespace SiteServer.BackgroundPages.Cms
                 var nodeInfo = ChannelManager.GetChannelAsync(SiteId, theChannelId).GetAwaiter().GetResult();
 
                 var value = enabled ? nodeInfo.Id.ToString() : string.Empty;
-                value = nodeInfo.IsContentAddable ? value : string.Empty;
 
                 var text = GetTitle(nodeInfo);
                 var listItem = new ListItem(text, value);
@@ -355,7 +354,6 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 var nodeInfo = ChannelManager.GetChannelAsync(psId, theChannelId).GetAwaiter().GetResult();
                 var value = IsOwningChannelId(nodeInfo.Id) ? nodeInfo.Id.ToString() : "";
-                value = nodeInfo.IsContentAddable ? value : "";
                 var listitem = new ListItem(GetTitle(nodeInfo), value);
                 DdlChannelIdTo.Items.Add(listitem);
 			}

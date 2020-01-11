@@ -95,17 +95,17 @@
           <div id="sidebar-menu">
             <ul v-if="menu">
               <template v-if="isDesktop && !isMobileMenu">
-                <li v-if="menu.id === 'SiteCurrent'" class="text-muted menu-title">
+                <li v-if="menu.id === 'SiteCurrent'" class="text-muted menu-title" style="text-align: center; margin: 0 !important; padding: 15px 10px !important;">
                   <el-dropdown>
                     <span class="el-dropdown-link" style="cursor: pointer;">
                       {{ menu.text }}<i class="el-icon-arrow-down el-icon--right"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
                       <el-dropdown-item>
-                        <a class="el-dropdown-link" :href="siteUrl" target="_blank">访问站点</a>
+                        <el-link :underline="false" :href="siteUrl" target="_blank">访问站点</el-link>
                       </el-dropdown-item>
                       <el-dropdown-item>
-                        <a class="el-dropdown-link" :href="previewUrl" target="_blank">预览站点</a>
+                        <el-link :underline="false" :href="previewUrl" target="_blank">预览站点</el-link>
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>

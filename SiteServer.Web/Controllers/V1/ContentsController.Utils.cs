@@ -1,30 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web.Http;
+﻿using System.Threading.Tasks;
 using Datory;
-using NSwag.Annotations;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Api.V1;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Repositories;
 using SqlKata;
 
 namespace SiteServer.API.Controllers.V1
 {
     public partial class ContentsController
     {
-        private Query GetQuery(int siteId, int? channelId, QueryRequest request)
+        private async Task<Query> GetQueryAsync(int siteId, int? channelId, QueryRequest request)
         {
             var query = Q.Where(nameof(Abstractions.Content.SiteId), siteId).Where(nameof(Abstractions.Content.ChannelId), ">", 0);
 
             if (channelId.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
+                //query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
+                var channel = await ChannelManager.GetChannelAsync(siteId, channelId.Value);
+                var channelIds = await ChannelManager.GetChannelIdListAsync(channel, EScopeType.All);
+
+                query.WhereIn(nameof(Abstractions.Content.ChannelId), channelIds);
             }
 
             if (request.Checked.HasValue)

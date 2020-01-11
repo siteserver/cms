@@ -33,9 +33,9 @@ namespace SiteServer.CMS.UEditor
         private string[] SearchExtensions;
 
         public int SiteId { get; }
-        public EUploadType UploadType { get; }
+        public UploadType UploadType { get; }
 
-        public ListFileManager(HttpContext context, string pathToList, string[] searchExtensions, int siteId, EUploadType uploadType)
+        public ListFileManager(HttpContext context, string pathToList, string[] searchExtensions, int siteId, UploadType uploadType)
             : base(context)
         {
             SearchExtensions = searchExtensions.Select(x => x.ToLower()).ToArray();
@@ -63,11 +63,11 @@ namespace SiteServer.CMS.UEditor
                 var site = DataProvider.SiteRepository.GetAsync(SiteId).GetAwaiter().GetResult();
                 var sitePath = PathUtility.GetSitePath(site); // 本站点物理路径
                 var applicationPath = WebConfigUtils.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\'); // 系统物理路径
-                if (UploadType == EUploadType.Image)
+                if (UploadType == UploadType.Image)
                 {
                     PathToList = site.ImageUploadDirectoryName; 
                 }
-                else if(UploadType == EUploadType.File)
+                else if(UploadType == UploadType.File)
                 {
                     PathToList = site.FileUploadDirectoryName;
                 }

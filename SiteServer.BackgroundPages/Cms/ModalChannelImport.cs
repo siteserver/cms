@@ -45,7 +45,6 @@ namespace SiteServer.BackgroundPages.Cms
                 var parentsCount = nodeInfo.ParentsCount;
                 var isLastNode = nodeInfo.LastNode;
                 var value = IsOwningChannelId(itemChannelId) ? itemChannelId.ToString() : string.Empty;
-                value = (nodeInfo.IsChannelAddable) ? value : string.Empty;
                 if (!string.IsNullOrEmpty(value))
                 {
                     if (!HasChannelPermissions(theChannelId, Constants.ChannelPermissions.ChannelAdd))

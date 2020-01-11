@@ -338,7 +338,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlSelect.Text = $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.ChannelId}_{contentInfo.Id}"" />";
         }
 
-        public void Search_onClick(object sender, EventArgs e)
+        public void Search_OnClick(object sender, EventArgs e)
         {
             PageUtils.Redirect(PageUrl);
         }

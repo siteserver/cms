@@ -81,7 +81,7 @@ namespace SiteServer.CMS.UEditor
             //格式验证
             string uploadFileName = Path.GetFileName(SourceUrl);
             var currentType = PathUtils.GetExtension(uploadFileName);
-            if (!PathUtility.IsUploadExtensionAllowed(EUploadType.Image, PubSystemInfo, currentType))
+            if (!PathUtility.IsUploadExtensionAllowed(UploadType.Image, PubSystemInfo, currentType))
             {
                 State = "不允许的文件类型";
                 return this;
@@ -102,7 +102,7 @@ namespace SiteServer.CMS.UEditor
                 }
                 //ServerUrl = PathFormatter.Format(Path.GetFileName(SourceUrl), Config.GetString("catcherPathFormat"));
                 //var savePath = Server.MapPath(ServerUrl);
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(PubSystemInfo, EUploadType.Image);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(PubSystemInfo, UploadType.Image);
                 var localFileName = PathUtility.GetUploadFileName(PubSystemInfo, uploadFileName);
                 var savePath = PathUtils.Combine(localDirectoryPath, localFileName); 
                 

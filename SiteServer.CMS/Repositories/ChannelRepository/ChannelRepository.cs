@@ -372,7 +372,7 @@ namespace SiteServer.CMS.Repositories
             }
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(Channel.GroupNameCollection), StringUtils.Join(channelEntity.GroupNames))
+                .Set("GroupNameCollection", StringUtils.Join(channelEntity.GroupNames))
                 .Where(nameof(Channel.Id), channelId)
             );
 
@@ -545,6 +545,22 @@ namespace SiteServer.CMS.Repositories
                 .Select(nameof(Channel.IndexName))
                 .Where(nameof(Channel.SiteId), siteId)
                 .Distinct()
+            );
+        }
+
+        public async Task<bool> IsIndexNameExistsAsync(int siteId, string indexName)
+        {
+            return await _repository.ExistsAsync(Q
+                .Where(nameof(Channel.SiteId), siteId)
+                .Where(nameof(Channel.IndexName), indexName)
+            );
+        }
+
+        public async Task<bool> IsFilePathExistsAsync(int siteId, string filePath)
+        {
+            return await _repository.ExistsAsync(Q
+                .Where(nameof(Channel.SiteId), siteId)
+                .Where(nameof(Channel.FilePath), filePath)
             );
         }
 

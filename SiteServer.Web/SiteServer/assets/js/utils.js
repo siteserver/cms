@@ -122,6 +122,25 @@ var utils = {
     };
   },
 
+  notifyError: function (app, error) {
+    if (app.loading) {
+      app.loading.close();
+    }
+    var message = error.message;
+    if (error.response && error.response.data) {
+      if (error.response.data.exceptionMessage) {
+        message = error.response.data.exceptionMessage;
+      } else if (error.response.data.message) {
+        message = error.response.data.message;
+      }
+    }
+
+    app.$notify.error({
+      title: '错误',
+      message: message
+    });
+  },
+
   getPanelAlert: function (error) {
     var message = error.message;
     if (error.response && error.response.data) {
@@ -148,7 +167,15 @@ var utils = {
     }
   },
 
-  closeLayer: function () {
+  closeLayer: function (reload) {
+    if (reload) {
+      var frmMain = parent.document.getElementById('frmMain');
+      var oDoc = frmMain.contentWindow || frmMain.contentDocument;
+      if (oDoc.document) {
+          oDoc = oDoc.document;
+      }
+      oDoc.location.reload();
+    }
     parent.layer.closeAll();
     return false;
   },

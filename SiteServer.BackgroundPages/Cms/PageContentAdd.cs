@@ -169,14 +169,11 @@ namespace SiteServer.BackgroundPages.Cms
                         var isClearImages = AuthRequest.GetQueryBool("isClearImages");
                         var fileName = AuthRequest.GetQueryString("fileName");
 
-                        var formCollection = WordUtils.GetWordNameValueCollectionAsync(SiteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName).GetAwaiter().GetResult();
+                        var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                        var (title, wordContent) = WordManager.GetWordAsync(Site, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, filePath).GetAwaiter().GetResult();
 
-                        foreach (var key in formCollection.AllKeys)
-                        {
-                            attributes[key] = formCollection[key];
-                        }
-
-                        TbTitle.Text = formCollection[ContentAttribute.Title];
+                        TbTitle.Text = title;
+                        attributes[ContentAttribute.Content] = wordContent;
                     }
 
                     AcAttributes.Attributes = attributes;
@@ -475,7 +472,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (contentId == 0)
             {
-                if (_channel == null || _channel.IsContentAddable == false)
+                if (_channel == null)
                 {
                     PageUtils.RedirectToErrorPage("此栏目不能添加内容！");
                     return false;

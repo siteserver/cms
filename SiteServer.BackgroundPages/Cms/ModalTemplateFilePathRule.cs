@@ -24,9 +24,6 @@ namespace SiteServer.BackgroundPages.Cms
         public Button BtnCreateChannelRule;
         public Button BtnCreateContentRule;
 
-        public RadioButtonList RblIsChannelCreatable;
-        public RadioButtonList RblIsContentCreatable;
-
         private int _channelId;
 
         public static string GetOpenWindowString(int siteId, int channelId)
@@ -67,9 +64,6 @@ namespace SiteServer.BackgroundPages.Cms
 
             TbContentFilePathRule.Text = string.IsNullOrEmpty(channelInfo.ContentFilePathRule) ? PathUtility.GetContentFilePathRuleAsync(Site, _channelId).GetAwaiter().GetResult() : channelInfo.ContentFilePathRule;
             BtnCreateContentRule.Attributes.Add("onclick", ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, false, TbContentFilePathRule.ClientID));
-
-            ControlUtils.SelectSingleItem(RblIsChannelCreatable, channelInfo.IsChannelCreatable.ToString());
-            ControlUtils.SelectSingleItem(RblIsContentCreatable, channelInfo.IsContentCreatable.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -152,9 +146,6 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     channelInfo.ContentFilePathRule = TbContentFilePathRule.Text;
                 }
-
-                channelInfo.IsChannelCreatable = TranslateUtils.ToBool(RblIsChannelCreatable.SelectedValue);
-                channelInfo.IsContentCreatable = TranslateUtils.ToBool(RblIsContentCreatable.SelectedValue);
 
                 DataProvider.ChannelRepository.UpdateAsync(channelInfo).GetAwaiter().GetResult();
 

@@ -59,6 +59,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlIf.ElementName.ToLower(), StlIf.ParseAsync},
             {StlImage.ElementName.ToLower(), StlImage.ParseAsync},
             {StlInclude.ElementName.ToLower(), StlInclude.ParseAsync},
+            {StlLibrary.ElementName.ToLower(), StlLibrary.ParseAsync},
             {StlLocation.ElementName.ToLower(), StlLocation.ParseAsync},
             {StlMarquee.ElementName.ToLower(), StlMarquee.ParseAsync},
             {StlNavigation.ElementName.ToLower(), StlNavigation.ParseAsync},

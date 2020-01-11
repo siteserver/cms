@@ -24,8 +24,6 @@ namespace SiteServer.BackgroundPages.Cms
         public PlaceHolder PhContentRelatedPluginIds;
         public CheckBoxList CblContentRelatedPluginIds;
         public CheckBoxList CblNodeGroupNameCollection;
-        public RadioButtonList RblIsChannelAddable;
-        public RadioButtonList RblIsContentAddable;
         public TextBox TbLinkUrl;
         public DropDownList DdlLinkType;
         public DropDownList DdlTaxisType;
@@ -159,8 +157,6 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ControlUtils.SelectSingleItem(DdlLinkType, channelInfo.LinkType);
                 ControlUtils.SelectSingleItem(DdlTaxisType, channelInfo.DefaultTaxisType);
-                ControlUtils.SelectSingleItem(RblIsChannelAddable, channelInfo.IsChannelAddable.ToString());
-                ControlUtils.SelectSingleItem(RblIsContentAddable, channelInfo.IsContentAddable.ToString());
 
                 TbImageUrl.Text = channelInfo.ImageUrl;
 
@@ -197,8 +193,6 @@ namespace SiteServer.BackgroundPages.Cms
                 var content = ContentUtility.TextEditorContentEncodeAsync(Site, Request.Form[nameof(Channel.Content)]).GetAwaiter().GetResult();
                 var keywords = TbKeywords.Text;
                 var description = TbDescription.Text;
-                var isChannelAddable = TranslateUtils.ToBool(RblIsChannelAddable.SelectedValue);
-                var isContentAddable = TranslateUtils.ToBool(RblIsContentAddable.SelectedValue);
                 var linkUrl = TbLinkUrl.Text;
                 var linkType = DdlLinkType.SelectedValue;
                 var defaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
@@ -294,9 +288,6 @@ namespace SiteServer.BackgroundPages.Cms
 
                 channel.Keywords = keywords;
                 channel.Description = description;
-
-                channel.IsChannelAddable = isChannelAddable;
-                channel.IsContentAddable = isContentAddable;
 
                 channel.LinkUrl = linkUrl;
                 channel.LinkType = linkType;

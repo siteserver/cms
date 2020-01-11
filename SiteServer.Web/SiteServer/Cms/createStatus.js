@@ -1,7 +1,7 @@
 ﻿var $siteId = parseInt(utils.getQueryString('siteId'));
 
-var $api = new apiUtils.Api(apiUrl + '/pages/cms/createStatus');
-var $apiCancel = new apiUtils.Api(apiUrl + '/pages/cms/createStatus/actions/cancel');
+var $url = '/pages/cms/createStatus';
+var $apiCancel = '/pages/cms/createStatus/actions/cancel';
 
 var data = {
   pageLoad: false,
@@ -19,21 +19,30 @@ var data = {
 var methods = {
   load: function () {
     var $this = this;
+    $this.pageAlert = null;
 
-    $api.get({
-        siteId: $this.siteId
-      },
-      function (err, res) {
-        $this.timeoutId = setTimeout(function () {
-          $this.load();
-        }, 3000);
-        if (err || !res || !res.value) return;
+    if (this.pageLoad) utils.loading(true);
+    $api.get($url, {
+        params: {
+          siteId: $this.siteId
+        }
+      }).then(function(response) {
+        var res = response.data;
 
         $this.tasks = res.value.tasks;
         $this.channelsCount = res.value.channelsCount;
         $this.contentsCount = res.value.contentsCount;
         $this.filesCount = res.value.filesCount;
         $this.specialsCount = res.value.specialsCount;
+      })
+      .catch(function(error) {
+        $this.pageAlert = utils.getPageAlert(error);
+      })
+      .then(function() {
+        $this.timeoutId = setTimeout(function () {
+          $this.load();
+        }, 3000);
+        utils.loading(false);
         $this.pageLoad = true;
       });
   },
@@ -56,15 +65,21 @@ var methods = {
   },
 
   btnCancelClick: function () {
-    var $this = this;
     clearTimeout(this.timeoutId);
+    var $this = this;
 
-    $this.pageLoad = false;
-    $apiCancel.post({
+    utils.loading(true);
+    $api
+      .post($url + '/actions/cancel', {
         siteId: $this.siteId
-      },
-      function (err, res) {
+      })
+      .then(function(response) {
+        var res = response.data;
+
         $this.load();
+      })
+      .catch(function(error) {
+        $this.pageAlert = utils.getPageAlert(error);
       });
   }
 };

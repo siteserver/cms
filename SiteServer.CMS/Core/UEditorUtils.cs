@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
 using SiteServer.CMS.StlParser.StlElement;
 
@@ -51,7 +50,7 @@ namespace SiteServer.CMS.Core
             }
 
             return GetInsertHtmlScript(attributeName,
-                $@"<img class=""siteserver-stl-player"" src=""{SiteServerAssets.GetUrl("ueditor/video-clip.png")}"" {TranslateUtils.ToAttributesString(dict)} />");
+                $@"<img {StlPlayer.EditorPlaceHolder} {TranslateUtils.ToAttributesString(dict)} />");
         }
 
         public static string GetInsertAudioScript(string attributeName, string playUrl, Site site)
@@ -60,13 +59,13 @@ namespace SiteServer.CMS.Core
 
             var dict = new Dictionary<string, string>
             {
-                {StlPlayer.PlayUrl, playUrl},
-                {StlPlayer.IsAutoPlay, site.ConfigUEditorAudioIsAutoPlay.ToString()},
+                {StlAudio.PlayUrl, playUrl},
+                {StlAudio.IsAutoPlay, site.ConfigUEditorAudioIsAutoPlay.ToString()},
                 {"style", "width: 400px; height: 40px;" }
             };
 
             return GetInsertHtmlScript(attributeName,
-                $@"<img class=""siteserver-stl-audio"" src=""{SiteServerAssets.GetUrl("ueditor/audio-clip.png")}"" {TranslateUtils.ToAttributesString(dict)} />");
+                $@"<img {StlAudio.EditorPlaceHolder} {TranslateUtils.ToAttributesString(dict)} />");
         }
 
         public static string GetPureTextScript(string attributeName)
@@ -92,8 +91,9 @@ namespace SiteServer.CMS.Core
             var retVal = html;
             if (!string.IsNullOrEmpty(retVal))
             {
-                retVal = retVal.Replace(@"<img class=""siteserver-stl-player"" ", "<stl:player ");
-                retVal = retVal.Replace(@"<img class=""siteserver-stl-audio"" ", "<stl:audio ");
+                retVal = retVal.Replace($"<img {StlPlayer.EditorPlaceHolder} ", $"<{StlPlayer.ElementName} ");
+                retVal = retVal.Replace($"<img {StlAudio.EditorPlaceHolder} ", $"<{StlAudio.ElementName} ");
+                retVal = retVal.Replace($"<img {StlLibrary.EditorPlaceHolder} ", $"<{StlLibrary.ElementName} ");
             }
             return retVal;
         }
@@ -103,8 +103,9 @@ namespace SiteServer.CMS.Core
             var retVal = html;
             if (!string.IsNullOrEmpty(retVal))
             {
-                retVal = retVal.Replace("<stl:player ", @"<img class=""siteserver-stl-player"" ");
-                retVal = retVal.Replace("<stl:audio ", @"<img class=""siteserver-stl-audio"" ");
+                retVal = retVal.Replace($"<{StlPlayer.ElementName} ", $"<img {StlPlayer.EditorPlaceHolder} ");
+                retVal = retVal.Replace($"<{StlAudio.ElementName} ", $"<img {StlAudio.EditorPlaceHolder} ");
+                retVal = retVal.Replace($"<{StlLibrary.ElementName} ", $"<img {StlLibrary.EditorPlaceHolder} ");
             }
             return retVal;
         }

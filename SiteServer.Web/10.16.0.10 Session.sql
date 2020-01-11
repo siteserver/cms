@@ -1,0 +1,1 @@
+SELECT x.channelId, x.id FROM siteserver_content_272 AS x INNER JOIN siteserver_channel AS y WHERE x.content LIKE '%<a href="http%' AND x.ChannelId = y.id;

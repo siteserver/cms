@@ -10,6 +10,7 @@ using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
+using System.Linq;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
 {
@@ -116,6 +117,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 }
 
                 var roles = await DataProvider.RoleRepository.GetRoleNameListAsync();
+                roles = roles.Where(x => !EPredefinedRoleUtils.IsPredefinedRole(x)).ToList();
                 var allSites = await DataProvider.SiteRepository.GetSiteListAsync();
 
                 var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(adminId);

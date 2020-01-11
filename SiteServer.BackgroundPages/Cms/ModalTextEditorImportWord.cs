@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var fileName in fileNames.Split('|'))
                 {
                     var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                    var wordContent = WordUtils.ParseAsync(SiteId, filePath, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked).GetAwaiter().GetResult();
+                    var (_, wordContent) = WordManager.GetWordAsync(Site, false, false, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, filePath).GetAwaiter().GetResult();
                     wordContent = ContentUtility.TextEditorContentDecode(Site, wordContent, true);
                     builder.Append(wordContent);
                     FileUtils.DeleteFileIfExists(filePath);

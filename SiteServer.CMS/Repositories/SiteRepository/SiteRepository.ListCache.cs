@@ -70,7 +70,12 @@ namespace SiteServer.CMS.Repositories
 
                 foreach (var site in siteList)
                 {
-                    optionList.Add(new Cascade<int>(site.Id, site.SiteName, await GetSiteOptionsAsync(site.Id)));
+                    optionList.Add(new Cascade<int>
+                    {
+                        Value = site.Id,
+                        Label = site.SiteName,
+                        Children = await GetSiteOptionsAsync(site.Id)
+                    });
                 }
 
                 return optionList;

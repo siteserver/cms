@@ -57,8 +57,6 @@ namespace SiteServer.API.Controllers.V1
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                if (!channelInfo.IsContentAddable) return BadRequest("此栏目不能添加内容");
-
                 var attributes = request.GetPostObject<Dictionary<string, object>>();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
                 var checkedLevel = request.GetPostInt("checkedLevel");
@@ -335,7 +333,7 @@ namespace SiteServer.API.Controllers.V1
         {
             var req = await AuthenticatedRequest.GetAuthAsync();
             var sourceId = req.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-            var channelId = request.ChannelId.HasValue ? request.ChannelId.Value : request.SiteId;
+            var channelId = request.ChannelId ?? request.SiteId;
 
             bool isAuth;
             if (sourceId == SourceManager.User)
@@ -360,7 +358,7 @@ namespace SiteServer.API.Controllers.V1
             if (site == null) return Request.BadRequest<QueryResult>("无法确定内容对应的站点");
 
             var tableName = site.TableName;
-            var query = GetQuery(request.SiteId, request.ChannelId, request);
+            var query = await GetQueryAsync(request.SiteId, request.ChannelId, request);
             var totalCount = await DataProvider.ContentRepository.GetTotalCountAsync(tableName, query);
             var channelContentIds = await DataProvider.ContentRepository.GetChannelContentIdListAsync(tableName, query);
 
@@ -385,7 +383,7 @@ namespace SiteServer.API.Controllers.V1
             var req = await AuthenticatedRequest.GetAuthAsync();
 
             if (!req.IsApiAuthenticated ||
-                await DataProvider.AccessTokenRepository.IsScopeAsync(req.ApiToken, Constants.ScopeContents))
+                !await DataProvider.AccessTokenRepository.IsScopeAsync(req.ApiToken, Constants.ScopeContents))
             {
                 return Request.Unauthorized<CheckResult>();
             }

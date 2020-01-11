@@ -13,23 +13,121 @@ Object.defineProperty(Object.prototype, "getProp", {
 });
 
 var data = {
-  siteId: parseInt(utils.getQueryString("siteId")),
-  channelId: parseInt(utils.getQueryString("channelId")),
+  siteId: utils.getQueryInt("siteId"),
+  channelId: utils.getQueryInt("channelId") || utils.getQueryInt("siteId"),
   pageLoad: false,
   pageAlert: null,
   pageType: null,
-  page: 1,
+  loading: false,
+
+  searchType: 'title',
+  searchText: '',
+
+  filterText: '',
+  treeData: null,
   pageContents: null,
-  count: null,
-  pages: null,
+  total: null,
+  pageSize: null,
+  page: 1,
   permissions: null,
   columns: null,
   isAllContents: false,
-  pageOptions: null,
-  isAllChecked: false
+  
+  asideHeight: 0,
+  tableMaxHeight: 0,
+  multipleSelection: [],
+
+  advancedForm: {
+    startDate: null,
+    endDate: null,
+    keywords: '',
+    description: ''
+  },
+  tableData: [{
+    id: 1,
+    date: '2016-05-02',
+    name: '王小虎',
+    address: '上海市普陀区金沙江路 1518 弄'
+  }],
 };
 
 var methods = {
+  deleteRow(index, rows) {
+    rows.splice(index, 1);
+  },
+  
+  apiConfig: function() {
+    var $this = this;
+
+    $api
+      .get($url + '/channels', {
+        params: {
+          siteId: $this.siteId
+        }
+      })
+      .then(function(response) {
+        var res = response.data;
+
+        $this.treeData = [res];
+      })
+      .catch(function(error) {
+        $this.pageAlert = utils.getPageAlert(error);
+      })
+      .then(function() {
+        $this.asideHeight = $(window).height();
+        $this.tableMaxHeight = $(window).height() - 85;
+        $this.pageLoad = true;
+      });
+  },
+
+  apiList: function(channelId, page) {
+    var $this = this;
+
+    $this.loading = true;
+    $api
+      .get($url, {
+        params: {
+          siteId: $this.siteId,
+          channelId: channelId,
+          page: page
+        }
+      })
+      .then(function(response) {
+        var res = response.data;
+
+        if (!$this.treeData) {
+          $this.treeData = [res.rootChannel];
+        }
+        
+        // var pageContents = [];
+        // for (var i = 0; i < res.pageContents.length; i++) {
+        //   var content = _.assign({}, res.pageContents[i], {
+        //     isSelected: false
+        //   });
+        //   pageContents.push(content);
+        // }
+        // $this.pageContents = pageContents;
+        $this.pageContents = res.pageContents;
+        $this.permissions = res.permissions;
+        $this.columns = res.columns;
+        $this.isAllContents = res.isAllContents;
+        $this.total = res.total;
+        $this.pageSize = res.pageSize;
+        $this.page = page;
+      })
+      .catch(function(error) {
+        $this.pageAlert = utils.getPageAlert(error);
+      })
+      .then(function() {
+        $this.loading = false;
+        $this.scrollToTop();
+      });
+  },
+
+  getChannelUrl: function(data) {
+    return '../redirect.cshtml?siteId=' + this.siteId + '&channelId=' + data.value;
+  },
+
   getContentUrl: function (content) {
     if (content.checked) {
       return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
@@ -37,13 +135,49 @@ var methods = {
     return apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
   },
 
-  btnAddClick: function () {
-    top.utils.openLayer({
-      title: "添加内容",
-      url: this.getAddUrl(),
-      full: true,
-      max: true
-    });
+  btnAdvancedSubmitClick: function() {
+
+  },
+
+  btnAdvancedCancelClick: function() {
+
+  },
+
+  btnAddClick: function (command) {
+    if (command === 'Word') {
+      this.btnLayerClick({title: '批量导入Word', name: 'Word', full: true});
+    } else if (command === 'Import') {
+      this.btnLayerClick({title: '批量导入', name: 'Import', full: true});
+    } else {
+      top.utils.openLayer({
+        title: "添加内容",
+        url: this.getAddUrl(),
+        full: true,
+        max: true
+      });
+    }
+  },
+
+  btnExportClick: function(command) {
+    this.btnLayerClick({title: '批量导出', name: 'Export', full: true, withOptionalContents: true});
+  },
+
+  btnMoreClick: function(command) {
+    if (command === 'Options') {
+      this.btnLayerClick({title: '设置选项', name: 'Options', full: true});
+    } else if (command === 'Arrange') {
+      this.btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350});
+    } else if (command === 'Attributes') {
+      this.btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 450, height: 320, withContents: true});
+    } else if (command === 'Group') {
+      this.btnLayerClick({title: '批量设置组别', name: 'Group', withContents: true});
+    } else if (command === 'Taxis') {
+      this.btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true});
+    } else if (command === 'Cut') {
+      this.btnLayerClick({title: '批量转移', name: 'Cut', full: true, withContents: true});
+    } else if (command === 'Copy') {
+      this.btnLayerClick({title: '批量复制', name: '', full: true, withContents: true});
+    }
   },
 
   btnEditClick: function(content) {
@@ -77,14 +211,12 @@ var methods = {
     );
   },
 
-  btnCreateClick: function(e) {
-    e.stopPropagation();
-
+  btnCreateClick: function() {
     var $this = this;
     this.pageAlert = null;
     if (!this.isContentChecked) return;
 
-    utils.loading(true);
+    $this.loading = true;
     $api
       .post($url + "/actions/create", {
         siteId: $this.siteId,
@@ -93,25 +225,17 @@ var methods = {
       .then(function(response) {
         var res = response.data;
 
-        $this.pageAlert = {
-          type: "success",
-          html:
-            "内容已添加至生成列队！<a href='createStatus.cshtml?siteId=" +
-            $this.siteId +
-            "'>生成进度查看</a>"
-        };
+        parent.openPageCreateStatus();
       })
       .catch(function(error) {
         $this.pageAlert = utils.getPageAlert(error);
       })
       .then(function() {
-        utils.loading(false);
+        $this.loading = false;
       });
   },
 
-  btnLayerClick: function(options, e) {
-    e.stopPropagation();
-
+  btnLayerClick: function(options) {
     this.pageAlert = null;
     var url = "contentsLayer" + options.name + ".cshtml?siteId=" + this.siteId;
 
@@ -145,9 +269,7 @@ var methods = {
     });
   },
 
-  btnContentViewClick: function(contentId, e) {
-    e.stopPropagation();
-
+  btnContentViewClick: function(contentId) {
     utils.openLayer({
       title: "查看内容",
       url:
@@ -161,9 +283,7 @@ var methods = {
     });
   },
 
-  btnContentStateClick: function(contentId, e) {
-    e.stopPropagation();
-
+  btnContentStateClick: function(contentId) {
     utils.openLayer({
       title: "查看审核状态",
       url:
@@ -177,44 +297,6 @@ var methods = {
     });
   },
 
-  toggleChecked: function(content) {
-    content.isSelected = !content.isSelected;
-    if (!content.isSelected) {
-      this.isAllChecked = false;
-    }
-  },
-
-  selectAll: function() {
-    this.isAllChecked = !this.isAllChecked;
-    for (var i = 0; i < this.pageContents.length; i++) {
-      this.pageContents[i].isSelected = this.isAllChecked;
-    }
-  },
-
-  loadFirstPage: function() {
-    if (this.page === 1) return;
-    this.loadContents(1);
-  },
-
-  loadPrevPage: function() {
-    if (this.page - 1 <= 0) return;
-    this.loadContents(this.page - 1);
-  },
-
-  loadNextPage: function() {
-    if (this.page + 1 > this.pages) return;
-    this.loadContents(this.page + 1);
-  },
-
-  loadLastPage: function() {
-    if (this.page + 1 > this.pages) return;
-    this.loadContents(this.pages);
-  },
-
-  onPageSelect: function(option) {
-    this.loadContents(option);
-  },
-
   scrollToTop: function() {
     document.documentElement.scrollTop = document.body.scrollTop = 0;
   },
@@ -223,9 +305,7 @@ var methods = {
     return pluginMenu.href + "&returnUrl=" + encodeURIComponent(location.href);
   },
 
-  btnPluginMenuClick: function(pluginMenu, e) {
-    e.stopPropagation();
-
+  btnPluginMenuClick: function(pluginMenu) {
     if (pluginMenu.target === "_layer") {
       utils.openLayer({
         title: pluginMenu.text,
@@ -235,59 +315,28 @@ var methods = {
     }
   },
 
-  loadContents: function(page) {
-    var $this = this;
+  treeIconClick: function(data) {
+    return false;
+  },
 
-    if ($this.pageLoad) {
-      utils.loading(true);
-    }
+  handleNodeClick: function(data) {
+    this.channelId = data.value;
+    this.apiList(data.value, 1);
+  },
 
-    $api
-      .get($url, {
-        params: {
-          siteId: $this.siteId,
-          channelId: $this.channelId,
-          page: page
-        }
-      })
-      .then(function(response) {
-        var res = response.data;
-        var pageContents = [];
-        for (var i = 0; i < res.value.length; i++) {
-          var content = _.assign({}, res.value[i], {
-            isSelected: false
-          });
-          pageContents.push(content);
-        }
-        $this.pageContents = pageContents;
-        $this.count = res.count;
-        $this.pages = res.pages;
-        $this.permissions = res.permissions;
-        $this.columns = res.columns;
-        $this.isAllContents = res.isAllContents;
-        $this.page = page;
-        $this.pageOptions = [];
-        for (var i = 1; i <= $this.pages; i++) {
-          $this.pageOptions.push(i);
-        }
+  filterNode: function(value, data) {
+    if (!value) return true;
+    return data.label.indexOf(value) !== -1;
+  },
 
-        if ($this.pageLoad) {
-          utils.loading(false);
-          $this.scrollToTop();
-        } else {
-          $this.pageLoad = true;
-        }
-      })
-      .catch(function(error) {
-        $this.pageAlert = utils.getPageAlert(error);
-      })
-      .then(function() {
-        utils.loading(false);
-      });
+  handleSelectionChange: function(val) {
+    this.multipleSelection = val;
+  },
+
+  handleCurrentChange: function(val) {
+    this.apiList(this.channelId, val);
   }
 };
-
-Vue.component("multiselect", window.VueMultiselect.default);
 
 var $vue = new Vue({
   el: "#main",
@@ -295,44 +344,39 @@ var $vue = new Vue({
   methods: methods,
   computed: {
     isContentChecked: function() {
-      if (this.pageContents) {
-        for (var i = 0; i < this.pageContents.length; i++) {
-          if (this.pageContents[i].isSelected) {
-            return true;
-          }
-        }
-      }
-      return false;
+      return this.multipleSelection.length > 0;
     },
+
     channelContentIds: function() {
       var retVal = [];
-      if (this.pageContents) {
-        for (var i = 0; i < this.pageContents.length; i++) {
-          if (this.pageContents[i].isSelected) {
-            retVal.push({
-              channelId: this.pageContents[i].channelId,
-              id: this.pageContents[i].id
-            });
-          }
-        }
+      for (var i = 0; i < this.multipleSelection.length; i++) {
+        var content = this.multipleSelection[i];
+        retVal.push({
+          channelId: content.channelId,
+          id: content.id
+        });
       }
       return retVal;
     },
+
     channelContentIdsString: function() {
       var retVal = [];
-      if (this.pageContents) {
-        for (var i = 0; i < this.pageContents.length; i++) {
-          if (this.pageContents[i].isSelected) {
-            retVal.push(
-              this.pageContents[i].channelId + "_" + this.pageContents[i].id
-            );
-          }
-        }
+      for (var i = 0; i < this.multipleSelection.length; i++) {
+        var content = this.multipleSelection[i];
+        retVal.push({
+          channelId: content.channelId,
+          id: content.id
+        });
       }
       return retVal.join(",");
     }
   },
+  watch: {
+    filterText: function(val) {
+      this.$refs.tree.filter(val);
+    }
+  },
   created: function() {
-    this.loadContents(1);
+    this.apiConfig();
   }
 });

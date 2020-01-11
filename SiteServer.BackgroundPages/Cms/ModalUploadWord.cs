@@ -83,11 +83,12 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (!string.IsNullOrEmpty(fileName))
                     {
-                        var formCollection = WordUtils.GetWordNameValueCollectionAsync(SiteId, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, fileName).GetAwaiter().GetResult();
+                        var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                        var (title, content) = WordManager.GetWordAsync(Site, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, filePath).GetAwaiter().GetResult();
 
-                        if (!string.IsNullOrEmpty(formCollection[ContentAttribute.Title]))
+                        if (!string.IsNullOrEmpty(title))
                         {
-                            var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleList, formCollection, ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
+                            var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
 
                             var contentInfo = new Content(dict)
                             {
@@ -103,7 +104,8 @@ namespace SiteServer.BackgroundPages.Cms
                             contentInfo.CheckedLevel = TranslateUtils.ToIntWithNegative(DdlContentLevel.SelectedValue);
                             contentInfo.Checked = contentInfo.CheckedLevel >= Site.CheckContentLevel;
 
-                            contentInfo.Title = formCollection[ContentAttribute.Title];
+                            contentInfo.Title = title;
+                            contentInfo.Set(ContentAttribute.Content, content);
 
                             contentInfo.Id = DataProvider.ContentRepository.InsertAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
 

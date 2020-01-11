@@ -30,8 +30,6 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlTaxisType;
         public DropDownList DdlChannelTemplateId;
         public DropDownList DdlContentTemplateId;
-        public RadioButtonList RblIsChannelAddable;
-        public RadioButtonList RblIsContentAddable;
         public TextBox TbImageUrl;
         public TextBox TbFilePath;
         public TextBox TbChannelFilePathRule;
@@ -73,11 +71,6 @@ namespace SiteServer.BackgroundPages.Cms
             //}
 
             var parentNodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
-            if (parentNodeInfo.IsChannelAddable == false)
-            {
-                PageUtils.RedirectToErrorPage("此栏目不能添加子栏目！");
-                return;
-            }
 
             CacAttributes.Site = Site;
             CacAttributes.ChannelId = _channelId;
@@ -206,8 +199,6 @@ namespace SiteServer.BackgroundPages.Cms
                 var content = ContentUtility.TextEditorContentEncodeAsync(Site, Request.Form[nameof(Channel.Content)]).GetAwaiter().GetResult();
                 var keywords = TbKeywords.Text;
                 var description = TbDescription.Text;
-                var isChannelAddable = TranslateUtils.ToBool(RblIsChannelAddable.SelectedValue);
-                var isContentAddable = TranslateUtils.ToBool(RblIsContentAddable.SelectedValue);
                 var linkUrl = TbLinkUrl.Text;
                 var linkType = DdlLinkType.SelectedValue;
                 var defaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
@@ -304,8 +295,6 @@ namespace SiteServer.BackgroundPages.Cms
                 channelInfo.Content = content;
                 channelInfo.Keywords = keywords;
                 channelInfo.Description = description;
-                channelInfo.IsChannelAddable = isChannelAddable;
-                channelInfo.IsContentAddable = isContentAddable;
                 channelInfo.LinkUrl = linkUrl;
                 channelInfo.LinkType = linkType;
                 channelInfo.DefaultTaxisType = defaultTaxisType;

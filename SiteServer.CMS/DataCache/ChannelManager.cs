@@ -96,23 +96,62 @@ namespace SiteServer.CMS.DataCache
             return channel;
         }
 
-        public static async Task<List<Cascade<int>>> GetChannelOptionsAsync(int siteId, int parentId = 0)
+        public static async Task<Cascade<int>> GetCascadeAsync(Site site, Channel channel, Func<Site, Channel, Task<Dictionary<string, object>>> func)
+        {
+            var dict = await func(site, channel);
+            return new Cascade<int>
+            {
+                Value = channel.Id,
+                Label = channel.ChannelName,
+                Dict = dict,
+                Children = await GetCascadeChildrenAsync(site, channel.Id, func)
+            };
+        }
+
+        public static async Task<List<Cascade<int>>> GetCascadeChildrenAsync(Site site, int parentId, Func<Site, Channel, Task<Dictionary<string, object>>> func)
         {
             var list = new List<Cascade<int>>();
 
-            var dic = await ChannelManagerCache.GetChannelDictionaryBySiteIdAsync(siteId);
+            var dic = await ChannelManagerCache.GetChannelDictionaryBySiteIdAsync(site.Id);
 
             foreach (var channelInfo in dic.Values)
             {
                 if (channelInfo == null) continue;
                 if (channelInfo.ParentId == parentId)
                 {
-                    list.Add(new Cascade<int>
-                    {
-                        Value = channelInfo.Id,
-                        Label = channelInfo.ChannelName,
-                        Children = await GetChannelOptionsAsync(siteId, channelInfo.Id)
-                    });
+                    list.Add(await GetCascadeAsync(site, channelInfo, func));
+                }
+            }
+
+            return list;
+        }
+
+        public static async Task<Cascade<int>> GetCascadeAsync(Site site, Channel channel, int adminId)
+        {
+            return new Cascade<int>
+            {
+                Value = channel.Id,
+                Label = channel.ChannelName,
+                Dict = new Dictionary<string, object>
+                {
+                    {"count", await DataProvider.ContentRepository.GetCountAsync(site, channel, adminId)}
+                },
+                Children = await GetCascadeChildrenAsync(site, adminId, channel.Id)
+            };
+        }
+
+        public static async Task<List<Cascade<int>>> GetCascadeChildrenAsync(Site site, int adminId, int parentId = 0)
+        {
+            var list = new List<Cascade<int>>();
+
+            var dic = await ChannelManagerCache.GetChannelDictionaryBySiteIdAsync(site.Id);
+
+            foreach (var channelInfo in dic.Values)
+            {
+                if (channelInfo == null) continue;
+                if (channelInfo.ParentId == parentId)
+                {
+                    list.Add(await GetCascadeAsync(site, channelInfo, adminId));
                 }
             }
 
@@ -232,6 +271,12 @@ namespace SiteServer.CMS.DataCache
         {
             var dic = await ChannelManagerCache.GetChannelDictionaryBySiteIdAsync(siteId);
             return dic.Values.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
+        }
+
+        public static async Task<List<string>> GetChannelIndexNameListAsync(int siteId)
+        {
+            var dic = await ChannelManagerCache.GetChannelDictionaryBySiteIdAsync(siteId);
+            return dic.Values.OrderBy(c => c.Taxis).Where(channelInfo => !string.IsNullOrEmpty(channelInfo.IndexName)).Select(channelInfo => channelInfo.IndexName).ToList();
         }
 
         public static async Task<List<int>> GetChannelIdListAsync(int siteId, string channelGroup)
@@ -618,10 +663,6 @@ namespace SiteServer.CMS.DataCache
                 }
 
                 var nodeInfo = await GetChannelAsync(site.Id, channelId);
-                if (enabled)
-                {
-                    if (nodeInfo.IsContentAddable == false) enabled = false;
-                }
 
                 if (!enabled)
                 {
@@ -827,12 +868,6 @@ namespace SiteServer.CMS.DataCache
             {
                 var enabled = await permissionsImpl.HasChannelPermissionsAsync(siteId, channelId, channelPermissions);
 
-                var channelInfo = await GetChannelAsync(siteId, channelId);
-                if (enabled && channelPermissions.Contains(Constants.ChannelPermissions.ContentAdd))
-                {
-                    if (channelInfo.IsContentAddable == false) enabled = false;
-                }
-
                 if (enabled)
                 {
                     var tuple = new KeyValuePair<int, string>(channelId,
@@ -848,7 +883,7 @@ namespace SiteServer.CMS.DataCache
         {
             if (site == null || channel == null) return false;
 
-            if (!channel.IsChannelCreatable || !string.IsNullOrEmpty(channel.LinkUrl)) return false;
+            if (!string.IsNullOrEmpty(channel.LinkUrl)) return false;
 
             var isCreatable = false;
 

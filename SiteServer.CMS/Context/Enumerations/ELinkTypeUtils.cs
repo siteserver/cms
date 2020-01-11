@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Dto;
 
 namespace SiteServer.CMS.Context.Enumerations
 {
@@ -34,5 +36,24 @@ namespace SiteServer.CMS.Context.Enumerations
 		    listControl.Items.Add(GetListItem(ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel, false));
 		    listControl.Items.Add(GetListItem(ELinkType.NoLink, false));
 		}
+
+        public static List<Select<string>> GetAll()
+        {
+            return new List<Select<string>>
+            {
+				new Select<string>(ELinkType.None),
+                new Select<string>(ELinkType.NoLinkIfContentNotExists),
+                new Select<string>(ELinkType.LinkToOnlyOneContent),
+                new Select<string>(ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent),
+                new Select<string>(ELinkType.LinkToFirstContent),
+                new Select<string>(ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent),
+                new Select<string>(ELinkType.NoLinkIfChannelNotExists),
+                new Select<string>(ELinkType.LinkToLastAddChannel),
+                new Select<string>(ELinkType.LinkToFirstChannel),
+                new Select<string>(ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel),
+                new Select<string>(ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel),
+                new Select<string>(ELinkType.NoLink)
+			};
+        }
 	}
 }

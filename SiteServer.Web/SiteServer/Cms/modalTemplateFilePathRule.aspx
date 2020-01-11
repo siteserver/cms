@@ -72,27 +72,6 @@
           </div>
         </div>
 
-        <div class="form-group form-row">
-          <label class="col-2 col-form-label text-right">生成栏目静态页面</label>
-          <div class="col-6">
-            <asp:RadioButtonList ID="RblIsChannelCreatable" RepeatDirection="Horizontal" class="radio radio-primary" runat="server">
-              <asp:ListItem Text="是" Value="True" Selected="True" />
-              <asp:ListItem Text="否" Value="False" />
-            </asp:RadioButtonList>
-          </div>
-          <div class="col-4"></div>
-        </div>
-        <div class="form-group form-row">
-          <label class="col-2 col-form-label text-right">生成内容静态页面</label>
-          <div class="col-6">
-            <asp:RadioButtonList ID="RblIsContentCreatable" RepeatDirection="Horizontal" class="radio radio-primary" runat="server">
-              <asp:ListItem Text="是" Value="True" Selected="True" />
-              <asp:ListItem Text="否" Value="False" />
-            </asp:RadioButtonList>
-          </div>
-          <div class="col-4"></div>
-        </div>
-
         <hr />
 
         <div class="text-right mr-1">

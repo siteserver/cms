@@ -207,6 +207,10 @@ namespace SiteServer.Abstractions
 
         public int ImageUploadTypeMaxSize { get; set; } = 15360;
 
+        public string AudioUploadDirectoryName { get; set; } = "upload/audio";
+
+        public string AudioUploadDateFormatString { get; set; } = EDateFormatTypeUtils.GetValue(EDateFormatType.Month);
+
         public string VideoUploadDirectoryName { get; set; } = "upload/videos";
 
         public string VideoUploadDateFormatString { get; set; } = EDateFormatTypeUtils.GetValue(EDateFormatType.Month);

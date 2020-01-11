@@ -1,61 +1,50 @@
-﻿@{ Layout = "../Shared/_LayoutLayer.cshtml"; }
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
 
-<div class="text-right">
-  <el-button size="medium" v-on:click="btnPreviewClick">预 览</el-button>
-  <el-button size="medium" v-on:click="btnSaveClick" type="success">保 存</el-button>
-  <el-button size="medium" icon="el-icon-setting" circle :type="isSettings ? 'info' : ''" v-on:click="isSettings = !isSettings"></el-button>
-</div>
+<el-row>
+  <el-col :span="12">
+    <el-button size="small" v-on:click="getWordSpliter();return false;">提取标签</el-button>
+    <el-button size="small" v-on:click="detection_Content();return false;">敏感词检测</el-button>
+  </el-col>
+  <el-col align="right" :span="12">
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+    <el-button size="small" v-on:click="btnPreviewClick">预 览</el-button>
+    <el-button size="small" v-on:click="btnSaveClick" type="success">保 存</el-button>
+    <el-button size="small" icon="el-icon-setting" circle :type="isSettings ? 'info' : ''" v-on:click="isSettings = !isSettings"></el-button>
+  </el-col>
+</el-row>
 
-<hr />
+<el-divider></el-divider>
 
 <el-container style="padding-top: 0; padding-bottom: 0; overflow:auto;" :style="{height: mainHeight}">
-  <el-main style="padding-top: 0;">
+  <el-main style="padding-top: 5px;">
 
-    <el-row v-for="style in styles" class="mb-3">
-
-      <el-row>
-        <el-col :span="4">
-          <label>
-            {{ style.displayName }}
-            <small v-if="style.helpText" class="text-muted">{{ style.helpText }}</small>
-            <span v-if="style.veeValidate && style.veeValidate.indexOf('required') !== -1" class="text-danger">*</span>
-            <small v-show="errors.has(style.attributeName)" class="text-danger">{{
-              errors.first(style.attributeName) }}</small>
-          </label>
-        </el-col>
-        <el-col :span="20" style="text-align: right">
-          <template v-if="style.inputType === 'Image'">
-            <el-button size="mini" round plain type="primary" style="margin-top: -2px;" v-on:click="btnLayerClick({ title: '上传图片', name: 'Image', full: true, args: {attributeName: style.attributeName, inputType: style.inputType} })">上传</el-button>
-            <el-button size="mini" round plain type="primary" style="margin-top: -2px;" v-if="style.value" v-on:click="btnImageClick(style.value)">预览</el-button>
-          </template>
-          <template v-else-if="style.inputType === 'TextEditor'">
-            <el-button-group style="margin-top: -2px;">
-              <el-button size="mini" plain type="info" v-on:click="btnLayerClick({title: '批量导入Word', name: 'Word', full: true}, $event)">导入Word</el-button>
-              <el-button size="mini" plain type="info" onClick="utils.openLayer({title: '插入图片', url: 'modalTextEditorInsertImage.aspx?siteId=1&amp;attributeName=Content', width: 700, height: 550});">插入图片</el-button>
-              <el-button size="mini" plain type="info" onClick="utils.openLayer({title: '插入视频', url: 'modalTextEditorInsertVideo.aspx?siteId=1&amp;AttributeName=Content', width: 600, height: 520});">插入视频</el-button>
-              <el-button size="mini" plain type="info" onClick="utils.openLayer({title: '插入音频', url: 'modalTextEditorInsertAudio.aspx?siteId=1&amp;AttributeName=Content', width: 600, height: 400});">插入音频</el-button>
-              <el-button size="mini" plain type="info" onClick="getWordSpliter();return false;">提取关键字</el-button>
-              <el-button size="mini" plain type="info" onClick="detection_Content();return false;">敏感词检测</el-button>
-            </el-button-group>
-          </template>
-        </el-col>
-      </el-row>
-
-      <el-row>
+    <el-form size="small" label-position="left" label-width="80px">
+      <el-form-item v-for="style in styles" :key="style.attributeName" :label="style.displayName">
         <template v-if="style.inputType === 'Image'">
-          <el-input size="medium" placeholder="请输入图片地址或点击右侧上传按钮" v-model="style.value" :name="style.attributeName" :data-vv-as="style.displayName" v-validate="style.veeValidate"
+          <el-input size="small" placeholder="请输入图片地址或点击右侧上传按钮" v-model="style.value" :name="style.attributeName" :data-vv-as="style.displayName" v-validate="style.veeValidate"
             :class="{'is-invalid': errors.has(style.attributeName)}">
             <el-button slot="append" icon="el-icon-upload">上传</el-button>
           </el-input>
         </template>
         <template v-else-if="style.inputType === 'TextArea'">
-          <el-input type="textarea" size="medium" v-model="style.value" :autosize="{ minRows: 4, maxRows: 10}"
+          <el-input type="textarea" size="small" v-model="style.value" :autosize="{ minRows: 4, maxRows: 10}"
             :name="style.attributeName" :data-vv-as="style.displayName" v-validate="style.veeValidate"
             :class="{'is-invalid': errors.has(style.attributeName)}"></el-input>
         </template>
         <template v-else-if="style.inputType === 'TextEditor'">
+
+          <el-button-group>
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '导入Word', name: 'Word', attributeName: 'editChannel_Content'})">导入Word</el-button>
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入图片', name: 'Image', attributeName: 'editChannel_Content'})">插入图片</el-button>
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入视频', name: 'Video', attributeName: 'editChannel_Content'})">插入视频</el-button>
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入音频', name: 'Audio', attributeName: 'editChannel_Content'})">插入音频</el-button>
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入附件', name: 'File', attributeName: 'editChannel_Content'})">插入附件</el-button>
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入图文', name: 'Text', attributeName: 'editChannel_Content'})">插入图文</el-button>
+          </el-button-group>
+
           <textarea v-model="style.value" style="width: 100%" :id="style.attributeName" :name="style.attributeName" :data-vv-as="style.displayName"
-            v-validate="style.veeValidate"></textarea>
+            v-validate="style.veeValidate" v-html="style.value"></textarea>
+
         </template>
         <template v-else-if="style.inputType === 'Radio'">
           <div class="m-2">
@@ -67,19 +56,19 @@
           </div>
         </template>
         <template v-else>
-          <el-input v-model="style.value" size="medium" autosize type="text" :name="style.attributeName"
+          <el-input v-model="style.value" size="small" autosize type="text" :name="style.attributeName"
             :data-vv-as="style.displayName" v-validate="style.veeValidate" :class="{'is-invalid': errors.has(style.attributeName)}"></el-input>
         </template>
-      </el-row>
-
-    </el-row>
+      </el-form-item>
+    </el-form>
+    
   </el-main>
   <el-aside v-if="isSettings" width="280px">
     <el-tabs v-model="sideType" type="border-card">
       <el-tab-pane label="设置" name="first">
         <el-collapse v-model="collapseType">
           <el-collapse-item title="审核状态" name="0">
-            <el-select v-model="content.checkedLevel" size="medium" style="width: 100%;">
+            <el-select v-model="content.checkedLevel" size="small" style="width: 100%;">
               <el-option
                 v-for="level in checkedLevels"
                 :key="level.value"
@@ -103,7 +92,7 @@
             <el-select
               v-model="content.tagNames"
               style="width: 100%;"
-              size="medium"
+              size="small"
               multiple
               filterable
               allow-create
@@ -119,7 +108,7 @@
             <small class="form-text text-muted">输入文字后回车可以创建并选中选项中不存在的条目</small>
           </el-collapse-item>
           <el-collapse-item title="外部链接" name="4">
-            <el-input v-model="content.linkUrl" name="linkUrl" placeholder="设置后链接将指向此地址" size="medium" autosize type="textarea" data-vv-as="外部链接" v-validate="'url'" :class="{'is-invalid': errors.has('linkUrl') }"></el-input>
+            <el-input v-model="content.linkUrl" name="linkUrl" placeholder="设置后链接将指向此地址" size="small" autosize type="textarea" data-vv-as="外部链接" v-validate="'url'" :class="{'is-invalid': errors.has('linkUrl') }"></el-input>
             <small class="form-text text-muted">设置外部链接后系统将不会生成内容页面</small>
           </el-collapse-item>
           <el-collapse-item title="添加时间" name="5">
@@ -172,9 +161,11 @@
   </el-aside>
 </el-container>
 
-
-
 @section Scripts{
 <script type="text/javascript" src="../assets/ueditor/editor_config.js"></script>
 <script type="text/javascript" src="../assets/ueditor/ueditor_all_min.js"></script>
+<script type="text/javascript" src="../assets/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js"></script>
+<!-- <script type="text/javascript" src="../assets/js/froala-editor/js/froala_editor.pkgd.min.js"></script>
+<script type="text/javascript" src="../assets/js/froala-editor/js/languages/zh_cn.js"></script> -->
+<!-- <script src="../assets/wangEditor/wangEditor.min.js" type="text/javascript"></script> -->
 <script src="editor.js" type="text/javascript"></script> }

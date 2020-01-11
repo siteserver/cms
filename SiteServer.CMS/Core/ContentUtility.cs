@@ -524,7 +524,7 @@ namespace SiteServer.CMS.Core
 
         public static async Task DeleteAsync(string tableName, Site site, int channelId, int contentId)
         {
-            if (string.IsNullOrEmpty(tableName) || site == null || channelId <= 0 || contentId <= 0) return;
+            if (string.IsNullOrEmpty(tableName) || site == null || contentId <= 0) return;
             
             await DataProvider.ContentRepository.DeleteAsync(tableName, site.Id, contentId);
 
@@ -831,7 +831,7 @@ $('#TbTags').keyup(function (e) {
                 return false;
             }
 
-            return channel.IsContentCreatable && string.IsNullOrEmpty(content.LinkUrl) && content.Checked && content.SourceId != SourceManager.Preview && content.ChannelId > 0;
+            return string.IsNullOrEmpty(content.LinkUrl) && content.Checked && content.SourceId != SourceManager.Preview && content.ChannelId > 0;
         }
     }
 }

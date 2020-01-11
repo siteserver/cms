@@ -1,5 +1,4 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/create');
-var $apiAll = new apiUtils.Api(apiUrl + '/pages/cms/create/all');
+﻿var $url = '/pages/cms/create';
 var $siteId = parseInt(utils.getQueryString('siteId'));
 var $type = utils.getQueryString('type');
 
@@ -23,12 +22,14 @@ var methods = {
     channel.isOpen ? this.hideChildren(channel) : this.showChildren(channel);
     event.stopPropagation();
   },
+  
   toggleChecked: function (channel) {
     channel.isChecked = !channel.isChecked;
     if (!channel.isChecked) {
       this.isAllChecked = false;
     }
   },
+
   selectAll: function () {
     this.isAllChecked = !this.isAllChecked;
     for (var i = 0; i < this.pageChannels.length; i++) {
@@ -36,6 +37,7 @@ var methods = {
     }
     this.reload();
   },
+
   create: function () {
     var $this = this;
 
@@ -51,7 +53,7 @@ var methods = {
     if (!$this.isAllChecked && channelIdList.length === 0) return;
     if (!$this.isChannelPage && !this.isContentPage) return;
 
-    $api.post({
+    $api.post($url, {
       siteId: $this.siteId,
       channelIdList: $this.isAllChecked ? [] : channelIdList,
       isAllChecked: $this.isAllChecked,
@@ -59,42 +61,52 @@ var methods = {
       isChannelPage: $this.isChannelPage,
       isContentPage: $this.isContentPage,
       scope: $this.scope
-    }, function () {
+    }).then(function (response) {
       location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
+    }).catch(function (error) {
+      utils.notifyError($this, error);
     });
   },
+
   createIndex: function () {
     var $this = this;
 
-    $api.post({
+    $api.post($url, {
       siteId: $this.siteId,
       channelIdList: [$this.siteId],
       isAllChecked: false,
       isDescendent: false,
       isChannelPage: true,
       isContentPage: false,
-    }, function () {
+    }).then(function (response) {
       location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
+    }).catch(function (error) {
+      utils.notifyError($this, error);
     });
   },
+
   createAll: function () {
     var $this = this;
 
-    $apiAll.post({
+    $api.post($url + '/all', {
       siteId: $this.siteId
-    }, function () {
+    }).then(function (response) {
       location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
+    }).catch(function (error) {
+      utils.notifyError($this, error);
     });
   },
+
   loadChannels: function () {
     var $this = this;
 
-    $api.get({
-      siteId: $siteId,
-      parentId: $siteId
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
-
+    $api.get($url, {
+      params: {
+        siteId: $siteId,
+        parentId: $siteId
+      }
+    }).then(function (response) {
+      var res = response.data;
       $this.root = _.assign({}, res.parent, {
         contentNum: res.countDict[res.parent.id],
         isOpen: true,
@@ -117,12 +129,16 @@ var methods = {
       $this.reload();
 
       $this.pageLoad = true;
+    }).catch(function (error) {
+      utils.notifyError($this, error);
     });
   },
+
   reload: function () {
     this.pageChannels = [];
     this.addPageChannels(this.root);
   },
+
   addPageChannels: function (channel) {
     this.pageChannels.push(channel);
     if (channel.isOpen) {
@@ -132,6 +148,7 @@ var methods = {
       }
     }
   },
+
   showChildren: function (channel) {
     var $this = this;
 
@@ -139,12 +156,11 @@ var methods = {
     if (channel.childrenCount > 0 && channel.children.length === 0) {
       channel.children = [];
       channel.isLoading = true;
-      $api.get({
+      $api.get($url, {
         siteId: $siteId,
         parentId: channel.id
-      }, function (err, res) {
-        if (err || !res || !res.value) return;
-
+      }).then(function (response) {
+        var res = response.data;
         for (var i = 0; i < res.value.length; i++) {
           var child = _.assign({}, res.value[i], {
             contentNum: res.countDict[res.value[i].id],
@@ -160,11 +176,14 @@ var methods = {
         channel.isLoading = false;
 
         $this.reload();
+      }).catch(function (error) {
+        utils.notifyError($this, error);
       });
     } else {
       this.reload();
     }
   },
+
   hideChildren: function (channel) {
     channel.isOpen = false;
     this.reload();

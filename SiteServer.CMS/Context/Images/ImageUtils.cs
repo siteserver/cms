@@ -381,8 +381,7 @@ namespace SiteServer.CMS.Context.Images
 
         public static bool MakeThumbnail(string originalImagePath, string thumbnailPath, int width, int height, bool isLessSizeNotThumb)
         {
-            Size originalSize;
-            return MakeThumbnail(originalImagePath, thumbnailPath, width, height, isLessSizeNotThumb, out originalSize);
+            return MakeThumbnail(originalImagePath, thumbnailPath, width, height, isLessSizeNotThumb, out _);
         }
 
         private static bool MakeThumbnail(Image originalImage, string originalImagePath, string thumbnailPath, int width, int height, string mode)

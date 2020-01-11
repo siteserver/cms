@@ -1,266 +1,381 @@
-﻿@{ Layout = "../Shared/_LayoutWhite.cshtml"; }
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+@section Styles{
+  <style>
+    body {
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+    }
+    .el-main {
+      padding: 0 5px 20px 5px;
+      overflow: hidden;
+    }
 
-<div class="btn-toolbar btn-group mb-2">
-  <button v-if="permissions.isAdd" v-on:click="btnAddClick" class="btn btn-outline-primary btn-sm">
-    <i class="ion-plus"></i>
-    添加
-  </button>
-  <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入Word', name: 'Word', full: true}, $event)" class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-wikipedia-w"></i>
-    Word
-  </button>
-  <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入', name: 'Import', full: true}, $event)" class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-upload"></i>
-    导入
-  </button>
-  <button v-if="count > 0" v-on:click="btnLayerClick({title: '批量导出', name: 'Export', full: true, withOptionalContents: true}, $event)" class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-download"></i>
-    导出
-  </button>
-  <button v-on:click="btnLayerClick({title: '设置选项', name: 'Options', full: true}, $event)"
-    class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-toggle-on"></i>
-    选项
-  </button>
-  <button v-if="count > 0 && permissions.isEdit" v-on:click="btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350}, $event)"
-    class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-list-ol"></i>
-    整理
-  </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 450, height: 320, withContents: true}, $event)"
-    class="btn btn-sm">
-    <i class="fa fa-flag"></i>
-    属性
-  </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量设置组别', name: 'Group', withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-check-square"></i>
-    内容组
-  </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-sort"></i>
-    排序
-  </button>
-  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量转移', name: 'Cut', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-cut"></i>
-    转移
-  </button>
-  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量复制', name: 'Copy', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-copy"></i>
-    复制
-  </button>
-  <button v-if="count > 0 && permissions.isDelete" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-trash"></i>
-    删除
-  </button>
-  <button v-if="count > 0 && permissions.isCheck" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-shield"></i>
-    审核
-  </button>
-  <button v-if="count > 0 && permissions.isCreate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnCreateClick" class="btn btn-sm">
-    <i class="ion-wand"></i>
-    生成
-  </button>
-</div>
+    .table-expand-form {
+      font-size: 0;
+    }
+    .table-expand-form label {
+      width: 90px;
+      color: #99a9bf;
+    }
+    .table-expand-form .el-form-item {
+      margin-right: 0;
+      margin-bottom: 0;
+      width: 50%;
+    }
 
-<div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
-  <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
-  <span v-html="pageAlert.html"></span>
-</div>
+    .el-button {
+      margin-bottom: 5px;
+    }
 
-<table class="table table-sm tablesaw table-bordered table-hover bg-white mt-1">
-  <thead>
-    <tr>
-      <th class="text-nowrap" v-for="column in columns" v-html="column.displayName"></th>
+    .el-select .el-input {
+      width: 100px;
+    }
+    .input-with-select .el-input-group__prepend {
+      background-color: #fff;
+    }
 
-      <th v-if="isAllContents" class="text-center text-nowrap">栏目</th>
-      <th class="text-center text-nowrap">操作</th>
-      <th class="text-center text-nowrap">状态</th>
-      <th class="text-nowrap checkbox checkbox-primary" style="width: 34px">
-        <input id="all" v-on:click="selectAll()" v-model="isAllChecked" type="checkbox">
-        <label for="all" style="margin-left: 5px;"></label>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr v-for="content in pageContents" v-on:click="toggleChecked(content)" :class="{'table-warning': content.isSelected}">
-      <td v-for="column in columns">
+    .el-table--medium td, .el-table--medium th{
+      padding: 5px 0;
+    }
+    .el-button+.el-button {
+      margin-left: 0;
+    }
 
-        <template v-if="column.attributeName === 'Title'">
-          <a :href="getContentUrl(content)" v-html="content.title" target="_blank" v-on:click.stop></a>
-          <i v-if="content.top" class="text-primary fa fa-arrow-up" title="置顶"></i>
-          <i v-if="content.recommend" class="text-primary fa fa-star" title="推荐"></i>
-          <i v-if="content.hot" class="text-primary fa fa-fire" title="热点"></i>
-          <i v-if="content.color" class="text-primary fa fa-eye" title="醒目"></i>
-          <a v-if="content.imageUrl" :href="content.imageUrl" target="_blank" v-on:click.stop><i
-              class="text-primary fa fa-file-photo-o"></i></a>
-          <a v-if="content.videoUrl" :href="content.videoUrl" target="_blank" v-on:click.stop><i
-              class="text-primary fa fa-file-video-o"></i></a>
-          <a v-if="content.fileUrl" :href="content.fileUrl" target="_blank" v-on:click.stop><i class="text-primary fa fa-file-archive-o"></i></a>
-          <i v-if="content.sourceId && content.referenceId && content.translateContentType === 'Reference'" class="text-primary fa fa-external-link" title="引用地址"></i>
-          <i v-else-if="content.sourceId && content.referenceId && content.translateContentType === 'ReferenceContent'" class="text-primary fa fa-external-link-square" title="引用内容"></i>
-          <a v-else-if="content.linkUrl" :href="content.linkUrl" target="_blank" v-on:click.stop title="外部链接"><i class="text-primary fa fa-external-link"></i></a>
-        </template>
-        <template v-else-if="column.inputType === 'Image'">
-          <a v-if="content.getProp(column.attributeName)" :href="content.getProp(column.attributeName)" target="_blank"
-            v-on:click.stop>
-            <img :src="content.getProp(column.attributeName)" style="height: 36px;width: 36px;" class="rounded-circle">
-          </a>
-        </template>
-        <template v-else>
-          <span v-html="content.getProp(column.attributeName)"></span>
-        </template>
+    .el-input-group {
+      width: 350px;
+    }
+  </style>
+}
 
-      </td>
+<el-container v-loading="loading" element-loading-text="内容加载中">
+  <el-aside style="padding-top: 5px; padding-left: 5px; width: 200px; overflow: auto;" :style="{height: asideHeight + 'px'}">
 
-      <td v-if="isAllContents" class="text-center text-nowrap">
-        {{ content.channelName }}
-      </td>
-      <td class="text-center text-nowrap" style="width: 80px;">
-        <a v-for="pluginMenu in content.pluginMenus" :target="pluginMenu.target" :href="(pluginMenu.target === '_layer' ? 'javascript:;' : getPluginMenuUrl(pluginMenu))"
-          v-on:click="btnPluginMenuClick(pluginMenu, $event)" class="mr-2" v-html="pluginMenu.text"></a>
-        <a href="javascript:;" v-on:click.stop="btnEditClick(content)">编辑</a>
-      </td>
-      <td class="text-center text-nowrap" style="width: 80px">
-        <a v-on:click="btnContentStateClick(content.id, $event)" href="javascript:;" :class="{'text-danger' : !content.checked}">
-          {{ content.checked ? '已审核' : '待审核' }}
-        </a>
-      </td>
-      <td class="text-nowrap checkbox checkbox-primary">
-        <input :id="'checkbox' + content.id" v-model="content.isSelected" type="checkbox">
-        <label :for="'checkbox' + content.id" style="padding: 0;margin-bottom: 13px;"></label>
-      </td>
-    </tr>
-  </tbody>
-</table>
+    <div>
+      <el-input
+        placeholder="输入栏目名称进行过滤"
+        size="mini"
+        suffix-icon="el-icon-search"
+        v-model="filterText">
+      </el-input>
 
-<div v-if="count > 20" class="btn-toolbar btn-group mb-2">
-  <button v-if="permissions.isAdd" v-on:click="btnAddClick" class="btn btn-outline-primary btn-sm">
-    <i class="ion-plus"></i>
-    添加
-  </button>
-  <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入Word', name: 'Word', full: true}, $event)" class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-wikipedia-w"></i>
-    Word
-  </button>
-  <button v-if="count > 0 && permissions.isChannelEdit" v-on:click="btnLayerClick({title: '设置显示列', name: 'Columns', full: true}, $event)"
-    class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-columns"></i>
-    显示列
-  </button>
-  <button v-if="count > 0" v-on:click="btnLayerClick({title: '批量导出', name: 'Export', full: true}, $event)" class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-download"></i>
-    导出
-  </button>
-  <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入', name: 'Import', full: true}, $event)" class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-upload"></i>
-    导入
-  </button>
-  <button v-if="count > 0 && permissions.isEdit" v-on:click="btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350}, $event)"
-    class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-list-ol"></i>
-    整理
-  </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 450, height: 320, withContents: true}, $event)"
-    class="btn btn-sm">
-    <i class="fa fa-flag"></i>
-    属性
-  </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量设置组别', name: 'Group', withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-check-square"></i>
-    内容组
-  </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-sort"></i>
-    排序
-  </button>
-  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量转移', name: 'Cut', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-cut"></i>
-    转移
-  </button>
-  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量复制', name: 'Copy', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-copy"></i>
-    复制
-  </button>
-  <button v-if="count > 0 && permissions.isDelete" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-trash"></i>
-    删除
-  </button>
-  <button v-if="count > 0 && permissions.isCheck" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-shield"></i>
-    审核
-  </button>
-  <button v-if="count > 0 && permissions.isCreate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnCreateClick" class="btn btn-sm">
-    <i class="ion-wand"></i>
-    生成
-  </button>
-</div>
+      <div style="height: 5px"></div>
 
-<hr />
+      <el-tree
+        ref="tree"
+        class="leftTree"
+        :data="treeData"
+        node-key="value"
+        :default-expanded-keys="[siteId]"
+        :highlight-current="true"
+        :filter-node-method="filterNode"
+        :expand-on-click-node="false"
+        v-on:node-click="handleNodeClick">
+        <span slot-scope="{ node, data }">
+          <el-link :underline="false" :href="getChannelUrl(data)" v-on:click.stop target="_blank"><i class="el-icon-link"></i></el-link>
+          {{ node.label }} ({{ data.dict.count }})
+        </span>
+      </el-tree>
+    </div>
 
-<div class="row">
-  <div class="col-11">
-    <ul class="pagination pagination-sm float-left">
-      <li class="page-item" :class="{disabled : page === 1}">
-        <a class="page-link" v-on:click="loadFirstPage" :class="{'bg-light' : page === 1}" href="javascript:;">首 页</a>
-      </li>
-      <li class="page-item" :class="{disabled : page === 1}">
-        <a class="page-link" v-on:click="loadPrevPage" :class="{'bg-light' : page === 1}" href="javascript:;">上一页</a>
-      </li>
-      <li class="page-item" :class="{disabled : page === pages}">
-        <a class="page-link" v-on:click="loadNextPage" :class="{'bg-light' : page === pages}" href="javascript:;">下一页</a>
-      </li>
-      <li class="page-item" :class="{disabled : page === pages}">
-        <a class="page-link" v-on:click="loadLastPage" :class="{'bg-light' : page === pages}" href="javascript:;">末
-          页</a>
-      </li>
-    </ul>
-  </div>
-  <div class="col-1">
-    <multiselect v-on:select="onPageSelect" v-model="page" placeholder="选择翻页" :options="pageOptions" :searchable="false" :show-labels="false"></multiselect>
-  </div>
-</div>
+  </el-aside>
+  
+  <el-container v-if="permissions">
+    <el-main>
+      <el-row :gutter="5">
+        <el-col :span="24">
+          <el-dropdown size="mini" v-on:command="btnAddClick">
+            <el-button size="mini" :disabled="!permissions.isAdd" v-on:click="btnAddClick">
+              新建<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="Add"><i style="width: 15px" class="fa fa-plus"></i>添加内容</el-dropdown-item>
+              <el-dropdown-item command="Word"><i style="width: 15px" class="fa fa-wikipedia-w"></i>导入Word</el-dropdown-item>
+              <el-dropdown-item command="Import"><i style="width: 15px" class="fa fa-upload"></i>批量导入</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+
+          <el-dropdown size="mini" v-on:command="btnExportClick">
+            <el-button size="mini" :disabled="total === 0">
+              导出<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="All"><i style="width: 15px" class="fa fa-download"></i>导出全部</el-dropdown-item>
+              <el-dropdown-item command="Selected" :disabled="total === 0 || !isContentChecked"><i style="width: 15px" class="fa fa-download"></i>导出选中</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+
+          <el-dropdown size="mini" v-on:command="btnMoreClick">
+            <el-button size="mini">
+              操作<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="Options"><i style="width: 15px" class="fa fa-toggle-on"></i>选项</el-dropdown-item>
+              <el-dropdown-item command="Arrange" :disabled="total === 0 || !permissions.isArrange || !isContentChecked"><i style="width: 15px" class="fa fa-list-ol"></i>整理</el-dropdown-item>
+              <el-dropdown-item command="Attributes" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"><i style="width: 15px" class="fa fa-flag"></i>属性</el-dropdown-item>
+              <el-dropdown-item command="Group" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"><i style="width: 15px" class="fa fa-check-square"></i>内容组</el-dropdown-item>
+              <el-dropdown-item command="Taxis" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"><i style="width: 15px" class="fa fa-sort"></i>排序</el-dropdown-item>
+              <el-dropdown-item command="Cut" :disabled="total === 0 || !permissions.isTranslate || !isContentChecked"><i style="width: 15px" class="fa fa-cut"></i>转移</el-dropdown-item>
+              <el-dropdown-item command="Copy" :disabled="total === 0 || !permissions.isTranslate || !isContentChecked"><i style="width: 15px" class="fa fa-copy"></i>复制</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+
+          <el-button size="mini" icon="fa fa-trash" :disabled="total === 0 || !permissions.isDelete || !isContentChecked" 
+            v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true})">
+            删除
+          </el-button>
+          <el-button size="mini" icon="fa fa-shield" :disabled="total === 0 || !permissions.isCheck || !isContentChecked" 
+            v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true})">
+            审核
+          </el-button>
+          <el-button size="mini" icon="fa fa-magic" :disabled="total === 0 || !permissions.isCreate || !isContentChecked"
+            v-on:click="btnCreateClick">
+            生成
+          </el-button>
+
+          <el-input size="mini" placeholder="请输入关键词" v-model="searchText" class="input-with-select">
+            <el-select v-model="searchType" slot="prepend" placeholder="请选择">
+              <el-option label="内容标题" value="title"></el-option>
+              <el-option label="订单号" value="2"></el-option>
+              <el-option label="用户电话" value="3"></el-option>
+            </el-select>
+            <el-button slot="append" icon="el-icon-search"></el-button>
+          </el-input>
+
+          <el-popover
+            placement="top"
+            width="580"
+            trigger="click">
+              <el-form size="mini" ref="advancedForm" :model="advancedForm" label-width="80px">
+                <el-form-item label="活动名称">
+                  <el-input v-model="advancedForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="活动区域">
+                  <el-select v-model="advancedForm.region" placeholder="请选择活动区域">
+                    <el-option label="区域一" value="shanghai"></el-option>
+                    <el-option label="区域二" value="beijing"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="添加时间">
+                  <el-col :span="11">
+                    <el-date-picker
+                      v-model="advancedForm.startDate"
+                      type="datetime"
+                      placeholder="选择开始时间">
+                    </el-date-picker>
+                  </el-col>
+                  <el-col class="line" align="center" :span="2">-</el-col>
+                  <el-col :span="11">
+                    <el-date-picker
+                      v-model="advancedForm.endDate"
+                      type="datetime"
+                      placeholder="选择结束时间">
+                  </el-col>
+                </el-form-item>
+                <el-form-item label="即时配送">
+                  <el-switch v-model="advancedForm.delivery"></el-switch>
+                </el-form-item>
+                <el-form-item label="活动性质">
+                  <el-checkbox-group v-model="advancedForm.type">
+                    <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
+                    <el-checkbox label="地推活动" name="type"></el-checkbox>
+                    <el-checkbox label="线下主题活动" name="type"></el-checkbox>
+                    <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="特殊资源">
+                  <el-radio-group v-model="advancedForm.resource">
+                    <el-radio label="线上品牌商赞助"></el-radio>
+                    <el-radio label="线下场地免费"></el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="活动形式">
+                  <el-input type="textarea" v-model="advancedForm.desc"></el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" v-on:click="btnAdvancedSubmitClick">搜索</el-button>
+                  <el-button v-on:click="btnAdvancedCancelClick">取消</el-button>
+                </el-form-item>
+              </el-form>
+            <el-button slot="reference" type="text" icon="el-icon-arrow-down">高级</el-button>
+          </el-popover>
+
+          <el-popover
+            placement="top"
+            width="280"
+            trigger="click">
+              <div>
+                设置列 （拖动选项排序）
+              </div>
+              <!-- https://github.com/sindu12jun/table-dragger -->
+              <el-table
+                :data="tableData"
+                size="mini"
+                style="width: 100%">
+                <el-table-column width="50">
+                  <template slot-scope="scope">
+                    <i style="cursor: move;" class="fa fa-bars"></i>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="name">
+                </el-table-column>
+                <el-table-column align="right">
+                  <template slot-scope="scope">
+                    <el-switch
+                      v-model="value"
+                      size="mini">
+                    </el-switch>
+                  </template>
+                </el-table-column>
+              </el-table>
+            <el-button slot="reference" type="text" icon="el-icon-setting">显示</el-button>
+          </el-popover>
+
+        </el-col>
+      </el-row>
+
+      <el-table
+        :data="pageContents"
+        style="width: 100%;"
+        size="medium"
+        border
+        stripe
+        highlight-current-row
+        v-on:selection-change="handleSelectionChange"
+        :max-height="tableMaxHeight">
+        <el-table-column type="expand" width="30" align="center">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="table-expand-form">
+              <el-form-item label="商品名称">
+                <span>{{ props.row.name }}</span>
+              </el-form-item>
+              <el-form-item label="所属店铺">
+                <span>{{ props.row.shop }}</span>
+              </el-form-item>
+              <el-form-item label="商品 ID">
+                <span>{{ props.row.id }}</span>
+              </el-form-item>
+              <el-form-item label="店铺 ID">
+                <span>{{ props.row.shopId }}</span>
+              </el-form-item>
+              <el-form-item label="商品分类">
+                <span>{{ props.row.category }}</span>
+              </el-form-item>
+              <el-form-item label="店铺地址">
+                <span>{{ props.row.address }}</span>
+              </el-form-item>
+              <el-form-item label="商品描述">
+                <span>{{ props.row.desc }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column type="selection" width="45" align="center">
+        </el-table-column>
+
+        <el-table-column
+          v-for="column in columns"
+          v-if="column.attributeName === 'Sequence'"
+          :key="column.attributeName"
+          :label="column.displayName"
+          width="60" align="center">
+          <template slot-scope="scope">
+            <span v-html="scope.row.getProp(column.attributeName)"></span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          resizable
+          label="标题">
+          <template slot-scope="scope">
+            <el-link type="primary" :underline="false" :href="getContentUrl(scope.row)" v-html="scope.row.title" target="_blank" v-on:click.stop></el-link>
+            
+            <el-tooltip v-if="scope.row.top" effect="light" content="置顶" placement="top">
+              <el-link type="primary" :underline="false"><i class="fa fa-arrow-up"></i></el-link>
+            </el-tooltip>
+            <el-tooltip v-if="scope.row.recommend" effect="light" content="推荐" placement="top">
+              <el-link type="primary" :underline="false"><i class="fa fa-star"></i></el-link>
+            </el-tooltip>
+            <el-tooltip v-if="scope.row.hot" effect="light" content="热点" placement="top">
+              <el-link type="primary" :underline="false"><i class="fa fa-fire"></i></el-link>
+            </el-tooltip>
+            <el-tooltip v-if="scope.row.color" effect="light" content="醒目" placement="top">
+              <el-link type="primary" :underline="false"><i class="fa fa-eye"></i></el-link>
+            </el-tooltip>
+
+            <el-link :underline="false" v-if="scope.row.imageUrl" :href="scope.row.imageUrl" target="_blank" v-on:click.stop><i
+                class="fa fa-file-photo-o"></i></el-link>
+            <el-link :underline="false" v-if="scope.row.videoUrl" :href="scope.row.videoUrl" target="_blank" v-on:click.stop><i
+                class="fa fa-file-video-o"></i></el-link>
+            <el-link :underline="false" v-if="scope.row.fileUrl" :href="scope.row.fileUrl" target="_blank" v-on:click.stop><i class="fa fa-file-archive-o"></i></el-link>
+            
+            <i v-if="scope.row.sourceId && scope.row.referenceId && scope.row.translateContentType === 'Reference'" class="fa fa-external-link" title="引用地址"></i>
+            <i v-else-if="scope.row.sourceId && scope.row.referenceId && scope.row.translateContentType === 'ReferenceContent'" class="fa fa-external-link-square" title="引用内容"></i>
+            <el-link :underline="false" v-else-if="scope.row.linkUrl" :href="scope.row.linkUrl" target="_blank" v-on:click.stop title="外部链接"><i class="fa fa-external-link"></i></el-link>
+            <el-link :underline="false" v-if="scope.row.imageUrl" :href="scope.row.imageUrl" target="_blank"
+              v-on:click.stop>
+              <img :src="scope.row.imageUrl" style="height: 36px;width: 36px;" class="rounded-circle">
+            </el-link>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          v-for="column in columns"
+          v-if="column.attributeName !== 'Title' && column.attributeName !== 'Sequence'"
+          :key="column.attributeName"
+          :label="column.displayName">
+          <template slot-scope="scope">
+            <span v-html="scope.row.getProp(column.attributeName)"></span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          v-if="isAllContents"
+          prop="channelName"
+          label="栏目">
+        </el-table-column>
+
+        <el-table-column
+          fixed="right"
+          width="70"
+          align="center"
+          label="状态">
+          <template slot-scope="scope">
+            <el-link size="mini" :underline="false" v-on:click="btnContentStateClick(scope.row.id)" :type="(scope.row.checked ? 'primary' : 'danger')">
+              {{ scope.row.checked ? '已审核' : '待审核' }}
+            </el-link>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          fixed="right"
+          align="center"
+          label="操作"
+          width="70">
+          <template slot-scope="scope">
+            <el-link size="mini" :underline="false" v-for="pluginMenu in scope.row.pluginMenus" :target="pluginMenu.target" :href="(pluginMenu.target === '_layer' ? 'javascript:;' : getPluginMenuUrl(pluginMenu))"
+                v-on:click="btnPluginMenuClick(pluginMenu)" class="mr-2" v-html="pluginMenu.text"></el-link>
+            <el-link size="mini" :underline="false" v-on:click.stop="btnEditClick(scope.row)" type="primary">编辑</el-link>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-row style="margin-top: 5px;">
+        <el-col :span="24" align="center">
+          <el-pagination
+            size="mini"
+            v-on:current-change="handleCurrentChange"
+            :current-page="page"
+            :page-size="pageSize"
+            layout="total, prev, pager, next, jumper"
+            :total="total">
+          </el-pagination>
+        </el-col>
+      </el-row>
+    </el-main>
+  </el-container>
+</el-container>
 
 @section Scripts{
-<script src="../assets/lib/vue-multiselect/script-2.1.0.min.js"></script>
-<link rel="stylesheet" href="../assets/lib/vue-multiselect/style-2.1.0.min.css">
-<style>
-  .multiselect__tags {
-    min-height: 34px;
-    display: block;
-    padding: 6px 40px 0 8px;
-  }
-
-.multiselect__single {
-margin-bottom: 4px;
-font-size: 14px;
-}
-
-.multiselect__option {
-font-size: 14px;
-}
-
-.multiselect__select {
-min-height: 34px;
-}
-
-  .multiselect__option--selected.multiselect__option--highlight {
-    background: #41b883;
-  }
-</style>
 <script src="contents.js" type="text/javascript"></script> }

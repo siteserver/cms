@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.IO;
-
+﻿using System.IO;
 
 namespace SiteServer.Abstractions
 {
@@ -40,6 +38,7 @@ namespace SiteServer.Abstractions
         {
             public const string DirectoryName = "SiteFiles";
 
+            public const string Library = "Library";
             public const string BackupFiles = "BackupFiles";
             public const string TemporaryFiles = "TemporaryFiles";
             public const string Plugins = "Plugins";
@@ -62,8 +61,6 @@ namespace SiteServer.Abstractions
             public const string FileMetadata = "Metadata.xml";                      //频道模板元数据文件
             public const string FileConfiguration = "Configuration.xml";            //站点配置
         }
-
-        public static char DirectorySeparatorChar = Path.DirectorySeparatorChar;
 
         public static void CreateDirectoryIfNotExists(string path)
         {
@@ -170,7 +167,7 @@ namespace SiteServer.Abstractions
             CreateDirectoryIfNotExists(destDirectoryPath);
 
             //从当前父目录中获取目录列表。 
-            foreach (var srcDir in Directory.GetDirectories(srcDirectoryPath))
+            foreach (var srcDir in GetDirectoryPaths(srcDirectoryPath))
             {
                 var directoryName = PathUtils.GetDirectoryName(srcDir, false);
 
@@ -182,7 +179,7 @@ namespace SiteServer.Abstractions
             }
 
             //从当前父目录中获取文件。
-            foreach (var srcFile in Directory.GetFiles(srcDirectoryPath))
+            foreach (var srcFile in GetFilePaths(srcDirectoryPath))
             {
                 var srcFileInfo = new FileInfo(srcFile);
                 var destFileInfo = new FileInfo(srcFile.Replace(srcDirectoryPath, destDirectoryPath));
@@ -217,7 +214,7 @@ namespace SiteServer.Abstractions
 
         public static string[] GetDirectoryNames(string directoryPath)
         {
-            var directorys = Directory.GetDirectories(directoryPath);
+            var directorys = GetDirectoryPaths(directoryPath);
             var retVal = new string[directorys.Length];
             var i = 0;
             foreach (var directory in directorys)
@@ -228,21 +225,9 @@ namespace SiteServer.Abstractions
             return retVal;
         }
 
-        public static ArrayList GetLowerDirectoryNames(string directoryPath)
-        {
-            var arraylist = new ArrayList();
-            var directorys = Directory.GetDirectories(directoryPath);
-            foreach (var directory in directorys)
-            {
-                var directoryInfo = new DirectoryInfo(directory);
-                arraylist.Add(directoryInfo.Name.ToLower());
-            }
-            return arraylist;
-        }
-
         public static string[] GetFileNames(string directoryPath)
         {
-            var filePaths = Directory.GetFiles(directoryPath);
+            var filePaths = GetFilePaths(directoryPath);
             var retVal = new string[filePaths.Length];
             var i = 0;
             foreach (var filePath in filePaths)
@@ -275,34 +260,6 @@ namespace SiteServer.Abstractions
             return retVal;
         }
 
-        public static void DeleteFilesSync(string rootDirectoryPath, string syncDirectoryPath)
-        {
-            if (IsDirectoryExists(syncDirectoryPath))
-            {
-                var directoryInfo = new DirectoryInfo(syncDirectoryPath);
-                foreach (var fileSystemInfo in directoryInfo.GetFileSystemInfos())
-                {
-                    var fileSystemPath = PathUtils.Combine(rootDirectoryPath, fileSystemInfo.Name);
-                    if (fileSystemInfo is FileInfo)
-                    {
-                        try
-                        {
-                            FileUtils.DeleteFileIfExists(fileSystemPath);
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-                    }
-                    else if (fileSystemInfo is DirectoryInfo)
-                    {
-                        DeleteFilesSync(fileSystemPath, fileSystemInfo.FullName);
-                        DeleteEmptyDirectory(fileSystemPath);
-                    }
-                }
-            }
-        }
-
         public static void DeleteEmptyDirectory(string directoryPath)
         {
             var directoryInfo = new DirectoryInfo(directoryPath);
@@ -322,63 +279,16 @@ namespace SiteServer.Abstractions
             }
         }
 
-        public static void CreateUrlRedirectDirectory(string sourceUrlRedirectFilePath, string directoryPath)
-        {
-            CreateDirectoryIfNotExists(directoryPath);
-            var filePath = PathUtils.Combine(directoryPath, "default.aspx");
-            if (!FileUtils.IsFileExists(filePath))
-            {
-                FileUtils.CopyFile(sourceUrlRedirectFilePath, filePath);
-            }
-        }
-
         public static string[] GetDirectoryPaths(string directoryPath)
         {
             CreateDirectoryIfNotExists(directoryPath);
             return Directory.GetDirectories(directoryPath);
         }
 
-        public static string[] GetDirectoryPaths(string directoryPath, string searchPattern)
-        {
-            CreateDirectoryIfNotExists(directoryPath);
-            return Directory.GetDirectories(directoryPath, searchPattern);
-        }
-
         public static string[] GetFilePaths(string directoryPath)
         {
+            CreateDirectoryIfNotExists(directoryPath);
             return Directory.GetFiles(directoryPath);
         }
-
-        public static long GetDirectorySize(string directoryPath)
-        {
-            long size = 0;
-            var filePaths = GetFilePaths(directoryPath);
-            //通过GetFiles方法,获取目录中所有文件的大小
-            foreach (var filePath in filePaths)
-            {
-                var info = new FileInfo(filePath);
-                size += info.Length;
-            }
-            var directoryPaths = GetDirectoryPaths(directoryPath);
-            //获取目录下所有文件夹大小,并存到一个新的对象数组中
-            foreach (var path in directoryPaths)
-            {
-                size += GetDirectorySize(path);
-            }
-            return size;
-        }
-
-        
-
-        public static bool IsWebSiteDirectory(string directoryName)
-        {
-            return StringUtils.EqualsIgnoreCase(directoryName, "channels")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "contents")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "Template")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "include")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "upload");
-        }
-
-        
     }
 }

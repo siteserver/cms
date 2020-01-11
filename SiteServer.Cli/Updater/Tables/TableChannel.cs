@@ -122,7 +122,7 @@ namespace SiteServer.Cli.Updater.Tables
                 {nameof(Channel.ChannelName), nameof(NodeName)},
                 {nameof(Channel.SiteId), nameof(PublishmentSystemId)},
                 {nameof(Channel.IndexName), nameof(NodeIndexName)},
-                {nameof(Channel.GroupNameCollection), nameof(NodeGroupNameCollection)},
+                {"GroupNameCollection", nameof(NodeGroupNameCollection)},
                 {nameof(Channel.ContentModelPluginId), nameof(ContentModelId)}
             };
 

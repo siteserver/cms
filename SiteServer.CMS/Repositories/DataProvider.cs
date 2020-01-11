@@ -31,6 +31,15 @@ namespace SiteServer.CMS.Repositories
         private static AdministratorsInRolesRepository _administratorsInRolesRepository;
         public static AdministratorsInRolesRepository AdministratorsInRolesRepository => _administratorsInRolesRepository ??= new AdministratorsInRolesRepository();
 
+        private static LibraryGroupRepository _libraryGroupRepository;
+        public static LibraryGroupRepository LibraryGroupRepository => _libraryGroupRepository ??= new LibraryGroupRepository();
+
+        private static LibraryImageRepository _libraryImageRepository;
+        public static LibraryImageRepository LibraryImageRepository => _libraryImageRepository ??= new LibraryImageRepository();
+
+        private static LibraryTextRepository _libraryTextRepository;
+        public static LibraryTextRepository LibraryTextRepository => _libraryTextRepository ??= new LibraryTextRepository();
+
         private static ChannelRepository _channelRepository;
         public static ChannelRepository ChannelRepository => _channelRepository ??= new ChannelRepository();
 
@@ -125,6 +134,9 @@ namespace SiteServer.CMS.Repositories
             _accessTokenRepository = null;
             _administratorRepository = null;
             _administratorsInRolesRepository = null;
+            _libraryGroupRepository = null;
+            _libraryImageRepository = null;
+            _libraryTextRepository = null;
             _channelRepository = null;
             _channelGroupRepository = null;
             _configRepository = null;
@@ -161,6 +173,9 @@ namespace SiteServer.CMS.Repositories
             AccessTokenRepository,
             AdministratorRepository,
             AdministratorsInRolesRepository,
+            LibraryGroupRepository,
+            LibraryImageRepository,
+            LibraryTextRepository,
             ChannelRepository,
             ChannelGroupRepository,
             ConfigRepository,

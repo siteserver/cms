@@ -1,5 +1,15 @@
 ﻿var $url = "/pages/cms/editor";
 
+function insertHtml(attributeName, html)
+{
+    if (html)
+    {
+      // var editor = new FroalaEditor('textarea#' + attributeName);
+      // editor.html.insert(html);
+      UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
+    }
+}
+
 var data = {
   siteId: utils.getQueryInt("siteId"),
   channelId: utils.getQueryInt("channelId"),
@@ -7,7 +17,6 @@ var data = {
   returnUrl: utils.getQueryString('returnUrl'),
   mainHeight: '',
   pageLoad: false,
-  pageAlert: null,
   isSettings: true,
   sideType: "first",
   collapseType: "0",
@@ -24,6 +33,7 @@ var data = {
 
   transForm: null,
   translations: [],
+  isPreviewSaving: false
 };
 
 var methods = {
@@ -47,29 +57,10 @@ var methods = {
         $this.loadEditor(res);
       })
       .catch(function(error) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.notifyError($this, error);
       })
       .then(function() {
         $this.pageLoad = true;
-
-        setTimeout(function () {
-          for (var i = 0; i < $this.styles.length; i++) {
-            var style = $this.styles[i];
-            if (style.inputType === 'TextEditor') {
-              var editor = UE.getEditor(style.attributeName, {
-                allowDivTransToP: false,
-                maximumWords: 99999999
-              });
-              editor.styleIndex = i;
-              editor.ready(function () {
-                editor.addListener("contentChange", function () {
-                  $this.styles[this.styleIndex].value = this.getContent();
-                });
-              });
-            }
-          }
-    
-        }, 100);
       });
   },
 
@@ -99,6 +90,10 @@ var methods = {
       for (var i = 0; i < $this.styles.length; i++) {
         var style = $this.styles[i];
         if (style.inputType === 'TextEditor') {
+          // var editor = new FroalaEditor('textarea#' + style.attributeName, {
+          //   language: 'zh_cn',
+          //   heightMin: 350
+          // });
           var editor = UE.getEditor(style.attributeName, {
             allowDivTransToP: false,
             maximumWords: 99999999
@@ -116,35 +111,18 @@ var methods = {
   },
 
   winResize: function () {
-    this.mainHeight = ($(window).height() - 85) + 'px';
+    this.mainHeight = ($(window).height() - 100) + 'px';
   },
 
-  btnLayerClick: function(options, e) {
-    e.stopPropagation();
+  btnLayerClick: function(options) {
+    var url = "editorLayer" + options.name + ".cshtml?siteId=" + this.siteId + "&channelId=" + this.channelId;
 
-    this.pageAlert = null;
-    var url = "editorLayer" + options.name + ".cshtml?siteId=" + this.siteId;
-
-    if (options.channelId) {
-      url += "&channelId=" + options.channelId;
-    } else {
-      url += "&channelId=" + this.channelId;
+    if (options.attributeName) {
+      url += "&attributeName=" + options.attributeName;
     }
     if (options.contentId) {
       url += "&contentId=" + options.contentId;
     }
-
-    if (options.withContents) {
-      if (!this.isContentChecked) return;
-      url += "&channelContentIds=" + this.channelContentIdsString;
-    }
-
-    if (options.withOptionalContents) {
-      if (this.isContentChecked) {
-        url += "&channelContentIds=" + this.channelContentIdsString;
-      }
-    }
-    url += "&returnUrl=" + encodeURIComponent(location.href);
 
     utils.openLayer({
       title: options.title,
@@ -155,9 +133,12 @@ var methods = {
     });
   },
 
-  btnPreviewClick: function() {},
+  btnCancelClick: function() {
+    utils.closeLayer();
+  },
 
   btnSaveClick: function() {
+    utils.closeLayer(true);
   },
 
   btnTransAddClick: function() {
@@ -179,6 +160,42 @@ var methods = {
 
   btnTransCancelClick: function() {
     this.transForm = null;
+  },
+
+  btnPreviewClick: function() {
+    if (!this.styles[0].value) return;
+    if (this.isPreviewSaving) return;
+
+    if (UE) {
+      $.each(UE.instants, function (index, editor) {
+        editor.sync();
+      });
+    }
+
+    for (let i = 0; i < this.styles.length; i++) {
+      var style = this.styles[i];
+      this.content[_.camelCase(style.attributeName)] = style.value;
+    }
+
+    var $this = this;
+    utils.loading(true);
+    $api.post($url + '/actions/preview', {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      contentId: this.contentId,
+      content: this.content
+    }).then(function(response) {
+      var res = response.data;
+
+      $this.isPreviewSaving = false;
+      window.open(res.url);
+    })
+    .catch(function(error) {
+      utils.notifyError($this, error);
+    })
+    .then(function() {
+      utils.loading(false);
+    });
   }
 };
 

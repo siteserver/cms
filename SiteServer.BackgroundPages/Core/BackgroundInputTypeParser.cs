@@ -823,7 +823,7 @@ function add_{attributeName}(val,foucs){{
 
             extraBuilder.Append($@"
 <div class=""btn-group btn-group-sm"">
-    <button class=""btn"" onclick=""{ModalUploadFile.GetOpenWindowStringToTextBox(site.Id, EUploadType.File, attributeName)}"">
+    <button class=""btn"" onclick=""{ModalUploadFile.GetOpenWindowStringToTextBox(site.Id, UploadType.File, attributeName)}"">
         上传
     </button>
     <button class=""btn"" onclick=""{ModalSelectFile.GetOpenWindowString(site.Id, attributeName, relatedPath)}"">
@@ -845,7 +845,7 @@ function select_{attributeName}(obj, index){{
   eval(cmd);
 }}
 function upload_{attributeName}(obj, index){{
-  var cmd = ""{ModalUploadFile.GetOpenWindowStringToTextBox(site.Id, EUploadType.File,
+  var cmd = ""{ModalUploadFile.GetOpenWindowStringToTextBox(site.Id, UploadType.File,
                 attributeName)}"".replace('{attributeName}', '{attributeName}_' + index).replace('return false;', '');
   eval(cmd);
 }}

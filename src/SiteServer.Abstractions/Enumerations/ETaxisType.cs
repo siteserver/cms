@@ -1,27 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Datory.Annotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace SiteServer.Abstractions
 {
-	public enum ETaxisType
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum ETaxisType
 	{
-		OrderById,				    //内容ID（升序）
-		OrderByIdDesc,			    //内容ID（降序）
-		OrderByChannelId,				//栏目ID（升序）
-		OrderByChannelIdDesc,			//栏目ID（降序）
-		OrderByAddDate,			    //添加时间（升序）
-		OrderByAddDateDesc,		    //添加时间（降序）
-		OrderByLastEditDate,	    //更新时间（升序）
-		OrderByLastEditDateDesc,    //更新时间（降序）
-		OrderByTaxis,			    //自定义排序（反方向）
-		OrderByTaxisDesc,		    //自定义排序
-        OrderByHits,                //按点击量排序
-        OrderByHitsByDay,           //按日点击量排序
-        OrderByHitsByWeek,          //按周点击量排序
-        OrderByHitsByMonth,         //按月点击量排序
-        OrderByRandom               //随机排序
-	}
+        [DataEnum(DisplayName = "内容ID（升序）")] OrderById,
+        [DataEnum(DisplayName = "内容ID（降序）")] OrderByIdDesc,
+        [DataEnum(DisplayName = "栏目ID（升序）")] OrderByChannelId,
+        [DataEnum(DisplayName = "栏目ID（降序）")] OrderByChannelIdDesc,
+        [DataEnum(DisplayName = "添加时间（升序）")] OrderByAddDate,
+        [DataEnum(DisplayName = "添加时间（降序）")] OrderByAddDateDesc,
+        [DataEnum(DisplayName = "更新时间（升序）")] OrderByLastEditDate,
+        [DataEnum(DisplayName = "更新时间（降序）")] OrderByLastEditDateDesc,
+        [DataEnum(DisplayName = "默认排序（升序）")] OrderByTaxis,
+        [DataEnum(DisplayName = "默认排序（降序）")] OrderByTaxisDesc,
+        [DataEnum(DisplayName = "按点击量排序")] OrderByHits,
+        [DataEnum(DisplayName = "按日点击量排序")] OrderByHitsByDay,
+        [DataEnum(DisplayName = "按周点击量排序")] OrderByHitsByWeek,
+        [DataEnum(DisplayName = "按月点击量排序")] OrderByHitsByMonth,
+        [DataEnum(DisplayName = "随机排序")] OrderByRandom
+    }
 
     public static class ETaxisTypeUtils
 	{

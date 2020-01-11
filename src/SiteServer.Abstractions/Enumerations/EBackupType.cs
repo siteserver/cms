@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SiteServer.Abstractions
+﻿namespace SiteServer.Abstractions
 {
     public enum EBackupType
 	{
-        [Display(Name = "It's autumn")]
         Undefined,
         Templates,              //模板页
         ChannelsAndContents,    //栏目及内容

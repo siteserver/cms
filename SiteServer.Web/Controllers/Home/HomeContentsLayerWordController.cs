@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -166,11 +167,12 @@ namespace SiteServer.API.Controllers.Home
                 {
                     if (string.IsNullOrEmpty(fileName)) continue;
 
-                    var formCollection = await WordUtils.GetWordNameValueCollectionAsync(siteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
+                    var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                    var (title, content) = await WordManager.GetWordAsync(site, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, filePath);
 
-                    if (string.IsNullOrEmpty(formCollection[ContentAttribute.Title])) continue;
+                    if (string.IsNullOrEmpty(title)) continue;
 
-                    var dict = await BackgroundInputTypeParser.SaveAttributesAsync(site, styleList, formCollection, ContentAttribute.AllAttributes.Value);
+                    var dict = await BackgroundInputTypeParser.SaveAttributesAsync(site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value);
 
                     var contentInfo = new Content(dict)
                     {
@@ -188,7 +190,8 @@ namespace SiteServer.API.Controllers.Home
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = contentInfo.AddDate;
 
-                    contentInfo.Title = formCollection[ContentAttribute.Title];
+                    contentInfo.Title = title;
+                    contentInfo.Set(ContentAttribute.Content, content);
 
                     contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channelInfo, contentInfo);
 

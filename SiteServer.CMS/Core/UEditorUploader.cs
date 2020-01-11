@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Core
     public class UEditorUploader
     {
         Site site = null;
-        EUploadType uploadType = EUploadType.Image;
+        UploadType uploadType = UploadType.Image;
 
         string state = "SUCCESS";
         string URL = null;
@@ -19,7 +19,7 @@ namespace SiteServer.CMS.Core
         string originalName = null;
         HttpPostedFile uploadFile = null;
 
-        public UEditorUploader(Site site, EUploadType uploadType)
+        public UEditorUploader(Site site, UploadType uploadType)
         {
             this.site = site;
             this.uploadType = uploadType;
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.Core
                     uploadFile.SaveAs(localFilePath);
                     URL = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, localFilePath, true);
                     //URL = pathbase + filename;
-                    if (uploadType == EUploadType.Image)
+                    if (uploadType == UploadType.Image)
                         //添加水印
                         FileUtility.AddWaterMark(site, localFilePath);
                 }

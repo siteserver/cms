@@ -2,93 +2,37 @@
 var $urlUpload = apiUrl + '/pages/cms/editorLayerWord/actions/upload?siteId=' + utils.getQueryInt('siteId') + '&channelId=' + utils.getQueryInt('channelId');
 
 var data = {
-  siteId: utils.getQueryInt('siteId'),
-  channelId: utils.getQueryInt('channelId'),
+  attributeName: utils.getQueryString('attributeName'),
   pageLoad: false,
   pageAlert: null,
-  file: null,
-  files: [],
-  isClearFormat: true,
-  isFirstLineIndent: true,
-  isClearFontSize: true,
-  isClearFontFamily: true,
-  isClearImages: false,
-  checkedLevels: null,
-  checkedLevel: null,
-
   uploadList: [],
+  form: {
+    siteId: utils.getQueryInt('siteId'),
+    channelId: utils.getQueryInt('channelId'),
+    isClearFormat: true,
+    isFirstLineIndent: true,
+    isClearFontSize: true,
+    isClearFontFamily: true,
+    isClearImages: false,
+    fileNames: []
+  }
 };
 
 var methods = {
-  loadConfig: function () {
-    var $this = this;
-    $this.pageLoad = true;
-
-    $api
-      .get($url, {
-        params: {
-          siteId: $this.siteId,
-          channelId: $this.channelId
-        }
-      })
-      .then(function(response) {
-        var res = response.data;
-
-        $this.checkedLevels = res.value;
-        $this.checkedLevel = res.checkedLevel;
-
-        // $this.loadUploader();
-      })
-      .catch(function(error) {
-        $this.pageAlert = utils.getPageAlert(error);
-      })
-      .then(function() {
-        $this.pageLoad = true;
-      });
-  },
-
-  uploadRemove(file, fileList) {
-    console.log(file.response.name);
-  },
-
-  getFileNames: function () {
-    var arr = [];
-    for (var i = 0; i < this.files.length; i++) {
-      arr.push(this.files[i].fileName);
-    }
-    return arr;
-  },
-
   btnSubmitClick: function () {
     var $this = this;
-    var fileNames = this.getFileNames().join(',');
-    if (!fileNames) {
-      return alert({
-        title: "请选择需要导入的Word文件！",
-        type: 'warning',
-        showConfirmButton: '关 闭'
-      });
+
+    if (this.form.fileNames.length === 0) {
+      this.$message.error('请选择需要导入的Word文件！');
+      return false;
     }
 
     utils.loading(true);
-    $api.post($url, {
-      siteId: $this.siteId,
-      channelId: $this.channelId,
-      isFirstLineIndent: $this.isFirstLineIndent,
-      isClearFontSize: $this.isClearFontSize,
-      isClearFontFamily: $this.isClearFontFamily,
-      isClearImages: $this.isClearImages,
-      checkedLevel: $this.checkedLevel,
-      fileNames: fileNames
-    }).then(function(response) {
+    $api.post($url, this.form).then(function(response) {
       var res = response.data;
 
-      var contentIdList = res.value;
-      if (contentIdList.length === 1) {
-        parent.location.href = 'pageContentAdd.aspx?siteId=' + $this.siteId + '&channelId=' + $this.channelId + '&id=' + contentIdList[0];
-      } else {
-        parent.location.reload(true);
-      }
+      parent.insertHtml($this.attributeName, res.value);
+      parent.layer.closeAll();
     })
     .catch(function(error) {
       $this.pageAlert = utils.getPageAlert(error);
@@ -98,48 +42,33 @@ var methods = {
     });
   },
 
+  btnCancelClick: function () {
+    parent.layer.closeAll();
+  },
+
   uploadBefore(file) {
-    var isWord = file.name.indexOf('.doc', file.name.length - '.docx'.length) !== -1;
-    if (!isWord) {
-      this.$message.error('上传的文件只能是 Word 格式!');
+    var re = /(\.doc|\.docx|\.wps)$/i;
+    if(!re.exec(file.name))
+    {
+      this.$message.error('文件只能是 Word 格式，请选择有效的文件上传!');
+      return false;
     }
-    return isWord;
+    return true;
   },
 
   uploadProgress: function() {
     utils.loading(true)
   },
 
-  uploadSuccess: function(res, file) {
-    console.log(this.uploadList);
+  uploadRemove(file) {
+    if (file.response) {
+      this.form.fileNames.splice(this.form.fileNames.indexOf(file.response.name), 1);
+    }
+  },
+
+  uploadSuccess: function(res) {
+    this.form.fileNames.push(res.name);
     utils.loading(false);
-    var success = res.success;
-    var failure = res.failure;
-    var errorMessage = res.errorMessage;
-
-    var $this = this;
-
-    // $api.get($url, {
-    //   params: this.formInline
-    // }).then(function (response) {
-    //   var res = response.data;
-
-    //   $this.items = res.value;
-    //   $this.count = res.count;
-    //   $this.roles = res.roles;
-    //   $this.isSuperAdmin = res.isSuperAdmin;
-    //   $this.adminId = res.adminId;
-    // }).catch(function (error) {
-    //   $this.pageAlert = utils.getPageAlert(error);
-    // }).then(function () {
-    //   if (success) {
-    //     $this.$message.success('成功导入 ' + success + ' 名管理员！');
-    //   }
-    //   if (errorMessage) {
-    //     $this.$message.error(failure + ' 名管理员导入失败：' + errorMessage);
-    //   }
-    //   utils.loading(false);
-    // });
   },
 
   uploadError: function(err) {
@@ -154,6 +83,6 @@ new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.loadConfig();
+    this.pageLoad = true;
   }
 });

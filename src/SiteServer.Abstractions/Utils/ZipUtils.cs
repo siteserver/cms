@@ -1,6 +1,4 @@
-﻿
-
-using ICSharpCode.SharpZipLib.Zip;
+﻿using ICSharpCode.SharpZipLib.Zip;
 
 namespace SiteServer.Abstractions
 {

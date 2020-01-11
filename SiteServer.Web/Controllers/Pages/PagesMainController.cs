@@ -232,16 +232,22 @@ namespace SiteServer.API.Controllers.Pages
                     {
                         if (!TabManager.IsValid(menu, permissionList)) continue;
 
-                        var menuToAdd = new Tab
+                        Tab[] children = null;
+                        if (menu.Children != null)
+                        {
+                            children = menu.Children.Where(child => TabManager.IsValid(child, permissionList))
+                                .ToArray();
+                        }
+
+                        tabsToAdd.Add(new Tab
                         {
                             Id = menu.Id,
                             Name = menu.Name,
                             Text = menu.Text,
                             Target = menu.Target,
                             Href = menu.Href,
-                            Children = menu.Children.Where(child => TabManager.IsValid(child, permissionList)).ToArray()
-                        };
-                        tabsToAdd.Add(menuToAdd);
+                            Children = children
+                        });
                     }
                     tabToAdd.Children = tabsToAdd.ToArray();
 

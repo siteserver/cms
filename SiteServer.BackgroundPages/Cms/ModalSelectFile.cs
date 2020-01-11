@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (Page.IsPostBack) return;
 
-            BtnUpload.Attributes.Add("onclick", ModalUploadFile.GetOpenWindowStringToList(SiteId, EUploadType.File, _currentRootPath));
+            BtnUpload.Attributes.Add("onclick", ModalUploadFile.GetOpenWindowStringToList(SiteId, UploadType.File, _currentRootPath));
 
             DdlListType.Items.Add(new ListItem("显示缩略图", "Image"));
             DdlListType.Items.Add(new ListItem("显示详细信息", "List"));

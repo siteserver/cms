@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
@@ -15,24 +16,24 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlIsFileUploadChangeFileName;
         public Literal LtlScript;
 
-        private EUploadType _uploadType;
+        private UploadType _uploadType;
         private string _realtedPath;
         private string _textBoxClientId;
 
-        public static string GetOpenWindowStringToTextBox(int siteId, EUploadType uploadType, string textBoxClientId)
+        public static string GetOpenWindowStringToTextBox(int siteId, UploadType uploadType, string textBoxClientId)
         {
             return LayerUtils.GetOpenScript("上传附件", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadFile), new NameValueCollection
             {
-                {"uploadType", EUploadTypeUtils.GetValue(uploadType)},
+                {"uploadType", uploadType.GetValue()},
                 {"TextBoxClientID", textBoxClientId}
             }), 550, 250);
         }
 
-        public static string GetOpenWindowStringToList(int siteId, EUploadType uploadType, string realtedPath)
+        public static string GetOpenWindowStringToList(int siteId, UploadType uploadType, string realtedPath)
         {
             return LayerUtils.GetOpenScript("上传附件", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadFile), new NameValueCollection
             {
-                {"uploadType", EUploadTypeUtils.GetValue(uploadType)},
+                {"uploadType", uploadType.GetValue()},
                 {"realtedPath", realtedPath}
             }), 550, 250);
         }
@@ -42,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId");
-            _uploadType = EUploadTypeUtils.GetEnumType(AuthRequest.GetQueryString("uploadType"));
+            _uploadType = TranslateUtils.ToEnum(AuthRequest.GetQueryString("uploadType"), UploadType.Image);
             _realtedPath = AuthRequest.GetQueryString("realtedPath");
             _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
 
@@ -71,17 +72,17 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-                if (_uploadType == EUploadType.Image && !EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName))
+                if (_uploadType == UploadType.Image && !EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName))
                 {
                     FailMessage("此格式不允许上传，此文件夹只允许上传图片以及音视频文件！");
                     return;
                 }
-                if (_uploadType == EUploadType.Video && !EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName))
+                if (_uploadType == UploadType.Video && !EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName))
                 {
                     FailMessage("此格式不允许上传，此文件夹只允许上传图片以及音视频文件！");
                     return;
                 }
-                if (_uploadType == EUploadType.File && !PathUtility.IsFileExtensionAllowed(Site, fileExtName))
+                if (_uploadType == UploadType.File && !PathUtility.IsFileExtensionAllowed(Site, fileExtName))
                 {
                     FailMessage("此格式不允许上传，请选择有效的文件！");
                     return;
