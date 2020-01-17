@@ -773,42 +773,6 @@ namespace SiteServer.CMS.Context
             return newValue;
         }
 
-        public static string UrlEncode(string urlString, string encoding)
-        {
-            if (urlString == null || urlString == "$4")
-            {
-                return string.Empty;
-            }
-
-            var newValue = urlString.Replace("\"", "'");
-            newValue = HttpUtility.UrlEncode(newValue, Encoding.GetEncoding(encoding));
-            newValue = newValue.Replace("%2f", "/");
-            return newValue;
-        }
-
-        public static string UrlEncode(string urlString, ECharset charset)
-        {
-            if (urlString == null || urlString == "$4")
-            {
-                return string.Empty;
-            }
-
-            var newValue = urlString.Replace("\"", "'");
-            newValue = HttpUtility.UrlEncode(newValue, ECharsetUtils.GetEncoding(charset));
-            newValue = newValue.Replace("%2f", "/");
-            return newValue;
-        }
-
-        public static string UrlDecode(string urlString, string encoding)
-        {
-            return HttpUtility.UrlDecode(urlString, Encoding.GetEncoding(encoding));
-        }
-
-        public static string UrlDecode(string urlString, ECharset charset)
-        {
-            return HttpUtility.UrlDecode(urlString, ECharsetUtils.GetEncoding(charset));
-        }
-
         public static string UrlDecode(string urlString)
         {
             return HttpUtility.UrlDecode(urlString);

@@ -414,7 +414,7 @@ namespace SiteServer.CMS.Repositories
             var whereString = $"WHERE {ContentAttribute.ChannelId} = {channelId}";
             if (isCheckedOnly)
             {
-                whereString += $" AND {nameof(Content.IsChecked)} = '{true.ToString()}'";
+                whereString += $" AND {ContentAttribute.IsChecked} = '{true.ToString()}'";
             }
             var sqlString = SqlUtils.ToTopSqlString(tableName, "Id", whereString, orderByString, 1);
 
@@ -448,7 +448,7 @@ namespace SiteServer.CMS.Repositories
         public int GetSequence(string tableName, int channelId, int contentId)
         {
             var sqlString =
-                $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {nameof(Content.IsChecked)} = '{true}' AND Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
+                $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {ContentAttribute.IsChecked} = '{true}' AND Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
 
             return DataProvider.DatabaseRepository.GetIntResult(sqlString) + 1;
         }
@@ -462,7 +462,7 @@ namespace SiteServer.CMS.Repositories
         {
             var tableName = await DataProvider.SiteRepository.GetTableNameAsync(siteId);
             var sqlString =
-                $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {ContentAttribute.ImageUrl} != '' AND {nameof(Content.IsChecked)} = '{true}' AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
+                $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {ContentAttribute.ImageUrl} != '' AND {ContentAttribute.IsChecked} = '{true}' AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
 
             return DataProvider.DatabaseRepository.GetIntResult(sqlString);
         }

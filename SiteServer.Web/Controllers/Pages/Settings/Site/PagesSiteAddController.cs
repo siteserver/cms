@@ -6,6 +6,7 @@ using System.Web.Http;
 using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Context;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
 
@@ -181,8 +182,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     SiteDir = siteDir,
                     TableName = tableName,
                     ParentId = parentId,
-                    Root = root,
-                    Charset = ECharsetUtils.GetValue(ECharset.utf_8)
+                    Root = root
                 };
 
                 var siteId = await DataProvider.ChannelRepository.InsertSiteAsync(channelInfo, site, request.AdminName);

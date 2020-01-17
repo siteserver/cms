@@ -3,6 +3,7 @@
 var data = {
   siteId: utils.getQueryInt("siteId"),
   pageLoad: false,
+  loading: false,
   elements: null,
   elementPanel: false,
   elementTagName: '',
@@ -23,10 +24,9 @@ var methods = {
 
       $this.elements = res;
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
-      utils.loading(false);
     });
   },
 
@@ -35,7 +35,7 @@ var methods = {
     this.elementTitle = element.title;
     var $this = this;
 
-    utils.loading(true);
+    this.loading = this.$loading();
     $api.post($url, {
       siteId: this.siteId,
       elementName: element.elementName
@@ -45,9 +45,9 @@ var methods = {
       $this.elementPanel = true;
       $this.elementFields = res;
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      $this.loading.close();
     });
   },
 

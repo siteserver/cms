@@ -61,19 +61,14 @@ namespace SiteServer.CMS.Plugin
                 foreach (var inputStyle in inputStyles)
                 {
                     columnTaxis++;
-                    var styleInfo = await TableStyleManager.GetTableStyleAsync(tableName, inputStyle.AttributeName, new List<int> { 0 });
+                    var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(tableName, inputStyle.AttributeName, DataProvider.TableStyleRepository.EmptyRelatedIdentities);
 
                     var isEquals = true;
 
-                    if (styleInfo.Type != inputStyle.InputType)
+                    if (styleInfo.InputType != inputStyle.InputType)
                     {
                         isEquals = false;
-                        styleInfo.Type = inputStyle.InputType;
-                    }
-
-                    if (styleInfo.InputType == null)
-                    {
-                        styleInfo.Type = InputType.Text;
+                        styleInfo.InputType = inputStyle.InputType;
                     }
 
                     if (!StringUtils.EqualsIgnoreNull(styleInfo.DisplayName, inputStyle.DisplayName))
@@ -142,9 +137,9 @@ namespace SiteServer.CMS.Plugin
                         styleInfo.Height = TranslateUtils.ToInt(inputStyle.Height);
                     }
 
-                    if (!(styleInfo.StyleItems == null && inputStyle.ListItems == null))
+                    if (!(styleInfo.Items == null && inputStyle.ListItems == null))
                     {
-                        var styleItems = styleInfo.StyleItems ?? new List<TableStyleItem>();
+                        var styleItems = styleInfo.Items ?? new List<TableStyleItem>();
                         var listItems = inputStyle.ListItems ?? new List<InputListItem>();
 
                         if (styleItems.Count > listItems.Count)
@@ -161,9 +156,8 @@ namespace SiteServer.CMS.Plugin
                                 isEquals = false;
                                 styleItems.Add(new TableStyleItem
                                 {
-                                    TableStyleId = styleInfo.Id,
-                                    ItemTitle = listItem.Text,
-                                    ItemValue = listItem.Value,
+                                    Label = listItem.Text,
+                                    Value = listItem.Value,
                                     Selected = listItem.Selected
                                 });
                             }
@@ -171,16 +165,16 @@ namespace SiteServer.CMS.Plugin
                             {
                                 var styleItem = styleItems[i];
 
-                                if (!StringUtils.EqualsIgnoreNull(styleItem.ItemTitle, listItem.Text))
+                                if (!StringUtils.EqualsIgnoreNull(styleItem.Label, listItem.Text))
                                 {
                                     isEquals = false;
-                                    styleItem.ItemTitle = listItem.Text;
+                                    styleItem.Label = listItem.Text;
                                 }
 
-                                if (!StringUtils.EqualsIgnoreNull(styleItem.ItemValue, listItem.Value))
+                                if (!StringUtils.EqualsIgnoreNull(styleItem.Value, listItem.Value))
                                 {
                                     isEquals = false;
-                                    styleItem.ItemValue = listItem.Value;
+                                    styleItem.Value = listItem.Value;
                                 }
 
                                 if (styleItem.Selected != listItem.Selected)
@@ -204,7 +198,7 @@ namespace SiteServer.CMS.Plugin
             {
                 if (styleInfo.Id == 0)
                 {
-                    await DataProvider.TableStyleRepository.InsertAsync(styleInfo);
+                    await DataProvider.TableStyleRepository.InsertAsync(DataProvider.TableStyleRepository.EmptyRelatedIdentities,  styleInfo);
                 }
                 else
                 {

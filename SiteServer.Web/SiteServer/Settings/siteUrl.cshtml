@@ -83,9 +83,6 @@
   direction="rtl"
   size="80%">
   <div class="drawer__content">
-    <el-alert v-if="apiAlert" :title="apiAlert.title" :type="apiAlert.type"></el-alert>
-    <br />
-
     <el-form ref="apiForm" :model="apiForm" :rules="apiRules" label-width="200px">
       <el-form-item label="API部署方式">
         <el-radio-group v-model="apiForm.isSeparatedApi">
@@ -114,9 +111,6 @@
   direction="rtl"
   size="80%">
   <div class="drawer__content">
-    <el-alert v-if="editAlert" :title="editAlert.title" :type="editAlert.type"></el-alert>
-    <br />
-
     <el-form ref="editForm" :model="editForm" :rules="editRules" label-width="200px">
       <el-form-item label="站点名称">{{ editForm.siteName }}</el-form-item>
       <el-form-item label="站点部署方式">

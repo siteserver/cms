@@ -129,8 +129,8 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = TranslateUtils.ToDateTime(lastEditDate);
-                    contentInfo.GroupNameCollection = groupNameCollection;
-                    contentInfo.Tags = tags;
+                    contentInfo.GroupNames = StringUtils.GetStringList(groupNameCollection);
+                    contentInfo.TagNames = StringUtils.GetStringList(tags);
                     contentInfo.Checked = isChecked;
                     contentInfo.CheckedLevel = checkedLevel;
                     contentInfo.Hits = hits;
@@ -251,8 +251,8 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = TranslateUtils.ToDateTime(lastEditDate);
-                    contentInfo.GroupNameCollection = groupNameCollection;
-                    contentInfo.Tags = tags;
+                    contentInfo.GroupNames = StringUtils.GetStringList(groupNameCollection);
+                    contentInfo.TagNames = StringUtils.GetStringList(tags);
                     contentInfo.Checked = isChecked;
                     contentInfo.CheckedLevel = checkedLevel;
                     contentInfo.Hits = hits;
@@ -412,8 +412,8 @@ namespace SiteServer.CMS.ImportExport.Components
                 AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastEditDate, content.LastEditDate.Value.ToString(CultureInfo.InvariantCulture));
             }
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Taxis, content.Taxis.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ ContentAttribute.GroupNameCollection, "ContentGroupNameCollection" }, content.GroupNameCollection);
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Tags, AtomUtility.Encrypt(content.Tags));
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ ContentAttribute.GroupNameCollection, "ContentGroupNameCollection" }, TranslateUtils.ObjectCollectionToString(content.GroupNames));
+            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Tags, AtomUtility.Encrypt(TranslateUtils.ObjectCollectionToString(content.TagNames)));
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.SourceId, content.SourceId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.ReferenceId, content.ReferenceId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsChecked, content.Checked.ToString());

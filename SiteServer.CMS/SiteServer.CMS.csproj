@@ -23,6 +23,7 @@
     <Compile Remove="Context\Enumerations\EUserLockType.cs" />
     <Compile Remove="Context\Enumerations\EUserPasswordRestriction.cs" />
     <Compile Remove="Core\ContentColumn.cs" />
+    <Compile Remove="Core\RoleManager.cs" />
     <Compile Remove="Packaging\PackageType.cs" />
   </ItemGroup>
 

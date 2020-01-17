@@ -9,12 +9,12 @@ namespace SiteServer.BackgroundPages.Controls
 		{
 			get 
 			{
-				var type = ViewState["Type"] as string;
+				var type = ViewState["InputType"] as string;
 				return !string.IsNullOrEmpty(type) ? type : string.Empty;
 			}
 			set 
 			{
-				ViewState["Type"] = value;
+				ViewState["InputType"] = value;
 			}
 		}
 

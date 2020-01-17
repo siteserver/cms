@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Datory;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Repositories;
@@ -95,7 +96,7 @@ namespace SiteServer.CMS.Core
             if (pageInfo != null)
             {
                 summary = $@"站点名称：{pageInfo.Site.SiteName}，
-模板类型：{TemplateTypeUtils.GetText(pageInfo.Template.Type)}，
+模板类型：{pageInfo.Template.TemplateType.GetDisplayName()}，
 模板名称：{pageInfo.Template.TemplateName}
 <br />";
             }

@@ -96,11 +96,11 @@ namespace SiteServer.CMS.Core.Create
         {
             var templateInfo = await TemplateManager.GetTemplateAsync(siteId, templateId);
 
-            if (templateInfo.Type == TemplateType.IndexPageTemplate)
+            if (templateInfo.TemplateType == TemplateType.IndexPageTemplate)
             {
                 await CreateChannelAsync(siteId, siteId);
             }
-            else if (templateInfo.Type == TemplateType.ChannelTemplate)
+            else if (templateInfo.TemplateType == TemplateType.ChannelTemplate)
             {
                 var channelIdList = await DataProvider.ChannelRepository.GetChannelIdListAsync(templateInfo);
                 foreach (var channelId in channelIdList)
@@ -108,7 +108,7 @@ namespace SiteServer.CMS.Core.Create
                     await CreateChannelAsync(siteId, channelId);
                 }
             }
-            else if (templateInfo.Type == TemplateType.ContentTemplate)
+            else if (templateInfo.TemplateType == TemplateType.ContentTemplate)
             {
                 var channelIdList = await DataProvider.ChannelRepository.GetChannelIdListAsync(templateInfo);
                 foreach (var channelId in channelIdList)
@@ -116,7 +116,7 @@ namespace SiteServer.CMS.Core.Create
                     await CreateAllContentAsync(siteId, channelId);
                 }
             }
-            else if (templateInfo.Type == TemplateType.FileTemplate)
+            else if (templateInfo.TemplateType == TemplateType.FileTemplate)
             {
                 await CreateFileAsync(siteId, templateId);
             }

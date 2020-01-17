@@ -56,7 +56,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 config.IsUserRegistrationChecked = request.GetPostBool("isUserRegistrationChecked");
                 config.IsUserUnRegistrationAllowed = request.GetPostBool("isUserUnRegistrationAllowed");
                 config.UserPasswordMinLength = request.GetPostInt("userPasswordMinLength");
-                config.UserPasswordRestriction = request.GetPostString("userPasswordRestriction");
+                config.UserPasswordRestriction = TranslateUtils.ToEnum(request.GetPostString("userPasswordRestriction"), PasswordRestriction.None);
                 config.UserRegistrationMinMinutes = request.GetPostInt("userRegistrationMinMinutes");
                 config.IsUserLockLogin = request.GetPostBool("isUserLockLogin");
                 config.UserLockLoginCount = request.GetPostInt("userLockLoginCount");

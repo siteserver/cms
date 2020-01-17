@@ -94,7 +94,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 else if (StringUtils.EqualsIgnoreCase(CurrentUrl, attributeName))//当前页地址
                 {
                     var contentInfo = await contextInfo.GetContentAsync();
-                    parsedContent = await StlParserUtility.GetStlCurrentUrlAsync(pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.Type, pageInfo.Template.Id, pageInfo.IsLocal);
+                    parsedContent = await StlParserUtility.GetStlCurrentUrlAsync(pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(ChannelUrl, attributeName))//栏目页地址
                 {
@@ -107,19 +107,19 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 else if (StringUtils.EqualsIgnoreCase(LoginUrl, attributeName))
                 {
                     var contentInfo = await contextInfo.GetContentAsync();
-                    var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.Type, pageInfo.Template.Id, pageInfo.IsLocal);
+                    var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
                     parsedContent = PageUtils.GetHomeUrl($"pages/login.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.EqualsIgnoreCase(LogoutUrl, attributeName))
                 {
                     var contentInfo = await contextInfo.GetContentAsync();
-                    var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.Type, pageInfo.Template.Id, pageInfo.IsLocal);
+                    var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
                     parsedContent = PageUtils.GetHomeUrl($"pages/logout.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.EqualsIgnoreCase(RegisterUrl, attributeName))
                 {
                     var contentInfo = await contextInfo.GetContentAsync();
-                    var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.Type, pageInfo.Template.Id, pageInfo.IsLocal);
+                    var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
                     parsedContent = PageUtils.GetHomeUrl($"pages/register.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "TableFor"))//
@@ -145,11 +145,11 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.SiteRepository.TableName, attributeName, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
+                            var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(DataProvider.SiteRepository.TableName, attributeName, DataProvider.TableStyleRepository.GetRelatedIdentities(pageInfo.SiteId));
 
                             if (styleInfo.Id > 0)
                             {
-                                parsedContent = InputTypeUtils.EqualsAny(styleInfo.Type, InputType.Image,
+                                parsedContent = InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image,
                                     InputType.File)
                                     ? PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent,
                                         pageInfo.IsLocal)

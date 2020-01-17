@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Core
                 extraBuilder.Append($@"<small class=""form-text text-muted"">{style.HelpText}</small>");
             }
 
-            var inputType = style.Type;
+            var inputType = style.InputType;
 
             if (inputType == InputType.Text)
             {
@@ -303,7 +303,7 @@ $(function(){{
             }
 
             var builder = new StringBuilder();
-            var styleItems = style.StyleItems ?? new List<TableStyleItem>();
+            var styleItems = style.Items ?? new List<TableStyleItem>();
 
             var selectedValue = TranslateUtils.Get<string>(attributes, style.AttributeName);
 
@@ -316,10 +316,10 @@ $(function(){{
                 var isOptionSelected = false;
                 if (!isTicked)
                 {
-                    isTicked = isOptionSelected = styleItem.ItemValue == selectedValue;
+                    isTicked = isOptionSelected = styleItem.Value == selectedValue;
                 }
 
-                builder.Append($@"<option value=""{styleItem.ItemValue}"" {(isOptionSelected ? "selected" : string.Empty)}>{styleItem.ItemTitle}</option>");
+                builder.Append($@"<option value=""{styleItem.Value}"" {(isOptionSelected ? "selected" : string.Empty)}>{styleItem.Label}</option>");
             }
 
             builder.Append("</select>");
@@ -336,7 +336,7 @@ $(function(){{
             }
 
             var builder = new StringBuilder();
-            var styleItems = style.StyleItems ?? new List<TableStyleItem>();
+            var styleItems = style.Items ?? new List<TableStyleItem>();
 
             var selectedValues = StringUtils.GetStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
 
@@ -345,8 +345,8 @@ $(function(){{
 
             foreach (var styleItem in styleItems)
             {
-                var isSelected = selectedValues.Contains(styleItem.ItemValue);
-                builder.Append($@"<option value=""{styleItem.ItemValue}"" {(isSelected ? "selected" : string.Empty)}>{styleItem.ItemTitle}</option>");
+                var isSelected = selectedValues.Contains(styleItem.Value);
+                builder.Append($@"<option value=""{styleItem.Value}"" {(isSelected ? "selected" : string.Empty)}>{styleItem.Label}</option>");
             }
 
             builder.Append("</select>");
@@ -474,14 +474,13 @@ $(document).ready(function(){{
 
             var builder = new StringBuilder();
 
-            var styleItems = style.StyleItems ?? new List<TableStyleItem>();
+            var styleItems = style.Items ?? new List<TableStyleItem>();
 
             var checkBoxList = new CheckBoxList
             {
                 CssClass = "checkbox checkbox-primary",
                 ID = style.AttributeName,
-                RepeatDirection = style.Horizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
-                RepeatColumns = style.Columns
+                RepeatDirection = style.Horizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical
             };
 
             var selectedValues = StringUtils.GetStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
@@ -490,8 +489,8 @@ $(document).ready(function(){{
 
             foreach (var styleItem in styleItems)
             {
-                var isSelected = selectedValues.Contains(styleItem.ItemValue);
-                var listItem = new ListItem(styleItem.ItemTitle, styleItem.ItemValue)
+                var isSelected = selectedValues.Contains(styleItem.Value);
+                var listItem = new ListItem(styleItem.Label, styleItem.Value)
                 {
                     Selected = isSelected
                 };
@@ -505,7 +504,7 @@ $(document).ready(function(){{
             foreach (var styleItem in styleItems)
             {
                 builder.Replace($@"name=""{style.AttributeName}${i}""",
-                    $@"name=""{style.AttributeName}"" value=""{styleItem.ItemValue}""");
+                    $@"name=""{style.AttributeName}"" value=""{styleItem.Value}""");
                 i++;
             }
 
@@ -522,20 +521,20 @@ $(document).ready(function(){{
 
             var builder = new StringBuilder();
 
-            var styleItems = style.StyleItems;
+            var styleItems = style.Items;
             if (styleItems == null || styleItems.Count == 0)
             {
                 styleItems = new List<TableStyleItem>
                 {
                     new TableStyleItem
                     {
-                        ItemTitle = "是",
-                        ItemValue = "1"
+                        Label = "是",
+                        Value = "1"
                     },
                     new TableStyleItem
                     {
-                        ItemTitle = "否",
-                        ItemValue = "0"
+                        Label = "否",
+                        Value = "0"
                     }
                 };
             }
@@ -543,8 +542,7 @@ $(document).ready(function(){{
             {
                 CssClass = "radio radio-primary",
                 ID = style.AttributeName,
-                RepeatDirection = style.Horizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
-                RepeatColumns = style.Columns
+                RepeatDirection = style.Horizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical
             };
 
             var selectedValue = TranslateUtils.Get<string>(attributes, style.AttributeName);
@@ -557,10 +555,10 @@ $(document).ready(function(){{
                 var isOptionSelected = false;
                 if (!isTicked)
                 {
-                    isTicked = isOptionSelected = styleItem.ItemValue == selectedValue;
+                    isTicked = isOptionSelected = styleItem.Value == selectedValue;
                 }
                 
-                var listItem = new ListItem(styleItem.ItemTitle, styleItem.ItemValue)
+                var listItem = new ListItem(styleItem.Label, styleItem.Value)
                 {
                     Selected = isOptionSelected
                 };
@@ -619,7 +617,7 @@ $(document).ready(function(){{
             var value = string.Empty;
             if (dateTime > Constants.SqlMinValue)
             {
-                value = DateUtils.GetDateAndTimeString(dateTime, EDateFormatType.Day, ETimeFormatType.LongTime);
+                value = DateUtils.GetDateAndTimeString(dateTime, DateFormatType.Day, ETimeFormatType.LongTime);
             }
 
             return $@"<input id=""{style.AttributeName}"" name=""{style.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" onfocus=""{SiteServerAssets.DatePicker.OnFocus}"" style=""width: 180px"" />";
@@ -922,7 +920,7 @@ function add_{attributeName}(val,foucs){{
                 //var theValue = GetValueByForm(style, site, formCollection);
 
                 var theValue = formCollection[style.AttributeName] ?? string.Empty;
-                var inputType = style.Type;
+                var inputType = style.InputType;
                 if (inputType == InputType.TextEditor)
                 {
                     theValue = await ContentUtility.TextEditorContentEncodeAsync(site, theValue);

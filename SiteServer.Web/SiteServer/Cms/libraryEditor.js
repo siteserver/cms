@@ -51,7 +51,7 @@ var methods = {
         $this.loadEditor(res);
       })
       .catch(function(error) {
-        utils.notifyError($this, error);
+        utils.error($this, error);
       })
       .then(function() {
         $this.pageLoad = true;
@@ -109,7 +109,7 @@ var methods = {
       return;
     }
 
-    utils.loading(true);
+    utils.loading($this, true);
     if (this.textId === 0) {
       $api
       .post($url, {
@@ -124,10 +124,10 @@ var methods = {
         utils.closeLayer(true);
       })
       .catch(function(error) {
-        utils.notifyError($this, error);
+        utils.error($this, error);
       })
       .then(function() {
-        utils.loading(false);
+        utils.loading($this, false);
       });
     } else {
       $api
@@ -143,10 +143,10 @@ var methods = {
         utils.closeLayer(true);
       })
       .catch(function(error) {
-        utils.notifyError($this, error);
+        utils.error($this, error);
       })
       .then(function() {
-        utils.loading(false);
+        utils.loading($this, false);
       });
     }
   },
@@ -168,16 +168,16 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(true)
+    utils.loading(this, true);
   },
 
   uploadSuccess(res, file) {
     this.imageUrl = res.value;
-    utils.loading(false);
+    utils.loading($this, false);
   },
 
   uploadError: function(err) {
-    utils.loading(false);
+    utils.loading($this, false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }

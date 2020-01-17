@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using Newtonsoft.Json;
 
 namespace SiteServer.Abstractions
 {
@@ -18,7 +19,8 @@ namespace SiteServer.Abstractions
         public string TableName { get; set; }
 
         [DataColumn]
-        public string IsRoot { get; set; }
+        [JsonIgnore]
+        private string IsRoot { get; set; }
 
         public bool Root
         {
@@ -33,11 +35,10 @@ namespace SiteServer.Abstractions
         public int Taxis { get; set; }
 
         [DataColumn(Extend = true, Text = true)]
-        public string SettingsXml { get; set; }
+        [JsonIgnore]
+        private string SettingsXml { get; set; }
 
         public IList<Site> Children { get; set; }
-
-        public string Charset { get; set; } = ECharsetUtils.GetValue(ECharset.utf_8);
 
         public int PageSize { get; set; } = 30;
 
@@ -131,8 +132,6 @@ namespace SiteServer.Abstractions
 
         /****************记录系统操作设置********************/
 
-        public bool ConfigTemplateIsCodeMirror { get; set; } = true;
-
         public bool ConfigUEditorVideoIsImageUrl { get; set; }
 
         public bool ConfigUEditorVideoIsAutoPlay { get; set; }
@@ -199,7 +198,7 @@ namespace SiteServer.Abstractions
 
         public string ImageUploadDirectoryName { get; set; } = "upload/images";
 
-        public string ImageUploadDateFormatString { get; set; } = EDateFormatTypeUtils.GetValue(EDateFormatType.Month);
+        public DateFormatType ImageUploadDateFormatString { get; set; } = DateFormatType.Month;
 
         public bool IsImageUploadChangeFileName { get; set; } = true;
 
@@ -209,11 +208,11 @@ namespace SiteServer.Abstractions
 
         public string AudioUploadDirectoryName { get; set; } = "upload/audio";
 
-        public string AudioUploadDateFormatString { get; set; } = EDateFormatTypeUtils.GetValue(EDateFormatType.Month);
+        public DateFormatType AudioUploadDateFormatString { get; set; } = DateFormatType.Month;
 
         public string VideoUploadDirectoryName { get; set; } = "upload/videos";
 
-        public string VideoUploadDateFormatString { get; set; } = EDateFormatTypeUtils.GetValue(EDateFormatType.Month);
+        public DateFormatType VideoUploadDateFormatString { get; set; } = DateFormatType.Month;
 
         public bool IsVideoUploadChangeFileName { get; set; } = true;
 
@@ -224,7 +223,7 @@ namespace SiteServer.Abstractions
 
         public string FileUploadDirectoryName { get; set; } = "upload/files";
 
-        public string FileUploadDateFormatString { get; set; } = EDateFormatTypeUtils.GetValue(EDateFormatType.Month);
+        public DateFormatType FileUploadDateFormatString { get; set; } = DateFormatType.Month;
 
         public bool IsFileUploadChangeFileName { get; set; } = true;
 
@@ -239,49 +238,5 @@ namespace SiteServer.Abstractions
         public string TemplatesAssetsJsDir { get; set; } = "js";
 
         public string TemplatesAssetsCssDir { get; set; } = "css";
-
-        /****************内容数据统计********************/
-
-        //内容表
-        public List<string> ContentTableNames { get; set; }
-
-        //内容总数
-        public int ContentCountAll { get; set; } = -1;
-
-        //草稿数
-        public int ContentCountCaoGao { get; set; } = -1;
-
-        //待审数
-        public int ContentCountDaiShen { get; set; } = -1;
-
-        //初审通过数
-        public int ContentCountPass1 { get; set; } = -1;
-
-        //二审通过数
-        public int ContentCountPass2 { get; set; } = -1;
-
-        //三审通过数
-        public int ContentCountPass3 { get; set; } = -1;
-
-        //四审通过数
-        public int ContentCountPass4 { get; set; } = -1;
-
-        //终审通过数
-        public int ContentCountPass5 { get; set; } = -1;
-
-        //初审退稿数
-        public int ContentCountFail1 { get; set; } = -1;
-
-        //二审退稿数
-        public int ContentCountFail2 { get; set; } = -1;
-
-        //三审退稿数
-        public int ContentCountFail3 { get; set; } = -1;
-
-        //四审退稿数
-        public int ContentCountFail4 { get; set; } = -1;
-
-        //终审退稿数
-        public int ContentCountFail5 { get; set; } = -1;
     }
 }

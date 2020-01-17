@@ -57,11 +57,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 config.AdminPasswordMinLength =
                     request.GetPostInt("adminPasswordMinLength");
                 config.AdminPasswordRestriction =
-                    request.GetPostString("adminPasswordRestriction");
+                    TranslateUtils.ToEnum(request.GetPostString("adminPasswordRestriction"), PasswordRestriction.None);
 
                 config.IsAdminLockLogin = request.GetPostBool("isAdminLockLogin");
                 config.AdminLockLoginCount = request.GetPostInt("adminLockLoginCount");
-                config.AdminLockLoginType = request.GetPostString("adminLockLoginType");
+                config.AdminLockLoginType = TranslateUtils.ToEnum(request.GetPostString("adminLockLoginType"), LockType.Hours);
                 config.AdminLockLoginHours = request.GetPostInt("adminLockLoginHours");
 
                 config.IsViewContentOnlySelf = request.GetPostBool("isViewContentOnlySelf");

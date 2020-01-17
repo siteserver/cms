@@ -156,7 +156,7 @@ namespace SiteServer.API.Controllers.Home
 
                 foreach (var contentId in contentIdList)
                 {
-                    await ContentUtility.TranslateAsync(site, channelId, contentId, targetSiteId, targetChannelId, ETranslateContentType.Cut);
+                    await ContentUtility.TranslateAsync(site, channelId, contentId, targetSiteId, targetChannelId, TranslateContentType.Cut);
                 }
 
                 await request.AddSiteLogAsync(siteId, channelId, "转移内容", string.Empty);

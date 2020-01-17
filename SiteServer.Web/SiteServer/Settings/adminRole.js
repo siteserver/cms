@@ -39,11 +39,11 @@ var methods = {
   apiDelete: function (item) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.delete({
       id: item.id
     }, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err || !res || !res.value) return;
 
       $this.items = res.value;

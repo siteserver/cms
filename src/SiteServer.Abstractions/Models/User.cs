@@ -11,16 +11,16 @@ namespace SiteServer.Abstractions
         [DataColumn]
         public string UserName { get; set; }
 
-        [JsonIgnore]
         [DataColumn]
+        [JsonIgnore]
         public string Password { get; set; }
 
-        [JsonIgnore]
         [DataColumn]
-        public string PasswordFormat { get; set; }
+        [JsonIgnore]
+        public PasswordFormat PasswordFormat { get; set; }
 
-        [JsonIgnore]
         [DataColumn]
+        [JsonIgnore]
         public string PasswordSalt { get; set; }
 
         [DataColumn]
@@ -42,7 +42,8 @@ namespace SiteServer.Abstractions
         public int CountOfFailedLogin { get; set; }
 
         [DataColumn]
-        public string IsChecked { get; set; }
+        [JsonIgnore]
+        private string IsChecked { get; set; }
 
         public bool Checked
         {
@@ -51,7 +52,8 @@ namespace SiteServer.Abstractions
         }
 
         [DataColumn]
-        public string IsLockedOut { get; set; }
+        [JsonIgnore]
+        private string IsLockedOut { get; set; }
 
         public bool Locked
         {

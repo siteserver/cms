@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             return LayerUtils.GetOpenScript(title, PageUtils.GetCmsUrl(siteId, nameof(ModalImport), new NameValueCollection
             {
-                {"Type", type}
+                {"InputType", type}
             }), Width, Height);
         }
 
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId");
-            _type = AuthRequest.GetQueryString("Type");
+            _type = AuthRequest.GetQueryString("InputType");
 
             if (!IsPostBack)
 			{

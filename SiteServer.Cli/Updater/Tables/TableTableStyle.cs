@@ -90,7 +90,7 @@ namespace SiteServer.Cli.Updater.Tables
             {
                 if (isVisible != null && StringUtils.EqualsIgnoreCase(isVisible.ToString(), "False"))
                 {
-                    row[nameof(TableStyle.InputType)] = Abstractions.InputType.Hidden.Value;
+                    row[nameof(TableStyle.InputType)] = Abstractions.InputType.Hidden.GetValue();
                 }
             }
 

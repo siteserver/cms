@@ -399,7 +399,7 @@ namespace SiteServer.BackgroundPages.Cms
 				var fileModifyDateTime = subDirectoryInfo.LastWriteTime;
 				var linkUrl = GetRedirectUrl(PageUtils.Combine(_currentRootPath, subDirectoryInfo.Name));
 				string trHtml =
-				    $"<tr><td><nobr><a href=\"{linkUrl}\">{fileNameString}</a></nobr></td><td align=\"right\">&nbsp;</td><td align=\"center\">{fileSystemTypeString}</td><td align=\"center\">{DateUtils.GetDateString(fileModifyDateTime, EDateFormatType.Day)}</td></tr>";
+				    $"<tr><td><nobr><a href=\"{linkUrl}\">{fileNameString}</a></nobr></td><td align=\"right\">&nbsp;</td><td align=\"center\">{fileSystemTypeString}</td><td align=\"center\">{DateUtils.GetDateString(fileModifyDateTime, DateFormatType.Day)}</td></tr>";
 				builder.Append(trHtml);
 			}
 
@@ -422,7 +422,7 @@ namespace SiteServer.BackgroundPages.Cms
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.SiteId, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(SiteId, attachmentUrl,_hiddenClientId);
                 string trHtml =
-                    $"<tr><td><a href=\"javascript:;\" onClick=\"window.parent.SelectAttachment('{_hiddenClientId}', '{attachmentUrl.Replace("'", "\\'")}', '{fileViewUrl.Replace("'", "\\'")}');{LayerUtils.CloseScript}\" title=\"点击此项选择此附件\">{fileNameString}</a></td><td align=\"right\">{fileKbSize} KB</td><td align=\"center\">{fileSystemTypeString}</td><td align=\"center\">{DateUtils.GetDateString(fileModifyDateTime, EDateFormatType.Day)}</td></tr>";
+                    $"<tr><td><a href=\"javascript:;\" onClick=\"window.parent.SelectAttachment('{_hiddenClientId}', '{attachmentUrl.Replace("'", "\\'")}', '{fileViewUrl.Replace("'", "\\'")}');{LayerUtils.CloseScript}\" title=\"点击此项选择此附件\">{fileNameString}</a></td><td align=\"right\">{fileKbSize} KB</td><td align=\"center\">{fileSystemTypeString}</td><td align=\"center\">{DateUtils.GetDateString(fileModifyDateTime, DateFormatType.Day)}</td></tr>";
 				builder.Append(trHtml);
 			}
 

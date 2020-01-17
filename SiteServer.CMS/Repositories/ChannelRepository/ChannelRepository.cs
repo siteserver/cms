@@ -61,7 +61,6 @@ namespace SiteServer.CMS.Repositories
             }
 
             channel.ChildrenCount = 0;
-            channel.LastNode = true;
 
             if (channel.SiteId != 0)
             {
@@ -78,22 +77,6 @@ namespace SiteServer.CMS.Repositories
                     .WhereIn(nameof(Channel.Id), StringUtils.GetIntList(channel.ParentsPath))
                 );
             }
-
-            await _repository.UpdateAsync(Q
-                .Set(nameof(Channel.IsLastNode), false.ToString())
-                .Where(nameof(Channel.ParentId), channel.ParentId)
-            );
-
-            var topId = await _repository.GetAsync<int>(Q
-                .Select(nameof(Channel.Id))
-                .Where(nameof(Channel.ParentId), channel.ParentId)
-                .OrderByDesc(nameof(Channel.Taxis))
-            );
-
-            await _repository.UpdateAsync(Q
-                .Set(nameof(Channel.IsLastNode), true.ToString())
-                .Where(nameof(Channel.Id), topId)
-            );
 
             ChannelManager.RemoveCacheBySiteId(channel.SiteId);
             PermissionsImpl.ClearAllCache();
@@ -131,8 +114,6 @@ namespace SiteServer.CMS.Repositories
 
             await SetTaxisSubtractAsync(selectedId, selectedPath, lower.Value.ChildrenCount + 1);
             await SetTaxisAddAsync(lower.Value.Id, lowerPath, channelEntity.ChildrenCount + 1);
-
-            await UpdateIsLastNodeAsync(channelEntity.ParentId);
         }
 
         private async Task TaxisAddAsync(int siteId, int selectedId)
@@ -154,12 +135,10 @@ namespace SiteServer.CMS.Repositories
             if (higher == null) return;
 
             var higherPath = higher.Value.ParentsPath == string.Empty ? higher.Value.Id.ToString() : string.Concat(higher.Value.ParentsPath, ",", higher.Value.Id);
-            var selectedPath = channelEntity.ParentsPath == string.Empty ? channelEntity.Id.ToString() : String.Concat(channelEntity.ParentsPath, ",", channelEntity.Id);
+            var selectedPath = channelEntity.ParentsPath == string.Empty ? channelEntity.Id.ToString() : string.Concat(channelEntity.ParentsPath, ",", channelEntity.Id);
 
             await SetTaxisAddAsync(selectedId, selectedPath, higher.Value.ChildrenCount + 1);
             await SetTaxisSubtractAsync(higher.Value.Id, higherPath, channelEntity.ChildrenCount + 1);
-
-            await UpdateIsLastNodeAsync(channelEntity.ParentId);
         }
 
         private async Task SetTaxisAddAsync(int channelId, string parentsPath, int addNum)
@@ -178,26 +157,6 @@ namespace SiteServer.CMS.Repositories
                     .OrWhere(nameof(Channel.ParentsPath), parentsPath)
                     .OrWhereStarts(nameof(Channel.ParentsPath), $"{parentsPath},")
                 , subtractNum);
-        }
-
-        private async Task UpdateIsLastNodeAsync(int parentId)
-        {
-            if (parentId <= 0) return;
-
-            await _repository.UpdateAsync(Q
-                .Set(nameof(Channel.IsLastNode), false.ToString())
-                .Where(nameof(Channel.ParentId), parentId)
-            );
-
-            var topId = await _repository.GetAsync<int>(Q
-                .Where(nameof(Channel.ParentId), parentId)
-                .OrderByDesc(nameof(Channel.Taxis))
-            );
-
-            await _repository.UpdateAsync(Q
-                .Set(nameof(Channel.IsLastNode), true.ToString())
-                .Where(nameof(Channel.Id), topId)
-            );
         }
 
         private async Task<int> GetMaxTaxisByParentPathAsync(string parentPath)
@@ -258,6 +217,13 @@ namespace SiteServer.CMS.Repositories
             };
 
             var parentChannel = await ChannelManager.GetChannelAsync(siteId, parentId);
+            if (parentChannel != null)
+            {
+                if (parentChannel.DefaultTaxisType != TaxisType.OrderByTaxisDesc)
+                {
+                    channelEntity.DefaultTaxisType = parentChannel.DefaultTaxisType;
+                }
+            }
 
             await InsertChannelAsync(parentChannel, channelEntity);
 
@@ -406,7 +372,6 @@ namespace SiteServer.CMS.Repositories
                 , deletedNum);
             }
 
-            await UpdateIsLastNodeAsync(channelEntity.ParentId);
             await UpdateSubtractChildrenCountAsync(channelEntity.ParentsPath, deletedNum);
 
             foreach (var channelIdDeleted in idList)
@@ -800,13 +765,13 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 
         public async Task<IEnumerable<int>> GetChannelIdListAsync(Template template)
         {
-            if (template.Type != TemplateType.ChannelTemplate &&
-                template.Type != TemplateType.ContentTemplate)
+            if (template.TemplateType != TemplateType.ChannelTemplate &&
+                template.TemplateType != TemplateType.ContentTemplate)
             {
                 return new List<int>();
             }
 
-            if (template.Type == TemplateType.ChannelTemplate)
+            if (template.TemplateType == TemplateType.ChannelTemplate)
             {
                 if (template.Default)
                 {

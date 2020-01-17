@@ -8,15 +8,8 @@ namespace SiteServer.Abstractions
     [DataTable("siteserver_LibraryGroup")]
     public class LibraryGroup : Entity
     {
-        [JsonIgnore]
         [DataColumn]
-        private string Type { get; set; }
-
-        public LibraryType LibraryType
-        {
-            get => TranslateUtils.ToEnum(Type, LibraryType.Document);
-            set => Type = value.GetValue();
-        }
+        public LibraryType Type { get; set; }
 
         [DataColumn]
         public string GroupName { get; set; }

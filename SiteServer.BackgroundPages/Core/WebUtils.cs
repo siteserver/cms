@@ -41,11 +41,11 @@ namespace SiteServer.BackgroundPages.Core
             }
             if (content.ReferenceId > 0)
             {
-                if (ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, content.TranslateContentType))
+                if (TranslateContentType.ReferenceContent == content.TranslateContentType)
                 {
                     image += "&nbsp;<img src='../pic/icon/reference.png' title='引用内容' align='absmiddle' border=0 />(引用内容)";
                 }
-                else if (ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, content.TranslateContentType))
+                else if (TranslateContentType.ReferenceContent == content.TranslateContentType)
                 {
                     image += "&nbsp;<img src='../pic/icon/reference.png' title='引用地址' align='absmiddle' border=0 />(引用地址)";
                 }

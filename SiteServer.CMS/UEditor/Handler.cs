@@ -24,12 +24,12 @@ namespace SiteServer.CMS.UEditor
                 json = JsonConvert.SerializeObject(response);
             if (string.IsNullOrWhiteSpace(jsonpCallback))
             {
-                Response.AddHeader("Body-Type", "text/plain");
+                Response.AddHeader("Body-InputType", "text/plain");
                 Response.Write(json);
             }
             else
             {
-                Response.AddHeader("Body-Type", "application/javascript");
+                Response.AddHeader("Body-InputType", "application/javascript");
                 Response.Write($"{jsonpCallback}({json});");
             }
             Response.End();

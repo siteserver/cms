@@ -45,7 +45,7 @@ var methods = {
       $this.siteList = res.siteList;
       $this.tableNameList = res.tableNameList;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
       if ($this.pageType == 'selectCloud') {
@@ -112,7 +112,7 @@ var methods = {
     var $this = this;
 
     if (this.pageLoad) {
-      utils.loading(true);
+      utils.loading($this, true);
     }
     $apiCloud.get('templates', {
         params: {
@@ -132,10 +132,10 @@ var methods = {
         $this.allTagNames = res.allTagNames;
       })
       .catch(function (error) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       })
       .then(function () {
-        utils.loading(false);
+        utils.loading($this, false);
         this.pageLoad = true;
       });
   },
@@ -172,7 +172,7 @@ var methods = {
 
     this.$validator.validate().then(function (result) {
       if (result) {
-        utils.loading(true);
+        utils.loading($this, true);
         $api.post($url, {
           createType: $this.createType,
           createTemplateId: $this.createTemplateId,
@@ -189,8 +189,8 @@ var methods = {
           var res = response.data;
           location.href = res.value;
         }).catch(function (error) {
-          utils.loading(false);
-          $this.pageAlert = utils.getPageAlert(error);
+          utils.loading($this, false);
+          utils.error($this, error);
         });
       }
     });

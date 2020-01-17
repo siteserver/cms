@@ -152,7 +152,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         ChannelId = contentInfo.ChannelId,
                         ContentId = contentInfo.Id,
                         UserName = request.AdminName,
-                        IsChecked = isChecked.ToString(),
+                        Checked = isChecked,
                         CheckedLevel = checkedLevel,
                         CheckDate = DateTime.Now,
                         Reasons = reasons

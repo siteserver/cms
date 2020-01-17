@@ -67,11 +67,11 @@ var methods = {
   delete: function (id) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.delete({
       id: id
     }, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err || !res || !res.value) return;
 
       $this.items = $this.getItems(res.value);
@@ -80,9 +80,9 @@ var methods = {
   reset: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $apiReset.post(null, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err || !res || !res.value) return;
 
       $this.items = $this.getItems(res.value);
@@ -91,9 +91,9 @@ var methods = {
   submit: function (item) {
     var $this = this;
     item.groupIdCollection = item.isGroup ? item.groupIds.join(',') : '';
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post(item, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',

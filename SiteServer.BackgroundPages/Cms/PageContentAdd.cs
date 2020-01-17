@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -82,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
             Content content = null;
-            _styleList = TableStyleManager.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
+            _styleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
 
             if (!IsPermissions(contentId)) return;
 
@@ -112,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
                     BtnTranslate.Attributes.Add("onClick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
                     ETranslateContentTypeUtilsExtensions.AddListItems(DdlTranslateType, true);
-                    ControlUtils.SelectSingleItem(DdlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
+                    ControlUtils.SelectSingleItem(DdlTranslateType, TranslateContentType.Copy.GetValue());
                 }
                 else
                 {
@@ -156,7 +157,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (contentId == 0)
                 {
-                    var attributes = TableStyleManager.GetDefaultAttributes(_styleList);
+                    var attributes = DataProvider.TableStyleRepository.GetDefaultAttributes(_styleList);
 
                     if (AuthRequest.IsQueryExists("isUploadWord"))
                     {
@@ -184,7 +185,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     TbTitle.Text = content.Title;
 
-                    TbTags.Text = content.Tags;
+                    TbTags.Text = TranslateUtils.ObjectCollectionToString(content.TagNames);
 
                     var list = new List<string>();
                     if (content.Top)
@@ -210,7 +211,7 @@ namespace SiteServer.BackgroundPages.Cms
                         TbAddDate.DateTime = content.AddDate.Value;
                     }
                     
-                    ControlUtils.SelectMultiItems(CblContentGroups, StringUtils.GetStringList(content.GroupNameCollection));
+                    ControlUtils.SelectMultiItems(CblContentGroups, content.GroupNames);
 
                     AcAttributes.Attributes = content.ToDictionary();
 
@@ -249,7 +250,7 @@ namespace SiteServer.BackgroundPages.Cms
                         AddUserName = AuthRequest.AdminName,
                         AdminId = AuthRequest.AdminId,
                         LastEditDate = DateTime.Now,
-                        GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items),
+                        GroupNames = ControlUtils.SelectedItemsValueToStringList(CblContentGroups.Items),
                         Title = TbTitle.Text
                     };
 
@@ -274,7 +275,7 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.CheckedLevel = TranslateUtils.ToIntWithNegative(RblContentLevel.SelectedValue);
                     
                     contentInfo.Checked = contentInfo.CheckedLevel >= Site.CheckContentLevel;
-                    contentInfo.Tags = TranslateUtils.ObjectCollectionToString(ContentTagUtils.ParseTagsString(TbTags.Text), " ");
+                    contentInfo.TagNames = ContentTagUtils.ParseTagsString(TbTags.Text);
 
                     foreach (var service in PluginManager.GetServicesAsync().GetAwaiter().GetResult())
                     {
@@ -314,7 +315,7 @@ namespace SiteServer.BackgroundPages.Cms
                     AuthRequest.AddSiteLogAsync(SiteId, _channel.Id, contentInfo.Id, "添加内容",
                         $"栏目:{ChannelManager.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult()},内容标题:{contentInfo.Title}").GetAwaiter().GetResult();
 
-                    ContentUtility.TranslateAsync(Site, _channel.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName).GetAwaiter().GetResult();
+                    ContentUtility.TranslateAsync(Site, _channel.Id, contentInfo.Id, Request.Form["translateCollection"], TranslateUtils.ToEnum(DdlTranslateType.SelectedValue, TranslateContentType.Copy), AuthRequest.AdminName).GetAwaiter().GetResult();
 
                     redirectUrl = PageContentAddAfter.GetRedirectUrl(SiteId, _channel.Id, contentInfo.Id,
                         ReturnUrl);
@@ -340,7 +341,7 @@ namespace SiteServer.BackgroundPages.Cms
                         contentInfo.Set(o.Key, o.Value);
                     }
 
-                    contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
+                    contentInfo.GroupNames = ControlUtils.SelectedItemsValueToStringList(CblContentGroups.Items);
 
                     contentInfo.Title = TbTitle.Text;
                     var formatString = TranslateUtils.ToBool(Request.Form[ContentAttribute.Title + "_formatStrong"]);
@@ -362,8 +363,8 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.Checked = checkedLevel >= Site.CheckContentLevel;
                     contentInfo.CheckedLevel = checkedLevel;
 
-                    ContentTagUtils.UpdateTagsAsync(contentInfo.Tags, TbTags.Text, SiteId, contentId).GetAwaiter().GetResult();
-                    contentInfo.Tags = TranslateUtils.ObjectCollectionToString(ContentTagUtils.ParseTagsString(TbTags.Text), " ");
+                    ContentTagUtils.UpdateTagsAsync(TranslateUtils.ObjectCollectionToString(contentInfo.TagNames), TbTags.Text, SiteId, contentId).GetAwaiter().GetResult();
+                    contentInfo.TagNames = ContentTagUtils.ParseTagsString(TbTags.Text);
 
                     foreach (var service in PluginManager.GetServicesAsync().GetAwaiter().GetResult())
                     {
@@ -380,7 +381,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     DataProvider.ContentRepository.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
 
-                    ContentUtility.TranslateAsync(Site, _channel.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName).GetAwaiter().GetResult();
+                    ContentUtility.TranslateAsync(Site, _channel.Id, contentInfo.Id, Request.Form["translateCollection"], TranslateUtils.ToEnum(DdlTranslateType.SelectedValue, TranslateContentType.Copy), AuthRequest.AdminName).GetAwaiter().GetResult();
 
                     CreateManager.CreateContentAsync(SiteId, _channel.Id, contentId).GetAwaiter().GetResult();
                     CreateManager.TriggerContentChangedEventAsync(SiteId, _channel.Id).GetAwaiter().GetResult();
@@ -403,7 +404,7 @@ namespace SiteServer.BackgroundPages.Cms
                     //    foreach (var targetContentId in targetContentIdList)
                     //    {
                     //        var targetContentInfo = DataProvider.ContentRepository.GetContentInfo(table.TableName, targetContentId);
-                    //        if (targetContentInfo == null || targetContentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString()) continue;
+                    //        if (targetContentInfo == null || targetContentInfo.GetString(ContentAttribute.TranslateContentType) != TranslateContentType.ReferenceContent.ToString()) continue;
 
                     //        contentInfo.Id = targetContentId;
                     //        contentInfo.SiteId = targetContentInfo.SiteId;

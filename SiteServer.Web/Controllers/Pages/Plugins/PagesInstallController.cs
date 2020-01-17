@@ -97,9 +97,8 @@ namespace SiteServer.API.Controllers.Pages.Plugins
 
                 if (!StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSiteServerPlugin))
                 {
-                    string errorMessage;
                     var idWithVersion = $"{packageId}.{version}";
-                    if (!PackageUtils.UpdatePackage(idWithVersion, PackageType.Parse(packageType), out errorMessage))
+                    if (!PackageUtils.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(packageType, PackageType.Library), out var errorMessage))
                     {
                         return BadRequest(errorMessage);
                     }

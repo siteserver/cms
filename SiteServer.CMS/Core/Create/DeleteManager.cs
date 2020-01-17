@@ -96,7 +96,7 @@ namespace SiteServer.CMS.Core.Create
             foreach (var templateId in templateIdList)
             {
                 var templateInfo = await TemplateManager.GetTemplateAsync(site.Id, templateId);
-                if (templateInfo == null || templateInfo.Type != TemplateType.FileTemplate)
+                if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
                 {
                     return;
                 }

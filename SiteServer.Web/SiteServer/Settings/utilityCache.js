@@ -17,7 +17,7 @@ var methods = {
       $this.parameters = res.value;
       $this.count = res.count;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -26,16 +26,16 @@ var methods = {
   btnCleanClick: function () {
     var $this = this;
     
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url).then(function (response) {
       var res = response.data;
 
       $this.parameters = res.value;
       $this.count = res.count;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   }
 };

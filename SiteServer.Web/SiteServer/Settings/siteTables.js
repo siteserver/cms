@@ -25,7 +25,7 @@ var methods = {
   },
   btnColumnsClick: function (tableName) {
     var $this = this;
-    utils.loading(true);
+    utils.loading($this, true);
 
     $api.get(null, function (err, res) {
       if (err || !res || !res.value) return;
@@ -34,7 +34,7 @@ var methods = {
       $this.tableName = tableName;
       $this.columns = res.value;
       $this.count = res.count;
-      utils.loading(false);
+      utils.loading($this, false);
     }, tableName);
   },
   btnCancelClick: function () {
@@ -43,7 +43,7 @@ var methods = {
   },
   btnRemoveCacheClick: function () {
     var $this = this;
-    utils.loading(true);
+    utils.loading($this, true);
 
     $api.post(null, function (err, res) {
       if (err || !res || !res.value) return;
@@ -51,7 +51,7 @@ var methods = {
       $this.pageType = 'columns';
       $this.columns = res.value;
       $this.count = res.count;
-      utils.loading(false);
+      utils.loading($this, false);
       $this.pageAlert = {
         type: 'success',
         html: '内容表缓存清除成功！'

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context.Atom.Atom.Core;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
@@ -135,7 +136,7 @@ namespace SiteServer.CMS.ImportExport
             }
         }
 
-        public static async Task ImportTableStyleByZipFileAsync(string tableName, int channelId, string zipFilePath)
+        public static async Task<string> ImportTableStyleByZipFileAsync(string tableName, List<int> relatedIdentities, string zipFilePath)
         {
             var styleDirectoryPath = PathUtils.GetTemporaryFilesPath("TableStyle");
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -143,7 +144,8 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.ExtractZip(zipFilePath, styleDirectoryPath);
 
-            await TableStyleIe.SingleImportTableStyleAsync(tableName, styleDirectoryPath, channelId);
+            await TableStyleIe.SingleImportTableStyleAsync(tableName, styleDirectoryPath, relatedIdentities);
+            return styleDirectoryPath;
         }
 
         public async Task ImportConfigurationAsync(string configurationFilePath)

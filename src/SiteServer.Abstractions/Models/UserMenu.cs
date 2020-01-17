@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using Newtonsoft.Json;
 
 namespace SiteServer.Abstractions
 {
@@ -12,7 +13,8 @@ namespace SiteServer.Abstractions
         public string SystemId { get; set; }
 
         [DataColumn]
-        public string GroupIdCollection { get; set; }
+        [JsonIgnore]
+        private string GroupIdCollection { get; set; }
 
         public List<int> GroupIds
         {
@@ -21,7 +23,8 @@ namespace SiteServer.Abstractions
         }
 
         [DataColumn]
-        public string IsDisabled { get; set; }
+        [DataIgnore]
+        private string IsDisabled { get; set; }
 
         public bool Disabled
         {

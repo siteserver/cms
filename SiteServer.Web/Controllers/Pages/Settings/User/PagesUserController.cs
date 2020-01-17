@@ -13,7 +13,6 @@ using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
 {
-    
     [RoutePrefix("pages/settings/user")]
     public class PagesUserController : ApiController
     {

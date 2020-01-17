@@ -71,7 +71,7 @@ var methods = {
         $this.treeData = [res];
       })
       .catch(function(error) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       })
       .then(function() {
         $this.asideHeight = $(window).height();
@@ -116,7 +116,7 @@ var methods = {
         $this.page = page;
       })
       .catch(function(error) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       })
       .then(function() {
         $this.loading = false;
@@ -228,7 +228,7 @@ var methods = {
         parent.openPageCreateStatus();
       })
       .catch(function(error) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       })
       .then(function() {
         $this.loading = false;

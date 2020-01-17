@@ -13,7 +13,7 @@ var methods = {
     $api.post($url).then(function (response) {
       $this.pageType = 'done';
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     });
   },
 

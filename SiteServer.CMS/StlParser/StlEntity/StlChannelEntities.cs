@@ -156,13 +156,13 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.ChannelRepository.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, node.ChannelId));
                     //parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.Site, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
 
-                    var styleInfo = await TableStyleManager.GetTableStyleAsync(DataProvider.ChannelRepository.TableName, attributeName, TableStyleManager.GetRelatedIdentities(nodeInfo));
+                    var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(DataProvider.ChannelRepository.TableName, attributeName, DataProvider.TableStyleRepository.GetRelatedIdentities(nodeInfo));
                     if (styleInfo.Id > 0)
                     {
                         parsedContent = GetValue(attributeName, nodeInfo, false, styleInfo.DefaultValue);
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            if (InputTypeUtils.EqualsAny(styleInfo.Type, InputType.Image, InputType.File))
+                            if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                             {
                                 parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                             }

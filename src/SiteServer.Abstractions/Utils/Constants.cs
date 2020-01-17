@@ -93,12 +93,10 @@ namespace SiteServer.Abstractions
             public const string ContentsTrash = "site_contentsTrash";
             public const string Templates = "site_templates";
             public const string Specials = "site_specials";
-            public const string TemplatesMatch = "site_templatesMatch";
-            public const string TemplatesIncludes = "site_templatesIncludes";
-            public const string TemplatesCss = "site_templatesCss";
-            public const string TemplatesJs = "site_templatesJs";
-            public const string TemplatesPreview = "site_templatesPreview";
-            public const string TemplatesReference = "site_templatesReference";
+            public const string TemplateMatch = "site_templateMatch";
+            public const string TemplateAssets = "site_templateAssets";
+            public const string TemplatePreview = "site_templatePreview";
+            public const string TemplateReference = "site_templateReference";
             public const string ConfigSite = "site_configSite";
             public const string ConfigAttributes = "site_configAttributes";
             public const string ConfigContents = "site_configContents";

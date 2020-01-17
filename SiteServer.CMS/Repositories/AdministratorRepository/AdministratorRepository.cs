@@ -31,6 +31,7 @@ namespace SiteServer.CMS.Repositories
 
         private static class Attr
         {
+            public const string IsLockedOut = nameof(IsLockedOut);
             public static readonly string SiteIdCollection = nameof(SiteIdCollection);
         }
 
@@ -121,13 +122,13 @@ namespace SiteServer.CMS.Repositories
             return siteIdListLatestAccessed;
         }
 
-        private async Task ChangePasswordAsync(Administrator administrator, EPasswordFormat passwordFormat, string passwordSalt, string password)
+        private async Task ChangePasswordAsync(Administrator administrator, PasswordFormat passwordFormat, string passwordSalt, string password)
         {
             administrator.LastChangePasswordDate = DateTime.Now;
 
             await _repository.UpdateAsync(Q
                 .Set(nameof(Administrator.Password), password)
-                .Set(nameof(Administrator.PasswordFormat), EPasswordFormatUtils.GetValue(passwordFormat))
+                .Set(nameof(Administrator.PasswordFormat), passwordFormat.GetValue())
                 .Set(nameof(Administrator.PasswordSalt), passwordSalt)
                 .Set(nameof(Administrator.LastChangePasswordDate), administrator.LastChangePasswordDate)
                 .Where(nameof(Administrator.Id), administrator.Id)
@@ -145,7 +146,7 @@ namespace SiteServer.CMS.Repositories
             }
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(Administrator.IsLockedOut), true.ToString())
+                .Set(Attr.IsLockedOut, true.ToString())
                 .WhereIn(nameof(Administrator.UserName), userNameList)
             );
         }
@@ -159,7 +160,7 @@ namespace SiteServer.CMS.Repositories
             }
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(Administrator.IsLockedOut), false.ToString())
+                .Set(Attr.IsLockedOut, false.ToString())
                 .Set(nameof(Administrator.CountOfFailedLogin), 0)
                 .WhereIn(nameof(Administrator.UserName), userNameList)
             );
@@ -295,16 +296,16 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        private string EncodePassword(string password, EPasswordFormat passwordFormat, out string passwordSalt)
+        private string EncodePassword(string password, PasswordFormat passwordFormat, out string passwordSalt)
         {
             var retVal = string.Empty;
             passwordSalt = string.Empty;
 
-            if (passwordFormat == EPasswordFormat.Clear)
+            if (passwordFormat == PasswordFormat.Clear)
             {
                 retVal = password;
             }
-            else if (passwordFormat == EPasswordFormat.Hashed)
+            else if (passwordFormat == PasswordFormat.Hashed)
             {
                 passwordSalt = GenerateSalt();
 
@@ -319,7 +320,7 @@ namespace SiteServer.CMS.Repositories
 
                 retVal = Convert.ToBase64String(inArray);
             }
-            else if (passwordFormat == EPasswordFormat.Encrypted)
+            else if (passwordFormat == PasswordFormat.Encrypted)
             {
                 passwordSalt = GenerateSalt();
 
@@ -406,10 +407,10 @@ namespace SiteServer.CMS.Repositories
                 return (false, $"密码长度必须大于等于{config.AdminPasswordMinLength}");
             }
             if (
-                !EUserPasswordRestrictionUtils.IsValid(password,
+                !PasswordRestrictionUtils.IsValid(password,
                     config.AdminPasswordRestriction))
             {
-                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(config.AdminPasswordRestriction))}");
+                return (false, $"密码不符合规则，请包含{config.AdminPasswordRestriction.GetDisplayName()}");
             }
 
             if (!string.IsNullOrEmpty(mobile) && await IsMobileExistsAsync(mobile))
@@ -434,8 +435,8 @@ namespace SiteServer.CMS.Repositories
                 administrator.CreationDate = DateTime.Now;
                 administrator.LastActivityDate = DateTime.Now;
                 administrator.LastChangePasswordDate = DateTime.Now;
-                administrator.PasswordFormat = EPasswordFormatUtils.GetValue(EPasswordFormat.Encrypted);
-                administrator.Password = EncodePassword(password, EPasswordFormatUtils.GetEnumType(administrator.PasswordFormat), out var passwordSalt);
+                administrator.PasswordFormat = PasswordFormat.Encrypted;
+                administrator.Password = EncodePassword(password, administrator.PasswordFormat, out var passwordSalt);
                 administrator.PasswordSalt = passwordSalt;
 
                 await _repository.InsertAsync(administrator);
@@ -464,7 +465,7 @@ namespace SiteServer.CMS.Repositories
                 .Set(nameof(Administrator.LastChangePasswordDate), administrator.LastChangePasswordDate)
                 .Set(nameof(Administrator.CountOfLogin), administrator.CountOfLogin)
                 .Set(nameof(Administrator.CountOfFailedLogin), administrator.CountOfFailedLogin)
-                .Set(nameof(Administrator.IsLockedOut), administrator.Locked.ToString())
+                .Set(Attr.IsLockedOut, administrator.Locked.ToString())
                 .Set(Attr.SiteIdCollection, StringUtils.Join(administrator.SiteIds))
                 .Set(nameof(Administrator.SiteId), administrator.SiteId)
                 .Set(nameof(Administrator.DisplayName), administrator.DisplayName)
@@ -491,13 +492,13 @@ namespace SiteServer.CMS.Repositories
                 return (false, $"密码长度必须大于等于{config.AdminPasswordMinLength}");
             }
             if (
-                !EUserPasswordRestrictionUtils.IsValid(password, config.AdminPasswordRestriction))
+                !PasswordRestrictionUtils.IsValid(password, config.AdminPasswordRestriction))
             {
-                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(config.AdminPasswordRestriction))}");
+                return (false, $"密码不符合规则，请包含{config.AdminPasswordRestriction.GetDisplayName()}");
             }
 
-            password = EncodePassword(password, EPasswordFormat.Encrypted, out var passwordSalt);
-            await ChangePasswordAsync(adminEntity, EPasswordFormat.Encrypted, passwordSalt, password);
+            password = EncodePassword(password, PasswordFormat.Encrypted, out var passwordSalt);
+            await ChangePasswordAsync(adminEntity, PasswordFormat.Encrypted, passwordSalt, password);
             return (true, string.Empty);
         }
 
@@ -534,12 +535,12 @@ namespace SiteServer.CMS.Repositories
                 if (administrator.CountOfFailedLogin > 0 &&
                     administrator.CountOfFailedLogin >= config.AdminLockLoginCount)
                 {
-                    var lockType = EUserLockTypeUtils.GetEnumType(config.AdminLockLoginType);
-                    if (lockType == EUserLockType.Forever)
+                    var lockType = config.AdminLockLoginType;
+                    if (lockType == LockType.Forever)
                     {
                         return (false, userName, "此账号错误登录次数过多，已被永久锁定");
                     }
-                    if (lockType == EUserLockType.Hours && administrator.LastActivityDate.HasValue)
+                    if (lockType == LockType.Hours && administrator.LastActivityDate.HasValue)
                     {
                         var ts = new TimeSpan(DateTime.Now.Ticks - administrator.LastActivityDate.Value.Ticks);
                         var hours = Convert.ToInt32(config.AdminLockLoginHours - ts.TotalHours);
@@ -554,23 +555,23 @@ namespace SiteServer.CMS.Repositories
             var adminEntity = await _repository.GetAsync(administrator.Id);
 
             return CheckPassword(password, isPasswordMd5, adminEntity.Password,
-                EPasswordFormatUtils.GetEnumType(adminEntity.PasswordFormat), adminEntity.PasswordSalt)
+                adminEntity.PasswordFormat, adminEntity.PasswordSalt)
                 ? (true, userName, string.Empty)
                 : (false, userName, "账号或密码错误");
         }
 
-        private static string DecodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
+        private static string DecodePassword(string password, PasswordFormat passwordFormat, string passwordSalt)
         {
             var retVal = string.Empty;
-            if (passwordFormat == EPasswordFormat.Clear)
+            if (passwordFormat == PasswordFormat.Clear)
             {
                 retVal = password;
             }
-            else if (passwordFormat == EPasswordFormat.Hashed)
+            else if (passwordFormat == PasswordFormat.Hashed)
             {
                 throw new Exception("can not decode hashed password");
             }
-            else if (passwordFormat == EPasswordFormat.Encrypted)
+            else if (passwordFormat == PasswordFormat.Encrypted)
             {
                 var des = new DesEncryptor
                 {
@@ -584,8 +585,7 @@ namespace SiteServer.CMS.Repositories
             return retVal;
         }
 
-        private static bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, EPasswordFormat passwordFormat,
-            string passwordSalt)
+        private static bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, PasswordFormat passwordFormat, string passwordSalt)
         {
             var decodePassword = DecodePassword(dbPassword, passwordFormat, passwordSalt);
             if (isPasswordMd5)

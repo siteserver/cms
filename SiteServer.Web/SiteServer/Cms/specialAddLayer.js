@@ -145,7 +145,7 @@ var methods = {
       });
     }
 
-    parent.utils.loading(true);
+    parent.utils.loading($this, true);
     $api.post({
         siteId: this.siteId,
         guid: this.guid,
@@ -157,7 +157,7 @@ var methods = {
         fileNames: fileNames
       },
       function (err, res) {
-        parent.utils.loading(false);
+        parent.utils.loading($this, false);
 
         if (err) {
           return $this.pageAlert = {

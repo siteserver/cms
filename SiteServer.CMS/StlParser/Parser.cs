@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using Datory;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
@@ -27,7 +28,7 @@ namespace SiteServer.CMS.StlParser
                         pageInfo.PageChannelId,
                         pageInfo.PageContentId,
                         await contextInfo.GetContentAsync(),
-                        pageInfo.Template.Type,
+                        pageInfo.Template.TemplateType,
                         pageInfo.Template.Id,
                         filePath,
                         pageInfo.HeadCodes,
@@ -51,7 +52,7 @@ namespace SiteServer.CMS.StlParser
             {
                 try
                 {
-                    service.OnAfterStlParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, await contextInfo.GetContentAsync(), pageInfo.Template.Type, pageInfo.Template.Id, filePath, pageInfo.HeadCodes, pageInfo.BodyCodes, pageInfo.FootCodes, contentBuilder));
+                    service.OnAfterStlParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, await contextInfo.GetContentAsync(), pageInfo.Template.TemplateType, pageInfo.Template.Id, filePath, pageInfo.HeadCodes, pageInfo.BodyCodes, pageInfo.FootCodes, contentBuilder));
                 }
                 catch (Exception ex)
                 {
@@ -98,7 +99,7 @@ namespace SiteServer.CMS.StlParser
                     if (pageInfo.Site.IsCreateDoubleClick)
                     {
                         var fileTemplateId = 0;
-                        if (pageInfo.Template.Type == TemplateType.FileTemplate)
+                        if (pageInfo.Template.TemplateType == TemplateType.FileTemplate)
                         {
                             fileTemplateId = pageInfo.Template.Id;
                         }
@@ -121,7 +122,7 @@ namespace SiteServer.CMS.StlParser
                 if (isShowPageInfo)
                 {
                     contentBuilder.Append($@"
-<!-- {pageInfo.Template.RelatedFileName}({TemplateTypeUtils.GetText(pageInfo.Template.Type)}) -->");
+<!-- {pageInfo.Template.RelatedFileName}({pageInfo.Template.TemplateType.GetDisplayName()}) -->");
                 }
 
                 var headCodesHtml = pageInfo.HeadCodesHtml;

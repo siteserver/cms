@@ -3,7 +3,7 @@
 <el-card class="box-card">
   <div slot="header" class="clearfix">
     <span>STL模板语言参考</span>
-    <a style="float: right; padding: 3px 0" href="https://www.siteserver.cn/docs/stl/" target="_blank">STL 语言参考手册</a>
+    <el-link :underline="false" type="primary" style="float: right; padding: 3px 0" href="https://www.siteserver.cn/docs/stl/" target="_blank">STL 语言参考手册</el-link>
   </div>
   <div>
     <el-table
@@ -14,9 +14,9 @@
         label="标签"
         width="150">
         <template slot-scope="scope">
-          <a href="javascript:;" v-on:click="btnElementSelectClick(scope.row)">
+          <el-link :underline="false" type="primary" v-on:click="btnElementSelectClick(scope.row)">
             {{ scope.row.name }}
-          </a>
+          </el-link>
         </template>
       </el-table-column>
       <el-table-column
@@ -26,7 +26,7 @@
       </el-table-column>
       <el-table-column label="参考">
         <template slot-scope="scope">
-            <a :href="getLinkUrl(scope.row.name)" target="_blank">{{ getLinkUrl(scope.row.name) }}</a>
+            <el-link :underline="false" type="primary" :href="getLinkUrl(scope.row.name)" target="_blank">{{ getLinkUrl(scope.row.name) }}</el-link>
         </template>
       </el-table-column>
     </el-table>
@@ -56,7 +56,7 @@
     </el-table-column>
     <el-table-column label="参考">
       <template slot-scope="scope">
-          <a :href="getFieldLinkUrl(scope.row)" target="_blank">{{ getFieldLinkUrl(scope.row) }}</a>
+          <el-link :underline="false" type="primary" :href="getFieldLinkUrl(scope.row)" target="_blank">{{ getFieldLinkUrl(scope.row) }}</el-link>
       </template>
     </el-table-column>
   </el-table>

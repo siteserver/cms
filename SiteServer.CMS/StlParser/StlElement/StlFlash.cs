@@ -233,7 +233,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //        private static readonly Attr Parent = new Attr("parent", "显示父栏目");
 //        private static readonly Attr UpLevel = new Attr("upLevel", "上级栏目的级别");
 //        private static readonly Attr TopLevel = new Attr("topLevel", "从首页向下的栏目级别");
-//        private static readonly Attr Type = new Attr("type", "指定存储flash的字段");
+//        private static readonly Attr InputType = new Attr("type", "指定存储flash的字段");
 //        private static readonly Attr Src = new Attr("src", "显示的flash地址");
 //        private static readonly Attr AltSrc = new Attr("altSrc", "当指定的flash不存在时显示的flash地址");
 //        private static readonly Attr Width = new Attr("width", "宽度");
@@ -296,7 +296,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                        isGetPicUrlFromAttribute = true;
 //                    }
 //                }
-//                else if (StringUtils.EqualsIgnoreCase(name, Type))
+//                else if (StringUtils.EqualsIgnoreCase(name, InputType))
 //                {
 //                    type = value;
 //                }

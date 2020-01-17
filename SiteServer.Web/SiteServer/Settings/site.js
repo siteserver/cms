@@ -9,7 +9,6 @@ var data = {
   site: null,
 
   editPanel: false,
-  editAlert: null,
   editForm: null,
   editLoading: false,
   editRules: {
@@ -25,7 +24,6 @@ var data = {
   },
   
   deletePanel: false,
-  deleteAlert: null,
   deleteForm: null,
   deleteLoading: false,
 };
@@ -41,7 +39,7 @@ var methods = {
       $this.rootSiteId = res.rootSiteId;
       $this.tableNames = res.tableNames;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -75,7 +73,6 @@ var methods = {
   btnEditCancelClick: function() {
     this.editPanel = false;
     this.editLoading = false;
-    this.editAlert = null;
   },
 
   btnEditSubmitClick: function() {
@@ -97,7 +94,7 @@ var methods = {
       $this.sites = res.value;
       $this.editPanel = false;
     }).catch(function (error) {
-      $this.editAlert = utils.getPanelAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.editLoading = false;
     });
@@ -113,17 +110,12 @@ var methods = {
       siteDir: null,
       deleteFiles: false
     };
-    this.deleteAlert = {
-      type: 'warning',
-      title: '此操作将会删除站点 ' + row.siteName + '，且数据无法恢复，请谨慎操作！',
-    };
     this.deletePanel = true;
   },
 
   btnDeleteCancelClick: function() {
     this.deletePanel = false;
     this.deleteLoading = false;
-    this.deleteAlert = null;
   },
 
   btnDeleteSubmitClick: function() {
@@ -150,7 +142,7 @@ var methods = {
         window.top.location.href='../main.cshtml';
       }, 1500);
     }).catch(function (error) {
-      $this.deleteAlert = utils.getPanelAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.deleteLoading = false;
     });

@@ -584,6 +584,8 @@ namespace SiteServer.Abstractions
 
         public static string JsonSerialize(object obj)
         {
+            if (obj == null) return string.Empty;
+
             try
             {
                 //var settings = new JsonSerializerSettings
@@ -601,8 +603,10 @@ namespace SiteServer.Abstractions
             }
         }
 
-        public static T JsonDeserialize<T>(string json, T defaultValue = default(T))
+        public static T JsonDeserialize<T>(string json, T defaultValue = default)
         {
+            if (string.IsNullOrEmpty(json)) return defaultValue;
+
             try
             {
                 //var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };

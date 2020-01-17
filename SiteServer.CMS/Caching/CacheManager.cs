@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Datory;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Caching.Redis;

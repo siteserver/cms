@@ -36,7 +36,7 @@ var methods = {
       $this.isOrdinaryAdmin = res.isOrdinaryAdmin;
       $this.roleNames = res.roleNames;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });

@@ -35,7 +35,7 @@ var methods = {
       $this.count = res.count;
       $this.groups = res.groups;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -52,15 +52,15 @@ var methods = {
   btnExportClick: function() {
     var $this = this;
     
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '/actions/export').then(function (response) {
       var res = response.data;
 
       window.open(res.value);
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
@@ -72,7 +72,7 @@ var methods = {
       text: '此操作将删除用户 ' + item.userName + '，确定吗？',
       callback: function () {
 
-        utils.loading(true);
+        utils.loading($this, true);
         $api.delete($url, {
           data: {
             id: item.id
@@ -82,9 +82,9 @@ var methods = {
     
           $this.items.splice($this.items.indexOf(item), 1);
         }).catch(function (error) {
-          $this.pageAlert = utils.getPageAlert(error);
+          utils.error($this, error);
         }).then(function () {
-          utils.loading(false);
+          utils.loading($this, false);
         });
       }
     });
@@ -96,7 +96,7 @@ var methods = {
       text: '此操作将设置用户 ' + item.userName + ' 的状态为审核通过，确定吗？',
       callback: function () {
 
-        utils.loading(true);
+        utils.loading($this, true);
         $api.post($url + '/actions/check', {
           id: item.id
         }).then(function (response) {
@@ -104,9 +104,9 @@ var methods = {
     
           item.checked = true;
         }).catch(function (error) {
-          $this.pageAlert = utils.getPageAlert(error);
+          utils.error($this, error);
         }).then(function () {
-          utils.loading(false);
+          utils.loading($this, false);
         });
       }
     });
@@ -118,7 +118,7 @@ var methods = {
       text: '此操作将锁定用户 ' + item.userName + '，确定吗？',
       callback: function () {
         
-        utils.loading(true);
+        utils.loading($this, true);
         $api.post($url + '/actions/lock', {
           id: item.id
         }).then(function (response) {
@@ -126,9 +126,9 @@ var methods = {
     
           item.locked = true;
         }).catch(function (error) {
-          $this.pageAlert = utils.getPageAlert(error);
+          utils.error($this, error);
         }).then(function () {
-          utils.loading(false);
+          utils.loading($this, false);
         });
       }
     });
@@ -140,7 +140,7 @@ var methods = {
       text: '此操作将解锁用户 ' + item.userName + '，确定吗？',
       callback: function () {
 
-        utils.loading(true);
+        utils.loading($this, true);
         $api.post($url + '/actions/unLock', {
           id: item.id
         }).then(function (response) {
@@ -148,9 +148,9 @@ var methods = {
     
           item.locked = false;
         }).catch(function (error) {
-          $this.pageAlert = utils.getPageAlert(error);
+          utils.error($this, error);
         }).then(function () {
-          utils.loading(false);
+          utils.loading($this, false);
         });
       }
     });
@@ -159,7 +159,7 @@ var methods = {
   btnSearchClick() {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.get($url, {
       params: this.formInline
     }).then(function (response) {
@@ -168,9 +168,9 @@ var methods = {
       $this.items = res.value;
       $this.count = res.count;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
@@ -194,7 +194,7 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(true)
+    utils.loading(this, true);
   },
 
   uploadSuccess: function(res, file) {
@@ -215,7 +215,7 @@ var methods = {
       $this.count = res.count;
       $this.groups = res.groups;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       if (success) {
         $this.$message.success('成功导入 ' + success + ' 名用户！');
@@ -223,12 +223,12 @@ var methods = {
       if (errorMessage) {
         $this.$message.error(failure + ' 名用户导入失败：' + errorMessage);
       }
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
   uploadError: function(err) {
-    utils.loading(false);
+    utils.loading(this, false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }

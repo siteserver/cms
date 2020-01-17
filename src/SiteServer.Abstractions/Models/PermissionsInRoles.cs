@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using Newtonsoft.Json;
 
 
 namespace SiteServer.Abstractions
@@ -13,7 +14,8 @@ namespace SiteServer.Abstractions
         public string RoleName { get; set; }
 
         [DataColumn(Text = true)]
-        public string GeneralPermissions { get; set; }
+        [JsonIgnore]
+        private string GeneralPermissions { get; set; }
 
         public List<string> GeneralPermissionList
         {

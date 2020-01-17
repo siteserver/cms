@@ -120,7 +120,7 @@ namespace SiteServer.CMS.Repositories
             {
                 try
                 {
-                    await database.CreateIndexAsync(tableName, $"IX_{tableName}_General", $"{nameof(Content.IsTop)} DESC", $"{nameof(Content.Taxis)} DESC", $"{nameof(Content.Id)} DESC");
+                    await database.CreateIndexAsync(tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{nameof(Content.Taxis)} DESC", $"{nameof(Content.Id)} DESC");
 
 
                     //sqlString =

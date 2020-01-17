@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
+using Datory;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
@@ -25,12 +26,11 @@ namespace SiteServer.API.Controllers.Sys
             var packageType = request.GetPostString("packageType");
             if (StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSsCms))
             {
-                packageType = PackageType.SsCms.Value;
+                packageType = PackageType.SsCms.GetValue();
             }
 
-            string errorMessage;
             var idWithVersion = $"{packageId}.{version}";
-            if (!PackageUtils.UpdatePackage(idWithVersion, PackageType.Parse(packageType), out errorMessage))
+            if (!PackageUtils.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(packageType, PackageType.Library), out var errorMessage))
             {
                 return BadRequest(errorMessage);
             }

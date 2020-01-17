@@ -24,8 +24,6 @@ namespace SiteServer.BackgroundPages.Cms
         public PlaceHolder PhReturn;
         public Button BtnSubmit;
 
-		private bool[] _isLastNodeArray;
-
         public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), null);
@@ -93,8 +91,6 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             var channelIdList = ChannelManager.GetChannelIdListAsync(SiteId).GetAwaiter().GetResult();
-            var nodeCount = channelIdList.Count;
-            _isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
             {
                 var enabled = IsOwningChannelId(theChannelId);
@@ -121,24 +117,7 @@ namespace SiteServer.BackgroundPages.Cms
 		public string GetTitle(Channel channel)
 		{
 			var str = "";
-            if (channel.Id == SiteId)
-			{
-                channel.LastNode = true;
-			}
-            if (channel.LastNode == false)
-			{
-                _isLastNodeArray[channel.ParentsCount] = false;
-			}
-			else
-			{
-                _isLastNodeArray[channel.ParentsCount] = true;
-			}
-            for (var i = 0; i < channel.ParentsCount; i++)
-            {
-                str = string.Concat(str, _isLastNodeArray[i] ? "　" : "│");
-            }
-		    str = string.Concat(str, channel.LastNode ? "└" : "├");
-		    str = string.Concat(str, channel.ChannelName);
+            str = string.Concat(str, channel.ChannelName);
 		    var adminId = AuthRequest.AdminPermissionsImpl.GetAdminIdAsync(SiteId, channel.Id).GetAwaiter().GetResult();
             var count = DataProvider.ContentRepository.GetCountAsync(Site, channel, adminId).GetAwaiter().GetResult();
             if (count != 0)
@@ -327,13 +306,13 @@ namespace SiteServer.BackgroundPages.Cms
 		{
             var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
 
-            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxis);
+            var orderByString = ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByTaxis);
 
             var contentIdList = DataProvider.ContentRepository.GetContentIdListChecked(tableName, channelId, orderByString);
 		    var translateType = RblIsDeleteAfterTranslate.Visible &&
 		                        EBooleanUtils.Equals(RblIsDeleteAfterTranslate.SelectedValue, EBoolean.True)
-		        ? ETranslateContentType.Cut
-		        : ETranslateContentType.Copy;
+		        ? TranslateContentType.Cut
+		        : TranslateContentType.Copy;
 
             foreach (var contentId in contentIdList)
 			{
@@ -349,7 +328,6 @@ namespace SiteServer.BackgroundPages.Cms
 
 			var channelIdList = ChannelManager.GetChannelIdListAsync(psId).GetAwaiter().GetResult();
             var nodeCount = channelIdList.Count;
-			_isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
 			{
                 var nodeInfo = ChannelManager.GetChannelAsync(psId, theChannelId).GetAwaiter().GetResult();

@@ -169,7 +169,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 foreach (var channelContentId in channelContentIds)
                 {
-                    await ContentUtility.TranslateAsync(site, channelContentId.ChannelId, channelContentId.Id, targetSiteId, targetChannelId, ETranslateContentType.Cut);
+                    await ContentUtility.TranslateAsync(site, channelContentId.ChannelId, channelContentId.Id, targetSiteId, targetChannelId, TranslateContentType.Cut);
                 }
 
                 await request.AddSiteLogAsync(siteId, channelId, "转移内容", string.Empty);

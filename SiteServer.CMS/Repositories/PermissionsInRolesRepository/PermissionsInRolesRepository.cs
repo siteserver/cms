@@ -43,7 +43,7 @@ namespace SiteServer.CMS.Repositories
             foreach (var roleName in roles)
 			{
                 var pr = await GetPermissionsInRolesAsync(roleName);
-                if (pr?.GeneralPermissions == null) continue;
+                if (pr?.GeneralPermissionList == null) continue;
 
                 foreach (var permission in pr.GeneralPermissionList)
                 {

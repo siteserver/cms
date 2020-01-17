@@ -38,7 +38,7 @@ var methods = {
 
       $this.getPackages();
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     });
   },
 
@@ -93,7 +93,7 @@ var methods = {
       }
       $this.installListPackage();
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -141,7 +141,7 @@ var methods = {
       $this.currentDownloadIds.push(packageId);
       $this.download();
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     });
   },
 
@@ -175,7 +175,7 @@ var methods = {
       $this.currentUpdatedIds.push(packageId);
       $this.update();
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     });
   },
 
@@ -207,7 +207,7 @@ var methods = {
         window.top.location.reload(true);
       }, 3000);
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     });
   }
 };

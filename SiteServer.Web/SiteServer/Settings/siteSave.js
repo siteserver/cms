@@ -40,7 +40,7 @@ var methods = {
       $this.templateName = res.value.siteName;
       $this.templateDir = res.templateDir;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -87,7 +87,7 @@ var methods = {
 
   apiSaveSettings: function () {
     var $this = this;
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '/actions/settings', {
       siteId: this.siteId,
       templateName: this.templateName,
@@ -101,15 +101,15 @@ var methods = {
       $this.files = res.files;
       $this.active = 1;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
   apiSaveFiles: function () {
     var $this = this;
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '/actions/files', {
       siteId: this.siteId,
       templateDir: this.templateDir,
@@ -122,15 +122,15 @@ var methods = {
       $this.channelInfo = res.channelInfo;
       $this.active = 2;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
   apiSaveData: function () {
     var $this = this;
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '/actions/data', {
       siteId: this.siteId,
       templateName:  this.templateName,
@@ -148,9 +148,9 @@ var methods = {
         location.href = 'siteTemplates.cshtml';
       }, 3000);
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 

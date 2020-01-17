@@ -19,7 +19,7 @@ var methods = {
         $this.loadUploader();
       }, 100);
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -112,7 +112,7 @@ var methods = {
       });
     }
 
-    parent.utils.loading(true);
+    parent.utils.loading($this, true);
     $api.post({
         siteId: $this.siteId,
         channelId: $this.channelId,
@@ -122,7 +122,7 @@ var methods = {
         isOverride: $this.isOverride
       },
       function (err, res) {
-        parent.utils.loading(false);
+        parent.utils.loading($this, false);
 
         if (err) {
           return $this.pageAlert = {

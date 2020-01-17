@@ -37,7 +37,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
                     Value = config,
                     WebConfigUtils.HomeDirectory,
                     request.AdminToken,
-                    Styles = await TableStyleManager.GetUserStyleListAsync()
+                    Styles = await DataProvider.TableStyleRepository.GetUserStyleListAsync()
                 });
             }
             catch (Exception ex)

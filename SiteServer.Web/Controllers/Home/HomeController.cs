@@ -74,7 +74,7 @@ namespace SiteServer.API.Controllers.Home
             {
                 Value = request.User,
                 Config = config,
-                Styles = await TableStyleManager.GetUserStyleListAsync(),
+                Styles = await DataProvider.TableStyleRepository.GetUserStyleListAsync(),
                 Groups = await UserGroupManager.GetUserGroupListAsync()
             };
         }
@@ -138,7 +138,7 @@ namespace SiteServer.API.Controllers.Home
             {
                 Value = request.User,
                 Config = config,
-                Styles = await TableStyleManager.GetUserStyleListAsync()
+                Styles = await DataProvider.TableStyleRepository.GetUserStyleListAsync()
             };
         }
 
@@ -303,7 +303,7 @@ namespace SiteServer.API.Controllers.Home
                         ChannelName = await ChannelManager.GetChannelNameNavigationAsync(siteInfo.Id, channelInfo.Id)
                     };
 
-                    styles = await TableStyleManager.GetContentStyleListAsync(siteInfo, channelInfo);
+                    styles = await DataProvider.TableStyleRepository.GetContentStyleListAsync(siteInfo, channelInfo);
 
                     var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, siteInfo, siteInfo.Id);
                     checkedLevels = CheckManager.GetCheckedLevels(siteInfo, userIsChecked, userCheckedLevel, true);

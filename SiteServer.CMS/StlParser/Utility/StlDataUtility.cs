@@ -121,7 +121,7 @@ namespace SiteServer.CMS.StlParser.Utility
         //    return retVal;
         //}
 
-        public static ETaxisType GetETaxisTypeByOrder(string order, bool isChannel, ETaxisType defaultType)
+        public static TaxisType GetETaxisTypeByOrder(string order, bool isChannel, TaxisType defaultType)
         {
             var taxisType = defaultType;
             if (!string.IsNullOrEmpty(order))
@@ -130,73 +130,73 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     if (order.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByTaxis;
+                        taxisType = TaxisType.OrderByTaxis;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByTaxisDesc;
+                        taxisType = TaxisType.OrderByTaxisDesc;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByAddDate;
+                        taxisType = TaxisType.OrderByAddDate;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByAddDateDesc;
+                        taxisType = TaxisType.OrderByAddDateDesc;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByHits;
+                        taxisType = TaxisType.OrderByHits;
                     }
                 }
                 else
                 {
                     if (order.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByTaxisDesc;
+                        taxisType = TaxisType.OrderByTaxisDesc;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByTaxis;
+                        taxisType = TaxisType.OrderByTaxis;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByAddDate;
+                        taxisType = TaxisType.OrderByAddDate;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByAddDateDesc;
+                        taxisType = TaxisType.OrderByAddDateDesc;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderLastEditDate.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByLastEditDate;
+                        taxisType = TaxisType.OrderByLastEditDate;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByLastEditDateDesc;
+                        taxisType = TaxisType.OrderByLastEditDateDesc;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByHits;
+                        taxisType = TaxisType.OrderByHits;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderHitsByDay.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByHitsByDay;
+                        taxisType = TaxisType.OrderByHitsByDay;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderHitsByWeek.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByHitsByWeek;
+                        taxisType = TaxisType.OrderByHitsByWeek;
                     }
                     else if (order.ToLower().Equals(StlParserUtility.OrderHitsByMonth.ToLower()))
                     {
-                        taxisType = ETaxisType.OrderByHitsByMonth;
+                        taxisType = TaxisType.OrderByHitsByMonth;
                     }
                 }
             }
             return taxisType;
         }
 
-        public static string GetChannelOrderByString(int siteId, string orderValue, ETaxisType defaultType)
+        public static string GetChannelOrderByString(int siteId, string orderValue, TaxisType defaultType)
         {
             var taxisType = defaultType;
             var orderByString = string.Empty;
@@ -204,27 +204,27 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByTaxis;
+                    taxisType = TaxisType.OrderByTaxis;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByTaxisDesc;
+                    taxisType = TaxisType.OrderByTaxisDesc;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByAddDateDesc;
+                    taxisType = TaxisType.OrderByAddDateDesc;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByAddDate;
+                    taxisType = TaxisType.OrderByAddDate;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByHits;
+                    taxisType = TaxisType.OrderByHits;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderRandom.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByRandom;
+                    taxisType = TaxisType.OrderByRandom;
                 }
                 else
                 {
@@ -235,7 +235,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return ETaxisTypeUtils.GetChannelOrderByString(taxisType, orderByString, null);
         }
 
-        public static string GetContentOrderByString(int siteId, string orderValue, ETaxisType defaultType)
+        public static string GetContentOrderByString(int siteId, string orderValue, TaxisType defaultType)
         {
             var taxisType = defaultType;
             var orderByString = string.Empty;
@@ -243,47 +243,47 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByTaxisDesc;
+                    taxisType = TaxisType.OrderByTaxisDesc;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByTaxis;
+                    taxisType = TaxisType.OrderByTaxis;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByAddDateDesc;
+                    taxisType = TaxisType.OrderByAddDateDesc;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByAddDate;
+                    taxisType = TaxisType.OrderByAddDate;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastEditDate.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByLastEditDateDesc;
+                    taxisType = TaxisType.OrderByLastEditDateDesc;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastEditDateBack.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByLastEditDate;
+                    taxisType = TaxisType.OrderByLastEditDate;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByHits;
+                    taxisType = TaxisType.OrderByHits;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByDay.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByHitsByDay;
+                    taxisType = TaxisType.OrderByHitsByDay;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByWeek.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByHitsByWeek;
+                    taxisType = TaxisType.OrderByHitsByWeek;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByMonth.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByHitsByMonth;
+                    taxisType = TaxisType.OrderByHitsByMonth;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderRandom.ToLower()))
                 {
-                    taxisType = ETaxisType.OrderByRandom;
+                    taxisType = TaxisType.OrderByRandom;
                 }
                 else
                 {

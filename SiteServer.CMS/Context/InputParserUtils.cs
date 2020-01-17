@@ -1,4 +1,5 @@
 ﻿using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.Abstractions;
 
 
@@ -26,7 +27,7 @@ namespace SiteServer.CMS.Context
             {
                 return
                     $@"isValidate=""{true.ToString().ToLower()}"" displayName=""{displayName}"" isRequire=""{isRequire
-                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{validateType.Value}"" regExp=""{regExp}"" errorMessage=""{errorMessage}""";
+                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{validateType.GetValue()}"" regExp=""{regExp}"" errorMessage=""{errorMessage}""";
             }
             return string.Empty;
         }
@@ -40,7 +41,7 @@ namespace SiteServer.CMS.Context
             control.Attributes.Add("isRequire", isRequire.ToString().ToLower());
             control.Attributes.Add("minNum", minNum.ToString());
             control.Attributes.Add("maxNum", maxNum.ToString());
-            control.Attributes.Add("validateType", validateType.Value);
+            control.Attributes.Add("validateType", validateType.GetValue());
             control.Attributes.Add("regExp", regExp);
             control.Attributes.Add("errorMessage", errorMessage);
             control.Attributes.Add("isListItem", true.ToString().ToLower());

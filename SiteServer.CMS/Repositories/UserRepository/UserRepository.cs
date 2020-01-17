@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Microsoft.Extensions.Caching.Distributed;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context.Enumerations;
@@ -27,6 +26,12 @@ namespace SiteServer.CMS.Repositories
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
+        private static class Attr
+        {
+            public const string IsChecked = nameof(IsChecked);
+            public const string IsLockedOut = nameof(IsLockedOut);
+        }
+
         private async Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string email, string mobile, string password, string ipAddress)
         {
             var config = await DataProvider.ConfigRepository.GetAsync();
@@ -42,9 +47,9 @@ namespace SiteServer.CMS.Repositories
             {
                 return (false, $"密码长度必须大于等于{config.UserPasswordMinLength}");
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, config.UserPasswordRestriction))
+            if (!PasswordRestrictionUtils.IsValid(password, config.UserPasswordRestriction))
             {
-                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(config.UserPasswordRestriction))}");
+                return (false, $"密码不符合规则，请包含{config.UserPasswordRestriction.GetDisplayName()}");
             }
             if (string.IsNullOrEmpty(userName))
             {
@@ -145,12 +150,12 @@ namespace SiteServer.CMS.Repositories
                 }
 
                 var passwordSalt = GenerateSalt();
-                password = EncodePassword(password, EPasswordFormat.Encrypted, passwordSalt);
+                password = EncodePassword(password, PasswordFormat.Encrypted, passwordSalt);
                 user.CreateDate = DateTime.Now;
                 user.LastActivityDate = DateTime.Now;
                 user.LastResetPasswordDate = DateTime.Now;
 
-                user.Id = await InsertWithoutValidationAsync(user, password, EPasswordFormat.Encrypted, passwordSalt);
+                user.Id = await InsertWithoutValidationAsync(user, password, PasswordFormat.Encrypted, passwordSalt);
 
                 await CacheIpAddressAsync(ipAddress);
 
@@ -162,14 +167,14 @@ namespace SiteServer.CMS.Repositories
             }
         }
 
-        private async Task<int> InsertWithoutValidationAsync(User user, string password, EPasswordFormat passwordFormat, string passwordSalt)
+        private async Task<int> InsertWithoutValidationAsync(User user, string password, PasswordFormat passwordFormat, string passwordSalt)
         {
             user.CreateDate = DateTime.Now;
             user.LastActivityDate = DateTime.Now;
             user.LastResetPasswordDate = DateTime.Now;
 
             user.Password = password;
-            user.PasswordFormat = EPasswordFormatUtils.GetValue(passwordFormat);
+            user.PasswordFormat = passwordFormat;
             user.PasswordSalt = passwordSalt;
 
             user.Id = await _repository.InsertAsync(user);
@@ -188,9 +193,9 @@ namespace SiteServer.CMS.Repositories
             {
                 return (false, $"密码长度必须大于等于{config.UserPasswordMinLength}");
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, config.UserPasswordRestriction))
+            if (!PasswordRestrictionUtils.IsValid(password, config.UserPasswordRestriction))
             {
-                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(config.UserPasswordRestriction))}");
+                return (false, $"密码不符合规则，请包含{config.UserPasswordRestriction.GetDisplayName()}");
             }
             return (true, string.Empty);
         }
@@ -260,15 +265,15 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        private static string EncodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
+        private static string EncodePassword(string password, PasswordFormat passwordFormat, string passwordSalt)
         {
             var retVal = string.Empty;
 
-            if (passwordFormat == EPasswordFormat.Clear)
+            if (passwordFormat == PasswordFormat.Clear)
             {
                 retVal = password;
             }
-            else if (passwordFormat == EPasswordFormat.Hashed)
+            else if (passwordFormat == PasswordFormat.Hashed)
             {
                 var src = Encoding.Unicode.GetBytes(password);
                 var buffer2 = Convert.FromBase64String(passwordSalt);
@@ -281,7 +286,7 @@ namespace SiteServer.CMS.Repositories
 
                 if (inArray != null) retVal = Convert.ToBase64String(inArray);
             }
-            else if (passwordFormat == EPasswordFormat.Encrypted)
+            else if (passwordFormat == PasswordFormat.Encrypted)
             {
                 var des = new DesEncryptor
                 {
@@ -295,18 +300,18 @@ namespace SiteServer.CMS.Repositories
             return retVal;
         }
 
-        private static string DecodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
+        private static string DecodePassword(string password, PasswordFormat passwordFormat, string passwordSalt)
         {
             var retVal = string.Empty;
-            if (passwordFormat == EPasswordFormat.Clear)
+            if (passwordFormat == PasswordFormat.Clear)
             {
                 retVal = password;
             }
-            else if (passwordFormat == EPasswordFormat.Hashed)
+            else if (passwordFormat == PasswordFormat.Hashed)
             {
                 throw new Exception("can not decode hashed password");
             }
-            else if (passwordFormat == EPasswordFormat.Encrypted)
+            else if (passwordFormat == PasswordFormat.Encrypted)
             {
                 var des = new DesEncryptor
                 {
@@ -334,18 +339,18 @@ namespace SiteServer.CMS.Repositories
             {
                 return (false, $"密码长度必须大于等于{config.UserPasswordMinLength}");
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, config.UserPasswordRestriction))
+            if (!PasswordRestrictionUtils.IsValid(password, config.UserPasswordRestriction))
             {
-                return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(config.UserPasswordRestriction))}");
+                return (false, $"密码不符合规则，请包含{config.UserPasswordRestriction.GetDisplayName()}");
             }
 
             var passwordSalt = GenerateSalt();
-            password = EncodePassword(password, EPasswordFormat.Encrypted, passwordSalt);
-            await ChangePasswordAsync(userName, EPasswordFormat.Encrypted, passwordSalt, password);
+            password = EncodePassword(password, PasswordFormat.Encrypted, passwordSalt);
+            await ChangePasswordAsync(userName, PasswordFormat.Encrypted, passwordSalt, password);
             return (true, string.Empty);
         }
 
-        private async Task ChangePasswordAsync(string userName, EPasswordFormat passwordFormat, string passwordSalt, string password)
+        private async Task ChangePasswordAsync(string userName, PasswordFormat passwordFormat, string passwordSalt, string password)
         {
             var user = await GetByUserNameAsync(userName);
             if (user == null) return;
@@ -354,7 +359,7 @@ namespace SiteServer.CMS.Repositories
 
             await _repository.UpdateAsync(Q
                 .Set(nameof(User.Password), password)
-                .Set(nameof(User.PasswordFormat), EPasswordFormatUtils.GetValue(passwordFormat))
+                .Set(nameof(User.PasswordFormat), passwordFormat.GetValue())
                 .Set(nameof(User.PasswordSalt), passwordSalt)
                 .Set(nameof(User.LastResetPasswordDate), user.LastResetPasswordDate)
                 .Where(nameof(User.Id), user.Id)
@@ -374,7 +379,7 @@ namespace SiteServer.CMS.Repositories
             }
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(User.IsChecked), true.ToString())
+                .Set(Attr.IsChecked, true.ToString())
                 .WhereIn(nameof(User.Id), idList)
                 .CachingRemove(cacheKeys.ToArray())
             );
@@ -390,7 +395,7 @@ namespace SiteServer.CMS.Repositories
             }
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(User.IsLockedOut), true.ToString())
+                .Set(Attr.IsLockedOut, true.ToString())
                 .WhereIn(nameof(User.Id), idList)
                 .CachingRemove(cacheKeys.ToArray())
             );
@@ -406,7 +411,7 @@ namespace SiteServer.CMS.Repositories
             }
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(User.IsLockedOut), false.ToString())
+                .Set(Attr.IsLockedOut, false.ToString())
                 .Set(nameof(User.CountOfFailedLogin), 0)
                 .WhereIn(nameof(User.Id), idList)
                 .CachingRemove(cacheKeys.ToArray())
@@ -452,12 +457,12 @@ namespace SiteServer.CMS.Repositories
         public async Task<IEnumerable<int>> GetIdListAsync(bool isChecked)
         {
             return await _repository.GetAllAsync<int>(Q
-                .Where(nameof(User.IsChecked), isChecked.ToString())
+                .Where(Attr.IsChecked, isChecked.ToString())
                 .OrderByDesc(nameof(User.Id))
             );
         }
 
-        public bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, EPasswordFormat passwordFormat, string passwordSalt)
+        public bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, PasswordFormat passwordFormat, string passwordSalt)
         {
             var decodePassword = DecodePassword(dbPassword, passwordFormat, passwordSalt);
             if (isPasswordMd5)
@@ -501,12 +506,12 @@ namespace SiteServer.CMS.Repositories
             {
                 if (user.CountOfFailedLogin > 0 && user.CountOfFailedLogin >= config.UserLockLoginCount)
                 {
-                    var lockType = EUserLockTypeUtils.GetEnumType(config.UserLockLoginType);
-                    if (lockType == EUserLockType.Forever)
+                    var lockType = TranslateUtils.ToEnum(config.UserLockLoginType, LockType.Hours);
+                    if (lockType == LockType.Forever)
                     {
                         return (null, user.UserName, "此账号错误登录次数过多，已被永久锁定");
                     }
-                    if (lockType == EUserLockType.Hours && user.LastActivityDate.HasValue)
+                    if (lockType == LockType.Hours && user.LastActivityDate.HasValue)
                     {
                         var ts = new TimeSpan(DateTime.Now.Ticks - user.LastActivityDate.Value.Ticks);
                         var hours = Convert.ToInt32(config.UserLockLoginHours - ts.TotalHours);
@@ -520,7 +525,7 @@ namespace SiteServer.CMS.Repositories
 
             var userEntity = await _repository.GetAsync(user.Id);
 
-            if (!CheckPassword(password, isPasswordMd5, userEntity.Password, EPasswordFormatUtils.GetEnumType(userEntity.PasswordFormat), userEntity.PasswordSalt))
+            if (!CheckPassword(password, isPasswordMd5, userEntity.Password, userEntity.PasswordFormat, userEntity.PasswordSalt))
             {
                 await DataProvider.UserRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(user);
                 await LogUtils.AddUserLogAsync(userEntity.UserName, "用户登录失败", "帐号或密码错误");
@@ -615,7 +620,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
             if (state != ETriState.All)
             {
-                query.Where(nameof(User.IsChecked), state.ToString());
+                query.Where(Attr.IsChecked, state.ToString());
             }
 
             if (dayOfLastActivity > 0)
@@ -675,7 +680,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             return await _repository.CountAsync(query);
         }
 
-        public async Task<IEnumerable<User>> GetUsersAsync(ETriState state, int groupId, int dayOfLastActivity, string keyword, string order, int offset, int limit)
+        public async Task<List<User>> GetUsersAsync(ETriState state, int groupId, int dayOfLastActivity, string keyword, string order, int offset, int limit)
         {
             var query = GetQuery(state, groupId, dayOfLastActivity, keyword, order);
             query.Offset(offset).Limit(limit);

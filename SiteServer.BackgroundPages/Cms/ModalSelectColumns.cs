@@ -44,10 +44,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var styleList = ContentUtility.GetAllTableStyleList(TableStyleManager.GetContentStyleListAsync(Site, channelInfo).GetAwaiter().GetResult());
+            var styleList = ContentUtility.GetAllTableStyleList(DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, channelInfo).GetAwaiter().GetResult());
             foreach (var style in styleList)
             {
-                if (style.Type == InputType.TextEditor) continue;
+                if (style.InputType == InputType.TextEditor) continue;
                 
                 var listitem = new ListItem($"{style.DisplayName}({style.AttributeName})", style.AttributeName);
                 if (style.AttributeName == ContentAttribute.Title)

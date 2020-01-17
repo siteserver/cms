@@ -89,7 +89,7 @@ var methods = {
   submit: function (item) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post({
       isHomeClosed: $this.isHomeClosed,
       homeTitle: $this.homeTitle,
@@ -101,7 +101,7 @@ var methods = {
       isHomeAgreement: $this.isHomeAgreement,
       homeAgreementHtml: $this.homeAgreementHtml
     }, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',

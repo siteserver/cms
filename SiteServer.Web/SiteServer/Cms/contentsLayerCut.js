@@ -48,12 +48,12 @@ var methods = {
     this.site = site;
     var $this = this;
 
-    parent.utils.loading(true);
+    parent.utils.loading($this, true);
     $apiChannels.get({
         siteId: this.site.id
       },
       function (err, res) {
-        parent.utils.loading(false);
+        parent.utils.loading($this, false);
         if (err || !res || !res.value) return;
 
         $this.channels = res.value;
@@ -71,7 +71,7 @@ var methods = {
     this.isSubmit = true;
     if (!this.channel) return;
 
-    parent.utils.loading(true);
+    parent.utils.loading($this, true);
     $api.post({
         siteId: $this.siteId,
         channelId: $this.channelId,

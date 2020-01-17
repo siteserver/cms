@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
@@ -120,7 +121,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ELinkTypeUtilsExtensions.AddListItems(DdlLinkType);
 
                 ETaxisTypeUtilsExtensions.AddListItemsForChannelEdit(DdlTaxisType);
-                ControlUtils.SelectSingleItem(DdlTaxisType, ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc));
+                ControlUtils.SelectSingleItem(DdlTaxisType, TaxisType.OrderByTaxisDesc.GetValue());
 
                 ControlUtils.AddListControlItems(CblNodeGroupNameCollection, DataProvider.ChannelGroupRepository.GetGroupNameListAsync(SiteId).GetAwaiter().GetResult());
                 //CblNodeGroupNameCollection.DataSource = DataProvider.ChannelGroupRepository.GetDataSource(SiteId);
@@ -200,8 +201,8 @@ namespace SiteServer.BackgroundPages.Cms
                 var keywords = TbKeywords.Text;
                 var description = TbDescription.Text;
                 var linkUrl = TbLinkUrl.Text;
-                var linkType = DdlLinkType.SelectedValue;
-                var defaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
+                var linkType = TranslateUtils.ToEnum(DdlLinkType.SelectedValue, LinkType.None);
+                var defaultTaxisType = TranslateUtils.ToEnum(DdlTaxisType.SelectedValue, TaxisType.OrderByTaxisDesc);
                 var channelTemplateId = DdlChannelTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue) : 0;
                 var contentTemplateId = DdlContentTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue) : 0;
 
@@ -273,7 +274,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 var parentChannelInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
-                var styleList = TableStyleManager.GetChannelStyleListAsync(parentChannelInfo).GetAwaiter().GetResult();
+                var styleList = DataProvider.TableStyleRepository.GetChannelStyleListAsync(parentChannelInfo).GetAwaiter().GetResult();
                 var extendedAttributes = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleList, Request.Form, null).GetAwaiter().GetResult();
                 foreach (var extendedAttribute in extendedAttributes)
                 {

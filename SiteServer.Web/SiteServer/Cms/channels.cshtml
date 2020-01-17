@@ -101,6 +101,8 @@
     node-key="value"
     draggable
     show-checkbox
+    check-on-click-node
+    check-strictly
     highlight-current
     :allow-drop="allowDrop"
     :allow-drag="allowDrag"
@@ -189,12 +191,8 @@
       <br />
       <el-form-item label="">
         栏目模板：<el-select v-model="appendForm.channelTemplateId" size="mini" placeholder="选择栏目模板">
-          <el-option label="<默认>" :value="0">
-
-          </el-option>
-          <el-option v-for="channelTemplate in channelTemplates" :key="channelTemplate.id" :label="channelTemplate.templateName" :value="channelTemplate.id">
-
-          </el-option>
+          <el-option label="<默认>" :value="0"></el-option>
+          <el-option v-for="channelTemplate in channelTemplates" :key="channelTemplate.id" :label="channelTemplate.templateName" :value="channelTemplate.id"></el-option>
         </el-select>
         内容模板：<el-select v-model="appendForm.contentTemplateId" size="mini" placeholder="选择内容模板">
           <el-option label="<默认>" :value="0"></el-option>

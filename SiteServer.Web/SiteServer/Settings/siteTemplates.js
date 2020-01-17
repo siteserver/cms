@@ -29,7 +29,7 @@ var methods = {
       $this.siteTemplateUrl = res.siteTemplateUrl;
       $this.siteAddPermission = res.siteAddPermission;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -50,7 +50,7 @@ var methods = {
   btnZipClick: function(row) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '/actions/zip', {
       directoryName: row.directoryName
     }).then(function (response) {
@@ -60,9 +60,9 @@ var methods = {
 
       row.fileExists = true;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
@@ -81,7 +81,7 @@ var methods = {
   apiDelete: function (row) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.delete($url, {
       data: {
         directoryName: row.directoryName
@@ -93,16 +93,16 @@ var methods = {
 
       $this.siteTemplateInfoList.splice($this.siteTemplateInfoList.indexOf(row.directoryName), 1);
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
   btnUnZipClick: function(row) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '/actions/unZip', {
       fileName: row
     }).then(function (response) {
@@ -116,9 +116,9 @@ var methods = {
       $this.siteTemplateInfoList = res.siteTemplateInfoList;
       $this.fileNameList = res.fileNameList;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
@@ -141,7 +141,7 @@ var methods = {
   apiDeleteFile: function (row) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.delete($url, {
       data: {
         fileName: row
@@ -153,9 +153,9 @@ var methods = {
 
       $this.fileNameList.splice($this.fileNameList.indexOf(row), 1);
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
@@ -172,11 +172,11 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(true)
+    utils.loading(this, true);
   },
 
   uploadSuccess: function(res, file) {
-    utils.loading(false);
+    utils.loading($this, false);
     this.siteTemplateInfoList = res.siteTemplateInfoList;
     this.fileNameList = res.fileNameList;
     this.siteTemplateUrl = res.siteTemplateUrl;
@@ -185,7 +185,7 @@ var methods = {
   },
 
   uploadError: function(err) {
-    utils.loading(false);
+    utils.loading($this, false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }

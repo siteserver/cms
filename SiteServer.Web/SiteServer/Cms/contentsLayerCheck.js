@@ -54,7 +54,7 @@ var methods = {
   btnSubmitClick: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post({
       siteId: $this.siteId,
       channelId: $this.channelId,

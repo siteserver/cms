@@ -321,13 +321,13 @@ namespace SiteServer.CMS.Core
                 },
                 new TableStyle
                 {
-                    AttributeName = nameof(Content.GroupNameCollection),
+                    AttributeName = ContentAttribute.GroupNameCollection,
                     DisplayName = "内容组",
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
-                    AttributeName = nameof(Content.Tags),
+                    AttributeName = ContentAttribute.Tags,
                     DisplayName = "标签",
                     Taxis = taxis++
                 },
@@ -415,31 +415,31 @@ namespace SiteServer.CMS.Core
                 new TableStyle
                 {
                     AttributeName = ContentAttribute.Title,
-                    Type = InputType.Text,
+                    InputType = InputType.Text,
                     DisplayName = "标题"
                 },
                 new TableStyle
                 {
                     AttributeName = ContentAttribute.LinkUrl,
-                    Type = InputType.Text,
+                    InputType = InputType.Text,
                     DisplayName = "外部链接"
                 },
                 new TableStyle
                 {
                     AttributeName = ContentAttribute.AddDate,
-                    Type = InputType.DateTime,
+                    InputType = InputType.DateTime,
                     DisplayName = "添加时间"
                 },
                 new TableStyle
                 {
                     AttributeName = ContentAttribute.GroupNameCollection,
-                    Type = InputType.CheckBox,
+                    InputType = InputType.CheckBox,
                     DisplayName = "内容组"
                 },
                 new TableStyle
                 {
                     AttributeName = ContentAttribute.Tags,
-                    Type = InputType.CheckBox,
+                    InputType = InputType.CheckBox,
                     DisplayName = "标签"
                 }
             };
@@ -459,15 +459,15 @@ namespace SiteServer.CMS.Core
             {
                 var targetSiteId = 0;
 
-                if (channel.TransType == ECrossSiteTransType.SpecifiedSite)
+                if (channel.TransType == TransType.SpecifiedSite)
                 {
                     targetSiteId = channel.TransSiteId;
                 }
-                else if (channel.TransType == ECrossSiteTransType.SelfSite)
+                else if (channel.TransType == TransType.SelfSite)
                 {
                     targetSiteId = site.Id;
                 }
-                else if (channel.TransType == ECrossSiteTransType.ParentSite)
+                else if (channel.TransType == TransType.ParentSite)
                 {
                     targetSiteId = await DataProvider.SiteRepository.GetParentSiteIdAsync(site.Id);
                 }
@@ -505,7 +505,7 @@ namespace SiteServer.CMS.Core
             return isTranslated;
         }
 
-        public static async Task TranslateAsync(Site site, int channelId, int contentId, string translateCollection, ETranslateContentType translateType, string administratorName)
+        public static async Task TranslateAsync(Site site, int channelId, int contentId, string translateCollection, TranslateContentType translateType, string administratorName)
         {
             var translateList = StringUtils.GetStringList(translateCollection);
             foreach (var translate in translateList)
@@ -543,7 +543,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static async Task TranslateAsync(Site site, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType)
+        public static async Task TranslateAsync(Site site, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType)
         {
             if (site == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
@@ -557,14 +557,14 @@ namespace SiteServer.CMS.Core
 
             if (contentInfo == null) return;
 
-            if (translateType == ETranslateContentType.Copy)
+            if (translateType == TranslateContentType.Copy)
             {
                 FileUtility.MoveFileByContentInfo(site, targetSite, contentInfo);
 
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
-                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy);
+                contentInfo.TranslateContentType = TranslateContentType.Copy;
                 var theContentId = await DataProvider.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var service in await PluginManager.GetServicesAsync())
@@ -582,14 +582,14 @@ namespace SiteServer.CMS.Core
                 await CreateManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, theContentId);
                 await CreateManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
             }
-            else if (translateType == ETranslateContentType.Cut)
+            else if (translateType == TranslateContentType.Cut)
             {
                 FileUtility.MoveFileByContentInfo(site, targetSite, contentInfo);
 
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
-                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.Cut);
+                contentInfo.TranslateContentType = TranslateContentType.Cut;
 
                 var newContentId = await DataProvider.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
@@ -612,7 +612,7 @@ namespace SiteServer.CMS.Core
                 await CreateManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, newContentId);
                 await CreateManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
             }
-            else if (translateType == ETranslateContentType.Reference)
+            else if (translateType == TranslateContentType.Reference)
             {
                 if (contentInfo.ReferenceId != 0) return;
 
@@ -620,14 +620,14 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.Reference);
-                //content.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
+                contentInfo.TranslateContentType = TranslateContentType.Reference;
+                //content.Attributes.Add(ContentAttribute.TranslateContentType, TranslateContentType.Reference.ToString());
                 int theContentId = await DataProvider.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 await CreateManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, theContentId);
                 await CreateManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
             }
-            else if (translateType == ETranslateContentType.ReferenceContent)
+            else if (translateType == TranslateContentType.ReferenceContent)
             {
                 if (contentInfo.ReferenceId != 0) return;
 
@@ -637,7 +637,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.ReferenceContent);
+                contentInfo.TranslateContentType = TranslateContentType.ReferenceContent;
                 var theContentId = await DataProvider.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var service in await PluginManager.GetServicesAsync())
@@ -826,7 +826,7 @@ $('#TbTags').keyup(function (e) {
 
             //引用链接，不需要生成内容页；引用内容，需要生成内容页；
             if (content.ReferenceId > 0 &&
-                !ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, content.TranslateContentType))
+                TranslateContentType.ReferenceContent != content.TranslateContentType)
             {
                 return false;
             }

@@ -81,11 +81,11 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.Tags))
             {
-                value = content.Tags;
+                value = TranslateUtils.ObjectCollectionToString(content.TagNames);
             }
             else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.GroupNameCollection))
             {
-                value = content.GroupNameCollection;
+                value = TranslateUtils.ObjectCollectionToString(content.GroupNames);
             }
             else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.Hits))
             {

@@ -151,13 +151,13 @@ var methods = {
       return;
     }
 
-    utils.loading(true);
+    utils.loading($this, true);
     var $this = this;
 
     $api.getAt(this.site.id, {
       roleId: $roleId
     }, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err || !res || !res.value) return;
 
       $this.site.permissionInfo = $this.getPermissionInfo(res);
@@ -247,7 +247,7 @@ var methods = {
 
   apiSubmit: function () {
     var $this = this;
-    utils.loading(true);
+    utils.loading($this, true);
 
     var sitePermissions = [];
     for (var i = 0; i < this.siteList.length; i++){
@@ -269,7 +269,7 @@ var methods = {
         generalPermissions: this.checkedPermissions,
         sitePermissions: sitePermissions
       }, function (err, res) {
-        utils.loading(false);
+        utils.loading($this, false);
         if (err) {
           $this.pageAlert = {
             type: 'danger',
@@ -293,7 +293,7 @@ var methods = {
         generalPermissions: this.checkedPermissions,
         sitePermissions: sitePermissions
       }, function (err, res) {
-        utils.loading(false);
+        utils.loading($this, false);
         if (err) {
           $this.pageAlert = {
             type: 'danger',

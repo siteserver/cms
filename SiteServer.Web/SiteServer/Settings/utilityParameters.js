@@ -15,7 +15,7 @@ var methods = {
 
       $this.parameters = res.value;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });

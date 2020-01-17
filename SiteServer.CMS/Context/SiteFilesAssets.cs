@@ -205,8 +205,7 @@ namespace SiteServer.CMS.Context
 
         public static class Print
         {
-            public const string JsUtf8 = "scripts/print_uft8.js";
-            public const string JsGb2312 = "scripts/print.js";
+            public const string Js = "scripts/print_uft8.js";
             public const string IconUrl = "Icons/print";
         }
 

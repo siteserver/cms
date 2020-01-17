@@ -47,13 +47,13 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var contentInfo = DataProvider.ContentRepository.GetAsync(Site, channelInfo, contentId).GetAwaiter().GetResult();
                 
-                var tagList = StringUtils.GetStringList(contentInfo.Tags, ' ');
+                var tagList = contentInfo.TagNames;
                 if (tagList.Contains(_tag))
                 {
                     tagList.Remove(_tag);
                 }
 
-                contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagList, " ");
+                contentInfo.TagNames = tagList;
                 DataProvider.ContentRepository.UpdateAsync(Site, channelInfo, contentInfo).GetAwaiter().GetResult();
 
                 ContentTagUtils.RemoveTagsAsync(SiteId, contentId).GetAwaiter().GetResult();

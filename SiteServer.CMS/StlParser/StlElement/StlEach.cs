@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 

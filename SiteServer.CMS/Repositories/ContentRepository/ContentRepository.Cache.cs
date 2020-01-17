@@ -20,7 +20,7 @@ namespace SiteServer.CMS.Repositories
             var pluginIds = PluginContentManager.GetContentPluginIds(channel);
             var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
-            var styleList = ContentUtility.GetAllTableStyleList(await TableStyleManager.GetContentStyleListAsync(site, channel));
+            var styleList = ContentUtility.GetAllTableStyleList(await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channel));
 
             styleList.Insert(0, new TableStyle
             {
@@ -30,13 +30,13 @@ namespace SiteServer.CMS.Repositories
 
             foreach (var style in styleList)
             {
-                if (!includeAll && style.Type == InputType.TextEditor) continue;
+                if (!includeAll && style.InputType == InputType.TextEditor) continue;
 
                 var column = new ContentColumn
                 {
                     AttributeName = style.AttributeName,
                     DisplayName = style.DisplayName,
-                    InputType = style.Type
+                    InputType = style.InputType
                 };
                 if (style.AttributeName == ContentAttribute.Title)
                 {

@@ -274,7 +274,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 }
                 else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
                 {
-                    tableColumnInfo.AttributeName = nameof(Abstractions.Content.GroupNameCollection);
+                    tableColumnInfo.AttributeName = ContentAttribute.GroupNameCollection;
                 }
 
                 if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
@@ -302,7 +302,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 {nameof(Abstractions.Content.ChannelId), nameof(NodeId)},
                 {nameof(Abstractions.Content.SiteId), nameof(PublishmentSystemId)},
-                {nameof(Abstractions.Content.GroupNameCollection), nameof(ContentGroupNameCollection)}
+                {ContentAttribute.GroupNameCollection, nameof(ContentGroupNameCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

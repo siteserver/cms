@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;

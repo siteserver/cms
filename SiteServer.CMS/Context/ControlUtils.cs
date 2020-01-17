@@ -375,6 +375,24 @@ namespace SiteServer.CMS.Context
 			return builder.ToString();
 		}
 
+        public static List<string> SelectedItemsValueToStringList(ListItemCollection items)
+        {
+            var builder = new StringBuilder();
+            if (items != null)
+            {
+                foreach (ListItem item in items)
+                {
+                    if (item.Selected)
+                    {
+                        builder.Append(item.Value).Append(",");
+                    }
+                }
+                if (builder.Length != 0)
+                    builder.Remove(builder.Length - 1, 1);
+            }
+            return StringUtils.GetStringList(builder.ToString());
+        }
+
         public static Control FindControlBySelfAndChildren(string id, Control baseControl)
         {
             Control ctrl = null;

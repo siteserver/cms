@@ -102,7 +102,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             if (contextInfo.ContextType == EContextType.Content && contentInfo != null)
             {
                 var tagInfoList2 = new List<ContentTag>();
-                var tagNameList = StringUtils.GetStringList(contentInfo.Tags.Trim().Replace(" ", ","));
+                var tagNameList = contentInfo.TagNames;
                 foreach (var tagName in tagNameList)
                 {
                     if (!string.IsNullOrEmpty(tagName))

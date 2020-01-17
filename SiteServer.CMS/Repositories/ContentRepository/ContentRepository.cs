@@ -9,14 +9,13 @@ using Dapper;
 using Datory;
 using Microsoft.Extensions.Caching.Distributed;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SqlKata;
-using ETaxisType = SiteServer.Abstractions.ETaxisType;
+using TaxisType = SiteServer.Abstractions.TaxisType;
 using ETaxisTypeUtils = SiteServer.Abstractions.ETaxisTypeUtils;
 
 namespace SiteServer.CMS.Repositories
@@ -25,7 +24,7 @@ namespace SiteServer.CMS.Repositories
     {
         private const int TaxisIsTopStartValue = 2000000000;
 
-        private static string MinListColumns { get; } = $"{nameof(Content.Id)}, {nameof(Content.ChannelId)}, {nameof(Content.IsTop)}, {nameof(Content.AddDate)}, {nameof(Content.LastEditDate)}, {nameof(Content.Taxis)}, {nameof(Content.Hits)}, {nameof(Content.HitsByDay)}, {nameof(Content.HitsByWeek)}, {nameof(Content.HitsByMonth)}";
+        private static string MinListColumns { get; } = $"{nameof(Content.Id)}, {nameof(Content.ChannelId)}, {ContentAttribute.IsTop}, {nameof(Content.AddDate)}, {nameof(Content.LastEditDate)}, {nameof(Content.Taxis)}, {nameof(Content.Hits)}, {nameof(Content.HitsByDay)}, {nameof(Content.HitsByWeek)}, {nameof(Content.HitsByMonth)}";
 
         public static string GetContentTableName(int siteId)
         {
@@ -115,7 +114,7 @@ namespace SiteServer.CMS.Repositories
             foreach (var contentId in contentIdList)
             {
                 var settingsXml = await repository.GetAsync<string>(Q
-                    .Select(nameof(Content.SettingsXml))
+                    .Select(ContentAttribute.SettingsXml)
                     .Where(nameof(Content.Id), contentId)
                 );
 
@@ -130,9 +129,9 @@ namespace SiteServer.CMS.Repositories
                 if (translateChannelId > 0)
                 {
                     await repository.UpdateAsync(Q
-                        .Set(nameof(Content.IsChecked), isChecked.ToString())
+                        .Set(ContentAttribute.IsChecked, isChecked.ToString())
                         .Set(nameof(Content.CheckedLevel), checkedLevel)
-                        .Set(nameof(Content.SettingsXml), settingsXml)
+                        .Set(ContentAttribute.SettingsXml, settingsXml)
                         .Set(nameof(Content.ChannelId), translateChannelId)
                         .Where(nameof(Content.Id), contentId)
                     );
@@ -140,9 +139,9 @@ namespace SiteServer.CMS.Repositories
                 else
                 {
                     await repository.UpdateAsync(Q
-                        .Set(nameof(Content.IsChecked), isChecked.ToString())
+                        .Set(ContentAttribute.IsChecked, isChecked.ToString())
                         .Set(nameof(Content.CheckedLevel), checkedLevel)
-                        .Set(nameof(Content.SettingsXml), settingsXml)
+                        .Set(ContentAttribute.SettingsXml, settingsXml)
                         .Where(nameof(Content.Id), contentId)
                     );
                 }
@@ -313,7 +312,7 @@ namespace SiteServer.CMS.Repositories
             {
                 await repository.UpdateAsync(Q
                     .Set(nameof(Content.Taxis), taxis++)
-                    .Set(nameof(Content.IsTop), isTop)
+                    .Set(ContentAttribute.IsTop, isTop)
                     .Where(nameof(Content.Id), id)
                     .CachingRemove(GetCacheKey(tableName, id))
                 );
@@ -329,12 +328,21 @@ namespace SiteServer.CMS.Repositories
                 .Where(ContentAttribute.Id, contentId)
             );
 
-            var result = await repository.GetAsync<(int HigherId, int HigherTaxis)?>(Q
+            var query = Q
                 .Select(ContentAttribute.Id, ContentAttribute.Taxis)
                 .Where(ContentAttribute.ChannelId, channelId)
                 .Where(ContentAttribute.Taxis, ">", taxis)
-                .Where(ContentAttribute.Taxis, isTop ? ">=" : "<", TaxisIsTopStartValue)
-                .OrderBy(ContentAttribute.Taxis));
+                .OrderBy(ContentAttribute.Taxis);
+            if (isTop)
+            {
+                query.Where(ContentAttribute.IsTop, true.ToString());
+            }
+            else
+            {
+                query.WhereNot(ContentAttribute.IsTop, true.ToString());
+            }
+
+            var result = await repository.GetAsync<(int HigherId, int HigherTaxis)?>(query);
 
             var higherId = 0;
             var higherTaxis = 0;
@@ -370,12 +378,21 @@ namespace SiteServer.CMS.Repositories
                 .Where(ContentAttribute.Id, contentId)
             );
 
-            var result = await repository.GetAsync<(int LowerId, int LowerTaxis)?>(Q
+            var query = Q
                 .Select(ContentAttribute.Id, ContentAttribute.Taxis)
                 .Where(ContentAttribute.ChannelId, channelId)
                 .Where(ContentAttribute.Taxis, "<", taxis)
-                .Where(ContentAttribute.Taxis, isTop ? ">=" : "<", TaxisIsTopStartValue)
-                .OrderByDesc(ContentAttribute.Taxis));
+                .OrderByDesc(ContentAttribute.Taxis);
+            if (isTop)
+            {
+                query.Where(ContentAttribute.IsTop, true.ToString());
+            }
+            else
+            {
+                query.WhereNot(ContentAttribute.IsTop, true.ToString());
+            }
+
+            var result = await repository.GetAsync<(int LowerId, int LowerTaxis)?>(query);
 
             var lowerId = 0;
             var lowerTaxis = 0;
@@ -456,7 +473,7 @@ namespace SiteServer.CMS.Repositories
                 content.GroupNames = list;
                 
                 await repository.UpdateAsync(Q
-                    .Set(ContentAttribute.GroupNameCollection, content.GroupNameCollection)
+                    .Set(ContentAttribute.GroupNameCollection, TranslateUtils.ObjectCollectionToString(content.GroupNames))
                     .Where(nameof(Content.Id), contentId)
                     .CachingRemove(GetCacheKey(tableName, contentId))
                 );
@@ -524,7 +541,7 @@ namespace SiteServer.CMS.Repositories
 
             if (checkedState != ETriState.All)
             {
-                query.Where(nameof(Content.IsChecked), ETriStateUtils.GetValue(checkedState));
+                query.Where(ContentAttribute.IsChecked, ETriStateUtils.GetValue(checkedState));
             }
 
             return await repository.GetAllAsync<int>(query);
@@ -537,7 +554,7 @@ namespace SiteServer.CMS.Repositories
                 .Select(ContentAttribute.Id)
                 .Where(ContentAttribute.SiteId, siteId)
                 .Where(ContentAttribute.ChannelId, channelId)
-                .Where(nameof(Content.IsChecked), true.ToString())
+                .Where(ContentAttribute.IsChecked, true.ToString())
             );
         }
 
@@ -603,58 +620,6 @@ group by tmp.userName";
             }
 
             return null;
-        }
-
-        public async Task<int> InsertAsync(Site site, Channel channel, Content content)
-        {
-            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
-            var taxis = 0;
-            if (content.SourceId == SourceManager.Preview)
-            {
-                channel.IsPreviewContentsExists = true;
-                await DataProvider.ChannelRepository.UpdateAdditionalAsync(channel);
-            }
-            else
-            {
-                if (content.Top)
-                {
-                    taxis = await GetMaxTaxisAsync(tableName, content.ChannelId, true) + 1;
-                }
-                else
-                {
-                    taxis = await GetMaxTaxisAsync(tableName, content.ChannelId, false) + 1;
-                }
-            }
-            return await InsertWithTaxisAsync(site, channel, content, taxis);
-        }
-
-        public async Task<int> InsertPreviewAsync(Site site, Channel channel, Content content)
-        {
-            channel.IsPreviewContentsExists = true;
-            await DataProvider.ChannelRepository.UpdateAdditionalAsync(channel);
-
-            content.SourceId = SourceManager.Preview;
-            return await InsertWithTaxisAsync(site, channel, content, 0);
-        }
-
-        public async Task<int> InsertWithTaxisAsync(Site site, Channel channel, Content content, int taxis)
-        {
-            if (site.IsAutoPageInTextEditor && content.ContainsKey(ContentAttribute.Content))
-            {
-                content.Set(ContentAttribute.Content, ContentUtility.GetAutoPageContent(content.Get<string>(ContentAttribute.Content), site.AutoPageWordNum));
-            }
-
-            content.Taxis = taxis;
-
-            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
-            if (string.IsNullOrEmpty(tableName)) return 0;
-
-            content.LastEditDate = DateTime.Now;
-
-            var repository = GetRepository(tableName);
-            content.Id = await repository.InsertAsync(content);
-
-            return content.Id;
         }
 
         public async Task UpdateAsync(Site site, Channel channel, Content content)
@@ -937,7 +902,7 @@ group by tmp.userName";
 
             if (checkedState != ETriState.All)
             {
-                sqlString += $" AND {nameof(Content.IsChecked)} = '{ETriStateUtils.GetValue(checkedState)}'";
+                sqlString += $" AND {ContentAttribute.IsChecked} = '{ETriStateUtils.GetValue(checkedState)}'";
             }
 
             return DataProvider.DatabaseRepository.GetIntResult(sqlString);
@@ -1011,7 +976,7 @@ group by tmp.userName";
         //{
         //    var list = new List<Content>();
 
-        //    var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} > 0 AND {nameof(Content.IsChecked)} = '{true}'";
+        //    var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} > 0 AND {ContentAttribute.IsChecked} = '{true}'";
         //    if (parameters.ChannelIds.Count > 0)
         //    {
         //        whereString += $" AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ObjectCollectionToString(parameters.ChannelIds)})";
@@ -1049,7 +1014,7 @@ group by tmp.userName";
 
         //            var value = parameters.QueryString[attributeName];
 
-        //            if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.IsChecked)) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
+        //            if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsChecked) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
         //            {
         //                whereString += $" AND {attributeName} = '{TranslateUtils.ToBool(value)}'";
         //            }
@@ -1097,7 +1062,7 @@ group by tmp.userName";
 
             var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
             var channelIdList = await ChannelManager.GetChannelIdListAsync(channelInfo, EScopeType.All, string.Empty, string.Empty, string.Empty);
-            var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND {nameof(Content.IsChecked)} = '{true}'";
+            var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND {ContentAttribute.IsChecked} = '{true}'";
 
             var likeList = StringUtils.GetStringList(StringUtils.TrimAndToLower(like));
             var orderString = GetOrderString(channelInfo, AttackUtils.FilterSql(orderBy), false);
@@ -1113,7 +1078,7 @@ group by tmp.userName";
 
                     var value = queryString[attributeName];
 
-                    if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.IsChecked)) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
+                    if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsChecked) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.IsTop))
                     {
                         whereString += $" AND {attributeName} = '{TranslateUtils.ToBool(value)}'";
                     }
@@ -1364,7 +1329,7 @@ group by tmp.userName";
                 return null;
             }
 
-            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
+            var orderByString = ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByTaxisDesc);
 
             var dateString = string.Empty;
             if (!string.IsNullOrEmpty(dateFrom))
@@ -1532,16 +1497,16 @@ group by tmp.userName";
             if (isCheckOnly)
             {
                 whereList.Add(checkLevel == CheckManager.LevelInt.All
-                    ? $"{nameof(Content.IsChecked)} = '{false}'"
-                    : $"{nameof(Content.IsChecked)} = '{false}' AND {nameof(ContentAttribute.CheckedLevel)} = {checkLevel}");
+                    ? $"{ContentAttribute.IsChecked} = '{false}'"
+                    : $"{ContentAttribute.IsChecked} = '{false}' AND {nameof(ContentAttribute.CheckedLevel)} = {checkLevel}");
             }
             else
             {
                 if (checkLevel != CheckManager.LevelInt.All)
                 {
                     whereList.Add(checkLevel == site.CheckContentLevel
-                        ? $"{nameof(Content.IsChecked)} = '{true}'"
-                        : $"{nameof(Content.IsChecked)} = '{false}' AND {nameof(ContentAttribute.CheckedLevel)} = {checkLevel}");
+                        ? $"{ContentAttribute.IsChecked} = '{true}'"
+                        : $"{ContentAttribute.IsChecked} = '{false}' AND {nameof(ContentAttribute.CheckedLevel)} = {checkLevel}");
                 }
             }
 
@@ -1573,9 +1538,8 @@ group by tmp.userName";
         private string GetOrderString(Channel channel, string orderBy, bool isAllContents)
         {
             return isAllContents
-                ? ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc)
-                : ETaxisTypeUtils.GetContentOrderByString(
-                    ETaxisTypeUtils.GetEnumType(channel.DefaultTaxisType), orderBy);
+                ? ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByIdDesc)
+                : ETaxisTypeUtils.GetContentOrderByString(channel.DefaultTaxisType, orderBy);
         }
 
         private async Task QueryWhereAsync(Query query, Site site, Channel channel, int adminId, bool isAllContents)
@@ -1603,11 +1567,11 @@ group by tmp.userName";
         private void QueryOrder(Query query, Channel channel, string orderBy, bool isAllContents)
         {
             QueryOrder(query, isAllContents
-                    ? ETaxisType.OrderByIdDesc
-                    : ETaxisTypeUtils.GetEnumType(channel.DefaultTaxisType), orderBy);
+                    ? TaxisType.OrderByIdDesc
+                    : channel.DefaultTaxisType, orderBy);
         }
 
-        private void QueryOrder(Query query, ETaxisType taxisType, string orderByString = null)
+        private void QueryOrder(Query query, TaxisType taxisType, string orderByString = null)
         {
             if (!string.IsNullOrEmpty(orderByString))
             {
@@ -1619,63 +1583,63 @@ group by tmp.userName";
                 query.OrderByRaw(orderByString);
             }
 
-            if (taxisType == ETaxisType.OrderById)
+            if (taxisType == TaxisType.OrderById)
             {
-                query.OrderByDesc(nameof(Content.IsTop)).OrderBy(nameof(Content.Id));
+                query.OrderByDesc(ContentAttribute.IsTop).OrderBy(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByIdDesc)
+            else if (taxisType == TaxisType.OrderByIdDesc)
             {
-                query.OrderByDesc(nameof(Content.IsTop), nameof(Content.Id));
+                query.OrderByDesc(ContentAttribute.IsTop, nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByChannelId)
+            else if (taxisType == TaxisType.OrderByChannelId)
             {
-                query.OrderByDesc(nameof(Content.IsTop)).OrderBy(nameof(Content.ChannelId)).OrderByDesc(nameof(Content.Id));
+                query.OrderByDesc(ContentAttribute.IsTop).OrderBy(nameof(Content.ChannelId)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByChannelIdDesc)
+            else if (taxisType == TaxisType.OrderByChannelIdDesc)
             {
-                query.OrderByDesc(nameof(Content.IsTop)).OrderByDesc(nameof(Content.ChannelId)).OrderByDesc(nameof(Content.Id));
+                query.OrderByDesc(ContentAttribute.IsTop).OrderByDesc(nameof(Content.ChannelId)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByAddDate)
+            else if (taxisType == TaxisType.OrderByAddDate)
             {
-                query.OrderByDesc(nameof(Content.IsTop)).OrderBy(nameof(Content.AddDate)).OrderByDesc(nameof(Content.Id));
+                query.OrderByDesc(ContentAttribute.IsTop).OrderBy(nameof(Content.AddDate)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByAddDateDesc)
+            else if (taxisType == TaxisType.OrderByAddDateDesc)
             {
-                query.OrderByDesc(nameof(Content.IsTop)).OrderByDesc(nameof(Content.AddDate)).OrderByDesc(nameof(Content.Id));
+                query.OrderByDesc(ContentAttribute.IsTop).OrderByDesc(nameof(Content.AddDate)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByLastEditDate)
+            else if (taxisType == TaxisType.OrderByLastEditDate)
             {
-                query.OrderByDesc(nameof(Content.IsTop)).OrderBy(nameof(Content.LastEditDate)).OrderByDesc(nameof(Content.Id));
+                query.OrderByDesc(ContentAttribute.IsTop).OrderBy(nameof(Content.LastEditDate)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByLastEditDateDesc)
+            else if (taxisType == TaxisType.OrderByLastEditDateDesc)
             {
-                query.OrderByDesc(nameof(Content.IsTop)).OrderByDesc(nameof(Content.LastEditDate)).OrderByDesc(nameof(Content.Id));
+                query.OrderByDesc(ContentAttribute.IsTop).OrderByDesc(nameof(Content.LastEditDate)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByTaxis)
+            else if (taxisType == TaxisType.OrderByTaxis)
             {
-                query.OrderByDesc(nameof(Content.IsTop)).OrderBy(nameof(Content.Taxis)).OrderByDesc(nameof(Content.Id));
+                query.OrderByDesc(ContentAttribute.IsTop).OrderBy(nameof(Content.Taxis)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByTaxisDesc)
+            else if (taxisType == TaxisType.OrderByTaxisDesc)
             {
-                query.OrderByDesc(nameof(Content.IsTop)).OrderByDesc(nameof(Content.Taxis)).OrderByDesc(nameof(Content.Id));
+                query.OrderByDesc(ContentAttribute.IsTop).OrderByDesc(nameof(Content.Taxis)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByHits)
+            else if (taxisType == TaxisType.OrderByHits)
             {
                 query.OrderByDesc(nameof(Content.Hits)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByHitsByDay)
+            else if (taxisType == TaxisType.OrderByHitsByDay)
             {
                 query.OrderByDesc(nameof(Content.HitsByDay)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByHitsByWeek)
+            else if (taxisType == TaxisType.OrderByHitsByWeek)
             {
                 query.OrderByDesc(nameof(Content.HitsByWeek)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByHitsByMonth)
+            else if (taxisType == TaxisType.OrderByHitsByMonth)
             {
                 query.OrderByDesc(nameof(Content.HitsByMonth)).OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == ETaxisType.OrderByRandom)
+            else if (taxisType == TaxisType.OrderByRandom)
             {
                 query.OrderByRandom(StringUtils.Guid());
             }

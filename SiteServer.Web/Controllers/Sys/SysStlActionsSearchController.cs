@@ -54,11 +54,10 @@ namespace SiteServer.API.Controllers.Sys
                     Id = 0,
                     SiteId = siteId,
                     TemplateName = string.Empty,
-                    Type = TemplateType.FileTemplate,
+                    TemplateType = TemplateType.FileTemplate,
                     RelatedFileName = string.Empty,
                     CreatedFileFullName = string.Empty,
                     CreatedFileExtName = string.Empty,
-                    CharsetType = ECharset.utf_8,
                     Default = false
                 };
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);

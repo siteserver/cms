@@ -163,7 +163,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var styleList = await TableStyleManager.GetContentStyleListAsync(site, channelInfo);
+                var styleList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channelInfo);
                 var isChecked = checkedLevel >= site.CheckContentLevel;
 
                 var contentIdList = new List<int>();

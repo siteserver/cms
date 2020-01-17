@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.Repositories
@@ -24,11 +23,16 @@ namespace SiteServer.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
+        public static class Attr
+        {
+            public const string IsDefault = nameof(IsDefault);
+        }
+
         public async Task<int> InsertAsync(Template template, string templateContent, string administratorName)
         {
             if (template.Default)
             {
-                await SetAllTemplateDefaultToFalseAsync(template.SiteId, template.Type);
+                await SetAllTemplateDefaultToFalseAsync(template.SiteId, template.TemplateType);
             }
 
             template.Id = await _repository.InsertAsync(template);
@@ -45,7 +49,7 @@ namespace SiteServer.CMS.Repositories
         {
             if (template.Default)
             {
-                await SetAllTemplateDefaultToFalseAsync(site.Id, template.Type);
+                await SetAllTemplateDefaultToFalseAsync(site.Id, template.TemplateType);
             }
 
             await _repository.UpdateAsync(template);
@@ -58,19 +62,19 @@ namespace SiteServer.CMS.Repositories
         private async Task SetAllTemplateDefaultToFalseAsync(int siteId, TemplateType templateType)
         {
             await _repository.UpdateAsync(Q
-                .Set(nameof(Template.IsDefault), false.ToString())
+                .Set(Attr.IsDefault, false.ToString())
                 .Where(nameof(Template.SiteId), siteId)
-                .Where(nameof(Template.TemplateType), templateType.Value)
+                .Where(nameof(Template.TemplateType), templateType.GetValue())
             );
         }
 
         public async Task SetDefaultAsync(int siteId, int templateId)
         {
             var template = await TemplateManager.GetTemplateAsync(siteId, templateId);
-            await SetAllTemplateDefaultToFalseAsync(template.SiteId, template.Type);
+            await SetAllTemplateDefaultToFalseAsync(template.SiteId, template.TemplateType);
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(Template.IsDefault), true.ToString())
+                .Set(Attr.IsDefault, true.ToString())
                 .Where(nameof(Template.Id), templateId)
             );
 
@@ -137,7 +141,7 @@ namespace SiteServer.CMS.Repositories
 
             foreach (var (type, count) in dataList)
             {
-                var templateType = TemplateTypeUtils.GetEnumType(type);
+                var templateType = TranslateUtils.ToEnum(type, TemplateType.IndexPageTemplate);
 
                 if (dictionary.ContainsKey(templateType))
                 {
@@ -152,29 +156,12 @@ namespace SiteServer.CMS.Repositories
             return dictionary;
         }
 
-        public async Task<List<Template>> GetTemplateListAsync(int siteId, string keyword, string templateTypeString)
+        public async Task<IEnumerable<Template>> GetAllAsync(int siteId)
         {
-            var query = Q.Where(nameof(Template.SiteId), siteId)
-                .OrderBy(nameof(Template.TemplateType), nameof(Template.RelatedFileName));
-
-            if (!string.IsNullOrEmpty(templateTypeString))
-            {
-                query.Where(nameof(Template.TemplateType), templateTypeString);
-            }
-
-            if (!string.IsNullOrEmpty(keyword))
-            {
-                var like = $"%{keyword}%";
-                query.Where(q => q
-                    .WhereLike(nameof(Template.TemplateName), like)
-                    .OrWhereLike(nameof(Template.RelatedFileName), like)
-                    .OrWhereLike(nameof(Template.CreatedFileFullName), like)
-                    .OrWhereLike(nameof(Template.CreatedFileExtName), like)
-                );
-            }
-
-            var templateEntityList = await _repository.GetAllAsync(query);
-            return templateEntityList.ToList();
+            return await _repository.GetAllAsync(Q
+                .Where(nameof(Template.SiteId), siteId)
+                .OrderBy(nameof(Template.TemplateType), nameof(Template.RelatedFileName))
+            );
         }
 
         public async Task<List<int>> GetIdListByTypeAsync(int siteId, TemplateType templateType)
@@ -187,7 +174,7 @@ namespace SiteServer.CMS.Repositories
         {
             var templateEntityList = await _repository.GetAllAsync(Q
                 .Where(nameof(Template.SiteId), siteId)
-                .Where(nameof(Template.TemplateType), templateType.Value)
+                .Where(nameof(Template.TemplateType), templateType.GetValue())
                 .OrderBy(nameof(Template.RelatedFileName))
             );
 
@@ -204,22 +191,22 @@ namespace SiteServer.CMS.Repositories
             return templateEntityList.ToList();
         }
 
-        public async Task<IEnumerable<string>> GetTemplateNameListAsync(int siteId, TemplateType templateType)
+        public async Task<List<string>> GetTemplateNameListAsync(int siteId, TemplateType templateType)
         {
-            return await _repository.GetAllAsync<string>(Q
+            return (await _repository.GetAllAsync<string>(Q
                 .Select(nameof(Template.TemplateName))
                 .Where(nameof(Template.SiteId), siteId)
-                .Where(nameof(Template.TemplateType), templateType.Value)
-            );
+                .Where(nameof(Template.TemplateType), templateType.GetValue())
+            )).ToList();
         }
 
-        public async Task<IEnumerable<string>> GetRelatedFileNameListAsync(int siteId, TemplateType templateType)
+        public async Task<List<string>> GetRelatedFileNameListAsync(int siteId, TemplateType templateType)
         {
-            return await _repository.GetAllAsync<string>(Q
+            return (await _repository.GetAllAsync<string>(Q
                 .Select(nameof(Template.RelatedFileName))
                 .Where(nameof(Template.SiteId), siteId)
-                .Where(nameof(Template.TemplateType), templateType.Value)
-            );
+                .Where(nameof(Template.TemplateType), templateType.GetValue())
+            )).ToList();
         }
 
         public async Task CreateDefaultTemplateAsync(int siteId, string administratorName)
@@ -227,18 +214,16 @@ namespace SiteServer.CMS.Repositories
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
             var templateList = new List<Template>();
-            var charset = ECharsetUtils.GetEnumType(site.Charset);
 
             var template = new Template
             {
                 Id = 0,
                 SiteId = site.Id,
                 TemplateName = "系统首页模板",
-                Type = TemplateType.IndexPageTemplate,
+                TemplateType = TemplateType.IndexPageTemplate,
                 RelatedFileName = "T_系统首页模板.html",
                 CreatedFileFullName = "@/index.html",
                 CreatedFileExtName = ".html",
-                CharsetType = charset,
                 Default = true
             };
             templateList.Add(template);
@@ -248,11 +233,10 @@ namespace SiteServer.CMS.Repositories
                 Id = 0,
                 SiteId = site.Id,
                 TemplateName = "系统栏目模板",
-                Type = TemplateType.ChannelTemplate,
+                TemplateType = TemplateType.ChannelTemplate,
                 RelatedFileName = "T_系统栏目模板.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
-                CharsetType = charset,
                 Default = true
             };
             templateList.Add(template);
@@ -262,11 +246,10 @@ namespace SiteServer.CMS.Repositories
                 Id = 0,
                 SiteId = site.Id,
                 TemplateName = "系统内容模板",
-                Type = TemplateType.ContentTemplate,
+                TemplateType = TemplateType.ContentTemplate,
                 RelatedFileName = "T_系统内容模板.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
-                CharsetType = charset,
                 Default = true
             };
             templateList.Add(template);
@@ -298,7 +281,7 @@ namespace SiteServer.CMS.Repositories
         {
             return await _repository.GetAsync(Q
                 .Where(nameof(Template.SiteId), siteId)
-                .Where(nameof(Template.TemplateType), templateType.Value)
+                .Where(nameof(Template.TemplateType), templateType.GetValue())
                 .Where(nameof(Template.CreatedFileFullName), createdFileFullName)
             );
         }

@@ -9,10 +9,8 @@ using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Repositories;
-using EBackupType = SiteServer.Abstractions.EBackupType;
-using EBackupTypeUtils = SiteServer.Abstractions.EBackupTypeUtils;
-using EDateFormatType = SiteServer.Abstractions.EDateFormatType;
-using EDateFormatTypeUtils = SiteServer.Abstractions.EDateFormatTypeUtils;
+using EBackupType = SiteServer.CMS.Context.Enumerations.EBackupType;
+using EBackupTypeUtils = SiteServer.CMS.Context.Enumerations.EBackupTypeUtils;
 using InputType = SiteServer.Abstractions.InputType;
 using TemplateType = SiteServer.Abstractions.TemplateType;
 
@@ -114,13 +112,13 @@ namespace SiteServer.CMS.Core
             }
 
             string directoryPath;
-            var dateFormatType = EDateFormatTypeUtils.GetEnumType(uploadDateFormatString);
+            var dateFormatType = uploadDateFormatString;
             var sitePath = GetSitePath(site);
-            if (dateFormatType == EDateFormatType.Year)
+            if (dateFormatType == DateFormatType.Year)
             {
                 directoryPath = PathUtils.Combine(sitePath, uploadDirectoryName, datetime.Year.ToString());
             }
-            else if (dateFormatType == EDateFormatType.Day)
+            else if (dateFormatType == DateFormatType.Day)
             {
                 directoryPath = PathUtils.Combine(sitePath, uploadDirectoryName, datetime.Year.ToString(), datetime.Month.ToString(), datetime.Day.ToString());
             }
@@ -139,7 +137,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetUploadDirectoryPath(Site site, DateTime datetime, UploadType uploadType)
         {
-            var uploadDateFormatString = string.Empty;
+            DateFormatType uploadDateFormatString = DateFormatType.Month;
             var uploadDirectoryName = string.Empty;
 
             if (uploadType == UploadType.Image)
@@ -169,13 +167,13 @@ namespace SiteServer.CMS.Core
             }
 
             string directoryPath;
-            var dateFormatType = EDateFormatTypeUtils.GetEnumType(uploadDateFormatString);
+            var dateFormatType = uploadDateFormatString;
             var sitePath = GetSitePath(site);
-            if (dateFormatType == EDateFormatType.Year)
+            if (dateFormatType == DateFormatType.Year)
             {
                 directoryPath = PathUtils.Combine(sitePath, uploadDirectoryName, datetime.Year.ToString());
             }
-            else if (dateFormatType == EDateFormatType.Day)
+            else if (dateFormatType == DateFormatType.Day)
             {
                 directoryPath = PathUtils.Combine(sitePath, uploadDirectoryName, datetime.Year.ToString(), datetime.Month.ToString(), datetime.Day.ToString());
             }
@@ -512,10 +510,10 @@ namespace SiteServer.CMS.Core
                 };
 
                 var channelInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
-                var styleInfoList = await TableStyleManager.GetChannelStyleListAsync(channelInfo);
+                var styleInfoList = await DataProvider.TableStyleRepository.GetChannelStyleListAsync(channelInfo);
                 foreach (var styleInfo in styleInfoList)
                 {
-                    if (styleInfo.Type == InputType.Text)
+                    if (styleInfo.InputType == InputType.Text)
                     {
                         dictionary.Add($@"{{@{StringUtils.LowerFirst(styleInfo.AttributeName)}}}", styleInfo.DisplayName);
                         dictionary.Add($@"{{@lower{styleInfo.AttributeName}}}", styleInfo.DisplayName + "(小写)");
@@ -702,10 +700,10 @@ namespace SiteServer.CMS.Core
                 };
 
                 var channelInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
-                var styleInfoList = await TableStyleManager.GetContentStyleListAsync(site, channelInfo);
+                var styleInfoList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channelInfo);
                 foreach (var styleInfo in styleInfoList)
                 {
-                    if (styleInfo.Type == InputType.Text)
+                    if (styleInfo.InputType == InputType.Text)
                     {
                         dictionary.Add($@"{{@{StringUtils.LowerFirst(styleInfo.AttributeName)}}}", styleInfo.DisplayName);
                         dictionary.Add($@"{{@lower{styleInfo.AttributeName}}}", styleInfo.DisplayName + "(小写)");

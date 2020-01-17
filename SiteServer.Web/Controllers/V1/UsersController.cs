@@ -394,7 +394,7 @@ namespace SiteServer.API.Controllers.V1
                 var password = request.GetPostString("password");
                 var newPassword = request.GetPostString("newPassword");
 
-                if (!DataProvider.UserRepository.CheckPassword(password, false, user.Password, EPasswordFormatUtils.GetEnumType(user.PasswordFormat), user.PasswordSalt))
+                if (!DataProvider.UserRepository.CheckPassword(password, false, user.Password, user.PasswordFormat, user.PasswordSalt))
                 {
                     return BadRequest("原密码不正确，请重新输入");
                 }

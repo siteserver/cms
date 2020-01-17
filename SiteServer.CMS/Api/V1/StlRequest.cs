@@ -69,11 +69,10 @@ namespace SiteServer.CMS.Api.V1
                 Id = 0,
                 SiteId = Site.Id,
                 TemplateName = string.Empty,
-                Type = TemplateType.IndexPageTemplate,
+                TemplateType = TemplateType.IndexPageTemplate,
                 RelatedFileName = string.Empty,
                 CreatedFileFullName = string.Empty,
                 CreatedFileExtName = string.Empty,
-                CharsetType = ECharset.utf_8,
                 Default = true
             };
 

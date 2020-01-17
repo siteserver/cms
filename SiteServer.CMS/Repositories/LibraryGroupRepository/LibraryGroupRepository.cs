@@ -31,12 +31,12 @@ namespace SiteServer.CMS.Repositories
 
         public async Task<int> InsertAsync(LibraryGroup group)
         {
-            return await _repository.InsertAsync(group, Q.CachingRemove(CacheKey(group.LibraryType)));
+            return await _repository.InsertAsync(group, Q.CachingRemove(CacheKey(group.Type)));
         }
 
         public async Task<bool> UpdateAsync(LibraryGroup group)
         {
-            return await _repository.UpdateAsync(group, Q.CachingRemove(CacheKey(group.LibraryType)));
+            return await _repository.UpdateAsync(group, Q.CachingRemove(CacheKey(group.Type)));
         }
 
         public async Task<bool> DeleteAsync(LibraryType type, int groupId)

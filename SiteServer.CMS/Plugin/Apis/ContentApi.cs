@@ -69,7 +69,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
             var nodeInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-            var tableStyleInfoList = await TableStyleManager.GetContentStyleListAsync(site, nodeInfo);
+            var tableStyleInfoList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, nodeInfo);
             var tableColumnList = new List<TableColumn>
             {
                 new TableColumn

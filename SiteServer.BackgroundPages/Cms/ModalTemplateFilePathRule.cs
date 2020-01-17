@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Linq;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -54,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
                 TbLinkUrl.Text = channelInfo.LinkUrl;
 
                 ELinkTypeUtilsExtensions.AddListItems(DdlLinkType);
-                ControlUtils.SelectSingleItem(DdlLinkType, channelInfo.LinkType);
+                ControlUtils.SelectSingleItem(DdlLinkType, channelInfo.LinkType.GetValue());
 
                 TbFilePath.Text = string.IsNullOrEmpty(channelInfo.FilePath) ? PageUtility.GetInputChannelUrlAsync(Site, channelInfo, false).GetAwaiter().GetResult() : channelInfo.FilePath;
             }
@@ -77,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (PhChannel.Visible)
                 {
                     channelInfo.LinkUrl = TbLinkUrl.Text;
-                    channelInfo.LinkType = DdlLinkType.SelectedValue;
+                    channelInfo.LinkType = TranslateUtils.ToEnum(DdlLinkType.SelectedValue, LinkType.None);
 
                     var filePath = channelInfo.FilePath;
                     TbFilePath.Text = TbFilePath.Text.Trim();

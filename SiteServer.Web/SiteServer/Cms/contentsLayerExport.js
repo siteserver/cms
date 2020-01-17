@@ -82,7 +82,7 @@ var methods = {
       };
     }
 
-    parent.utils.loading(true);
+    parent.utils.loading($this, true);
     $api.post({
         siteId: $this.siteId,
         channelId: $this.channelId,
@@ -96,7 +96,7 @@ var methods = {
         columnNames: $this.columnNames
       },
       function (err, res) {
-        parent.utils.loading(false);
+        parent.utils.loading($this, false);
 
         if (err) {
           return $this.pageAlert = {

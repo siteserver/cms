@@ -1,6 +1,7 @@
 using System;
 using Datory;
 using Datory.Annotations;
+using Newtonsoft.Json;
 
 
 namespace SiteServer.Abstractions
@@ -12,7 +13,8 @@ namespace SiteServer.Abstractions
         public string PluginId { get; set; }
 
         [DataColumn]
-        public string IsDisabled { get; set; }
+        [JsonIgnore]
+        private string IsDisabled { get; set; }
 
         public bool Disabled
         {

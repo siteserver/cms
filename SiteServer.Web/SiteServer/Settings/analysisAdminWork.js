@@ -36,7 +36,7 @@ var methods = {
       $this.items = res.items;
       $this.loadCharts();
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -45,7 +45,7 @@ var methods = {
   btnSearchClick() {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url, {
       siteId: this.formInline.siteIds && this.formInline.siteIds.length > 0 ? this.formInline.siteIds[0] : 0,
       dateFrom: this.formInline.dateFrom,
@@ -59,9 +59,9 @@ var methods = {
       $this.items = res.items;
       $this.loadCharts();
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 

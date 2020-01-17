@@ -29,7 +29,7 @@ var methods = {
       $this.isLogUser = res.value.isLogUser;
       $this.isLogError = res.value.isLogError;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageType = 'list';
       $this.pageLoad = true;
@@ -39,7 +39,7 @@ var methods = {
   apiSubmit: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url, {
       isTimeThreshold: this.isTimeThreshold,
       timeThreshold: this.timeThreshold,
@@ -56,9 +56,9 @@ var methods = {
       };
       $this.config = _.clone(res.value);
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
       $this.pageType = 'list';
     });
   },

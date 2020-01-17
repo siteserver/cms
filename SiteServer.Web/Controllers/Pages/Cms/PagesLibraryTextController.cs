@@ -137,7 +137,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
             var libraryGroup = new LibraryGroup
             {
-                LibraryType = LibraryType.Text,
+                Type = LibraryType.Text,
                 GroupName = group.Name
             };
             libraryGroup.Id = await DataProvider.LibraryGroupRepository.InsertAsync(libraryGroup);

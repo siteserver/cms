@@ -22,6 +22,11 @@ namespace SiteServer.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
+        private static class Attr
+        {
+            public const string ContentIdCollection = nameof(ContentIdCollection);
+        }
+
         public async Task InsertAsync(ContentTag tag)
         {
             await _repository.InsertAsync(tag);
@@ -29,7 +34,7 @@ namespace SiteServer.CMS.Repositories
 
         public async Task UpdateAsync(ContentTag tag)
         {
-            await _repository.UpdateAsync(tag); ;
+            await _repository.UpdateAsync(tag);
         }
 
         public async Task<ContentTag> GetTagAsync(int siteId, string tag)
@@ -122,10 +127,10 @@ namespace SiteServer.CMS.Repositories
             if (contentId > 0)
             {
                 query.Where(q => q
-                    .Where(nameof(ContentTag.ContentIdCollection), contentId)
-                    .OrWhereLike(nameof(ContentTag.ContentIdCollection), $"{contentId},%")
-                    .OrWhereLike(nameof(ContentTag.ContentIdCollection), $"%,{contentId},%")
-                    .OrWhereLike(nameof(ContentTag.ContentIdCollection), $"%,{contentId}")
+                    .Where(Attr.ContentIdCollection, contentId)
+                    .OrWhereLike(Attr.ContentIdCollection, $"{contentId},%")
+                    .OrWhereLike(Attr.ContentIdCollection, $"%,{contentId},%")
+                    .OrWhereLike(Attr.ContentIdCollection, $"%,{contentId}")
                 );
             }
 
@@ -140,7 +145,7 @@ namespace SiteServer.CMS.Repositories
             if (string.IsNullOrEmpty(tag)) return idList;
 
             var query = GetQuery(tag, siteId, 0);
-            query.Select(nameof(ContentTag.ContentIdCollection));
+            query.Select(Attr.ContentIdCollection);
 
             var list = await _repository.GetAllAsync<string>(query);
             foreach (var contentIdCollection in list)
@@ -165,7 +170,7 @@ namespace SiteServer.CMS.Repositories
             {
                 var query = Q.Where(nameof(ContentTag.SiteId), siteId);
                 query.WhereIn(nameof(ContentTag.Tag), tagList);
-                query.Select(nameof(ContentTag.ContentIdCollection));
+                query.Select(Attr.ContentIdCollection);
 
                 var allList = await _repository.GetAllAsync<string>(query);
                 foreach (var contentIdCollection in allList)

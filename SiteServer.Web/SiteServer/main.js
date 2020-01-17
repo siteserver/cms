@@ -8,8 +8,7 @@ var $urlDownload = '/pages/main/actions/download';
 var $packageIdSsCms = 'SS.CMS';
 var $siteId = parseInt(utils.getQueryString('siteId') || '0');
 
-var data = {
-  pageLoad: false,
+var data = utils.initData({
   pageAlert: null,
   defaultPageUrl: null,
   isNightly: null,
@@ -22,7 +21,7 @@ var data = {
   isSuperAdmin: null,
   packageList: null,
   packageIds: null,
-  menus: null,
+  menus: [],
   siteUrl: null,
   previewUrl: null,
   local: null,
@@ -41,12 +40,13 @@ var data = {
   winWidth: 0,
   isDesktop: true,
   isMobileMenu: false
-};
+});
 
 var methods = {
   getConfig: function () {
     var $this = this;
 
+    utils.loading($this, true);
     $api.get($url + '?siteId=' + $siteId).then(function (response) {
       var res = response.data;
       if (res.value) {
@@ -76,7 +76,7 @@ var methods = {
       if (error.response && error.response.status === 401) {
         location.href = 'login.cshtml';
       } else if (error.response && error.response.status === 500) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       }
     }).then(function () {
       setTimeout($this.ready, 100);
@@ -178,7 +178,7 @@ var methods = {
       } else {
         $this.timeoutId = setTimeout($this.create, 100);
       }
-      $this.pageLoad = true;
+      utils.loading($this, false);
     }).catch(function (error) {
       if (error.response && error.response.status === 401) {
         location.href = 'login.cshtml';

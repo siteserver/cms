@@ -37,7 +37,7 @@ var methods = {
       return false;
     }
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url, this.form).then(function(response) {
       var res = response.data;
 
@@ -56,10 +56,10 @@ var methods = {
       parent.layer.closeAll();
     })
     .catch(function(error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     })
     .then(function() {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
@@ -84,16 +84,16 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(true)
+    utils.loading(this, true);
   },
 
   uploadSuccess: function(res) {
     this.form.filePaths.push(res.path);
-    utils.loading(false);
+    utils.loading($this, false);
   },
 
   uploadError: function(err) {
-    utils.loading(false);
+    utils.loading($this, false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   },

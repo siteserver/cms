@@ -49,7 +49,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
             var groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(site.Id);
             var tagNames = await DataProvider.ContentTagRepository.GetTagListAsync(site.Id);
 
-            var allStyles = await TableStyleManager.GetContentStyleListAsync(site, channel);
+            var allStyles = await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channel);
             var styles = allStyles.Where(style =>
                     !StringUtils.ContainsIgnoreCase(ContentAttribute.MetadataAttributes.Value, style.AttributeName));
 

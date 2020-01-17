@@ -1,19 +1,18 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Caching;
 
 namespace SiteServer.CMS.Repositories
 {
-    public class TableStyleRepository : IRepository
+    public partial class TableStyleRepository : IRepository
     {
         private readonly Repository<TableStyle> _repository;
 
         public TableStyleRepository()
         {
-            _repository = new Repository<TableStyle>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            _repository = new Repository<TableStyle>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
         }
 
         public IDatabase Database => _repository.Database;
@@ -22,94 +21,87 @@ namespace SiteServer.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        public async Task<int> InsertAsync(TableStyle style)
+        private string GetCacheKey(string tableName)
         {
-            var styleId = await _repository.InsertAsync(style);
+            return CacheManager.GetListKey(_repository.TableName, tableName);
+        }
 
-            await DataProvider.TableStyleItemRepository.InsertAsync(styleId, style.StyleItems);
+        private void Sync(TableStyle style)
+        {
+            if (style?.Items != null)
+            {
+                style.ItemValues = TranslateUtils.JsonSerialize(style.Items);
+            }
+        }
 
-            TableStyleManager.ClearCache();
+
+        public async Task<int> InsertAsync(List<int> relatedIdentities, TableStyle style)
+        {
+            Sync(style);
+
+            if (style.Taxis == 0)
+            {
+                style.Taxis =
+                    await DataProvider.TableStyleRepository.GetMaxTaxisAsync(style.TableName,
+                        relatedIdentities) + 1;
+            }
+
+            var styleId = await _repository.InsertAsync(style, Q
+                .CachingRemove(GetCacheKey(style.TableName))
+            );
 
             return styleId;
         }
 
-        public async Task UpdateAsync(TableStyle style, bool deleteAndInsertStyleItems = true)
+        public async Task UpdateAsync(TableStyle style)
         {
-            await _repository.UpdateAsync(style);
+            Sync(style);
 
-            if (deleteAndInsertStyleItems)
-            {
-                await DataProvider.TableStyleItemRepository.DeleteAndInsertStyleItemsAsync(style.Id, style.StyleItems);
-            }
+            await _repository.UpdateAsync(style, Q.CachingRemove(GetCacheKey(style.TableName)));
+        }
 
-            TableStyleManager.ClearCache();
+        public async Task DeleteAllAsync(string tableName)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(TableStyle.TableName), tableName)
+                .CachingRemove(GetCacheKey(tableName))
+            );
         }
 
         public async Task DeleteAsync(int relatedIdentity, string tableName, string attributeName)
         {
-            var styleId = await _repository.GetAsync<int>(Q
-                .Select(nameof(TableStyle.Id))
+            await _repository.DeleteAsync(Q
                 .Where(nameof(TableStyle.RelatedIdentity), relatedIdentity)
                 .Where(nameof(TableStyle.TableName), tableName)
                 .Where(nameof(TableStyle.AttributeName), attributeName)
+                .CachingRemove(GetCacheKey(tableName))
             );
-
-            if (styleId > 0)
-            {
-                await _repository.DeleteAsync(styleId);
-                await DataProvider.TableStyleItemRepository.DeleteAllAsync(styleId);
-            }
-
-            TableStyleManager.ClearCache();
         }
 
         public async Task DeleteAsync(List<int> relatedIdentities, string tableName)
         {
             if (relatedIdentities == null || relatedIdentities.Count <= 0) return;
 
-            var styleIdList = await _repository.GetAllAsync<int>(Q
-                .Select(nameof(TableStyle.Id))
+            await _repository.DeleteAsync(Q
                 .WhereIn(nameof(TableStyle.RelatedIdentity), relatedIdentities)
                 .Where(nameof(TableStyle.TableName), tableName)
+                .CachingRemove(GetCacheKey(tableName))
             );
-
-            if (styleIdList != null)
-            {
-                foreach (var styleId in styleIdList)
-                {
-                    await _repository.DeleteAsync(styleId);
-                    await DataProvider.TableStyleItemRepository.DeleteAllAsync(styleId);
-                }
-            }
-
-            TableStyleManager.ClearCache();
         }
 
-        public async Task<List<KeyValuePair<string, TableStyle>>> GetAllTableStylesAsync()
+        private async Task<List<TableStyle>> GetAllAsync(string tableName)
         {
-            var pairs = new List<KeyValuePair<string, TableStyle>>();
-
-            var allItemsDict = await DataProvider.TableStyleItemRepository.GetAllTableStyleItemsAsync();
-
-            var list = await _repository.GetAllAsync(Q
+            var styles = await _repository.GetAllAsync(Q
+                .Where(nameof(TableStyle.TableName), tableName)
                 .OrderByDesc(nameof(TableStyle.Taxis), nameof(TableStyle.Id))
+                .CachingGet(GetCacheKey(tableName))
             );
-
-            foreach (var style in list)
+            foreach (var style in styles)
             {
-                allItemsDict.TryGetValue(style.Id, out var items);
-                style.StyleItems = items;
-
-                var key = TableStyleManager.GetKey(style.RelatedIdentity, style.TableName, style.AttributeName);
-
-                if (pairs.All(pair => pair.Key != key))
-                {
-                    var pair = new KeyValuePair<string, TableStyle>(key, style);
-                    pairs.Add(pair);
-                }
+                style.Items = TranslateUtils.JsonDeserialize<List<TableStyleItem>>(style.ItemValues);
             }
 
-            return pairs;
+            return styles;
         }
     }
 }

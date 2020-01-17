@@ -51,7 +51,7 @@ var methods = {
       $this.adminUrl = res.adminUrl;
       $this.oraclePrivileges = res.oraclePrivileges;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -68,7 +68,7 @@ var methods = {
   btnConnectClick: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '/actions/connect', this.form).then(function (response) {
       var res = response.data;
 
@@ -83,7 +83,7 @@ var methods = {
     }).catch(function (error) {
       $this.connectErrorMessage = error.message;
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   }
 }

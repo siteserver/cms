@@ -18,7 +18,7 @@ var methods = {
 
       $this.user = res.value;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -27,7 +27,7 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '?userId=' + $this.userId, {
       password: $this.password
     }).then(function (response) {
@@ -43,9 +43,9 @@ var methods = {
         $this.btnReturnClick();
       });
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 

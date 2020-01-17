@@ -416,7 +416,7 @@ namespace SiteServer.API.Controllers.V1
                     ChannelId = content.ChannelId,
                     ContentId = content.Id,
                     UserName = req.AdminName,
-                    IsChecked = true.ToString(),
+                    Checked = true,
                     CheckedLevel = 0,
                     CheckDate = DateTime.Now,
                     Reasons = request.Reasons

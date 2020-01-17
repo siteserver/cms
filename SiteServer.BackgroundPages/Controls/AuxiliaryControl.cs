@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Controls
 
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (style.Type == InputType.TextEditor)
+                if (style.InputType == InputType.TextEditor)
                 {
                     var commands = WebUtils.GetTextEditorCommands(Site, style.AttributeName);
                     builder.Append($@"
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Controls
     </div>
 </div>";
 
-                    if (style.Type == InputType.Customize)
+                    if (style.InputType == InputType.Customize)
                     {
                         var eventArgs = new ContentFormLoadEventArgs(Site.Id, ChannelId, ContentId, Attributes, style.AttributeName, html);
                         foreach (var service in PluginManager.GetServicesAsync().GetAwaiter().GetResult())

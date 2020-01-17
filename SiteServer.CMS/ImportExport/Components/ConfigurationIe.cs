@@ -86,26 +86,26 @@ namespace SiteServer.CMS.ImportExport.Components
 			feed.Save(_filePath);
 		}
 
-        public static Site GetSite(string filePath)
-        {
-            var site = new Site();
-            if (!FileUtils.IsFileExists(filePath)) return site;
+        //public static Site GetSite(string filePath)
+        //{
+        //    var site = new Site();
+        //    if (!FileUtils.IsFileExists(filePath)) return site;
 
-            var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
+        //    var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-            site.SiteName = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { nameof(Site.SiteName), "PublishmentSystemName" });
-            site.SiteDir = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { nameof(Site.SiteDir), "PublishmentSystemDir" });
-            if (site.SiteDir != null && site.SiteDir.IndexOf("\\", StringComparison.Ordinal) != -1)
-            {
-                site.SiteDir = site.SiteDir.Substring(site.SiteDir.LastIndexOf("\\", StringComparison.Ordinal) + 1);
-            }
+        //    site.SiteName = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { nameof(Site.SiteName), "PublishmentSystemName" });
+        //    site.SiteDir = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { nameof(Site.SiteDir), "PublishmentSystemDir" });
+        //    if (site.SiteDir != null && site.SiteDir.IndexOf("\\", StringComparison.Ordinal) != -1)
+        //    {
+        //        site.SiteDir = site.SiteDir.Substring(site.SiteDir.LastIndexOf("\\", StringComparison.Ordinal) + 1);
+        //    }
 
-            site.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements, "SettingsXml");
+        //    site.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements, "SettingsXml");
 
-            site.IsCreateDoubleClick = false;
+        //    site.IsCreateDoubleClick = false;
 
-            return site;
-        }
+        //    return site;
+        //}
 
 		public async Task ImportAsync()
 		{
@@ -115,8 +115,12 @@ namespace SiteServer.CMS.ImportExport.Components
 
 			var site = await DataProvider.SiteRepository.GetAsync(_siteId);
 
-            site.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements,
-                "SettingsXml", site.ToString());
+			var dict = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(AtomUtility.GetDcElementContent(feed.AdditionalElements,
+                "SettingsXml", site.ToString()));
+            foreach (var o in dict)
+            {
+                site.Set(o.Key, o.Value);
+            }
             site.IsSeparatedWeb = false;
             site.IsCreateDoubleClick = false;
 

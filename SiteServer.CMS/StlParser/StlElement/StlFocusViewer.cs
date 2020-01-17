@@ -67,7 +67,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var groupContent = string.Empty;
             var groupContentNot = string.Empty;
             var tags = string.Empty;
-            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
+            var orderByString = ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByTaxisDesc);
             var startNum = 1;
             var totalNum = 0;
             var isShowText = true;
@@ -129,7 +129,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
                 {
-                    orderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxisDesc);
+                    orderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, TaxisType.OrderByTaxisDesc);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeStartNum))
                 {

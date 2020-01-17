@@ -45,13 +45,13 @@ var methods = {
 
         $this.packages = res.value;
       }).catch(function (error) {
-        this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       }).then(function () {
         $this.pageLoad = true;
       });
 
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });

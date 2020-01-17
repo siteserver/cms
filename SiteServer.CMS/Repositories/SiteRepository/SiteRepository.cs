@@ -26,6 +26,11 @@ namespace SiteServer.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
+        private static class Attr
+        {
+            public const string IsRoot = nameof(IsRoot);
+        }
+
         public async Task<int> InsertAsync(Site site)
         {
             site.Taxis = await GetMaxTaxisAsync() + 1;
@@ -93,7 +98,7 @@ namespace SiteServer.CMS.Repositories
         private async Task UpdateAllIsRootAsync()
         {
             await _repository.UpdateAsync(Q
-                .Set(nameof(Site.IsRoot), false.ToString())
+                .Set(Attr.IsRoot, false.ToString())
             );
             var siteIds = await GetSiteIdListAsync();
             foreach (var siteId in siteIds)

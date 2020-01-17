@@ -6,6 +6,7 @@ using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
 using Datory;
+using SiteServer.CMS.Context.Enumerations;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -82,9 +83,9 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            if (!EUserPasswordRestrictionUtils.IsValid(_password, EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit)))
+            if (!PasswordRestrictionUtils.IsValid(_password, PasswordRestriction.LetterAndDigit.GetValue()))
             {
-                await CliUtils.PrintErrorAsync($"管理员密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestriction.LetterAndDigit)}");
+                await CliUtils.PrintErrorAsync($"管理员密码不符合规则，请包含{PasswordRestriction.LetterAndDigit.GetDisplayName()}");
                 return;
             }
 

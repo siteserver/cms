@@ -9,7 +9,7 @@ namespace SiteServer.CMS.Context
 	public class WebClientUtils
 	{
 		// 获取指定网页的HTML代码
-		public static string GetRemoteFileSource(string url, ECharset charset, string cookieString)
+		public static string GetRemoteFileSource(string url, Encoding encoding, string cookieString)
 		{
 			try
 			{
@@ -25,7 +25,7 @@ namespace SiteServer.CMS.Context
 				//hwReq.ContentType = "text/html";
 				hwReq.KeepAlive = false;
 
-			    using (var reader = new System.IO.StreamReader(hwRes.GetResponseStream(), ECharsetUtils.GetEncoding(charset)))
+			    using (var reader = new System.IO.StreamReader(hwRes.GetResponseStream(), encoding))
 			    {
                     retval = reader.ReadToEnd();
                 }
@@ -38,9 +38,9 @@ namespace SiteServer.CMS.Context
 			}
 		}
 
-        public static string GetRemoteFileSource(string url, ECharset charset)
+        public static string GetRemoteFileSource(string url, Encoding encoding)
 		{
-			return GetRemoteFileSource(url, charset, string.Empty);
+			return GetRemoteFileSource(url, encoding, string.Empty);
 		}
 
         public static HttpStatusCode GetRemoteUrlStatusCode(string url)
@@ -79,7 +79,7 @@ namespace SiteServer.CMS.Context
                 if (builder.Length > 0) builder.Length -= 1;
                 var postData = Encoding.UTF8.GetBytes(builder.ToString());
                 var webClient = new WebClient();
-                webClient.Headers.Add("Body-Type", "application/x-www-form-urlencoded");//采取POST方式必须加的header
+                webClient.Headers.Add("Body-InputType", "application/x-www-form-urlencoded");//采取POST方式必须加的header
                 var responseData = webClient.UploadData(url, "POST", postData);//得到返回字符流  
                 retval = Encoding.UTF8.GetString(responseData);//解码
 
@@ -98,7 +98,7 @@ namespace SiteServer.CMS.Context
             {
                 var postData = Encoding.UTF8.GetBytes(requestData);
                 var webClient = new WebClient();
-                webClient.Headers.Add("Body-Type", "application/x-www-form-urlencoded");//采取POST方式必须加的header
+                webClient.Headers.Add("Body-InputType", "application/x-www-form-urlencoded");//采取POST方式必须加的header
                 var responseData = webClient.UploadData(url, "POST", postData);//得到返回字符流  
                 retval = Encoding.UTF8.GetString(responseData);//解码
 

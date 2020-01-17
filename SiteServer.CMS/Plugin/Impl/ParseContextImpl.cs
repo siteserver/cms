@@ -20,7 +20,7 @@ namespace SiteServer.CMS.Plugin.Impl
             ChannelId = contextInfo.ChannelId;
             ContentId = contextInfo.ContentId;
             ContentInfo = await contextInfo.GetContentAsync();
-            TemplateType = pageInfo.Template.Type;
+            TemplateType = pageInfo.Template.TemplateType;
             TemplateId = pageInfo.Template.Id;
 
             HeadCodes = pageInfo.HeadCodes;

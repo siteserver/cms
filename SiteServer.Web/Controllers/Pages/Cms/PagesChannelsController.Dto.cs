@@ -57,8 +57,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
             public string ContentModelPluginId { get; set; }
             public List<string> ContentRelatedPluginIdList { get; set; }
             public string LinkUrl { get; set; }
-            public string LinkType { get; set; }
-            public string DefaultTaxisType { get; set; }
+            public LinkType LinkType { get; set; }
+            public TaxisType DefaultTaxisType { get; set; }
             public string FilePath { get; set; }
             public string ChannelFilePathRule { get; set; }
             public string ContentFilePathRule { get; set; }

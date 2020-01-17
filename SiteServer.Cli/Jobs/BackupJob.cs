@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Abstractions;
@@ -122,7 +121,7 @@ namespace SiteServer.Cli.Jobs
                 tableNames.Add(tableName);
             }
 
-            await FileUtils.WriteTextAsync(treeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(tableNames));
+            await FileUtils.WriteTextAsync(treeInfo.TablesFilePath, TranslateUtils.JsonSerialize(tableNames));
 
             await CliUtils.PrintRowLineAsync();
             await CliUtils.PrintRowAsync("备份表名称", "总条数");
@@ -170,8 +169,7 @@ namespace SiteServer.Cli.Jobs
                                 var rows = DataProvider.DatabaseRepository.GetPageObjects(tableName, identityColumnName, offset,
                                     limit);
 
-                                await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName),
-                                    Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
+                                await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), TranslateUtils.JsonSerialize(rows));
                             }
                         }
                     }
@@ -181,12 +179,11 @@ namespace SiteServer.Cli.Jobs
                         tableInfo.RowFiles.Add(fileName);
                         var rows = DataProvider.DatabaseRepository.GetObjects(tableName);
 
-                        await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8,
-                            TranslateUtils.JsonSerialize(rows));
+                        await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), TranslateUtils.JsonSerialize(rows));
                     }
                 }
 
-                await FileUtils.WriteTextAsync(treeInfo.GetTableMetadataFilePath(tableName), Encoding.UTF8,
+                await FileUtils.WriteTextAsync(treeInfo.GetTableMetadataFilePath(tableName),
                     TranslateUtils.JsonSerialize(tableInfo));
             }
         }

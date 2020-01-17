@@ -9,6 +9,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
+using Datory;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Repositories;
 
@@ -198,7 +199,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypTemplateType))
             {
-                isSuccess = TestTypeValue(testOperate, testValue, pageInfo.Template.Type.Value);
+                isSuccess = TestTypeValue(testOperate, testValue, pageInfo.Template.TemplateType.GetValue());
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeTopLevel))
             {
@@ -456,7 +457,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             };
             dynamicInfo.ElementValues = TranslateUtils.JsonSerialize(ifInfo);
 
-            return dynamicInfo.GetScript(ApiRouteActionsIf.GetUrl(pageInfo.ApiUrl));
+            return dynamicInfo.GetScript(ApiRouteActionsIf.GetUrl(pageInfo.ApiUrl), true);
         }
 
         private static bool TestTypeValues(string testOperate, string testValue, List<string> actualValues)

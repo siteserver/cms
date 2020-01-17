@@ -40,24 +40,19 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        public async Task<Dictionary<int, string>> GetLogIdWithNameDictionaryAsync(int siteId, int templateId)
+        public async Task<IEnumerable<KeyValuePair<int, string>>> GetLogIdWithNameListAsync(int siteId, int templateId)
         {
             var list = await _repository.GetAllAsync(Q
                 .Where(nameof(TemplateLog.TemplateId), templateId)
                 .OrderByDesc(nameof(TemplateLog.Id))
             );
 
-            return list.ToDictionary(templateLog => templateLog.Id,
-                templateLog =>
-                    $"修订时间：{DateUtils.GetDateAndTimeString(templateLog.AddDate)}，修订人：{templateLog.AddUserName}，字符数：{templateLog.ContentLength}");
+            return list.Select(templateLog => new KeyValuePair<int, string>(templateLog.Id, $"修订时间：{DateUtils.GetDateAndTimeString(templateLog.AddDate)}，修订人：{templateLog.AddUserName}，字符数：{templateLog.ContentLength}"));
         }
 
-        public async Task DeleteAsync(List<int> idList)
+        public async Task DeleteAsync(int logId)
         {
-            if (idList != null && idList.Count > 0)
-            {
-                await _repository.DeleteAsync(Q.WhereIn(nameof(TemplateLog.Id), idList));
-            }
+            await _repository.DeleteAsync(logId);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
             var tableName = ChannelManager.GetTableNameAsync(Site, _channel).GetAwaiter().GetResult();
-            _tableStyleList = TableStyleManager.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
+            _tableStyleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.SelectCommand = string.IsNullOrEmpty(AuthRequest.GetQueryString("channelId"))
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.ItemsPerPage = Site.PageSize;
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
-            SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
+            SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByIdDesc);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             if (IsPostBack) return;

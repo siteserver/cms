@@ -75,7 +75,6 @@ namespace SiteServer.CMS.DataCache
 
                     var template = new Template
                     {
-                        CharsetType = ECharset.utf_8,
                         Content = GetContentByFilePath(htmlFilePath),
                         CreatedFileExtName = ".html",
                         CreatedFileFullName = PathUtils.Combine(special.Url, relatedPath),
@@ -83,7 +82,7 @@ namespace SiteServer.CMS.DataCache
                         Default = false,
                         RelatedFileName = string.Empty,
                         SiteId = site.Id,
-                        Type = TemplateType.FileTemplate,
+                        TemplateType = TemplateType.FileTemplate,
                         TemplateName = relatedPath
                     };
 

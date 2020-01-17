@@ -21,7 +21,7 @@ var methods = {
     var $this = this;
     $this.pageAlert = null;
 
-    if (this.pageLoad) utils.loading(true);
+    if (this.pageLoad) utils.loading($this, true);
     $api.get($url, {
         params: {
           siteId: $this.siteId
@@ -36,13 +36,13 @@ var methods = {
         $this.specialsCount = res.value.specialsCount;
       })
       .catch(function(error) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       })
       .then(function() {
         $this.timeoutId = setTimeout(function () {
           $this.load();
         }, 3000);
-        utils.loading(false);
+        utils.loading($this, false);
         $this.pageLoad = true;
       });
   },
@@ -68,7 +68,7 @@ var methods = {
     clearTimeout(this.timeoutId);
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api
       .post($url + '/actions/cancel', {
         siteId: $this.siteId
@@ -79,7 +79,7 @@ var methods = {
         $this.load();
       })
       .catch(function(error) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       });
   }
 };

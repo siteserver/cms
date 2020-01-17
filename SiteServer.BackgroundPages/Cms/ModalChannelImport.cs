@@ -43,7 +43,6 @@ namespace SiteServer.BackgroundPages.Cms
                 var itemChannelId = nodeInfo.Id;
                 var nodeName = nodeInfo.ChannelName;
                 var parentsCount = nodeInfo.ParentsCount;
-                var isLastNode = nodeInfo.LastNode;
                 var value = IsOwningChannelId(itemChannelId) ? itemChannelId.ToString() : string.Empty;
                 if (!string.IsNullOrEmpty(value))
                 {
@@ -52,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
                         value = string.Empty;
                     }
                 }
-                var listitem = new ListItem(GetTitle(itemChannelId, nodeName, parentsCount, isLastNode), value);
+                var listitem = new ListItem(GetTitle(itemChannelId, nodeName, parentsCount), value);
                 if (itemChannelId == channelId)
                 {
                     listitem.Selected = true;
@@ -61,26 +60,14 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-        public string GetTitle(int channelId, string nodeName, int parentsCount, bool isLastNode)
+        public string GetTitle(int channelId, string nodeName, int parentsCount)
         {
             var str = "";
-            if (channelId == SiteId)
-            {
-                isLastNode = true;
-            }
-            if (isLastNode == false)
-            {
-                _isLastNodeArray[parentsCount] = false;
-            }
-            else
-            {
-                _isLastNodeArray[parentsCount] = true;
-            }
+
             for (var i = 0; i < parentsCount; i++)
             {
                 str = string.Concat(str, _isLastNodeArray[i] ? "　" : "│");
             }
-            str = string.Concat(str, isLastNode ? "└" : "├");
             str = string.Concat(str, nodeName);
             return str;
         }

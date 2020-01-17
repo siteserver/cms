@@ -52,7 +52,7 @@ namespace SiteServer.Cli.Updater.Tables
             new Dictionary<string, string>
             {
                 {nameof(SitePermissions.SiteId), nameof(PublishmentSystemId)},
-                {nameof(SitePermissions.ChannelIdCollection), nameof(NodeIdCollection)}
+                {"ChannelIdCollection", nameof(NodeIdCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

@@ -24,12 +24,12 @@ var methods = {
   delete: function (specialId) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.delete({
       siteId: $siteId,
       specialId: specialId
     }, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err || !res || !res.value) return;
 
       $this.items = res.value;
@@ -39,9 +39,9 @@ var methods = {
   submit: function (item) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post(item, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',
@@ -81,12 +81,12 @@ var methods = {
   btnDownloadClick: function(item){
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.postAt('actions/download', {
       siteId: $siteId,
       specialId: item.id
     }, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err || !res || !res.value) return;
 
       window.location.href = res.value;

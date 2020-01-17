@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using System.Xml;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
@@ -17,7 +18,7 @@ namespace SiteServer.CMS.Core
 
             try
             {
-                var content = WebClientUtils.GetRemoteFileSource(UrlTemplatesXml, ECharset.utf_8);
+                var content = WebClientUtils.GetRemoteFileSource(UrlTemplatesXml, Encoding.UTF8);
 
                 var document = XmlUtils.GetXmlDocument(content);
                 var rootNode = XmlUtils.GetXmlNode(document, "//siteTemplates");

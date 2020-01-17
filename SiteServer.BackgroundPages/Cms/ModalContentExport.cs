@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
         private void LoadDisplayAttributeCheckBoxList()
         {
             var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
-            var styleList = ContentUtility.GetAllTableStyleList(TableStyleManager.GetContentStyleListAsync(Site, nodeInfo).GetAwaiter().GetResult());
+            var styleList = ContentUtility.GetAllTableStyleList(DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, nodeInfo).GetAwaiter().GetResult());
 
             foreach (var style in styleList)
             {

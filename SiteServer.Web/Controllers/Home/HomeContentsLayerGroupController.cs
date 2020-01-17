@@ -86,12 +86,12 @@ namespace SiteServer.API.Controllers.Home
                         var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
-                        var list = StringUtils.GetStringList(contentInfo.GroupNameCollection);
+                        var list = contentInfo.GroupNames;
                         foreach (var name in groupNames)
                         {
                             if (!list.Contains(name)) list.Add(name);
                         }
-                        contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
+                        contentInfo.GroupNames = list;
 
                         await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
@@ -105,12 +105,12 @@ namespace SiteServer.API.Controllers.Home
                         var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
-                        var list = StringUtils.GetStringList(contentInfo.GroupNameCollection);
+                        var list = contentInfo.GroupNames;
                         foreach (var name in groupNames)
                         {
                             if (list.Contains(name)) list.Remove(name);
                         }
-                        contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
+                        contentInfo.GroupNames = list;
 
                         await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
@@ -142,9 +142,9 @@ namespace SiteServer.API.Controllers.Home
                         var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
-                        var list = StringUtils.GetStringList(contentInfo.GroupNameCollection);
+                        var list = contentInfo.GroupNames;
                         if (!list.Contains(groupInfo.GroupName)) list.Add(groupInfo.GroupName);
-                        contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
+                        contentInfo.GroupNames = list;
 
                         await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }

@@ -41,7 +41,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                if (ETaxisTypeUtils.Equals(channelInfo.DefaultTaxisType, ETaxisType.OrderByTaxis))
+                if (ETaxisTypeUtils.Equals(channelInfo.DefaultTaxisType, TaxisType.OrderByTaxis))
                 {
                     isUp = !isUp;
                 }

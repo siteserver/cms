@@ -1,36 +1,82 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using SiteServer.Abstractions;
 using SiteServer.API.Result;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Dto;
 using SiteServer.CMS.Dto.Request;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
     public partial class PagesTemplatesController
     {
-        public class SearchRequest : PageRequest
+        public class GetResult
+        {
+            public List<Cascade<int>> Channels { get; set; }
+            public IEnumerable<Template> Templates { get; set; }
+        }
+
+        public class TemplateRequest
         {
             public int SiteId { get; set; }
-            public string LogType { get; set; }
-            public string UserName { get; set; }
-            public string Keyword { get; set; }
-            public string DateFrom { get; set; }
-            public string DateTo { get; set; }
+            public int TemplateId { get; set; }
         }
 
-        public class SiteLogResult : Abstractions.SiteLog
+        private static async Task<GetResult> GetResultAsync(Site site)
         {
-            public string WebUrl { get; set; }
+            var children = await ChannelManager.GetCascadeChildrenAsync(site, site.Id, func: async (siteInfo, channelInfo) =>
+            {
+                var dict = new Dictionary<string, object>
+                {
+                    ["channelTemplateId"] = channelInfo.ChannelTemplateId,
+                    ["contentTemplateId"] = channelInfo.ContentTemplateId
+                };
+                return dict;
+            });
 
-            public string SiteName { get; set;  }
-        }
+            var allTemplates = await DataProvider.TemplateRepository.GetAllAsync(site.Id);
+            var templates = new List<Template>();
+            foreach (var template in allTemplates)
+            {
+                template.Set("useCount", DataProvider.ChannelRepository.GetTemplateUseCount(site.Id, template.Id, template.TemplateType, template.Default));
+                if (template.TemplateType == TemplateType.IndexPageTemplate)
+                {
+                    template.Set("url", PageUtility.ParseNavigationUrl(site, template.CreatedFileFullName, false));
+                    templates.Add(template);
+                }
+            }
+            foreach (var template in allTemplates)
+            {
+                if (template.TemplateType == TemplateType.ChannelTemplate)
+                {
+                    template.Set("channelIds", await ChannelManager.GetChannelIdListByTemplateIdAsync(site.Id, template.Id));
+                    templates.Add(template);
+                }
+            }
+            foreach (var template in allTemplates)
+            {
+                if (template.TemplateType == TemplateType.ContentTemplate)
+                {
+                    template.Set("channelIds", await ChannelManager.GetChannelIdListByTemplateIdAsync(site.Id, template.Id));
+                    templates.Add(template);
+                }
+            }
+            foreach (var template in allTemplates)
+            {
+                if (template.TemplateType == TemplateType.FileTemplate)
+                {
+                    template.Set("url", PageUtility.ParseNavigationUrl(site, template.CreatedFileFullName, false));
+                    templates.Add(template);
+                }
+            }
 
-        public class SiteLogPageResult : PageResult<SiteLogResult>
-        {
-            public int IndexPageTemplateCount { get; set; }
-            public int ChannelTemplateCount { get; set; }
-            public int ContentTemplateCount { get; set; }
-            public int FileTemplateCount { get; set; }
-            public IEnumerable<Select<int>> SiteOptions { get; set; }
+            return new GetResult
+            {
+                Channels = children,
+                Templates = templates
+            };
         }
     }
 }

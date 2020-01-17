@@ -62,9 +62,6 @@
   direction="rtl"
   size="80%">
   <div class="drawer__content">
-    <el-alert v-if="editAlert" :title="editAlert.title" :type="editAlert.type"></el-alert>
-    <br />
-
     <el-form ref="editForm" :model="editForm" :rules="editRules" label-width="120px">
       <el-form-item label="站点名称" prop="siteName">
         <el-input v-model="editForm.siteName"></el-input>
@@ -115,7 +112,7 @@
   size="80%">
   <div class="drawer__content">
 
-    <el-alert v-if="deleteAlert" :title="deleteAlert.title" :type="deleteAlert.type"></el-alert>
+    <el-alert :title="'此操作将会删除站点 ' + deleteForm.siteName + '，且数据无法恢复，请谨慎操作！'" type="error"></el-alert>
     <br />
     <el-form ref="deleteForm" :model="deleteForm" label-width="120px">
       <el-form-item label="站点名称">{{ deleteForm.siteName }}</el-form-item>

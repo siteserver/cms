@@ -57,7 +57,7 @@ var methods = {
         $this.loadEditor(res);
       })
       .catch(function(error) {
-        utils.notifyError($this, error);
+        utils.error($this, error);
       })
       .then(function() {
         $this.pageLoad = true;
@@ -178,7 +178,7 @@ var methods = {
     }
 
     var $this = this;
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '/actions/preview', {
       siteId: this.siteId,
       channelId: this.channelId,
@@ -191,10 +191,10 @@ var methods = {
       window.open(res.url);
     })
     .catch(function(error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     })
     .then(function() {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   }
 };

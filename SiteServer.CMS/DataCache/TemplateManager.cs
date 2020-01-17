@@ -61,7 +61,7 @@ namespace SiteServer.CMS.DataCache
             {
                 foreach (var template in templateDictionary.Values)
                 {
-                    if (template.Type == templateType && template.TemplateName == templateName)
+                    if (template.TemplateType == templateType && template.TemplateName == templateName)
                     {
                         info = template;
                         break;
@@ -81,7 +81,7 @@ namespace SiteServer.CMS.DataCache
             {
                 foreach (var template in templateDictionary.Values)
                 {
-                    if (template.Type == templateType && template.Default)
+                    if (template.TemplateType == templateType && template.Default)
                     {
                         info = template;
                         break;
@@ -92,7 +92,7 @@ namespace SiteServer.CMS.DataCache
             return info ?? new Template
             {
                 SiteId = siteId,
-                Type = templateType
+                TemplateType = templateType
             };
         }
 
@@ -105,7 +105,7 @@ namespace SiteServer.CMS.DataCache
             {
                 foreach (var template in templateDictionary.Values)
                 {
-                    if (template.Type == templateType && template.Default)
+                    if (template.TemplateType == templateType && template.Default)
                     {
                         id = template.Id;
                         break;
@@ -125,7 +125,7 @@ namespace SiteServer.CMS.DataCache
             {
                 foreach (var template in templateDictionary.Values)
                 {
-                    if (template.Type == templateType && template.TemplateName == templateName)
+                    if (template.TemplateType == templateType && template.TemplateName == templateName)
                     {
                         id = template.Id;
                         break;
@@ -145,7 +145,7 @@ namespace SiteServer.CMS.DataCache
 
             foreach (var template in templateDictionary.Values)
             {
-                if (template.Type == TemplateType.FileTemplate)
+                if (template.TemplateType == TemplateType.FileTemplate)
                 {
                     list.Add(template.Id);
                 }
@@ -209,11 +209,11 @@ namespace SiteServer.CMS.DataCache
         public static string GetTemplateFilePath(Site site, Template template)
         {
             string filePath;
-            if (template.Type == TemplateType.IndexPageTemplate)
+            if (template.TemplateType == TemplateType.IndexPageTemplate)
             {
                 filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir, template.RelatedFileName);
             }
-            else if (template.Type == TemplateType.ContentTemplate)
+            else if (template.TemplateType == TemplateType.ContentTemplate)
             {
                 filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir, DirectoryUtils.PublishmentSytem.Template, DirectoryUtils.PublishmentSytem.Content, template.RelatedFileName);
             }

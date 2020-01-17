@@ -1,117 +1,205 @@
-﻿var $url = '/pages/settings/logSite';
+﻿var $url = '/pages/cms/templates';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
-  items: null,
-  count: null,
-  siteOptions: null,
-  formInline: {
-    siteIds: [],
-    logType: '',
-    dateFrom: '',
-    dateTo: '',
-    userName: '',
-    keyword: '',
-    currentPage: 1,
-    offset: 0,
-    limit: 30
-  }
-};
+var data = utils.initData({
+  siteId: utils.getQueryInt("siteId"),
+  channels: null,
+  allTemplates: null,
+  templates: null,
+  templateType: 'All',
+  channelIds: [],
+  keyword: ''
+});
 
 var methods = {
-  getConfig: function () {
+  apiList: function () {
     var $this = this;
 
-    $api.post($url, this.formInline).then(function (response) {
+    utils.loading($this, true);
+    $api.get($url, {
+      params: {
+        siteId: this.siteId
+      }
+    }).then(function (response) {
       var res = response.data;
 
-      $this.items = res.items;
-      $this.count = res.count;
-      $this.siteOptions = res.siteOptions;
+      $this.channels = res.channels;
+      $this.allTemplates = $this.templates = res.templates;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
-  btnDeleteClick: function () {
+  apiDefault: function (template) {
     var $this = this;
 
-    utils.alertDelete({
-      title: '清空站点日志',
-      text: '此操作将会清空站点日志，且数据无法恢复，请谨慎操作！',
-      callback: function () {
+    utils.loading($this, true);
+    $api.post($url + '/actions/default', {
+      siteId: this.siteId,
+      templateId: template.id
+    }).then(function (response) {
+      var res = response.data;
 
-        utils.loading(true);
-        $api.delete($url).then(function (response) {
-          var res = response.data;
-    
-          $this.items = [];
-        }).catch(function (error) {
-          $this.pageAlert = utils.getPageAlert(error);
-        }).then(function () {
-          utils.loading(false);
-        });
+      $this.channels = res.channels;
+      $this.allTemplates = res.templates;
+      $this.reload();
+      $this.$message({
+        type: 'success',
+        message: '默认模板设置成功！'
+      });
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  apiDelete: function (template) {
+    var $this = this;
+
+    utils.loading($this, true);
+    $api.delete($url, {
+      data: {
+        siteId: this.siteId,
+        templateId: template.id
+      }
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.channels = res.channels;
+      $this.allTemplates = res.templates;
+      $this.reload();
+      $this.$message({
+        type: 'success',
+        message: '模板删除成功！'
+      });
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  tableRowClassName(scope) {
+    if (scope.row.default) {
+      return 'default-row';
+    }
+    return '';
+  },
+
+  getTemplateType: function(templateType) {
+    if (templateType === 'IndexPageTemplate') {
+      return '首页模板';
+    } else if (templateType === 'ChannelTemplate') {
+      return '栏目模板';
+    } else if (templateType === 'ContentTemplate') {
+      return '内容模板';
+    } else if (templateType === 'FileTemplate') {
+      return '单页模板';
+    }
+    return '';
+  },
+
+  btnDefaultClick: function (template) {
+    var $this = this;
+
+    utils.alertWarning({
+      title: '设置默认模板',
+      text: '此操作将把模板 ' + template.templateName + ' 设为默认' + this.getTemplateType(template.templateType) + '，确认吗？',
+      callback: function () {
+        $this.apiDefault(template);
       }
     });
   },
 
-  btnSearchClick() {
+  btnCopyClick: function(template) {
     var $this = this;
 
-    this.formInline.currentPage = 1;
-    this.formInline.offset = 0;
-    this.formInline.limit = 30;
-    this.formInline.siteIds = [];
-    var checkedSites = this.$refs.sites.getCheckedNodes();
-    for (var i = 0; i < checkedSites.length; i++) {
-      var site = checkedSites[i];
-      this.formInline.siteIds.push(site.value);
-    }
-
-    utils.loading(true);
-    $api.post($url, this.formInline).then(function (response) {
+    utils.loading($this, true);
+    $api.post($url + '/actions/copy', {
+      siteId: this.siteId,
+      templateId: template.id
+    }).then(function (response) {
       var res = response.data;
 
-      $this.items = res.items;
-      $this.count = res.count;
+      $this.channels = res.channels;
+      $this.allTemplates = res.templates;
+      $this.reload();
+      $this.$message({
+        type: 'success',
+        message: '快速复制成功！'
+      });
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
-  handleCurrentChange: function(val) {
+  btnCreateClick: function(template) {
     var $this = this;
 
-    this.formInline.currentValue = val;
-    this.formInline.offset = this.formInline.limit * (val - 1);
-    this.formInline.siteIds = [];
-    var checkedSites = this.$refs.sites.getCheckedNodes();
-    for (var i = 0; i < checkedSites.length; i++) {
-      var site = checkedSites[i];
-      this.formInline.siteIds.push(site.value);
-    }
-
-    utils.loading(true);
-    $api.post($url, this.formInline).then(function (response) {
+    utils.loading($this, true);
+    $api.post($url + '/actions/create', {
+      siteId: this.siteId,
+      templateId: template.id
+    }).then(function (response) {
       var res = response.data;
 
-      $this.items = res.items;
-      $this.count = res.count;
+      top.openPageCreateStatus();
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
-    window.scrollTo(0, 0);
+  },
+
+  btnDeleteClick: function (template) {
+    var $this = this;
+
+    utils.alertDelete({
+      title: '删除模板',
+      text: '此操作将删除模板 ' + template.templateName + '，确认吗？',
+      callback: function () {
+        $this.apiDelete(template);
+      }
+    });
   },
 
   btnAddClick: function(templateType) {
-    console.log(templateType);
+    location.href = this.getEditorUrl(templateType, 0);
+  },
+
+  getEditorUrl: function(templateType, templateId) {
+    return 'templateEditor.cshtml?siteId=' + this.siteId + '&templateId=' + templateId + '&templateType=' + templateType;
+  },
+
+  reload: function() {
+    var $this = this;
+
+    this.templates = _.filter(this.allTemplates, function(o) {
+      var isTemplateType = true;
+      var isChannels = true;
+      var isKeyword = true;
+      if ($this.templateType != 'All') {
+        isTemplateType = o.templateType === $this.templateType;
+      }
+      if ($this.channelIds.length > 0) {
+        isChannels = false;
+        for (var i = 0; i < $this.channelIds.length; i++) {
+          var channelId = $this.channelIds[i][$this.channelIds[i].length - 1];
+          if (o.channelIds && o.channelIds.indexOf(channelId) !== -1) {
+            isChannels = true;
+          }
+        }
+      }
+      if ($this.keyword) {
+        isKeyword = (o.templateName || '').indexOf($this.keyword) !== -1 || (o.relatedFileName || '').indexOf($this.keyword) !== -1 || (o.createdFileFullName || '').indexOf($this.keyword) !== -1;
+      }
+      
+      return isTemplateType && isChannels && isKeyword;
+    });
   }
 };
 
@@ -120,6 +208,6 @@ new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.getConfig();
+    this.apiList();
   }
 });

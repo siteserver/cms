@@ -77,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (fileNames.Count > 1)
             {
-                var styleList = TableStyleManager.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
+                var styleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
 
                 foreach (var fileName in fileNames)
                 {

@@ -356,10 +356,10 @@ namespace SiteServer.BackgroundPages
                 errorMessage = "两次输入的管理员密码不一致！";
                 return false;
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(TbAdminPassword.Text, EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit)))
+            if (!PasswordRestrictionUtils.IsValid(TbAdminPassword.Text, PasswordRestriction.LetterAndDigit.GetValue()))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestriction.LetterAndDigit)}";
+                    $"密码不符合规则，请包含{PasswordRestriction.LetterAndDigit.GetDisplayName()}";
                 return false;
             }
             return true;

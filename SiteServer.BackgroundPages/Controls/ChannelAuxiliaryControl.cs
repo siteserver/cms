@@ -5,6 +5,7 @@ using System.Web.UI;
 using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 
 namespace SiteServer.BackgroundPages.Controls
@@ -24,7 +25,7 @@ namespace SiteServer.BackgroundPages.Controls
             if (Attributes == null) return;
 
 		    var channelInfo = ChannelManager.GetChannelAsync(Site.Id, ChannelId).GetAwaiter().GetResult();
-            var styleList = TableStyleManager.GetChannelStyleListAsync(channelInfo).GetAwaiter().GetResult();
+            var styleList = DataProvider.TableStyleRepository.GetChannelStyleListAsync(channelInfo).GetAwaiter().GetResult();
 
 		    if (styleList == null) return;
 
@@ -36,7 +37,7 @@ namespace SiteServer.BackgroundPages.Controls
 
 		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (style.Type == InputType.TextEditor)
+                if (style.InputType == InputType.TextEditor)
                 {
                     builder.Append($@"
 <div class=""form-group form-row"">

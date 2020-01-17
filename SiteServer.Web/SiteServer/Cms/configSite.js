@@ -50,14 +50,14 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post({
       siteName: $this.siteName,
       charset: $this.charset,
       pageSize: $this.pageSize,
       isCreateDoubleClick: $this.isCreateDoubleClick
     }, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',

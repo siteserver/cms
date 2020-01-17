@@ -29,7 +29,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             var templateInfo = new Template
             {
-                Type = templateType
+                TemplateType = templateType
             };
             var pageInfo = await PageInfo.GetPageInfoAsync(channelId, contentId, site, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
@@ -61,7 +61,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var templateInfo = new Template
             {
                 Id = context.TemplateId,
-                Type = context.TemplateType
+                TemplateType = context.TemplateType
             };
             var pageInfo = await PageInfo.GetPageInfoAsync(context.ChannelId, context.ContentId, site, templateInfo, context.PluginItems);
             var contextInfo = new ContextInfo(pageInfo);

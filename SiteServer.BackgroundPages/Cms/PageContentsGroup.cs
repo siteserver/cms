@@ -48,13 +48,13 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentId = AuthRequest.GetQueryInt("contentId");
 
                 var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
-                var groupList = StringUtils.GetStringList(contentInfo.GroupNameCollection);
+                var groupList = contentInfo.GroupNames;
                 if (groupList.Contains(_contentGroupName))
                 {
                     groupList.Remove(_contentGroupName);
                 }
 
-                contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(groupList);
+                contentInfo.GroupNames = groupList;
                 DataProvider.ContentRepository.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
                 AuthRequest.AddSiteLogAsync(SiteId, "移除内容", $"内容:{contentInfo.Title}").GetAwaiter().GetResult();
                 SuccessMessage("移除成功");

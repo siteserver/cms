@@ -10,7 +10,6 @@ var data = {
   separatedApiUrl: null,
 
   editPanel: false,
-  editAlert: null,
   editForm: null,
   editLoading: false,
   editRules: {
@@ -26,7 +25,6 @@ var data = {
   },
 
   apiPanel: false,
-  apiAlert: null,
   apiForm: null,
   apiLoading: false,
   apiRules: {
@@ -48,7 +46,7 @@ var methods = {
       $this.isSeparatedApi = res.isSeparatedApi;
       $this.separatedApiUrl = res.separatedApiUrl;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -74,7 +72,6 @@ var methods = {
   btnEditCancelClick: function() {
     this.editPanel = false;
     this.editLoading = false;
-    this.editAlert = null;
   },
 
   btnEditSubmitClick: function() {
@@ -96,13 +93,11 @@ var methods = {
       $this.sites = res.value;
       $this.editPanel = false;
     }).catch(function (error) {
-      $this.editAlert = utils.getPanelAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.editLoading = false;
     });
   },
-
-  ////////////////////////////////api////////////////////////////////
 
   btnApiClick: function() {
     this.apiForm = {
@@ -115,7 +110,6 @@ var methods = {
   btnApiCancelClick: function() {
     this.apiPanel = false;
     this.apiLoading = false;
-    this.apiAlert = null;
   },
 
   btnApiSubmitClick: function() {
@@ -139,7 +133,7 @@ var methods = {
 
       $this.apiPanel = false;
     }).catch(function (error) {
-      $this.apiAlert = utils.getPanelAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.apiLoading = false;
     });

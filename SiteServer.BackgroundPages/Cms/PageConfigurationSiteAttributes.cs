@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId");
 
-            _styleList = TableStyleManager.GetSiteStyleListAsync(SiteId).GetAwaiter().GetResult();
+            _styleList = DataProvider.TableStyleRepository.GetSiteStyleListAsync(SiteId).GetAwaiter().GetResult();
 
             if (!IsPostBack)
 			{
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var value = BackgroundInputTypeParser.Parse(Site, 0, style, attributes, pageScripts, out extra);
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (InputTypeUtils.Equals(style.InputType, InputType.TextEditor))
+                if (style.InputType == InputType.TextEditor)
                 {
                     var commands = WebUtils.GetTextEditorCommands(Site, style.AttributeName);
                     builder.Append($@"

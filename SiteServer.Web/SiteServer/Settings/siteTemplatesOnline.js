@@ -79,7 +79,7 @@ var methods = {
 
       $this.siteAddPermission = res.siteAddPermission;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -106,7 +106,7 @@ var methods = {
         $this.allTagNames = res.allTagNames;
       })
       .catch(function (error) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       })
       .then(function () {
         $this.apiGetConfig();

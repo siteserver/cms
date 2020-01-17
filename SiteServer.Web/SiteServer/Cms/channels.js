@@ -74,7 +74,7 @@ var methods = {
         });
       }
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
       $this.loading && $this.loading.close();
@@ -93,7 +93,7 @@ var methods = {
       $this.editTaxisTypes = res.taxisTypes;
       $this.editPanel = true;
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     }).then(function () {
       $this.loading.close();
     });
@@ -109,7 +109,7 @@ var methods = {
       $this.appendPanel = false;
       $this.apiList('栏目添加成功!');
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     });
   },
 
@@ -123,7 +123,7 @@ var methods = {
       $this.editPanel = false;
       $this.apiList('栏目编辑成功!');
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     });
   },
 
@@ -139,7 +139,7 @@ var methods = {
       $this.deletePanel = false;
       $this.apiList('栏目删除成功!');
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     });
   },
 
@@ -158,7 +158,7 @@ var methods = {
       $this.importPanel = false;
       $this.apiList('栏目导入成功!');
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     });
   },
 
@@ -174,7 +174,7 @@ var methods = {
 
       window.open(res.value);
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     });
   },
 

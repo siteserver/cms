@@ -93,7 +93,7 @@ namespace SiteServer.CMS.Plugin
 
         public static List<string> GetContentPluginIds(Channel channel)
         {
-            if (channel.ContentRelatedPluginIds.Any() &&
+            if (channel.ContentRelatedPluginIdList.Any() &&
                 string.IsNullOrEmpty(channel.ContentModelPluginId))
             {
                 return null;

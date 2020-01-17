@@ -26,7 +26,7 @@ var methods = {
       $this.user = res.user;
       $this.groupName = res.groupName;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });

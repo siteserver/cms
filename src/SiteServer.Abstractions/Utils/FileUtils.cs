@@ -36,31 +36,45 @@ namespace SiteServer.Abstractions
 
         public static string ReadText(string filePath, Encoding encoding)
         {
-            var sr = new StreamReader(filePath, encoding);
-            var text = sr.ReadToEnd();
-            sr.Close();
+            string text;
+            using (var sr = new StreamReader(filePath, encoding))
+            {
+                text = sr.ReadToEnd();
+                sr.Close();
+            }
             return text;
         }
 
-	    public static async Task<string> ReadTextAsync(string filePath, Encoding encoding)
-	    {
-	        var sr = new StreamReader(filePath, encoding);
-	        var text = await sr.ReadToEndAsync();
-	        sr.Close();
+        public static async Task<string> ReadTextAsync(string filePath)
+        {
+            return await ReadTextAsync(filePath, Encoding.UTF8);
+        }
+
+        public static async Task<string> ReadTextAsync(string filePath, Encoding encoding)
+        {
+            string text;
+            using (var sr = new StreamReader(filePath, encoding))
+            {
+                text = await sr.ReadToEndAsync();
+                sr.Close();
+            }
 	        return text;
 	    }
 
-        public static async Task WriteTextAsync(string filePath, Encoding encoding, string content)
+        public static async Task WriteTextAsync(string filePath, string content)
+        {
+            await WriteTextAsync(filePath, content, Encoding.UTF8);
+        }
+
+        public static async Task WriteTextAsync(string filePath, string content, Encoding encoding)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-            byte[] encodedText = encoding.GetBytes(content);
+            var encodedText = encoding.GetBytes(content);
 
-            using (FileStream sourceStream = new FileStream(filePath,
-                FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize: 4096, useAsync: true))
-            {
-                await sourceStream.WriteAsync(encodedText, 0, encodedText.Length);
-            }
+            using var sourceStream = new FileStream(filePath,
+                FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize: 4096, useAsync: true);
+            await sourceStream.WriteAsync(encodedText, 0, encodedText.Length);
         }
 
 	    public static void WriteText(string filePath, string content)
@@ -73,14 +87,11 @@ namespace SiteServer.Abstractions
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
             var file = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
-            using (var writer = new StreamWriter(file, encoding))
-            {
-                writer.Write(content);
-                writer.Flush();
-                writer.Close();
-
-                file.Close();
-            }
+            using var writer = new StreamWriter(file, encoding);
+            writer.Write(content);
+            writer.Flush();
+            writer.Close();
+            file.Close();
         }
 
 	    public static void AppendText(string filePath, string content)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
@@ -144,9 +145,9 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (PhLinkType.Visible)
                 {
-                    ControlUtils.SelectSingleItem(DdlLinkType, nodeInfo.LinkType);
+                    ControlUtils.SelectSingleItem(DdlLinkType, nodeInfo.LinkType.GetValue());
                 }
-                ControlUtils.SelectSingleItem(DdlTaxisType, nodeInfo.DefaultTaxisType);
+                ControlUtils.SelectSingleItem(DdlTaxisType, nodeInfo.DefaultTaxisType.GetValue());
 
                 TbImageUrl.Text = nodeInfo.ImageUrl;
                 LtlImageUrlButtonGroup.Text = WebUtils.GetImageUrlButtonGroupHtml(Site, TbImageUrl.ClientID);
@@ -211,7 +212,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                var styleList = TableStyleManager.GetChannelStyleListAsync(nodeInfo).GetAwaiter().GetResult();
+                var styleList = DataProvider.TableStyleRepository.GetChannelStyleListAsync(nodeInfo).GetAwaiter().GetResult();
 
                 var extendedAttributes = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleList, Request.Form, null).GetAwaiter().GetResult();
                 if (extendedAttributes.Count > 0)
@@ -256,9 +257,9 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 if (PhLinkType.Visible)
                 {
-                    nodeInfo.LinkType = DdlLinkType.SelectedValue;
+                    nodeInfo.LinkType = TranslateUtils.ToEnum(DdlLinkType.SelectedValue, LinkType.None);
                 }
-                nodeInfo.DefaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
+                nodeInfo.DefaultTaxisType = TranslateUtils.ToEnum(DdlTaxisType.SelectedValue, TaxisType.OrderByTaxisDesc);
                 if (PhChannelTemplateId.Visible)
                 {
                     nodeInfo.ChannelTemplateId = DdlChannelTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue) : 0;

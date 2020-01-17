@@ -22,6 +22,9 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "所处上下文")]
         private const string Context = nameof(Context);
 
+        [StlAttribute(Title = "显示模式")]
+        private const string Inline = nameof(Inline);
+
         [StlAttribute(Title = "动态请求发送前执行的JS代码")]
         private const string OnBeforeSend = nameof(OnBeforeSend);
 
@@ -42,6 +45,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return string.Empty;
             }
 
+            var inline = false;
             var onBeforeSend = string.Empty;
             var onSuccess = string.Empty;
             var onComplete = string.Empty;
@@ -54,6 +58,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (StringUtils.EqualsIgnoreCase(name, Context))
                 {
                     contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, Inline))
+                {
+                    inline = TranslateUtils.ToBool(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, OnBeforeSend))
                 {
@@ -81,10 +89,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 loading = innerBuilder.ToString();
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, loading, template, onBeforeSend, onSuccess, onComplete, onError);
+            return await ParseImplAsync(pageInfo, contextInfo, loading, template, inline, onBeforeSend, onSuccess, onComplete, onError);
         }
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string loading, string template, string onBeforeSend, string onSuccess, string onComplete, string onError)
+        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
             pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.StlClient);
 
@@ -110,13 +118,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                 OnError = onError
             };
 
-            return dynamicInfo.GetScript(ApiRouteActionsDynamic.GetUrl(pageInfo.ApiUrl));
+            return dynamicInfo.GetScript(ApiRouteActionsDynamic.GetUrl(pageInfo.ApiUrl), inline);
         }
 
         internal static async Task<string> ParseDynamicElementAsync(string stlElement, PageInfo pageInfo, ContextInfo contextInfo)
         {
             stlElement = StringUtils.ReplaceIgnoreCase(stlElement, "isdynamic=\"true\"", string.Empty);
-            return await ParseImplAsync(pageInfo, contextInfo, string.Empty, stlElement, string.Empty, string.Empty, string.Empty, string.Empty);
+            return await ParseImplAsync(pageInfo, contextInfo, string.Empty, stlElement, true, string.Empty, string.Empty, string.Empty, string.Empty);
         }
 
         public static async Task<string> ParseDynamicContentAsync(DynamicInfo dynamicInfo, string template)

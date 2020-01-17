@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.CMS.DataCache;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin.Impl;
@@ -15,12 +16,12 @@ namespace SiteServer.CMS.Core
         {
             var isCrossSiteTrans = false;
 
-            if (channel != null && channel.TransType != ECrossSiteTransType.None)
+            if (channel != null && channel.TransType != TransType.None)
             {
                 var transType = channel.TransType;
-                if (transType != ECrossSiteTransType.None)
+                if (transType != TransType.None)
                 {
-                    if (transType == ECrossSiteTransType.AllParentSite)
+                    if (transType == TransType.AllParentSite)
                     {
                         var parentSiteId = await DataProvider.SiteRepository.GetParentSiteIdAsync(site.Id);
                         if (parentSiteId != 0)
@@ -28,15 +29,15 @@ namespace SiteServer.CMS.Core
                             isCrossSiteTrans = true;
                         }
                     }
-                    else if (transType == ECrossSiteTransType.SelfSite)
+                    else if (transType == TransType.SelfSite)
                     {
                         isCrossSiteTrans = true;
                     }
-                    else if (transType == ECrossSiteTransType.AllSite)
+                    else if (transType == TransType.AllSite)
                     {
                         isCrossSiteTrans = true;
                     }
-                    else if (transType == ECrossSiteTransType.SpecifiedSite)
+                    else if (transType == TransType.SpecifiedSite)
                     {
                         if (channel.TransSiteId > 0)
                         {
@@ -47,7 +48,7 @@ namespace SiteServer.CMS.Core
                             }
                         }
                     }
-                    else if (transType == ECrossSiteTransType.ParentSite)
+                    else if (transType == TransType.ParentSite)
                     {
                         var parentSiteId = await DataProvider.SiteRepository.GetParentSiteIdAsync(site.Id);
                         if (parentSiteId != 0)
@@ -67,7 +68,7 @@ namespace SiteServer.CMS.Core
 
             if (channel != null)
             {
-                if (channel.TransType == ECrossSiteTransType.SelfSite || channel.TransType == ECrossSiteTransType.ParentSite || channel.TransType == ECrossSiteTransType.SpecifiedSite)
+                if (channel.TransType == TransType.SelfSite || channel.TransType == TransType.ParentSite || channel.TransType == TransType.SpecifiedSite)
                 {
                     isAutomatic = channel.TransIsAutomatic;
                 }
@@ -81,14 +82,14 @@ namespace SiteServer.CMS.Core
             siteIdDropDownList.Items.Clear();
 
             var channelInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
-            if (channelInfo.TransType == ECrossSiteTransType.SelfSite || channelInfo.TransType == ECrossSiteTransType.SpecifiedSite || channelInfo.TransType == ECrossSiteTransType.ParentSite)
+            if (channelInfo.TransType == TransType.SelfSite || channelInfo.TransType == TransType.SpecifiedSite || channelInfo.TransType == TransType.ParentSite)
             {
                 int theSiteId;
-                if (channelInfo.TransType == ECrossSiteTransType.SelfSite)
+                if (channelInfo.TransType == TransType.SelfSite)
                 {
                     theSiteId = site.Id;
                 }
-                else if (channelInfo.TransType == ECrossSiteTransType.SpecifiedSite)
+                else if (channelInfo.TransType == TransType.SpecifiedSite)
                 {
                     theSiteId = channelInfo.TransSiteId;
                 }
@@ -106,7 +107,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
             }
-            else if (channelInfo.TransType == ECrossSiteTransType.AllParentSite)
+            else if (channelInfo.TransType == TransType.AllParentSite)
             {
                 var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
 
@@ -126,7 +127,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
             }
-            else if (channelInfo.TransType == ECrossSiteTransType.AllSite)
+            else if (channelInfo.TransType == TransType.AllSite)
             {
                 var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
 
@@ -144,7 +145,7 @@ namespace SiteServer.CMS.Core
         {
             channelIdListBox.Items.Clear();
 
-            var isUseNodeNames = channel.TransType == ECrossSiteTransType.AllParentSite || channel.TransType == ECrossSiteTransType.AllSite;
+            var isUseNodeNames = channel.TransType == TransType.AllParentSite || channel.TransType == TransType.AllSite;
 
             if (!isUseNodeNames)
             {
@@ -192,24 +193,24 @@ namespace SiteServer.CMS.Core
 
             if (channel != null)
             {
-                results = ECrossSiteTransTypeUtils.GetText(channel.TransType);
+                results = channel.TransType.GetDisplayName();
 
-                if (channel.TransType == ECrossSiteTransType.AllParentSite || channel.TransType == ECrossSiteTransType.AllSite)
+                if (channel.TransType == TransType.AllParentSite || channel.TransType == TransType.AllSite)
                 {
                     if (!string.IsNullOrEmpty(channel.TransChannelNames))
                     {
                         results += $"({channel.TransChannelNames})";
                     }
                 }
-                else if (channel.TransType == ECrossSiteTransType.SelfSite || channel.TransType == ECrossSiteTransType.SpecifiedSite || channel.TransType == ECrossSiteTransType.ParentSite)
+                else if (channel.TransType == TransType.SelfSite || channel.TransType == TransType.SpecifiedSite || channel.TransType == TransType.ParentSite)
                 {
                     Site site = null;
 
-                    if (channel.TransType == ECrossSiteTransType.SelfSite)
+                    if (channel.TransType == TransType.SelfSite)
                     {
                         site = await DataProvider.SiteRepository.GetAsync(siteId);
                     }
-                    else if (channel.TransType == ECrossSiteTransType.SpecifiedSite)
+                    else if (channel.TransType == TransType.SpecifiedSite)
                     {
                         site = await DataProvider.SiteRepository.GetAsync(channel.TransSiteId);
                     }
@@ -256,27 +257,27 @@ namespace SiteServer.CMS.Core
             contentInfo.CheckedLevel = 0;
 
             //复制
-            if (Equals(channel.TransDoneType, ETranslateContentType.Copy))
+            if (Equals(channel.TransDoneType, TranslateContentType.Copy))
             {
-                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy);
+                contentInfo.TranslateContentType = TranslateContentType.Copy;
             }
             //引用地址
-            else if (Equals(channel.TransDoneType, ETranslateContentType.Reference))
+            else if (Equals(channel.TransDoneType, TranslateContentType.Reference))
             {
                 contentInfo.SiteId = targetSite.Id;
                 contentInfo.SourceId = channel.Id;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.Reference);
+                contentInfo.TranslateContentType = TranslateContentType.Reference;
             }
             //引用内容
-            else if (Equals(channel.TransDoneType, ETranslateContentType.ReferenceContent))
+            else if (Equals(channel.TransDoneType, TranslateContentType.ReferenceContent))
             {
                 contentInfo.SiteId = targetSite.Id;
                 contentInfo.SourceId = channel.Id;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.TranslateContentType = ETranslateContentTypeUtils.GetValue(ETranslateContentType.ReferenceContent);
+                contentInfo.TranslateContentType = TranslateContentType.ReferenceContent;
             }
 
             await DataProvider.ContentRepository.InsertAsync(targetSite, channel, contentInfo);

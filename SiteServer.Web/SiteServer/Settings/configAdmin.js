@@ -47,13 +47,13 @@ var methods = {
   submit: function (item) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post({
       adminTitle: $this.adminTitle,
       adminLogoUrl: $this.adminLogoUrl,
       adminWelcomeHtml: $this.adminWelcomeHtml
     }, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',

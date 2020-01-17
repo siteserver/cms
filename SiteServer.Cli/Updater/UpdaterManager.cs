@@ -77,7 +77,7 @@ namespace SiteServer.Cli.Updater
 
                             var newRows = UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict, converter.Process);
 
-                            await FileUtils.WriteTextAsync(newFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
+                            await FileUtils.WriteTextAsync(newFilePath, TranslateUtils.JsonSerialize(newRows));
                         }
                         else
                         {
@@ -167,7 +167,7 @@ namespace SiteServer.Cli.Updater
                                 var siteTableFileName = $"{siteTableInfo.RowFiles.Count + 1}.json";
                                 siteTableInfo.RowFiles.Add(siteTableFileName);
                                 var filePath = NewTreeInfo.GetTableContentFilePath(siteTableName, siteTableFileName);
-                                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, TranslateUtils.JsonSerialize(siteRows));
+                                await FileUtils.WriteTextAsync(filePath, TranslateUtils.JsonSerialize(siteRows));
                             }
                         }
                     }
@@ -250,10 +250,6 @@ namespace SiteServer.Cli.Updater
             else if (StringUtils.EqualsIgnoreCase(TableTableStyle.OldTableName, oldTableName))
             {
                 converter = TableTableStyle.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableTableStyleItem.OldTableName, oldTableName))
-            {
-                converter = TableTableStyleItem.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableTag.OldTableName, oldTableName))
             {

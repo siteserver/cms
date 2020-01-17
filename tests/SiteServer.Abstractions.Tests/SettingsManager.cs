@@ -60,9 +60,9 @@ namespace SiteServer.Abstractions.Tests
         public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey)) ?? StringUtils.GetShortGuid().ToUpper();
 
         public DatabaseType DatabaseType =>
-            TranslateUtils.ToEnum(_config.GetValue<string>("Database:Type"), DatabaseType.MySql);
+            TranslateUtils.ToEnum(_config.GetValue<string>("Database:InputType"), DatabaseType.MySql);
         public string DatabaseConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Database:ConnectionString")) : _config.GetValue<string>("Database:ConnectionString");
-        public CacheType CacheType => CacheType.Parse(_config.GetValue<string>("Cache:Type"));
+        public CacheType CacheType => TranslateUtils.ToEnum(_config.GetValue<string>("Cache:InputType"), CacheType.Memory);
         public string CacheConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Cache:ConnectionString")) : _config.GetValue<string>("Cache:ConnectionString");
 
         public IList<Menu> Menus { get; }
@@ -96,11 +96,11 @@ namespace SiteServer.Abstractions.Tests
   ""IsProtectData"": {isProtectData.ToString().ToLower()},
   ""SecurityKey"": ""{securityKey}"",
   ""Database"": {{
-    ""Type"": ""{databaseType.GetValue()}"",
+    ""InputType"": ""{databaseType.GetValue()}"",
     ""ConnectionString"": ""{databaseConnectionStringValue}""
   }},
   ""Redis"": {{
-    ""Type"": ""{cacheType.Value}"",
+    ""InputType"": ""{cacheType.GetValue()}"",
     ""ConnectionString"": ""{cacheConnectionStringValue}""
   }}
 }}";

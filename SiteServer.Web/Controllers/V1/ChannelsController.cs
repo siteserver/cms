@@ -37,7 +37,7 @@ namespace SiteServer.API.Controllers.V1
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var contentModelPluginId = request.GetPostString(nameof(Channel.ContentModelPluginId));
-                var contentRelatedPluginIds = StringUtils.GetStringList(request.GetPostString(nameof(Channel.ContentRelatedPluginIds)));
+                var contentRelatedPluginIdList = StringUtils.GetStringList(request.GetPostString(nameof(Channel.ContentRelatedPluginIdList)));
 
                 var channelName = request.GetPostString(nameof(Channel.ChannelName));
                 var indexName = request.GetPostString(nameof(Channel.IndexName));
@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.V1
                 var keywords = request.GetPostString(nameof(Channel.Keywords));
                 var description = request.GetPostString(nameof(Channel.Description));
                 var linkUrl = request.GetPostString(nameof(Channel.LinkUrl));
-                var linkType = request.GetPostString(nameof(Channel.LinkType));
+                var linkType = TranslateUtils.ToEnum(request.GetPostString(nameof(Channel.LinkType)), LinkType.None);
                 var channelTemplateId = request.GetPostInt(nameof(Channel.ChannelTemplateId));
                 var contentTemplateId = request.GetPostInt(nameof(Channel.ContentTemplateId));
 
@@ -59,7 +59,7 @@ namespace SiteServer.API.Controllers.V1
                     SiteId = siteId,
                     ParentId = parentId,
                     ContentModelPluginId = contentModelPluginId,
-                    ContentRelatedPluginIdList = contentRelatedPluginIds
+                    ContentRelatedPluginIdList = contentRelatedPluginIdList
                 };
 
                 if (!string.IsNullOrEmpty(indexName))
@@ -217,9 +217,9 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                if (request.IsPostExists(nameof(Channel.ContentRelatedPluginIds)))
+                if (request.IsPostExists(nameof(Channel.ContentRelatedPluginIdList)))
                 {
-                    channelInfo.ContentRelatedPluginIdList = StringUtils.GetStringList(request.GetPostString(nameof(Channel.ContentRelatedPluginIds)));
+                    channelInfo.ContentRelatedPluginIdList = StringUtils.GetStringList(request.GetPostString(nameof(Channel.ContentRelatedPluginIdList)));
                 }
 
                 if (request.IsPostExists(nameof(Channel.FilePath)))
@@ -319,7 +319,7 @@ namespace SiteServer.API.Controllers.V1
 
                 if (request.IsPostExists(nameof(Channel.LinkType)))
                 {
-                    channelInfo.LinkType = request.GetPostString(nameof(Channel.LinkType));
+                    channelInfo.LinkType = TranslateUtils.ToEnum(request.GetPostString(nameof(Channel.LinkType)), LinkType.None);
                 }
 
                 if (request.IsPostExists(nameof(Channel.ChannelTemplateId)))

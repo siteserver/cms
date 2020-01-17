@@ -211,7 +211,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (isOriginal)
             {
-                if (content.ReferenceId > 0 && content.SourceId > 0 && ETranslateContentTypeUtils.Equals(ETranslateContentType.Reference, content.TranslateContentType))
+                if (content.ReferenceId > 0 && content.SourceId > 0 && TranslateContentType.Reference == content.TranslateContentType)
                 {
                     var targetChannelId = content.SourceId;
                     //var targetSiteId = DataProvider.ChannelRepository.GetSiteId(targetChannelId);
@@ -248,12 +248,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (ContentAttribute.Title.ToLower().Equals(type))
                 {
                     var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, content.ChannelId);
-                    var relatedIdentities = TableStyleManager.GetRelatedIdentities(nodeInfo);
+                    var relatedIdentities = DataProvider.TableStyleRepository.GetRelatedIdentities(nodeInfo);
                     var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, nodeInfo);
 
-                    var styleInfo = await TableStyleManager.GetTableStyleAsync(tableName, type, relatedIdentities);
+                    var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(tableName, type, relatedIdentities);
                     parsedContent = await InputParserUtility.GetContentByTableStyleAsync(content.Title, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
-                    parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                    parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(content.Get<string>(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title))))
                     {
@@ -560,7 +560,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (ContentAttribute.Tags.ToLower().Equals(type))
                 {
-                    parsedContent = content.Tags;
+                    parsedContent = TranslateUtils.ObjectCollectionToString(content.TagNames);
                 }
                 else if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ContentItem != null)
                 {
@@ -582,14 +582,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes.Value, type))
                         {
-                            var relatedIdentities = TableStyleManager.GetRelatedIdentities(nodeInfo);
+                            var relatedIdentities = DataProvider.TableStyleRepository.GetRelatedIdentities(nodeInfo);
                             var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, nodeInfo);
-                            var styleInfo = await TableStyleManager.GetTableStyleAsync(tableName, type, relatedIdentities);
+                            var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(tableName, type, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var num = TranslateUtils.ToInt(no);
                             parsedContent = await InputParserUtility.GetContentByTableStyleAsync(content, separator, pageInfo.Site, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
-                            parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else
                         {

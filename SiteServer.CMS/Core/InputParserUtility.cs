@@ -25,7 +25,7 @@ namespace SiteServer.CMS.Core
         {
             var parsedContent = content;
 
-            var inputType = style.Type;
+            var inputType = style.InputType;
 
             if (inputType == InputType.Date)
             {
@@ -63,14 +63,14 @@ namespace SiteServer.CMS.Core
             {
                 var selectedTexts = new ArrayList();
                 var selectedValues = StringUtils.GetStringList(content);
-                var styleItems = style.StyleItems;
+                var styleItems = style.Items;
                 if (styleItems != null)
                 {
                     foreach (var itemInfo in styleItems)
                     {
-                        if (selectedValues.Contains(itemInfo.ItemValue))
+                        if (selectedValues.Contains(itemInfo.Value))
                         {
-                            selectedTexts.Add(isStlEntity ? itemInfo.ItemValue : itemInfo.ItemTitle);
+                            selectedTexts.Add(isStlEntity ? itemInfo.Value : itemInfo.Label);
                         }
                     }
                 }
@@ -106,7 +106,7 @@ namespace SiteServer.CMS.Core
             var value = content.Get<string>(style.AttributeName);
             var parsedContent = string.Empty;
 
-            var inputType = style.Type;
+            var inputType = style.InputType;
 
             if (inputType == InputType.Date)
             {
@@ -136,14 +136,14 @@ namespace SiteServer.CMS.Core
             {
                 var selectedTexts = new ArrayList();
                 var selectedValues = StringUtils.GetStringList(value);
-                var styleItems = style.StyleItems;
+                var styleItems = style.Items;
                 if (styleItems != null)
                 {
                     foreach (var itemInfo in styleItems)
                     {
-                        if (selectedValues.Contains(itemInfo.ItemValue))
+                        if (selectedValues.Contains(itemInfo.Value))
                         {
-                            selectedTexts.Add(isStlEntity ? itemInfo.ItemValue : itemInfo.ItemTitle);
+                            selectedTexts.Add(isStlEntity ? itemInfo.Value : itemInfo.Label);
                         }
                     }
                 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using Newtonsoft.Json;
 
 namespace SiteServer.Abstractions
 {
@@ -18,8 +19,10 @@ namespace SiteServer.Abstractions
         public string ContentModelPluginId { get; set; }
 
         [DataColumn]
-        public string ContentRelatedPluginIds { get; set; }
+        [JsonIgnore]
+        private string ContentRelatedPluginIds { get; set; }
 
+        [DataIgnore]
         public List<string> ContentRelatedPluginIdList
         {
             get => StringUtils.GetStringList(ContentRelatedPluginIds);
@@ -39,20 +42,13 @@ namespace SiteServer.Abstractions
         public int ChildrenCount { get; set; }
 
         [DataColumn]
-        public string IsLastNode { get; set; }
-
-        public bool LastNode
-        {
-            get => TranslateUtils.ToBool(IsLastNode);
-            set => IsLastNode = value.ToString();
-        }
-
-        [DataColumn]
         public string IndexName { get; set; }
 
         [DataColumn]
+        [JsonIgnore]
         private string GroupNameCollection { get; set; }
 
+        [DataIgnore]
         public List<string> GroupNames
         {
             get => StringUtils.GetStringList(GroupNameCollection);
@@ -84,7 +80,7 @@ namespace SiteServer.Abstractions
         public string LinkUrl { get; set; }
 
         [DataColumn]
-        public string LinkType { get; set; }
+        public LinkType LinkType { get; set; }
 
         [DataColumn]
         public int ChannelTemplateId { get; set; }
@@ -109,7 +105,7 @@ namespace SiteServer.Abstractions
 
         public string ContentAttributesOfDisplay { get; set; }
 
-        public ECrossSiteTransType TransType { get; set; }
+        public TransType TransType { get; set; }
 
         public int TransSiteId { get; set; }
 
@@ -120,11 +116,11 @@ namespace SiteServer.Abstractions
         public bool TransIsAutomatic { get; set; }
 
         //跨站转发操作类型：复制 引用地址 引用内容
-        public ETranslateContentType TransDoneType { get; set; }
+        public TranslateContentType TransDoneType { get; set; }
 
         public bool IsPreviewContentsExists { get; set; }
 
-        public string DefaultTaxisType { get; set; } = ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc);
+        public TaxisType DefaultTaxisType { get; set; } = TaxisType.OrderByTaxisDesc;
 
         //显示下级栏目内容
         public bool IsAllContents { get; set; }

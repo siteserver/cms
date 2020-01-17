@@ -19,7 +19,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         public async Task<List<Element>> List()
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, auth.SiteId, Constants.SitePermissions.TemplatesReference);
+            await auth.CheckSitePermissionsAsync(Request, auth.SiteId, Constants.SitePermissions.TemplateReference);
 
             var list = new List<Element>();
             var elements = StlAll.Elements;
@@ -45,7 +45,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         public async Task<List<Field>> ListFields([FromBody]FieldsRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplatesReference);
+            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplateReference);
 
             var elements = StlAll.Elements;
             if (!elements.TryGetValue(request.ElementName, out var elementType))

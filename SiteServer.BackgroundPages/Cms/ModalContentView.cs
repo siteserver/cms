@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var styleList = TableStyleManager.GetContentStyleListAsync(Site, channelInfo).GetAwaiter().GetResult();
+            var styleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, channelInfo).GetAwaiter().GetResult();
 
             RptContents.DataSource = styleList;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
@@ -68,13 +68,13 @@ namespace SiteServer.BackgroundPages.Cms
             LtlTitle.Text = _content.Title;
             LtlChannelName.Text = channelInfo.ChannelName;
 
-            LtlTags.Text = _content.Tags;
+            LtlTags.Text = TranslateUtils.ObjectCollectionToString(_content.TagNames);
             if (string.IsNullOrEmpty(LtlTags.Text))
             {
                 PhTags.Visible = false;
             }
 
-            LtlContentGroup.Text = _content.GroupNameCollection;
+            LtlContentGroup.Text = TranslateUtils.ObjectCollectionToString(_content.GroupNames);
             if (string.IsNullOrEmpty(LtlContentGroup.Text))
             {
                 PhContentGroup.Visible = false;
@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlContentLevel.Text = CheckManager.GetCheckState(Site, _content);
 
-            if (_content.ReferenceId > 0 && ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, _content.TranslateContentType))
+            if (_content.ReferenceId > 0 && TranslateContentType.ReferenceContent ==  _content.TranslateContentType)
             {
                 var referenceSiteId = DataProvider.ChannelRepository.GetSiteIdAsync(_content.SourceId).GetAwaiter().GetResult();
                 var referenceSite = DataProvider.SiteRepository.GetAsync(referenceSiteId).GetAwaiter().GetResult();

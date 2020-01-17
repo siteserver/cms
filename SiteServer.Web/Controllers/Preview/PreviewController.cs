@@ -95,14 +95,12 @@ namespace SiteServer.API.Controllers.Preview
             return Request.CreateResponse(HttpStatusCode.NotFound);
         }
 
-        private HttpResponseMessage Response(string html, Site site)
+        private HttpResponseMessage Response(string html)
         {
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content =
-                    new StringContent(html,
-                        Encoding.GetEncoding(site.Charset), "text/html")
-
+                    new StringContent(html, Encoding.UTF8, "text/html")
             };
         }
 
@@ -132,23 +130,23 @@ namespace SiteServer.API.Controllers.Preview
             }
             HttpResponseMessage message = null;
 
-            if (templateInfo.Type == TemplateType.FileTemplate)           //单页
+            if (templateInfo.TemplateType == TemplateType.FileTemplate)           //单页
             {
-                message = await GetFileTemplateAsync(visualInfo, pageInfo, contextInfo, contentBuilder, site);
+                message = await GetFileTemplateAsync(visualInfo, pageInfo, contextInfo, contentBuilder);
             }
-            else if (templateInfo.Type == TemplateType.IndexPageTemplate || templateInfo.Type == TemplateType.ChannelTemplate)        //栏目页面
+            else if (templateInfo.TemplateType == TemplateType.IndexPageTemplate || templateInfo.TemplateType == TemplateType.ChannelTemplate)        //栏目页面
             {
                 message = await GetChannelTemplateAsync(visualInfo, site, contentBuilder, pageInfo, contextInfo);
             }
-            else if (templateInfo.Type == TemplateType.ContentTemplate)        //内容页面
+            else if (templateInfo.TemplateType == TemplateType.ContentTemplate)        //内容页面
             {
-                message = await GetContentTemplateAsync(visualInfo, contextInfo, contentBuilder, pageInfo, site);
+                message = await GetContentTemplateAsync(visualInfo, contextInfo, contentBuilder, pageInfo);
             }
 
             return message;
         }
 
-        private async Task<HttpResponseMessage> GetContentTemplateAsync(VisualInfo visualInfo, ContextInfo contextInfo, StringBuilder contentBuilder, PageInfo pageInfo, Site site)
+        private async Task<HttpResponseMessage> GetContentTemplateAsync(VisualInfo visualInfo, ContextInfo contextInfo, StringBuilder contentBuilder, PageInfo pageInfo)
         {
             var contentInfo = await contextInfo.GetContentAsync();
             if (contentInfo == null) return null;
@@ -190,7 +188,7 @@ namespace SiteServer.API.Controllers.Preview
                         await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             visualInfo.ChannelId, visualInfo.ContentId, currentPageIndex, pageCount);
 
-                        return Response(pagedBuilder.ToString(), site);
+                        return Response(pagedBuilder.ToString());
                     }
 
                     if (index != -1)
@@ -223,7 +221,7 @@ namespace SiteServer.API.Controllers.Preview
                         await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             visualInfo.ChannelId, visualInfo.ContentId, currentPageIndex, pageCount);
 
-                        return Response(pagedBuilder.ToString(), site);
+                        return Response(pagedBuilder.ToString());
                     }
                 }
             }
@@ -250,7 +248,7 @@ namespace SiteServer.API.Controllers.Preview
                         await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             visualInfo.ChannelId, visualInfo.ContentId, currentPageIndex, pageCount);
 
-                        return Response(pagedBuilder.ToString(), site);
+                        return Response(pagedBuilder.ToString());
                     }
                 }
             }
@@ -278,7 +276,7 @@ namespace SiteServer.API.Controllers.Preview
                         await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             visualInfo.ChannelId, visualInfo.ContentId, currentPageIndex, pageCount);
 
-                        return Response(pagedBuilder.ToString(), site);
+                        return Response(pagedBuilder.ToString());
                     }
                 }
             }
@@ -286,7 +284,7 @@ namespace SiteServer.API.Controllers.Preview
             await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
             await StlParserManager.ReplacePageElementsInContentPageAsync(contentBuilder, pageInfo, stlLabelList,
                 contentInfo.ChannelId, contentInfo.Id, 0, 1);
-            return Response(contentBuilder.ToString(), site);
+            return Response(contentBuilder.ToString());
         }
 
         private async Task<HttpResponseMessage> GetChannelTemplateAsync(VisualInfo visualInfo, Site site, StringBuilder contentBuilder, PageInfo pageInfo, ContextInfo contextInfo)
@@ -343,7 +341,7 @@ namespace SiteServer.API.Controllers.Preview
                             await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                                 thePageInfo.PageChannelId, currentPageIndex, pageCount, 0);
 
-                            return Response(pagedBuilder.ToString(), site);
+                            return Response(pagedBuilder.ToString());
                         }
 
                         if (index != -1)
@@ -382,7 +380,7 @@ namespace SiteServer.API.Controllers.Preview
                         await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             thePageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
-                        return Response(pagedBuilder.ToString(), site);
+                        return Response(pagedBuilder.ToString());
                     }
                 }
             }
@@ -409,7 +407,7 @@ namespace SiteServer.API.Controllers.Preview
                         await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             thePageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
-                        return Response(pagedBuilder.ToString(), site);
+                        return Response(pagedBuilder.ToString());
                     }
                 }
             }
@@ -437,19 +435,19 @@ namespace SiteServer.API.Controllers.Preview
                         await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             thePageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
-                        return Response(pagedBuilder.ToString(), site);
+                        return Response(pagedBuilder.ToString());
                     }
                 }
             }
 
             await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
-            return Response(contentBuilder.ToString(), site);
+            return Response(contentBuilder.ToString());
         }
 
-        private async Task<HttpResponseMessage> GetFileTemplateAsync(VisualInfo visualInfo, PageInfo pageInfo, ContextInfo contextInfo, StringBuilder contentBuilder, Site site)
+        private async Task<HttpResponseMessage> GetFileTemplateAsync(VisualInfo visualInfo, PageInfo pageInfo, ContextInfo contextInfo, StringBuilder contentBuilder)
         {
             await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
-            return Response(contentBuilder.ToString(), site);
+            return Response(contentBuilder.ToString());
         }
     }
 }

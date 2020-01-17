@@ -140,7 +140,7 @@ namespace SiteServer.API.Controllers.Home
                 var contentIdList = StringUtils.GetIntList(request.GetPostString("contentIds"));
                 var targetSiteId = request.GetPostInt("targetSiteId");
                 var targetChannelId = request.GetPostInt("targetChannelId");
-                var copyType = request.GetPostString("copyType");
+                var copyType = TranslateUtils.ToEnum(request.GetPostString("copyType"), TranslateContentType.Copy);
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
@@ -157,7 +157,7 @@ namespace SiteServer.API.Controllers.Home
 
                 foreach (var contentId in contentIdList)
                 {
-                    await ContentUtility.TranslateAsync(site, channelId, contentId, targetSiteId, targetChannelId, ETranslateContentTypeUtils.GetEnumType(copyType));
+                    await ContentUtility.TranslateAsync(site, channelId, contentId, targetSiteId, targetChannelId, copyType);
                 }
 
                 await request.AddSiteLogAsync(siteId, channelId, "复制内容", string.Empty);

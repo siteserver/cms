@@ -20,7 +20,7 @@ var methods = {
   checkCaptcha: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $ssApi.post($urlCaptchaCheck, {
         captcha: $this.captcha
       })
@@ -28,10 +28,10 @@ var methods = {
         $this.login();
       })
       .catch(function (error) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       })
       .then(function () {
-        utils.loading(false);
+        utils.loading($this, false);
         $this.reload();
       });
   },
@@ -39,7 +39,7 @@ var methods = {
   login: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $ssApi.post($urlLogin, {
         account: $this.account,
         password: md5($this.password),
@@ -52,10 +52,10 @@ var methods = {
         location.href = utils.getQueryString('returnUrl') || 'settings.html';
       })
       .catch(function (error) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       })
       .then(function () {
-        utils.loading(false);
+        utils.loading($this, false);
         $this.reload();
       });
   },

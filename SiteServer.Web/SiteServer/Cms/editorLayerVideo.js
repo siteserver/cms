@@ -89,22 +89,22 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(true)
+    utils.loading(this, true);
   },
 
   uploadVideoSuccess: function(res) {
     this.form.videoUrl = res.url;
     this.form.type = 'url';
-    utils.loading(false);
+    utils.loading($this, false);
   },
 
   uploadImageSuccess: function(res) {
     this.form.imageUrl = res.url;
-    utils.loading(false);
+    utils.loading($this, false);
   },
 
   uploadError: function(err) {
-    utils.loading(false);
+    utils.loading($this, false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }

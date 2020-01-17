@@ -106,11 +106,11 @@ namespace SiteServer.CMS.ImportExport
             return PathUtils.GetFileName(filePath);
         }
 
-        public static async Task<string> ExportRootSingleTableStyleAsync(string tableName)
+        public static async Task<string> ExportRootSingleTableStyleAsync(string tableName, List<int> relatedIdentities)
         {
             var filePath = PathUtils.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = PathUtils.GetTemporaryFilesPath("TableStyle");
-            await TableStyleIe.SingleExportTableStylesAsync(tableName, styleDirectoryPath);
+            await TableStyleIe.SingleExportTableStylesAsync(tableName, relatedIdentities, styleDirectoryPath);
             ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);

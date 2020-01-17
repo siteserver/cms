@@ -1,1 +1,0 @@
-update siteserver_content_272 set content = replace(content, '"/cms/cms/upload/info/', '"@/cms/cms/upload/info/') where ChannelId IN (312,311,310,309)

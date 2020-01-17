@@ -1,28 +1,11 @@
-using System;
-using Datory;
-using Datory.Annotations;
-
 namespace SiteServer.Abstractions
 {
-    [DataTable("siteserver_TableStyleItem")]
-    public class TableStyleItem : Entity
+    public class TableStyleItem
     {
-        [DataColumn]
-        public int TableStyleId { get; set; }
+        public string Label { get; set; }
 
-        [DataColumn]
-        public string ItemTitle { get; set; }
+        public string Value { get; set; }
 
-        [DataColumn]
-        public string ItemValue { get; set; }
-
-        [DataColumn]
-        public string IsSelected { get; set; }
-
-        public bool Selected
-        {
-            get => TranslateUtils.ToBool(IsSelected);
-            set => IsSelected = value.ToString();
-        }
+        public bool Selected { get; set; }
     }
 }

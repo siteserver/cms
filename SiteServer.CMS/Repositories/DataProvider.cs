@@ -103,9 +103,6 @@ namespace SiteServer.CMS.Repositories
         private static TableStyleRepository _tableStyleRepository;
         public static TableStyleRepository TableStyleRepository => _tableStyleRepository ??= new TableStyleRepository();
 
-        private static TableStyleItemRepository _tableStyleItemRepository;
-        public static TableStyleItemRepository TableStyleItemRepository => _tableStyleItemRepository ??= new TableStyleItemRepository();
-
         private static ContentTagRepository _contentTagRepository;
         public static ContentTagRepository ContentTagRepository => _contentTagRepository ??= new ContentTagRepository();
 
@@ -158,7 +155,6 @@ namespace SiteServer.CMS.Repositories
             _sitePermissionsRepository = null;
             _specialRepository = null;
             _tableStyleRepository = null;
-            _tableStyleItemRepository = null;
             _contentTagRepository = null;
             _templateRepository = null;
             _templateLogRepository = null;
@@ -195,7 +191,6 @@ namespace SiteServer.CMS.Repositories
             SitePermissionsRepository,
             SpecialRepository,
             TableStyleRepository,
-            TableStyleItemRepository,
             ContentTagRepository,
             TemplateRepository,
             TemplateLogRepository,

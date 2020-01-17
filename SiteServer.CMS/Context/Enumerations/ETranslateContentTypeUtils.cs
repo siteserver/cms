@@ -1,13 +1,14 @@
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Context.Enumerations
 {
 	public class ETranslateContentTypeUtilsExtensions
 	{
-		public static ListItem GetListItem(Abstractions.ETranslateContentType type, bool selected)
+		public static ListItem GetListItem(Abstractions.TranslateContentType type, bool selected)
 		{
-			var item = new ListItem(ETranslateContentTypeUtils.GetText(type), ETranslateContentTypeUtils.GetValue(type));
+			var item = new ListItem(type.GetDisplayName(), type.GetValue());
 			if (selected)
 			{
 				item.Selected = true;
@@ -19,13 +20,13 @@ namespace SiteServer.CMS.Context.Enumerations
 		{
 			if (listControl != null)
 			{
-				listControl.Items.Add(GetListItem(ETranslateContentType.Copy, false));
+				listControl.Items.Add(GetListItem(TranslateContentType.Copy, false));
                 if (isCut)
                 {
-                    listControl.Items.Add(GetListItem(ETranslateContentType.Cut, false));
+                    listControl.Items.Add(GetListItem(TranslateContentType.Cut, false));
                 }
-                listControl.Items.Add(GetListItem(ETranslateContentType.Reference, false));
-                listControl.Items.Add(GetListItem(ETranslateContentType.ReferenceContent, false));
+                listControl.Items.Add(GetListItem(TranslateContentType.Reference, false));
+                listControl.Items.Add(GetListItem(TranslateContentType.ReferenceContent, false));
 			}
 		}
 	}

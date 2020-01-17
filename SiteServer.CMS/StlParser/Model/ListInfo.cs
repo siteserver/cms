@@ -224,11 +224,11 @@ namespace SiteServer.CMS.StlParser.Model
                 {
                     if (contextType == EContextType.Content)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxisDesc);
+                        listInfo.OrderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, TaxisType.OrderByTaxisDesc);
                     }
                     else if (contextType == EContextType.Channel)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetChannelOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxis);
+                        listInfo.OrderByString = StlDataUtility.GetChannelOrderByString(pageInfo.SiteId, value, TaxisType.OrderByTaxis);
                     }
                     //else if (contextType == EContextType.InputContent)
                     //{
@@ -432,11 +432,11 @@ namespace SiteServer.CMS.StlParser.Model
                 {
                     if (_contextType == EContextType.Content)
                     {
-                        return ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
+                        return ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByTaxisDesc);
                     }
                     if (_contextType == EContextType.Channel)
                     {
-                        return ETaxisTypeUtils.GetChannelOrderByString(ETaxisType.OrderByTaxis);
+                        return ETaxisTypeUtils.GetChannelOrderByString(TaxisType.OrderByTaxis);
                     }
                     //if (_contextType == EContextType.InputContent)
                     //{

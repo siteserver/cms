@@ -48,9 +48,9 @@ var methods = {
       payload.administratorSmsNotifyMobile = this.formInfo.additional.administratorSmsNotifyMobile;
     }
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post(payload, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',

@@ -157,7 +157,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
+                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissionList, permission.Name)
                     });
                 }
 
@@ -167,7 +167,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
+                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissionList, permission.Name)
                     });
                 }
 
@@ -214,7 +214,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Name)
+                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissionList, permission.Name)
                     });
                 }
             }
@@ -233,7 +233,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                                 {
                                     Name = permission.Name,
                                     Text = permission.Text,
-                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
+                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissionList, permission.Name)
                                 });
                             }
                         }
@@ -246,7 +246,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                                 {
                                     Name = permission.Name,
                                     Text = permission.Text,
-                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
+                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissionList, permission.Name)
                                 });
                             }
                         }
@@ -285,7 +285,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                             {
                                 Name = permission.Name,
                                 Text = permission.Text,
-                                Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Name)
+                                Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissionList, permission.Name)
                             });
                         }
                     }

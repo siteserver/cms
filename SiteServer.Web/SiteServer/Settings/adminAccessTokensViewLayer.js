@@ -27,9 +27,9 @@ var $vue = new Vue({
     regenerate: function () {
       var $this = this;
 
-      utils.loading(true);
+      utils.loading($this, true);
       $api.post(null, function (err, res) {
-        utils.loading(false);
+        utils.loading($this, false);
         if (err || !res || !res.value) return;
 
         $this.accessToken = res.value;

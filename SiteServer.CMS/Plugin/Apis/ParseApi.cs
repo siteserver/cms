@@ -33,7 +33,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var templateInfo = new Template
             {
                 Id = context.TemplateId,
-                Type = context.TemplateType
+                TemplateType = context.TemplateType
             };
             var pageInfo = await PageInfo.GetPageInfoAsync(context.ChannelId, context.ContentId, site, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);

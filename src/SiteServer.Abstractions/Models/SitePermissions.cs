@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using Newtonsoft.Json;
 
 namespace SiteServer.Abstractions
 {
@@ -14,13 +15,8 @@ namespace SiteServer.Abstractions
         public int SiteId { get; set; }
 
         [DataColumn(Text = true)]
-        public string ChannelIdCollection { get; set; }
-
-        [DataColumn(Text = true)]
-        public string ChannelPermissions { get; set; }
-
-        [DataColumn(Text = true)]
-        public string WebsitePermissions { get; set; }
+        [JsonIgnore]
+        private string ChannelIdCollection { get; set; }
 
         public List<int> ChannelIdList
         {
@@ -28,11 +24,19 @@ namespace SiteServer.Abstractions
             set => ChannelIdCollection = StringUtils.Join(value);
         }
 
+        [DataColumn(Text = true)]
+        [JsonIgnore]
+        private string ChannelPermissions { get; set; }
+
         public List<string> ChannelPermissionList
         {
             get => StringUtils.GetStringList(ChannelPermissions);
             set => ChannelPermissions = StringUtils.Join(value);
         }
+
+        [DataColumn(Text = true)]
+        [JsonIgnore]
+        private string WebsitePermissions { get; set; }
 
         public List<string> WebsitePermissionList
         {

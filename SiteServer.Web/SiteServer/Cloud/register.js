@@ -45,11 +45,11 @@ var methods = {
   checkCaptcha: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $captchaCheckApi.post({
       captcha: $this.captcha
     }, function (err) {
-      utils.loading(false);
+      utils.loading($this, false);
 
       if (err) {
         $this.reload();
@@ -76,9 +76,9 @@ var methods = {
       payload[style.attributeName] = style.value;
     }
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post(payload, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err) {
         $this.reload();
         $this.pageAlert = {

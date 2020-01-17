@@ -58,7 +58,7 @@ namespace SiteServer.CMS.Context
             return $"{GetRelatedDateTimeString(datetime)}{postfix}";
         }
 
-        public static string GetDateAndTimeString(DateTime datetime, EDateFormatType dateFormat, ETimeFormatType timeFormat)
+        public static string GetDateAndTimeString(DateTime datetime, DateFormatType dateFormat, ETimeFormatType timeFormat)
         {
             return $"{GetDateString(datetime, dateFormat)} {GetTimeString(datetime, timeFormat)}";
         }
@@ -66,13 +66,13 @@ namespace SiteServer.CMS.Context
         public static string GetDateAndTimeString(DateTime datetime)
         {
             if (datetime == Constants.SqlMinValue || datetime == DateTime.MinValue) return string.Empty;
-            return GetDateAndTimeString(datetime, EDateFormatType.Day, ETimeFormatType.ShortTime);
+            return GetDateAndTimeString(datetime, DateFormatType.Day, ETimeFormatType.ShortTime);
         }
 
         public static string GetDateString(DateTime datetime)
         {
             if (datetime == Constants.SqlMinValue || datetime == DateTime.MinValue) return string.Empty;
-            return GetDateString(datetime, EDateFormatType.Day);
+            return GetDateString(datetime, DateFormatType.Day);
         }
 
 	    public static string GetDateString(DateTimeOffset? offset)
@@ -85,22 +85,22 @@ namespace SiteServer.CMS.Context
 	        return offset.HasValue ? GetDateAndTimeString(offset.Value.DateTime) : string.Empty;
 	    }
 
-        public static string GetDateString(DateTime datetime, EDateFormatType dateFormat)
+        public static string GetDateString(DateTime datetime, DateFormatType dateFormat)
         {
             var format = string.Empty;
-            if (dateFormat == EDateFormatType.Year)
+            if (dateFormat == DateFormatType.Year)
             {
                 format = "yyyy年MM月";
             }
-            else if (dateFormat == EDateFormatType.Month)
+            else if (dateFormat == DateFormatType.Month)
             {
                 format = "MM月dd日";
             }
-            else if (dateFormat == EDateFormatType.Day)
+            else if (dateFormat == DateFormatType.Day)
             {
                 format = "yyyy-MM-dd";
             }
-            else if (dateFormat == EDateFormatType.Chinese)
+            else if (dateFormat == DateFormatType.Chinese)
             {
                 format = "yyyy年M月d日";
             }

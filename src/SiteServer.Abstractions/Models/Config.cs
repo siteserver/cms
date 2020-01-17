@@ -50,13 +50,13 @@ namespace SiteServer.Abstractions
 
         public int AdminPasswordMinLength { get; set; } = 6;
 
-        public string AdminPasswordRestriction { get; set; } = EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit);
+        public PasswordRestriction AdminPasswordRestriction { get; set; } = PasswordRestriction.LetterAndDigit;
 
         public bool IsAdminLockLogin { get; set; }
 
         public int AdminLockLoginCount { get; set; } = 3;
 
-        public string AdminLockLoginType { get; set; } = EUserLockTypeUtils.GetValue(EUserLockType.Hours);
+        public LockType AdminLockLoginType { get; set; } = LockType.Hours;
 
         public int AdminLockLoginHours { get; set; } = 3;
 
@@ -64,9 +64,9 @@ namespace SiteServer.Abstractions
 
         public int AdminEnforcePasswordChangeDays { get; set; } = 90;
 
-        public bool IsAdminEnforceLogout { get; set; } = true;
+        public bool IsAdminEnforceLogout { get; set; }
 
-        public int AdminEnforceLogoutMinutes { get; set; } = 30;
+        public int AdminEnforceLogoutMinutes { get; set; } = 960;
 
         /****************”√ªß…Ë÷√********************/
 
@@ -82,7 +82,7 @@ namespace SiteServer.Abstractions
 
         public int UserPasswordMinLength { get; set; } = 6;
 
-        public string UserPasswordRestriction { get; set; } = EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit);
+        public PasswordRestriction UserPasswordRestriction { get; set; } = PasswordRestriction.LetterAndDigit;
 
         public int UserRegistrationMinMinutes { get; set; } = 3;
 

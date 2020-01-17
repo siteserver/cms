@@ -372,7 +372,7 @@ namespace SiteServer.CMS.Context.LitJson
                 var t_data = array_metadata[inst_type];
 
                 if (! t_data.IsArray && ! t_data.IsList)
-                    throw new JsonException ($"Type {inst_type} can't act as an array");
+                    throw new JsonException ($"InputType {inst_type} can't act as an array");
 
                 IList list;
                 Type elem_type;

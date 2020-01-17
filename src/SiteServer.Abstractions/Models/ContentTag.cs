@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using Newtonsoft.Json;
 
 namespace SiteServer.Abstractions
 {
@@ -12,7 +13,8 @@ namespace SiteServer.Abstractions
         public int SiteId { get; set; }
 
         [DataColumn]
-        public string ContentIdCollection { get; set; }
+        [JsonIgnore]
+        private string ContentIdCollection { get; set; }
 
         public List<int> ContentIds
         {

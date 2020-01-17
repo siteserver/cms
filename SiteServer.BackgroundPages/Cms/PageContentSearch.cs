@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             _channel = await ChannelManager.GetChannelAsync(SiteId, _channelId);
             var tableName = ChannelManager.GetTableNameAsync(Site, _channel).GetAwaiter().GetResult();
-            _styleList = TableStyleManager.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
+            _styleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplayAsync(SiteId, _channelId).GetAwaiter().GetResult());
             _allStyleList = ContentUtility.GetAllTableStyleList(_styleList);
             _pluginIds = PluginContentManager.GetContentPluginIds(_channel);
@@ -125,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
                 TableName = tableName,
                 PageSize = Site.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
-                OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc),
+                OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByIdDesc),
                 ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList),
                 WhereSqlString = whereString,
                 TotalCount = DataProvider.DatabaseRepository.GetPageTotalCount(tableName, whereString),
@@ -183,7 +183,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var style in _allStyleList)
             {
-                if (style.Type == InputType.TextEditor) continue;
+                if (style.InputType == InputType.TextEditor) continue;
 
                 var listitem = new ListItem(style.DisplayName, style.AttributeName);
                 DdlSearchType.Items.Add(listitem);

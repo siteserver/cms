@@ -96,9 +96,13 @@ namespace SiteServer.CMS.DataCache
             return channel;
         }
 
-        public static async Task<Cascade<int>> GetCascadeAsync(Site site, Channel channel, Func<Site, Channel, Task<Dictionary<string, object>>> func)
+        public static async Task<Cascade<int>> GetCascadeAsync(Site site, Channel channel, Func<Site, Channel, Task<Dictionary<string, object>>> func = null)
         {
-            var dict = await func(site, channel);
+            Dictionary<string, object> dict = null;
+            if (func != null)
+            {
+                dict = await func(site, channel);
+            }
             return new Cascade<int>
             {
                 Value = channel.Id,
@@ -108,7 +112,7 @@ namespace SiteServer.CMS.DataCache
             };
         }
 
-        public static async Task<List<Cascade<int>>> GetCascadeChildrenAsync(Site site, int parentId, Func<Site, Channel, Task<Dictionary<string, object>>> func)
+        public static async Task<List<Cascade<int>>> GetCascadeChildrenAsync(Site site, int parentId, Func<Site, Channel, Task<Dictionary<string, object>>> func = null)
         {
             var list = new List<Cascade<int>>();
 
@@ -140,7 +144,7 @@ namespace SiteServer.CMS.DataCache
             };
         }
 
-        public static async Task<List<Cascade<int>>> GetCascadeChildrenAsync(Site site, int adminId, int parentId = 0)
+        public static async Task<List<Cascade<int>>> GetCascadeChildrenAsync(Site site, int adminId, int parentId)
         {
             var list = new List<Cascade<int>>();
 
@@ -271,6 +275,13 @@ namespace SiteServer.CMS.DataCache
         {
             var dic = await ChannelManagerCache.GetChannelDictionaryBySiteIdAsync(siteId);
             return dic.Values.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
+        }
+
+        public static async Task<List<int>> GetChannelIdListByTemplateIdAsync(int siteId, int templateId)
+        {
+            var dic = await ChannelManagerCache.GetChannelDictionaryBySiteIdAsync(siteId);
+            return dic.Values.Where(o => o.ChannelTemplateId == templateId || o.ContentTemplateId == templateId)
+                .Select(channelInfo => channelInfo.Id).ToList();
         }
 
         public static async Task<List<string>> GetChannelIndexNameListAsync(int siteId)
@@ -476,7 +487,7 @@ namespace SiteServer.CMS.DataCache
         public static async Task<string> GetNodeTreeLastImageHtmlAsync(Site site, Channel node)
         {
             var imageHtml = string.Empty;
-            if (!string.IsNullOrEmpty(node.ContentModelPluginId) || node.ContentRelatedPluginIds.Any())
+            if (!string.IsNullOrEmpty(node.ContentModelPluginId) || node.ContentRelatedPluginIdList.Any())
             {
                 var list = await PluginContentManager.GetContentPluginsAsync(node, true);
                 if (list != null && list.Count > 0)
@@ -595,7 +606,6 @@ namespace SiteServer.CMS.DataCache
         {
             var list = await GetChannelIdListAsync(site.Id);
             var nodeCount = list.Count;
-            var isLastNodeArray = new bool[nodeCount];
             foreach (var channelId in list)
             {
                 var enabled = true;
@@ -609,7 +619,7 @@ namespace SiteServer.CMS.DataCache
                 }
                 var nodeInfo = await GetChannelAsync(site.Id, channelId);
 
-                var listitem = new ListItem(await GetSelectTextAsync(site, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
+                var listitem = new ListItem(await GetSelectTextAsync(site, nodeInfo, permissionsImpl, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
                 {
                     listitem.Attributes.Add("style", "color:gray;");
@@ -622,7 +632,6 @@ namespace SiteServer.CMS.DataCache
         {
             var list = await GetChannelIdListAsync(site.Id);
             var nodeCount = list.Count;
-            var isLastNodeArray = new bool[nodeCount];
             foreach (var channelId in list)
             {
                 var enabled = true;
@@ -636,7 +645,7 @@ namespace SiteServer.CMS.DataCache
                 }
                 var nodeInfo = await GetChannelAsync(site.Id, channelId);
 
-                var listitem = new ListItem(await GetSelectTextAsync(site, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
+                var listitem = new ListItem(await GetSelectTextAsync(site, nodeInfo, permissionsImpl, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
                 {
                     listitem.Attributes.Add("style", "color:gray;");
@@ -653,7 +662,6 @@ namespace SiteServer.CMS.DataCache
         {
             var list = await GetChannelIdListAsync(site.Id);
             var nodeCount = list.Count;
-            var isLastNodeArray = new bool[nodeCount];
             foreach (var channelId in list)
             {
                 var enabled = true;
@@ -669,7 +677,7 @@ namespace SiteServer.CMS.DataCache
                     continue;
                 }
 
-                var listitem = new ListItem(await GetSelectTextAsync(site, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
+                var listitem = new ListItem(await GetSelectTextAsync(site, nodeInfo, permissionsImpl, true), nodeInfo.Id.ToString());
                 listItemCollection.Add(listitem);
             }
         }
@@ -683,7 +691,6 @@ namespace SiteServer.CMS.DataCache
         {
             var list = await GetChannelIdListAsync(site.Id);
             var nodeCount = list.Count;
-            var isLastNodeArray = new bool[nodeCount];
             foreach (var channelId in list)
             {
                 var enabled = true;
@@ -699,31 +706,14 @@ namespace SiteServer.CMS.DataCache
                     continue;
                 }
 
-                var listitem = new ListItem(await GetSelectTextAsync(site, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
+                var listitem = new ListItem(await GetSelectTextAsync(site, nodeInfo, permissionsImpl, true), nodeInfo.Id.ToString());
                 listItemCollection.Add(listitem);
             }
         }
 
-        public static async Task<string> GetSelectTextAsync(Site site, Channel channel, PermissionsImpl adminPermissions, bool[] isLastNodeArray, bool isShowContentNum)
+        public static async Task<string> GetSelectTextAsync(Site site, Channel channel, PermissionsImpl adminPermissions, bool isShowContentNum)
         {
             var retVal = string.Empty;
-            if (channel.Id == channel.SiteId)
-            {
-                channel.LastNode = true;
-            }
-            if (channel.LastNode == false)
-            {
-                isLastNodeArray[channel.ParentsCount] = false;
-            }
-            else
-            {
-                isLastNodeArray[channel.ParentsCount] = true;
-            }
-            for (var i = 0; i < channel.ParentsCount; i++)
-            {
-                retVal = string.Concat(retVal, isLastNodeArray[i] ? "　" : "│");
-            }
-            retVal = string.Concat(retVal, channel.LastNode ? "└" : "├");
             retVal = string.Concat(retVal, channel.ChannelName);
 
             if (isShowContentNum)
@@ -755,7 +745,7 @@ namespace SiteServer.CMS.DataCache
             var pluginIds = PluginContentManager.GetContentPluginIds(channel);
             var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
-            var styleList = ContentUtility.GetAllTableStyleList(await TableStyleManager.GetContentStyleListAsync(site, channel));
+            var styleList = ContentUtility.GetAllTableStyleList(await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channel));
 
             styleList.Insert(0, new TableStyle
             {
@@ -765,7 +755,7 @@ namespace SiteServer.CMS.DataCache
 
             foreach (var style in styleList)
             {
-                if (style.Type == InputType.TextEditor) continue;
+                if (style.InputType == InputType.TextEditor) continue;
 
                 var listitem = new InputListItem
                 {
@@ -826,7 +816,7 @@ namespace SiteServer.CMS.DataCache
         {
             var items = new List<InputStyle>();
 
-            var styleList = ContentUtility.GetAllTableStyleList(await TableStyleManager.GetContentStyleListAsync(site, channel));
+            var styleList = ContentUtility.GetAllTableStyleList(await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channel));
 
             foreach (var style in styleList)
             {
@@ -887,23 +877,23 @@ namespace SiteServer.CMS.DataCache
 
             var isCreatable = false;
 
-            var linkType = ELinkTypeUtils.GetEnumType(channel.LinkType);
+            var linkType = channel.LinkType;
 
-            if (linkType == ELinkType.None)
+            if (linkType == LinkType.None)
             {
                 isCreatable = true;
             }
-            else if (linkType == ELinkType.NoLinkIfContentNotExists)
+            else if (linkType == LinkType.NoLinkIfContentNotExists)
             {
                 var count = await DataProvider.ContentRepository.GetCountAsync(site, channel);
                 isCreatable = count != 0;
             }
-            else if (linkType == ELinkType.LinkToOnlyOneContent)
+            else if (linkType == LinkType.LinkToOnlyOneContent)
             {
                 var count = await DataProvider.ContentRepository.GetCountAsync(site, channel);
                 isCreatable = count != 1;
             }
-            else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
+            else if (linkType == LinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
             {
                 var count = await DataProvider.ContentRepository.GetCountAsync(site, channel);
                 if (count != 0 && count != 1)
@@ -911,20 +901,20 @@ namespace SiteServer.CMS.DataCache
                     isCreatable = true;
                 }
             }
-            else if (linkType == ELinkType.LinkToFirstContent)
+            else if (linkType == LinkType.LinkToFirstContent)
             {
                 var count = await DataProvider.ContentRepository.GetCountAsync(site, channel);
                 isCreatable = count < 1;
             }
-            else if (linkType == ELinkType.NoLinkIfChannelNotExists)
+            else if (linkType == LinkType.NoLinkIfChannelNotExists)
             {
                 isCreatable = channel.ChildrenCount != 0;
             }
-            else if (linkType == ELinkType.LinkToLastAddChannel)
+            else if (linkType == LinkType.LinkToLastAddChannel)
             {
                 isCreatable = channel.ChildrenCount <= 0;
             }
-            else if (linkType == ELinkType.LinkToFirstChannel)
+            else if (linkType == LinkType.LinkToFirstChannel)
             {
                 isCreatable = channel.ChildrenCount <= 0;
             }

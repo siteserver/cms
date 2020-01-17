@@ -43,11 +43,11 @@ var methods = {
   delete: function (item) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.delete({
       id: item.id
     }, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err || !res || !res.value) return;
 
       $this.items = res.value;
@@ -58,9 +58,9 @@ var methods = {
 
     this.item.scopes = this.item.scopeList ? this.item.scopeList.join(',') : '';
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post(item, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',

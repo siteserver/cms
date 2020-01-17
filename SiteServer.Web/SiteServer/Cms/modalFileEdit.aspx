@@ -24,14 +24,6 @@
         </div>
 
         <div class="form-group form-row">
-          <label class="col-2 col-form-label text-right">文件编码</label>
-          <div class="col-6">
-            <asp:DropDownList id="DdlCharset" class="form-control" runat="server"></asp:DropDownList>
-          </div>
-          <div class="col-4"></div>
-        </div>
-
-        <div class="form-group form-row">
           <label class="col-2 col-form-label text-right">编辑方式</label>
           <div class="col-6">
             <asp:DropDownList ID="DdlIsPureText" AutoPostBack="true" OnSelectedIndexChanged="DdlIsPureText_OnSelectedIndexChanged" class="form-control"

@@ -5,12 +5,10 @@ using System.Web.Http;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
-    
     [RoutePrefix("pages/cms/configSite")]
     public class PagesConfigSiteController : ApiController
     {
@@ -63,25 +61,12 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
                 var siteName = request.GetPostString("siteName");
-                var charset = ECharsetUtils.GetEnumType(request.GetPostString("charset"));
                 var pageSize = request.GetPostInt("pageSize", site.PageSize);
                 var isCreateDoubleClick = request.GetPostBool("isCreateDoubleClick");
 
                 site.SiteName = siteName;
-                site.Charset = ECharsetUtils.GetValue(charset);
                 site.PageSize = pageSize;
                 site.IsCreateDoubleClick = isCreateDoubleClick;
-
-                //修改所有模板编码
-                var templateInfoList = await DataProvider.TemplateRepository.GetTemplateListBySiteIdAsync(siteId);
-                foreach (var templateInfo in templateInfoList)
-                {
-                    if (templateInfo.CharsetType == charset) continue;
-
-                    var templateContent = TemplateManager.GetTemplateContent(site, templateInfo);
-                    templateInfo.CharsetType = charset;
-                    await DataProvider.TemplateRepository.UpdateAsync(site, templateInfo, templateContent, request.AdminName);
-                }
 
                 await DataProvider.SiteRepository.UpdateAsync(site);
 

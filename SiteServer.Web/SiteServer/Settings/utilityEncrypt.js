@@ -13,7 +13,7 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url, {
       isEncrypt: this.isEncrypt,
       value: this.value
@@ -22,9 +22,9 @@ var methods = {
 
       $this.results = res.value;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 

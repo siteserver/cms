@@ -57,10 +57,10 @@ var methods = {
         return item.imageUrl;
       });
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
@@ -88,7 +88,7 @@ var methods = {
     this.form.groupId = groupId;
     this.form.page = 1;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '/list', this.form).then(function (response) {
       var res = response.data;
 
@@ -105,7 +105,7 @@ var methods = {
         });
     }).then(function () {
       $this.pageLoad = true;
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
@@ -117,7 +117,7 @@ var methods = {
     var $this = this;
     this.$refs.submitForm.validate(function(valid) {
       if (valid) {
-        utils.loading(true);
+        utils.loading($this, true);
         $api
           .get($url + '/' + $this.submitForm.textId, {
             params: {
@@ -135,10 +135,10 @@ var methods = {
             utils.closeLayer();
           })
           .catch(function(error) {
-            utils.notifyError($this, error);
+            utils.error($this, error);
           })
           .then(function() {
-            utils.loading(false);
+            utils.loading($this, false);
           });
       } else {
         return false;
@@ -147,12 +147,12 @@ var methods = {
   },
 
   btnSearchClick() {
-    utils.loading(true);
+    utils.loading($this, true);
     this.apiList(1);
   },
 
   btnPageClick: function(val) {
-    utils.loading(true);
+    utils.loading($this, true);
     this.apiList(val);
   }
 };

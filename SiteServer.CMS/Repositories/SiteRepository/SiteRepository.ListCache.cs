@@ -23,7 +23,7 @@ namespace SiteServer.CMS.Repositories
             return await _repository.Cache.GetOrCreateAsync(cacheKey, async () =>
             {
                 var sites = await _repository.GetAllAsync(Q
-                    .Select(nameof(Site.Id), nameof(Site.SiteName), nameof(Site.SiteDir), nameof(Site.TableName), nameof(Site.IsRoot), nameof(Site.ParentId), nameof(Site.Taxis))
+                    .Select(nameof(Site.Id), nameof(Site.SiteName), nameof(Site.SiteDir), nameof(Site.TableName), Attr.IsRoot, nameof(Site.ParentId), nameof(Site.Taxis))
                     .OrderBy(nameof(Site.Taxis), nameof(Site.Id))
                 );
 

@@ -44,7 +44,7 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post({
       isSaveImageInTextEditor: $this.isSaveImageInTextEditor,
       isAutoPageInTextEditor: $this.isAutoPageInTextEditor,
@@ -55,7 +55,7 @@ var methods = {
       checkContentLevel: $this.checkContentLevel,
       checkContentDefaultLevel: $this.checkContentDefaultLevel
     }, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',

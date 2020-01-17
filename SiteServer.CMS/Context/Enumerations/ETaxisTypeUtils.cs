@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Dto;
 
@@ -7,9 +8,9 @@ namespace SiteServer.CMS.Context.Enumerations
 {
     public static class ETaxisTypeUtilsExtensions
 	{
-		public static ListItem GetListItem(ETaxisType type, bool selected)
+		public static ListItem GetListItem(TaxisType type, bool selected)
 		{
-			var item = new ListItem(ETaxisTypeUtils.GetText(type), ETaxisTypeUtils.GetValue(type));
+			var item = new ListItem(type.GetDisplayName(), type.GetValue());
 			if (selected)
 			{
 				item.Selected = true;
@@ -17,48 +18,28 @@ namespace SiteServer.CMS.Context.Enumerations
 			return item;
 		}
 
-		public static void AddListItems(ListControl listControl)
-		{
-		    if (listControl == null) return;
-
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderById, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByIdDesc, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByChannelId, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByChannelIdDesc, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDate, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDateDesc, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDate, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDateDesc, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxis, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxisDesc, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHits, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByDay, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByWeek, false));
-		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByMonth, false));
-		}
-
         public static void AddListItemsForChannelEdit(ListControl listControl)
         {
             if (listControl == null) return;
 
-            listControl.Items.Add(GetListItem(ETaxisType.OrderById, false));
-            listControl.Items.Add(GetListItem(ETaxisType.OrderByIdDesc, false));
-            listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDate, false));
-            listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDateDesc, false));
-            listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDate, false));
-            listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDateDesc, false));
-            listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxis, false));
-            listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxisDesc, false));
+            listControl.Items.Add(GetListItem(TaxisType.OrderById, false));
+            listControl.Items.Add(GetListItem(TaxisType.OrderByIdDesc, false));
+            listControl.Items.Add(GetListItem(TaxisType.OrderByAddDate, false));
+            listControl.Items.Add(GetListItem(TaxisType.OrderByAddDateDesc, false));
+            listControl.Items.Add(GetListItem(TaxisType.OrderByLastEditDate, false));
+            listControl.Items.Add(GetListItem(TaxisType.OrderByLastEditDateDesc, false));
+            listControl.Items.Add(GetListItem(TaxisType.OrderByTaxis, false));
+            listControl.Items.Add(GetListItem(TaxisType.OrderByTaxisDesc, false));
         }
 
         public static List<Select<string>> GetAllForChannel()
         {
             return new List<Select<string>>
             {
-                new Select<string>(ETaxisType.OrderByTaxisDesc),
-                new Select<string>(ETaxisType.OrderByTaxis),
-                new Select<string>(ETaxisType.OrderByAddDateDesc),
-                new Select<string>(ETaxisType.OrderByAddDate)
+                new Select<string>(TaxisType.OrderByTaxisDesc),
+                new Select<string>(TaxisType.OrderByTaxis),
+                new Select<string>(TaxisType.OrderByAddDateDesc),
+                new Select<string>(TaxisType.OrderByAddDate)
             };
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Context.Enumerations;
@@ -93,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
             BtnTranslateAdd.Attributes.Add("onClick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
             ETranslateContentTypeUtilsExtensions.AddListItems(RblTranslateType, isCut);
-            ControlUtils.SelectSingleItem(RblTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
+            ControlUtils.SelectSingleItem(RblTranslateType, TranslateContentType.Copy.GetValue());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -104,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    var translateType = ETranslateContentTypeUtils.GetEnumType(RblTranslateType.SelectedValue);
+                    var translateType = TranslateUtils.ToEnum(RblTranslateType.SelectedValue, TranslateContentType.Copy);
 
                     foreach (var channelId in _idsDictionary.Keys)
                     {

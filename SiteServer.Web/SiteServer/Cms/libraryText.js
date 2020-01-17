@@ -44,17 +44,17 @@ var methods = {
         return item.imageUrl;
       });
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
   apiCreateGroup: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '/groups', this.groupForm).then(function (response) {
       var res = response.data;
 
@@ -66,14 +66,14 @@ var methods = {
         });
     }).then(function () {
       $this.isGroupForm = false;
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
   apiRenameGroup: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.put($url + '/groups/' + this.form.groupId, this.groupForm).then(function (response) {
       var res = response.data;
 
@@ -86,14 +86,14 @@ var methods = {
         });
     }).then(function () {
       $this.isGroupForm = false;
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
   apiDeleteGroup: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.delete($url + '/groups/' + this.form.groupId).then(function (response) {
       var res = response.data;
 
@@ -108,22 +108,22 @@ var methods = {
     }).then(function () {
       $this.isGroupForm = false;
       $this.form.groupId = 0;
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
   apiDelete: function (library) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.delete($url + '/' + library.id).then(function (response) {
       var res = response.data;
 
       $this.items.splice($this.items.indexOf(library), 1);
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
@@ -180,7 +180,7 @@ var methods = {
         $this.btnSearchClick();
       }
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     });
   },
 
@@ -201,7 +201,7 @@ var methods = {
 
       $this.$message.success('编辑名称成功');
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     });
 
     return false;
@@ -213,7 +213,7 @@ var methods = {
     this.form.groupId = groupId;
     this.form.page = 1;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url + '/list', this.form).then(function (response) {
       var res = response.data;
 
@@ -230,7 +230,7 @@ var methods = {
         });
     }).then(function () {
       $this.pageLoad = true;
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
@@ -290,12 +290,12 @@ var methods = {
   },
 
   btnSearchClick() {
-    utils.loading(true);
+    utils.loading($this, true);
     this.apiList(1);
   },
 
   btnPageClick: function(val) {
-    utils.loading(true);
+    utils.loading($this, true);
     this.apiList(val);
   },
 
@@ -310,17 +310,17 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(true)
+    utils.loading(this, true);
   },
 
   uploadSuccess: function(res) {
     this.items.splice(0, 0, res);
     this.count++;
-    utils.loading(false);
+    utils.loading($this, false);
   },
 
   uploadError: function(err) {
-    utils.loading(false);
+    utils.loading($this, false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }

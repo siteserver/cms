@@ -7,8 +7,7 @@ if (window.top != self) {
   window.top.location = self.location;
 }
 
-var data = {
-  pageLoad: false,
+var data = utils.initData({
   pageSubmit: false,
   pageAlert: null,
   account: null,
@@ -18,12 +17,13 @@ var data = {
   captchaUrl: null,
   productVersion: null,
   adminTitle: null
-};
+});
 
 var methods = {
   load: function () {
     var $this = this;
 
+    utils.loading($this, true);
     $api.get($url).then(function (response) {
       var res = response.data;
 
@@ -35,14 +35,13 @@ var methods = {
         location.href = res.redirectUrl;
       }
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
   reload: function () {
-    this.pageLoad = true;
     this.captcha = '';
     this.pageSubmit = false;
     this.captchaUrl = apiUrl + $urlGetCaptcha + '?r=' + new Date().getTime();
@@ -51,21 +50,22 @@ var methods = {
   checkCaptcha: function () {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($urlCheckCaptcha, {
       captcha: $this.captcha
     }).then(function (response) {
       $this.login();
     }).catch(function (error) {
-      utils.loading(false);
       $this.reload();
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.loading($this, false);
+      utils.error($this, error);
     });
   },
 
   login: function () {
     var $this = this;
 
+    utils.loading($this, true);
     $api.post($urlLogin, {
       account: $this.account,
       password: md5($this.password),
@@ -78,10 +78,10 @@ var methods = {
         $this.redirectMain();
       }
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
       $this.reload();
+      utils.loading($this, false);
     });
   },
 

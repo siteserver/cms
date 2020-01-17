@@ -36,7 +36,7 @@ var methods = {
       $this.pageTitle = $this.site.root ? '转移到子目录' : '转移到根目录';
       $this.root = $this.site.root;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -77,7 +77,7 @@ var methods = {
 
   apiSubmit: function () {
     var $this = this;
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url, {
       siteId: this.siteId,
       siteDir: this.siteDir,
@@ -97,9 +97,9 @@ var methods = {
       }, 1500);
 
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   }
 };

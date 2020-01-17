@@ -20,7 +20,7 @@ var methods = {
         }, 200);
       }
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     });
   }
 };

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Context.Enumerations;
@@ -44,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             ECrossSiteTransTypeUtilsExtensions.AddAllListItems(DdlTransType, Site.ParentId > 0);
 
-            ControlUtils.SelectSingleItem(DdlTransType, ECrossSiteTransTypeUtils.GetValue(_channel.TransType));
+            ControlUtils.SelectSingleItem(DdlTransType, _channel.TransType.GetValue());
 
             DdlTransType_OnSelectedIndexChanged(null, EventArgs.Empty);
             ControlUtils.SelectSingleItem(DdlSiteId, _channel.TransSiteId.ToString());
@@ -58,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutomatic, _channel.TransIsAutomatic.ToString());
 
             ETranslateContentTypeUtilsExtensions.AddListItems(DdlTranslateDoneType, false);
-            ControlUtils.SelectSingleItem(DdlTranslateDoneType, ETranslateContentTypeUtils.GetValue(_channel.TransDoneType));
+            ControlUtils.SelectSingleItem(DdlTranslateDoneType, _channel.TransDoneType.GetValue());
         }
 
         protected void DdlTransType_OnSelectedIndexChanged(object sender, EventArgs e)
@@ -68,19 +69,19 @@ namespace SiteServer.BackgroundPages.Cms
 
             PhIsAutomatic.Visible = false;
 
-            var contributeType = ECrossSiteTransTypeUtils.GetEnumType(DdlTransType.SelectedValue);
-            if (contributeType == ECrossSiteTransType.None)
+            var contributeType = TranslateUtils.ToEnum(DdlTransType.SelectedValue, TransType.None);
+            if (contributeType == TransType.None)
             {
                 PhSite.Visible = PhNodeNames.Visible = false;
             }
-            else if (contributeType == ECrossSiteTransType.SelfSite || contributeType == ECrossSiteTransType.SpecifiedSite)
+            else if (contributeType == TransType.SelfSite || contributeType == TransType.SpecifiedSite)
             {
                 PhSite.Visible = true;
                 PhNodeNames.Visible = false;
 
                 PhIsAutomatic.Visible = true;
             }
-            else if (contributeType == ECrossSiteTransType.ParentSite)
+            else if (contributeType == TransType.ParentSite)
             {
                 PhSite.Visible = true;
                 PhNodeNames.Visible = false;
@@ -88,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 PhIsAutomatic.Visible = true;
             }
-            else if (contributeType == ECrossSiteTransType.AllParentSite || contributeType == ECrossSiteTransType.AllSite)
+            else if (contributeType == TransType.AllParentSite || contributeType == TransType.AllSite)
             {
                 PhSite.Visible = false;
                 PhNodeNames.Visible = true;
@@ -99,11 +100,11 @@ namespace SiteServer.BackgroundPages.Cms
                 var siteIdList = DataProvider.SiteRepository.GetSiteIdListAsync().GetAwaiter().GetResult();
 
                 var allParentSiteIdList = new List<int>();
-                if (contributeType == ECrossSiteTransType.AllParentSite)
+                if (contributeType == TransType.AllParentSite)
                 {
                     DataProvider.SiteRepository.GetAllParentSiteIdListAsync(allParentSiteIdList, siteIdList, SiteId).GetAwaiter().GetResult();
                 }
-                else if (contributeType == ECrossSiteTransType.SelfSite)
+                else if (contributeType == TransType.SelfSite)
                 {
                     siteIdList = new List<int>
                     {
@@ -115,18 +116,18 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var psInfo = DataProvider.SiteRepository.GetAsync(psId).GetAwaiter().GetResult();
                     var show = false;
-                    if (contributeType == ECrossSiteTransType.SpecifiedSite)
+                    if (contributeType == TransType.SpecifiedSite)
                     {
                         show = true;
                     }
-                    else if (contributeType == ECrossSiteTransType.SelfSite)
+                    else if (contributeType == TransType.SelfSite)
                     {
                         if (psId == SiteId)
                         {
                             show = true;
                         }
                     }
-                    else if (contributeType == ECrossSiteTransType.ParentSite)
+                    else if (contributeType == TransType.ParentSite)
                     {
                         if (psInfo.Id == Site.ParentId || (Site.ParentId == 0 && psInfo.Root))
                         {
@@ -158,14 +159,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                _channel.TransType = ECrossSiteTransTypeUtils.GetEnumType(DdlTransType.SelectedValue);
-                _channel.TransSiteId = _channel.TransType == ECrossSiteTransType.SpecifiedSite ? TranslateUtils.ToInt(DdlSiteId.SelectedValue) : 0;
+                _channel.TransType = TranslateUtils.ToEnum(DdlTransType.SelectedValue, TransType.None);
+                _channel.TransSiteId = _channel.TransType == TransType.SpecifiedSite ? TranslateUtils.ToInt(DdlSiteId.SelectedValue) : 0;
                 _channel.TransChannelIds = ControlUtils.GetSelectedListControlValueCollection(LbChannelId);
                 _channel.TransChannelNames = TbNodeNames.Text;
 
                 _channel.TransIsAutomatic = TranslateUtils.ToBool(DdlIsAutomatic.SelectedValue);
 
-                var translateDoneType = ETranslateContentTypeUtils.GetEnumType(DdlTranslateDoneType.SelectedValue);
+                var translateDoneType = TranslateUtils.ToEnum(DdlTranslateDoneType.SelectedValue, TranslateContentType.Copy);
                 _channel.TransDoneType = translateDoneType;
 
                 DataProvider.ChannelRepository.UpdateAsync(_channel).GetAwaiter().GetResult();

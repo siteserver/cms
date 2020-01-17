@@ -66,7 +66,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 {
                     var contentInfo = await contextInfo.GetContentAsync();
 
-                    if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && ETranslateContentTypeUtils.Equals(ETranslateContentType.ReferenceContent, contentInfo.TranslateContentType))
+                    if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && TranslateContentType.ReferenceContent == contentInfo.TranslateContentType)
                     {
                         var targetChannelId = contentInfo.SourceId;
                         var targetSiteId = await StlChannelCache.GetSiteIdAsync(targetChannelId);
@@ -234,7 +234,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = contentInfo.GroupNameCollection;
+                            parsedContent = TranslateUtils.ObjectCollectionToString(contentInfo.GroupNames);
                         }
                         else
                         {
@@ -246,7 +246,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = contentInfo.Tags;
+                            parsedContent = TranslateUtils.ObjectCollectionToString(contentInfo.TagNames);
                         }
                         else
                         {
@@ -298,8 +298,8 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         {
                             var channelInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, contentChannelId);
                             var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, channelInfo);
-                            var relatedIdentities = TableStyleManager.GetRelatedIdentities(channelInfo);
-                            var styleInfo = await TableStyleManager.GetTableStyleAsync(tableName, attributeName, relatedIdentities);
+                            var relatedIdentities = DataProvider.TableStyleRepository.GetRelatedIdentities(channelInfo);
+                            var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(tableName, attributeName, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parsedContent, ",", pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);

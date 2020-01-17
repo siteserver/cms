@@ -1,26 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using Newtonsoft.Json;
 
 namespace SiteServer.Abstractions
 {
     [DataTable("siteserver_TableStyle")]
     public class TableStyle : Entity
     {
-        [DataColumn] public int RelatedIdentity { get; set; }
+        [DataColumn]
+        public int RelatedIdentity { get; set; }
 
-        [DataColumn] public string TableName { get; set; }
+        [DataColumn]
+        public string TableName { get; set; }
 
-        [DataColumn] public string AttributeName { get; set; }
+        [DataColumn] 
+        public string AttributeName { get; set; }
 
-        [DataColumn] public int Taxis { get; set; }
+        [DataColumn] 
+        public int Taxis { get; set; }
 
-        [DataColumn] public string DisplayName { get; set; }
+        [DataColumn] 
+        public string DisplayName { get; set; }
 
-        [DataColumn] public string HelpText { get; set; }
+        [DataColumn] 
+        public string HelpText { get; set; }
 
-        [DataColumn] public string IsVisibleInList { get; set; }
+        [JsonIgnore]
+        [DataColumn]
+        private string IsVisibleInList { get; set; }
 
         public bool VisibleInList
         {
@@ -28,17 +36,15 @@ namespace SiteServer.Abstractions
             set => IsVisibleInList = value.ToString();
         }
 
-        [DataColumn] public string InputType { get; set; }
+        [DataColumn] 
+        public InputType InputType { get; set; }
 
-        public InputType Type
-        {
-            get => Abstractions.InputType.Parse(InputType);
-            set => InputType = value.Value;
-        }
+        [DataColumn] 
+        public string DefaultValue { get; set; }
 
-        [DataColumn] public string DefaultValue { get; set; }
-
-        [DataColumn] public string IsHorizontal { get; set; }
+        [DataColumn]
+        [JsonIgnore]
+        private string IsHorizontal { get; set; }
 
         public bool Horizontal
         {
@@ -46,15 +52,19 @@ namespace SiteServer.Abstractions
             set => IsHorizontal = value.ToString();
         }
 
-        [DataColumn(Text = true)] public string ExtendValues { get; set; }
+        [DataIgnore]
+        public List<TableStyleItem> Items { get; set; }
 
-        public List<TableStyleItem> StyleItems { get; set; }
+        [DataColumn(Text = true, Extend = true)] 
+        public string ExtendValues { get; set; }
+
+        public string ItemValues { get; set; }
+
+        public string RuleValues { get; set; }
 
         public int Height { get; set; }
 
         public string Width { get; set; }
-
-        public int Columns { get; set; }
 
         public bool IsFormatString { get; set; }
 

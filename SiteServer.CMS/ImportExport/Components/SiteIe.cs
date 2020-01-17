@@ -133,7 +133,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             if (isSaveContents)
             {
-                var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxis);
+                var orderByString = ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByTaxis);
                 var contentIdList = DataProvider.ContentRepository.GetContentIdListChecked(tableName, channelId, orderByString);
                 foreach (var contentId in contentIdList)
                 {

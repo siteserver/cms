@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
             var taxisNum = TranslateUtils.ToInt(TbTaxisNum.Text);
 
             var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
-            if (ETaxisTypeUtils.Equals(nodeInfo.DefaultTaxisType, ETaxisType.OrderByTaxis))
+            if (ETaxisTypeUtils.Equals(nodeInfo.DefaultTaxisType, TaxisType.OrderByTaxis))
             {
                 isUp = !isUp;
             }

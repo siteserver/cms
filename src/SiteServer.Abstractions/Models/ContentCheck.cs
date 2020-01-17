@@ -1,6 +1,7 @@
 using System;
 using Datory;
 using Datory.Annotations;
+using Newtonsoft.Json;
 
 
 namespace SiteServer.Abstractions
@@ -24,7 +25,8 @@ namespace SiteServer.Abstractions
         public string UserName { get; set; }
 
         [DataColumn]
-        public string IsChecked { get; set; }
+        [JsonIgnore]
+        private string IsChecked { get; set; }
 
         public bool Checked
         {

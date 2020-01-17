@@ -24,23 +24,23 @@ namespace SiteServer.API.Controllers.V1
 
             if (request.Checked.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.IsChecked), request.Checked.Value.ToString());
+                query.Where(ContentAttribute.IsChecked, request.Checked.Value.ToString());
             }
             if (request.Top.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.IsTop), request.Top.Value.ToString());
+                query.Where(ContentAttribute.IsTop, request.Top.Value.ToString());
             }
             if (request.Recommend.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.IsRecommend), request.Recommend.Value.ToString());
+                query.Where(ContentAttribute.IsRecommend, request.Recommend.Value.ToString());
             }
             if (request.Color.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.IsColor), request.Color.Value.ToString());
+                query.Where(ContentAttribute.IsColor, request.Color.Value.ToString());
             }
             if (request.Hot.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.IsHot), request.Hot.Value.ToString());
+                query.Where(ContentAttribute.IsHot, request.Hot.Value.ToString());
             }
 
             if (request.GroupNames != null)
@@ -52,10 +52,10 @@ namespace SiteServer.API.Controllers.V1
                         if (!string.IsNullOrEmpty(groupName))
                         {
                             q
-                                .OrWhere(nameof(Abstractions.Content.GroupNameCollection), groupName)
-                                .OrWhereLike(nameof(Abstractions.Content.GroupNameCollection), $"{groupName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.GroupNameCollection), $"%,{groupName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.GroupNameCollection), $"%,{groupName}");
+                                .OrWhere(ContentAttribute.GroupNameCollection, groupName)
+                                .OrWhereLike(ContentAttribute.GroupNameCollection, $"{groupName},%")
+                                .OrWhereLike(ContentAttribute.GroupNameCollection, $"%,{groupName},%")
+                                .OrWhereLike(ContentAttribute.GroupNameCollection, $"%,{groupName}");
                         }
                     }
                     return q;
@@ -71,10 +71,10 @@ namespace SiteServer.API.Controllers.V1
                         if (!string.IsNullOrEmpty(tagName))
                         {
                             q
-                                .OrWhere(nameof(Abstractions.Content.Tags), tagName)
-                                .OrWhereLike(nameof(Abstractions.Content.Tags), $"{tagName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.Tags), $"%,{tagName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.Tags), $"%,{tagName}");
+                                .OrWhere(ContentAttribute.Tags, tagName)
+                                .OrWhereLike(ContentAttribute.Tags, $"{tagName},%")
+                                .OrWhereLike(ContentAttribute.Tags, $"%,{tagName},%")
+                                .OrWhereLike(ContentAttribute.Tags, $"%,{tagName}");
                         }
                     }
                     return q;
@@ -125,7 +125,7 @@ namespace SiteServer.API.Controllers.V1
             }
             else
             {
-                query.OrderByDesc(nameof(Abstractions.Content.IsTop), 
+                query.OrderByDesc(ContentAttribute.IsTop, 
                     nameof(Abstractions.Content.ChannelId),
                     nameof(Abstractions.Content.Taxis),
                     nameof(Abstractions.Content.Id));

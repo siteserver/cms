@@ -49,7 +49,7 @@ var methods = {
   submit: function (item) {
     var $this = this;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post({
       adminUserNameMinLength: $this.adminUserNameMinLength,
       adminPasswordMinLength: $this.adminPasswordMinLength,
@@ -64,7 +64,7 @@ var methods = {
       isAdminEnforceLogout: $this.isAdminEnforceLogout,
       adminEnforceLogoutMinutes: $this.adminEnforceLogoutMinutes,
     }, function (err, res) {
-      utils.loading(false);
+      utils.loading($this, false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',

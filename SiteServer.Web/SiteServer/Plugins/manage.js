@@ -78,13 +78,13 @@ var methods = {
         }
 
       }).catch(function (error) {
-        $this.pageAlert = utils.getPageAlert(error);
+        utils.error($this, error);
       }).then(function () {
         $this.pageLoad = true;
       });
 
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -105,9 +105,9 @@ var methods = {
       confirmButtonText: pkg.isDisabled ? '启 用' : '禁 用'
     }).then(function (result) {
       if (result.value) {
-        utils.loading(true);
+        utils.loading($this, true);
         $api.post($url + '/' + pkg.id + '/actions/enable').then(function () {
-          utils.loading(false);
+          utils.loading($this, false);
           swal({
             type: 'success',
             title: '插件' + text + '成功',
@@ -136,9 +136,9 @@ var methods = {
       })
       .then(function (result) {
         if (result.value) {
-          utils.loading(true);
+          utils.loading($this, true);
           $api.delete($url + '/' + pkg.id).then(function () {
-            utils.loading(false);
+            utils.loading($this, false);
             swal({
                 type: 'success',
                 title: '插件删除成功',
@@ -154,9 +154,9 @@ var methods = {
   },
 
   btnReload: function () {
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($urlReload).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
       swal({
         type: 'success',
         title: '插件重新加载成功',

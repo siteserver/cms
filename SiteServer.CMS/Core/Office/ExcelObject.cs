@@ -24,7 +24,7 @@ namespace SiteServer.CMS.Core.Office
             var rows = new List<List<string>>();
 
             var tableName = await ChannelManager.GetTableNameAsync(site, channel);
-            var styleList = ContentUtility.GetAllTableStyleList(await TableStyleManager.GetContentStyleListAsync(site, channel));
+            var styleList = ContentUtility.GetAllTableStyleList(await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channel));
 
             foreach (var style in styleList)
             {
@@ -186,7 +186,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (rows.Count <= 0) return contentInfoList;
 
-            var styleList = ContentUtility.GetAllTableStyleList(await TableStyleManager.GetContentStyleListAsync(site, node));
+            var styleList = ContentUtility.GetAllTableStyleList(await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, node));
             var nameValueCollection = new NameValueCollection();
             foreach (var style in styleList)
             {

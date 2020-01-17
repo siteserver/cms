@@ -18,11 +18,11 @@ namespace SiteServer.Abstractions
         public const string AdminId = nameof(Abstractions.Content.AdminId);
         public const string UserId = nameof(Abstractions.Content.UserId);
         public const string Taxis = nameof(Abstractions.Content.Taxis);
-        public const string GroupNameCollection = nameof(Abstractions.Content.GroupNameCollection);
-        public const string Tags = nameof(Abstractions.Content.Tags);
+        public const string GroupNameCollection = nameof(GroupNameCollection);
+        public const string Tags = nameof(Tags);
         public const string SourceId = nameof(Abstractions.Content.SourceId);
         public const string ReferenceId = nameof(Abstractions.Content.ReferenceId);
-        public const string IsChecked = nameof(Abstractions.Content.IsChecked);
+        public const string IsChecked = nameof(IsChecked);
         public const string CheckedLevel = nameof(Abstractions.Content.CheckedLevel);
         public const string Hits = nameof(Abstractions.Content.Hits);
         public const string HitsByDay = nameof(Abstractions.Content.HitsByDay);
@@ -31,7 +31,7 @@ namespace SiteServer.Abstractions
         public const string LastHitsDate = nameof(Abstractions.Content.LastHitsDate);
         public const string Downloads = nameof(Abstractions.Content.Downloads);
         public const string Title = nameof(Abstractions.Content.Title);
-        public const string IsTop = nameof(Abstractions.Content.IsTop);
+        public const string IsTop = nameof(IsTop);
         public const string IsRecommend = nameof(IsRecommend);
         public const string IsHot = nameof(IsHot);
         public const string IsColor = nameof(IsColor);

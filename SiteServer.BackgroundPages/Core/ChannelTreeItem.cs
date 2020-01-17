@@ -9,6 +9,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.Repositories;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {

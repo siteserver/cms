@@ -64,7 +64,7 @@ var methods = {
     }).then(function (response) {
       location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     });
   },
 
@@ -81,7 +81,7 @@ var methods = {
     }).then(function (response) {
       location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     });
   },
 
@@ -93,7 +93,7 @@ var methods = {
     }).then(function (response) {
       location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     });
   },
 
@@ -130,7 +130,7 @@ var methods = {
 
       $this.pageLoad = true;
     }).catch(function (error) {
-      utils.notifyError($this, error);
+      utils.error($this, error);
     });
   },
 
@@ -177,7 +177,7 @@ var methods = {
 
         $this.reload();
       }).catch(function (error) {
-        utils.notifyError($this, error);
+        utils.error($this, error);
       });
     } else {
       this.reload();

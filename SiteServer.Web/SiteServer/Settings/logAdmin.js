@@ -26,7 +26,7 @@ var methods = {
       $this.items = res.items;
       $this.count = res.count;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -40,15 +40,15 @@ var methods = {
       text: '此操作将会清空管理员日志，且数据无法恢复，请谨慎操作！',
       callback: function () {
 
-        utils.loading(true);
+        utils.loading($this, true);
         $api.delete($url).then(function (response) {
           var res = response.data;
     
           $this.items = [];
         }).catch(function (error) {
-          $this.pageAlert = utils.getPageAlert(error);
+          utils.error($this, error);
         }).then(function () {
-          utils.loading(false);
+          utils.loading($this, false);
         });
       }
     });
@@ -61,16 +61,16 @@ var methods = {
     this.formInline.offset = 0;
     this.formInline.limit = 30;
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url, this.formInline).then(function (response) {
       var res = response.data;
 
       $this.items = res.items;
       $this.count = res.count;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
   },
 
@@ -80,16 +80,16 @@ var methods = {
     this.formInline.currentValue = val;
     this.formInline.offset = this.formInline.limit * (val - 1);
 
-    utils.loading(true);
+    utils.loading($this, true);
     $api.post($url, this.formInline).then(function (response) {
       var res = response.data;
 
       $this.items = res.items;
       $this.count = res.count;
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
-      utils.loading(false);
+      utils.loading($this, false);
     });
     window.scrollTo(0, 0);
   }

@@ -13,8 +13,7 @@ namespace SiteServer.BackgroundPages.Cms
     {
         protected TextBox TbFileName;
         protected DropDownList DdlIsPureText;
-        public DropDownList DdlCharset;
-        
+
         protected PlaceHolder PhPureText;
         protected TextBox TbFileContent;
         protected PlaceHolder PhFileContent;
@@ -26,7 +25,6 @@ namespace SiteServer.BackgroundPages.Cms
 		private string _relatedPath;
         private string _theFileName;
         private bool _isCreate;
-        private ECharset _fileCharset;
 
         public static string GetOpenWindowString(int siteId, string relatedPath, string fileName, bool isCreate)
         {
@@ -78,11 +76,6 @@ namespace SiteServer.BackgroundPages.Cms
             }
             _theFileName = AuthRequest.GetQueryString("FileName");
             _isCreate = AuthRequest.GetQueryBool("IsCreate");
-            _fileCharset = ECharset.utf_8;
-            if (Site != null)
-            {
-                _fileCharset = ECharsetUtils.GetEnumType(Site.Charset);
-            }
 
             if (_isCreate == false)
             {
@@ -98,9 +91,6 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             if (IsPostBack) return;
-
-            DdlCharset.Items.Add(new ListItem("默认", string.Empty));
-            ECharsetUtilsExtensions.AddListItems(DdlCharset);
 
             if (_isCreate == false)
             {
@@ -170,10 +160,6 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     try
                     {
-                        if (!string.IsNullOrEmpty(DdlCharset.SelectedValue))
-                        {
-                            _fileCharset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
-                        }
                         FileUtils.WriteText(filePath, content);
                     }
                     catch

@@ -18,7 +18,7 @@ namespace SiteServer.Abstractions
 
         [JsonIgnore]
         [DataColumn]
-        public string PasswordFormat { get; set; }
+        public PasswordFormat PasswordFormat { get; set; }
 
         [JsonIgnore]
         [DataColumn]
@@ -44,7 +44,7 @@ namespace SiteServer.Abstractions
 
         [JsonIgnore]
         [DataColumn]
-        public string IsLockedOut { get; set; }
+        private string IsLockedOut { get; set; }
 
         public bool Locked
         {

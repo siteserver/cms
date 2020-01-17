@@ -152,7 +152,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
             var libraryGroup = new LibraryGroup
             {
-                LibraryType = LibraryType.Image,
+                Type = LibraryType.Image,
                 GroupName = group.Name
             };
             libraryGroup.Id = await DataProvider.LibraryGroupRepository.InsertAsync(libraryGroup);
