@@ -1,7 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
+using Datory.Utils;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
@@ -61,8 +63,8 @@ namespace SiteServer.CMS.Core
             }
             else if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)//选择类型
             {
-                var selectedTexts = new ArrayList();
-                var selectedValues = StringUtils.GetStringList(content);
+                var selectedTexts = new List<string>();
+                var selectedValues = Utilities.GetStringList(content);
                 var styleItems = style.Items;
                 if (styleItems != null)
                 {
@@ -75,7 +77,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
                 
-                parsedContent = separator == null ? TranslateUtils.ObjectCollectionToString(selectedTexts) : TranslateUtils.ObjectCollectionToString(selectedTexts, separator);
+                parsedContent = separator == null ? Utilities.ToString(selectedTexts) : Utilities.ToString(selectedTexts, separator);
             }
             //else if (style.InputType == InputType.TextArea)
             //{
@@ -134,8 +136,8 @@ namespace SiteServer.CMS.Core
             }
             else if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)//选择类型
             {
-                var selectedTexts = new ArrayList();
-                var selectedValues = StringUtils.GetStringList(value);
+                var selectedTexts = new List<string>();
+                var selectedValues = Utilities.GetStringList(value);
                 var styleItems = style.Items;
                 if (styleItems != null)
                 {
@@ -148,7 +150,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
                 
-                parsedContent = separator == null ? TranslateUtils.ObjectCollectionToString(selectedTexts) : TranslateUtils.ObjectCollectionToString(selectedTexts, separator);
+                parsedContent = separator == null ? Utilities.ToString(selectedTexts) : Utilities.ToString(selectedTexts, separator);
             }
             else if (inputType == InputType.TextEditor)
             {
@@ -167,7 +169,7 @@ namespace SiteServer.CMS.Core
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
-                        foreach (string extendValue in StringUtils.GetStringList(extendValues))
+                        foreach (string extendValue in Utilities.GetStringList(extendValues))
                         {
                             if (index == no)
                             {
@@ -192,7 +194,7 @@ namespace SiteServer.CMS.Core
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
-                        foreach (string extendValue in StringUtils.GetStringList(extendValues))
+                        foreach (string extendValue in Utilities.GetStringList(extendValues))
                         {
                             if (index == no)
                             {
@@ -217,7 +219,7 @@ namespace SiteServer.CMS.Core
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
-                        foreach (string extendValue in StringUtils.GetStringList(extendValues))
+                        foreach (string extendValue in Utilities.GetStringList(extendValues))
                         {
                             if (index == no)
                             {

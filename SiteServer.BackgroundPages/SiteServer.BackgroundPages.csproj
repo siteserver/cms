@@ -173,9 +173,6 @@
     <Compile Include="Cms\ModalCheckState.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalConfigurationCreateChannel.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\ModalContentAttributes.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -197,9 +194,6 @@
     <Compile Include="Cms\ModalContentMultipleSelect.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalContentTagAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\ModalContentTaxis.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -207,9 +201,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalCreateDirectory.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalCrossSiteTransEdit.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalCuttingImage.cs">
@@ -230,25 +221,10 @@
     <Compile Include="Cms\ModalFileView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalImport.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\ModalMessage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalNodeGroupAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\ModalProgressBar.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalRelatedFieldAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalRelatedFieldItemAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalRelatedFieldItemEdit.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalSelectColumns.cs">
@@ -264,9 +240,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalSiteSelect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalTemplateFilePathRule.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalTextEditorImportWord.cs">
@@ -297,54 +270,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageContentAddHandler.cs" />
-    <Compile Include="Cms\PageChannel.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageChannelAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageChannelDelete.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageChannelEdit.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageChannelsGroup.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageChannelTranslate.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationCreate.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationCreateRule.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationCreateTrigger.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationCrossSiteTrans.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationCrossSiteTransChannels.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationSiteAttributes.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationUploadFile.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationUploadImage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationUploadVideo.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationWaterMark.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\PageContentAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -354,19 +279,7 @@
     <Compile Include="Cms\PageContentDelete.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageContentGroup.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\PageContentSearch.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageContentsTag.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageContentsGroup.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageContentTags.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageContentTranslate.cs">
@@ -375,25 +288,7 @@
     <Compile Include="Cms\ModalContentView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageCreateSpecial.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageCreateFile.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageNodeGroup.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\PageProgressBar.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageRelatedField.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageRelatedFieldItem.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageRelatedFieldMain.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalTextEditorInsertImageHandler.cs" />

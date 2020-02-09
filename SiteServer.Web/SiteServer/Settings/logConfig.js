@@ -1,8 +1,6 @@
 ﻿var $url = '/pages/settings/logConfig';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: null,
   config: null,
   isTimeThreshold: null,
@@ -11,7 +9,7 @@ var data = {
   isLogAdmin: null,
   isLogUser: null,
   isLogError: null
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -32,14 +30,14 @@ var methods = {
       utils.error($this, error);
     }).then(function () {
       $this.pageType = 'list';
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
   apiSubmit: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url, {
       isTimeThreshold: this.isTimeThreshold,
       timeThreshold: this.timeThreshold,

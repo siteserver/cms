@@ -24,7 +24,7 @@ namespace SiteServer.CMS.ImportExport
         {
             var exportObject = new ExportObject(siteId, adminName);
 
-            var channelIdList = await ChannelManager.GetChannelIdListAsync(await ChannelManager.GetChannelAsync(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
+            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(await DataProvider.ChannelRepository.GetAsync(siteId), EScopeType.Children);
 
             await exportObject.ExportChannelsAsync(channelIdList, filePath);  
         }
@@ -68,7 +68,7 @@ namespace SiteServer.CMS.ImportExport
         {
             var importObject = new ImportObject(siteId, administratorName);
 
-            var siteInfo = await DataProvider.SiteRepository.GetAsync(siteId);
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
             var siteTemplatePath = path;
             if (isZip)
@@ -84,7 +84,7 @@ namespace SiteServer.CMS.ImportExport
 
             if (isDeleteChannels)
             {
-                var channelIdList = await ChannelManager.GetChannelIdListAsync(await ChannelManager.GetChannelAsync(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
+                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(await DataProvider.ChannelRepository.GetAsync(siteId), EScopeType.Children);
                 foreach (var channelId in channelIdList)
                 {
                     await DataProvider.ChannelRepository.DeleteAsync(siteId, channelId);
@@ -93,18 +93,18 @@ namespace SiteServer.CMS.ImportExport
             if (isDeleteTemplates)
             {
                 var templateInfoList =
-                    await DataProvider.TemplateRepository.GetTemplateListBySiteIdAsync(siteId);
+                    await DataProvider.TemplateRepository.GetAllAsync(siteId);
                 foreach (var templateInfo in templateInfoList)
                 {
                     if (templateInfo.Default == false)
                     {
-                        await DataProvider.TemplateRepository.DeleteAsync(siteId, templateInfo.Id);
+                        await DataProvider.TemplateRepository.DeleteAsync(site, templateInfo.Id);
                     }
                 }
             }
             if (isDeleteFiles)
             {
-                await DirectoryUtility.DeleteSiteFilesAsync(siteInfo);
+                await DirectoryUtility.DeleteSiteFilesAsync(site);
             }
 
             //导入文件

@@ -1,9 +1,6 @@
 var $url = '/pages/updateSystem';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
-
+var data = utils.initData({
   packageId: null,
   installedVersion: null,
   isNightly: null,
@@ -15,7 +12,7 @@ var data = {
   isShouldUpdate: false,
   updatesUrl: '',
   errorMessage: null
-};
+});
 
 var methods = {
   load: function() {
@@ -29,10 +26,11 @@ var methods = {
       $this.isNightly = res.isNightly;
       $this.version = res.version;
 
-      $this.pageLoad = true;
+      utils.loading($this, false);
 
       $this.getVersion();
     }).catch(function (error) {
+      utils.loading($this, false);
       utils.error($this, error);
     });
   },
@@ -58,7 +56,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
 
     // ssApi.get({

@@ -77,25 +77,25 @@ namespace SiteServer.CMS.Core
 
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                visualInfo.Template = await TemplateManager.GetIndexPageTemplateAsync(visualInfo.Site.Id);
+                visualInfo.Template = await DataProvider.TemplateRepository.GetIndexPageTemplateAsync(visualInfo.Site.Id);
                 visualInfo.ContextType = EContextType.Channel;
                 visualInfo.FilePath = PathUtility.GetIndexPageFilePath(visualInfo.Site, visualInfo.Template.CreatedFileFullName, visualInfo.Site.Root, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
-                visualInfo.Template = await TemplateManager.GetChannelTemplateAsync(visualInfo.Site.Id, visualInfo.ChannelId);
+                visualInfo.Template = await DataProvider.TemplateRepository.GetChannelTemplateAsync(visualInfo.Site.Id, visualInfo.ChannelId);
                 visualInfo.ContextType = EContextType.Channel;
                 visualInfo.FilePath = await PathUtility.GetChannelPageFilePathAsync(visualInfo.Site, visualInfo.ChannelId, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.ContentTemplate)
             {
-                visualInfo.Template = await TemplateManager.GetContentTemplateAsync(visualInfo.Site.Id, visualInfo.ChannelId);
+                visualInfo.Template = await DataProvider.TemplateRepository.GetContentTemplateAsync(visualInfo.Site.Id, visualInfo.ChannelId);
                 visualInfo.ContextType = EContextType.Content;
                 visualInfo.FilePath = await PathUtility.GetContentPageFilePathAsync(visualInfo.Site, visualInfo.ChannelId, visualInfo.ContentId, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.FileTemplate)
             {
-                visualInfo.Template = await TemplateManager.GetFileTemplateAsync(visualInfo.Site.Id, fileTemplateId);
+                visualInfo.Template = await DataProvider.TemplateRepository.GetFileTemplateAsync(visualInfo.Site.Id, fileTemplateId);
                 visualInfo.ContextType = EContextType.Undefined;
                 visualInfo.FilePath = PathUtility.MapPath(visualInfo.Site, visualInfo.Template.CreatedFileFullName);
             }

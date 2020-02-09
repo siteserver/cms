@@ -1,15 +1,11 @@
-﻿using Datory;
-
-namespace SiteServer.Abstractions
+﻿namespace SiteServer.Abstractions
 {
-    public class ContentColumn : TableColumn
+    public class ContentColumn
     {
+        public string AttributeName { get; set; }
         public string DisplayName { get; set; }
-
         public InputType InputType { get; set; }
-
         public bool IsList { get; set; }
-
-        public bool IsCalculate { get; set; }
+        public bool IsSearchable { get; set; }
     }
 }

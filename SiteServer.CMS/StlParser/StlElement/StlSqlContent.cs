@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
 using System.Web.UI;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache.Stl;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
-
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -173,7 +172,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 		        }
 		        else if (!string.IsNullOrEmpty(queryString))
 		        {
-		            var dataTable = StlDatabaseCache.GetDataTable(connectionString, queryString);
+		            var dataTable = DataProvider.DatabaseRepository.GetDataTable(connectionString, queryString);
 		            var dictList = TranslateUtils.DataTableToDictionaryList(dataTable);
 		            if (dictList != null && dictList.Count >= 1)
 		            {
@@ -229,7 +228,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
 
                 //parsedContent = DataProvider.DatabaseRepository.GetString(connectionString, queryString);
-                parsedContent = StlDatabaseCache.GetString(connectionString, queryString);
+                parsedContent = DataProvider.DatabaseRepository.GetString(connectionString, queryString);
             }
 
             if (!string.IsNullOrEmpty(parsedContent))

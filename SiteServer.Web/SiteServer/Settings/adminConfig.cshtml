@@ -55,18 +55,6 @@
         </td>
       </tr>
       <tr>
-        <td>是否允许查看其他人添加的内容</td>
-        <td>
-          <a href="javascript:;" v-on:click="pageType = 'isViewContentOnlySelf'" class="editable">
-            <span v-show="config.isViewContentOnlySelf">禁止</span>
-            <span v-show="!config.isViewContentOnlySelf">允许</span>
-          </a>
-          <div>
-            <small class="form-text text-muted">注意：超级管理员、站点管理员、具有审核权限的管理员，此设置无效。</small>
-          </div>
-        </td>
-      </tr>
-      <tr>
         <td>是否强制定期更改密码</td>
         <td>
           <a href="javascript:;" v-on:click="pageType = 'isAdminEnforcePasswordChange'" class="editable">

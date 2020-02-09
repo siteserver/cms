@@ -157,7 +157,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissionList, permission.Name)
+                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
                     });
                 }
 
@@ -167,7 +167,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissionList, permission.Name)
+                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
                     });
                 }
 
@@ -214,7 +214,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissionList, permission.Name)
+                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Name)
                     });
                 }
             }
@@ -233,7 +233,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                                 {
                                     Name = permission.Name,
                                     Text = permission.Text,
-                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissionList, permission.Name)
+                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
                                 });
                             }
                         }
@@ -246,7 +246,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                                 {
                                     Name = permission.Name,
                                     Text = permission.Text,
-                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissionList, permission.Name)
+                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
                                 });
                             }
                         }
@@ -285,17 +285,17 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                             {
                                 Name = permission.Name,
                                 Text = permission.Text,
-                                Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissionList, permission.Name)
+                                Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Name)
                             });
                         }
                     }
                 }
             }
 
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, siteId);
-            channelInfo.Children = await ChannelManager.GetChildrenAsync(siteId, siteId);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(siteId);
+            channelInfo.Children = await DataProvider.ChannelRepository.GetChildrenAsync(siteId, siteId);
             var checkedChannelIdList = new List<int>();
-            foreach (var i in sitePermissionsInfo.ChannelIdList)
+            foreach (var i in sitePermissionsInfo.ChannelIds)
             {
                 if (!checkedChannelIdList.Contains(i))
                 {
@@ -354,7 +354,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     {
                         Id = 0,
                         RoleName = roleName,
-                        GeneralPermissionList = generalPermissionList
+                        GeneralPermissions = generalPermissionList
                     };
                     await DataProvider.PermissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
                 }
@@ -423,7 +423,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     {
                         Id = 0,
                         RoleName = roleName,
-                        GeneralPermissionList = generalPermissionList
+                        GeneralPermissions = generalPermissionList
                     };
                     await DataProvider.PermissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
                 }

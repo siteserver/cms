@@ -13,14 +13,7 @@ namespace SiteServer.Abstractions
         public string PluginId { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string IsDisabled { get; set; }
-
-        public bool Disabled
-        {
-            get => TranslateUtils.ToBool(IsDisabled);
-            set => IsDisabled = value.ToString();
-        }
+        public bool Disabled { get; set; }
 
         [DataColumn]
         public int Taxis { get; set; }

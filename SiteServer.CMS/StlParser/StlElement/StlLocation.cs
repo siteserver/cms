@@ -1,10 +1,12 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -75,7 +77,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 separator = contextInfo.InnerHtml;
             }
 
-            var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId);
+            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId);
 
             var builder = new StringBuilder();
 
@@ -88,11 +90,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     nodePath = nodePath + "," + contextInfo.ChannelId;
                 }
-                var channelIdArrayList = StringUtils.GetStringList(nodePath);
+                var channelIdArrayList = Utilities.GetStringList(nodePath);
                 foreach (var channelIdStr in channelIdArrayList)
                 {
                     var currentId = int.Parse(channelIdStr);
-                    var currentNodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, currentId);
+                    var currentNodeInfo = await DataProvider.ChannelRepository.GetAsync(currentId);
                     if (currentId == pageInfo.SiteId)
                     {
                         var stlAnchor = new HtmlAnchor();

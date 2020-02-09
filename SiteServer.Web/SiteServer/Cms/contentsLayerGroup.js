@@ -1,51 +1,104 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerGroup');
+﻿var $url = '/pages/cms/contents/contentsLayerGroup';
 
-var data = {
-  siteId: parseInt(utils.getQueryString('siteId')),
-  channelId: parseInt(utils.getQueryString('channelId')),
-  channelContentIds: utils.getQueryString('channelContentIds'),
-  pageLoad: false,
-  pageAlert: null,
-  pageType: 'setGroup',
+var data = utils.initData({
+  page: utils.getQueryInt('page'),
   groupNames: null,
-  selected: [],
-  groupName: '',
-  description: ''
-};
+  isAddForm: false,
+  form: {
+    siteId: utils.getQueryInt('siteId'),
+    channelId: utils.getQueryInt('channelId'),
+    channelContentIds: utils.getQueryString('channelContentIds'),
+    isCancel: false,
+    groupNames: [],
+  },
+  addForm: {
+    siteId: utils.getQueryInt('siteId'),
+    channelId: utils.getQueryInt('channelId'),
+    channelContentIds: utils.getQueryString('channelContentIds'),
+    groupName: '',
+    description: ''
+  }
+});
 
 var methods = {
-  loadConfig: function () {
+  apiGet: function () {
     var $this = this;
 
-    $api.get({
-      siteId: $this.siteId,
-      channelId: $this.channelId,
-      channelContentIds: $this.channelContentIds
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        siteId: this.form.siteId,
+        channelId: this.form.channelId
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.groupNames = res.value;
-      $this.pageLoad = true;
+      if (!$this.groupNames || $this.groupNames.length === 0) {
+        $this.isAddForm = true;
+      }
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
-  btnSubmitClick: function () {
+
+  apiAdd: function () {
     var $this = this;
 
-    utils.loading($this, true);
-    $api.post({
-      siteId: $this.siteId,
-      channelId: $this.channelId,
-      channelContentIds: $this.channelContentIds,
-      pageType: $this.pageType,
-      groupNames: $this.selected.join(','),
-      groupName: $this.groupName,
-      description: $this.description
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.post($url + '/actions/add', this.addForm).then(function (response) {
+      var res = response.data;
 
-      parent.location.reload(true);
+      parent.$vue.apiList($this.form.channelId, $this.page, '内容组设置成功!');
+      utils.closeLayer();
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
-  }
+  },
+
+  apiSubmit: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url, this.form).then(function (response) {
+      var res = response.data;
+
+      parent.$vue.apiList($this.form.channelId, $this.page, '内容组设置成功!');
+      utils.closeLayer();
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  btnSubmitClick: function () {
+    if (this.isAddForm) {
+      var $this = this;
+      this.$refs.addForm.validate(function(valid) {
+        if (valid) {
+          $this.apiAdd();
+        }
+      });
+    } else {
+      if (this.form.groupNames.length === 0) {
+        return this.$message.error('请选择内容组！');
+      }
+      this.apiSubmit();
+    }
+  },
+
+  btnCancelClick: function () {
+    if (this.isAddForm && this.groupNames) {
+      this.isAddForm = false;
+    } else {
+      utils.closeLayer();
+    }
+  },
 };
 
 new Vue({
@@ -53,6 +106,6 @@ new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.loadConfig();
+    this.apiGet();
   }
 });

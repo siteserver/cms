@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Repositories
 
         public TableStyleRepository()
         {
-            _repository = new Repository<TableStyle>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
+            _repository = new Repository<TableStyle>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -23,7 +23,7 @@ namespace SiteServer.CMS.Repositories
 
         private string GetCacheKey(string tableName)
         {
-            return CacheManager.GetListKey(_repository.TableName, tableName);
+            return Caching.GetListKey(_repository.TableName, tableName);
         }
 
         private void Sync(TableStyle style)

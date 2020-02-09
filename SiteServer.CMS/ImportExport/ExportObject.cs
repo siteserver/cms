@@ -5,6 +5,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport.Components;
 using System.Threading.Tasks;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Atom.Atom.Core;
 using SiteServer.CMS.Context.Enumerations;
@@ -106,11 +107,11 @@ namespace SiteServer.CMS.ImportExport
             return PathUtils.GetFileName(filePath);
         }
 
-        public static async Task<string> ExportRootSingleTableStyleAsync(string tableName, List<int> relatedIdentities)
+        public static async Task<string> ExportRootSingleTableStyleAsync(int siteId, string tableName, List<int> relatedIdentities)
         {
             var filePath = PathUtils.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = PathUtils.GetTemporaryFilesPath("TableStyle");
-            await TableStyleIe.SingleExportTableStylesAsync(tableName, relatedIdentities, styleDirectoryPath);
+            await TableStyleIe.SingleExportTableStylesAsync(siteId, tableName, relatedIdentities, styleDirectoryPath);
             ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -149,7 +150,7 @@ namespace SiteServer.CMS.ImportExport
             }
         }
 
-        public async Task<string> ExportRelatedFieldAsync(int relatedFieldId)
+        public static async Task<string> ExportRelatedFieldListAsync(int siteId)
         {
             var directoryPath = PathUtils.GetTemporaryFilesPath("relatedField");
             var filePath = PathUtils.GetTemporaryFilesPath("relatedField.zip");
@@ -158,12 +159,13 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            var relatedFieldInfo = await DataProvider.RelatedFieldRepository.GetRelatedFieldAsync(relatedFieldId);
-
-            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
-
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var relatedFieldInfoList = await DataProvider.RelatedFieldRepository.GetRelatedFieldListAsync(siteId);
             var relatedFieldIe = new RelatedFieldIe(site.Id, directoryPath);
-            await relatedFieldIe.ExportRelatedFieldAsync(relatedFieldInfo);
+            foreach (var relatedFieldInfo in relatedFieldInfoList)
+            {
+                await relatedFieldIe.ExportRelatedFieldAsync(relatedFieldInfo);
+            }
 
             ZipUtils.CreateZip(filePath, directoryPath);
 
@@ -200,13 +202,13 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var allChannelIdList = await ChannelManager.GetChannelIdListAsync(_siteId);
+            var allChannelIdList = await DataProvider.ChannelRepository.GetChannelIdListAsync(_siteId);
 
             var includeChannelIdArrayList = new ArrayList();
             foreach (int channelId in channelIdArrayList)
             {
-                var nodeInfo = await ChannelManager.GetChannelAsync(_siteId, channelId);
-                var parentIdArrayList = StringUtils.GetIntList(nodeInfo.ParentsPath);
+                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                var parentIdArrayList = Utilities.GetIntList(nodeInfo.ParentsPath);
                 foreach (int parentId in parentIdArrayList)
                 {
                     if (!includeChannelIdArrayList.Contains(parentId))
@@ -266,8 +268,8 @@ namespace SiteServer.CMS.ImportExport
                 if (!allChannelIdList.Contains(channelId))
                 {
                     allChannelIdList.Add(channelId);
-                    var nodeInfo = await ChannelManager.GetChannelAsync(_siteId, channelId);
-                    var childChannelIdList = await ChannelManager.GetChannelIdListAsync(nodeInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+                    var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                    var childChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(nodeInfo, EScopeType.Descendant);
                     allChannelIdList.AddRange(childChannelIdList);
                 }
             }

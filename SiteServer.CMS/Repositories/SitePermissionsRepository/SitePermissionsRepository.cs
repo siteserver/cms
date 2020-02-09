@@ -57,10 +57,10 @@ namespace SiteServer.CMS.Repositories
                 var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
-                    if (systemPermissions.WebsitePermissionList == null) continue;
+                    if (systemPermissions.WebsitePermissions == null) continue;
 
                     var list = new List<string>();
-                    foreach (var websitePermission in systemPermissions.WebsitePermissionList)
+                    foreach (var websitePermission in systemPermissions.WebsitePermissions)
                     {
                         if (!list.Contains(websitePermission)) list.Add(websitePermission);
                     }
@@ -81,7 +81,7 @@ namespace SiteServer.CMS.Repositories
                 var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
-                    foreach (var channelId in systemPermissions.ChannelIdList)
+                    foreach (var channelId in systemPermissions.ChannelIds)
                     {
                         var key = PermissionsImpl.GetChannelPermissionDictKey(systemPermissions.SiteId, channelId);
 
@@ -91,7 +91,7 @@ namespace SiteServer.CMS.Repositories
                             dict[key] = list;
                         }
 
-                        foreach (var channelPermission in systemPermissions.ChannelPermissionList)
+                        foreach (var channelPermission in systemPermissions.ChannelPermissions)
                         {
                             if (!list.Contains(channelPermission)) list.Add(channelPermission);
                         }
@@ -112,7 +112,7 @@ namespace SiteServer.CMS.Repositories
                 var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
-                    foreach (var channelPermission in systemPermissions.ChannelPermissionList)
+                    foreach (var channelPermission in systemPermissions.ChannelPermissions)
                     {
                         if (!list.Contains(channelPermission))
                         {

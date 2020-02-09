@@ -1,17 +1,4 @@
-﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
-<li class="nav-item">
-  <a class="nav-link active" href="admin.cshtml">管理员管理</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="adminRole.cshtml">角色管理</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="adminConfig.cshtml">管理员设置</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="adminAccessTokens.cshtml">API密钥管理</a>
-</li>
-}
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
 
 <el-form :inline="true" :model="formInline" size="mini">
   <el-form-item label="角色">
@@ -149,6 +136,7 @@
   title="权限设置"
   ref="drawer"
   :visible.sync="drawer"
+  destroy-on-close
   direction="rtl"
   size="80%">
   <div class="drawer__content">
@@ -180,6 +168,7 @@
   title="导入管理员"
   ref="uploadPanel"
   :visible.sync="uploadPanel"
+  destroy-on-close
   direction="rtl"
   size="50%">
   <div class="drawer__content">

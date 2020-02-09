@@ -6,7 +6,6 @@ using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -99,17 +98,17 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(successTemplateString))
             {
-                var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId);
+                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId);
 
                 if (type.ToLower().Equals(TypePreviousChannel.ToLower()) || type.ToLower().Equals(TypeNextChannel.ToLower()))
                 {
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
                     //var siblingChannelId = DataProvider.ChannelRepository.GetIdByParentIdAndTaxis(node.ParentId, taxis, isNextChannel);
-                    var siblingChannelId = await StlChannelCache.GetIdByParentIdAndTaxisAsync(nodeInfo.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = await DataProvider.ChannelRepository.GetIdByParentIdAndTaxisAsync(pageInfo.SiteId, nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingChannelId != 0)
                     {
-                        var siblingNodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, siblingChannelId);
+                        var siblingNodeInfo = await DataProvider.ChannelRepository.GetAsync(siblingChannelId);
                         var url = await PageUtility.GetChannelUrlAsync(pageInfo.Site, siblingNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
@@ -119,7 +118,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                         if (string.IsNullOrEmpty(contextInfo.InnerHtml))
                         {
-                            stlAnchor.InnerHtml = await ChannelManager.GetChannelNameAsync(pageInfo.SiteId, siblingChannelId);
+                            stlAnchor.InnerHtml = await DataProvider.ChannelRepository.GetChannelNameAsync(pageInfo.SiteId, siblingChannelId);
                             if (wordNum > 0)
                             {
                                 stlAnchor.InnerHtml = WebUtils.MaxLengthText(stlAnchor.InnerHtml, wordNum);
@@ -140,7 +139,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var taxis = contentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
-                        var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
+                        var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
                         var siblingContentId = DataProvider.ContentRepository.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
@@ -191,7 +190,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else
             {
-                var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId);
+                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId);
 
                 var isSuccess = false;
                 var theContextInfo = contextInfo.Clone();
@@ -201,7 +200,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
                     //var siblingChannelId = DataProvider.ChannelRepository.GetIdByParentIdAndTaxis(node.ParentId, taxis, isNextChannel);
-                    var siblingChannelId = await StlChannelCache.GetIdByParentIdAndTaxisAsync(nodeInfo.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = await DataProvider.ChannelRepository.GetIdByParentIdAndTaxisAsync(pageInfo.SiteId, nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingChannelId != 0)
                     {
                         isSuccess = true;
@@ -215,7 +214,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var taxis = contentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
-                        var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
+                        var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
                         var siblingContentId = DataProvider.ContentRepository.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {

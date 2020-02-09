@@ -12,6 +12,7 @@ using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -120,7 +121,7 @@ namespace SiteServer.API.Controllers.Preview
                 ContextType = visualInfo.ContextType
             };
 
-            var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(site, templateInfo));
+            var contentBuilder = new StringBuilder(DataProvider.TemplateRepository.GetTemplateContent(site, templateInfo));
             if (templateInfo.CreatedFileExtName == ".shtml")
             {
                 //<!-- #include virtual="{Stl.SiteUrl}/include/head.html" -->
@@ -289,7 +290,7 @@ namespace SiteServer.API.Controllers.Preview
 
         private async Task<HttpResponseMessage> GetChannelTemplateAsync(VisualInfo visualInfo, Site site, StringBuilder contentBuilder, PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var nodeInfo = await ChannelManager.GetChannelAsync(site.Id, visualInfo.ChannelId);
+            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(visualInfo.ChannelId);
             if (nodeInfo == null) return null;
 
             if (nodeInfo.ParentId > 0)

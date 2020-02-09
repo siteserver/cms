@@ -1,35 +1,45 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerTaxis');
+﻿var $url = '/pages/cms/contents/contentsLayerTaxis';
 
-var data = {
-  siteId: parseInt(utils.getQueryString('siteId')),
-  channelId: parseInt(utils.getQueryString('channelId')),
-  channelContentIds: utils.getQueryString('channelContentIds'),
-  pageLoad: false,
-  pageAlert: null,
-  isUp: true,
-  taxis: 1
-};
+var data = utils.initData({
+  page: utils.getQueryInt('page'),
+  form: {
+    siteId: utils.getQueryInt('siteId'),
+    channelId: utils.getQueryInt('channelId'),
+    channelContentIds: utils.getQueryString('channelContentIds'),
+    isUp: true,
+    taxis: 1
+  }
+});
 
 var methods = {
-  loadConfig: function () {
-    this.pageLoad = true;
-  },
-  btnSubmitClick: function () {
+  apiSubmit: function () {
     var $this = this;
 
-    utils.loading($this, true);
-    $api.post({
-      siteId: $this.siteId,
-      channelId: $this.channelId,
-      channelContentIds: $this.channelContentIds,
-      isUp: $this.isUp,
-      taxis: $this.taxis
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.post($url, this.form).then(function (response) {
+      var res = response.data;
 
-      parent.location.reload(true);
+      parent.$vue.apiList($this.form.channelId, $this.page, '内容排序成功!');
+      utils.closeLayer();
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
-  }
+  },
+
+  btnSubmitClick: function () {
+    var $this = this;
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
+        $this.apiSubmit();
+      }
+    });
+  },
+
+  btnCancelClick: function () {
+    utils.closeLayer();
+  },
 };
 
 new Vue({
@@ -37,6 +47,6 @@ new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.loadConfig();
+    utils.loading(this, false);
   }
 });

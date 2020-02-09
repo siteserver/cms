@@ -36,10 +36,10 @@ namespace SiteServer.API.Controllers.Pages.Shared
         }
 
         [HttpPost, Route(Route)]
-        public async Task<DefaultResult> Submit([FromBody] SubmitRequest request)
+        public async Task<BoolResult> Submit([FromBody] SubmitRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            if (!auth.IsAdminLoggin) return Request.Unauthorized<DefaultResult>();
+            if (!auth.IsAdminLoggin) return Request.Unauthorized<BoolResult>();
 
             foreach (var style in request.Styles)
             {
@@ -70,7 +70,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
 
             await auth.AddAdminLogAsync("批量添加表单显示样式");
 
-            return new DefaultResult
+            return new BoolResult
             {
                 Value = true
             };

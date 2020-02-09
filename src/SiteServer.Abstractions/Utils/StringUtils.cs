@@ -3,46 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using Datory.Utils;
 
 namespace SiteServer.Abstractions
 {
     public static class StringUtils
     {
-        public static string Join<T>(IEnumerable<T> values, string separator = ",")
-        {
-            return values == null ? string.Empty : string.Join(",", values);
-        }
-
-        public static List<int> GetIntList(string collection)
-        {
-            var list = new List<int>();
-            if (!string.IsNullOrEmpty(collection))
-            {
-                var array = collection.Split(',');
-                foreach (var s in array)
-                {
-                    int.TryParse(s.Trim(), out var i);
-                    list.Add(i);
-                }
-            }
-            return list;
-        }
-
-        public static List<string> GetStringList(string collection, char split = ',')
-        {
-            var list = new List<string>();
-            if (!string.IsNullOrEmpty(collection))
-            {
-                var array = collection.Split(split);
-                foreach (var s in array)
-                {
-                    list.Add(s);
-                }
-            }
-            return list;
-        }
-
         public static bool IsMobile(string val)
         {
             return !string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^1[3456789]\d{9}$", RegexOptions.IgnoreCase);
@@ -241,8 +207,6 @@ namespace SiteServer.Abstractions
             }
         }
 
-        
-
         public static string ToXmlContent(string inputString)
         {
             var contentBuilder = new StringBuilder(inputString);
@@ -427,10 +391,6 @@ namespace SiteServer.Abstractions
             return retVal.ToString();
         }
 
-        
-
-        
-
         public static bool IsChinese(char c)
         {
             return 0x4e00 <= c && c <= 0x9fbb;
@@ -562,8 +522,8 @@ namespace SiteServer.Abstractions
         {
             if (replace.IndexOf(',') != -1)
             {
-                var replaceList = GetStringList(replace);
-                var toList = GetStringList(to);
+                var replaceList = Utilities.GetStringList(replace);
+                var toList = Utilities.GetStringList(to);
 
                 if (replaceList.Count == toList.Count)
                 {

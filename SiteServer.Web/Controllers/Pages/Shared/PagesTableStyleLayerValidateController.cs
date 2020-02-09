@@ -5,7 +5,6 @@ using System.Web.Http;
 using Datory;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Dto;
 using SiteServer.CMS.Dto.Result;
 using SiteServer.CMS.Extensions;
@@ -38,10 +37,10 @@ namespace SiteServer.API.Controllers.Pages.Shared
         }
 
         [HttpPost, Route(Route)]
-        public async Task<DefaultResult> Submit([FromBody] SubmitRequest request)
+        public async Task<BoolResult> Submit([FromBody] SubmitRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            if (!auth.IsAdminLoggin) return Request.Unauthorized<DefaultResult>();
+            if (!auth.IsAdminLoggin) return Request.Unauthorized<BoolResult>();
 
             var style =
                 await DataProvider.TableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities);
@@ -60,7 +59,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 await auth.AddAdminLogAsync("修改表单显示样式", $"字段名:{style.AttributeName}");
             }
 
-            return new DefaultResult
+            return new BoolResult
             {
                 Value = true
             };

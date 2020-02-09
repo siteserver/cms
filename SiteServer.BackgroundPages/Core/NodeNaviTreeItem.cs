@@ -194,7 +194,7 @@ namespace SiteServer.BackgroundPages.Core
                 var site = DataProvider.SiteRepository.GetAsync(_siteId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append("&nbsp;");
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(site, ChannelManager.GetChannelAsync(_siteId, _channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());
+                htmlBuilder.Append(DataProvider.ChannelRepository.GetNodeTreeLastImageHtmlAsync(site, DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());
 
                 if (_contentNum >= 0)
                 {
@@ -293,7 +293,7 @@ namespace SiteServer.BackgroundPages.Core
                 var site = DataProvider.SiteRepository.GetAsync(_siteId).GetAwaiter().GetResult();
 
                 htmlBuilder.Append("&nbsp;");
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(site, ChannelManager.GetChannelAsync(_siteId, _channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());
+                htmlBuilder.Append(DataProvider.ChannelRepository.GetNodeTreeLastImageHtmlAsync(site, DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());
 
                 if (_contentNum >= 0)
                 {

@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.CMS.Core;
 using SiteServer.BackgroundPages.Cms;
@@ -23,7 +24,7 @@ namespace SiteServer.BackgroundPages.Core
         public const string Current = "{Current}";
         public const string Value = "{Value}";
 
-        public static string Parse(Site site, int channelId, TableStyle style, IDictionary<string, object> attributes, NameValueCollection pageScripts, out string extraHtml)
+        public static async Task<(string value, string extra)> ParseAsync(Site site, int channelId, TableStyle style, IDictionary<string, object> attributes, NameValueCollection pageScripts)
         {
             var retVal = string.Empty;
             var extraBuilder = new StringBuilder();
@@ -56,7 +57,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (inputType == InputType.SelectCascading)
             {
-                retVal = ParseSelectCascading(attributes, site, style, extraBuilder);
+                retVal = await ParseSelectCascadingAsync(attributes, site, style, extraBuilder);
             }
             else if (inputType == InputType.CheckBox)
             {
@@ -96,8 +97,7 @@ namespace SiteServer.BackgroundPages.Core
                 extraBuilder.Clear();
             }
 
-            extraHtml = extraBuilder.ToString();
-            return retVal;
+            return (retVal, extraBuilder.ToString());
         }
 
         public static string ParseText(IDictionary<string, object> attributes, Site site, int channelId, TableStyle style, StringBuilder extraBuilder)
@@ -338,7 +338,7 @@ $(function(){{
             var builder = new StringBuilder();
             var styleItems = style.Items ?? new List<TableStyleItem>();
 
-            var selectedValues = StringUtils.GetStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
+            var selectedValues = Utilities.GetStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
 
             var validateAttributes = InputParserUtils.GetValidateAttributes(style.IsValidate, style.DisplayName, style.IsRequired, style.MinNum, style.MaxNum, style.ValidateType, style.RegExp, style.ErrorMessage);
             builder.Append($@"<select id=""{style.AttributeName}"" name=""{style.AttributeName}"" class=""form-control"" isListItem=""true"" multiple  {validateAttributes}>");
@@ -353,23 +353,19 @@ $(function(){{
             return builder.ToString();
         }
 
-        private static string ParseSelectCascading(IDictionary<string, object> attributes, Site site, TableStyle tableStyle, StringBuilder extraBuilder)
+        private static async Task<string> ParseSelectCascadingAsync(IDictionary<string, object> attributes, Site site, TableStyle tableStyle, StringBuilder extraBuilder)
         {
             var attributeName = tableStyle.AttributeName;
             var fieldInfo = DataProvider.RelatedFieldRepository.GetRelatedFieldAsync(tableStyle.RelatedFieldId).GetAwaiter().GetResult();
             if (fieldInfo == null) return string.Empty;
 
-            var list = DataProvider.RelatedFieldItemRepository.GetRelatedFieldItemInfoListAsync(tableStyle.RelatedFieldId, 0).GetAwaiter().GetResult();
-
-            var prefixes = TranslateUtils.StringCollectionToStringCollection(fieldInfo.Prefixes);
-            var suffixes = TranslateUtils.StringCollectionToStringCollection(fieldInfo.Suffixes);
+            var list = DataProvider.RelatedFieldItemRepository.GetListAsync(site.Id, tableStyle.RelatedFieldId, 0).GetAwaiter().GetResult();
 
             var style = ERelatedFieldStyleUtils.GetEnumType(tableStyle.RelatedFieldStyle);
 
             var builder = new StringBuilder();
             builder.Append($@"
 <span id=""c_{attributeName}_1"">
-    {prefixes[0]}
     <select name=""{attributeName}"" id=""{attributeName}_1"" class=""select"" onchange=""getRelatedField_{fieldInfo.Id}(2);"">
         <option value="""">请选择</option>");
 
@@ -384,25 +380,24 @@ $(function(){{
             var isLoad = false;
             foreach (var itemInfo in list)
             {
-                var selected = !string.IsNullOrEmpty(itemInfo.ItemValue) && value == itemInfo.ItemValue ? @" selected=""selected""" : string.Empty;
+                var selected = !string.IsNullOrEmpty(itemInfo.Value) && value == itemInfo.Value ? @" selected=""selected""" : string.Empty;
                 if (!string.IsNullOrEmpty(selected)) isLoad = true;
                 builder.Append($@"
-	<option value=""{itemInfo.ItemValue}"" itemID=""{itemInfo.Id}""{selected}>{itemInfo.ItemName}</option>");
+	<option value=""{itemInfo.Value}"" itemID=""{itemInfo.Id}""{selected}>{itemInfo.Label}</option>");
             }
 
-            builder.Append($@"
-</select>{suffixes[0]}</span>");
+            builder.Append(@"</select></span>");
 
-            if (fieldInfo.TotalLevel > 1)
+            var totalLevel = await DataProvider.RelatedFieldItemRepository.GetTotalLevelAsync(fieldInfo.SiteId, fieldInfo.Id);
+
+            if (totalLevel > 1)
             {
-                for (var i = 2; i <= fieldInfo.TotalLevel; i++)
+                for (var i = 2; i <= totalLevel; i++)
                 {
                     builder.Append($@"<span id=""c_{attributeName}_{i}"" style=""display:none"">");
                     builder.Append(style == ERelatedFieldStyle.Virtical ? @"<br />" : "&nbsp;");
                     builder.Append($@"
-{prefixes[i - 1]}
 <select name=""{attributeName}"" id=""{attributeName}_{i}"" class=""select"" onchange=""getRelatedField_{fieldInfo.Id}({i} + 1);""></select>
-{suffixes[i - 1]}
 </span>
 ");
                 }
@@ -412,7 +407,7 @@ $(function(){{
 <script>
 function getRelatedField_{fieldInfo.Id}(level){{
     var attributeName = '{tableStyle.AttributeName}';
-    var totalLevel = {fieldInfo.TotalLevel};
+    var totalLevel = {totalLevel};
     for(i=level;i<=totalLevel;i++){{
         $('#c_' + attributeName + '_' + i).hide();
     }}
@@ -483,7 +478,7 @@ $(document).ready(function(){{
                 RepeatDirection = style.Horizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical
             };
 
-            var selectedValues = StringUtils.GetStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
+            var selectedValues = Utilities.GetStringList(TranslateUtils.Get<string>(attributes, style.AttributeName));
 
             InputParserUtils.GetValidateAttributesForListItem(checkBoxList, style.IsValidate, style.DisplayName, style.IsRequired, style.MinNum, style.MaxNum, style.ValidateType, style.RegExp, style.ErrorMessage);
 
@@ -699,7 +694,7 @@ function add_{attributeName}(val,foucs){{
             var extendValues = TranslateUtils.Get<string>(attributes, extendAttributeName);
             if (!string.IsNullOrEmpty(extendValues))
             {
-                foreach (var extendValue in StringUtils.GetStringList(extendValues))
+                foreach (var extendValue in Utilities.GetStringList(extendValues))
                 {
                     if (!string.IsNullOrEmpty(extendValue))
                     {
@@ -780,7 +775,7 @@ function add_{attributeName}(val,foucs){{
             var extendValues = TranslateUtils.Get<string>(attributes, extendAttributeName);
             if (!string.IsNullOrEmpty(extendValues))
             {
-                foreach (var extendValue in StringUtils.GetStringList(extendValues))
+                foreach (var extendValue in Utilities.GetStringList(extendValues))
                 {
                     if (!string.IsNullOrEmpty(extendValue))
                     {
@@ -874,7 +869,7 @@ function add_{attributeName}(val,foucs){{
             var extendValues = TranslateUtils.Get<string>(attributes, extendAttributeName);
             if (!string.IsNullOrEmpty(extendValues))
             {
-                foreach (var extendValue in StringUtils.GetStringList(extendValues))
+                foreach (var extendValue in Utilities.GetStringList(extendValues))
                 {
                     if (!string.IsNullOrEmpty(extendValue))
                     {

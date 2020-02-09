@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -10,7 +9,6 @@ using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Utility
 {
-    
     [RoutePrefix("pages/settings/utilityCache")]
     public class PagesUtilityCacheController : ApiController
     {
@@ -19,35 +17,28 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         [HttpGet, Route(Route)]
         public async Task<IHttpActionResult> Get()
         {
-            try
+            var auth = await AuthenticatedRequest.GetAuthAsync();
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUtilityCache))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUtilityCache))
-                {
-                    return Unauthorized();
-                }
-
-                var parameterList = new List<KeyValuePair<string, string>>();
-                foreach (var key in CacheUtils.AllKeys)
-                {
-                    var value = GetCacheValue(key);
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        parameterList.Add(new KeyValuePair<string, string>(key, value));
-                    }
-                }
-
-                return Ok(new
-                {
-                    Value = parameterList,
-                    parameterList.Count
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            var parameterList = new List<KeyValuePair<string, string>>();
+            foreach (var key in CacheUtils.AllKeys)
             {
-                return InternalServerError(ex);
+                var value = GetCacheValue(key);
+                if (!string.IsNullOrEmpty(value))
+                {
+                    parameterList.Add(new KeyValuePair<string, string>(key, value));
+                }
             }
+
+            return Ok(new
+            {
+                Value = parameterList,
+                parameterList.Count
+            });
         }
 
         private static string GetCacheValue(string key)
@@ -79,40 +70,35 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
         }
 
         [HttpPost, Route(Route)]
-        public async Task<IHttpActionResult> Post()
+        public async Task<IHttpActionResult> ClearCache()
         {
-            try
+            var auth = await AuthenticatedRequest.GetAuthAsync();
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUtilityCache))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUtilityCache))
-                {
-                    return Unauthorized();
-                }
-
-                CacheUtils.ClearAll();
-                await DataProvider.DbCacheRepository.ClearAsync();
-
-                var parameterList = new List<KeyValuePair<string, string>>();
-                foreach (var key in CacheUtils.AllKeys)
-                {
-                    var value = GetCacheValue(key);
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        parameterList.Add(new KeyValuePair<string, string>(key, value));
-                    }
-                }
-
-                return Ok(new
-                {
-                    Value = parameterList,
-                    parameterList.Count
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            await DataProvider.ConfigRepository.ClearAllCache();
+
+            CacheUtils.ClearAll();
+            await DataProvider.DbCacheRepository.ClearAsync();
+
+            var parameterList = new List<KeyValuePair<string, string>>();
+            foreach (var key in CacheUtils.AllKeys)
             {
-                return InternalServerError(ex);
+                var value = GetCacheValue(key);
+                if (!string.IsNullOrEmpty(value))
+                {
+                    parameterList.Add(new KeyValuePair<string, string>(key, value));
+                }
             }
+
+            return Ok(new
+            {
+                Value = parameterList,
+                parameterList.Count
+            });
         }
     }
 }

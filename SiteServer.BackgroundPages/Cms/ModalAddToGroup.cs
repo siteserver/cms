@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
@@ -65,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
             else
             {
                 BtnAddGroup.Text = " 新建栏目组";
-                _channelIdArrayList = StringUtils.GetIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
+                _channelIdArrayList = Utilities.GetIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
             }
             if (!IsPostBack)
             {
@@ -89,8 +90,8 @@ namespace SiteServer.BackgroundPages.Cms
                         CblGroupNameCollection.Items.Add(item);
                     }
 
-                    var showPopWinString = ModalNodeGroupAdd.GetOpenWindowString(SiteId);
-                    BtnAddGroup.Attributes.Add("onclick", showPopWinString);
+                    //var showPopWinString = ModalNodeGroupAdd.GetOpenWindowString(SiteId);
+                    //BtnAddGroup.Attributes.Add("onclick", showPopWinString);
                 }
             }
         }
@@ -114,7 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in _idsDictionary.Keys)
                     {
-                        var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
+                        var tableName = DataProvider.ChannelRepository.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
                         var contentIdArrayList = _idsDictionary[channelId];
                         if (contentIdArrayList != null)
                         {
@@ -125,7 +126,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    AuthRequest.AddSiteLogAsync(SiteId, "添加内容到内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNameList)}").GetAwaiter().GetResult();
+                    AuthRequest.AddSiteLogAsync(SiteId, "添加内容到内容组", $"内容组:{Utilities.ToString(groupNameList)}").GetAwaiter().GetResult();
 
                     isChanged = true;
                 }
@@ -140,10 +141,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (int channelId in _channelIdArrayList)
                     {
-                        DataProvider.ChannelRepository.AddGroupNameListAsync(SiteId, channelId, groupNameList).GetAwaiter().GetResult();
+                        //DataProvider.ChannelRepository.AddGroupNameListAsync(SiteId, channelId, groupNameList).GetAwaiter().GetResult();
                     }
 
-                    AuthRequest.AddSiteLogAsync(SiteId, "添加栏目到栏目组", $"栏目组:{TranslateUtils.ObjectCollectionToString(groupNameList)}").GetAwaiter().GetResult();
+                    AuthRequest.AddSiteLogAsync(SiteId, "添加栏目到栏目组", $"栏目组:{Utilities.ToString(groupNameList)}").GetAwaiter().GetResult();
 
                     isChanged = true;
                 }

@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Images;
@@ -97,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var scripts = string.Empty;
 
-            var fileNames = StringUtils.GetStringList(HihFilePaths.Value);
+            var fileNames = Utilities.GetStringList(HihFilePaths.Value);
 
             foreach (var filePath in fileNames)
             {

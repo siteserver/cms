@@ -42,25 +42,11 @@ namespace SiteServer.Abstractions
         [DataColumn]
         public string CreatorUserName { get; set; }
 
-        [JsonIgnore]
         [DataColumn]
-        private string IsLockedOut { get; set; }
+        public bool Locked { get; set; }
 
-        public bool Locked
-        {
-            get => TranslateUtils.ToBool(IsLockedOut);
-            set => IsLockedOut = value.ToString();
-        }
-
-        [JsonIgnore]
         [DataColumn]
-        private string SiteIdCollection { get; set; }
-
-        public List<int> SiteIds
-        {
-            get => StringUtils.GetIntList(SiteIdCollection);
-            set => SiteIdCollection = StringUtils.Join(value);
-        }
+        public List<int> SiteIds { get; set; }
 
         [DataColumn]
         public int SiteId { get; set; }

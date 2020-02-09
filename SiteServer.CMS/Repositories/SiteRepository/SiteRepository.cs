@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -17,7 +16,7 @@ namespace SiteServer.CMS.Repositories
 
         public SiteRepository()
         {
-            _repository = new Repository<Site>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
+            _repository = new Repository<Site>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -26,49 +25,42 @@ namespace SiteServer.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private static class Attr
-        {
-            public const string IsRoot = nameof(IsRoot);
-        }
-
         public async Task<int> InsertAsync(Site site)
         {
             site.Taxis = await GetMaxTaxisAsync() + 1;
-            site.Id = await _repository.InsertAsync(site);
-            await RemoveCacheListAsync();
+            site.Id = await _repository.InsertAsync(site, Q.CachingRemove(GetListKey()));
             return site.Id;
         }
 
         public async Task DeleteAsync(int siteId)
         {
-            var siteEntity = await GetAsync(siteId);
-            var list = await ChannelManager.GetChannelIdListAsync(siteId);
-            await DataProvider.TableStyleRepository.DeleteAsync(list, siteEntity.TableName);
+            var site = await GetAsync(siteId);
+            var list = await DataProvider.ChannelRepository.GetChannelIdListAsync(siteId);
+            await DataProvider.TableStyleRepository.DeleteAsync(list, site.TableName);
 
-            await DataProvider.ContentTagRepository.DeleteTagsAsync(siteId);
+            await DataProvider.ContentGroupRepository.DeleteAsync(siteId);
+            await DataProvider.ContentTagRepository.DeleteAsync(siteId);
 
             await DataProvider.ChannelRepository.DeleteAllAsync(siteId);
 
             await UpdateParentIdToZeroAsync(siteId);
 
-            await _repository.DeleteAsync(siteId);
-
-            await RemoveCacheListAsync();
-            await RemoveCacheEntityAsync(siteId);
-            ChannelManager.RemoveCacheBySiteId(siteId);
-            PermissionsImpl.ClearAllCache();
+            await _repository.DeleteAsync(siteId, Q
+                .CachingRemove(GetListKey(), GetEntityKey(siteId))
+            );
         }
 
         public async Task UpdateAsync(Site site)
         {
-            if (site.Root)
+            var cache = await GetCacheAsync(site.Id);
+            if (site.Root != cache.Root)
             {
                 await UpdateAllIsRootAsync();
             }
 
-            await _repository.UpdateAsync(site);
-            await RemoveCacheListAsync();
-            await RemoveCacheEntityAsync(site.Id);
+            await _repository.UpdateAsync(site, Q
+                .CachingRemove(GetListKey(), GetEntityKey(site.Id))
+            );
         }
 
         public async Task UpdateTableNameAsync(int siteId, string tableName)
@@ -76,59 +68,46 @@ namespace SiteServer.CMS.Repositories
             await _repository.UpdateAsync(Q
                 .Set(nameof(Site.TableName), tableName)
                 .Where(nameof(Site.Id), siteId)
+                .CachingRemove(GetListKey(), GetEntityKey(siteId))
             );
-            await RemoveCacheListAsync();
-            await RemoveCacheEntityAsync(siteId);
         }
 
         public async Task UpdateParentIdToZeroAsync(int parentId)
         {
-            await _repository.UpdateAsync(Q
-                .Set(nameof(Site.ParentId), 0)
-                .Where(nameof(Site.ParentId), parentId)
-            );
+            var cacheKeys = new List<string>
+            {
+                GetListKey()
+            };
             var siteIds = await GetSiteIdListAsync(parentId);
             foreach (var siteId in siteIds)
             {
-                await RemoveCacheEntityAsync(siteId);
+                cacheKeys.Add(GetEntityKey(siteId));
             }
-            await RemoveCacheListAsync();
+            
+            await _repository.UpdateAsync(Q
+                .Set(nameof(Site.ParentId), 0)
+                .Where(nameof(Site.ParentId), parentId)
+                .CachingRemove(cacheKeys.ToArray())
+            );
         }
 
         private async Task UpdateAllIsRootAsync()
         {
-            await _repository.UpdateAsync(Q
-                .Set(Attr.IsRoot, false.ToString())
-            );
+            var cacheKeys = new List<string>
+            {
+                GetListKey()
+            };
             var siteIds = await GetSiteIdListAsync();
             foreach (var siteId in siteIds)
             {
-                await RemoveCacheEntityAsync(siteId);
+                cacheKeys.Add(GetEntityKey(siteId));
             }
-            await RemoveCacheListAsync();
+
+            await _repository.UpdateAsync(Q
+                .Set(nameof(Site.Root), false)
+                .CachingRemove(cacheKeys.ToArray())
+            );
         }
-
-        //private static string GetSiteDir(List<Site> siteEntityList, Site siteEntity)
-        //{
-        //    if (TranslateUtils.ToBool(siteEntity.IsRoot)) return string.Empty;
-        //    if (siteEntity.ParentId <= 0) return PathUtils.GetDirectoryName(siteEntity.SiteDir, false);
-
-        //    Site parent = null;
-        //    foreach (var current in siteEntityList)
-        //    {
-        //        if (current.Id != siteEntity.ParentId) continue;
-        //        parent = current;
-        //        break;
-        //    }
-
-        //    return PathUtils.Combine(GetSiteDir(siteEntityList, parent), PathUtils.GetDirectoryName(siteEntity.SiteDir, false));
-        //}
-
-        
-
-        
-
-        
 
         public async Task<IDataReader> GetStlDataSourceAsync(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
         {
@@ -174,15 +153,11 @@ namespace SiteServer.CMS.Repositories
                 //var sqlSelect = DataProvider.DatabaseRepository.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
                 var sqlSelect = DataProvider.DatabaseRepository.GetPageSqlString(TableName, SqlUtils.Asterisk, sqlWhereString, orderByString, startNum - 1, totalNum);
 
-                using (var connection = _repository.Database.GetConnection())
-                {
-                    ie = connection.ExecuteReader(sqlSelect);
-                }
+                using var connection = _repository.Database.GetConnection();
+                ie = connection.ExecuteReader(sqlSelect);
             }
 
             return ie;
         }
-
-        
     }
 }

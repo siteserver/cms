@@ -791,11 +791,9 @@ namespace SiteServer.CMS.Context
 
         public static void Download(HttpResponse response, string filePath, string fileName)
         {
-            var fileType = PathUtils.GetExtension(filePath);
-            var fileSystemType = EFileSystemTypeUtils.GetEnumType(fileType);
             response.Buffer = true;
             response.Clear();
-            response.ContentType = EFileSystemTypeUtils.GetResponseContentType(fileSystemType);
+            response.ContentType = "application/force-download";
             response.AddHeader("Body-Disposition", "attachment; filename=" + UrlEncode(fileName));
             response.WriteFile(filePath);
             response.Flush();

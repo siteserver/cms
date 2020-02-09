@@ -1,13 +1,11 @@
 ﻿var $url = '/pages/settings/userPassword';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   userId: utils.getQueryInt('userId'),
   user: null,
   password: null,
   confirmPassword: null
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -20,15 +18,15 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
   submit: function () {
     var $this = this;
 
-    utils.loading($this, true);
-    $api.post($url + '?userId=' + $this.userId, {
+    utils.loading(this, true);
+    $api.post($url + '?userId=' + this.userId, {
       password: $this.password
     }).then(function (response) {
       var res = response.data;

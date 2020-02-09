@@ -19,14 +19,14 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task<Channel> GetChannelAsync(int siteId, int channelId)
         {
-            return await ChannelManager.GetChannelAsync(siteId, channelId);
+            return await DataProvider.ChannelRepository.GetAsync(channelId);
         }
 
         public async Task<int> GetChannelIdAsync(int siteId, string channelIndex)
         {
             if (string.IsNullOrEmpty(channelIndex)) return 0;
 
-            var channelInfoList = await ChannelManager.GetChannelListAsync(siteId);
+            var channelInfoList = await DataProvider.ChannelRepository.GetChannelListAsync(siteId);
             foreach (var channelInfo in channelInfoList)
             {
                 if (channelInfo.IndexName == channelIndex)
@@ -55,12 +55,12 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task<List<int>> GetChannelIdListAsync(int siteId)
         {
-            return await ChannelManager.GetChannelIdListAsync(siteId);
+            return await DataProvider.ChannelRepository.GetChannelIdListAsync(siteId);
         }
 
         public async Task<List<int>> GetChannelIdListAsync(int siteId, int parentId)
         {
-            return await ChannelManager.GetChannelIdListAsync(await ChannelManager.GetChannelAsync(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
+            return await DataProvider.ChannelRepository.GetChannelIdsAsync(await DataProvider.ChannelRepository.GetAsync(parentId == 0 ? siteId : parentId), EScopeType.Children);
         }
 
         
@@ -74,19 +74,19 @@ namespace SiteServer.CMS.Plugin.Apis
 
         //    if (permissionManager.IsConsoleAdministrator || permissionManager.IsSystemAdministrator)//如果是超级管理员或站点管理员
         //    {
-        //        channelIdList = await ChannelManager.GetChannelIdListAsync(siteId);
+        //        channelIdList = await DataProvider.ChannelRepository.GetChannelIdListAsync(siteId);
         //    }
         //    else
         //    {
         //        foreach (var channelId in permissionManager.ChannelPermissionChannelIdList)
         //        {
-        //            var channel = await ChannelManager.GetChannelAsync(siteId, channelId);
-        //            var allChannelIdList = await ChannelManager.GetChannelIdListAsync(channel, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+        //            var channel = await DataProvider.ChannelRepository.GetAsync(siteId, channelId);
+        //            var allChannelIdList = await DataProvider.ChannelRepository.GetChannelIdListAsync(channel, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
         //            allChannelIdList.Insert(0, channelId);
 
         //            foreach (var ownChannelId in allChannelIdList)
         //            {
-        //                var node = await ChannelManager.GetChannelAsync(siteId, ownChannelId);
+        //                var node = await DataProvider.ChannelRepository.GetAsync(siteId, ownChannelId);
         //                if (node != null)
         //                {
         //                    channelIdList.Add(node.Id);
@@ -99,7 +99,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task<string> GetChannelNameAsync(int siteId, int channelId)
         {
-            return await ChannelManager.GetChannelNameAsync(siteId, channelId);
+            return await DataProvider.ChannelRepository.GetChannelNameAsync(siteId, channelId);
         }
 
         public async Task UpdateAsync(int siteId, Channel channelInfo)
@@ -116,7 +116,7 @@ namespace SiteServer.CMS.Plugin.Apis
         public async Task<string> GetChannelUrlAsync(int siteId, int channelId)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            return await PageUtility.GetChannelUrlAsync(site, await ChannelManager.GetChannelAsync(siteId, channelId), false);
+            return await PageUtility.GetChannelUrlAsync(site, await DataProvider.ChannelRepository.GetAsync(channelId), false);
         }
     }
 }

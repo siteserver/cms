@@ -2,6 +2,7 @@
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.StlElement;
 
 namespace SiteServer.CMS.StlParser.Utility
@@ -179,7 +180,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
                 else
                 {
-                    var nodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                    var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                     var redirectUrl = contentId > 0 ? await PathUtility.GetContentPageFilePathAsync(site, nodeInfo.Id, contentId, pageIndex) : await PathUtility.GetChannelPageFilePathAsync(site, nodeInfo.Id, pageIndex);
                     redirectUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, redirectUrl, isLocal);
                     jsMethod = $"window.location.href='{redirectUrl}';";

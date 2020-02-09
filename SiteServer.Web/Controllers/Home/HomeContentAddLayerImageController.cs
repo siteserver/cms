@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Images;
 using SiteServer.CMS.Core;
@@ -38,7 +39,7 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 return Ok(new
@@ -134,7 +135,7 @@ namespace SiteServer.API.Controllers.Home
                 var editorFixWidth = request.GetPostString("editorFixWidth");
                 var editorFixHeight = request.GetPostString("editorFixHeight");
                 var editorIsLinkToOriginal = request.GetPostBool("editorIsLinkToOriginal");
-                var filePaths = StringUtils.GetStringList(request.GetPostString("filePaths"));
+                var filePaths = Utilities.GetStringList(request.GetPostString("filePaths"));
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
@@ -146,7 +147,7 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var retVal = new List<string>();

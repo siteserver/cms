@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages.Controls
 		{
             if (Attributes == null) return;
 
-		    var channelInfo = ChannelManager.GetChannelAsync(Site.Id, ChannelId).GetAwaiter().GetResult();
+		    var channelInfo = DataProvider.ChannelRepository.GetAsync(ChannelId).GetAwaiter().GetResult();
             var styleList = DataProvider.TableStyleRepository.GetChannelStyleListAsync(channelInfo).GetAwaiter().GetResult();
 
 		    if (styleList == null) return;
@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Controls
 		    var pageScripts = new NameValueCollection();
 		    foreach (var style in styleList)
 		    {
-		        var value = BackgroundInputTypeParser.Parse(Site, ChannelId, style, Attributes, pageScripts, out var extra);
+		        var (value, extra) = BackgroundInputTypeParser.ParseAsync(Site, ChannelId, style, Attributes, pageScripts).GetAwaiter().GetResult();
 
 		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 

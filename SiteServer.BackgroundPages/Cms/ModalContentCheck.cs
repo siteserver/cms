@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
             var titles = new StringBuilder();
             foreach (var channelId in _idsDictionary.Keys)
             {
-                var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
+                var tableName = DataProvider.ChannelRepository.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
             var listItem = new ListItem("<保持原栏目不变>", "0");
             DdlTranslateChannelId.Items.Add(listItem);
 
-            ChannelManager.AddListItemsForAddContentAsync(DdlTranslateChannelId.Items, Site, true, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
+            DataProvider.ChannelRepository.AddListItemsForAddContentAsync(DdlTranslateChannelId.Items, Site, true, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -124,7 +124,7 @@ namespace SiteServer.BackgroundPages.Cms
             var idsDictionaryToCheck = new Dictionary<int, List<int>>();
             foreach (var channelId in _idsDictionary.Keys)
             {
-                var channelInfo = ChannelManager.GetChannelAsync(Site.Id, channelId).GetAwaiter().GetResult();
+                var channelInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
                 var contentIdList = _idsDictionary[channelId];
                 var contentIdListToCheck = new List<int>();
 
@@ -163,9 +163,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var channelId in idsDictionaryToCheck.Keys)
             {
-                var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
+                var channelInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
                 var contentIdList = idsDictionaryToCheck[channelId];
-                DataProvider.ContentRepository.UpdateIsCheckedAsync(tableName, SiteId, channelId, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text).GetAwaiter().GetResult();
+                DataProvider.ContentRepository.UpdateIsCheckedAsync(Site, channelInfo, contentIdList, translateChannelId, AuthRequest.AdminId, isChecked, checkedLevel, TbCheckReasons.Text).GetAwaiter().GetResult();
             }
 
             AuthRequest.AddSiteLogAsync(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text).GetAwaiter().GetResult();

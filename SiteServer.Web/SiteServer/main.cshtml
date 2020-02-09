@@ -25,7 +25,7 @@
         <div class="topbar-main">
           <div class="logo">
             <a href="https://www.siteserver.cn" target="_blank" class="logo">
-              <img :src="adminLogoUrl" style="max-width: 160px;" />
+              <img :src="adminLogoUrl" style="max-width: 160px;height: 22px;" />
             </a>
           </div>
           <a v-if="!isDesktop" href="javascript:;" class="position-fixed" v-on:click="btnMobileMenuClick" style="right: 20px;top: 10px;">
@@ -58,15 +58,15 @@
                   </div>
                 </div>
               </li>
-              <li v-if="$siteId > 0" class="dropdown">
-                <a href="javascript:;" onclick="openPageCreateStatus()">
+              <li v-if="siteId > 0" class="dropdown">
+                <a href="javascript:;" v-on:click="openPageCreateStatus">
                   <i class="ion-wand"></i>
                   <span v-if="pendingCount > 0" class="badge badge-xs badge-warning" style="right: 0;">{{pendingCount}}</span>
                 </a>
               </li>
               <li class="list-inline-item dropdown notification-list has-submenu">
                 <a class="nav-link nav-user" href="javascript:;">
-                  <img style="height: 36px;width: 36px;" :src="local.avatarUrl ? local.avatarUrl : 'assets/images/default_avatar.png'"
+                  <img style="height: 25px;width: 25px;" :src="local.avatarUrl ? local.avatarUrl : 'assets/images/default_avatar.png'"
                     class="rounded-circle">
                 </a>
                 <ul class="submenu">
@@ -77,9 +77,9 @@
                 </ul>
               </li>
               <li>
-                <form v-if="$siteId > 0" id="search" class="navbar-left app-search float-left" :action="'cms/pageContentSearch.aspx?siteId=' + $siteId"
+                <form v-if="siteId > 0" id="search" class="navbar-left app-search float-left" :action="'cms/pageContentSearch.aspx?siteId=' + siteId"
                   target="right" method="get">
-                  <input name="siteId" type="hidden" :value="$siteId">
+                  <input name="siteId" type="hidden" :value="siteId">
                   <input name="keyword" type="text" placeholder="内容搜索..." class="form-control">
                   <a href="javascript:;" onclick="$('#search').submit();">
                     <i class="ion-search"></i>
@@ -88,7 +88,6 @@
               </li>
             </ul>
           </div>
-          <div class="clearfix"></div>
         </div>
       </header>
       <div v-if="isDesktop || isMobileMenu" class="left side-menu" :style="{width: leftMenuWidth}">
@@ -156,7 +155,7 @@
         </div>
       </div>
       <div class="content-page" id="content" :style="{marginLeft: (isDesktop ? 200 : 0) + 'px'}">
-        <iframe id="frmMain" frameborder="0" id="right" name="right" :src="defaultPageUrl" :style="{width: (winWidth - (isDesktop ? 200 : 0)) + 'px', height: (winHeight - 62) + 'px'}"></iframe>
+        <iframe id="frmMain" frameborder="0" id="right" name="right" :src="defaultPageUrl" :style="{width: (winWidth - (isDesktop ? 200 : 0)) + 'px', height: (winHeight - 45) + 'px'}"></iframe>
       </div>
     </div>
     <div v-else-if="pageAlert">

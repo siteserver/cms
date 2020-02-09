@@ -1,34 +1,31 @@
-﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
-  <li class="nav-item">
-    <a class="nav-link active" href="utilityCache.cshtml">系统缓存</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="utilityParameters.cshtml">系统参数</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="utilityEncrypt.cshtml">加密/解密字符串</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="utilityDbLogDelete.cshtml">清空数据库日志</a>
-  </li>
-}
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
 
-<p class="text-muted font-13">
-  当前缓存：{{ count }}
-  <button class="btn btn-success ml-2" v-on:click="btnCleanClick">清除缓存</button>
-</p>
+<el-card>
+  <div slot="header" class="clearfix">
+    <span>系统缓存</span>
+  </div>
 
-<table class="table table-bordered table-striped">
-  <tbody>
-    <tr>
-      <th> 缓存键 </th>
-      <th> 缓存值 </th>
-    </tr>
-    <tr v-for="parameter in parameters" :key="parameter.key">
-      <td> {{ parameter.key }} </td>
-      <td>{{ parameter.value }}</td>
-    </tr>
-  </tbody>
-</table>
+  <p class="text-muted font-13">
+    当前缓存数：{{ count }}
+    <el-button type="primary" style="margin-left: 10px;" size="small" v-on:click="btnCleanClick">清除缓存</el-button>
+  </p>
+
+  <el-table
+    :data="parameters"
+    style="width: 100%">
+    <el-table-column
+      prop="key"
+      label="缓存键"
+      width="280">
+    </el-table-column>
+    <el-table-column
+      prop="value"
+      label="缓存值">
+    </el-table-column>
+  </el-table>
+
+</el-card>
+
+
 
 @section Scripts{ <script src="utilityCache.js" type="text/javascript"></script> }

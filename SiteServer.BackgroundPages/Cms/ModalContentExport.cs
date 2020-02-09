@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Context;
@@ -34,8 +35,8 @@ namespace SiteServer.BackgroundPages.Cms
 
         private void LoadDisplayAttributeCheckBoxList()
         {
-            var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
-            var styleList = ContentUtility.GetAllTableStyleList(DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, nodeInfo).GetAwaiter().GetResult());
+            var nodeInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
+            var styleList = ColumnsManager.GetContentListStyles(DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, nodeInfo).GetAwaiter().GetResult());
 
             foreach (var style in styleList)
             {
@@ -72,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 if (!string.IsNullOrEmpty(Site.ConfigExportDisplayAttributes))
                 {
-                    var displayAttributes = StringUtils.GetStringList(Site.ConfigExportDisplayAttributes);
+                    var displayAttributes = Utilities.GetStringList(Site.ConfigExportDisplayAttributes);
                     ControlUtils.SelectMultiItems(CblDisplayAttributes, displayAttributes);
                 }
                 if (!string.IsNullOrEmpty(Site.ConfigExportIsChecked))

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -9,7 +9,7 @@ namespace SiteServer.CMS.Repositories
     {
         private string GetCacheKeyByToken(string token)
         {
-            return CacheManager.GetEntityKey(TableName, "token", token);
+            return Caching.GetEntityKey(TableName, "token", token);
         }
 
         //private async Task RemoveCacheAsync(string token)

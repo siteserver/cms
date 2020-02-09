@@ -129,7 +129,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 foreach (var channelId in _idsDictionary.Keys)
                 {
-                    var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
+                    var channel = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
+                    var tableName = DataProvider.ChannelRepository.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
                     var contentIdList = _idsDictionary[channelId];
 
                     if (!_isDeleteFromTrash)
@@ -149,15 +150,15 @@ namespace SiteServer.BackgroundPages.Cms
                             var contentId = contentIdList[0];
                             var contentTitle = DataProvider.ContentRepository.GetValueAsync(tableName, contentId, ContentAttribute.Title).GetAwaiter().GetResult();
                             AuthRequest.AddSiteLogAsync(SiteId, channelId, contentId, "删除内容",
-                                $"栏目:{ChannelManager.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()},内容标题:{contentTitle}").GetAwaiter().GetResult();
+                                $"栏目:{DataProvider.ChannelRepository.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()},内容标题:{contentTitle}").GetAwaiter().GetResult();
                         }
                         else
                         {
                             AuthRequest.AddSiteLogAsync(SiteId, "批量删除内容",
-                                $"栏目:{ChannelManager.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()},内容条数:{contentIdList.Count}").GetAwaiter().GetResult();
+                                $"栏目:{DataProvider.ChannelRepository.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()},内容条数:{contentIdList.Count}").GetAwaiter().GetResult();
                         }
 
-                        DataProvider.ContentRepository.UpdateTrashContentsAsync(SiteId, channelId, tableName, contentIdList).GetAwaiter().GetResult();
+                        DataProvider.ContentRepository.RecycleContentsAsync(Site, channel, contentIdList).GetAwaiter().GetResult();
 
                         //引用内容，需要删除
                         //var siteTableNameList = DataProvider.SiteRepository.GetTableNameList();
@@ -180,7 +181,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         foreach (var contentId in contentIdList)
                         {
-                            ContentUtility.DeleteAsync(tableName, Site, channelId, contentId).GetAwaiter().GetResult();
+                            DataProvider.ContentRepository.DeleteAsync(Site, channel, contentId).GetAwaiter().GetResult();
                         }
 
                         AuthRequest.AddSiteLogAsync(SiteId, "从回收站清空内容", $"内容条数:{contentIdList.Count}").GetAwaiter().GetResult();

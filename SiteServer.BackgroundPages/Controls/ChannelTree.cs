@@ -36,10 +36,10 @@ namespace SiteServer.BackgroundPages.Controls
                     var scripts = ChannelLoading.GetScript(site, contentModelPluginId, ELoadingType.ContentTree, additional);
                     builder.Append(scripts);
 
-                    var channelIdList = ChannelManager.GetChannelIdListAsync(ChannelManager.GetChannelAsync(site.Id, site.Id).GetAwaiter().GetResult(), EScopeType.SelfAndChildren, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
+                    var channelIdList = DataProvider.ChannelRepository.GetChannelIdsAsync(DataProvider.ChannelRepository.GetAsync(site.Id).GetAwaiter().GetResult(), EScopeType.SelfAndChildren).GetAwaiter().GetResult();
                     foreach (var channelId in channelIdList)
                     {
-                        var channelInfo = ChannelManager.GetChannelAsync(site.Id, channelId).GetAwaiter().GetResult();
+                        var channelInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
                         var enabled = request.AdminPermissionsImpl.IsOwningChannelIdAsync(channelInfo.Id).GetAwaiter().GetResult();
                         if (!string.IsNullOrEmpty(contentModelPluginId) &&
                             !StringUtils.EqualsIgnoreCase(channelInfo.ContentModelPluginId, contentModelPluginId))
@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             if (string.IsNullOrEmpty(contentModelPluginId)) return true;
 
-            var channelIdList = ChannelManager.GetChannelIdListAsync(channel, EScopeType.Descendant, string.Empty, string.Empty, contentModelPluginId).GetAwaiter().GetResult();
+            var channelIdList = DataProvider.ChannelRepository.GetChannelIdsAsync(channel, EScopeType.Descendant, string.Empty, string.Empty, contentModelPluginId).GetAwaiter().GetResult();
             return channelIdList.Count > 0;
         }
     }

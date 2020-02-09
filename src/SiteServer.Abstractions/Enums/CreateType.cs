@@ -8,6 +8,8 @@ namespace SiteServer.Abstractions
     [JsonConverter(typeof(StringEnumConverter))]
     public enum CreateType
     {
+        [DataEnum(DisplayName = "首页")]
+        Index,
         [DataEnum(DisplayName = "栏目页")]
         Channel,
         [DataEnum(DisplayName = "内容页")]
@@ -17,6 +19,8 @@ namespace SiteServer.Abstractions
         [DataEnum(DisplayName = "专题页")]
         Special,
         [DataEnum(DisplayName = "栏目下所有内容页")]
-        AllContent
+        AllContent,
+        [DataEnum(DisplayName = "所有页面")]
+        All
     }
 }

@@ -25,15 +25,9 @@ namespace SiteServer.Abstractions
         public string CreatedFileExtName { get; set; }
 
         [DataColumn]
+        public bool Default { get; set; }
+
         [DataIgnore]
-        private string IsDefault { get; set; }
-
-        public bool Default
-        {
-            get => TranslateUtils.ToBool(IsDefault);
-            set => IsDefault = value.ToString();
-        }
-
         public string Content { get; set; }
     }
 }

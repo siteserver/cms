@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -26,7 +27,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
-                var contentIdList = StringUtils.GetIntList(request.GetQueryString("contentIds"));
+                var contentIdList = Utilities.GetIntList(request.GetQueryString("contentIds"));
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
@@ -38,7 +39,7 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var retVal = new List<IDictionary<string, object>>();
@@ -71,11 +72,11 @@ namespace SiteServer.API.Controllers.Home
                     Constants.ChannelPermissions.ContentAdd);
                 foreach (var permissionChannelId in channelIdList)
                 {
-                    var permissionChannelInfo = await ChannelManager.GetChannelAsync(site.Id, permissionChannelId);
+                    var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
                     channels.Add(new
                     {
                         permissionChannelInfo.Id,
-                        ChannelName = await ChannelManager.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
+                        ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
                     });
                 }
 
@@ -108,11 +109,11 @@ namespace SiteServer.API.Controllers.Home
                     Constants.ChannelPermissions.ContentAdd);
                 foreach (var permissionChannelId in channelIdList)
                 {
-                    var permissionChannelInfo = await ChannelManager.GetChannelAsync(siteId, permissionChannelId);
+                    var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
                     channels.Add(new
                     {
                         permissionChannelInfo.Id,
-                        ChannelName = await ChannelManager.GetChannelNameNavigationAsync(siteId, permissionChannelId)
+                        ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteId, permissionChannelId)
                     });
                 }
 
@@ -137,7 +138,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIdList = StringUtils.GetIntList(request.GetPostString("contentIds"));
+                var contentIdList = Utilities.GetIntList(request.GetPostString("contentIds"));
                 var targetSiteId = request.GetPostInt("targetSiteId");
                 var targetChannelId = request.GetPostInt("targetChannelId");
 
@@ -151,7 +152,7 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 foreach (var contentId in contentIdList)

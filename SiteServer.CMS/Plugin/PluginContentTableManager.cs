@@ -188,7 +188,7 @@ namespace SiteServer.CMS.Plugin
 
                     if (isEquals) continue;
 
-                    styleInfo.VisibleInList = false;
+                    styleInfo.List = false;
                     styleInfo.IsValidate = true;
                     styleInfoList.Add(styleInfo);
                 }

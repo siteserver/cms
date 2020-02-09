@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
 using SiteServer.CMS.Context;
-using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Abstractions;
 

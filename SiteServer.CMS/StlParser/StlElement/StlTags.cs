@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache.Stl;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -96,8 +96,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 contentId = contextInfo.ContentId;
             }
 
-            var tagInfoList = await StlTagCache.GetTagListAsync(pageInfo.SiteId, contentId, isOrderByCount, totalNum);
-            tagInfoList = ContentTagUtils.GetTagInfoList(tagInfoList, totalNum, tagLevel);
+            var tagInfoList = await DataProvider.ContentTagRepository.GetTagListAsync(pageInfo.SiteId, contentId, isOrderByCount, totalNum);
+            tagInfoList = DataProvider.ContentTagRepository.GetTagInfoList(tagInfoList, totalNum, tagLevel);
             var contentInfo = await contextInfo.GetContentAsync();
             if (contextInfo.ContextType == EContextType.Content && contentInfo != null)
             {
@@ -110,7 +110,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var isAdd = false;
                         foreach (var tagInfo in tagInfoList)
                         {
-                            if (tagInfo.Tag == tagName)
+                            if (tagInfo.TagName == tagName)
                             {
                                 isAdd = true;
                                 tagInfoList2.Add(tagInfo);
@@ -123,8 +123,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 Id = 0,
                                 SiteId = pageInfo.SiteId,
-                                ContentIds = new List<int> { contentId },
-                                Tag = tagName,
+                                ChannelId = pageInfo.PageChannelId,
+                                ContentId = contentId,
+                                TagName = tagName,
                                 UseNum = 1
                             };
                             tagInfoList2.Add(tagInfo);
@@ -139,9 +140,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (isInnerHtml)
                 {
                     var tagHtml = innerHtml;
-                    tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Name}", tagInfo.Tag);
-                    tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Count}", tagInfo.UseNum.ToString());
-                    tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Level}", tagInfo.Level.ToString());
+                    tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Name}", tagInfo.TagName);
+                    tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Count}", tagInfo.UseNum.ToString());
+                    tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Level}", tagInfo.Level.ToString());
                     var innerBuilder = new StringBuilder(tagHtml);
                     await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
                     tagsBuilder.Append(innerBuilder);
@@ -149,9 +150,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 else
                 {
                     var url = PageUtility.ParseNavigationUrl(pageInfo.Site,
-                        $"@/utils/tags.html?tagName={PageUtils.UrlEncode(tagInfo.Tag)}", pageInfo.IsLocal);
+                        $"@/utils/tags.html?tagName={PageUtils.UrlEncode(tagInfo.TagName)}", pageInfo.IsLocal);
                     tagsBuilder.Append($@"
-<li class=""tag_popularity_{tagInfo.Level}""><a target=""_blank"" href=""{url}"">{tagInfo.Tag}</a></li>
+<li class=""tag_popularity_{tagInfo.Level}""><a target=""_blank"" href=""{url}"">{tagInfo.TagName}</a></li>
 ");
                 }
             }

@@ -13,8 +13,5 @@ namespace SiteServer.Abstractions
 
         [DataColumn(Length = 500)]
         public string CacheValue { get; set; }
-
-        [DataColumn]
-        public DateTime AddDate { get; set; }
     }
 }

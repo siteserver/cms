@@ -1,23 +1,20 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Microsoft.Extensions.Caching.Distributed;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
     public partial class ConfigRepository : IRepository
     {
         private readonly Repository<Config> _repository;
-        private readonly IDistributedCache _cache;
         private readonly string _cacheKey;
 
         public ConfigRepository()
         {
-            _repository = new Repository<Config>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
-            _cache = CacheManager.Cache;
-            _cacheKey = CacheManager.GetEntityKey(TableName);
+            _repository = new Repository<Config>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
+            _cacheKey = Caching.GetEntityKey(TableName);
         }
 
         public IDatabase Database => _repository.Database;
@@ -28,16 +25,18 @@ namespace SiteServer.CMS.Repositories
 
         public async Task<int> InsertAsync(Config config)
         {
-            var configId = await _repository.InsertAsync(config);
-            await RemoveCacheAsync();
+            var configId = await _repository.InsertAsync(config, Q
+                .CachingRemove(_cacheKey)
+            );
 
             return configId;
         }
 
 		public async Task UpdateAsync(Config config)
 		{
-            await _repository.UpdateAsync(config);
-            await RemoveCacheAsync();
+            await _repository.UpdateAsync(config, Q
+                .CachingRemove(_cacheKey)
+            );
         }
 
 		public async Task<bool> IsInitializedAsync()

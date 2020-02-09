@@ -1,9 +1,7 @@
 ﻿var $url = '/pages/settings/siteTemplatesOnline';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
-  page: parseInt(utils.getQueryString('page') || 1),
+var data = utils.initData({
+  page: utils.getQueryInt('page') || 1,
   word: utils.getQueryString('word'),
   tag: utils.getQueryString('tag'),
   price: utils.getQueryString('price'),
@@ -14,7 +12,7 @@ var data = {
   count: null,
   pages: null,
   allTagNames: []
-};
+});
 
 var methods = {
   getDisplayUrl: function (templateId) {
@@ -81,7 +79,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 

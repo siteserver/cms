@@ -85,14 +85,14 @@ namespace SiteServer.CMS.Repositories
             return await _repository.CountAsync(GetQuery(userName, keyword, dateFrom, dateTo));
         }
 
-        public async Task<IEnumerable<UserLog>> GetAllAsync(string userName, string keyword, string dateFrom, string dateTo, int offset, int limit)
+        public async Task<List<UserLog>> GetAllAsync(string userName, string keyword, string dateFrom, string dateTo, int offset, int limit)
         {
             var query = GetQuery(userName, keyword, dateFrom, dateTo);
             query.Offset(offset).Limit(limit);
             return await _repository.GetAllAsync(query);
         }
 
-        public async Task<IEnumerable<UserLog>> ListAsync(string userName, int totalNum, string action)
+        public async Task<List<UserLog>> ListAsync(string userName, int totalNum, string action)
         {
             var query = Q.Where(nameof(UserLog.UserName), userName);
             if (!string.IsNullOrEmpty(action))
@@ -106,7 +106,7 @@ namespace SiteServer.CMS.Repositories
             return await _repository.GetAllAsync(query);
         }
 
-        public async Task<IEnumerable<UserLog>> GetLogsAsync(string userName, int offset, int limit)
+        public async Task<List<UserLog>> GetLogsAsync(string userName, int offset, int limit)
         {
             return await _repository.GetAllAsync(Q
                 .Where(nameof(UserLog.UserName), userName)

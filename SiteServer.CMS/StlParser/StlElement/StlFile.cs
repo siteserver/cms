@@ -1,6 +1,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
@@ -160,7 +161,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 if (!string.IsNullOrEmpty(extendValues))
                                 {
                                     var index = 2;
-                                    foreach (var extendValue in StringUtils.GetStringList(extendValues))
+                                    foreach (var extendValue in Utilities.GetStringList(extendValues))
                                     {
                                         if (index == no)
                                         {

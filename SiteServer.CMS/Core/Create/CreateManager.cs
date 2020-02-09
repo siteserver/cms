@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Datory.Utils;
 using SiteServer.CMS.DataCache;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Repositories;
@@ -16,7 +17,7 @@ namespace SiteServer.CMS.Core.Create
 
             if (createType == CreateType.Channel)
             {
-                name = channelId == siteId ? "首页" : ChannelManager.GetChannelNameAsync(siteId, channelId).GetAwaiter().GetResult();
+                name = channelId == siteId ? "首页" : DataProvider.ChannelRepository.GetChannelNameAsync(siteId, channelId).GetAwaiter().GetResult();
                 if (!string.IsNullOrEmpty(name))
                 {
                     pageCount = 1;
@@ -25,7 +26,7 @@ namespace SiteServer.CMS.Core.Create
             else if (createType == CreateType.AllContent)
             {
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 
                 if (channelInfo != null)
                 {
@@ -39,7 +40,7 @@ namespace SiteServer.CMS.Core.Create
             }
             else if (createType == CreateType.Content)
             {
-                var title = await DataProvider.ContentRepository.GetValueAsync(await ChannelManager.GetTableNameAsync(await 
+                var title = await DataProvider.ContentRepository.GetValueAsync(await DataProvider.ChannelRepository.GetTableNameAsync(await 
                     DataProvider.SiteRepository.GetAsync(siteId), channelId), contentId, ContentAttribute.Title);
                 if (!string.IsNullOrEmpty(title))
                 {
@@ -49,7 +50,7 @@ namespace SiteServer.CMS.Core.Create
             }
             else if (createType == CreateType.File)
             {
-                name = await TemplateManager.GetTemplateNameAsync(siteId, fileTemplateId);
+                name = await DataProvider.TemplateRepository.GetTemplateNameAsync(fileTemplateId);
                 if (!string.IsNullOrEmpty(name))
                 {
                     pageCount = 1;
@@ -57,7 +58,7 @@ namespace SiteServer.CMS.Core.Create
             }
             else if (createType == CreateType.Special)
             {
-                name = await SpecialManager.GetTitleAsync(siteId, specialId);
+                name = await DataProvider.SpecialRepository.GetTitleAsync(siteId, specialId);
                 if (!string.IsNullOrEmpty(name))
                 {
                     pageCount = 1;
@@ -70,7 +71,7 @@ namespace SiteServer.CMS.Core.Create
         {
             CreateTaskManager.ClearAllTask(siteId);
 
-            var channelIdList = await ChannelManager.GetChannelIdListAsync(siteId);
+            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdListAsync(siteId);
             foreach (var channelId in channelIdList)
             {
                 await CreateChannelAsync(siteId, channelId);
@@ -81,12 +82,12 @@ namespace SiteServer.CMS.Core.Create
                 await CreateAllContentAsync(siteId, channelId);
             }
 
-            foreach (var specialId in await SpecialManager.GetAllSpecialIdListAsync(siteId))
+            foreach (var specialId in await DataProvider.SpecialRepository.GetAllSpecialIdListAsync(siteId))
             {
                 await CreateSpecialAsync(siteId, specialId);
             }
 
-            foreach (var fileTemplateId in await TemplateManager.GetAllFileTemplateIdListAsync(siteId))
+            foreach (var fileTemplateId in await DataProvider.TemplateRepository.GetAllFileTemplateIdListAsync(siteId))
             {
                 await CreateFileAsync(siteId, fileTemplateId);
             }
@@ -94,7 +95,7 @@ namespace SiteServer.CMS.Core.Create
 
         public static async Task CreateByTemplateAsync(int siteId, int templateId)
         {
-            var templateInfo = await TemplateManager.GetTemplateAsync(siteId, templateId);
+            var templateInfo = await DataProvider.TemplateRepository.GetAsync(templateId);
 
             if (templateInfo.TemplateType == TemplateType.IndexPageTemplate)
             {
@@ -181,8 +182,8 @@ namespace SiteServer.CMS.Core.Create
         {
             if (siteId <= 0 || channelId <= 0) return;
 
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-            var channelIdList = StringUtils.GetIntList(channelInfo.CreateChannelIdsIfContentChanged);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var channelIdList = Utilities.GetIntList(channelInfo.CreateChannelIdsIfContentChanged);
             if (channelInfo.IsCreateChannelIfContentChanged && !channelIdList.Contains(channelId))
             {
                 channelIdList.Add(channelId);

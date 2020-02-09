@@ -7,6 +7,7 @@ using HtmlAgilityPack;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 
@@ -405,7 +406,7 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 if (content == null)
                 {
-                    var nodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                    var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                     currentUrl = await PageUtility.GetContentUrlAsync(site, nodeInfo, contentId, isLocal);
                 }
                 else
@@ -415,7 +416,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
-                currentUrl = await PageUtility.GetChannelUrlAsync(site, await ChannelManager.GetChannelAsync(site.Id, channelId), isLocal);
+                currentUrl = await PageUtility.GetChannelUrlAsync(site, await DataProvider.ChannelRepository.GetAsync(channelId), isLocal);
             }
             else if (templateType == TemplateType.FileTemplate)
             {

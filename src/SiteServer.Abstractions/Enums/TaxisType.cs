@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Datory.Annotations;
+using Datory.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -90,7 +91,7 @@ namespace SiteServer.Abstractions
                 {
                     orderedContentIdList.Reverse();
                     retVal =
-                        $"ORDER BY CHARINDEX(CONVERT(VARCHAR, {nameof(Channel.Id)}), '{TranslateUtils.ObjectCollectionToString(orderedContentIdList)}') DESC, {nameof(Channel.Taxis)} ASC";
+                        $"ORDER BY CHARINDEX(CONVERT(VARCHAR, {nameof(Channel.Id)}), '{Utilities.ToString(orderedContentIdList)}') DESC, {nameof(Channel.Taxis)} ASC";
                 }
                 else
                 {
@@ -125,43 +126,43 @@ namespace SiteServer.Abstractions
 
             if (taxisType == TaxisType.OrderById)
             {
-                retVal = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(Content.Id)} ASC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.Id)} ASC";
             }
             else if (taxisType == TaxisType.OrderByIdDesc)
             {
-                retVal = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(Content.Id)} DESC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.Id)} DESC";
             }
             else if (taxisType == TaxisType.OrderByChannelId)
             {
-                retVal = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(Content.ChannelId)} ASC, {nameof(Content.Id)} DESC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.ChannelId)} ASC, {nameof(Content.Id)} DESC";
             }
             else if (taxisType == TaxisType.OrderByChannelIdDesc)
             {
-                retVal = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(Content.ChannelId)} DESC, {nameof(Content.Id)} DESC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.ChannelId)} DESC, {nameof(Content.Id)} DESC";
             }
             else if (taxisType == TaxisType.OrderByAddDate)
             {
-                retVal = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(Content.AddDate)} ASC, {nameof(Content.Id)} DESC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.AddDate)} ASC, {nameof(Content.Id)} DESC";
             }
             else if (taxisType == TaxisType.OrderByAddDateDesc)
             {
-                retVal = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(Content.AddDate)} DESC, {nameof(Content.Id)} DESC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.AddDate)} DESC, {nameof(Content.Id)} DESC";
             }
             else if (taxisType == TaxisType.OrderByLastEditDate)
             {
-                retVal = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(Content.LastEditDate)} ASC, {nameof(Content.Id)} DESC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.LastEditDate)} ASC, {nameof(Content.Id)} DESC";
             }
             else if (taxisType == TaxisType.OrderByLastEditDateDesc)
             {
-                retVal = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(Content.LastEditDate)} DESC, {nameof(Content.Id)} DESC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.LastEditDate)} DESC, {nameof(Content.Id)} DESC";
             }
             else if (taxisType == TaxisType.OrderByTaxis)
             {
-                retVal = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(Content.Taxis)} ASC, {nameof(Content.Id)} DESC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.Taxis)} ASC, {nameof(Content.Id)} DESC";
             }
             else if (taxisType == TaxisType.OrderByTaxisDesc)
             {
-                retVal = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(Content.Taxis)} DESC, {nameof(Content.Id)} DESC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.Taxis)} DESC, {nameof(Content.Id)} DESC";
             }
             else if (taxisType == TaxisType.OrderByHits)
             {

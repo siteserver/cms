@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SqlKata;
@@ -18,7 +17,7 @@ namespace SiteServer.CMS.Repositories
 
         public UserRepository()
         {
-            _repository = new Repository<User>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
+            _repository = new Repository<User>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -454,7 +453,7 @@ namespace SiteServer.CMS.Repositories
             return await _repository.ExistsAsync(Q.Where(nameof(User.Mobile), mobile));
         }
 
-        public async Task<IEnumerable<int>> GetIdListAsync(bool isChecked)
+        public async Task<List<int>> GetIdListAsync(bool isChecked)
         {
             return await _repository.GetAllAsync<int>(Q
                 .Where(Attr.IsChecked, isChecked.ToString())

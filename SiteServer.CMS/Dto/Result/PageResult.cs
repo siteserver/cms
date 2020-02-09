@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SiteServer.API.Result
+namespace SiteServer.CMS.Dto.Result
 {
     public class PageResult<T> where T : class
     {

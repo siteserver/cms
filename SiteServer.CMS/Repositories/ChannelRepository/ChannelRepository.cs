@@ -6,17 +6,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Datory;
-using Datory.Caching;
+using Datory.Utils;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Dto;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.Repositories
 {
-    public class ChannelRepository : DataProviderBase, IRepository
+    public partial class ChannelRepository : DataProviderBase, IRepository
     {
         private string SqlColumns => $"{nameof(Channel.Id)}, {nameof(Channel.AddDate)}, {nameof(Channel.Taxis)}";
 
@@ -24,7 +22,7 @@ namespace SiteServer.CMS.Repositories
 
         public ChannelRepository()
         {
-            _repository = new Repository<Channel>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            _repository = new Repository<Channel>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -48,7 +46,7 @@ namespace SiteServer.CMS.Repositories
                 }
                 channel.ParentsCount = parentChannel.ParentsCount + 1;
 
-                var maxTaxis = await GetMaxTaxisByParentPathAsync(channel.ParentsPath);
+                var maxTaxis = await GetMaxTaxisAsync(channel.SiteId, channel.ParentId);
                 if (maxTaxis == 0)
                 {
                     maxTaxis = parentChannel.Taxis;
@@ -69,34 +67,25 @@ namespace SiteServer.CMS.Repositories
                     .Where(nameof(Channel.SiteId), channel.SiteId)
                 );
             }
-            channel.Id = await _repository.InsertAsync(channel);
+
+            channel.Id = await _repository.InsertAsync(channel, Q
+                .CachingRemove(GetListKey(channel.SiteId))
+            );
 
             if (!string.IsNullOrEmpty(channel.ParentsPath))
             {
                 await _repository.IncrementAsync(nameof(Channel.ChildrenCount), Q
-                    .WhereIn(nameof(Channel.Id), StringUtils.GetIntList(channel.ParentsPath))
+                    .WhereIn(nameof(Channel.Id), Utilities.GetIntList(channel.ParentsPath))
                 );
             }
 
-            ChannelManager.RemoveCacheBySiteId(channel.SiteId);
             PermissionsImpl.ClearAllCache();
-        }
-
-        private async Task UpdateSubtractChildrenCountAsync(string parentsPath, int subtractNum)
-        {
-            if (string.IsNullOrEmpty(parentsPath)) return;
-
-            await _repository.DecrementAsync(nameof(Channel.ChildrenCount), Q
-                    .WhereIn(nameof(Channel.Id), StringUtils.GetIntList(parentsPath))
-                , subtractNum);
         }
 
         private async Task TaxisSubtractAsync(int siteId, int selectedId)
         {
-            var channelEntity = await ChannelManager.GetChannelAsync(siteId, selectedId);
+            var channelEntity = await GetAsync(selectedId);
             if (channelEntity == null || channelEntity.ParentId == 0 || channelEntity.SiteId == 0) return;
-
-            //UpdateWholeTaxisBySiteId(channel.SiteId);
 
             var lower = await _repository.GetAsync<(int Id, int ChildrenCount, string ParentsPath)?>(Q
                 .Select(nameof(Channel.Id), nameof(Channel.ChildrenCount), nameof(Channel.ParentsPath))
@@ -118,10 +107,8 @@ namespace SiteServer.CMS.Repositories
 
         private async Task TaxisAddAsync(int siteId, int selectedId)
         {
-            var channelEntity = await ChannelManager.GetChannelAsync(siteId, selectedId);
+            var channelEntity = await GetAsync(selectedId);
             if (channelEntity == null || channelEntity.ParentId == 0 || channelEntity.SiteId == 0) return;
-
-            //UpdateWholeTaxisBySiteId(channel.SiteId);
 
             var higher = await _repository.GetAsync<(int Id, int ChildrenCount, string ParentsPath)?>(Q
                 .Select(nameof(Channel.Id), nameof(Channel.ChildrenCount), nameof(Channel.ParentsPath))
@@ -159,49 +146,12 @@ namespace SiteServer.CMS.Repositories
                 , subtractNum);
         }
 
-        private async Task<int> GetMaxTaxisByParentPathAsync(string parentPath)
-        {
-            return await _repository.MaxAsync(nameof(Channel.Taxis), Q
-                       .Where(nameof(Channel.ParentsPath), parentPath)
-                       .OrWhereStarts(nameof(Channel.ParentsPath), $"{parentPath},")
-                   ) ?? 0;
-        }
-
-        private async Task<int> GetParentIdAsync(int channelId)
-        {
-            return await _repository.GetAsync<int>(Q
-                .Select(nameof(Channel.ParentId))
-                .Where(nameof(Channel.Id), channelId)
-            );
-        }
-
-        private async Task<int> GetIdByParentIdAndOrderAsync(int parentId, int order)
-        {
-            var channelId = parentId;
-
-            var list = await _repository.GetAllAsync<int>(Q
-                .Select(nameof(Channel.Id))
-                .Where(nameof(Channel.ParentId), parentId)
-                .OrderBy(nameof(Channel.Taxis))
-            );
-
-            var index = 1;
-            foreach (var id in list)
-            {
-                channelId = id;
-                if (index == order)
-                    break;
-                index++;
-            }
-            return channelId;
-        }
-
         public async Task<int> InsertAsync(int siteId, int parentId, string channelName, string indexName, string contentModelPluginId, List<string> contentRelatedPluginIds, int channelTemplateId, int contentTemplateId)
         {
             if (siteId > 0 && parentId == 0) return 0;
 
-            var defaultChannelTemplateEntity = await TemplateManager.GetDefaultTemplateAsync(siteId, TemplateType.ChannelTemplate);
-            var defaultContentTemplateEntity = await TemplateManager.GetDefaultTemplateAsync(siteId, TemplateType.ContentTemplate);
+            var defaultChannelTemplateEntity = await DataProvider.TemplateRepository.GetDefaultTemplateAsync(siteId, TemplateType.ChannelTemplate);
+            var defaultContentTemplateEntity = await DataProvider.TemplateRepository.GetDefaultTemplateAsync(siteId, TemplateType.ContentTemplate);
 
             var channelEntity = new Channel
             {
@@ -210,13 +160,13 @@ namespace SiteServer.CMS.Repositories
                 ChannelName = channelName,
                 IndexName = indexName,
                 ContentModelPluginId = contentModelPluginId,
-                ContentRelatedPluginIdList = contentRelatedPluginIds,
+                ContentRelatedPluginIds = contentRelatedPluginIds,
                 AddDate = DateTime.Now,
                 ChannelTemplateId = channelTemplateId > 0 ? channelTemplateId : defaultChannelTemplateEntity.Id,
                 ContentTemplateId = contentTemplateId > 0 ? contentTemplateId : defaultContentTemplateEntity.Id
             };
 
-            var parentChannel = await ChannelManager.GetChannelAsync(siteId, parentId);
+            var parentChannel = await GetAsync(parentId);
             if (parentChannel != null)
             {
                 if (parentChannel.DefaultTaxisType != TaxisType.OrderByTaxisDesc)
@@ -235,7 +185,7 @@ namespace SiteServer.CMS.Repositories
         {
             if (channel.SiteId > 0 && channel.ParentId == 0) return 0;
 
-            var parentChannel = await ChannelManager.GetChannelAsync(channel.SiteId, channel.ParentId);
+            var parentChannel = await GetAsync(channel.ParentId);
 
             await InsertChannelAsync(parentChannel, channel);
 
@@ -261,20 +211,17 @@ namespace SiteServer.CMS.Repositories
                 .Where(nameof(Channel.Id), channel.Id)
             );
 
-            await DataProvider.TemplateRepository.CreateDefaultTemplateAsync(channel.Id, administratorName);
+            await DataProvider.TemplateRepository.CreateDefaultTemplateAsync(site, administratorName);
 
             return channel.Id;
         }
 
         public async Task UpdateAsync(Channel channel)
         {
-            await _repository.UpdateAsync(channel);
-
-            await ChannelManager.UpdateCacheAsync(channel.SiteId, channel);
-
-            //ChannelManager.RemoveCache(channel.ParentId == 0
-            //    ? channel.Id
-            //    : channel.SiteId);
+            await _repository.UpdateAsync(channel, Q
+                .CachingRemove(GetListKey(channel.SiteId))
+                .CachingRemove(GetEntityKey(channel.Id))
+            );
         }
 
         public async Task UpdateChannelTemplateIdAsync(Channel channel)
@@ -283,8 +230,6 @@ namespace SiteServer.CMS.Repositories
                 .Set(nameof(Channel.ChannelTemplateId), channel.ChannelTemplateId)
                 .Where(nameof(Channel.Id), channel.Id)
             );
-
-            await ChannelManager.UpdateCacheAsync(channel.SiteId, channel);
         }
 
         public async Task UpdateContentTemplateIdAsync(Channel channel)
@@ -293,22 +238,6 @@ namespace SiteServer.CMS.Repositories
                 .Set(nameof(Channel.ContentTemplateId), channel.ContentTemplateId)
                 .Where(nameof(Channel.Id), channel.Id)
             );
-
-            await ChannelManager.UpdateCacheAsync(channel.SiteId, channel);
-        }
-
-        public async Task UpdateAdditionalAsync(Channel channel)
-        {
-            await _repository.UpdateAsync(Q
-                .Set(nameof(Channel.ExtendValues), channel.ToString())
-                .Where(nameof(Channel.Id), channel.Id)
-            );
-
-            await ChannelManager.UpdateCacheAsync(channel.SiteId, channel);
-
-            //ChannelManager.RemoveCache(channel.ParentId == 0
-            //    ? channel.Id
-            //    : channel.SiteId);
         }
 
         /// <summary>
@@ -324,38 +253,32 @@ namespace SiteServer.CMS.Repositories
             {
                 await TaxisAddAsync(siteId, selectedId);
             }
-            ChannelManager.RemoveCacheBySiteId(siteId);
         }
 
-        public async Task AddGroupNameListAsync(int siteId, int channelId, List<string> groupList)
+        public async Task SetGroupNamesAsync(int siteId, int channelId, List<string> groupNames)
         {
-            var channelEntity = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var channelEntity = await GetAsync(channelId);
             if (channelEntity == null) return;
 
-            foreach (var groupName in groupList)
-            {
-                if (!channelEntity.GroupNames.Contains(groupName)) channelEntity.GroupNames.Add(groupName);
-            }
+            channelEntity.GroupNames = groupNames;
 
             await _repository.UpdateAsync(Q
-                .Set("GroupNameCollection", StringUtils.Join(channelEntity.GroupNames))
+                .Set(nameof(Channel.GroupNames), Utilities.ToString(channelEntity.GroupNames))
                 .Where(nameof(Channel.Id), channelId)
+                .CachingRemove(GetEntityKey(channelId))
             );
-
-            await ChannelManager.UpdateCacheAsync(siteId, channelEntity);
         }
 
         public async Task DeleteAsync(int siteId, int channelId)
         {
-            var channelEntity = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var channelEntity = await GetAsync(channelId);
             if (channelEntity == null) return;
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var tableName = await ChannelManager.GetTableNameAsync(site, channelEntity);
             var idList = new List<int>();
             if (channelEntity.ChildrenCount > 0)
             {
-                idList = await ChannelManager.GetChannelIdListAsync(channelEntity, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+                idList = await GetChannelIdsAsync(channelEntity, EScopeType.Descendant);
             }
             idList.Add(channelId);
 
@@ -372,21 +295,23 @@ namespace SiteServer.CMS.Repositories
                 , deletedNum);
             }
 
-            await UpdateSubtractChildrenCountAsync(channelEntity.ParentsPath, deletedNum);
+            if (!string.IsNullOrEmpty(channelEntity.ParentsPath))
+            {
+                await _repository.DecrementAsync(nameof(Channel.ChildrenCount), Q
+                        .WhereIn(nameof(Channel.Id), Utilities.GetIntList(channelEntity.ParentsPath))
+                    , deletedNum);
+            }
 
             foreach (var channelIdDeleted in idList)
             {
-                await DataProvider.ContentRepository.UpdateTrashContentsByChannelIdAsync(site.Id, channelIdDeleted, tableName);
+                var channelDeleted = await DataProvider.ChannelRepository.GetAsync(channelIdDeleted);
+                await DataProvider.ContentRepository.RecycleContentsAsync(site, channelDeleted);
             }
             //DataProvider.ContentRepository.DeleteContentsByDeletedChannelIdList(trans, site, idList);
 
             if (channelEntity.ParentId == 0)
             {
                 await DataProvider.SiteRepository.DeleteAsync(channelEntity.Id);
-            }
-            else
-            {
-                ChannelManager.RemoveCacheBySiteId(channelEntity.SiteId);
             }
         }
 
@@ -395,129 +320,6 @@ namespace SiteServer.CMS.Repositories
             await _repository.DeleteAsync(Q
                 .Where(nameof(Channel.SiteId), siteId)
                 .OrWhere(nameof(Channel.Id), siteId)
-            );
-        }
-
-        /// <summary>
-        /// 得到最后一个添加的子节点
-        /// </summary>
-        public async Task<Channel> GetChannelByLastAddDateAsyncTask(int channelId)
-        {
-            var channel = await _repository.GetAsync(Q
-                .Where(nameof(Channel.ParentId), channelId)
-                .OrderByDesc(nameof(Channel.AddDate))
-            );
-            return channel;
-        }
-
-        /// <summary>
-        /// 得到第一个子节点
-        /// </summary>
-        public async Task<Channel> GetChannelByTaxisAsync(int channelId)
-        {
-            var channel = await _repository.GetAsync(Q
-                .Where(nameof(Channel.ParentId), channelId)
-                .OrderBy(nameof(Channel.Taxis))
-            );
-            return channel;
-        }
-
-        public async Task<int> GetIdByParentIdAndTaxisAsync(int parentId, int taxis, bool isNextChannel)
-        {
-            var channelId = 0;
-
-            if (isNextChannel)
-            {
-                channelId = await _repository.GetAsync<int>(Q
-                    .Select(nameof(Channel.Id))
-                    .Where(nameof(Channel.ParentId), parentId)
-                    .Where(nameof(Channel.Taxis), ">", taxis)
-                    .OrderBy(nameof(Channel.Taxis))
-                );
-            }
-            else
-            {
-                channelId = await _repository.GetAsync<int>(Q
-                    .Select(nameof(Channel.Id))
-                    .Where(nameof(Channel.ParentId), parentId)
-                    .Where(nameof(Channel.Taxis), "<", taxis)
-                    .OrderByDesc(nameof(Channel.Taxis))
-                );
-            }
-
-            return channelId;
-        }
-
-        public async Task<int> GetIdAsync(int siteId, string orderString)
-        {
-            if (orderString == "1")
-                return siteId;
-
-            var channelId = siteId;
-
-            var orderArr = orderString.Split('_');
-            for (var index = 1; index < orderArr.Length; index++)
-            {
-                var order = int.Parse(orderArr[index]);
-                channelId = await GetIdByParentIdAndOrderAsync(channelId, order);
-            }
-            return channelId;
-        }
-
-        public async Task<int> GetSiteIdAsync(int channelId)
-        {
-            return await _repository.GetAsync<int>(Q
-                .Select(nameof(Channel.SiteId))
-                .Where(nameof(Channel.Id), channelId)
-            );
-        }
-
-        /// <summary>
-        /// 在节点树中得到此节点的排序号，以“1_2_5_2”的形式表示
-        /// </summary>
-        public async Task<string> GetOrderStringInSiteAsync(int channelId)
-        {
-            var retVal = "";
-            if (channelId != 0)
-            {
-                var parentId = await GetParentIdAsync(channelId);
-                if (parentId != 0)
-                {
-                    var orderString = await GetOrderStringInSiteAsync(parentId);
-                    retVal = orderString + "_" + await GetOrderInSiblingAsync(channelId, parentId);
-                }
-                else
-                {
-                    retVal = "1";
-                }
-            }
-            return retVal;
-        }
-
-        private async Task<int> GetOrderInSiblingAsync(int channelId, int parentId)
-        {
-            var idList = (await _repository.GetAllAsync<int>(Q
-                .Select(nameof(Channel.Id))
-                .Where(nameof(Channel.ParentId), parentId)
-                .OrderBy(nameof(Channel.Taxis))
-            )).ToList();
-            return idList.IndexOf(channelId) + 1;
-        }
-
-        public async Task<IEnumerable<string>> GetIndexNameListAsync(int siteId)
-        {
-            return await _repository.GetAllAsync<string>(Q
-                .Select(nameof(Channel.IndexName))
-                .Where(nameof(Channel.SiteId), siteId)
-                .Distinct()
-            );
-        }
-
-        public async Task<bool> IsIndexNameExistsAsync(int siteId, string indexName)
-        {
-            return await _repository.ExistsAsync(Q
-                .Where(nameof(Channel.SiteId), siteId)
-                .Where(nameof(Channel.IndexName), indexName)
             );
         }
 
@@ -600,23 +402,7 @@ namespace SiteServer.CMS.Repositories
             return whereStringBuilder.ToString();
         }
 
-        public async Task<int> GetCountAsync(int channelId)
-        {
-            return await _repository.CountAsync(Q.Where(nameof(Channel.ParentId), channelId));
-        }
-
-        public async Task<int> GetSequenceAsync(int siteId, int channelId)
-        {
-            var channelEntity = await ChannelManager.GetChannelAsync(siteId, channelId);
-
-            return await _repository.CountAsync(Q
-                .Where(nameof(Channel.SiteId), siteId)
-                .Where(nameof(Channel.ParentId), channelEntity.ParentId)
-                .Where(nameof(Channel.Taxis), ">", channelEntity.Taxis)
-            ) + 1;
-        }
-
-        public async Task<IEnumerable<int>> GetIdListByTotalNumAsync(List<int> channelIdList, int totalNum, string orderByString, string whereString)
+        public async Task<List<int>> GetIdListByTotalNumAsync(List<int> channelIdList, int totalNum, string orderByString, string whereString)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
@@ -661,20 +447,6 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             return list;
         }
 
-        public async Task<Dictionary<int, Channel>> GetChannelDictionaryBySiteIdAsync(int siteId)
-        {
-            var channelList = await _repository.GetAllAsync(Q
-                .Where(nameof(Channel.SiteId), siteId)
-                .Where(q => q
-                    .Where(nameof(Channel.Id), siteId)
-                    .OrWhere(nameof(Channel.ParentId), ">", 0)
-                )
-                .OrderBy(nameof(Channel.Taxis))
-            );
-
-            return channelList.ToDictionary(channel => channel.Id);
-        }
-
         public DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
         {
             var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
@@ -713,15 +485,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             return ExecuteDataset(sqlSelect);
         }
 
-        public async Task<IEnumerable<string>> GetContentModelPluginIdListAsync()
-        {
-            return await _repository.GetAllAsync<string>(Q
-                .Select(nameof(Channel.ContentModelPluginId))
-                .Distinct()
-            );
-        }
-
-        public async Task<IEnumerable<string>> GetAllFilePathBySiteIdAsync(int siteId)
+        public async Task<List<string>> GetAllFilePathBySiteIdAsync(int siteId)
         {
             return await _repository.GetAllAsync<string>(Q
                 .Select(nameof(Channel.FilePath))
@@ -763,7 +527,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             return DataProvider.DatabaseRepository.GetIntResult(sqlString);
         }
 
-        public async Task<IEnumerable<int>> GetChannelIdListAsync(Template template)
+        public async Task<List<int>> GetChannelIdListAsync(Template template)
         {
             if (template.TemplateType != TemplateType.ChannelTemplate &&
                 template.TemplateType != TemplateType.ContentTemplate)
@@ -811,58 +575,13 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             );
         }
 
-        /// 更新发布系统下的所有节点的排序号
-        //private void UpdateWholeTaxisBySiteId(int siteId)
-        //{
-        //    if (siteId <= 0) return;
-        //    var idList = new List<int>
-        //    {
-        //        siteId
-        //    };
-        //    var level = 0;
-        //    string selectLevelCmd =
-        //        $"SELECT MAX(ParentsCount) FROM siteserver_Channel WHERE (Id = {siteId}) OR (SiteId = {siteId})";
-        //    using (var rdr = ExecuteReader(selectLevelCmd))
-        //    {
-        //        while (rdr.Read())
-        //        {
-        //            var parentsCount = GetInt(rdr, 0);
-        //            level = parentsCount;
-        //        }
-        //        rdr.Close();
-        //    }
-
-        //    for (var i = 0; i < level; i++)
-        //    {
-        //        var list = new List<int>(idList);
-        //        foreach (var savedId in list)
-        //        {
-        //            var lastChildIdOfSavedId = savedId;
-        //            var sqlString =
-        //                $"SELECT Id, ChannelName FROM siteserver_Channel WHERE ParentId = {savedId} ORDER BY Taxis, LastNode";
-        //            using (var rdr = ExecuteReader(sqlString))
-        //            {
-        //                while (rdr.Read())
-        //                {
-        //                    var channelId = GetInt(rdr, 0);
-        //                    if (!idList.Contains(channelId))
-        //                    {
-        //                        var index = idList.IndexOf(lastChildIdOfSavedId);
-        //                        idList.Insert(index + 1, channelId);
-        //                        lastChildIdOfSavedId = channelId;
-        //                    }
-        //                }
-        //                rdr.Close();
-        //            }
-        //        }
-        //    }
-
-        //    for (var i = 1; i <= idList.Count; i++)
-        //    {
-        //        var channelId = idList[i - 1];
-        //        string updateCmd = $"UPDATE siteserver_Channel SET Taxis = {i} WHERE Id = {channelId}";
-        //        ExecuteNonQuery(updateCmd);
-        //    }
-        //}
+        public async Task<List<int>> GetChannelIdListByTemplateIdAsync(int siteId, bool isChannelTemplate, int templateId)
+        {
+            var name = isChannelTemplate ? nameof(Channel.ChannelTemplateId) : nameof(Channel.ContentTemplateId);
+            return await _repository.GetAllAsync<int>(Q
+                .Select(nameof(Channel.Id))
+                .Where(name, templateId)
+            );
+        }
     }
 }

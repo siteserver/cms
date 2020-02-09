@@ -200,7 +200,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     await DataProvider.AdministratorsInRolesRepository.AddUserToRolesAsync(adminInfo.UserName, checkedRoles.ToArray());
                 }
 
-                await DataProvider.AdministratorRepository.UpdateSiteIdCollectionAsync(adminInfo,
+                await DataProvider.AdministratorRepository.UpdateSiteIdsAsync(adminInfo,
                     adminLevel == "SiteAdmin"
                         ? checkedSites
                         : new List<int>());

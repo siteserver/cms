@@ -1,19 +1,16 @@
 ﻿var $url = '/pages/settings/utilityEncrypt';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
-
+var data = utils.initData({
   isEncrypt: true,
   value: null,
   results: null
-};
+});
 
 var methods = {
   submit: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url, {
       isEncrypt: this.isEncrypt,
       value: this.value

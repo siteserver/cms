@@ -1,10 +1,7 @@
 ﻿var $url = '/pages/plugins/manage';
-var $urlReload = '/pages/plugins/manage/actions/reload';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
-  pageType: parseInt(utils.getQueryString("pageType") || '1'),
+var data = utils.initData({
+  pageType: utils.toInt(utils.getQueryString("pageType") || '1'),
   isNightly: null,
   pluginVersion: null,
   allPackages: null,
@@ -15,16 +12,17 @@ var data = {
   updatePackages: [],
   updatePackageIds: [],
   referencePackageIds: []
-};
+});
 
 var methods = {
   getIconUrl: function (url) {
     return 'https://www.siteserver.cn/plugins/' + url;
   },
 
-  load: function () {
+  apiGet: function () {
     var $this = this;
 
+    utils.loading(this, true);
     $api.get($url).then(function (response) {
       var res = response.data;
 
@@ -80,17 +78,19 @@ var methods = {
       }).catch(function (error) {
         utils.error($this, error);
       }).then(function () {
-        $this.pageLoad = true;
+        utils.loading($this, false);
       });
 
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
   enablePackage: function (pkg) {
+    var $this = this;
+    
     var text = pkg.isDisabled ? '启用' : '禁用';
     var isReference = this.referencePackageIds.indexOf(pkg.id) !== -1;
     if (isReference) {
@@ -122,6 +122,8 @@ var methods = {
   },
 
   deletePackage: function (pkg) {
+    var $this = this;
+
     var isReference = this.referencePackageIds.indexOf(pkg.id) !== -1;
     if (isReference) {
       return swal("无法删除", "存在其他插件依赖此插件，需要删除依赖插件后才能进行删除操作", "error");
@@ -154,8 +156,10 @@ var methods = {
   },
 
   btnReload: function () {
-    utils.loading($this, true);
-    $api.post($urlReload).then(function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/reload').then(function () {
       utils.loading($this, false);
       swal({
         type: 'success',
@@ -174,6 +178,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.load();
+    this.apiGet();
   }
 });

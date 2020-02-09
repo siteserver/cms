@@ -36,7 +36,7 @@ namespace SiteServer.API.Controllers.Sys
             }
 
             WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
-                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.Redis, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
+                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.RedisConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
                 WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), WebUtils.GetSiteFilesPath(string.Empty), true);

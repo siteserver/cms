@@ -24,7 +24,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-			var templateInfoList = await DataProvider.TemplateRepository.GetTemplateListBySiteIdAsync(_siteId);
+			var templateInfoList = await DataProvider.TemplateRepository.GetAllAsync(_siteId);
 
 			foreach (var templateInfo in templateInfoList)
 			{
@@ -38,7 +38,7 @@ namespace SiteServer.CMS.ImportExport.Components
         {
             var feed = AtomUtility.GetEmptyFeed();
 
-            var templateInfoList = await DataProvider.TemplateRepository.GetTemplateListBySiteIdAsync(_siteId);
+            var templateInfoList = await DataProvider.TemplateRepository.GetAllAsync(_siteId);
 
             foreach (var templateInfo in templateInfoList)
             {
@@ -66,7 +66,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileExtName), template.CreatedFileExtName);
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.Default), template.Default.ToString());
 
-            var templateContent = TemplateManager.GetTemplateContent(site, template);
+            var templateContent = DataProvider.TemplateRepository.GetTemplateContent(site, template);
 			AtomUtility.AddDcElement(entry.AdditionalElements, "Body", AtomUtility.Encrypt(templateContent));
 
 			return entry;
@@ -97,7 +97,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
 			    var templateContent = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Body"));
 					
-			    var srcTemplateInfo = await TemplateManager.GetTemplateByTemplateNameAsync(_siteId, templateInfo.TemplateType, templateInfo.TemplateName);
+			    var srcTemplateInfo = await DataProvider.TemplateRepository.GetTemplateByTemplateNameAsync(_siteId, templateInfo.TemplateType, templateInfo.TemplateName);
 
 			    int templateId;
 
@@ -115,12 +115,12 @@ namespace SiteServer.CMS.ImportExport.Components
 			        else
 			        {
 			            templateInfo.TemplateName = await DataProvider.TemplateRepository.GetImportTemplateNameAsync(_siteId, templateInfo.TemplateName);
-			            templateId = await DataProvider.TemplateRepository.InsertAsync(templateInfo, templateContent, administratorName);
+			            templateId = await DataProvider.TemplateRepository.InsertAsync(site, templateInfo, templateContent, administratorName);
 			        }
 			    }
 			    else
 			    {
-			        templateId = await DataProvider.TemplateRepository.InsertAsync(templateInfo, templateContent, administratorName);
+			        templateId = await DataProvider.TemplateRepository.InsertAsync(site, templateInfo, templateContent, administratorName);
 			    }
 
 			    if (templateInfo.TemplateType == TemplateType.FileTemplate)

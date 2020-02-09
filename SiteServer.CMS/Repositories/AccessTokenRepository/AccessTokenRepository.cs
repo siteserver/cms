@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Microsoft.Extensions.Caching.Distributed;
+using Datory.Utils;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Repositories
 
         public AccessTokenRepository()
         {
-            _repository = new Repository<AccessToken>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
+            _repository = new Repository<AccessToken>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -67,7 +67,7 @@ namespace SiteServer.CMS.Repositories
             return await _repository.ExistsAsync(Q.Where(nameof(AccessToken.Title), title));
         }
 
-        public async Task<IEnumerable<AccessToken>> GetAccessTokenListAsync()
+        public async Task<List<AccessToken>> GetAccessTokenListAsync()
         {
             return await _repository.GetAllAsync(Q.OrderBy(nameof(AccessToken.Id)));
         }
@@ -82,7 +82,7 @@ namespace SiteServer.CMS.Repositories
             if (string.IsNullOrEmpty(token)) return false;
 
             var tokenInfo = await GetByTokenAsync(token);
-            return tokenInfo != null && StringUtils.ContainsIgnoreCase(StringUtils.GetStringList(tokenInfo.Scopes), scope);
+            return tokenInfo != null && StringUtils.ContainsIgnoreCase(Utilities.GetStringList(tokenInfo.Scopes), scope);
         }
     }
 }

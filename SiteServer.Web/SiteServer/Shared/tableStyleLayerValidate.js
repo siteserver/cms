@@ -15,7 +15,7 @@ var methods = {
   apiGet: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.get($url, {
       params: {
         tableName: this.tableName,
@@ -37,12 +37,12 @@ var methods = {
   btnSubmitClick: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url, {
-      tableName: $this.tableName,
-      attributeName: $this.attributeName,
-      relatedIdentities: $this.relatedIdentities,
-      rules: $this.rules
+      tableName: this.tableName,
+      attributeName: this.attributeName,
+      relatedIdentities: this.relatedIdentities,
+      rules: this.rules
     }).then(function (response) {
       var res = response.data;
 

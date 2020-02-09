@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using SiteServer.Abstractions;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Repositories;
 using EBackupType = SiteServer.CMS.Context.Enumerations.EBackupType;
 using EBackupTypeUtils = SiteServer.CMS.Context.Enumerations.EBackupTypeUtils;
@@ -137,7 +137,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetUploadDirectoryPath(Site site, DateTime datetime, UploadType uploadType)
         {
-            DateFormatType uploadDateFormatString = DateFormatType.Month;
+            var uploadDateFormatString = DateFormatType.Month;
             var uploadDirectoryName = string.Empty;
 
             if (uploadType == UploadType.Image)
@@ -276,18 +276,18 @@ namespace SiteServer.CMS.Core
         {
             int siteId;
             var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
-            if (siteIdList.Count == 1)
+            if (siteIdList.Any())
             {
-                siteId = siteIdList[0];
+                siteId = siteIdList.First();
             }
             else
             {
                 var siteDir = await GetCurrentSiteDirAsync();
-                siteId = !string.IsNullOrEmpty(siteDir) ? await StlSiteCache.GetSiteIdBySiteDirAsync(siteDir) : await StlSiteCache.GetSiteIdByIsRootAsync();
+                siteId = !string.IsNullOrEmpty(siteDir) ? await DataProvider.SiteRepository.GetIdBySiteDirAsync(siteDir) : await DataProvider.SiteRepository.GetIdByIsRootAsync();
 
                 if (siteId == 0)
                 {
-                    siteId = await StlSiteCache.GetSiteIdByIsRootAsync();
+                    siteId = await DataProvider.SiteRepository.GetIdByIsRootAsync();
                 }
             }
             return siteId;
@@ -490,9 +490,9 @@ namespace SiteServer.CMS.Core
             public static string DefaultDirectoryName = "/channels/";
             public static string DefaultRegexString = "/channels/(?<channelId>[^_]*)_?(?<pageIndex>[^_]*)";
 
-            public static async Task<IDictionary> GetDictionaryAsync(Site site, int channelId)
+            public static async Task<Dictionary<string, string>> GetDictionaryAsync(Site site, int channelId)
             {
-                var dictionary = new ListDictionary
+                var dictionary = new Dictionary<string, string>
                 {
                     {ChannelId, "栏目ID"},
                     {Year, "年份"},
@@ -509,7 +509,7 @@ namespace SiteServer.CMS.Core
                     {LowerChannelIndex, "栏目索引(小写)"}
                 };
 
-                var channelInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 var styleInfoList = await DataProvider.TableStyleRepository.GetChannelStyleListAsync(channelInfo);
                 foreach (var styleInfo in styleInfoList)
                 {
@@ -548,7 +548,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Year))
                     {
-                        if (node == null) node = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        if (node == null) node = await DataProvider.ChannelRepository.GetAsync(channelId);
                         if (node.AddDate.HasValue)
                         {
                             value = node.AddDate.Value.Year.ToString();
@@ -556,7 +556,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Month))
                     {
-                        if (node == null) node = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        if (node == null) node = await DataProvider.ChannelRepository.GetAsync(channelId);
                         if (node.AddDate.HasValue)
                         {
                             value = node.AddDate.Value.Month.ToString();
@@ -564,7 +564,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Day))
                     {
-                        if (node == null) node = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        if (node == null) node = await DataProvider.ChannelRepository.GetAsync(channelId);
                         if (node.AddDate.HasValue)
                         {
                             value = node.AddDate.Value.Day.ToString();
@@ -572,7 +572,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Hour))
                     {
-                        if (node == null) node = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        if (node == null) node = await DataProvider.ChannelRepository.GetAsync(channelId);
                         if (node.AddDate.HasValue)
                         {
                             value = node.AddDate.Value.Hour.ToString();
@@ -580,7 +580,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Minute))
                     {
-                        if (node == null) node = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        if (node == null) node = await DataProvider.ChannelRepository.GetAsync(channelId);
                         if (node.AddDate.HasValue)
                         {
                             value = node.AddDate.Value.Minute.ToString();
@@ -588,7 +588,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Second))
                     {
-                        if (node == null) node = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        if (node == null) node = await DataProvider.ChannelRepository.GetAsync(channelId);
                         if (node.AddDate.HasValue)
                         {
                             value = node.AddDate.Value.Second.ToString();
@@ -596,12 +596,12 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Sequence))
                     {
-                        value = (await StlChannelCache.GetSequenceAsync(site.Id, channelId)).ToString();
+                        value = (await DataProvider.ChannelRepository.GetSequenceAsync(site.Id, channelId)).ToString();
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ParentRule))
                     {
-                        if (node == null) node = await ChannelManager.GetChannelAsync(site.Id, channelId);
-                        var parentInfo = await ChannelManager.GetChannelAsync(site.Id, node.ParentId);
+                        if (node == null) node = await DataProvider.ChannelRepository.GetAsync(channelId);
+                        var parentInfo = await DataProvider.ChannelRepository.GetAsync(node.ParentId);
                         if (parentInfo != null)
                         {
                             var parentRule = await GetChannelFilePathRuleAsync(site, parentInfo.Id);
@@ -610,22 +610,22 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ChannelName))
                     {
-                        if (node == null) node = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        if (node == null) node = await DataProvider.ChannelRepository.GetAsync(channelId);
                         value = node.ChannelName;
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, LowerChannelName))
                     {
-                        if (node == null) node = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        if (node == null) node = await DataProvider.ChannelRepository.GetAsync(channelId);
                         value = node.ChannelName.ToLower();
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, LowerChannelIndex))
                     {
-                        if (node == null) node = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        if (node == null) node = await DataProvider.ChannelRepository.GetAsync(channelId);
                         value = node.IndexName.ToLower();
                     }
                     else
                     {
-                        if (node == null) node = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        if (node == null) node = await DataProvider.ChannelRepository.GetAsync(channelId);
                         var attributeName = element.Replace("{@", string.Empty).Replace("}", string.Empty);
 
                         var isLower = false;
@@ -679,9 +679,9 @@ namespace SiteServer.CMS.Core
             public const string DefaultDirectoryName = "/contents/";
             public const string DefaultRegexString = "/contents/(?<channelId>[^/]*)/(?<contentId>[^/]*)_?(?<pageIndex>[^_]*)";
 
-            public static async Task<IDictionary> GetDictionaryAsync(Site site, int channelId)
+            public static async Task<Dictionary<string, string>> GetDictionaryAsync(Site site, int channelId)
             {
-                var dictionary = new ListDictionary
+                var dictionary = new Dictionary<string, string>
                 {
                     {ChannelId, "栏目ID"},
                     {ContentId, "内容ID"},
@@ -699,7 +699,7 @@ namespace SiteServer.CMS.Core
                     {LowerChannelIndex, "栏目索引(小写)"}
                 };
 
-                var channelInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 var styleInfoList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channelInfo);
                 foreach (var styleInfo in styleInfoList)
                 {
@@ -749,13 +749,13 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Sequence))
                     {
-                        var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
+                        var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelId);
                         value = DataProvider.ContentRepository.GetSequence(tableName, channelId, contentId).ToString();
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ParentRule))//继承父级设置 20151113 sessionliang
                     {
-                        var nodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
-                        var parentInfo = await ChannelManager.GetChannelAsync(site.Id, nodeInfo.ParentId);
+                        var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                        var parentInfo = await DataProvider.ChannelRepository.GetAsync(nodeInfo.ParentId);
                         if (parentInfo != null)
                         {
                             var parentRule = await GetContentFilePathRuleAsync(site, parentInfo.Id);
@@ -764,7 +764,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ChannelName))
                     {
-                        var nodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                         if (nodeInfo != null)
                         {
                             value = nodeInfo.ChannelName;
@@ -772,7 +772,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, LowerChannelName))
                     {
-                        var nodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                         if (nodeInfo != null)
                         {
                             value = nodeInfo.ChannelName.ToLower();
@@ -780,7 +780,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ChannelIndex))
                     {
-                        var nodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                         if (nodeInfo != null)
                         {
                             value = nodeInfo.IndexName;
@@ -788,7 +788,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, LowerChannelIndex))
                     {
-                        var nodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                        var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                         if (nodeInfo != null)
                         {
                             value = nodeInfo.IndexName.ToLower();
@@ -915,7 +915,7 @@ namespace SiteServer.CMS.Core
         private static async Task<string> GetChannelFilePathRuleAsync(int siteId, int channelId)
         {
             if (channelId == 0) return string.Empty;
-            var nodeInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
             if (nodeInfo == null) return string.Empty;
 
             var filePathRule = nodeInfo.ChannelFilePathRule;
@@ -945,7 +945,7 @@ namespace SiteServer.CMS.Core
         private static async Task<string> GetContentFilePathRuleAsync(int siteId, int channelId)
         {
             if (channelId == 0) return string.Empty;
-            var nodeInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
             if (nodeInfo == null) return string.Empty;
 
             var filePathRule = nodeInfo.ContentFilePathRule;
@@ -959,10 +959,10 @@ namespace SiteServer.CMS.Core
 
         public static async Task<string> GetChannelPageFilePathAsync(Site site, int channelId, int currentPageIndex)
         {
-            var nodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
             if (nodeInfo.ParentId == 0)
             {
-                var templateInfo = await TemplateManager.GetDefaultTemplateAsync(site.Id, TemplateType.IndexPageTemplate);
+                var templateInfo = await DataProvider.TemplateRepository.GetDefaultTemplateAsync(site.Id, TemplateType.IndexPageTemplate);
                 return GetIndexPageFilePath(site, templateInfo.CreatedFileFullName, site.Root, currentPageIndex);
             }
             var filePath = nodeInfo.FilePath;

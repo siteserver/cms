@@ -1,164 +1,105 @@
-﻿var $url = '/pages/cms/contentsLayerWord';
-var $uploadUrl = apiUrl + '/pages/cms/contentsLayerWord';
+﻿var $url = '/pages/cms/contents/contentsLayerWord';
 
-var data = {
-  siteId: parseInt(utils.getQueryString('siteId')),
-  channelId: parseInt(utils.getQueryString('channelId')),
-  pageLoad: false,
-  pageAlert: null,
-  file: null,
-  files: [],
-  isFirstLineTitle: false,
-  isFirstLineRemove: true,
-  isClearFormat: true,
-  isFirstLineIndent: true,
-  isClearFontSize: true,
-  isClearFontFamily: true,
-  isClearImages: false,
+var data = utils.initData({
   checkedLevels: null,
-  checkedLevel: null
-};
+  form: {
+    siteId: utils.getQueryInt('siteId'),
+    channelId: utils.getQueryInt('channelId'),
+    isFirstLineTitle: false,
+    isFirstLineRemove: true,
+    isClearFormat: true,
+    isFirstLineIndent: true,
+    isClearFontSize: true,
+    isClearFontFamily: true,
+    isClearImages: false,
+    checkedLevel: null,
+    fileNames: []
+  },
+  uploadUrl: null,
+  uploadList: []
+});
 
 var methods = {
-  loadConfig: function () {
-    var $this = this;
-    $this.pageLoad = true;
-
-    $api
-      .get($url, {
-        params: {
-          siteId: $this.siteId,
-          channelId: $this.channelId
-        }
-      })
-      .then(function(response) {
-        var res = response.data;
-
-        $this.checkedLevels = res.value;
-        $this.checkedLevel = res.checkedLevel;
-
-        $this.loadUploader();
-      })
-      .catch(function(error) {
-        utils.error($this, error);
-      })
-      .then(function() {
-        $this.pageLoad = true;
-      });
-  },
-
-  loadUploader: function () {
+  apiGet: function () {
     var $this = this;
 
-    var E = Q.event,
-      Uploader = Q.Uploader;
-
-    var boxDropArea = document.getElementById("drop-area");
-
-    var uploader = new Uploader({
-      url: $uploadUrl + '/actions/upload?siteId=' + $this.siteId + '&channelId=' + $this.channelId,
-      target: document.getElementById("drop-area"),
-      allows: ".doc,.docx",
-      on: {
-        add: function (task) {
-          if (task.disabled) {
-            return alert({
-              title: "允许上传的文件格式为：" + this.ops.allows,
-              type: 'warning',
-              confirmButtonText: '关 闭'
-            });
-          }
-        },
-        complete: function (task) {
-          var json = task.json;
-          if (!json || json.ret != 1) {
-            return alert({
-              title: "上传失败！",
-              type: 'warning',
-              confirmButtonText: '关 闭'
-            });
-          }
-
-          if (json && json.fileName) {
-            $this.files.push(json);
-          }
-        }
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        siteId: this.form.siteId,
+        channelId: this.form.channelId
       }
-    });
-
-    //若浏览器不支持html5上传，则禁止拖拽上传
-    if (!Uploader.support.html5 || !uploader.html5) {
-      boxDropArea.innerHTML = "点击批量上传Word文件";
-      return;
-    }
-
-    //阻止浏览器默认拖放行为
-    E.add(boxDropArea, "dragleave", E.stop);
-    E.add(boxDropArea, "dragenter", E.stop);
-    E.add(boxDropArea, "dragover", E.stop);
-
-    E.add(boxDropArea, "drop", function (e) {
-      E.stop(e);
-
-      //获取文件对象
-      var files = e.dataTransfer.files;
-
-      uploader.addList(files);
-    });
-  },
-
-  del: function (file) {
-    this.files.splice(this.files.indexOf(file), 1);
-  },
-
-  getFileNames: function () {
-    var arr = [];
-    for (var i = 0; i < this.files.length; i++) {
-      arr.push(this.files[i].fileName);
-    }
-    return arr;
-  },
-
-  btnSubmitClick: function () {
-    var $this = this;
-    var fileNames = this.getFileNames().join(',');
-    if (!fileNames) {
-      return alert({
-        title: "请选择需要导入的Word文件！",
-        type: 'warning',
-        showConfirmButton: '关 闭'
-      });
-    }
-
-    utils.loading($this, true);
-    $api.post($url, {
-      siteId: $this.siteId,
-      channelId: $this.channelId,
-      isFirstLineTitle: $this.isFirstLineTitle,
-      isFirstLineRemove: $this.isFirstLineRemove,
-      isClearFormat: $this.isClearFormat,
-      isFirstLineIndent: $this.isFirstLineIndent,
-      isClearFontSize: $this.isClearFontSize,
-      isClearFontFamily: $this.isClearFontFamily,
-      isClearImages: $this.isClearImages,
-      checkedLevel: $this.checkedLevel,
-      fileNames: fileNames
     }).then(function(response) {
       var res = response.data;
 
-      var contentIdList = res.value;
-      if (contentIdList.length === 1) {
-        parent.location.href = 'pageContentAdd.aspx?siteId=' + $this.siteId + '&channelId=' + $this.channelId + '&id=' + contentIdList[0];
-      } else {
-        parent.location.reload(true);
-      }
-    })
-    .catch(function(error) {
+      $this.checkedLevels = res.value;
+      $this.form.checkedLevel = res.checkedLevel;
+
+      $this.uploadUrl = apiUrl + $url + '/actions/upload?siteId=' + $this.form.siteId + '&channelId=' + $this.form.channelId;
+    }).catch(function(error) {
       utils.error($this, error);
-    })
-    .then(function() {
+    }).then(function() {
       utils.loading($this, false);
     });
+  },
+
+  apiSubmit: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url, this.form).then(function(response) {
+      var res = response.data;
+
+      utils.closeLayer();
+      parent.$vue.apiList($this.form.channelId, 1, 'Word导入成功！');
+    }).catch(function(error) {
+      utils.error($this, error);
+    }).then(function() {
+      utils.loading($this, false);
+    });
+  },
+
+  btnSubmitClick: function () {
+    if (this.form.fileNames.length === 0) {
+      return this.$message.error('请选择需要导入的Word文件！');
+    }
+
+    this.apiSubmit();
+  },
+
+  btnCancelClick: function () {
+    utils.closeLayer();
+  },
+
+  uploadBefore(file) {
+    var re = /(\.doc|\.docx|\.wps)$/i;
+    if(!re.exec(file.name))
+    {
+      this.$message.error('文件只能是 Word 格式，请选择有效的文件上传!');
+      return false;
+    }
+    return true;
+  },
+
+  uploadProgress: function() {
+    utils.loading(this, true);
+  },
+
+  uploadRemove(file) {
+    if (file.response) {
+      this.form.fileNames.splice(this.form.fileNames.indexOf(file.response.name), 1);
+    }
+  },
+
+  uploadSuccess: function(res) {
+    this.form.fileNames.push(res.name);
+    utils.loading(this, false);
+  },
+
+  uploadError: function(err) {
+    utils.loading(this, false);
+    var error = JSON.parse(err.message);
+    this.$message.error(error.message);
   }
 };
 
@@ -167,6 +108,6 @@ new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.loadConfig();
+    this.apiGet();
   }
 });

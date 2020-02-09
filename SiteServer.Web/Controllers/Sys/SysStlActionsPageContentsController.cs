@@ -31,8 +31,8 @@ namespace SiteServer.API.Controllers.Sys
                 var currentPageIndex = request.GetPostInt("currentPageIndex");
                 var stlPageContentsElement = WebConfigUtils.DecryptStringBySecretKey(request.GetPostString("stlPageContentsElement"));
 
-                var nodeInfo = await ChannelManager.GetChannelAsync(siteId, pageChannelId);
-                var templateInfo = await TemplateManager.GetTemplateAsync(siteId, templateId);
+                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(pageChannelId);
+                var templateInfo = await DataProvider.TemplateRepository.GetAsync(templateId);
                 var pageInfo = await PageInfo.GetPageInfoAsync(nodeInfo.Id, 0, site, templateInfo, new Dictionary<string, object>());
                 pageInfo.User = request.User;
 

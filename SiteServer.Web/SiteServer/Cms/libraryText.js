@@ -1,8 +1,7 @@
-﻿var $url = '/pages/cms/libraryText';
+﻿var $url = '/pages/cms/library/libraryText';
 
-var data = {
+var data = utils.initData({
   siteId: utils.getQueryInt("siteId"),
-  pageLoad: false,
   pageType: 'card',
   drawer: false,
   isGroupForm: false,
@@ -27,13 +26,14 @@ var data = {
     page: 1,
     perPage: 24
   }
-};
+});
 
 var methods = {
   apiList: function (page) {
     var $this = this;
     this.form.page = page;
 
+    utils.loading(this, true);
     $api.post($url + '/list', this.form).then(function (response) {
       var res = response.data;
 
@@ -46,7 +46,6 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
       utils.loading($this, false);
     });
   },
@@ -54,7 +53,7 @@ var methods = {
   apiCreateGroup: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/groups', this.groupForm).then(function (response) {
       var res = response.data;
 
@@ -73,7 +72,7 @@ var methods = {
   apiRenameGroup: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.put($url + '/groups/' + this.form.groupId, this.groupForm).then(function (response) {
       var res = response.data;
 
@@ -93,7 +92,7 @@ var methods = {
   apiDeleteGroup: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.delete($url + '/groups/' + this.form.groupId).then(function (response) {
       var res = response.data;
 
@@ -115,7 +114,7 @@ var methods = {
   apiDelete: function (library) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.delete($url + '/' + library.id).then(function (response) {
       var res = response.data;
 
@@ -213,7 +212,7 @@ var methods = {
     this.form.groupId = groupId;
     this.form.page = 1;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/list', this.form).then(function (response) {
       var res = response.data;
 
@@ -229,7 +228,6 @@ var methods = {
           message: error.message
         });
     }).then(function () {
-      $this.pageLoad = true;
       utils.loading($this, false);
     });
   },
@@ -290,12 +288,12 @@ var methods = {
   },
 
   btnSearchClick() {
-    utils.loading($this, true);
+    utils.loading(this, true);
     this.apiList(1);
   },
 
   btnPageClick: function(val) {
-    utils.loading($this, true);
+    utils.loading(this, true);
     this.apiList(val);
   },
 
@@ -316,11 +314,11 @@ var methods = {
   uploadSuccess: function(res) {
     this.items.splice(0, 0, res);
     this.count++;
-    utils.loading($this, false);
+    utils.loading(this, false);
   },
 
   uploadError: function(err) {
-    utils.loading($this, false);
+    utils.loading(this, false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }

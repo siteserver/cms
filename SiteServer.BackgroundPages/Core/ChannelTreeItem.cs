@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Core
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
         }
 
-        public async Task<string> GetItemHtmlAsync(ELoadingType loadingType, string returnUrl, int adminId, NameValueCollection additional)
+        public async Task<string> GetItemHtmlAsync(ELoadingType loadingType, string returnUrl, NameValueCollection additional)
         {
             var htmlBuilder = new StringBuilder();
             var parentsCount = _channel.ParentsCount;
@@ -143,9 +143,9 @@ namespace SiteServer.BackgroundPages.Core
             {
                 htmlBuilder.Append("&nbsp;");
 
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtmlAsync(_site, _channel).GetAwaiter().GetResult());
+                htmlBuilder.Append(DataProvider.ChannelRepository.GetNodeTreeLastImageHtmlAsync(_site, _channel).GetAwaiter().GetResult());
 
-                var count = DataProvider.ContentRepository.GetCountAsync(_site, _channel, adminId).GetAwaiter().GetResult();
+                var count = DataProvider.ContentRepository.GetCountAsync(_site, _channel).GetAwaiter().GetResult();
 
                 htmlBuilder.Append(
                     $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span>");

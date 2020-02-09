@@ -29,8 +29,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
 
                 return Ok(new
                 {
-                    Value = await UserMenuManager.GetAllUserMenuListAsync(),
-                    Groups = await UserGroupManager.GetUserGroupListAsync()
+                    Value = await DataProvider.UserMenuRepository.GetUserMenuListAsync(),
+                    Groups = await DataProvider.UserGroupRepository.GetUserGroupListAsync()
                 });
             }
             catch (Exception ex)
@@ -57,7 +57,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
 
                 return Ok(new
                 {
-                    Value = await UserMenuManager.GetAllUserMenuListAsync()
+                    Value = await DataProvider.UserMenuRepository.GetUserMenuListAsync()
                 });
             }
             catch (Exception ex)
@@ -93,7 +93,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
 
                 return Ok(new
                 {
-                    Value = await UserMenuManager.GetAllUserMenuListAsync()
+                    Value = await DataProvider.UserMenuRepository.GetUserMenuListAsync()
                 });
             }
             catch (Exception ex)
@@ -114,7 +114,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
                     return Unauthorized();
                 }
 
-                foreach (var userMenuInfo in await UserMenuManager.GetAllUserMenuListAsync())
+                foreach (var userMenuInfo in await DataProvider.UserMenuRepository.GetUserMenuListAsync())
                 {
                     await DataProvider.UserMenuRepository.DeleteAsync(userMenuInfo.Id);
                 }
@@ -123,7 +123,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
 
                 return Ok(new
                 {
-                    Value = await UserMenuManager.GetAllUserMenuListAsync()
+                    Value = await DataProvider.UserMenuRepository.GetUserMenuListAsync()
                 });
             }
             catch (Exception ex)

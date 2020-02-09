@@ -139,8 +139,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                 var siteTemplatePath = PathUtility.GetSiteTemplatesPath(templateDir);
                 await exportObject.ExportFilesToSiteAsync(siteTemplatePath, isAllFiles, checkedDirectories, checkedFiles, true);
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, siteId);
-                channelInfo.Children = await ChannelManager.GetChildrenAsync(siteId, siteId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(siteId);
+                channelInfo.Children = await DataProvider.ChannelRepository.GetChildrenAsync(siteId, siteId);
 
                 return Ok(new
                 {

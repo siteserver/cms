@@ -25,7 +25,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
         public async Task<int> ImportChannelsAndContentsAsync(string filePath, bool isImportContents, bool isOverride, int theParentId, string adminName)
         {
-            var psChildCount = await DataProvider.ChannelRepository.GetCountAsync(_site.Id);
+            var psChildCount = await DataProvider.ChannelRepository.GetCountAsync(_site.Id, _site.Id);
             var indexNameList = (await DataProvider.ChannelRepository.GetIndexNameListAsync(_site.Id)).ToList();
 
             if (!FileUtils.IsFileExists(filePath)) return 0;
@@ -66,7 +66,7 @@ namespace SiteServer.CMS.ImportExport.Components
             if (parentIdOriginal == 0)
             {
                 channelId = _site.Id;
-                var nodeInfo = await ChannelManager.GetChannelAsync(_site.Id, _site.Id);
+                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(_site.Id);
                 await _channelIe.ImportNodeInfoAsync(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
                 await DataProvider.ChannelRepository.UpdateAsync(nodeInfo);
@@ -86,7 +86,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var theSameNameChannelId = 0;
                 if (isOverride)
                 {
-                    theSameNameChannelId = await ChannelManager.GetChannelIdByParentIdAndChannelNameAsync(_site.Id, parentId, nodeInfo.ChannelName, false);
+                    theSameNameChannelId = await DataProvider.ChannelRepository.GetChannelIdByParentIdAndChannelNameAsync(_site.Id, parentId, nodeInfo.ChannelName, false);
                     if (theSameNameChannelId != 0)
                     {
                         isUpdate = true;
@@ -99,8 +99,8 @@ namespace SiteServer.CMS.ImportExport.Components
                 else
                 {
                     channelId = theSameNameChannelId;
-                    nodeInfo = await ChannelManager.GetChannelAsync(_site.Id, theSameNameChannelId);
-                    //var tableName = ChannelManager.GetTableName(_site, node);
+                    nodeInfo = await DataProvider.ChannelRepository.GetAsync(theSameNameChannelId);
+                    //var tableName = DataProvider.ChannelRepository.GetTableName(_site, node);
                     await _channelIe.ImportNodeInfoAsync(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
                     await DataProvider.ChannelRepository.UpdateAsync(nodeInfo);
@@ -119,13 +119,13 @@ namespace SiteServer.CMS.ImportExport.Components
 
         public async Task ExportAsync(int siteId, int channelId, bool isSaveContents)
         {
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
             if (channelInfo == null) return;
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
 
-            var fileName = await DataProvider.ChannelRepository.GetOrderStringInSiteAsync(channelId);
+            var fileName = await DataProvider.ChannelRepository.GetOrderStringInSiteAsync(siteId, channelId);
 
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + fileName + ".xml";
 

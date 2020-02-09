@@ -50,7 +50,7 @@ namespace SiteServer.CMS.Repositories
             return await _repository.CountAsync(GetQuery(siteIds, logType, userName, keyword, dateFrom, dateTo));
         }
 
-        public async Task<IEnumerable<SiteLog>> GetAllAsync(List<int> siteIds, string logType, string userName, string keyword, string dateFrom, string dateTo, int offset, int limit)
+        public async Task<List<SiteLog>> GetAllAsync(List<int> siteIds, string logType, string userName, string keyword, string dateFrom, string dateTo, int offset, int limit)
         {
             var query = GetQuery(siteIds, logType, userName, keyword, dateFrom, dateTo);
             query.Offset(offset).Limit(limit);

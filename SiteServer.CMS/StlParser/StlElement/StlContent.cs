@@ -1,12 +1,10 @@
 ﻿using System.Text;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-
 using System.Threading.Tasks;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Repositories;
 
@@ -215,9 +213,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var targetChannelId = content.SourceId;
                     //var targetSiteId = DataProvider.ChannelRepository.GetSiteId(targetChannelId);
-                    var targetSiteId = await StlChannelCache.GetSiteIdAsync(targetChannelId);
+                    var targetSiteId = await DataProvider.ChannelRepository.GetSiteIdAsync(targetChannelId);
                     var targetSite = await DataProvider.SiteRepository.GetAsync(targetSiteId);
-                    var targetNodeInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
+                    var targetNodeInfo = await DataProvider.ChannelRepository.GetAsync(targetChannelId);
 
                     //var targetContentInfo = DataProvider.ContentRepository.GetContentInfo(tableStyle, tableName, content.ReferenceId);
                     var targetContentInfo = await DataProvider.ContentRepository.GetAsync(targetSite, targetNodeInfo, content.ReferenceId);
@@ -247,9 +245,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (ContentAttribute.Title.ToLower().Equals(type))
                 {
-                    var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, content.ChannelId);
+                    var nodeInfo = await DataProvider.ChannelRepository.GetAsync(content.ChannelId);
                     var relatedIdentities = DataProvider.TableStyleRepository.GetRelatedIdentities(nodeInfo);
-                    var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, nodeInfo);
+                    var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, nodeInfo);
 
                     var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(tableName, type, relatedIdentities);
                     parsedContent = await InputParserUtility.GetContentByTableStyleAsync(content.Title, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
@@ -360,7 +358,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var extendValues = content.Get<string>(extendAttributeName);
                         if (!string.IsNullOrEmpty(extendValues))
                         {
-                            foreach (var extendValue in StringUtils.GetStringList(extendValues))
+                            foreach (var extendValue in Utilities.GetStringList(extendValues))
                             {
                                 var newExtendValue = extendValue;
                                 sbParsedContent.Append(contextInfo.IsStlEntity
@@ -386,7 +384,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             if (!string.IsNullOrEmpty(extendValues))
                             {
                                 var index = 2;
-                                foreach (var extendValue in StringUtils.GetStringList(extendValues))
+                                foreach (var extendValue in Utilities.GetStringList(extendValues))
                                 {
                                     var newExtendValue = extendValue;
                                     if (index == num)
@@ -413,7 +411,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var extendValues = content.Get<string>(extendAttributeName);
                         if (!string.IsNullOrEmpty(extendValues))
                         {
-                            foreach (string extendValue in StringUtils.GetStringList(extendValues))
+                            foreach (string extendValue in Utilities.GetStringList(extendValues))
                             {
 
                                 sbParsedContent.Append(await InputParserUtility.GetVideoHtmlAsync(pageInfo.Site, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity));
@@ -437,7 +435,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             if (!string.IsNullOrEmpty(extendValues))
                             {
                                 var index = 2;
-                                foreach (string extendValue in StringUtils.GetStringList(extendValues))
+                                foreach (string extendValue in Utilities.GetStringList(extendValues))
                                 {
                                     if (index == num)
                                     {
@@ -466,7 +464,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var extendValues = content.Get<string>(extendAttributeName);
                             if (!string.IsNullOrEmpty(extendValues))
                             {
-                                foreach (string extendValue in StringUtils.GetStringList(extendValues))
+                                foreach (string extendValue in Utilities.GetStringList(extendValues))
                                 {
                                     sbParsedContent.Append(extendValue);
                                 }
@@ -481,7 +479,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var extendValues = content.Get<string>(extendAttributeName);
                             if (!string.IsNullOrEmpty(extendValues))
                             {
-                                foreach (string extendValue in StringUtils.GetStringList(extendValues))
+                                foreach (string extendValue in Utilities.GetStringList(extendValues))
                                 {
                                     sbParsedContent.Append(await InputParserUtility.GetFileHtmlWithCountAsync(pageInfo.Site, content.ChannelId, content.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
                                 }
@@ -508,7 +506,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 if (!string.IsNullOrEmpty(extendValues))
                                 {
                                     var index = 2;
-                                    foreach (string extendValue in StringUtils.GetStringList(extendValues))
+                                    foreach (string extendValue in Utilities.GetStringList(extendValues))
                                     {
                                         if (index == num)
                                         {
@@ -538,7 +536,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 if (!string.IsNullOrEmpty(extendValues))
                                 {
                                     var index = 2;
-                                    foreach (string extendValue in StringUtils.GetStringList(extendValues))
+                                    foreach (string extendValue in Utilities.GetStringList(extendValues))
                                     {
                                         if (index == num)
                                         {
@@ -558,32 +556,25 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     parsedContent = await PageUtility.GetContentUrlAsync(pageInfo.Site, content, pageInfo.IsLocal);
                 }
-                else if (ContentAttribute.Tags.ToLower().Equals(type))
+                else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.TagNames)))
                 {
-                    parsedContent = TranslateUtils.ObjectCollectionToString(content.TagNames);
+                    parsedContent = Utilities.ToString(content.TagNames);
                 }
                 else if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ContentItem != null)
                 {
                     var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.ContentItem.ItemIndex, type, contextInfo);
                     parsedContent = !string.IsNullOrEmpty(formatString) ? string.Format(formatString, itemIndex) : itemIndex.ToString();
                 }
-                else if (ContentAttribute.AddUserName.ToLower().Equals(type))
-                {
-                    if (!string.IsNullOrEmpty(content.AddUserName))
-                    {
-                        parsedContent = content.AddUserName;
-                    }
-                }
                 else
                 {
-                    var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, content.ChannelId);
+                    var nodeInfo = await DataProvider.ChannelRepository.GetAsync(content.ChannelId);
 
                     if (content.ContainsKey(type))
                     {
                         if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes.Value, type))
                         {
                             var relatedIdentities = DataProvider.TableStyleRepository.GetRelatedIdentities(nodeInfo);
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, nodeInfo);
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, nodeInfo);
                             var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(tableName, type, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式

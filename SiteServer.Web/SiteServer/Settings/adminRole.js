@@ -1,21 +1,23 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/adminRole');
+﻿var $url = '/pages/settings/adminRole';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: null,
   items: null
-};
+});
 
 var methods = {
   getList: function () {
     var $this = this;
 
-    $api.get(null, function (err, res) {
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.get($url).then(function (response) {
+      var res = response.data;
 
       $this.items = res.value;
-      $this.pageLoad = true;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
 
@@ -39,14 +41,19 @@ var methods = {
   apiDelete: function (item) {
     var $this = this;
 
-    utils.loading($this, true);
-    $api.delete({
-      id: item.id
-    }, function (err, res) {
-      utils.loading($this, false);
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.delete($url, {
+      data: {
+        id: item.id
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.items = res.value;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   }
 };

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Repositories
 
         public LibraryTextRepository()
         {
-            _repository = new Repository<LibraryText>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
+            _repository = new Repository<LibraryText>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.Repositories
             return await _repository.CountAsync(query);
         }
 
-        public async Task<IEnumerable<LibraryText>> GetAllAsync(int groupId, string keyword, int page, int perPage)
+        public async Task<List<LibraryText>> GetAllAsync(int groupId, string keyword, int page, int perPage)
         {
             var query = Q
                 .OrderByDesc(nameof(LibraryText.Id))

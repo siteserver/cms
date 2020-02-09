@@ -9,7 +9,7 @@
       <script language="javascript" type="text/javascript">
         function selectVideo(textBoxUrl, imageUrl) {
           window.parent.document.getElementById('<%=Request.QueryString["TextBoxClientID"]%>').value = textBoxUrl;
-          window.parent.layer.closeAll();
+          window.utils.closeLayer();
         }
       </script>
     </head>

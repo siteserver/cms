@@ -39,12 +39,12 @@ namespace SiteServer.API.Controllers.Pages
 
                 if (siteId > 0 && channelId > 0 && contentId > 0)
                 {
-                    var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                     url = await PageUtility.GetContentUrlAsync(site, channelInfo, contentId, isLocal);
                 }
                 else if (siteId > 0 && channelId > 0)
                 {
-                    var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                     url = await PageUtility.GetChannelUrlAsync(site, channelInfo, isLocal);
                 }
                 else if (siteId > 0 && fileTemplateId > 0)
@@ -57,7 +57,7 @@ namespace SiteServer.API.Controllers.Pages
                 }
                 else if (siteId > 0)
                 {
-                    var channelInfo = await ChannelManager.GetChannelAsync(siteId, siteId);
+                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(siteId);
                     url = await PageUtility.GetChannelUrlAsync(site, channelInfo, isLocal);
                 }
 

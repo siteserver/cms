@@ -110,11 +110,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
                 channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-                var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
-                var channelIdList = await ChannelManager.GetChannelIdListAsync(nodeInfo, scope, string.Empty, string.Empty, string.Empty);
+                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(nodeInfo, scope);
                 foreach (var theChannelId in channelIdList)
                 {
-                    var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, theChannelId);
+                    var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, theChannelId);
                     count += await DataProvider.ContentRepository.GetCountOfContentAddAsync(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, ETriState.True);
                 }
             }
@@ -123,7 +123,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
                 channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-                var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
+                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 count = nodeInfo.ChildrenCount;
             }
 

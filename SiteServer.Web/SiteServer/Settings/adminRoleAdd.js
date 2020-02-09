@@ -1,9 +1,7 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/adminRoleAdd');
-var $roleId = utils.getQueryInt('roleId');
+﻿var $url = '/pages/settings/adminRoleAdd';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
+  roleId: utils.getQueryInt('roleId'),
   pageType: null,
   roleName: null,
   description: null,
@@ -15,18 +13,20 @@ var data = {
   siteList: null,
   checkedSiteIdList: null,
   site: null,
-  
   permissionInfo: null
-};
+});
 
 var methods = {
   getConfig: function () {
     var $this = this;
 
-    $api.get({
-      roleId: $roleId
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        roleId: this.roleId
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       if (res.roleInfo) {
         $this.roleName = res.roleInfo.roleName;
@@ -55,7 +55,10 @@ var methods = {
       }
 
       $this.pageType = 'role';
-      $this.pageLoad = true;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
 
@@ -151,18 +154,23 @@ var methods = {
       return;
     }
 
-    utils.loading($this, true);
     var $this = this;
 
-    $api.getAt(this.site.id, {
-      roleId: $roleId
-    }, function (err, res) {
-      utils.loading($this, false);
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.get($url + '/' + this.site.id, {
+      params: {
+        roleId: this.roleId
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.site.permissionInfo = $this.getPermissionInfo(res);
       $this.permissionInfo = $this.site.permissionInfo;
       $this.pageType = 'permissions';
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
   
@@ -247,7 +255,7 @@ var methods = {
 
   apiSubmit: function () {
     var $this = this;
-    utils.loading($this, true);
+    utils.loading(this, true);
 
     var sitePermissions = [];
     for (var i = 0; i < this.siteList.length; i++){
@@ -262,53 +270,43 @@ var methods = {
       }
     }
 
-    if ($roleId > 0) {
-      $api.putAt($roleId, {
+    if (this.roleId > 0) {
+      utils.loading(this, true);
+      $api.put($url + '/' + this.roleId, {
         roleName: this.roleName,
         description: this.description,
         generalPermissions: this.checkedPermissions,
         sitePermissions: sitePermissions
-      }, function (err, res) {
-        utils.loading($this, false);
-        if (err) {
-          $this.pageAlert = {
-            type: 'danger',
-            html: err.message
-          };
-          return;
-        }
+      }).then(function (response) {
+        var res = response.data;
   
-        $this.pageAlert = {
-          type: 'success',
-          html: '角色保存成功！'
-        };
         setTimeout(function() {
           location.href = 'adminRole.cshtml';
         }, 1000);
+        $this.$message.success('角色保存成功！');
+      }).catch(function (error) {
+        utils.error($this, error);
+      }).then(function () {
+        utils.loading($this, false);
       });
     } else {
-      $api.post({
+      utils.loading(this, true);
+      $api.post($url, {
         roleName: this.roleName,
         description: this.description,
         generalPermissions: this.checkedPermissions,
         sitePermissions: sitePermissions
-      }, function (err, res) {
-        utils.loading($this, false);
-        if (err) {
-          $this.pageAlert = {
-            type: 'danger',
-            html: err.message
-          };
-          return;
-        }
+      }).then(function (response) {
+        var res = response.data;
   
-        $this.pageAlert = {
-          type: 'success',
-          html: '角色保存成功！'
-        };
         setTimeout(function() {
           location.href = 'adminRole.cshtml';
         }, 1000);
+        $this.$message.success('角色保存成功！');
+      }).catch(function (error) {
+        utils.error($this, error);
+      }).then(function () {
+        utils.loading($this, false);
       });
     }
   },

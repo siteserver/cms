@@ -59,7 +59,7 @@ namespace SiteServer.API.Controllers.Sys
 
                 if (isRedirect)
                 {
-                    var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
 
                     var redirectUrl = string.Empty;
                     if (specialId != 0)

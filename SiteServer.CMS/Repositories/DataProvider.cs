@@ -37,6 +37,12 @@ namespace SiteServer.CMS.Repositories
         private static LibraryImageRepository _libraryImageRepository;
         public static LibraryImageRepository LibraryImageRepository => _libraryImageRepository ??= new LibraryImageRepository();
 
+        private static LibraryVideoRepository _libraryVideoRepository;
+        public static LibraryVideoRepository LibraryVideoRepository => _libraryVideoRepository ??= new LibraryVideoRepository();
+
+        private static LibraryFileRepository _libraryFileRepository;
+        public static LibraryFileRepository LibraryFileRepository => _libraryFileRepository ??= new LibraryFileRepository();
+
         private static LibraryTextRepository _libraryTextRepository;
         public static LibraryTextRepository LibraryTextRepository => _libraryTextRepository ??= new LibraryTextRepository();
 
@@ -133,6 +139,8 @@ namespace SiteServer.CMS.Repositories
             _administratorsInRolesRepository = null;
             _libraryGroupRepository = null;
             _libraryImageRepository = null;
+            _libraryVideoRepository = null;
+            _libraryFileRepository = null;
             _libraryTextRepository = null;
             _channelRepository = null;
             _channelGroupRepository = null;
@@ -171,6 +179,8 @@ namespace SiteServer.CMS.Repositories
             AdministratorsInRolesRepository,
             LibraryGroupRepository,
             LibraryImageRepository,
+            LibraryVideoRepository,
+            LibraryFileRepository,
             LibraryTextRepository,
             ChannelRepository,
             ChannelGroupRepository,

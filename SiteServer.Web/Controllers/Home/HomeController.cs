@@ -75,7 +75,7 @@ namespace SiteServer.API.Controllers.Home
                 Value = request.User,
                 Config = config,
                 Styles = await DataProvider.TableStyleRepository.GetUserStyleListAsync(),
-                Groups = await UserGroupManager.GetUserGroupListAsync()
+                Groups = await DataProvider.UserGroupRepository.GetUserGroupListAsync()
             };
         }
 
@@ -86,7 +86,7 @@ namespace SiteServer.API.Controllers.Home
 
             if (request.IsUserLoggin)
             {
-                var userMenus = await UserMenuManager.GetAllUserMenuListAsync();
+                var userMenus = await DataProvider.UserMenuRepository.GetUserMenuListAsync();
                 foreach (var menuInfo1 in userMenus)
                 {
                     if (menuInfo1.Disabled || menuInfo1.ParentId != 0 ||
@@ -182,7 +182,7 @@ namespace SiteServer.API.Controllers.Home
                         Constants.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
-                        var permissionChannelInfo = await ChannelManager.GetChannelAsync(site.Id, permissionChannelId);
+                        var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
                         if (channelInfo == null || requestChannelId == permissionChannelId)
                         {
                             channelInfo = permissionChannelInfo;
@@ -190,7 +190,7 @@ namespace SiteServer.API.Controllers.Home
                         channels.Add(new
                         {
                             permissionChannelInfo.Id,
-                            ChannelName = await ChannelManager.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
+                            ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
                         });
                     }
 
@@ -207,7 +207,7 @@ namespace SiteServer.API.Controllers.Home
                     channel = new
                     {
                         channelInfo.Id,
-                        ChannelName = await ChannelManager.GetChannelNameNavigationAsync(site.Id, channelInfo.Id)
+                        ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(site.Id, channelInfo.Id)
                     };
                 }
             }
@@ -272,7 +272,7 @@ namespace SiteServer.API.Controllers.Home
                         Constants.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
-                        var permissionChannelInfo = await ChannelManager.GetChannelAsync(siteInfo.Id, permissionChannelId);
+                        var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
                         if (channelInfo == null || permissionChannelInfo.Id == requestChannelId)
                         {
                             channelInfo = permissionChannelInfo;
@@ -280,7 +280,7 @@ namespace SiteServer.API.Controllers.Home
                         channels.Add(new
                         {
                             permissionChannelInfo.Id,
-                            ChannelName = await ChannelManager.GetChannelNameNavigationAsync(siteInfo.Id, permissionChannelId)
+                            ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteInfo.Id, permissionChannelId)
                         });
                     }
 
@@ -300,7 +300,7 @@ namespace SiteServer.API.Controllers.Home
                     channel = new
                     {
                         channelInfo.Id,
-                        ChannelName = await ChannelManager.GetChannelNameNavigationAsync(siteInfo.Id, channelInfo.Id)
+                        ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteInfo.Id, channelInfo.Id)
                     };
 
                     styles = await DataProvider.TableStyleRepository.GetContentStyleListAsync(siteInfo, channelInfo);

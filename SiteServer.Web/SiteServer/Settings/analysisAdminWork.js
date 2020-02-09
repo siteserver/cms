@@ -1,8 +1,6 @@
 ﻿var $url = '/pages/settings/analysisAdminWork';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: 'chart',
   siteOptions: null,
   newX: null,
@@ -15,7 +13,7 @@ var data = {
     dateTo: ''
   },
   chartOption:null
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -38,14 +36,14 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
   btnSearchClick() {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url, {
       siteId: this.formInline.siteIds && this.formInline.siteIds.length > 0 ? this.formInline.siteIds[0] : 0,
       dateFrom: this.formInline.dateFrom,

@@ -117,7 +117,7 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 foreach (var contentId in contentIdList)
                                 {
-                                    ContentUtility.TranslateAsync(Site, channelId, contentId, Request.Form["translateCollection"], translateType, AuthRequest.AdminName).GetAwaiter().GetResult();
+                                    ContentUtility.TranslateAsync(Site, channelId, contentId, Request.Form["translateCollection"], translateType).GetAwaiter().GetResult();
 
                                     AuthRequest.AddSiteLogAsync(Site.Id, channelId, contentId, "转移内容", string.Empty).GetAwaiter().GetResult();
                                 }

@@ -1,15 +1,13 @@
 ﻿var $url = '/pages/plugins/add';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   isNightly: null,
   pluginVersion: null,
   packageIds: null,
   q: utils.getQueryString('q'),
   keyword: utils.getQueryString('q') || '',
   packages: null
-};
+});
 
 var methods = {
   getIconUrl: function (url) {
@@ -47,13 +45,13 @@ var methods = {
       }).catch(function (error) {
         utils.error($this, error);
       }).then(function () {
-        $this.pageLoad = true;
+        utils.loading($this, false);
       });
 
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 

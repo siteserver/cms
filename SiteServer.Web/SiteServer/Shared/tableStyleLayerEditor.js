@@ -12,7 +12,7 @@ var methods = {
   apiGet: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.get($url, {
       params: {
         tableName: this.tableName,
@@ -41,7 +41,7 @@ var methods = {
   apiSubmit: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
@@ -52,6 +52,13 @@ var methods = {
     }).then(function () {
       utils.loading($this, false);
     });
+  },
+
+  validateAttributeName: function(rule, value, callback) {
+    if (!/^\+?[A-Za-z0-9]+$/.test(value)) {
+      return callback(new Error('字段名称只允许输入字母或者数字'));
+    }
+    callback();
   },
 
   btnSubmitClick() {

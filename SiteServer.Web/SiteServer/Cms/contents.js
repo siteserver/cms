@@ -1,127 +1,151 @@
-﻿var $url = "/pages/cms/contents";
+﻿var $url = "/pages/cms/contents/contents";
+var $defaultWidth = 160;
 
-Object.defineProperty(Object.prototype, "getProp", {
-  value: function(prop) {
-    var key,
-      self = this;
-    for (key in self) {
-      if (key.toLowerCase() == prop.toLowerCase()) {
-        return self[key];
-      }
-    }
-  }
-});
-
-var data = {
+var data = utils.initData({
   siteId: utils.getQueryInt("siteId"),
   channelId: utils.getQueryInt("channelId") || utils.getQueryInt("siteId"),
-  pageLoad: false,
-  pageAlert: null,
-  pageType: null,
-  loading: false,
-
-  searchType: 'title',
-  searchText: '',
+  root: null,
+  siteUrl: null,
+  checkedLevels: [],
+  groupNames: null,
+  tagNames: null,
+  expendedChannelIds: [],
 
   filterText: '',
-  treeData: null,
+  
   pageContents: null,
   total: null,
   pageSize: null,
   page: 1,
   permissions: null,
   columns: null,
-  isAllContents: false,
   
   asideHeight: 0,
   tableMaxHeight: 0,
   multipleSelection: [],
 
-  advancedForm: {
-    startDate: null,
-    endDate: null,
-    keywords: '',
-    description: ''
+  checkedColumns: [],
+
+  searchForm: {
+    searchType: 'Title',
+    searchText: '',
+    isAllContents: false
   },
-  tableData: [{
-    id: 1,
-    date: '2016-05-02',
-    name: '王小虎',
-    address: '上海市普陀区金沙江路 1518 弄'
-  }],
-};
+
+  isAdvancedForm: false,
+  advancedForm: {
+    checkedLevels: [],
+    isTop: false,
+    isRecommend: false,
+    isHot: false,
+    isColor: false,
+    groupNames: [],
+    tagNames: []
+  }
+});
 
 var methods = {
   deleteRow(index, rows) {
     rows.splice(index, 1);
   },
   
-  apiConfig: function() {
+  apiTree: function(reload) {
     var $this = this;
 
-    $api
-      .get($url + '/channels', {
-        params: {
-          siteId: $this.siteId
-        }
-      })
-      .then(function(response) {
-        var res = response.data;
+    $api.post($url + '/actions/tree', {
+      siteId: this.siteId,
+      reload: reload
+    }).then(function(response) {
+      var res = response.data;
 
-        $this.treeData = [res];
-      })
-      .catch(function(error) {
-        utils.error($this, error);
-      })
-      .then(function() {
-        $this.asideHeight = $(window).height();
-        $this.tableMaxHeight = $(window).height() - 85;
-        $this.pageLoad = true;
-      });
+      $this.root = res.root;
+      if (!reload) {
+        $this.siteUrl = res.siteUrl;
+        $this.groupNames = res.groupNames;
+        $this.tagNames = res.tagNames;
+        $this.expendedChannelIds = [$this.siteId];
+      }else{
+        $this.expendedChannelIds = [$this.siteId, $this.channelId];
+      }
+    }).catch(function(error) {
+      utils.error($this, error);
+    }).then(function() {
+      $this.asideHeight = $(window).height() - 4;
+      $this.tableMaxHeight = $(window).height() - 128;
+      utils.loading($this, false);
+    });
   },
 
-  apiList: function(channelId, page) {
+  apiList: function(channelId, page, message, reload) {
     var $this = this;
 
-    $this.loading = true;
-    $api
-      .get($url, {
-        params: {
-          siteId: $this.siteId,
-          channelId: channelId,
-          page: page
-        }
-      })
-      .then(function(response) {
-        var res = response.data;
+    utils.loading(this, true);
+    var request = _.assign({
+      siteId: this.siteId,
+      channelId: channelId,
+      page: page,
+      searchType: this.searchForm.searchType,
+      searchText: this.searchForm.searchText,
+      isAdvanced: this.isAdvanced
+    }, this.advancedForm);
+    $api.post($url + '/actions/list', request).then(function(response) {
+      var res = response.data;
+      
+      $this.pageContents = res.pageContents;
+      $this.columns = res.columns;
+      $this.total = res.total;
+      $this.pageSize = res.pageSize;
+      $this.page = page;
+      $this.checkedLevels = res.checkedLevels;
+      $this.advancedForm.checkedLevels = _.map(res.checkedLevels, function(x) { return x.label; });
+      $this.permissions = res.permissions;
+      $this.expendedChannelIds = [$this.siteId, channelId];
+      $this.searchForm.isAllContents = res.isAllContents;
 
-        if (!$this.treeData) {
-          $this.treeData = [res.rootChannel];
-        }
-        
-        // var pageContents = [];
-        // for (var i = 0; i < res.pageContents.length; i++) {
-        //   var content = _.assign({}, res.pageContents[i], {
-        //     isSelected: false
-        //   });
-        //   pageContents.push(content);
-        // }
-        // $this.pageContents = pageContents;
-        $this.pageContents = res.pageContents;
-        $this.permissions = res.permissions;
-        $this.columns = res.columns;
-        $this.isAllContents = res.isAllContents;
-        $this.total = res.total;
-        $this.pageSize = res.pageSize;
-        $this.page = page;
-      })
-      .catch(function(error) {
-        utils.error($this, error);
-      })
-      .then(function() {
-        $this.loading = false;
-        $this.scrollToTop();
-      });
+      if (message) {
+        $this.$message.success(message);
+      }
+      if (reload) {
+        $this.apiTree(true);
+      }
+    }).catch(function(error) {
+      utils.error($this, error);
+    }).then(function() {
+      utils.loading($this, false);
+      $this.scrollToTop();
+    });
+  },
+
+  apiColumns: function(attributeNames) {
+    var $this = this;
+
+    $api.post($url + '/actions/columns', {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      attributeNames: attributeNames
+    }).then(function(response) {
+      var res = response.data;
+
+    }).catch(function(error) {
+      utils.error($this, error);
+    });
+  },
+
+  handleAllChange: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/all', {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      isAllContents: this.searchForm.isAllContents
+    }).then(function(response) {
+      var res = response.data;
+
+      $this.apiList($this.channelId, 1);
+    }).catch(function(error) {
+      utils.error($this, error);
+    });
   },
 
   getChannelUrl: function(data) {
@@ -135,12 +159,16 @@ var methods = {
     return apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
   },
 
-  btnAdvancedSubmitClick: function() {
-
+  btnSearchClick: function() {
+    this.isAdvancedForm = false;
+    this.apiList(this.channelId, 1);
   },
 
-  btnAdvancedCancelClick: function() {
-
+  handleTagNamesChange: function(visible) {
+    if (!visible) {
+      this.isAdvancedForm = false;
+      this.apiList(this.channelId, 1);
+    }
   },
 
   btnAddClick: function (command) {
@@ -158,34 +186,34 @@ var methods = {
     }
   },
 
-  btnExportClick: function(command) {
-    this.btnLayerClick({title: '批量导出', name: 'Export', full: true, withOptionalContents: true});
-  },
-
   btnMoreClick: function(command) {
-    if (command === 'Options') {
-      this.btnLayerClick({title: '设置选项', name: 'Options', full: true});
+    if (command === 'ExportAll') {
+      this.btnLayerClick({title: '导出全部', name: 'Export', full: true, withOptionalContents: true});
+    } else if (command === 'ExportSelected') {
+      this.btnLayerClick({title: '导出选中', name: 'Export', full: true, withContents: true});
     } else if (command === 'Arrange') {
-      this.btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350});
-    } else if (command === 'Attributes') {
-      this.btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 450, height: 320, withContents: true});
-    } else if (command === 'Group') {
-      this.btnLayerClick({title: '批量设置组别', name: 'Group', withContents: true});
-    } else if (command === 'Taxis') {
-      this.btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true});
-    } else if (command === 'Cut') {
-      this.btnLayerClick({title: '批量转移', name: 'Cut', full: true, withContents: true});
-    } else if (command === 'Copy') {
-      this.btnLayerClick({title: '批量复制', name: '', full: true, withContents: true});
+      this.btnLayerClick({title: '整理排序', name: 'Arrange', width: 550, height: 350});
+    } else if (command === 'Hits') {
+      this.btnLayerClick({title: '设置点击量', name: 'Hits', width: 450, height: 320, withContents: true});
     }
   },
 
   btnEditClick: function(content) {
-    top.utils.openLayer({
+    // location.href = 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId + '&contentId=' + this.contentId;
+    utils.openLayer({
       title: "编辑内容",
       url: this.getEditUrl(content),
       full: true,
       max: true
+    });
+  },
+
+  btnAdminClick: function(adminId) {
+    utils.openLayer({
+      title: "管理员查看",
+      url: '../Shared/adminLayerView.cshtml?adminId=' + adminId,
+      width: 550,
+      height: 450
     });
   },
 
@@ -199,44 +227,30 @@ var methods = {
   },
 
   getEditUrl: function(content) {
-    return (
-      "cms/editor.cshtml?siteId=" +
-      this.siteId +
-      "&channelId=" +
-      content.channelId +
-      "&contentId=" +
-      content.id +
-      "&returnUrl=" +
-      encodeURIComponent(location.href)
-    );
+    return "editor.cshtml?siteId=" + this.siteId + "&channelId=" + content.channelId + "&contentId=" + content.id + "&page=" + this.page;
   },
 
   btnCreateClick: function() {
     var $this = this;
-    this.pageAlert = null;
+
     if (!this.isContentChecked) return;
 
-    $this.loading = true;
-    $api
-      .post($url + "/actions/create", {
-        siteId: $this.siteId,
-        channelContentIds: this.channelContentIds
-      })
-      .then(function(response) {
-        var res = response.data;
+    utils.loading(this, true);
+    $api.post($url + "/actions/create", {
+      siteId: $this.siteId,
+      channelContentIds: this.channelContentIdsString
+    }).then(function(response) {
+      var res = response.data;
 
-        parent.openPageCreateStatus();
-      })
-      .catch(function(error) {
-        utils.error($this, error);
-      })
-      .then(function() {
-        $this.loading = false;
-      });
+      parent.$vue.openPageCreateStatus();
+    }).catch(function(error) {
+      utils.error($this, error);
+    }).then(function() {
+      utils.loading($this, false);
+    });
   },
 
   btnLayerClick: function(options) {
-    this.pageAlert = null;
     var url = "contentsLayer" + options.name + ".cshtml?siteId=" + this.siteId;
 
     if (options.channelId) {
@@ -244,6 +258,7 @@ var methods = {
     } else {
       url += "&channelId=" + this.channelId;
     }
+    url += '&page=' + this.page;
     if (options.contentId) {
       url += "&contentId=" + options.contentId;
     }
@@ -258,15 +273,10 @@ var methods = {
         url += "&channelContentIds=" + this.channelContentIdsString;
       }
     }
-    url += "&returnUrl=" + encodeURIComponent(location.href);
 
-    utils.openLayer({
-      title: options.title,
-      url: url,
-      full: options.full,
-      width: options.width ? options.width : 700,
-      height: options.height ? options.height : 500
-    });
+    options.url = url;
+
+    utils.openLayer(options);
   },
 
   btnContentViewClick: function(contentId) {
@@ -301,25 +311,14 @@ var methods = {
     document.documentElement.scrollTop = document.body.scrollTop = 0;
   },
 
-  getPluginMenuUrl: function(pluginMenu) {
-    return pluginMenu.href + "&returnUrl=" + encodeURIComponent(location.href);
-  },
-
-  btnPluginMenuClick: function(pluginMenu) {
-    if (pluginMenu.target === "_layer") {
-      utils.openLayer({
-        title: pluginMenu.text,
-        url: this.getPluginMenuUrl(pluginMenu),
-        full: true
-      });
+  tableRowClassName: function(scope) {
+    if (this.multipleSelection.indexOf(scope.row) !== -1) {
+      return 'current-row';
     }
+    return '';
   },
 
-  treeIconClick: function(data) {
-    return false;
-  },
-
-  handleNodeClick: function(data) {
+  handleChannelClick: function(data) {
     this.channelId = data.value;
     this.apiList(data.value, 1);
   },
@@ -333,8 +332,48 @@ var methods = {
     this.multipleSelection = val;
   },
 
+  toggleSelection: function(row) {
+    this.$refs.multipleTable.toggleRowSelection(row);
+  },
+
   handleCurrentChange: function(val) {
     this.apiList(this.channelId, val);
+  },
+
+  handleColumnsChange: function() {
+    var listColumns = _.filter(this.columns, function(o) { return o.isList; });
+    var attributeNames = _.map(listColumns, function(column) {
+      return column.attributeName;
+    });
+    this.apiColumns(attributeNames);
+  },
+
+  getColumnWidth: function(column) {
+    if (column.attributeName === 'Sequence' || column.attributeName === 'Id' || column.attributeName === 'Hits') {
+      return 70;
+    }
+    if (column.attributeName === 'ImageUrl') {
+      return 100;
+    }
+    if (column.attributeName === 'Guid') {
+      return 310;
+    }
+    if (column.attributeName === 'Title') {
+      return '';
+    }
+    return $defaultWidth;
+  },
+
+  getColumnMinWidth: function(column) {
+    if (column.attributeName === 'Title') {
+      return 400;
+    }
+    return '';
+  },
+
+  getUrl: function(virtualUrl) {
+    if (!virtualUrl) return '';
+    return _.replace(virtualUrl, '@/', this.siteUrl + '/');
   }
 };
 
@@ -343,6 +382,13 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   computed: {
+    isAdvanced: function() {
+      if (this.checkedLevels.length !== this.advancedForm.checkedLevels.length) return true;
+      if (this.advancedForm.isTop || this.advancedForm.isRecommend || this.advancedForm.isHot || this.advancedForm.isColor) return true;
+      if (this.advancedForm.groupNames.length > 0 || this.advancedForm.tagNames.length > 0) return true;
+      return false;
+    },
+
     isContentChecked: function() {
       return this.multipleSelection.length > 0;
     },
@@ -363,10 +409,7 @@ var $vue = new Vue({
       var retVal = [];
       for (var i = 0; i < this.multipleSelection.length; i++) {
         var content = this.multipleSelection[i];
-        retVal.push({
-          channelId: content.channelId,
-          id: content.id
-        });
+        retVal.push(content.channelId + '_' + content.id);
       }
       return retVal.join(",");
     }
@@ -377,6 +420,6 @@ var $vue = new Vue({
     }
   },
   created: function() {
-    this.apiConfig();
+    this.apiTree(false);
   }
 });

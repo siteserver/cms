@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
@@ -33,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "channelId", "contentIdCollection");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
-            _contentIdList = StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
+            _contentIdList = Utilities.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
 
             if (IsPostBack) return;
 
@@ -48,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBoxAsync(LbChannelId, Site, psId, ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult(), AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
+            CrossSiteTransUtility.LoadChannelIdListBoxAsync(LbChannelId, Site, psId, DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult(), AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -64,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var targetChannelId = TranslateUtils.ToInt(listItem.Value);
                         if (targetChannelId != 0)
                         {
-                            var targetChannelInfo = ChannelManager.GetChannelAsync(targetSiteId, targetChannelId).GetAwaiter().GetResult();
+                            var targetChannelInfo = DataProvider.ChannelRepository.GetAsync(targetChannelId).GetAwaiter().GetResult();
                             foreach (var contentId in _contentIdList)
                             {
                                 var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channelId, contentId).GetAwaiter().GetResult();

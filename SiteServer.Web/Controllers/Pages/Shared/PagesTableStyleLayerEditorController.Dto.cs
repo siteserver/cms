@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Repositories;
@@ -81,7 +82,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
             {
                 if (request.IsRapid)
                 {
-                    foreach (var rapidValue in TranslateUtils.StringCollectionToStringCollection(request.RapidValues))
+                    foreach (var rapidValue in Utilities.GetStringList(request.RapidValues))
                     {
                         var itemInfo = new TableStyleItem
                         {
@@ -143,7 +144,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
             {
                 if (request.IsRapid)
                 {
-                    foreach (var rapidValue in TranslateUtils.StringCollectionToStringCollection(request.RapidValues))
+                    foreach (var rapidValue in Utilities.GetStringList(request.RapidValues))
                     {
                         var itemInfo = new TableStyleItem
                         {

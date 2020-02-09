@@ -41,7 +41,7 @@ namespace SiteServer.CMS.Core
             {
                 var arrText = new SortedList();
 
-                var tagList = await DataProvider.ContentTagRepository.GetTagListAsync(siteId);
+                var tagList = await DataProvider.ContentTagRepository.GetTagNamesAsync(siteId);
                 if (tagList.Any())
                 {
                     foreach (var line in tagList)

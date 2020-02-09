@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
@@ -51,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
             _channelId = AuthRequest.GetQueryInt("channelId");
             if (_channelId < 0) _channelId = -_channelId;
 
-            var channelInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
+            var channelInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
             _contentId = AuthRequest.GetQueryInt("id");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
@@ -68,21 +69,21 @@ namespace SiteServer.BackgroundPages.Cms
             LtlTitle.Text = _content.Title;
             LtlChannelName.Text = channelInfo.ChannelName;
 
-            LtlTags.Text = TranslateUtils.ObjectCollectionToString(_content.TagNames);
+            LtlTags.Text = Utilities.ToString(_content.TagNames);
             if (string.IsNullOrEmpty(LtlTags.Text))
             {
                 PhTags.Visible = false;
             }
 
-            LtlContentGroup.Text = TranslateUtils.ObjectCollectionToString(_content.GroupNames);
+            LtlContentGroup.Text = Utilities.ToString(_content.GroupNames);
             if (string.IsNullOrEmpty(LtlContentGroup.Text))
             {
                 PhContentGroup.Visible = false;
             }
 
             LtlLastEditDate.Text = DateUtils.GetDateAndTimeString(_content.LastEditDate);
-            LtlAddUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(_content.AddUserName).GetAwaiter().GetResult();
-            LtlLastEditUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(_content.LastEditUserName).GetAwaiter().GetResult();
+            //LtlAddUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(_content.AddUserName).GetAwaiter().GetResult();
+            //LtlLastEditUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(_content.LastEditUserName).GetAwaiter().GetResult();
 
             LtlContentLevel.Text = CheckManager.GetCheckState(Site, _content);
 
@@ -95,7 +96,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (referenceContentInfo != null)
                 {
                     var pageUrl = PageUtility.GetContentUrlAsync(referenceSite, referenceContentInfo, true).GetAwaiter().GetResult();
-                    var referenceNodeInfo = ChannelManager.GetChannelAsync(referenceContentInfo.SiteId, referenceContentInfo.ChannelId).GetAwaiter().GetResult();
+                    var referenceNodeInfo = DataProvider.ChannelRepository.GetAsync(referenceContentInfo.ChannelId).GetAwaiter().GetResult();
                     var addEditUrl =
                         WebUtils.GetContentAddEditUrl(referenceSite.Id,
                             referenceNodeInfo.Id, _content.ReferenceId, AuthRequest.GetQueryString("ReturnUrl"));

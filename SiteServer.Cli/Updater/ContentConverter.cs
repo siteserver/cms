@@ -32,6 +32,9 @@ namespace SiteServer.Cli.Updater
         [JsonProperty("contentGroupNameCollection")]
         public string ContentGroupNameCollection { get; set; }
 
+        [JsonProperty("groupNameCollection")]
+        public string GroupNameCollection { get; set; }
+
         [JsonProperty("tags")]
         public string Tags { get; set; }
 
@@ -159,7 +162,11 @@ namespace SiteServer.Cli.Updater
                     }
                     else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
                     {
-                        tableColumnInfo.AttributeName = ContentAttribute.GroupNameCollection;
+                        tableColumnInfo.AttributeName = nameof(Abstractions.Content.GroupNames);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(GroupNameCollection)))
+                    {
+                        tableColumnInfo.AttributeName = nameof(Abstractions.Content.GroupNames);
                     }
 
                     if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
@@ -177,7 +184,8 @@ namespace SiteServer.Cli.Updater
             {
                 {nameof(Abstractions.Content.ChannelId), nameof(NodeId)},
                 {nameof(Abstractions.Content.SiteId), nameof(PublishmentSystemId)},
-                {ContentAttribute.GroupNameCollection, nameof(ContentGroupNameCollection)}
+                {nameof(Abstractions.Content.GroupNames), nameof(ContentGroupNameCollection)},
+                {nameof(Abstractions.Content.GroupNames), nameof(GroupNameCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;
@@ -190,11 +198,11 @@ namespace SiteServer.Cli.Updater
                 content = content.Replace("@upload", "@/upload");
                 row[ContentAttribute.Content] = content;
             }
-            if (row.TryGetValue(ContentAttribute.SettingsXml, out contentObj))
+            if (row.TryGetValue("SettingsXml", out contentObj))
             {
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
-                row[ContentAttribute.SettingsXml] = content;
+                row[ContentAttribute.ExtendValues] = content;
             }
 
             return row;

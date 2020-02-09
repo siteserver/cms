@@ -1,10 +1,8 @@
 var $url = '/pages/syncDatabase';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: 'prepare'
-};
+});
 
 var methods = {
   updateDatabase: function () {
@@ -29,6 +27,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.pageLoad = true;
+    utils.loading(this, false);
   }
 });

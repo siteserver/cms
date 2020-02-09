@@ -1,9 +1,7 @@
 ﻿var $url = '/pages/settings/admin';
 var $urlUpload = apiUrl + '/pages/settings/admin/actions/import';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   drawer: false,
   items: null,
   count: null,
@@ -23,7 +21,7 @@ var data = {
   uploadPanel: false,
   uploadLoading: false,
   uploadList: []
-};
+});
 
 var methods = {
   apiGetConfig: function () {
@@ -42,7 +40,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
@@ -57,7 +55,7 @@ var methods = {
   btnPermissionsClick: function(row) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.get($url + '/permissions/' + row.id).then(function (response) {
       var res = response.data;
 
@@ -115,6 +113,25 @@ var methods = {
     });
   },
 
+  apiDelete: function (item) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.delete($url, {
+      data: {
+        id: item.id
+      }
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.items.splice($this.items.indexOf(item), 1);
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
   btnDeleteClick: function (item) {
     var $this = this;
 
@@ -122,21 +139,25 @@ var methods = {
       title: '删除管理员',
       text: '此操作将删除管理员 ' + item.userName + '，确定吗？',
       callback: function () {
-        utils.loading($this, true);
-        $api.delete($url, {
-          data: {
-            id: item.id
-          }
-        }).then(function (response) {
-          var res = response.data;
-    
-          $this.items.splice($this.items.indexOf(item), 1);
-        }).catch(function (error) {
-          utils.error($this, error);
-        }).then(function () {
-          utils.loading($this, false);
-        });
+        $this.apiDelete(item);
       }
+    });
+  },
+
+  apiLock: function (item) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/lock', {
+      id: item.id
+    }).then(function (response) {
+      var res = response.data;
+
+      item.locked = true;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
 
@@ -147,19 +168,25 @@ var methods = {
       title: '锁定管理员',
       text: '此操作将锁定管理员 ' + item.userName + '，确定吗？',
       callback: function () {
-        utils.loading($this, true);
-        $api.post($url + '/actions/lock', {
-          id: item.id
-        }).then(function (response) {
-          var res = response.data;
-    
-          item.locked = true;
-        }).catch(function (error) {
-          utils.error($this, error);
-        }).then(function () {
-          utils.loading($this, false);
-        });
+        $this.apiLock(item);
       }
+    });
+  },
+
+  apiUnLock: function (item) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/unLock', {
+      id: item.id
+    }).then(function (response) {
+      var res = response.data;
+
+      item.locked = false;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
 
@@ -170,18 +197,7 @@ var methods = {
       title: '解锁管理员',
       text: '此操作将解锁管理员 ' + item.userName + '，确定吗？',
       callback: function () {
-        utils.loading($this, true);
-        $api.post($url + '/actions/unLock', {
-          id: item.id
-        }).then(function (response) {
-          var res = response.data;
-    
-          item.locked = false;
-        }).catch(function (error) {
-          utils.error($this, error);
-        }).then(function () {
-          utils.loading($this, false);
-        });
+        $this.apiUnLock(item);
       }
     });
   },
@@ -189,7 +205,7 @@ var methods = {
   btnSearchClick() {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.get($url, {
       params: this.formInline
     }).then(function (response) {
@@ -205,7 +221,7 @@ var methods = {
   },
 
   btnExportClick: function() {
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/actions/export').then(function (response) {
       var res = response.data;
 
@@ -273,7 +289,7 @@ var methods = {
   },
 
   uploadError: function(err) {
-    utils.loading($this, false);
+    utils.loading(this, false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }

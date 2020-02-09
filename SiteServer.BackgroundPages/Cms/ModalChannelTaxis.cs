@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
@@ -26,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "ChannelIDCollection");
 
-            _channelIdList = StringUtils.GetIntList(AuthRequest.GetQueryString("channelIDCollection"));
+            _channelIdList = Utilities.GetIntList(AuthRequest.GetQueryString("channelIDCollection"));
 
             if (IsPostBack) return;
 
@@ -47,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
                     DataProvider.ChannelRepository.UpdateTaxisAsync(SiteId, channelId, isSubtract).GetAwaiter().GetResult();
                 }
 
-                AuthRequest.AddSiteLogAsync(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"), $"栏目:{ChannelManager.GetChannelNameAsync(SiteId, channelId).GetAwaiter().GetResult()}").GetAwaiter().GetResult();
+                AuthRequest.AddSiteLogAsync(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"), $"栏目:{DataProvider.ChannelRepository.GetChannelNameAsync(SiteId, channelId).GetAwaiter().GetResult()}").GetAwaiter().GetResult();
             }
             LayerUtils.Close(Page);
         }

@@ -1,22 +1,11 @@
-﻿var $url = "/pages/cms/editor";
+﻿var $url = "/pages/cms/editor/editor";
 
-function insertHtml(attributeName, html)
-{
-    if (html)
-    {
-      // var editor = new FroalaEditor('textarea#' + attributeName);
-      // editor.html.insert(html);
-      UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
-    }
-}
-
-var data = {
+var data = utils.initData({
+  page: utils.getQueryInt("page"),
   siteId: utils.getQueryInt("siteId"),
   channelId: utils.getQueryInt("channelId"),
   contentId: utils.getQueryInt("contentId"),
-  returnUrl: utils.getQueryString('returnUrl'),
   mainHeight: '',
-  pageLoad: false,
   isSettings: true,
   sideType: "first",
   collapseType: "0",
@@ -25,43 +14,59 @@ var data = {
   channel: null,
   groupNames: null,
   tagNames: null,
-  styles: null,
   checkedLevels: null,
-  content: null,
   siteOptions: null,
   channelOptions: null,
+  styles: null,
+  form: null,
 
   transForm: null,
   translations: [],
   isPreviewSaving: false
-};
+});
 
 var methods = {
+  insertEditor: function(attributeName, html)
+  {
+    if (html)
+    {
+      UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
+    }
+  },
+
+  insertText: function(attributeName, no, text) {
+    var count = this.form[utils.getCountName(attributeName)];
+    if (count < no) {
+      this.form[utils.getCountName(attributeName)] = no;
+    }
+    this.form[utils.getExtendName(attributeName, no)] = text;
+    this.form = _.assign({}, this.form);
+  },
+
   getConfig: function() {
     var $this = this;
 
     window.onresize = $this.winResize;
     window.onresize();
 
-    $api
-      .get($url, {
-        params: {
-          siteId: $this.siteId,
-          channelId: $this.channelId,
-          contentId: $this.contentId
-        }
-      })
-      .then(function(response) {
-        var res = response.data;
+    $api.get($url, {
+      params: {
+        siteId: $this.siteId,
+        channelId: $this.channelId,
+        contentId: $this.contentId
+      }
+    })
+    .then(function(response) {
+      var res = response.data;
 
-        $this.loadEditor(res);
-      })
-      .catch(function(error) {
-        utils.error($this, error);
-      })
-      .then(function() {
-        $this.pageLoad = true;
-      });
+      $this.loadEditor(res);
+    })
+    .catch(function(error) {
+      utils.error($this, error);
+    })
+    .then(function() {
+      utils.loading($this, false);
+    });
   },
 
   loadEditor: function(res) {
@@ -70,20 +75,23 @@ var methods = {
     this.groupNames = res.groupNames;
     this.tagNames = res.tagNames;
     this.checkedLevels = res.checkedLevels;
-    this.content = res.content;
+    
     this.siteOptions = res.siteOptions;
     this.channelOptions = res.channelOptions;
-    this.styles = [];
+    // this.styles = [];
+    // this.content = res.content;
+    // for (let i = 0; i < res.styles.length; i++) {
+    //   var style = res.styles[i];
+    //   if (this.contentId) {
+    //     style.value = this.content[_.camelCase(style.attributeName)];
+    //   } else {
+    //     style.value = style.defaultValue || '';
+    //   }
+    //   this.styles.push(style);
+    // }
 
-    for (let i = 0; i < res.styles.length; i++) {
-      var style = res.styles[i];
-      if (this.contentId) {
-        style.value = this.content[_.camelCase(style.attributeName)];
-      } else {
-        style.value = style.defaultValue || '';
-      }
-      this.styles.push(style);
-    }
+    this.styles = res.styles;
+    this.form = _.assign({}, res.content);
 
     var $this = this;
     setTimeout(function () {
@@ -115,7 +123,7 @@ var methods = {
   },
 
   btnLayerClick: function(options) {
-    var url = "editorLayer" + options.name + ".cshtml?siteId=" + this.siteId + "&channelId=" + this.channelId;
+    var url = "../Shared/" + options.name + ".cshtml?siteId=" + this.siteId + "&channelId=" + this.channelId;
 
     if (options.attributeName) {
       url += "&attributeName=" + options.attributeName;
@@ -138,7 +146,32 @@ var methods = {
   },
 
   btnSaveClick: function() {
-    utils.closeLayer(true);
+    console.log(parent.$vue);
+    if (UE) {
+      $.each(UE.instants, function (index, editor) {
+        editor.sync();
+      });
+    }
+
+    var $this = this;
+    utils.loading(this, true);
+    $api.put($url, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      contentId: this.contentId,
+      content: this.form
+    }).then(function(response) {
+      var res = response.data;
+
+      parent.$vue.apiList($this.channelId, $this.page, '内容保存成功！');
+      utils.closeLayer();
+    })
+    .catch(function(error) {
+      utils.error($this, error);
+    })
+    .then(function() {
+      utils.loading($this, false);
+    });
   },
 
   btnTransAddClick: function() {
@@ -172,18 +205,13 @@ var methods = {
       });
     }
 
-    for (let i = 0; i < this.styles.length; i++) {
-      var style = this.styles[i];
-      this.content[_.camelCase(style.attributeName)] = style.value;
-    }
-
     var $this = this;
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/actions/preview', {
       siteId: this.siteId,
       channelId: this.channelId,
       contentId: this.contentId,
-      content: this.content
+      content: this.form
     }).then(function(response) {
       var res = response.data;
 
@@ -196,10 +224,22 @@ var methods = {
     .then(function() {
       utils.loading($this, false);
     });
-  }
+  },
+
+  btnExtendAddClick: function(style) {
+    var no = this.form[utils.getCountName(style.attributeName)] + 1;
+    this.form[utils.getCountName(style.attributeName)] = no;
+    this.form[utils.getExtendName(style.attributeName, no)] = '';
+  },
+
+  btnExtendRemoveClick: function(style) {
+    var no = this.form[utils.getCountName(style.attributeName)] - 1;
+    this.form[utils.getCountName(style.attributeName)] = no;
+    this.form[utils.getExtendName(style.attributeName, no)] = '';
+  },
 };
 
-new Vue({
+var $vue = new Vue({
   el: "#main",
   data: data,
   methods: methods,

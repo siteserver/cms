@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin.Impl;
 
@@ -73,7 +74,7 @@ namespace SiteServer.CMS.Plugin
         public static async Task<List<ServiceImpl>> GetContentPluginsAsync(Channel channel, bool includeContentTable)
         {
             var list = new List<ServiceImpl>();
-            var pluginIds = new List<string>(channel.ContentRelatedPluginIdList);
+            var pluginIds = Utilities.GetStringList(channel.ContentRelatedPluginIds);
             if (!string.IsNullOrEmpty(channel.ContentModelPluginId))
             {
                 pluginIds.Add(channel.ContentModelPluginId);
@@ -93,13 +94,13 @@ namespace SiteServer.CMS.Plugin
 
         public static List<string> GetContentPluginIds(Channel channel)
         {
-            if (channel.ContentRelatedPluginIdList.Any() &&
+            if (channel.ContentRelatedPluginIds != null && channel.ContentRelatedPluginIds.Any() &&
                 string.IsNullOrEmpty(channel.ContentModelPluginId))
             {
                 return null;
             }
 
-            var pluginIds = new List<string>(channel.ContentRelatedPluginIdList);
+            var pluginIds = Utilities.GetStringList(channel.ContentRelatedPluginIds);
             if (!string.IsNullOrEmpty(channel.ContentModelPluginId))
             {
                 pluginIds.Add(channel.ContentModelPluginId);

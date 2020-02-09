@@ -20,7 +20,6 @@ namespace SiteServer.CMS.Core.Office
         public class ConverterSettings
         {
             public bool IsFirstLineTitle { get; set; }
-            public bool IsFirstLineRemove { get; set; }
             public bool IsClearFormat { get; set; }
             public bool IsFirstLineIndent { get; set; }
             public bool IsClearFontSize { get; set; }
@@ -32,7 +31,7 @@ namespace SiteServer.CMS.Core.Office
             public string ImageDirectoryUrl { get; set; }
         }
 
-        public static async Task<(string title, string content)> GetWordAsync(Site siteInfo, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath)
+        public static async Task<(string title, string content)> GetWordAsync(Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath)
         {
             string imageDirectoryPath;
             string imageDirectoryUrl;
@@ -51,7 +50,6 @@ namespace SiteServer.CMS.Core.Office
             var settings = new ConverterSettings
             {
                 IsFirstLineTitle = isFirstLineTitle,
-                IsFirstLineRemove = isFirstLineRemove,
                 IsClearFormat = isClearFormat,
                 IsFirstLineIndent = isFirstLineIndent,
                 IsClearFontSize = isClearFontSize,
@@ -195,10 +193,6 @@ namespace SiteServer.CMS.Core.Office
             {
                 var contentTitle = RegexUtils.GetInnerContent("p", content);
                 contentTitle = StringUtils.StripTags(contentTitle);
-                if (!string.IsNullOrEmpty(contentTitle) && settings.IsFirstLineRemove)
-                {
-                    content = StringUtils.ReplaceFirst(contentTitle, content, string.Empty);
-                }
                 if (!string.IsNullOrEmpty(contentTitle))
                 {
                     contentTitle = contentTitle.Trim();
@@ -230,11 +224,6 @@ namespace SiteServer.CMS.Core.Office
             if (settings.IsClearFontFamily)
             {
                 content = HtmlClearUtils.ClearFontFamily(content);
-            }
-
-            if (settings.IsFirstLineRemove)
-            {
-                content = StringUtils.ReplaceFirst(title, content, string.Empty);
             }
 
             if (string.IsNullOrEmpty(title))

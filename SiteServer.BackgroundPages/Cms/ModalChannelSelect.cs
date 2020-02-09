@@ -7,6 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -69,7 +70,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (AuthRequest.IsQueryExists("channelId"))
                 {
                     var channelId = AuthRequest.GetQueryInt("channelId");
-                    var nodeNames = ChannelManager.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult();
+                    var nodeNames = DataProvider.ChannelRepository.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult();
 
                     if (!string.IsNullOrEmpty(_jsMethod))
                     {
@@ -78,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else
                     {
-                        var pageUrl = PageUtility.GetChannelUrlAsync(Site, ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult(), false).GetAwaiter().GetResult();
+                        var pageUrl = PageUtility.GetChannelUrlAsync(Site, DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult(), false).GetAwaiter().GetResult();
                         if (_isProtocol)
                         {
                             pageUrl = PageUtils.AddProtocolToUrl(pageUrl);
@@ -90,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var nodeInfo = ChannelManager.GetChannelAsync(SiteId, SiteId).GetAwaiter().GetResult();
+                    var nodeInfo = DataProvider.ChannelRepository.GetAsync(SiteId).GetAwaiter().GetResult();
 
                     var linkUrl = PageUtils.GetCmsUrl(SiteId, nameof(ModalChannelSelect), new NameValueCollection
                     {
@@ -108,7 +109,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BindGrid()
         {
-            var channelIdList = ChannelManager.GetChannelIdListAsync(ChannelManager.GetChannelAsync(SiteId, SiteId).GetAwaiter().GetResult(), EScopeType.Children, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
+            var channelIdList = DataProvider.ChannelRepository.GetChannelIdsAsync(DataProvider.ChannelRepository.GetAsync(SiteId).GetAwaiter().GetResult(), EScopeType.Children).GetAwaiter().GetResult();
             RptChannel.DataSource = channelIdList;
             RptChannel.ItemDataBound += rptChannel_ItemDataBound;
             RptChannel.DataBind();
@@ -122,7 +123,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (!IsDescendantOwningChannelId(channelId)) e.Item.Visible = false;
             }
-            var nodeInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+            var nodeInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 

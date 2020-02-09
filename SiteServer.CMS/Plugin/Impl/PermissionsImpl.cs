@@ -4,10 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
-
 
 namespace SiteServer.CMS.Plugin.Impl
 {
@@ -59,8 +57,8 @@ namespace SiteServer.CMS.Plugin.Impl
                     foreach (var dictKey in dict.Keys)
                     {
                         var kvp = ParseChannelPermissionDictKey(dictKey);
-                        var channelInfo = await ChannelManager.GetChannelAsync(kvp.Key, kvp.Value);
-                        _channelIdList.AddRange(await ChannelManager.GetChannelIdListAsync(channelInfo, EScopeType.All, string.Empty, string.Empty, string.Empty));
+                        var channelInfo = await DataProvider.ChannelRepository.GetAsync(kvp.Value);
+                        _channelIdList.AddRange(await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo, EScopeType.All));
                     }
                 }
 
@@ -101,11 +99,11 @@ namespace SiteServer.CMS.Plugin.Impl
 
             if (await IsSuperAdminAsync())
             {
-                siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
+                siteIdList = (await DataProvider.SiteRepository.GetSiteIdListAsync()).ToList();
             }
             else if (await IsSiteAdminAsync())
             {
-                if (_adminInfo != null)
+                if (_adminInfo?.SiteIds != null)
                 {
                     foreach (var siteId in _adminInfo.SiteIds)
                     {
@@ -136,7 +134,7 @@ namespace SiteServer.CMS.Plugin.Impl
         {
             if (await IsSiteAdminAsync(siteId))
             {
-                return await ChannelManager.GetChannelIdListAsync(siteId);
+                return await DataProvider.ChannelRepository.GetChannelIdListAsync(siteId);
             }
 
             var siteChannelIdList = new List<int>();
@@ -147,9 +145,9 @@ namespace SiteServer.CMS.Plugin.Impl
                 var dictPermissions = dict[dictKey];
                 if (kvp.Key == siteId && dictPermissions.Any(permissions.Contains))
                 {
-                    var channelInfo = await ChannelManager.GetChannelAsync(kvp.Key, kvp.Value);
+                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(kvp.Value);
 
-                    var channelIdList = await ChannelManager.GetChannelIdListAsync(channelInfo, EScopeType.All);
+                    var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo, EScopeType.All);
 
                     foreach (var channelId in channelIdList)
                     {
@@ -197,7 +195,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 var dict = await GetChannelPermissionDictAsync();
                 if (dict.ContainsKey(dictKey) && await HasChannelPermissionsAsync(dict[dictKey], permissions)) return true;
 
-                var parentChannelId = await ChannelManager.GetParentIdAsync(siteId, channelId);
+                var parentChannelId = await DataProvider.ChannelRepository.GetParentIdAsync(siteId, channelId);
                 channelId = parentChannelId;
             }
         }
@@ -418,7 +416,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 return true;
             }
 
-            var parentChannelId = await ChannelManager.GetParentIdAsync(siteId, channelId);
+            var parentChannelId = await DataProvider.ChannelRepository.GetParentIdAsync(siteId, channelId);
             return await HasChannelPermissionsAsync(siteId, parentChannelId);
         }
 
@@ -486,8 +484,8 @@ namespace SiteServer.CMS.Plugin.Impl
                 return true;
             }
 
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-            var channelIdList = await ChannelManager.GetChannelIdListAsync(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo, EScopeType.Descendant);
             foreach (var theChannelId in channelIdList)
             {
                 if (await IsOwningChannelIdAsync(theChannelId))
@@ -496,19 +494,6 @@ namespace SiteServer.CMS.Plugin.Impl
                 }
             }
             return false;
-        }
-
-        public async Task<int> GetAdminIdAsync(int siteId, int channelId)
-        {
-            var config = await DataProvider.ConfigRepository.GetAsync();
-            if (!config.IsViewContentOnlySelf
-                || await IsSuperAdminAsync()
-                || await IsSiteAdminAsync()
-                || await HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentCheckLevel1))
-            {
-                return 0;
-            }
-            return _adminInfo.Id;
         }
 
         public static string GetChannelPermissionDictKey(int siteId, int channelId)

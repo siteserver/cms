@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
+using Datory.Utils;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -13,45 +14,45 @@ namespace SiteServer.CMS.Repositories
     {
         private string GetCacheKeyByUserId(int userId)
         {
-            return CacheManager.GetEntityKey(TableName, "userId", userId.ToString());
+            return Caching.GetEntityKey(TableName, "userId", userId.ToString());
         }
 
         private string GetCacheKeyByUserName(string userName)
         {
-            return CacheManager.GetEntityKey(TableName, "userName", userName);
+            return Caching.GetEntityKey(TableName, "userName", userName);
         }
 
         private string GetCacheKeyByMobile(string mobile)
         {
-            return CacheManager.GetEntityKey(TableName, "mobile", mobile);
+            return Caching.GetEntityKey(TableName, "mobile", mobile);
         }
 
         private string GetCacheKeyByEmail(string email)
         {
-            return CacheManager.GetEntityKey(TableName, "email", email);
+            return Caching.GetEntityKey(TableName, "email", email);
         }
 
-        private async Task RemoveCacheAsync(Administrator admin)
+        private List<string> GetCacheKeys(Administrator admin)
         {
-            if (admin == null) return;
+            if (admin == null) return new List<string>();
 
-            var cacheKey = GetCacheKeyByUserId(admin.Id);
-            await _cache.RemoveAsync(cacheKey);
-
-            cacheKey = GetCacheKeyByUserName(admin.UserName);
-            await _cache.RemoveAsync(cacheKey);
+            var keys = new List<string>
+            {
+                GetCacheKeyByUserId(admin.Id), 
+                GetCacheKeyByUserName(admin.UserName)
+            };
 
             if (!string.IsNullOrEmpty(admin.Mobile))
             {
-                cacheKey = GetCacheKeyByMobile(admin.Mobile);
-                await _cache.RemoveAsync(cacheKey);
+                keys.Add(GetCacheKeyByMobile(admin.Mobile));
             }
 
             if (!string.IsNullOrEmpty(admin.Email))
             {
-                cacheKey = GetCacheKeyByEmail(admin.Email);
-                await _cache.RemoveAsync(cacheKey);
+                keys.Add(GetCacheKeyByEmail(admin.Email));
             }
+
+            return keys;
         }
 
         public async Task<Administrator> GetByAccountAsync(string account)
@@ -105,11 +106,11 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        public async Task<string> GetDisplayNameAsync(string userName)
+        public async Task<string> GetDisplayNameAsync(int adminId)
         {
-            var administrator = await GetByUserNameAsync(userName);
-            return administrator == null ? userName :
-                string.IsNullOrEmpty(administrator.DisplayName) ? userName : administrator.DisplayName;
+            var administrator = await GetByUserIdAsync(adminId);
+            return administrator == null ? string.Empty :
+                string.IsNullOrEmpty(administrator.DisplayName) ? administrator.UserName : administrator.DisplayName;
         }
 
         public async Task<List<int>> GetLatestTop10SiteIdListAsync(List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
@@ -180,7 +181,7 @@ namespace SiteServer.CMS.Repositories
             }
             else
             {
-                roleNames += TranslateUtils.ObjectCollectionToString(roleNameList);
+                roleNames += Utilities.ToString(roleNameList);
             }
             return roleNames;
         }

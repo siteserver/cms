@@ -1,9 +1,7 @@
 ﻿var $url = '/pages/settings/siteTemplates';
 var $urlUpload = apiUrl + '/pages/settings/siteTemplates/actions/upload';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: null,
   siteTemplateInfoList: null,
   fileNameList: null,
@@ -13,7 +11,7 @@ var data = {
   uploadPanel: false,
   uploadLoading: false,
   uploadList: []
-};
+});
 
 var error = null;
 
@@ -31,7 +29,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
@@ -50,7 +48,7 @@ var methods = {
   btnZipClick: function(row) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/actions/zip', {
       directoryName: row.directoryName
     }).then(function (response) {
@@ -81,7 +79,7 @@ var methods = {
   apiDelete: function (row) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.delete($url, {
       data: {
         directoryName: row.directoryName
@@ -102,7 +100,7 @@ var methods = {
   btnUnZipClick: function(row) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/actions/unZip', {
       fileName: row
     }).then(function (response) {
@@ -141,7 +139,7 @@ var methods = {
   apiDeleteFile: function (row) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.delete($url, {
       data: {
         fileName: row
@@ -176,7 +174,7 @@ var methods = {
   },
 
   uploadSuccess: function(res, file) {
-    utils.loading($this, false);
+    utils.loading(this, false);
     this.siteTemplateInfoList = res.siteTemplateInfoList;
     this.fileNameList = res.fileNameList;
     this.siteTemplateUrl = res.siteTemplateUrl;
@@ -185,7 +183,7 @@ var methods = {
   },
 
   uploadError: function(err) {
-    utils.loading($this, false);
+    utils.loading(this, false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }

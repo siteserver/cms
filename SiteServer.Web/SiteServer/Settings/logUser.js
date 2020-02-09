@@ -1,8 +1,6 @@
 ﻿var $url = '/pages/settings/logUser';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   items: null,
   count: null,
   formInline: {
@@ -14,7 +12,7 @@ var data = {
     offset: 0,
     limit: 30
   }
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -28,7 +26,22 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
+    });
+  },
+
+  apiDelete: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.delete($url).then(function (response) {
+      var res = response.data;
+
+      $this.items = [];
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
 
@@ -39,17 +52,7 @@ var methods = {
       title: '清空用户日志',
       text: '此操作将会清空用户日志，且数据无法恢复，请谨慎操作！',
       callback: function () {
-
-        utils.loading($this, true);
-        $api.delete($url).then(function (response) {
-          var res = response.data;
-    
-          $this.items = [];
-        }).catch(function (error) {
-          utils.error($this, error);
-        }).then(function () {
-          utils.loading($this, false);
-        });
+        $this.apiDelete();
       }
     });
   },
@@ -61,7 +64,7 @@ var methods = {
     this.formInline.offset = 0;
     this.formInline.limit = 30;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url, this.formInline).then(function (response) {
       var res = response.data;
 
@@ -80,7 +83,7 @@ var methods = {
     this.formInline.currentValue = val;
     this.formInline.offset = this.formInline.limit * (val - 1);
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url, this.formInline).then(function (response) {
       var res = response.data;
 

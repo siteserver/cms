@@ -2,17 +2,17 @@
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
-    public class SpecialRepository : IRepository
+    public partial class SpecialRepository : IRepository
     {
         private readonly Repository<Special> _repository;
 
         public SpecialRepository()
         {
-            _repository = new Repository<Special>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            _repository = new Repository<Special>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -24,21 +24,21 @@ namespace SiteServer.CMS.Repositories
         public async Task<int> InsertAsync(Special special)
         {
             var specialId = await _repository.InsertAsync(special);
-            SpecialManager.RemoveCache(special.SiteId);
+            RemoveCache(special.SiteId);
             return specialId;
         }
 
         public async Task UpdateAsync(Special special)
         {
             await _repository.UpdateAsync(special);
-            SpecialManager.RemoveCache(special.SiteId);
+            RemoveCache(special.SiteId);
         }
 
         public async Task DeleteAsync(int siteId, int specialId)
         {
             if (specialId <= 0) return;
             await _repository.DeleteAsync(specialId);
-            SpecialManager.RemoveCache(siteId);
+            RemoveCache(siteId);
         }
 
         public async Task<bool> IsTitleExistsAsync(int siteId, string title)
@@ -57,7 +57,7 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        public async Task<IEnumerable<Special>> GetSpecialListAsync(int siteId)
+        public async Task<List<Special>> GetSpecialListAsync(int siteId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(nameof(Special.SiteId), siteId)
@@ -65,7 +65,7 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        public async Task<IEnumerable<Special>> GetSpecialListAsync(int siteId, string keyword)
+        public async Task<List<Special>> GetSpecialListAsync(int siteId, string keyword)
         {
             return await _repository.GetAllAsync(Q
                 .Where(nameof(Special.SiteId), siteId)

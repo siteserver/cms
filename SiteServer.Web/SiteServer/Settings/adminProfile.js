@@ -2,17 +2,15 @@
 var $pageTypeAdmin = 'admin';
 var $pageTypeUser = 'user';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: utils.getQueryString('pageType'),
-  userId: parseInt(utils.getQueryString('userId') || '0'),
+  userId: utils.getQueryInt('userId') || '0',
   adminInfo: null,
   password: null,
   confirmPassword: null,
   uploadUrl: null,
   files: []
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -26,7 +24,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
@@ -45,9 +43,9 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    utils.loading($this, true);
-    $api.post($url + '?userId=' + $this.userId, _.assign({}, $this.adminInfo, {
-      password: $this.password
+    utils.loading(this, true);
+    $api.post($url + '?userId=' + this.userId, _.assign({}, this.adminInfo, {
+      password: this.password
     })).then(function (response) {
       var res = response.data;
 

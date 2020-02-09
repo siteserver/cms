@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Repositories;
 
@@ -22,7 +21,7 @@ namespace SiteServer.CMS.Plugin.Apis
             if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
 
             //return ContentManager.GetContentInfo(site, channel, contentId);
             return await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
@@ -33,7 +32,7 @@ namespace SiteServer.CMS.Plugin.Apis
         //    if (siteId <= 0 || channelId <= 0) return null;
 
         //    var site = await DataProvider.SiteRepository.GetAsync(siteId);
-        //    var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
+        //    var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelId);
 
         //    var list = await DataProvider.ContentRepository.GetContentInfoListAsync(tableName, whereString, orderString, offset, limit);
         //    var retVal = new List<Content>();
@@ -49,7 +48,7 @@ namespace SiteServer.CMS.Plugin.Apis
             if (siteId <= 0 || channelId <= 0) return 0;
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelId);
 
             return DataProvider.ContentRepository.GetCount(tableName, whereString);
         }
@@ -59,8 +58,8 @@ namespace SiteServer.CMS.Plugin.Apis
             if (siteId <= 0 || channelId <= 0) return string.Empty;
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var nodeInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-            return await ChannelManager.GetTableNameAsync(site, nodeInfo);
+            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+            return await DataProvider.ChannelRepository.GetTableNameAsync(site, nodeInfo);
         }
 
         public async Task<List<TableColumn>> GetTableColumnsAsync(int siteId, int channelId)
@@ -68,7 +67,7 @@ namespace SiteServer.CMS.Plugin.Apis
             if (siteId <= 0 || channelId <= 0) return null;
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var nodeInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
             var tableStyleInfoList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, nodeInfo);
             var tableColumnList = new List<TableColumn>
             {
@@ -92,25 +91,25 @@ namespace SiteServer.CMS.Plugin.Apis
 
             tableColumnList.Add(new TableColumn
             {
-                AttributeName = ContentAttribute.IsTop,
+                AttributeName = nameof(Content.Top),
                 DataType = DataType.VarChar,
                 DataLength = 18
             });
             tableColumnList.Add(new TableColumn
             {
-                AttributeName = ContentAttribute.IsRecommend,
+                AttributeName = nameof(Content.Recommend),
                 DataType = DataType.VarChar,
                 DataLength = 18
             });
             tableColumnList.Add(new TableColumn
             {
-                AttributeName = ContentAttribute.IsHot,
+                AttributeName = nameof(Content.Hot),
                 DataType = DataType.VarChar,
                 DataLength = 18
             });
             tableColumnList.Add(new TableColumn
             {
-                AttributeName = ContentAttribute.IsColor,
+                AttributeName = nameof(Content.Color),
                 DataType = DataType.VarChar,
                 DataLength = 18
             });
@@ -126,9 +125,9 @@ namespace SiteServer.CMS.Plugin.Apis
         public async Task<List<InputStyle>> GetInputStylesAsync(int siteId, int channelId)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
 
-            return await ChannelManager.GetInputStylesAsync(site, channelInfo);
+            return await DataProvider.ChannelRepository.GetInputStylesAsync(site, channelInfo);
         }
 
         public async Task<string> GetContentValueAsync(int siteId, int channelId, int contentId, string attributeName)
@@ -136,7 +135,7 @@ namespace SiteServer.CMS.Plugin.Apis
             if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelId);
 
             var value = await DataProvider.ContentRepository.GetValueAsync(tableName, contentId, attributeName);
             return value;
@@ -172,7 +171,7 @@ namespace SiteServer.CMS.Plugin.Apis
         public async Task<int> InsertAsync(int siteId, int channelId, Content contentInfo)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
 
             return await DataProvider.ContentRepository.InsertAsync(site, channelInfo, (Content)contentInfo);
         }
@@ -180,30 +179,29 @@ namespace SiteServer.CMS.Plugin.Apis
         public async Task UpdateAsync(int siteId, int channelId, Content contentInfo)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
             await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, (Content)contentInfo);
         }
 
         public async Task DeleteAsync(int siteId, int channelId, int contentId)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var nodeInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-            var tableName = await ChannelManager.GetTableNameAsync(site, nodeInfo);
+            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
             var contentIdList = new List<int> { contentId };
-            await DataProvider.ContentRepository.UpdateTrashContentsAsync(siteId, channelId, tableName, contentIdList);
+            await DataProvider.ContentRepository.RecycleContentsAsync(site, nodeInfo, contentIdList);
         }
 
-        public async Task<IEnumerable<int>> GetContentIdListAsync(int siteId, int channelId)
+        public async Task<List<int>> GetContentIdListAsync(int siteId, int channelId)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelId);
             return await DataProvider.ContentRepository.GetContentIdListCheckedByChannelIdAsync(tableName, siteId, channelId);
         }
 
         public async Task<string> GetContentUrlAsync(int siteId, int channelId, int contentId)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            return await PageUtility.GetContentUrlAsync(site, await ChannelManager.GetChannelAsync(siteId, channelId), contentId, false);
+            return await PageUtility.GetContentUrlAsync(site, await DataProvider.ChannelRepository.GetAsync(channelId), contentId, false);
         }
     }
 }

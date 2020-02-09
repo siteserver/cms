@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Datory;
 using Datory.Caching;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -13,22 +13,22 @@ namespace SiteServer.CMS.Repositories
     {
         private string GetCacheKeyByUserId(int userId)
         {
-            return CacheManager.GetEntityKey(TableName, "userId", userId.ToString());
+            return Caching.GetEntityKey(TableName, "userId", userId.ToString());
         }
 
         private string GetCacheKeyByUserName(string userName)
         {
-            return CacheManager.GetEntityKey(TableName, "userName", userName);
+            return Caching.GetEntityKey(TableName, "userName", userName);
         }
 
         private string GetCacheKeyByMobile(string mobile)
         {
-            return CacheManager.GetEntityKey(TableName, "mobile", mobile);
+            return Caching.GetEntityKey(TableName, "mobile", mobile);
         }
 
         private string GetCacheKeyByEmail(string email)
         {
-            return CacheManager.GetEntityKey(TableName, "email", email);
+            return Caching.GetEntityKey(TableName, "email", email);
         }
 
         private string[] GetCacheKeysToRemove(User user)
@@ -68,38 +68,39 @@ namespace SiteServer.CMS.Repositories
         {
             if (userId <= 0) return null;
 
-            var cacheKey = GetCacheKeyByUserId(userId);
-            return await _repository.Cache.GetOrCreateAsync(cacheKey, async () => await _repository.GetAsync(userId));
+            return await _repository.GetAsync(userId, Q
+                .CachingGet(GetCacheKeyByUserId(userId))
+            );
         }
 
         public async Task<User> GetByUserNameAsync(string userName)
         {
             if (string.IsNullOrWhiteSpace(userName)) return null;
 
-            var cacheKey = GetCacheKeyByUserName(userName);
-            return await _repository.Cache.GetOrCreateAsync(cacheKey, async () => await _repository.GetAsync(Q
+            return await _repository.GetAsync(Q
                 .Where(nameof(User.UserName), userName)
-            ));
+                .CachingGet(GetCacheKeyByUserName(userName))
+            );
         }
 
         public async Task<User> GetByMobileAsync(string mobile)
         {
             if (string.IsNullOrWhiteSpace(mobile)) return null;
 
-            var cacheKey = GetCacheKeyByMobile(mobile);
-            return await _repository.Cache.GetOrCreateAsync(cacheKey, async () => await _repository.GetAsync(Q
+            return await _repository.GetAsync(Q
                 .Where(nameof(User.Mobile), mobile)
-            ));
+                .CachingGet(GetCacheKeyByMobile(mobile))
+            );
         }
 
         public async Task<User> GetByEmailAsync(string email)
         {
             if (string.IsNullOrWhiteSpace(email)) return null;
 
-            var cacheKey = GetCacheKeyByEmail(email);
-            return await _repository.Cache.GetOrCreateAsync(cacheKey, async () => await _repository.GetAsync(Q
+            return await _repository.GetAsync(Q
                 .Where(nameof(User.Email), email)
-            ));
+                .CachingGet(GetCacheKeyByEmail(email))
+            );
         }
 
         public async Task<bool> IsIpAddressCachedAsync(string ipAddress)
@@ -124,7 +125,6 @@ namespace SiteServer.CMS.Repositories
 
         public string GetHomeUploadPath(params string[] paths)
         {
-
             var path = WebUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Home, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;

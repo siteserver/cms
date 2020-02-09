@@ -1,5 +1,4 @@
 ﻿var $url = '/pages/settings/userStyle';
-var $urlImport = '/pages/settings/userStyle/actions/import';
 
 var data = utils.initData({
   urlUpload: null,
@@ -16,7 +15,7 @@ var methods = {
   apiList: function (message) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.get($url).then(function (response) {
       var res = response.data;
 
@@ -24,7 +23,7 @@ var methods = {
       $this.tableName = res.tableName;
       $this.relatedIdentities = res.relatedIdentities;
 
-      $this.urlUpload = apiUrl + urlImport;
+      $this.urlUpload = apiUrl + $url + '/actions/import';
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -38,7 +37,7 @@ var methods = {
   apiDelete: function (attributeName) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.delete($url, {
       data: {
         attributeName: attributeName
@@ -57,7 +56,7 @@ var methods = {
   apiReset: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/actions/reset').then(function (response) {
       var res = response.data;
 
@@ -174,7 +173,7 @@ var methods = {
   btnExportClick: function() {
     var $this = this;
     
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/actions/export').then(function (response) {
       var res = response.data;
 

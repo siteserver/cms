@@ -23,8 +23,8 @@ namespace SiteServer.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
-            var styleList = ContentUtility.GetAllTableStyleList(await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channel));
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
+            var styleList = ColumnsManager.GetContentListStyles(await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channel));
 
             foreach (var style in styleList)
             {
@@ -72,7 +72,7 @@ namespace SiteServer.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var columns = await DataProvider.ContentRepository.GetContentColumnsAsync(site, channel, true);
+            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, true);
 
             foreach (var column in columns)
             {
@@ -186,7 +186,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (rows.Count <= 0) return contentInfoList;
 
-            var styleList = ContentUtility.GetAllTableStyleList(await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, node));
+            var styleList = ColumnsManager.GetContentListStyles(await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, node));
             var nameValueCollection = new NameValueCollection();
             foreach (var style in styleList)
             {

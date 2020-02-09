@@ -6,6 +6,7 @@ using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Repositories;
 using Datory;
+using Datory.Utils;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -30,9 +31,9 @@ namespace SiteServer.Cli.Jobs
                 { "c|config-file=", "指定配置文件Web.config路径或文件名",
                     v => _configFile = v },
                 { "includes=", "指定需要备份的表，多个表用英文逗号隔开，默认备份所有表",
-                    v => _includes = v == null ? null : StringUtils.GetStringList(v) },
+                    v => _includes = v == null ? null : Utilities.GetStringList(v) },
                 { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
-                    v => _excludes = v == null ? null : StringUtils.GetStringList(v) },
+                    v => _excludes = v == null ? null : Utilities.GetStringList(v) },
                 { "max-rows=", "指定需要备份的表的最大行数",
                     v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v) },
                 { "h|help",  "命令说明",

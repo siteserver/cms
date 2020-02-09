@@ -1,17 +1,4 @@
-﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
-<li class="nav-item">
-  <a class="nav-link active" href="user.cshtml">用户管理</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="userGroup.cshtml">用户组管理</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="userStyle.cshtml">用户字段</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="userConfig.cshtml">用户设置</a>
-</li>
-}
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
 
 <div v-if="userId == 0" class="header-title">添加用户</div>
 <div v-else class="header-title">修改资料</div>

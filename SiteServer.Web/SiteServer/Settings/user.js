@@ -1,9 +1,7 @@
 ﻿var $url = '/pages/settings/user';
 var $urlUpload = apiUrl + '/pages/settings/user/actions/import';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   items: null,
   count: null,
   groups: null,
@@ -20,7 +18,7 @@ var data = {
   uploadPanel: false,
   uploadLoading: false,
   uploadList: []
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -37,7 +35,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
@@ -52,11 +50,30 @@ var methods = {
   btnExportClick: function() {
     var $this = this;
     
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/actions/export').then(function (response) {
       var res = response.data;
 
       window.open(res.value);
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  apiDelete: function(item) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.delete($url, {
+      data: {
+        id: item.id
+      }
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.items.splice($this.items.indexOf(item), 1);
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -71,87 +88,94 @@ var methods = {
       title: '删除用户',
       text: '此操作将删除用户 ' + item.userName + '，确定吗？',
       callback: function () {
-
-        utils.loading($this, true);
-        $api.delete($url, {
-          data: {
-            id: item.id
-          }
-        }).then(function (response) {
-          var res = response.data;
-    
-          $this.items.splice($this.items.indexOf(item), 1);
-        }).catch(function (error) {
-          utils.error($this, error);
-        }).then(function () {
-          utils.loading($this, false);
-        });
+        $this.apiDelete(item);
       }
+    });
+  },
+
+  apiCheck: function (item) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/check', {
+      id: item.id
+    }).then(function (response) {
+      var res = response.data;
+
+      item.checked = true;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
 
   btnCheckClick: function(item) {
+    var $this = this;
+
     utils.alertWarning({
       title: '审核用户',
       text: '此操作将设置用户 ' + item.userName + ' 的状态为审核通过，确定吗？',
       callback: function () {
-
-        utils.loading($this, true);
-        $api.post($url + '/actions/check', {
-          id: item.id
-        }).then(function (response) {
-          var res = response.data;
-    
-          item.checked = true;
-        }).catch(function (error) {
-          utils.error($this, error);
-        }).then(function () {
-          utils.loading($this, false);
-        });
+        $this.apiCheck(item);
       }
+    });
+  },
+
+  apiLock: function (item) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/lock', {
+      id: item.id
+    }).then(function (response) {
+      var res = response.data;
+
+      item.locked = true;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
 
   btnLockClick: function(item) {
+    var $this = this;
+
     utils.alertWarning({
       title: '锁定用户',
       text: '此操作将锁定用户 ' + item.userName + '，确定吗？',
       callback: function () {
-        
-        utils.loading($this, true);
-        $api.post($url + '/actions/lock', {
-          id: item.id
-        }).then(function (response) {
-          var res = response.data;
-    
-          item.locked = true;
-        }).catch(function (error) {
-          utils.error($this, error);
-        }).then(function () {
-          utils.loading($this, false);
-        });
+        $this.apiLock(item);
       }
     });
   },
 
+  apiUnLock: function (item) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/unLock', {
+      id: item.id
+    }).then(function (response) {
+      var res = response.data;
+
+      item.locked = false;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
   btnUnLockClick: function(item) {
+    var $this = this;
+
     utils.alertWarning({
       title: '解锁用户',
       text: '此操作将解锁用户 ' + item.userName + '，确定吗？',
       callback: function () {
-
-        utils.loading($this, true);
-        $api.post($url + '/actions/unLock', {
-          id: item.id
-        }).then(function (response) {
-          var res = response.data;
-    
-          item.locked = false;
-        }).catch(function (error) {
-          utils.error($this, error);
-        }).then(function () {
-          utils.loading($this, false);
-        });
+        $this.apiUnLock(item);
       }
     });
   },
@@ -159,7 +183,7 @@ var methods = {
   btnSearchClick() {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.get($url, {
       params: this.formInline
     }).then(function (response) {

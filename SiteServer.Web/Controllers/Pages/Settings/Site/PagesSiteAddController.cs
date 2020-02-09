@@ -199,7 +199,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Site
                     var siteIdList = await request.AdminPermissionsImpl.GetSiteIdListAsync() ?? new List<int>();
                     siteIdList.Add(siteId);
                     var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(request.AdminId);
-                    await DataProvider.AdministratorRepository.UpdateSiteIdCollectionAsync(adminInfo, siteIdList);
+                    await DataProvider.AdministratorRepository.UpdateSiteIdsAsync(adminInfo, siteIdList);
                 }
 
                 var siteTemplateDir = string.Empty;

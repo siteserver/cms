@@ -6,7 +6,6 @@ using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages
 {
-    
     [RoutePrefix("pages/login")]
     public class PagesLoginController : ApiController
     {
@@ -18,8 +17,12 @@ namespace SiteServer.API.Controllers.Pages
             try
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
-                var redirect = await request.AdminRedirectCheckAsync(checkInstall: true, checkDatabaseVersion: true);
-                if (redirect != null) return Ok(redirect);
+                var redirectUrl = await request.AdminRedirectCheckAsync(checkInstall: true, checkDatabaseVersion: true);
+                if (!string.IsNullOrEmpty(redirectUrl)) return Ok(new
+                {
+                    Value = false,
+                    RedirectUrl = redirectUrl
+                });
 
                 var config = await DataProvider.ConfigRepository.GetAsync();
 

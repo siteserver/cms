@@ -14,7 +14,7 @@ namespace SiteServer.Abstractions
 
         Task<int> GetCountAsync(int groupId, string keyword);
 
-        Task<IEnumerable<LibraryText>> GetAllAsync(int groupId, string keyword, int page, int perPage);
+        Task<List<LibraryText>> GetAllAsync(int groupId, string keyword, int page, int perPage);
 
         Task<string> GetContentByIdAsync(int id);
 

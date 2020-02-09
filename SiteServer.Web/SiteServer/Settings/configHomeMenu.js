@@ -1,14 +1,11 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/configHomeMenu');
-var $apiReset = new apiUtils.Api(apiUrl + '/pages/settings/configHomeMenu/actions/reset');
+﻿var $url = '/pages/settings/configHomeMenu';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: 'list',
   items: null,
   groups: null,
   item: null
-};
+});
 
 var methods = {
   getItems: function (menus) {
@@ -40,18 +37,23 @@ var methods = {
 
     return items;
   },
+
   getList: function () {
     var $this = this;
 
-    $api.get(null, function (err, res) {
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.get($url).then(function (response) {
+      var res = response.data;
 
       $this.items = $this.getItems(res.value);
       $this.groups = res.groups;
-
-      $this.pageLoad = true;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
+
   getUserGroups: function (item) {
     if (item.isGroup) {
       var str = '';
@@ -64,51 +66,57 @@ var methods = {
     }
     return '所有用户组';
   },
+  
   delete: function (id) {
     var $this = this;
 
-    utils.loading($this, true);
-    $api.delete({
-      id: id
-    }, function (err, res) {
-      utils.loading($this, false);
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.delete($url, {
+      data: {
+        id: id
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.items = $this.getItems(res.value);
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
+
   reset: function () {
     var $this = this;
 
-    utils.loading($this, true);
-    $apiReset.post(null, function (err, res) {
-      utils.loading($this, false);
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.post($url + '/actions/reset').then(function (response) {
+      var res = response.data;
 
       $this.items = $this.getItems(res.value);
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
+
   submit: function (item) {
     var $this = this;
     item.groupIdCollection = item.isGroup ? item.groupIds.join(',') : '';
-    utils.loading($this, true);
-    $api.post(item, function (err, res) {
-      utils.loading($this, false);
-      if (err) {
-        $this.pageAlert = {
-          type: 'danger',
-          html: err.message
-        };
-        return;
-      }
 
-      $this.pageAlert = {
-        type: 'success',
-        html: item.id === -1 ? '用户菜单添加成功！' : '用户菜单修改成功！'
-      };
+    utils.loading(this, true);
+    $api.post($url, item).then(function (response) {
+      var res = response.data;
+
       $this.item = null;
       $this.items = $this.getItems(res.value);
       $this.pageType = 'list';
+      $this.$message.success(item.id === -1 ? '用户菜单添加成功！' : '用户菜单修改成功！');
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
 
@@ -180,6 +188,7 @@ var methods = {
       }
     });
   },
+
   btnSubmitClick: function () {
     var $this = this;
     this.$validator.validate().then(function (result) {
@@ -188,6 +197,7 @@ var methods = {
       }
     });
   },
+  
   btnCancelClick: function () {
     this.pageType = 'list';
   }

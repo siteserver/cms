@@ -24,6 +24,8 @@
 >
   <el-menu-item index="1"><el-link :underline="false" :href="getLinkUrl('Text')">图文</el-link></el-menu-item>
   <el-menu-item index="2"><el-link :underline="false" :href="getLinkUrl('Image')">图片</el-link></el-menu-item>
+  <el-menu-item index="3"><el-link :underline="false" :href="getLinkUrl('Video')">视频</el-link></el-menu-item>
+  <el-menu-item index="4"><el-link :underline="false" :href="getLinkUrl('File')">文件</el-link></el-menu-item>
 </el-menu>
 
 <el-card>
@@ -214,7 +216,7 @@
     </el-table>
   </template>
   
-  <div class="text-center mt-3">
+  <div style="text-align: center; margin-top: 15px">
     <el-pagination
       v-on:current-change="btnPageClick"
       :current-page="form.page"
@@ -227,18 +229,14 @@
 </el-card>
 
 <el-dialog title="请输入分组名称" :visible.sync="isGroupForm">
-  <el-form ref="groupForm" :model="groupForm" :rules="{
-    name: [
-      { required: true, message: '请输入分组名称', trigger: 'blur' }
-    ],
-  }">
+  <el-form ref="groupForm" size="small" :model="groupForm">
     <el-form-item label="分组名称" prop="name">
-      <el-input v-model="groupForm.name" autocomplete="off"></el-input>
+      <el-input v-model="groupForm.name" autocomplete="off" :rules="{ required: true, message: '请输入分组名称' }"></el-input>
     </el-form-item>
   </el-form>
   <div slot="footer" class="dialog-footer">
-    <el-button type="primary" v-on:click="btnGroupSubmitClick">确 定</el-button>
-    <el-button v-on:click="isGroupForm = false">取 消</el-button>
+    <el-button size="small" type="primary" v-on:click="btnGroupSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="isGroupForm = false">取 消</el-button>
   </div>
 </el-dialog>
 

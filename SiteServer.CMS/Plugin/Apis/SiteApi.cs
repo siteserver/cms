@@ -29,7 +29,7 @@ namespace SiteServer.CMS.Plugin.Apis
             return site == null ? null : PathUtility.GetSitePath(site);
         }
 
-        public async Task<List<int>> GetSiteIdListAsync()
+        public async Task<IEnumerable<int>> GetSiteIdListAsync()
         {
             return await DataProvider.SiteRepository.GetSiteIdListAsync();
         }

@@ -382,7 +382,7 @@ namespace SiteServer.CMS.Core
 
                 if (User != null)
                 {
-                    var groupInfo = UserGroupManager.GetUserGroupAsync(User.GroupId).GetAwaiter().GetResult();
+                    var groupInfo = DataProvider.UserGroupRepository.GetUserGroupAsync(User.GroupId).GetAwaiter().GetResult();
                     if (groupInfo != null)
                     {
                         Administrator = DataProvider.AdministratorRepository.GetByUserNameAsync(groupInfo.AdminName).GetAwaiter().GetResult();
@@ -428,7 +428,7 @@ namespace SiteServer.CMS.Core
 
                 if (User != null)
                 {
-                    var groupInfo = UserGroupManager.GetUserGroupAsync(User.GroupId).GetAwaiter().GetResult();
+                    var groupInfo = DataProvider.UserGroupRepository.GetUserGroupAsync(User.GroupId).GetAwaiter().GetResult();
                     if (groupInfo != null)
                     {
                         return groupInfo.AdminName;
@@ -517,8 +517,7 @@ namespace SiteServer.CMS.Core
 
         #endregion
 
-        public async Task<object> AdminRedirectCheckAsync(bool checkInstall = false, bool checkDatabaseVersion = false,
-            bool checkLogin = false)
+        public async Task<string> AdminRedirectCheckAsync(bool checkInstall = false, bool checkDatabaseVersion = false, bool checkLogin = false)
         {
             var redirect = false;
             var redirectUrl = string.Empty;
@@ -542,16 +541,7 @@ namespace SiteServer.CMS.Core
                 redirectUrl = PageUtils.GetAdminUrl("login.cshtml");
             }
 
-            if (redirect)
-            {
-                return new
-                {
-                    Value = false,
-                    RedirectUrl = redirectUrl
-                };
-            }
-
-            return null;
+            return redirect ? redirectUrl : null;
         }
 
         public static string GetAccessToken(int userId, string userName, TimeSpan expiresAt)

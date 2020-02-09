@@ -1,11 +1,10 @@
 ﻿using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -170,9 +169,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             var targetChannelId = contentInfo.SourceId;
                             //var targetSiteId = DataProvider.ChannelRepository.GetSiteId(targetChannelId);
-                            var targetSiteId = await StlChannelCache.GetSiteIdAsync(targetChannelId);
+                            var targetSiteId = await DataProvider.ChannelRepository.GetSiteIdAsync(targetChannelId);
                             var targetSite = await DataProvider.SiteRepository.GetAsync(targetSiteId);
-                            var targetNodeInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
+                            var targetNodeInfo = await DataProvider.ChannelRepository.GetAsync(targetChannelId);
 
                             //var targetContentInfo = DataProvider.ContentRepository.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
                             var targetContentInfo = await DataProvider.ContentRepository.GetAsync(targetSite, targetNodeInfo, contentInfo.ReferenceId);
@@ -201,7 +200,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             if (!string.IsNullOrEmpty(extendValues))
                             {
                                 var index = 2;
-                                foreach (var extendValue in StringUtils.GetStringList(extendValues))
+                                foreach (var extendValue in Utilities.GetStringList(extendValues))
                                 {
                                     if (index == no)
                                     {
@@ -220,7 +219,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-                    var channel = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
+                    var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
 
                     picUrl = channel.ImageUrl;
                 }

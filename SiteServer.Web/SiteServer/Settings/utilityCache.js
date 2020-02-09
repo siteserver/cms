@@ -1,11 +1,9 @@
 ﻿var $url = '/pages/settings/utilityCache';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   parameters: null,
   count: null
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -19,14 +17,14 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
   btnCleanClick: function () {
     var $this = this;
     
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url).then(function (response) {
       var res = response.data;
 

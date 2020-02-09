@@ -33,8 +33,7 @@ namespace SiteServer.BackgroundPages.Controls
             {
                 if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.Title)) continue;
 
-                string extra;
-                var value = BackgroundInputTypeParser.Parse(Site, ChannelId, style, Attributes, pageScripts, out extra);
+                var (value, extra) = BackgroundInputTypeParser.ParseAsync(Site, ChannelId, style, Attributes, pageScripts).GetAwaiter().GetResult();
 
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 

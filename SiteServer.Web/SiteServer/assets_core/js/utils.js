@@ -1,3 +1,5 @@
+Object.defineProperty(Object.prototype,"getValue",{value:function(t){var e;for(e in this)if(e.toLowerCase()==t.toLowerCase())return this[e]}});
+
 if (window.swal && swal.mixin) {
   var alert = swal.mixin({
     confirmButtonClass: 'btn btn-primary',
@@ -40,6 +42,8 @@ var $apiCloud = axios.create({
 });
 
 var utils = {
+  PER_PAGE: 30,
+
   initData: function(data) {
     return _.assign({
       pageLoad: false,
@@ -76,7 +80,22 @@ var utils = {
     if (!result || result.length < 1) {
       return 0;
     }
-    return parseInt(result[1], 10);
+    return utils.toInt(result[1]);
+  },
+
+  getQueryIntList: function (name) {
+    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+    if (!result || result.length < 1) {
+      return [];
+    }
+    return _.map(result[1].split(','), function (x) {
+      return utils.toInt(x);
+    });
+  },
+
+  toInt: function (val) {
+    if (!val) return 0;
+    return parseInt(val, 10) || 0;
   },
 
   getQueryIntList: function (name) {
@@ -87,6 +106,14 @@ var utils = {
       });
     }
     return [];
+  },
+
+  getCountName(attributeName) {
+    return _.camelCase(attributeName + '_Count');
+  },
+
+  getExtendName(attributeName, n) {
+    return _.camelCase(n ? attributeName + '_' + n : attributeName);
   },
 
   alertDelete: function (config) {
@@ -194,5 +221,25 @@ var utils = {
     }
 
     return false;
+  },
+
+  contains: function(str, val) {
+    return str && val && str.indexOf(val) !== -1;
+  },
+
+  getRules: function(rules) {
+    if (rules) {
+      var array = [];
+      for (var i = 0; i < rules.length; i++) {
+        var rule = rules[i];
+        if (rule.type === 'Required') {
+          array.push({ required: true, message: rule.message });
+        } else if (rule.type === '') {
+          
+        }
+      }
+      return array;
+    }
+    return null;
   }
 };

@@ -44,7 +44,7 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-		public async Task<IEnumerable<ContentCheck>> GetCheckListAsync(string tableName, int contentId)
+		public async Task<List<ContentCheck>> GetCheckListAsync(string tableName, int contentId)
 		{
             return await _repository.GetAllAsync(Q
                 .Where(nameof(ContentCheck.TableName), tableName)

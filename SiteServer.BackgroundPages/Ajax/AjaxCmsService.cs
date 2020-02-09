@@ -103,9 +103,9 @@ namespace SiteServer.BackgroundPages.Ajax
             var retVal = new StringBuilder();
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
+            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
 
-            var titleList = await DataProvider.ContentRepository.GetValueListByStartStringAsync(tableName, channelId, ContentAttribute.Title, title, 10);
+            var titleList = await DataProvider.ContentRepository.GetValueListByStartStringAsync(site, channel, ContentAttribute.Title, title, 10);
             if (titleList.Count > 0)
             {
                 foreach (var value in titleList)
@@ -123,16 +123,16 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             var retVal = new StringBuilder();
 
-            var tagList = await DataProvider.ContentTagRepository.GetTagListByStartStringAsync(siteId, tag, 10);
-            if (tagList.Count > 0)
-            {
-                foreach (var value in tagList)
-                {
-                    retVal.Append(value);
-                    retVal.Append("|");
-                }
-                retVal.Length -= 1;
-            }
+            //var tagList = await DataProvider.ContentTagRepository.GetTagListByStartStringAsync(siteId, tag, 10);
+            //if (tagList.Count > 0)
+            //{
+            //    foreach (var value in tagList)
+            //    {
+            //        retVal.Append(value);
+            //        retVal.Append("|");
+            //    }
+            //    retVal.Length -= 1;
+            //}
 
             return retVal.ToString();
         }

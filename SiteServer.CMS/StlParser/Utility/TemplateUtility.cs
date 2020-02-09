@@ -2,10 +2,10 @@
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Abstractions;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using System.Threading.Tasks;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
@@ -52,7 +52,7 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 foreach (var itemTypes in selectedItems.AllKeys)
                 {
-                    var itemTypeArrayList = StringUtils.GetStringList(itemTypes);
+                    var itemTypeArrayList = Utilities.GetStringList(itemTypes);
                     var isTrue = true;
                     foreach (var itemType in itemTypeArrayList)
                     {
@@ -133,21 +133,21 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsRecommend))//推荐的内容
             {
-                if (TranslateUtils.ToBool(contentInfo.Get<string>(ContentAttribute.IsRecommend)))
+                if (contentInfo.Recommend)
                 {
                     return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsHot))//热点内容
             {
-                if (TranslateUtils.ToBool(contentInfo.Get<string>(ContentAttribute.IsHot)))
+                if (contentInfo.Hot)
                 {
                     return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsColor))//醒目内容
             {
-                if (TranslateUtils.ToBool(contentInfo.Get<string>(ContentAttribute.IsColor)))
+                if (contentInfo.Color)
                 {
                     return (true, selectedItems.Get(itemTypes));
                 }
@@ -156,7 +156,7 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 if (selectedValues.Count > 0)
                 {
-                    var nodeInfo = await ChannelManager.GetChannelAsync(contentInfo.SiteId, contentInfo.ChannelId);
+                    var nodeInfo = await DataProvider.ChannelRepository.GetAsync(contentInfo.ChannelId);
                     if (nodeInfo != null)
                     {
                         if (selectedValues.Get(nodeInfo.ChannelName) != null)
@@ -185,7 +185,7 @@ namespace SiteServer.CMS.StlParser.Utility
             contextInfo.ContainerClientId = containerClientId;
             contextInfo.ChannelId = channelId;
 
-            var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
+            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
             if (selectedItems != null && selectedItems.Count > 0)
             {
                 foreach (var itemType in selectedItems.AllKeys)

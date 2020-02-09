@@ -38,18 +38,15 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var adminId = await request.AdminPermissionsImpl.GetAdminIdAsync(siteId, channelId);
-
-                var columns = await DataProvider.ContentRepository.GetContentColumnsAsync(site, channelInfo, false);
+                var columns = await ColumnsManager.GetContentListColumnsAsync(site, channelInfo, false);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
                 var pageContentInfoList = new List<Content>();
-                var ccIds = await DataProvider.ContentRepository.GetChannelContentIdListAsync(site, channelInfo,
-                    adminId, true);
+                var ccIds = await DataProvider.ContentRepository.GetSummariesAsync(site, channelInfo, true);
                 var count = ccIds.Count();
 
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
@@ -67,10 +64,7 @@ namespace SiteServer.API.Controllers.Home
                         var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
                         if (contentInfo == null) continue;
 
-                        var channelName = await ChannelManager.GetChannelNameNavigationAsync(siteId, channelId, channelContentId.ChannelId);
-                        contentInfo.Set("ChannelName", channelName);
-
-                        pageContentInfoList.Add(await DataProvider.ContentRepository.CalculateAsync(sequence++, contentInfo, columns, pluginColumns));
+                        pageContentInfoList.Add(await ColumnsManager.CalculateContentListAsync(sequence++, channelId, contentInfo, columns, pluginColumns));
                     }
                 }
 

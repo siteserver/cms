@@ -1,8 +1,6 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/adminConfig');
+﻿var $url = '/pages/settings/adminConfig';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: null,
   config: null,
 
@@ -13,21 +11,21 @@ var data = {
   adminLockLoginCount: null,
   adminLockLoginType: null,
   adminLockLoginHours: null,
-  isViewContentOnlySelf: null,
   isAdminEnforcePasswordChange: null,
   adminEnforcePasswordChangeDays: null,
   isAdminEnforceLogout: null,
   adminEnforceLogoutMinutes: null,
-};
+});
 
 var methods = {
   getConfig: function () {
     var $this = this;
 
-    $api.get(null, function (err, res) {
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.get($url).then(function (response) {
+      var res = response.data;
 
-      $this.config = _.clone(res.value);
+      $this.config = _.assign({}, res.value);
 
       $this.adminUserNameMinLength = res.value.adminUserNameMinLength;
       $this.adminPasswordMinLength = res.value.adminPasswordMinLength;
@@ -36,49 +34,45 @@ var methods = {
       $this.adminLockLoginCount = res.value.adminLockLoginCount;
       $this.adminLockLoginType = res.value.adminLockLoginType;
       $this.adminLockLoginHours = res.value.adminLockLoginHours;
-      $this.isViewContentOnlySelf = res.value.isViewContentOnlySelf;
       $this.isAdminEnforcePasswordChange = res.value.isAdminEnforcePasswordChange;
       $this.adminEnforcePasswordChangeDays = res.value.adminEnforcePasswordChangeDays;
       $this.isAdminEnforceLogout = res.value.isAdminEnforceLogout;
       $this.adminEnforceLogoutMinutes = res.value.adminEnforceLogoutMinutes;
 
       $this.pageType = 'list';
-      $this.pageLoad = true;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
-  submit: function (item) {
+
+  apiSubmit: function (item) {
     var $this = this;
 
-    utils.loading($this, true);
-    $api.post({
-      adminUserNameMinLength: $this.adminUserNameMinLength,
-      adminPasswordMinLength: $this.adminPasswordMinLength,
-      adminPasswordRestriction: $this.adminPasswordRestriction,
-      isAdminLockLogin: $this.isAdminLockLogin,
-      adminLockLoginCount: $this.adminLockLoginCount,
-      adminLockLoginType: $this.adminLockLoginType,
-      adminLockLoginHours: $this.adminLockLoginHours,
-      isViewContentOnlySelf: $this.isViewContentOnlySelf,
-      isAdminEnforcePasswordChange: $this.isAdminEnforcePasswordChange,
-      adminEnforcePasswordChangeDays: $this.adminEnforcePasswordChangeDays,
-      isAdminEnforceLogout: $this.isAdminEnforceLogout,
-      adminEnforceLogoutMinutes: $this.adminEnforceLogoutMinutes,
-    }, function (err, res) {
-      utils.loading($this, false);
-      if (err) {
-        $this.pageAlert = {
-          type: 'danger',
-          html: err.message
-        };
-        return;
-      }
+    utils.loading(this, true);
+    $api.post($url, {
+      adminUserNameMinLength: this.adminUserNameMinLength,
+      adminPasswordMinLength: this.adminPasswordMinLength,
+      adminPasswordRestriction: this.adminPasswordRestriction,
+      isAdminLockLogin: this.isAdminLockLogin,
+      adminLockLoginCount: this.adminLockLoginCount,
+      adminLockLoginType: this.adminLockLoginType,
+      adminLockLoginHours: this.adminLockLoginHours,
+      isAdminEnforcePasswordChange: this.isAdminEnforcePasswordChange,
+      adminEnforcePasswordChangeDays: this.adminEnforcePasswordChangeDays,
+      isAdminEnforceLogout: this.isAdminEnforceLogout,
+      adminEnforceLogoutMinutes: this.adminEnforceLogoutMinutes,
+    }).then(function (response) {
+      var res = response.data;
 
-      $this.pageAlert = {
-        type: 'success',
-        html: '管理员设置保存成功！'
-      };
-      $this.config = _.clone(res.value);
+      $this.config = _.assign({}, res.value);
       $this.pageType = 'list';
+      $this.$message.success('管理员设置保存成功！');
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
 
@@ -92,7 +86,7 @@ var methods = {
     var $this = this;
     this.$validator.validate().then(function (result) {
       if (result) {
-        $this.submit($this.item);
+        $this.apiSubmit($this.item);
       }
     });
   }

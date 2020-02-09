@@ -13,7 +13,7 @@ var methods = {
   apiGet: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.get($url, {
       params: {
         tableName: this.tableName,
@@ -34,7 +34,7 @@ var methods = {
   apiSubmit: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url, {
       tableName: this.tableName,
       relatedIdentities: this.relatedIdentities,

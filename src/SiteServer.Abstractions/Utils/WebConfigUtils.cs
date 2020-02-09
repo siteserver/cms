@@ -2,6 +2,7 @@
 using System.Text;
 using System.Xml;
 using Datory;
+using Datory.Utils;
 
 namespace SiteServer.Abstractions
 {
@@ -32,7 +33,7 @@ namespace SiteServer.Abstractions
             }
         }
 
-        public static string Redis { get; private set; }
+        public static string RedisConnectionString { get; private set; }
 
         public static string AdminDirectory { get; private set; }
 
@@ -89,12 +90,12 @@ namespace SiteServer.Abstractions
                                         connectionString = attrValue.Value;
                                     }
                                 }
-                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(Redis)))
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(RedisConnectionString)))
                                 {
                                     var attrValue = setting.Attributes["value"];
                                     if (attrValue != null)
                                     {
-                                        Redis = attrValue.Value;
+                                        RedisConnectionString = attrValue.Value;
                                     }
                                 }
                                 else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(AdminDirectory)))
@@ -177,7 +178,7 @@ namespace SiteServer.Abstractions
             ConnectionString = connectionString;
         }
 
-        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string redis, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
+        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string redisConnectionString, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
         {
             connectionString = GetConnectionString(databaseType, connectionString);
 
@@ -229,12 +230,12 @@ namespace SiteServer.Abstractions
                                     dirty = true;
                                 }
                             }
-                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(Redis)))
+                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(RedisConnectionString)))
                             {
                                 var attrValue = setting.Attributes["value"];
                                 if (attrValue != null)
                                 {
-                                    attrValue.Value = redis;
+                                    attrValue.Value = redisConnectionString;
                                     dirty = true;
                                 }
                             }
@@ -363,7 +364,7 @@ namespace SiteServer.Abstractions
         {
             var userId = string.Empty;
 
-            foreach (var pair in StringUtils.GetStringList(connectionString, ';'))
+            foreach (var pair in Utilities.GetStringList(connectionString, ';'))
             {
                 if (!string.IsNullOrEmpty(pair) && pair.IndexOf("=", StringComparison.Ordinal) != -1)
                 {

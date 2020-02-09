@@ -1,33 +1,35 @@
 ﻿@{ Layout = "../Shared/_Layout.cshtml"; }
 
-<div class="card-box">
-  <div class="m-t-0 header-title">
-    创建新站点
+<el-card>
+  <div slot="header" class="clearfix">
+    <span>创建新站点</span>
   </div>
 
   <template v-if="pageType == 'selectType'">
-    <p class="text-muted m-b-30 font-14">
+    <el-alert>
       欢迎使用创建新站点向导，请选择创建站点的方式
-    </p>
+    </el-alert>
+    <div style="height: 10px"></div>
 
-    <button v-on:click="btnCreateClick('empty')" type="button" class="btn btn-block btn-md btn-outline-primary">创建空站点</button>
-    <p class="text-muted mt-2 mb-4 font-13">
+    <el-button v-on:click="btnCreateClick('empty')" type="primary">创建空站点</el-button>
+    <p class="tips">
       点击按钮创建空站点，站点的栏目、内容及模板需要手动添加。
     </p>
-    <button v-on:click="btnLocalClick()" v-if="siteTemplates && siteTemplates.length > 0" type="button" class="btn btn-block btn-md btn-outline-primary">使用本地站点模板创建站点</button>
-    <p v-if="siteTemplates && siteTemplates.length > 0" class="text-muted mt-2 mb-4 font-13">
+    <el-button v-on:click="btnLocalClick()" v-if="siteTemplates && siteTemplates.length > 0" type="primary">使用本地站点模板创建站点</el-button>
+    <p class="tips" v-if="siteTemplates && siteTemplates.length > 0">
       点击按钮从本地站点模板中选择并创建站点。
     </p>
-    <button v-on:click="btnCloudClick()" type="button" class="btn btn-block btn-md btn-outline-primary">使用在线站点模板创建站点</button>
-    <p class="text-muted mt-2 mb-4 font-13">
-      点击按钮从<a href="https://www.siteserver.cn/templates/" target="_blank">官网模板中心</a>中选择并创建站点。
+    <el-button v-on:click="btnCloudClick()" type="primary">使用在线站点模板创建站点</el-button>
+    <p class="tips">
+      点击按钮从官网模板中心中选择并创建站点。
     </p>
   </template>
 
   <template v-else-if="pageType == 'selectLocal'">
-    <p class="text-muted m-b-30 font-14">
+    <el-alert>
       选中站点模板后点击创建站点按钮开始创建站点。
-    </p>
+    </el-alert>
+    <div style="height: 10px"></div>
 
     <div class="panel panel-default">
       <div class="panel-body p-0">
@@ -162,14 +164,13 @@
   </template>
 
   <template v-else-if="pageType == 'create'">
-    <p class="text-muted font-13 m-b-25" v-html="getCreateType()"></p>
+    <p v-html="getCreateType()"></p>
 
     <div class="form-group">
       <label>
         站点名称
-        <small v-show="errors.has('siteName')" class="text-danger">{{ errors.first('siteName') }}</small>
       </label>
-      <input v-model="siteName" name="siteName" data-vv-as="站点名称" v-validate="'required'" :class="{'is-invalid': errors.has('siteName') }" type="text" class="form-control">
+      <input v-model="siteName" name="siteName" data-vv-as="站点名称" v-validate="'required'" type="text" class="form-control">
     </div>
 
     <div v-if="!rootExists" class="form-group">
@@ -200,17 +201,14 @@
     <div v-if="!root" class="form-group">
       <label>
         文件夹名称
-        <small v-show="errors.has('siteDir')" class="text-danger">{{ errors.first('siteDir') }}</small>
       </label>
-      <input v-model="siteDir" name="siteDir" data-vv-as="文件夹名称" v-validate="'required'" :class="{'is-invalid': errors.has('siteDir') }" type="text" class="form-control">
+      <input v-model="siteDir" name="siteDir" data-vv-as="文件夹名称" v-validate="'required'" type="text" class="form-control">
       <small class="form-text text-muted">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名</small>
     </div>
 
     <div class="form-group">
       <label>
         内容表
-        <small v-show="errors.has('tableChoose')" class="text-danger">{{ errors.first('tableChoose') }}</small>
-        <small v-show="errors.has('tableHandWrite')" class="text-danger">{{ errors.first('tableHandWrite') }}</small>
       </label>
       <div class="m-2">
         <div class="radio radio-primary form-check-inline">
@@ -227,7 +225,7 @@
         </div>
       </div>
       <template v-if="tableRule == 'Choose'">
-        <select v-model="tableChoose" name="tableChoose" data-vv-as="内容表" v-validate="'required'" :class="{'is-invalid': errors.has('tableChoose') }" class="form-control">
+        <select v-model="tableChoose" name="tableChoose" data-vv-as="内容表" v-validate="'required'" class="form-control">
           <option v-for="tableName in tableNameList" :value="tableName">{{ tableName }}</option>
         </select>
         <small class="form-text text-muted">请选择已存在的内容表。</small>
@@ -236,7 +234,7 @@
         <small class="form-text text-muted">系统将创建内容表，表名称为<code>siteserver_Content_&lt;站点Id&gt;</code>。</small>
       </template>
       <template v-else-if="tableRule == 'HandWrite'">
-        <input v-model="tableHandWrite" name="tableHandWrite" data-vv-as="内容表" v-validate="'required'" :class="{'is-invalid': errors.has('tableHandWrite') }" type="text" class="form-control">
+        <input v-model="tableHandWrite" name="tableHandWrite" data-vv-as="内容表" v-validate="'required'" type="text" class="form-control">
         <small class="form-text text-muted">请输入内容表名称，系统将检测数据库是否已存在指定的内容表，如果不存在系统将创建此内容表。</small>
       </template>
     </div>
@@ -260,11 +258,11 @@
     <hr>
 
     <div class="text-center">
-      <button v-on:click="btnSubmitClick" type="button" class="btn btn-primary">创建站点</button>
+      <button v-on:click="btnSubmitClick" type="button" class="btn btn-primary">创建站点</el-button>
     </div>
   </template>
 
-</div>
+</el-card>
 
 @section Scripts{
 <script src="siteAdd.js" type="text/javascript"></script> }

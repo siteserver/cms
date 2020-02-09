@@ -7,6 +7,7 @@ using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -34,12 +35,12 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             var channelId = AuthRequest.GetQueryInt("channelId", SiteId);
-            var channelIdList = ChannelManager.GetChannelIdListAsync(SiteId).GetAwaiter().GetResult();
+            var channelIdList = DataProvider.ChannelRepository.GetChannelIdListAsync(SiteId).GetAwaiter().GetResult();
             var nodeCount = channelIdList.Count;
             _isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
             {
-                var nodeInfo = ChannelManager.GetChannelAsync(SiteId, theChannelId).GetAwaiter().GetResult();
+                var nodeInfo = DataProvider.ChannelRepository.GetAsync(theChannelId).GetAwaiter().GetResult();
                 var itemChannelId = nodeInfo.Id;
                 var nodeName = nodeInfo.ChannelName;
                 var parentsCount = nodeInfo.ParentsCount;

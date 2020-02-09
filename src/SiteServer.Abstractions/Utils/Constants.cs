@@ -103,6 +103,7 @@ namespace SiteServer.Abstractions
             public const string ConfigGroups = "site_configGroups";
             public const string ConfigTableStyles = "site_configTableStyles";
             public const string ConfigUpload = "site_configUpload";
+            public const string ConfigWaterMark = "site_configWaterMark";
             public const string ConfigCrossSiteTrans = "site_configCrossSiteTrans";
             public const string ConfigCreateRule = "site_configCreateRule";
             public const string CreateIndex = "site_createIndex";

@@ -1,8 +1,6 @@
 ﻿var $url = '/pages/settings/site';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   sites: null,
   rootSiteId: null,
   tableNames: null,
@@ -26,7 +24,7 @@ var data = {
   deletePanel: false,
   deleteForm: null,
   deleteLoading: false,
-};
+});
 
 var methods = {
   apiGetConfig: function () {
@@ -41,7 +39,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 

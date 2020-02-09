@@ -26,12 +26,12 @@ namespace SiteServer.CMS.Repositories
             return await _repository.GetAsync(roleId);
         }
 
-        public async Task<IEnumerable<Role>> GetRoleListAsync()
+        public async Task<List<Role>> GetRoleListAsync()
         {
             return await _repository.GetAllAsync(Q.OrderBy(nameof(Role.RoleName)));
         }
 
-        public async Task<IEnumerable<Role>> GetRoleListByCreatorUserNameAsync(string creatorUserName)
+        public async Task<List<Role>> GetRoleListByCreatorUserNameAsync(string creatorUserName)
         {
             if (string.IsNullOrEmpty(creatorUserName)) return new List<Role>();
 
@@ -41,7 +41,7 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        public async Task<IEnumerable<string>> GetRoleNameListAsync()
+        public async Task<List<string>> GetRoleNameListAsync()
         {
             return await _repository.GetAllAsync<string>(Q
                 .Select(nameof(Role.RoleName))
@@ -49,7 +49,7 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-		public async Task<IEnumerable<string>> GetRoleNameListByCreatorUserNameAsync(string creatorUserName)
+		public async Task<List<string>> GetRoleNameListByCreatorUserNameAsync(string creatorUserName)
 		{
             return await _repository.GetAllAsync<string>(Q
                 .Select(nameof(Role.RoleName))

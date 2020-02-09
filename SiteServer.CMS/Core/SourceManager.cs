@@ -30,7 +30,7 @@ namespace SiteServer.CMS.Core
             var siteInfo = await DataProvider.SiteRepository.GetAsync(sourceSiteId);
             if (siteInfo == null) return "内容转移";
 
-            var nodeNames = await ChannelManager.GetChannelNameNavigationAsync(siteInfo.Id, sourceId);
+            var nodeNames = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteInfo.Id, sourceId);
             if (!string.IsNullOrEmpty(nodeNames))
             {
                 return siteInfo.SiteName + "：" + nodeNames;

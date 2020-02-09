@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
@@ -55,8 +56,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 channelId = SiteId;
             }
-            _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
-            var tableName = ChannelManager.GetTableNameAsync(Site, _channel).GetAwaiter().GetResult();
+            _channel = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
+            var tableName = DataProvider.ChannelRepository.GetTableNameAsync(Site, _channel).GetAwaiter().GetResult();
             _tableStyleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
 
             SpContents.ControlToPaginate = RptContents;
@@ -78,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            ChannelManager.AddListItemsAsync(DdlChannelId.Items, Site, false, true, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
+            DataProvider.ChannelRepository.AddListItemsAsync(DdlChannelId.Items, Site, false, true, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
 
             if (_tableStyleList != null)
             {
@@ -91,8 +92,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             //添加隐藏属性
             DdlSearchType.Items.Add(new ListItem("内容ID", ContentAttribute.Id));
-            DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
-            DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
+            //DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
+            //DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
 
             if (AuthRequest.IsQueryExists("channelId"))
             {
@@ -141,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var nodeName = _valueHashtable[contentInfo.ChannelId] as string;
                 if (nodeName == null)
                 {
-                    nodeName = ChannelManager.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult();
+                    nodeName = DataProvider.ChannelRepository.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult();
                     _valueHashtable[contentInfo.ChannelId] = nodeName;
                 }
                 ltlChannel.Text = nodeName;
@@ -168,12 +169,12 @@ namespace SiteServer.BackgroundPages.Cms
             if (!string.IsNullOrEmpty(Request.Form["IDsCollection"]))
             {
                 var builder = new StringBuilder();
-                foreach (var pair in StringUtils.GetStringList(Request.Form["IDsCollection"]))
+                foreach (var pair in Utilities.GetStringList(Request.Form["IDsCollection"]))
                 {
                     var channelId = TranslateUtils.ToInt(pair.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(pair.Split('_')[1]);
 
-                    var tableName = ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
+                    var tableName = DataProvider.ChannelRepository.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
                     var title = DataProvider.ContentRepository.GetValueAsync(tableName, contentId, ContentAttribute.Title).GetAwaiter().GetResult();
                     builder.Append($@"parent.{_jsMethod}('{title}', '{pair}');");
                 }

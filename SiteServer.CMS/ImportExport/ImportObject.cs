@@ -115,7 +115,7 @@ namespace SiteServer.CMS.ImportExport
             await templateIe.ImportTemplatesAsync(overwrite, administratorName);
         }
 
-        public async Task ImportRelatedFieldByZipFileAsync(string zipFilePath, bool overwrite)
+        public static async Task<string> ImportRelatedFieldByZipFileAsync(int siteId, string zipFilePath)
         {
             var directoryPath = PathUtils.GetTemporaryFilesPath("RelatedField");
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
@@ -123,8 +123,10 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.ExtractZip(zipFilePath, directoryPath);
 
-            var relatedFieldIe = new RelatedFieldIe(_siteId, directoryPath);
-            await relatedFieldIe.ImportRelatedFieldAsync(overwrite);
+            var relatedFieldIe = new RelatedFieldIe(siteId, directoryPath);
+            await relatedFieldIe.ImportRelatedFieldAsync(true);
+
+            return directoryPath;
         }
 
         public async Task ImportTableStylesAsync(string tableDirectoryPath)
@@ -261,9 +263,8 @@ namespace SiteServer.CMS.ImportExport
             ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
             var site = await DataProvider.SiteRepository.GetAsync(_siteId);
-            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
 
-            var taxis = await DataProvider.ContentRepository.GetMaxTaxisAsync(tableName, channel.Id, false);
+            var taxis = await DataProvider.ContentRepository.GetMaxTaxisAsync(site, channel, false);
 
             await ImportContentsAsync(channel, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
         }
@@ -277,16 +278,15 @@ namespace SiteServer.CMS.ImportExport
             ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
             var site = await DataProvider.SiteRepository.GetAsync(_siteId);
-            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
 
-            var taxis = await DataProvider.ContentRepository.GetMaxTaxisAsync(tableName, channel.Id, false);
+            var taxis = await DataProvider.ContentRepository.GetMaxTaxisAsync(site, channel, false);
 
             return await ImportContentsAsync(channel, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
         }
 
         public async Task ImportContentsByCsvFileAsync(int channelId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
-            var channelInfo = await ChannelManager.GetChannelAsync(_siteId, channelId);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
             var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var contentInfoList = await ExcelObject.GetContentsByCsvFileAsync(csvFilePath, site, channelInfo);
             contentInfoList.Reverse();
@@ -324,7 +324,7 @@ namespace SiteServer.CMS.ImportExport
                 contentInfoList = theList;
             }
 
-            var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
 
             foreach (var contentInfo in contentInfoList)
             {
@@ -360,7 +360,7 @@ namespace SiteServer.CMS.ImportExport
             var contentInfoList = await ExcelObject.GetContentsByCsvFileAsync(csvFilePath, site, channel);
             contentInfoList.Reverse();
 
-            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
 
             foreach (var contentInfo in contentInfoList)
             {
@@ -408,7 +408,7 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.ExtractZip(zipFilePath, directoryPath);
 
-            var channelInfo = await ChannelManager.GetChannelAsync(_siteId, channelId);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
 
             var site = await DataProvider.SiteRepository.GetAsync(_siteId);
             var contentInfoList = TxtObject.GetContentListByTxtFile(directoryPath, site, channelInfo);
@@ -446,7 +446,7 @@ namespace SiteServer.CMS.ImportExport
                 contentInfoList = theList;
             }
 
-            var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
 
             foreach (var contentInfo in contentInfoList)
             {
@@ -483,7 +483,7 @@ namespace SiteServer.CMS.ImportExport
         public async Task<List<int>> ImportContentsByTxtFileAsync(Channel channel, string txtFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var site = await DataProvider.SiteRepository.GetAsync(_siteId);
-            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
 
             var contentInfo = new Content
             {

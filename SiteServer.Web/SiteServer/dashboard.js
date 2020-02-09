@@ -13,7 +13,7 @@ var methods = {
   apiGet: function() {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.get($url).then(function (response) {
       var res = response.data;
 

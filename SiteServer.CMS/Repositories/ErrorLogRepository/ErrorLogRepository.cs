@@ -106,7 +106,7 @@ namespace SiteServer.CMS.Repositories
             return await _repository.CountAsync(GetQuery(category, pluginId, keyword, dateFrom, dateTo));
         }
 
-        public async Task<IEnumerable<ErrorLog>> GetAllAsync(string category, string pluginId, string keyword, string dateFrom, string dateTo, int offset, int limit)
+        public async Task<List<ErrorLog>> GetAllAsync(string category, string pluginId, string keyword, string dateFrom, string dateTo, int offset, int limit)
         {
             var query = GetQuery(category, pluginId, keyword, dateFrom, dateTo);
             query.Offset(offset).Limit(limit);

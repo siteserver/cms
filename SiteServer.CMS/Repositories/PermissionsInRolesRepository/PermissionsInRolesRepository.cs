@@ -43,9 +43,9 @@ namespace SiteServer.CMS.Repositories
             foreach (var roleName in roles)
 			{
                 var pr = await GetPermissionsInRolesAsync(roleName);
-                if (pr?.GeneralPermissionList == null) continue;
+                if (pr?.GeneralPermissions == null) continue;
 
-                foreach (var permission in pr.GeneralPermissionList)
+                foreach (var permission in pr.GeneralPermissions)
                 {
                     if (!list.Contains(permission)) list.Add(permission);
                 }

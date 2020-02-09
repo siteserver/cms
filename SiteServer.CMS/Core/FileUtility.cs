@@ -1,6 +1,7 @@
 using System;
 using SiteServer.Abstractions;
 using System.Collections.Generic;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Context.Images;
@@ -68,21 +69,21 @@ namespace SiteServer.CMS.Core
                     content.Get<string>(ContentAttribute.FileUrl)
                 };
 
-                foreach (var url in StringUtils.GetStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl))))
+                foreach (var url in Utilities.GetStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl))))
                 {
                     if (!fileUrls.Contains(url))
                     {
                         fileUrls.Add(url);
                     }
                 }
-                foreach (var url in StringUtils.GetStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.VideoUrl))))
+                foreach (var url in Utilities.GetStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.VideoUrl))))
                 {
                     if (!fileUrls.Contains(url))
                     {
                         fileUrls.Add(url);
                     }
                 }
-                foreach (var url in StringUtils.GetStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl))))
+                foreach (var url in Utilities.GetStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl))))
                 {
                     if (!fileUrls.Contains(url))
                     {

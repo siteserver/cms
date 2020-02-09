@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
-using SiteServer.CMS.Caching;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Plugin;
@@ -18,7 +17,7 @@ namespace SiteServer.CMS.Core
         {
             WebConfigUtils.Load(applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
 
-            await CacheManager.LoadCacheAsync();
+            //await Caching.LoadCacheAsync();
 
             await PluginManager.LoadPluginsAsync(applicationPhysicalPath);
 

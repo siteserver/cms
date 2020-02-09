@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
@@ -32,7 +33,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
 
             var dict = await PluginManager.GetPluginIdAndVersionDictAsync();
             var list = dict.Keys.ToList();
-            var packageIds = TranslateUtils.ObjectCollectionToString(list);
+            var packageIds = Utilities.ToString(list);
 
             return new GetResult
             {
@@ -44,13 +45,13 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         }
 
         [HttpDelete, Route(RoutePluginId)]
-        public async Task<DefaultResult> Delete(string pluginId)
+        public async Task<BoolResult> Delete(string pluginId)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
             if (!auth.IsAdminLoggin ||
                 !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
-                return Request.Unauthorized<DefaultResult>();
+                return Request.Unauthorized<BoolResult>();
             }
 
             PluginManager.Delete(pluginId);
@@ -59,39 +60,39 @@ namespace SiteServer.API.Controllers.Pages.Plugins
             CacheUtils.ClearAll();
             await DataProvider.DbCacheRepository.ClearAsync();
 
-            return new DefaultResult
+            return new BoolResult
             {
                 Value = true
             };
         }
 
         [HttpPost, Route(RouteActionsReload)]
-        public async Task<DefaultResult> Reload()
+        public async Task<BoolResult> Reload()
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
             if (!auth.IsAdminLoggin ||
                 !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
-                return Request.Unauthorized<DefaultResult>();
+                return Request.Unauthorized<BoolResult>();
             }
 
             CacheUtils.ClearAll();
             await DataProvider.DbCacheRepository.ClearAsync();
 
-            return new DefaultResult
+            return new BoolResult
             {
                 Value = true
             };
         }
 
         [HttpPost, Route(RoutePluginIdEnable)]
-        public async Task<DefaultResult> Enable(string pluginId)
+        public async Task<BoolResult> Enable(string pluginId)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
             if (!auth.IsAdminLoggin ||
                 !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
-                return Request.Unauthorized<DefaultResult>();
+                return Request.Unauthorized<BoolResult>();
             }
 
             var pluginInfo = await PluginManager.GetPluginInfoAsync(pluginId);
@@ -107,7 +108,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
             CacheUtils.ClearAll();
             await DataProvider.DbCacheRepository.ClearAsync();
 
-            return new DefaultResult
+            return new BoolResult
             {
                 Value = true
             };

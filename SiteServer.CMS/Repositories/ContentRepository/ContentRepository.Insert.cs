@@ -1,23 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Dapper;
 using Datory;
-using Microsoft.Extensions.Caching.Distributed;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Api.V1;
-using SiteServer.CMS.Caching;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SqlKata;
-using ETaxisType = SiteServer.Abstractions.TaxisType;
-using ETaxisTypeUtils = SiteServer.Abstractions.ETaxisTypeUtils;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -25,22 +11,21 @@ namespace SiteServer.CMS.Repositories
     {
         public async Task<int> InsertAsync(Site site, Channel channel, Content content)
         {
-            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
             var taxis = 0;
             if (content.SourceId == SourceManager.Preview)
             {
                 channel.IsPreviewContentsExists = true;
-                await DataProvider.ChannelRepository.UpdateAdditionalAsync(channel);
+                await DataProvider.ChannelRepository.UpdateAsync(channel);
             }
             else
             {
                 if (content.Top)
                 {
-                    taxis = await GetMaxTaxisAsync(tableName, content.ChannelId, true) + 1;
+                    taxis = await GetMaxTaxisAsync(site, channel, true) + 1;
                 }
                 else
                 {
-                    taxis = await GetMaxTaxisAsync(tableName, content.ChannelId, false) + 1;
+                    taxis = await GetMaxTaxisAsync(site, channel, false) + 1;
                 }
             }
             return await InsertWithTaxisAsync(site, channel, content, taxis);
@@ -49,7 +34,7 @@ namespace SiteServer.CMS.Repositories
         public async Task<int> InsertPreviewAsync(Site site, Channel channel, Content content)
         {
             channel.IsPreviewContentsExists = true;
-            await DataProvider.ChannelRepository.UpdateAdditionalAsync(channel);
+            await DataProvider.ChannelRepository.UpdateAsync(channel);
 
             content.SourceId = SourceManager.Preview;
             return await InsertWithTaxisAsync(site, channel, content, 0);
@@ -64,13 +49,26 @@ namespace SiteServer.CMS.Repositories
 
             content.Taxis = taxis;
 
-            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
             if (string.IsNullOrEmpty(tableName)) return 0;
 
             content.LastEditDate = DateTime.Now;
 
             var repository = GetRepository(tableName);
-            content.Id = await repository.InsertAsync(content);
+            if (content.SourceId == SourceManager.Preview)
+            {
+                await repository.InsertAsync(content);
+            }
+            else
+            {
+                var cacheKeys = new List<string>
+                {
+                    GetListKey(tableName, false, content.SiteId, content.ChannelId),
+                    GetListKey(tableName, true, content.SiteId, content.ChannelId),
+                    GetCountKey(tableName, content.SiteId, content.ChannelId)
+                };
+                await repository.InsertAsync(content, Q.CachingRemove(cacheKeys.ToArray()));
+            }
 
             return content.Id;
         }

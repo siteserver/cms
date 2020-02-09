@@ -11,7 +11,6 @@ using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    
     public class SysStlActionsDownloadController : ApiController
     {
         [HttpGet]
@@ -76,10 +75,10 @@ namespace SiteServer.API.Controllers.Sys
                     var contentId = request.GetQueryInt("contentId");
                     var fileUrl = WebConfigUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
                     var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                    var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                     var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
 
-                    await DataProvider.ContentRepository.AddDownloadsAsync(await ChannelManager.GetTableNameAsync(site, channelInfo), channelId, contentId);
+                    await DataProvider.ContentRepository.AddDownloadsAsync(await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo), channelId, contentId);
 
                     if (!string.IsNullOrEmpty(contentInfo?.Get<string>(ContentAttribute.FileUrl)))
                     {

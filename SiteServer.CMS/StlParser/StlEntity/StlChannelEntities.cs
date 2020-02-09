@@ -7,6 +7,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
 using System.Threading.Tasks;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Repositories;
 
@@ -60,7 +61,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 if (!string.IsNullOrEmpty(channelIndex))
                 {
                     //channelId = DataProvider.ChannelRepository.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    channelId = await ChannelManager.GetChannelIdByIndexNameAsync(pageInfo.SiteId, channelIndex);
+                    channelId = await DataProvider.ChannelRepository.GetChannelIdByIndexNameAsync(pageInfo.SiteId, channelIndex);
                     if (channelId == 0)
                     {
                         channelId = contextInfo.ChannelId;
@@ -96,7 +97,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     attributeName = attributeName.Substring(attributeName.IndexOf(".", StringComparison.Ordinal) + 1);
                 }
 
-                var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, channelId, upLevel, topLevel));
+                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, channelId, upLevel, topLevel));
 
                 if (StringUtils.EqualsIgnoreCase(ChannelId, attributeName))//栏目ID
                 {
@@ -137,7 +138,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(Group, attributeName))//栏目组别
                 {
-                    parsedContent = StringUtils.Join(nodeInfo.GroupNames);
+                    parsedContent = Utilities.ToString(nodeInfo.GroupNames);
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ChannelItem != null)
                 {
@@ -184,13 +185,13 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
         private static string GetValue(string attributeName, Channel attributes, bool isAddAndNotPostBack, string defaultValue)
         {
-            var value = attributes.Get(attributeName);
-            if (isAddAndNotPostBack && value == null)
+            var value = attributes.Get<string>(attributeName);
+            if (isAddAndNotPostBack && string.IsNullOrEmpty(value))
             {
                 value = defaultValue;
             } 
 
-            return value.ToString();
+            return value;
         }
     }
 }

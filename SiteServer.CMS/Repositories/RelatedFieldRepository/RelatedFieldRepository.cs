@@ -57,14 +57,14 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        public async Task<IEnumerable<RelatedField>> GetRelatedFieldListAsync(int siteId)
+        public async Task<List<RelatedField>> GetRelatedFieldListAsync(int siteId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(nameof(RelatedField.SiteId), siteId)
                 .OrderBy(nameof(RelatedField.Id)));
         }
 
-        public async Task<IEnumerable<string>> GetTitleListAsync(int siteId)
+        public async Task<List<string>> GetTitleListAsync(int siteId)
         {
             return await _repository.GetAllAsync<string>(Q
                 .Select(nameof(RelatedField.Title))

@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "channelId", "contentID", "returnUrl");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
-            _tableName = ChannelManager.GetTableNameAsync(Site, _channelId).GetAwaiter().GetResult();
+            _tableName = DataProvider.ChannelRepository.GetTableNameAsync(Site, _channelId).GetAwaiter().GetResult();
             _contentId = AuthRequest.GetQueryInt("contentID");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlCheckDate = (Literal)e.Item.FindControl("ltlCheckDate");
             var ltlReasons = (Literal)e.Item.FindControl("ltlReasons");
 
-            ltlUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(checkInfo.UserName).GetAwaiter().GetResult();
+            ltlUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(checkInfo.AdminId).GetAwaiter().GetResult();
             ltlCheckDate.Text = DateUtils.GetDateAndTimeString(checkInfo.CheckDate);
             ltlReasons.Text = checkInfo.Reasons;
         }

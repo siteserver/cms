@@ -5,6 +5,7 @@ using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -170,7 +171,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId);
+                        var nodeInfo = await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId);
                         url = await PageUtility.GetContentUrlAsync(pageInfo.Site, nodeInfo, contextInfo.ContentId,
                             pageInfo.IsLocal);
                     }
@@ -200,9 +201,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     contextInfo.ChannelId =
                         await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
                     contextInfo.ChannelId =
-                        await ChannelManager.GetChannelIdAsync(pageInfo.SiteId,
+                        await DataProvider.ChannelRepository.GetChannelIdAsync(pageInfo.SiteId,
                             contextInfo.ChannelId, channelIndex, channelName);
-                    var channel = await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId);
+                    var channel = await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId);
 
                     url = await PageUtility.GetChannelUrlAsync(pageInfo.Site, channel, pageInfo.IsLocal);
                     if (string.IsNullOrWhiteSpace(contextInfo.InnerHtml))

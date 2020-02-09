@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
+                var nodeInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
                 if (nodeInfo == null) return;
 
                 if (nodeInfo.ParentId == 0)
@@ -175,7 +175,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
+                var nodeInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
 
                 if (!nodeInfo.IndexName.Equals(TbNodeIndexName.Text) && !string.IsNullOrEmpty(TbNodeIndexName.Text))
                 {

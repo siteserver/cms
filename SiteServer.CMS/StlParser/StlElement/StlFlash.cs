@@ -151,8 +151,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contentInfo == null)
                     {
-                        var nodeInfo = await ChannelManager.GetChannelAsync(contextInfo.Site.Id, contextInfo.ChannelId);
-                        var tableName = await ChannelManager.GetTableNameAsync(contextInfo.Site, nodeInfo);
+                        var nodeInfo = await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId);
+                        var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(contextInfo.Site, nodeInfo);
 
                         flashUrl = await DataProvider.ContentRepository.GetValueAsync(tableName, contentId, type);
                     }
@@ -166,7 +166,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
                     channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
-                    var channel = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
+                    var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
 
                     flashUrl = channel.ImageUrl;
                 }
@@ -344,8 +344,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                {
 //                    if (contentInfo == null)
 //                    {
-//                        var node = await ChannelManager.GetChannelAsync(contextInfo.Site.Id, contextInfo.ChannelId);
-//                        var tableName = ChannelManager.GetTableName(contextInfo.Site, node);
+//                        var node = await DataProvider.ChannelRepository.GetAsync(contextInfo.Site.Id, contextInfo.ChannelId);
+//                        var tableName = DataProvider.ChannelRepository.GetTableName(contextInfo.Site, node);
 
 //                        //picUrl = DataProvider.ContentRepository.GetValue(tableName, contentId, type);
 //                        picUrl = Body.GetValue(tableName, contentId, type);
@@ -360,7 +360,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                    var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
 //                    channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
-//                    var channel = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
+//                    var channel = await DataProvider.ChannelRepository.GetAsync(pageInfo.SiteId, channelId);
 
 //                    picUrl = channel.ImageUrl;
 //                }

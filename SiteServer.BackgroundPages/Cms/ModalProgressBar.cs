@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Core;
@@ -124,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (AuthRequest.IsQueryExists("CreateChannelsOneByOne") && AuthRequest.IsQueryExists("ChannelIDCollection"))
             {
-                foreach (var channelId in StringUtils.GetIntList(AuthRequest.GetQueryString("ChannelIDCollection")))
+                foreach (var channelId in Utilities.GetIntList(AuthRequest.GetQueryString("ChannelIDCollection")))
                 {
                     CreateManager.CreateChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                 }
@@ -135,7 +136,7 @@ namespace SiteServer.BackgroundPages.Cms
             else if (AuthRequest.IsQueryExists("CreateContentsOneByOne") && AuthRequest.IsQueryExists("channelId") &&
                      AuthRequest.IsQueryExists("contentIdCollection"))
             {
-                foreach (var contentId in StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection")))
+                foreach (var contentId in Utilities.GetIntList(AuthRequest.GetQueryString("contentIdCollection")))
                 {
                     CreateManager.CreateContentAsync(SiteId, AuthRequest.GetQueryInt("channelId"),
                         contentId).GetAwaiter().GetResult();
@@ -155,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
             else if (AuthRequest.IsQueryExists("CreateByIDsCollection") && AuthRequest.IsQueryExists("IDsCollection"))
             {
                 foreach (var channelIdContentId in
-                    TranslateUtils.StringCollectionToStringCollection(AuthRequest.GetQueryString("IDsCollection")))
+                    Utilities.GetStringList(AuthRequest.GetQueryString("IDsCollection")))
                 {
                     var pair = channelIdContentId.Split('_');
                     CreateManager.CreateContentAsync(SiteId, TranslateUtils.ToInt(pair[0]),

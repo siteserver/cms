@@ -1,9 +1,7 @@
 ﻿var $url = '/pages/settings/siteSave';
 
-var data = {
+var data = utils.initData({
   siteId: utils.getQueryInt('siteId'),
-  pageLoad: false,
-  pageAlert: null,
   active: 0,
   site: null,
   templateDir: null,
@@ -23,7 +21,7 @@ var data = {
   isSaveContents: true,
   isSaveAllChannels: true,
   checkedChannelIds: []
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -42,7 +40,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
@@ -87,7 +85,8 @@ var methods = {
 
   apiSaveSettings: function () {
     var $this = this;
-    utils.loading($this, true);
+
+    utils.loading(this, true);
     $api.post($url + '/actions/settings', {
       siteId: this.siteId,
       templateName: this.templateName,
@@ -109,7 +108,8 @@ var methods = {
 
   apiSaveFiles: function () {
     var $this = this;
-    utils.loading($this, true);
+
+    utils.loading(this, true);
     $api.post($url + '/actions/files', {
       siteId: this.siteId,
       templateDir: this.templateDir,
@@ -130,7 +130,8 @@ var methods = {
 
   apiSaveData: function () {
     var $this = this;
-    utils.loading($this, true);
+    
+    utils.loading(this, true);
     $api.post($url + '/actions/data', {
       siteId: this.siteId,
       templateName:  this.templateName,

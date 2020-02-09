@@ -35,7 +35,7 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
@@ -45,7 +45,7 @@ namespace SiteServer.API.Controllers.Home
                 var checkState = 
                     CheckManager.GetCheckState(site, contentInfo);
 
-                var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
+                var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
                 var contentChecks = await DataProvider.ContentCheckRepository.GetCheckListAsync(tableName, contentId);
 
                 return Ok(new

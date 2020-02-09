@@ -8,6 +8,7 @@ using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -69,7 +70,7 @@ namespace SiteServer.BackgroundPages.Cms
                     HifFile.PostedFile.SaveAs(localFilePath);
 
                     var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
-                    var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
+                    var nodeInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
                     importObject.ImportContentsByZipFileAsync(nodeInfo, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel).GetAwaiter().GetResult();
                 }
                 else if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentExcel))

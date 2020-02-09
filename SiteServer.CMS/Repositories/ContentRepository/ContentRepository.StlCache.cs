@@ -5,49 +5,16 @@ using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Core;
 
 namespace SiteServer.CMS.Repositories
 {
     public partial class ContentRepository
     {
-        public async Task<string> GetStlSqlStringCheckedAsync(string tableName, int siteId, int channelId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot)
-        {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(ContentRepository), nameof(GetStlSqlStringCheckedAsync),
-                    tableName, siteId.ToString(), channelId.ToString(), startNum.ToString(),
-                    totalNum.ToString(), orderByString, whereString, EScopeTypeUtils.GetValue(scopeType), groupChannel,
-                    groupChannelNot);
-            var retVal = StlCacheManager.Get<string>(cacheKey);
-            if (retVal != null) return retVal;
-
-            retVal = StlCacheManager.Get<string>(cacheKey);
-            if (retVal == null)
-            {
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-                var channelIdList = await ChannelManager.GetChannelIdListAsync(channelInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
-                retVal = GetStlSqlStringChecked(channelIdList, tableName, siteId, channelId, startNum,
-                    totalNum, orderByString, whereString, scopeType, groupChannel, groupChannelNot);
-                StlCacheManager.Set(cacheKey, retVal);
-            }
-
-            return retVal;
-        }
-
-        public async Task<int> GetCountOfContentAddAsync(string tableName, int siteId, int channelId, EScopeType scope, DateTime begin, DateTime end, string userName, ETriState checkedState)
-        {
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-            var channelIdList = await ChannelManager.GetChannelIdListAsync(channelInfo, scope, string.Empty, string.Empty, string.Empty);
-            return GetCountOfContentAdd(tableName, siteId, channelIdList, begin, end, userName, checkedState);
-        }
-
-        public List<int> GetContentIdListChecked(string tableName, int channelId, string orderByFormatString)
-        {
-            return GetContentIdListChecked(tableName, channelId, orderByFormatString, string.Empty);
-        }
+        
 
         public async Task<string> GetValueAsync(string tableName, int contentId, string name)
         {
@@ -58,39 +25,6 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        //public Tuple<int, string> GetChannelIdAndValue(string tableName, int contentId, string name)
-        //{
-        //    Tuple<int, string> tuple = null;
-
-        //    try
-        //    {
-        //        var sqlString = $"SELECT {ContentAttribute.ChannelId}, {name} FROM {tableName} WHERE Id = {contentId}";
-
-        //        using (var conn = GetConnection())
-        //        {
-        //            conn.Open();
-        //            using (var rdr = ExecuteReader(conn, sqlString))
-        //            {
-        //                if (rdr.Read())
-        //                {
-        //                    var channelId = GetInt(rdr, 0);
-        //                    var value = GetString(rdr, 1);
-
-        //                    tuple = new Tuple<int, string>(channelId, value);
-        //                }
-
-        //                rdr.Close();
-        //            }
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        // ignored
-        //    }
-
-        //    return tuple;
-        //}
-
         public string GetStlSqlStringCheckedBySearch(string tableName, int startNum, int totalNum, string orderByString, string whereString)
         {
             var sqlWhereString =
@@ -98,8 +32,7 @@ namespace SiteServer.CMS.Repositories
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                //return DataProvider.DatabaseRepository.GetSelectSqlString(tableName, startNum, totalNum, TranslateUtils.ObjectCollectionToString(ContentAttribute.AllAttributes.Value), sqlWhereString, orderByString);
-                return DataProvider.DatabaseRepository.GetPageSqlString(tableName, TranslateUtils.ObjectCollectionToString(ContentAttribute.AllAttributes.Value), sqlWhereString, orderByString, startNum - 1, totalNum);
+                return DataProvider.DatabaseRepository.GetPageSqlString(tableName, Utilities.ToString(ContentAttribute.AllAttributes.Value), sqlWhereString, orderByString, startNum - 1, totalNum);
             }
             return string.Empty;
         }
@@ -132,42 +65,39 @@ namespace SiteServer.CMS.Repositories
 
             if (isTopExists)
             {
-                whereBuilder.Append($" AND {ContentAttribute.IsTop} = '{isTop}' ");
+                whereBuilder.Append($" AND {nameof(Content.Top)} = {isTop.ToString().ToLower()} ");
             }
 
             if (isRecommendExists)
             {
-                whereBuilder.Append($" AND {ContentAttribute.IsRecommend} = '{isRecommend}' ");
+                whereBuilder.Append($" AND {nameof(Content.Recommend)} = {isRecommend.ToString().ToLower()} ");
             }
 
             if (isHotExists)
             {
-                whereBuilder.Append($" AND {ContentAttribute.IsHot} = '{isHot}' ");
+                whereBuilder.Append($" AND {nameof(Content.Hot)} = {isHot.ToString().ToLower()} ");
             }
 
             if (isColorExists)
             {
-                whereBuilder.Append($" AND {ContentAttribute.IsColor} = '{isColor}' ");
+                whereBuilder.Append($" AND {nameof(Content.Color)} = {isColor.ToString().ToLower()} ");
             }
 
             if (!string.IsNullOrEmpty(group))
             {
                 group = group.Trim().Trim(',');
-                var groupArr = group.Split(',');
-                if (groupArr != null && groupArr.Length > 0)
+                var groups = Utilities.GetStringList(group);
+                if (groups.Count > 0)
                 {
                     whereBuilder.Append(" AND (");
-                    foreach (var theGroup in groupArr)
+                    foreach (var theGroup in groups)
                     {
                         var trimGroup = theGroup.Trim();
 
                         whereBuilder.Append(
-                                $" ({ContentAttribute.GroupNameCollection} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup)}) OR ");
+                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(nameof(Content.GroupNames), trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup)}) OR ");
                     }
-                    if (groupArr.Length > 0)
-                    {
-                        whereBuilder.Length = whereBuilder.Length - 3;
-                    }
+                    whereBuilder.Length = whereBuilder.Length - 3;
                     whereBuilder.Append(") ");
                 }
             }
@@ -175,35 +105,38 @@ namespace SiteServer.CMS.Repositories
             if (!string.IsNullOrEmpty(groupNot))
             {
                 groupNot = groupNot.Trim().Trim(',');
-                var groupNotArr = groupNot.Split(',');
-                if (groupNotArr != null && groupNotArr.Length > 0)
+                var groupNots = Utilities.GetStringList(groupNot);
+                if (groupNots.Count > 0)
                 {
                     whereBuilder.Append(" AND (");
-                    foreach (var theGroupNot in groupNotArr)
+                    foreach (var theGroupNot in groupNots)
                     {
                         var trimGroup = theGroupNot.Trim();
                         //whereBuilder.Append(
                         //    $" ({ContentAttribute.GroupNameCollection} <> '{trimGroup}' AND CHARINDEX('{trimGroup},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup}',{ContentAttribute.GroupNameCollection}) = 0) AND ");
 
                         whereBuilder.Append(
-                                $" ({ContentAttribute.GroupNameCollection} <> '{trimGroup}' AND {SqlUtils.GetNotInStr(ContentAttribute.GroupNameCollection, trimGroup + ",")} AND {SqlUtils.GetNotInStr(ContentAttribute.GroupNameCollection, "," + trimGroup + ",")} AND {SqlUtils.GetNotInStr(ContentAttribute.GroupNameCollection, "," + trimGroup)}) AND ");
+                                $" ({nameof(Content.GroupNames)} <> '{trimGroup}' AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), trimGroup + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + trimGroup + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + trimGroup)}) AND ");
                     }
-                    if (groupNotArr.Length > 0)
-                    {
-                        whereBuilder.Length = whereBuilder.Length - 4;
-                    }
+                    whereBuilder.Length = whereBuilder.Length - 4;
                     whereBuilder.Append(") ");
                 }
             }
 
             if (!string.IsNullOrEmpty(tags))
             {
-                var tagCollection = ContentTagUtils.ParseTagsString(tags);
-                var contentIdArrayList = await DataProvider.ContentTagRepository.GetContentIdListByTagCollectionAsync(tagCollection, siteId);
-                if (contentIdArrayList.Count > 0)
+                tags = tags.Trim().Trim(',');
+                var tagNames = Utilities.GetStringList(tags);
+                if (tagNames.Count > 0)
                 {
-                    whereBuilder.Append(
-                        $" AND (ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdArrayList)}))");
+                    whereBuilder.Append(" AND (");
+                    foreach (var tagName in tagNames)
+                    {
+                        whereBuilder.Append(
+                            $" ({nameof(Content.TagNames)} = '{AttackUtils.FilterSql(tagName)}' OR {SqlUtils.GetInStr(nameof(Content.TagNames), tagName + ",")} OR {SqlUtils.GetInStr(nameof(Content.TagNames), "," + tagName + ",")} OR {SqlUtils.GetInStr(nameof(Content.TagNames), "," + tagName)}) OR ");
+                    }
+                    whereBuilder.Length = whereBuilder.Length - 3;
+                    whereBuilder.Append(") ");
                 }
             }
 
@@ -242,22 +175,22 @@ namespace SiteServer.CMS.Repositories
 
             if (isTopExists)
             {
-                whereBuilder.Append($" AND {ContentAttribute.IsTop} = '{isTop}' ");
+                whereBuilder.Append($" AND {nameof(Content.Top)} = {isTop.ToString().ToLower()} ");
             }
 
             if (isRecommendExists)
             {
-                whereBuilder.Append($" AND {ContentAttribute.IsRecommend} = '{isRecommend}' ");
+                whereBuilder.Append($" AND {nameof(Content.Recommend)} = {isRecommend.ToString().ToLower()} ");
             }
 
             if (isHotExists)
             {
-                whereBuilder.Append($" AND {ContentAttribute.IsHot} = '{isHot}' ");
+                whereBuilder.Append($" AND {nameof(Content.Hot)} = {isHot.ToString().ToLower()} ");
             }
 
             if (isColorExists)
             {
-                whereBuilder.Append($" AND {ContentAttribute.IsColor} = '{isColor}' ");
+                whereBuilder.Append($" AND {nameof(Content.Color)} = {isColor.ToString().ToLower()} ");
             }
 
             if (!string.IsNullOrEmpty(group))
@@ -272,7 +205,7 @@ namespace SiteServer.CMS.Repositories
                         var trimGroup = theGroup.Trim();
 
                         whereBuilder.Append(
-                                $" ({ContentAttribute.GroupNameCollection} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup)}) OR ");
+                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(nameof(Content.GroupNames), trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {
@@ -296,7 +229,7 @@ namespace SiteServer.CMS.Repositories
                         //    $" ({ContentAttribute.GroupNameCollection} <> '{trimGroup}' AND CHARINDEX('{trimGroup},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup}',{ContentAttribute.GroupNameCollection}) = 0) AND ");
 
                         whereBuilder.Append(
-                                $" ({ContentAttribute.GroupNameCollection} <> '{trimGroup}' AND {SqlUtils.GetNotInStr(ContentAttribute.GroupNameCollection, trimGroup + ",")} AND {SqlUtils.GetNotInStr(ContentAttribute.GroupNameCollection, "," + trimGroup + ",")} AND {SqlUtils.GetNotInStr(ContentAttribute.GroupNameCollection, "," + trimGroup)}) AND ");
+                                $" ({nameof(Content.GroupNames)} <> '{trimGroup}' AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), trimGroup + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + trimGroup + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + trimGroup)}) AND ");
                     }
                     if (groupNotArr.Length > 0)
                     {
@@ -335,7 +268,7 @@ namespace SiteServer.CMS.Repositories
                         var trimGroup = theGroup.Trim();
 
                         whereStringBuilder.Append(
-                                $" ({ContentAttribute.GroupNameCollection} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup)}) OR ");
+                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(nameof(Content.GroupNames), trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {
@@ -358,7 +291,7 @@ namespace SiteServer.CMS.Repositories
                         //    $" ({ContentAttribute.GroupNameCollection} <> '{theGroupNot.Trim()}' AND CHARINDEX('{theGroupNot.Trim()},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{theGroupNot.Trim()},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{theGroupNot.Trim()}',{ContentAttribute.GroupNameCollection}) = 0) AND ");
 
                         whereStringBuilder.Append(
-                                $" ({ContentAttribute.GroupNameCollection} <> '{theGroupNot.Trim()}' AND {SqlUtils.GetNotInStr(ContentAttribute.GroupNameCollection, theGroupNot.Trim() + ",")} AND {SqlUtils.GetNotInStr(ContentAttribute.GroupNameCollection, "," + theGroupNot.Trim() + ",")} AND {SqlUtils.GetNotInStr(ContentAttribute.GroupNameCollection, "," + theGroupNot.Trim())}) AND ");
+                                $" ({nameof(Content.GroupNames)} <> '{theGroupNot.Trim()}' AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), theGroupNot.Trim() + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + theGroupNot.Trim() + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + theGroupNot.Trim())}) AND ");
                     }
                     if (groupNotArr.Length > 0)
                     {
@@ -370,12 +303,18 @@ namespace SiteServer.CMS.Repositories
 
             if (!string.IsNullOrEmpty(tags))
             {
-                var tagList = ContentTagUtils.ParseTagsString(tags);
-                var contentIdList = await DataProvider.ContentTagRepository.GetContentIdListByTagCollectionAsync(tagList, siteId);
-                if (contentIdList.Count > 0)
+                tags = tags.Trim().Trim(',');
+                var tagNames = Utilities.GetStringList(tags);
+                if (tagNames.Count > 0)
                 {
-                    var inString = TranslateUtils.ToSqlInStringWithoutQuote(contentIdList);
-                    whereStringBuilder.Append($" AND (Id IN ({inString}))");
+                    whereStringBuilder.Append(" AND (");
+                    foreach (var tagName in tagNames)
+                    {
+                        whereStringBuilder.Append(
+                            $" ({nameof(Content.TagNames)} = '{AttackUtils.FilterSql(tagName)}' OR {SqlUtils.GetInStr(nameof(Content.TagNames), tagName + ",")} OR {SqlUtils.GetInStr(nameof(Content.TagNames), "," + tagName + ",")} OR {SqlUtils.GetInStr(nameof(Content.TagNames), "," + tagName)}) OR ");
+                    }
+                    whereStringBuilder.Length = whereStringBuilder.Length - 3;
+                    whereStringBuilder.Append(") ");
                 }
             }
 
@@ -414,7 +353,7 @@ namespace SiteServer.CMS.Repositories
             var whereString = $"WHERE {ContentAttribute.ChannelId} = {channelId}";
             if (isCheckedOnly)
             {
-                whereString += $" AND {ContentAttribute.IsChecked} = '{true.ToString()}'";
+                whereString += $" AND {nameof(Content.Checked)} = {true.ToString().ToLower()}";
             }
             var sqlString = SqlUtils.ToTopSqlString(tableName, "Id", whereString, orderByString, 1);
 
@@ -448,7 +387,7 @@ namespace SiteServer.CMS.Repositories
         public int GetSequence(string tableName, int channelId, int contentId)
         {
             var sqlString =
-                $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {ContentAttribute.IsChecked} = '{true}' AND Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
+                $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {nameof(Content.Checked)} = {true.ToString().ToLower()} AND Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
 
             return DataProvider.DatabaseRepository.GetIntResult(sqlString) + 1;
         }
@@ -462,7 +401,7 @@ namespace SiteServer.CMS.Repositories
         {
             var tableName = await DataProvider.SiteRepository.GetTableNameAsync(siteId);
             var sqlString =
-                $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {ContentAttribute.ImageUrl} != '' AND {ContentAttribute.IsChecked} = '{true}' AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
+                $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {ContentAttribute.ImageUrl} != '' AND {nameof(Content.Checked)} = {true.ToString().ToLower()} AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
 
             return DataProvider.DatabaseRepository.GetIntResult(sqlString);
         }

@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Core.Create
         {
             foreach (var channelId in channelIdList)
             {
-                var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
+                var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelId);
                 var contentIdList = await DataProvider.ContentRepository.GetContentIdListAsync(tableName, channelId);
                 if (contentIdList != null)
                 {
@@ -51,7 +51,7 @@ namespace SiteServer.CMS.Core.Create
 
                 FileUtils.DeleteFileIfExists(filePath);
 
-                var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
+                var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelId);
                 var contentIdList = await DataProvider.ContentRepository.GetContentIdListAsync(tableName, channelId);
                 await DeleteContentsAsync(site, channelId, contentIdList);
             }
@@ -95,7 +95,7 @@ namespace SiteServer.CMS.Core.Create
         {
             foreach (var templateId in templateIdList)
             {
-                var templateInfo = await TemplateManager.GetTemplateAsync(site.Id, templateId);
+                var templateInfo = await DataProvider.TemplateRepository.GetAsync(templateId);
                 if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
                 {
                     return;

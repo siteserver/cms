@@ -37,10 +37,10 @@ namespace SiteServer.API.Controllers.Pages
         }
 
         [HttpGet, Route(RouteUnCheckedList)]
-        public async Task<GenericResult<List<Checking>>> GetUnCheckedList()
+        public async Task<ObjectResult<List<Checking>>> GetUnCheckedList()
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            if (!auth.IsAdminLoggin) return Request.Unauthorized<GenericResult<List<Checking>>>();
+            if (!auth.IsAdminLoggin) return Request.Unauthorized<ObjectResult<List<Checking>>>();
 
             var checkingList = new List<Checking>();
 
@@ -62,25 +62,28 @@ namespace SiteServer.API.Controllers.Pages
             }
             else if (await auth.AdminPermissionsImpl.IsSiteAdminAsync())
             {
-                foreach (var siteId in auth.Administrator.SiteIds)
+                if (auth.Administrator.SiteIds != null)
                 {
-                    var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                    if (site == null) continue;
-
-                    var count = await DataProvider.ContentRepository.GetCountCheckingAsync(site);
-                    if (count > 0)
+                    foreach (var siteId in auth.Administrator.SiteIds)
                     {
-                        checkingList.Add(new Checking
+                        var site = await DataProvider.SiteRepository.GetAsync(siteId);
+                        if (site == null) continue;
+
+                        var count = await DataProvider.ContentRepository.GetCountCheckingAsync(site);
+                        if (count > 0)
                         {
-                            Url = PageContentSearch.GetRedirectUrlCheck(site.Id),
-                            SiteName = site.SiteName,
-                            Count = count
-                        });
+                            checkingList.Add(new Checking
+                            {
+                                Url = PageContentSearch.GetRedirectUrlCheck(site.Id),
+                                SiteName = site.SiteName,
+                                Count = count
+                            });
+                        }
                     }
                 }
             }
 
-            return new GenericResult<List<Checking>>
+            return new ObjectResult<List<Checking>>
             {
                 Value = checkingList
             };

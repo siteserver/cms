@@ -1,8 +1,6 @@
 ﻿var $url = '/pages/settings/siteUrl';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: null,
   sites: null,
   rootSiteId: null,
@@ -32,7 +30,7 @@ var data = {
       { required: true, message: '独立部署API访问地址', trigger: 'blur' }
     ]
   }
-};
+});
 
 var methods = {
   apiGetConfig: function () {
@@ -48,7 +46,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 

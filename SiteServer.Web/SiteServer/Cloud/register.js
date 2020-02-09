@@ -38,16 +38,18 @@ var methods = {
     this.groups = groups;
     this.reload();
   },
+
   reload: function () {
     this.captcha = '';
     this.captchaUrl = $captchaGetUrl + '?r=' + new Date().getTime();
   },
+
   checkCaptcha: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $captchaCheckApi.post({
-      captcha: $this.captcha
+      captcha: this.captcha
     }, function (err) {
       utils.loading($this, false);
 
@@ -76,7 +78,7 @@ var methods = {
       payload[style.attributeName] = style.value;
     }
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post(payload, function (err, res) {
       utils.loading($this, false);
       if (err) {

@@ -7,17 +7,17 @@ namespace SiteServer.Abstractions
     [JsonConverter(typeof(StringEnumConverter))]
     public enum LibraryType
     {
-        [DataEnum(DisplayName = "Text")]
+        [DataEnum(DisplayName = "图文")]
         Text,
-        [DataEnum(DisplayName = "Image")]
+        [DataEnum(DisplayName = "图片")]
         Image,
-        [DataEnum(DisplayName = "Document")]
+        [DataEnum(DisplayName = "文档")]
         Document,
-        [DataEnum(DisplayName = "Audio")]
+        [DataEnum(DisplayName = "音频")]
         Audio,
-        [DataEnum(DisplayName = "Video")]
+        [DataEnum(DisplayName = "视频")]
         Video,
-        [DataEnum(DisplayName = "File")]
+        [DataEnum(DisplayName = "文件")]
         File
     }
 }

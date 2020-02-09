@@ -5,6 +5,7 @@ using System.Data;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using Datory;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -50,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
         private int _channelId;
         private Channel _channel;
         private List<TableStyle> _styleList;
-        private StringCollection _attributesOfDisplay;
+        private List<string> _attributesOfDisplay;
         private List<TableStyle> _allStyleList;
         private List<string> _pluginIds;
         private Dictionary<string, Dictionary<string, Func<IContentContext, string>>> _pluginColumns;
@@ -77,11 +78,11 @@ namespace SiteServer.BackgroundPages.Cms
             _isWritingOnly = AuthRequest.GetQueryBool("isWritingOnly");
             _isAdminOnly = AuthRequest.GetQueryBool("isAdminOnly");
 
-            _channel = await ChannelManager.GetChannelAsync(SiteId, _channelId);
-            var tableName = ChannelManager.GetTableNameAsync(Site, _channel).GetAwaiter().GetResult();
+            _channel = await DataProvider.ChannelRepository.GetAsync(_channelId);
+            var tableName = DataProvider.ChannelRepository.GetTableNameAsync(Site, _channel).GetAwaiter().GetResult();
             _styleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
-            _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplayAsync(SiteId, _channelId).GetAwaiter().GetResult());
-            _allStyleList = ContentUtility.GetAllTableStyleList(_styleList);
+            _attributesOfDisplay = Utilities.GetStringList(DataProvider.ChannelRepository.GetContentAttributesOfDisplayAsync(SiteId, _channelId).GetAwaiter().GetResult());
+            _allStyleList = ColumnsManager.GetContentListStyles(_styleList);
             _pluginIds = PluginContentManager.GetContentPluginIds(_channel);
             _pluginColumns = PluginContentManager.GetContentColumnsAsync(_pluginIds).GetAwaiter().GetResult();
             _isEdit = TextUtility.IsEditAsync(Site, _channelId, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
@@ -110,12 +111,10 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             var allAttributeNameList = await TableColumnManager.GetTableColumnNameListAsync(tableName, DataType.Text);
-            var adminId = _isAdminOnly
-                ? AuthRequest.AdminId
-                : AuthRequest.AdminPermissionsImpl.GetAdminIdAsync(Site.Id, _channel.Id).GetAwaiter().GetResult();
+
             var whereString = DataProvider.ContentRepository.GetPagerWhereSqlStringAsync(Site, _channel,
                 searchType, keyword,
-                dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, adminId,
+                dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly,
                 AuthRequest.AdminPermissionsImpl.IsSiteAdminAsync().GetAwaiter().GetResult(), AuthRequest.AdminPermissionsImpl.GetChannelIdListAsync().GetAwaiter().GetResult(),
                 allAttributeNameList).GetAwaiter().GetResult();
 
@@ -126,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageSize = Site.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
                 OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByIdDesc),
-                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList),
+                ReturnColumnNames = Utilities.ToString(allAttributeNameList),
                 WhereSqlString = whereString,
                 TotalCount = DataProvider.DatabaseRepository.GetPageTotalCount(tableName, whereString),
                 
@@ -143,7 +142,9 @@ namespace SiteServer.BackgroundPages.Cms
                     var list = DataProvider.ContentRepository.GetContentIdListByTrashAsync(SiteId, tableName).GetAwaiter().GetResult();
                     foreach (var (contentChannelId, contentId) in list)
                     {
-                        ContentUtility.DeleteAsync(tableName, Site, contentChannelId, contentId).GetAwaiter().GetResult();
+                        var channel = DataProvider.ChannelRepository.GetAsync(contentChannelId).GetAwaiter()
+                            .GetResult();
+                        DataProvider.ContentRepository.DeleteAsync(Site, channel, contentId).GetAwaiter().GetResult();
                     }
 
                     await AuthRequest.AddSiteLogAsync(SiteId, "清空回收站");
@@ -155,7 +156,8 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var channelId in idsDictionary.Keys)
                     {
                         var contentIdList = idsDictionary[channelId];
-                        DataProvider.ContentRepository.UpdateTrashContentsAsync(SiteId, channelId, ChannelManager.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult(), contentIdList).GetAwaiter().GetResult();
+                        var channel = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
+                        DataProvider.ContentRepository.RecycleContentsAsync(Site, channel, contentIdList).GetAwaiter().GetResult();
                     }
                     await AuthRequest.AddSiteLogAsync(SiteId, "从回收站还原内容");
                     SuccessMessage("成功还原内容!");
@@ -168,7 +170,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            ChannelManager.AddListItemsAsync(DdlChannelId.Items, Site, true, true, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
+            DataProvider.ChannelRepository.AddListItemsAsync(DdlChannelId.Items, Site, true, true, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
 
             if (_isCheckOnly)
             {
@@ -322,7 +324,7 @@ namespace SiteServer.BackgroundPages.Cms
             string nodeName;
             if (!_nameValueCacheDict.TryGetValue(contentInfo.ChannelId.ToString(), out nodeName))
             {
-                nodeName = ChannelManager.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult();
+                nodeName = DataProvider.ChannelRepository.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult();
                 _nameValueCacheDict[contentInfo.ChannelId.ToString()] = nodeName;
             }
 

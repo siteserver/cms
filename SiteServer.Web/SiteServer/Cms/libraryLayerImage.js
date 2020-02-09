@@ -1,9 +1,7 @@
-﻿var $url = '/pages/cms/libraryLayerImage';
-var $urlUpload = apiUrl + '/pages/cms/libraryLayerImage/actions/upload?siteId=' + utils.getQueryInt('siteId');
+﻿var $url = '/pages/cms/library/libraryLayerImage';
+var $urlUpload = apiUrl + '/pages/cms/library/libraryLayerImage/actions/upload?siteId=' + utils.getQueryInt('siteId');
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   uploadList: [],
   dialogImageUrl: '',
   dialogVisible: false,
@@ -15,7 +13,7 @@ var data = {
     isLinkToOriginal: true,
     filePaths: []
   }
-};
+});
 
 var methods = {
   btnSubmitClick: function () {
@@ -26,7 +24,7 @@ var methods = {
       return false;
     }
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url, this.form).then(function(response) {
       var res = response.data;
 
@@ -34,14 +32,14 @@ var methods = {
         for (var i = 0; i < res.length; i++) {
           var result = res[i];
           if (result.thumbUrl) {
-            parent.insertHtml('<a href="' + result.url + '" target="_blank"><img src="' + result.thumbUrl + '" border="0" /></a><br/>');
+            parent.$vue.insertHtml('<a href="' + result.url + '" target="_blank"><img src="' + result.thumbUrl + '" border="0" /></a><br/>');
           } else {
-            parent.insertHtml('<img src="' + result.url + '" border="0" /><br/>');
+            parent.$vue.insertHtml('<img src="' + result.url + '" border="0" /><br/>');
           }
         }
       }
       
-      parent.layer.closeAll();
+      utils.closeLayer();
     })
     .catch(function(error) {
       utils.error($this, error);
@@ -52,7 +50,7 @@ var methods = {
   },
 
   btnCancelClick: function () {
-    parent.layer.closeAll();
+    utils.closeLayer();
   },
 
   uploadBefore(file) {
@@ -77,11 +75,11 @@ var methods = {
 
   uploadSuccess: function(res) {
     this.form.filePaths.push(res.path);
-    utils.loading($this, false);
+    utils.loading(this, false);
   },
 
   uploadError: function(err) {
-    utils.loading($this, false);
+    utils.loading(this, false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   },

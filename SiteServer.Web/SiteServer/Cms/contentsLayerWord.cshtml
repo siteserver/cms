@@ -1,67 +1,59 @@
 ﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+@section Styles{
+  <style>
+    .el-upload, .el-upload-dragger {width: 100%;}
+  </style>
+}
 
-<div id="drop-area" style="height: 200px; line-height: 200px; text-align: center; font-size: 18px; color: #777; border: 2px dashed #0000004d; background: #eee;	border-radius: 6px; cursor: pointer; margin-bottom: 20px">
-  点击批量上传Word文件或者将Word文件拖拽到此区域
-</div>
+<el-upload
+  drag
+  :action="uploadUrl"
+  :auto-upload="true"
+  :with-credentials="true"
+  :file-list="uploadList"
+  :before-upload="uploadBefore"
+  :on-progress="uploadProgress"
+  :on-success="uploadSuccess"
+  :on-error="uploadError"
+  :on-remove="uploadRemove"
+  :multiple="true">
+  <i class="el-icon-upload"></i>
+  <div class="el-upload__text">将Word文件拖到此处，或<em>点击上传</em></div>
+</el-upload>
 
-<div class="row">
-  <div class="col-sm-4 col-lg-3 col-xs-12" v-for="(file, index) in files">
-    <div class="card m-b-20">
-      <div class="card-body">
-        <p class="card-text">
-          {{ file.fileName }}
-          <br /> 大小：{{ Math.round(file.length/1024) + ' KB' }}
-        </p>
-        <a v-on:click="del(file)" href="javascript:;" class="card-link text-danger">删 除</a>
-      </div>
-    </div>
-  </div>
-</div>
+<div style="height: 10px"></div>
 
-<div class="form-group form-row">
-  <label class="col-1 text-right col-form-label col-form-label-sm">设置</label>
-  <div class="col-10">
-    <div class="checkbox checkbox-primary">
-      <input id="isNotFirstLineTitle" type="checkbox" v-model="isFirstLineTitle" true-value="false" false-value="true" />
-      <label for="isNotFirstLineTitle" class="mr-2">将文件名称作为标题</label>
-      <input id="isFirstLineTitle" type="checkbox" v-model="isFirstLineTitle" true-value="true" false-value="false" />
-      <label for="isFirstLineTitle" class="mr-2">将Word第一行作为标题</label>
-      <input id="isFirstLineRemove" type="checkbox" v-model="isFirstLineRemove" />
-      <label for="isFirstLineRemove" class="mr-2">内容正文删除标题</label>
-      <br />
-      <input id="isClearFormat" type="checkbox" v-model="isClearFormat" />
-      <label for="isClearFormat" class="mr-2">清除格式</label>
-      <input id="isFirstLineIndent" type="checkbox" v-model="isFirstLineIndent" />
-      <label for="isFirstLineIndent" class="mr-2">首行缩进</label>
-      <input id="isClearFontSize" type="checkbox" v-model="isClearFontSize" />
-      <label for="isClearFontSize" class="mr-2">清除字号</label>
-      <input id="isClearFontFamily" type="checkbox" v-model="isClearFontFamily" />
-      <label for="isClearFontFamily" class="mr-2">清除字体</label>
-      <input id="isClearImages" type="checkbox" v-model="isClearImages" />
-      <label for="isClearImages" class="mr-2">清除图片</label>
-    </div>
-  </div>
-  <div class="col-1 help-block"></div>
-</div>
+<el-form ref="form" :model="form" label-width="100px" size="small">
+  <el-form-item label="内容标题">
+    <el-radio v-model="form.isFirstLineTitle" :label="false">将Word第一行作为标题</el-radio>
+    <el-radio v-model="form.isFirstLineTitle" :label="true">将文件名称作为标题</el-radio>
+  </el-form-item>
+  <el-form-item label="导入设置">
+    <el-checkbox label="清除格式" v-model="form.isClearFormat"></el-checkbox>
+    <el-checkbox label="首行缩进" v-model="form.isFirstLineIndent"></el-checkbox>
+    <el-checkbox label="清除字号" v-model="form.isClearFontSize"></el-checkbox>
+    <el-checkbox label="清除字体" v-model="form.isClearFontFamily"></el-checkbox>
+    <el-checkbox label="清除图片" v-model="form.isClearImages"></el-checkbox>
+  </el-form-item>
+  <el-form-item label="审核状态">
+    <el-select v-model="form.checkedLevel">
+      <el-option
+        v-for="level in checkedLevels"
+        :key="level.key"
+        :label="level.value"
+        :value="level.key"></el-option>
+    </el-select>
+  </el-form-item>
+</el-form>
 
-<div class="form-group form-row">
-  <label class="col-1 text-right col-form-label col-form-label-sm">状态</label>
-  <div class="col-10">
-    <select v-model="checkedLevel" class="form-control form-control-sm">
-      <option v-for="level in checkedLevels" :value="level.key">{{ level.value }}</option>
-    </select>
-  </div>
-  <div class="col-1 help-block"></div>
-</div>
-
-<hr />
-
-<div class="text-right mr-1">
-  <button v-on:click="btnSubmitClick" type="button" class="btn btn-primary m-l-5">确 定</button>
-  <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
-</div>
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
 
 @section Scripts{
-<script type="text/javascript" src="../assets/js/web-uploader/js/Q.js"></script>
-<script type="text/javascript" src="../assets/js/web-uploader/js/Q.Uploader.js"></script>
-<script src="contentsLayerWord.js" type="text/javascript"></script> }
+  <script src="contentsLayerWord.js" type="text/javascript"></script>
+}

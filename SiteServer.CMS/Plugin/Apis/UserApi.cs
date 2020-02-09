@@ -95,7 +95,7 @@ namespace SiteServer.CMS.Plugin.Apis
             await LogUtils.AddUserLogAsync(userName, action, summary);
         }
 
-        public async Task<IEnumerable<UserLog>> GetLogsAsync(string userName, int totalNum, string action = "")
+        public async Task<List<UserLog>> GetLogsAsync(string userName, int totalNum, string action = "")
         {
             return await DataProvider.UserLogRepository.ListAsync(userName, totalNum, action);
         }

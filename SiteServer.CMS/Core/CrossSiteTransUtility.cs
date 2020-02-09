@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using Datory;
+using Datory.Utils;
 using SiteServer.CMS.DataCache;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Plugin.Impl;
@@ -81,7 +82,7 @@ namespace SiteServer.CMS.Core
         {
             siteIdDropDownList.Items.Clear();
 
-            var channelInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
             if (channelInfo.TransType == TransType.SelfSite || channelInfo.TransType == TransType.SpecifiedSite || channelInfo.TransType == TransType.ParentSite)
             {
                 int theSiteId;
@@ -149,10 +150,10 @@ namespace SiteServer.CMS.Core
 
             if (!isUseNodeNames)
             {
-                var channelIdList = StringUtils.GetIntList(channel.TransChannelIds);
+                var channelIdList = Utilities.GetIntList(channel.TransChannelIds);
                 foreach (var theChannelId in channelIdList)
                 {
-                    var theNodeInfo = await ChannelManager.GetChannelAsync(psId, theChannelId);
+                    var theNodeInfo = await DataProvider.ChannelRepository.GetAsync(theChannelId);
                     if (theNodeInfo != null)
                     {
                         var listitem = new ListItem(theNodeInfo.ChannelName, theNodeInfo.Id.ToString());
@@ -164,13 +165,13 @@ namespace SiteServer.CMS.Core
             {
                 if (!string.IsNullOrEmpty(channel.TransChannelNames))
                 {
-                    var nodeNameArrayList = StringUtils.GetStringList(channel.TransChannelNames);
-                    var channelIdList = await ChannelManager.GetChannelIdListAsync(psId);
+                    var nodeNameArrayList = Utilities.GetStringList(channel.TransChannelNames);
+                    var channelIdList = await DataProvider.ChannelRepository.GetChannelIdListAsync(psId);
                     foreach (var nodeName in nodeNameArrayList)
                     {
                         foreach (var theChannelId in channelIdList)
                         {
-                            var theNodeInfo = await ChannelManager.GetChannelAsync(psId, theChannelId);
+                            var theNodeInfo = await DataProvider.ChannelRepository.GetAsync(theChannelId);
                             if (theNodeInfo.ChannelName == nodeName)
                             {
                                 var listitem = new ListItem(theNodeInfo.ChannelName, theNodeInfo.Id.ToString());
@@ -182,7 +183,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    await ChannelManager.AddListItemsForAddContentAsync(channelIdListBox.Items, await DataProvider.SiteRepository.GetAsync(psId), false, permissionsImpl);
+                    await DataProvider.ChannelRepository.AddListItemsForAddContentAsync(channelIdListBox.Items, await DataProvider.SiteRepository.GetAsync(psId), false, permissionsImpl);
                 }
             }
         }
@@ -226,10 +227,10 @@ namespace SiteServer.CMS.Core
                     if (site != null && !string.IsNullOrEmpty(channel.TransChannelIds))
                     {
                         var nodeNameBuilder = new StringBuilder();
-                        var channelIdArrayList = StringUtils.GetIntList(channel.TransChannelIds);
+                        var channelIdArrayList = Utilities.GetIntList(channel.TransChannelIds);
                         foreach (int channelId in channelIdArrayList)
                         {
-                            var theNodeInfo = await ChannelManager.GetChannelAsync(site.Id, channelId);
+                            var theNodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                             if (theNodeInfo != null)
                             {
                                 nodeNameBuilder.Append(theNodeInfo.ChannelName).Append(",");
@@ -293,7 +294,7 @@ namespace SiteServer.CMS.Core
             }
             else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl))))
             {
-                var sourceImageUrls = StringUtils.GetStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl)));
+                var sourceImageUrls = Utilities.GetStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl)));
 
                 foreach (string imageUrl in sourceImageUrls)
                 {
@@ -310,7 +311,7 @@ namespace SiteServer.CMS.Core
             }
             else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl))))
             {
-                var sourceFileUrls = StringUtils.GetStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl)));
+                var sourceFileUrls = Utilities.GetStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl)));
 
                 foreach (string fileUrl in sourceFileUrls)
                 {

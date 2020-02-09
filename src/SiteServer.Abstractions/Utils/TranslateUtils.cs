@@ -16,13 +16,6 @@ namespace SiteServer.Abstractions
 {
     public static class TranslateUtils
     {
-        public static object Get(IDictionary<string, object> dict, string name)
-        {
-            if (string.IsNullOrEmpty(name)) return null;
-
-            return dict.TryGetValue(name, out var extendValue) ? extendValue : null;
-        }
-
         public static T Get<T>(object value, T defaultValue = default(T))
         {
             switch (value)
@@ -63,13 +56,6 @@ namespace SiteServer.Abstractions
         public static IEnumerable<T> GetEnums<T>()
         {
             return Enum.GetValues(typeof(T)).Cast<T>();
-        }
-
-        //添加枚举：(fileAttributes | FileAttributes.ReadOnly)   判断枚举：((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)   去除枚举：(fileAttributes ^ FileAttributes.ReadOnly)
-
-        public static List<int> ToIntList(int intValue)
-        {
-            return new List<int> {intValue};
         }
 
         public static int ToInt(string intStr, int defaultValue = 0)
@@ -114,19 +100,6 @@ namespace SiteServer.Abstractions
                 i = defaultValue;
             }
             return i;
-        }
-
-        public static long ToLong(string intStr, long defaultValue = 0)
-        {
-            if (!long.TryParse(intStr?.Trim(), out var l))
-            {
-                l = defaultValue;
-            }
-            if (l < 0)
-            {
-                l = defaultValue;
-            }
-            return l;
         }
 
         public static bool ToBool(string boolStr)
@@ -197,6 +170,16 @@ namespace SiteServer.Abstractions
             return i >= 0 && i <= 9 ? $"0{i}" : i.ToString();
         }
 
+        public static Dictionary<string, object> ToDictionary(object obj)
+        {
+            if (obj == null) return new Dictionary<string, object>();
+            if (obj is Dictionary<string, object> objects) return objects;
+
+            var props = obj.GetType().GetProperties();
+            var pairDictionary = props.ToDictionary(x => x.Name, x => x.GetValue(obj, null));
+            return pairDictionary;
+        }
+
         public static IDictionary<string, object> ToDictionary(NameValueCollection collection)
         {
             var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
@@ -210,72 +193,6 @@ namespace SiteServer.Abstractions
             return dict;
         }
 
-        public static StringCollection StringCollectionToStringCollection(string collection, char separator = ',')
-        {
-            var arraylist = new StringCollection();
-            if (!string.IsNullOrEmpty(collection))
-            {
-                var array = collection.Split(separator);
-                foreach (var s in array)
-                {
-                    arraylist.Add(s.Trim());
-                }
-            }
-            return arraylist;
-        }
-
-        public static string ObjectCollectionToString(ICollection collection)
-        {
-            var builder = new StringBuilder();
-            if (collection != null)
-            {
-                foreach (var obj in collection)
-                {
-                    builder.Append(obj.ToString().Trim()).Append(",");
-                }
-                if (builder.Length != 0) builder.Remove(builder.Length - 1, 1);
-            }
-            return builder.ToString();
-        }
-
-        public static string ObjectCollectionToString(ICollection collection, string separatorStr)
-        {
-            var builder = new StringBuilder();
-            if (collection != null)
-            {
-                foreach (var obj in collection)
-                {
-                    builder.Append(obj.ToString().Trim()).Append(separatorStr);
-                }
-                if (builder.Length != 0) builder.Remove(builder.Length - separatorStr.Length, separatorStr.Length);
-            }
-            return builder.ToString();
-        }
-
-        /// <summary>
-        /// 将对象集合转化为可供Sql语句查询的In()条件，如将集合{'ss','xx','ww'}转化为字符串"'ss','xx','ww'"。
-        /// </summary>
-        /// <param name="collection">非数字的集合</param>
-        /// <returns>可供Sql语句查询的In()条件字符串，各元素用单引号包围</returns>
-        public static string ToSqlInStringWithQuote(ICollection collection)
-        {
-            var builder = new StringBuilder();
-            if (collection != null)
-            {
-                foreach (var obj in collection)
-                {
-                    builder.Append("'").Append(obj).Append("'").Append(",");
-                }
-                if (builder.Length != 0) builder.Remove(builder.Length - 1, 1);
-            }
-            return builder.Length == 0 ? "null" : builder.ToString();
-        }
-
-        /// <summary>
-        /// 将数字集合转化为可供Sql语句查询的In()条件，如将集合{2,3,4}转化为字符串"2,3,4"。
-        /// </summary>
-        /// <param name="collection">非数字的集合</param>
-        /// <returns>可供Sql语句查询的In()条件字符串，各元素不使用单引号包围</returns>
         public static string ToSqlInStringWithoutQuote(ICollection collection)
         {
             var builder = new StringBuilder();
@@ -290,7 +207,6 @@ namespace SiteServer.Abstractions
             return builder.Length == 0 ? "null" : builder.ToString();
         }
         
-
         public static NameValueCollection ToNameValueCollection(string separateString)
         {
             if (!string.IsNullOrEmpty(separateString))
@@ -365,16 +281,6 @@ namespace SiteServer.Abstractions
                 }
             }
             return nvc;
-        }
-
-        public static bool DictGetValue(Dictionary<int, bool> dict, int key)
-        {
-            if (dict.TryGetValue(key, out var retVal))
-            {
-                return retVal;
-            }
-
-            return false;
         }
 
         public static string ToAttributesString(NameValueCollection attributes)

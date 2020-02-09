@@ -2,11 +2,10 @@
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Repositories;
 
@@ -34,7 +33,6 @@ namespace SiteServer.CMS.StlParser.StlEntity
         public const string Content = "Body";
         public const string Group = "Group";
         public const string Tags = "Tags";
-        public const string AddUserName = "AddUserName";
         public const string ItemIndex = "ItemIndex";
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
@@ -52,7 +50,6 @@ namespace SiteServer.CMS.StlParser.StlEntity
             {LastEditDate, "内容最后修改日期"},
             {Group, "内容组别"},
             {Tags, "内容标签"},
-            {AddUserName, "内容添加人"},
             {ItemIndex, "内容排序"}
         };
 
@@ -69,9 +66,9 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && TranslateContentType.ReferenceContent == contentInfo.TranslateContentType)
                     {
                         var targetChannelId = contentInfo.SourceId;
-                        var targetSiteId = await StlChannelCache.GetSiteIdAsync(targetChannelId);
+                        var targetSiteId = await DataProvider.ChannelRepository.GetSiteIdAsync(targetChannelId);
                         var targetSite = await DataProvider.SiteRepository.GetAsync(targetSiteId);
-                        var targetNodeInfo = await ChannelManager.GetChannelAsync(targetSiteId, targetChannelId);
+                        var targetNodeInfo = await DataProvider.ChannelRepository.GetAsync(targetChannelId);
 
                         var targetContentInfo = await DataProvider.ContentRepository.GetAsync(targetSite, targetNodeInfo, contentInfo.ReferenceId);
                         if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
@@ -94,7 +91,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId));
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId));
                             parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.Id);
                         }
                     }
@@ -106,7 +103,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId));
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId));
                             parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.Title);
                         }
                     }
@@ -118,7 +115,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId));
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId));
                             parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.Title);
                         }
                     }
@@ -130,7 +127,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId);
+                            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId);
                             parsedContent = await PageUtility.GetContentUrlAsync(pageInfo.Site, nodeInfo, contextInfo.ContentId, pageInfo.IsLocal);
                         }
                     }
@@ -142,7 +139,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId));
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId));
                             parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.ImageUrl);
                         }
 
@@ -159,7 +156,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId));
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId));
                             parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.VideoUrl);
                         }
 
@@ -176,7 +173,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId));
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId));
                             parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.FileUrl);
                         }
 
@@ -193,7 +190,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId));
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId));
                             parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.FileUrl);
                         }
 
@@ -224,7 +221,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId));
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId));
                             parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.Content);
                         }
 
@@ -234,41 +231,24 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = TranslateUtils.ObjectCollectionToString(contentInfo.GroupNames);
+                            parsedContent = Utilities.ToString(contentInfo.GroupNames);
                         }
                         else
                         {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId));
-                            parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.GroupNameCollection);
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId));
+                            parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, nameof(Abstractions.Content.GroupNames));
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(Tags, attributeName))//标签
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = TranslateUtils.ObjectCollectionToString(contentInfo.TagNames);
+                            parsedContent = Utilities.ToString(contentInfo.TagNames);
                         }
                         else
                         {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId));
-                            parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.Tags);
-                        }
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(AddUserName, attributeName))
-                    {
-                        string addUserName;
-                        if (contentInfo != null)
-                        {
-                            addUserName = contentInfo.AddUserName;
-                        }
-                        else
-                        {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId));
-                            addUserName = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.AddUserName);
-                        }
-                        if (!string.IsNullOrEmpty(addUserName))
-                        {
-                            parsedContent = addUserName;
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId));
+                            parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, nameof(Abstractions.Content.TagNames));
                         }
                     }
                     else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ContentItem != null)
@@ -288,16 +268,16 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         }
                         else
                         {
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
                             contentChannelId = DataProvider.ContentRepository.GetChannelId(tableName, contextInfo.ContentId);
-                            tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contentChannelId));
+                            tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contentChannelId));
                             parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, attributeName);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var channelInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, contentChannelId);
-                            var tableName = await ChannelManager.GetTableNameAsync(pageInfo.Site, channelInfo);
+                            var channelInfo = await DataProvider.ChannelRepository.GetAsync(contentChannelId);
+                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, channelInfo);
                             var relatedIdentities = DataProvider.TableStyleRepository.GetRelatedIdentities(channelInfo);
                             var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(tableName, attributeName, relatedIdentities);
 

@@ -1,19 +1,17 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SqlKata;
 
 namespace SiteServer.CMS.Repositories
 {
-    public class ContentTagRepository : DataProviderBase, IRepository
+    public partial class ContentTagRepository : IRepository
     {
         private readonly Repository<ContentTag> _repository;
 
         public ContentTagRepository()
         {
-            _repository = new Repository<ContentTag>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            _repository = new Repository<ContentTag>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -22,170 +20,44 @@ namespace SiteServer.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private static class Attr
+        public async Task InsertAsync(int siteId, string tagName)
         {
-            public const string ContentIdCollection = nameof(ContentIdCollection);
-        }
-
-        public async Task InsertAsync(ContentTag tag)
-        {
-            await _repository.InsertAsync(tag);
-        }
-
-        public async Task UpdateAsync(ContentTag tag)
-        {
-            await _repository.UpdateAsync(tag);
-        }
-
-        public async Task<ContentTag> GetTagAsync(int siteId, string tag)
-        {
-            var tagEntity = await _repository.GetAsync(Q
-                .Where(nameof(ContentTag.SiteId), siteId)
-                .Where(nameof(ContentTag.Tag), tag)
-            );
-            return tagEntity;
-        }
-
-        public async Task<List<ContentTag>> GetTagListAsync(int siteId, int contentId)
-        {
-            var query = GetQuery(null, siteId, contentId);
-            var list = await _repository.GetAllAsync(query);
-            return list.ToList();
-        }
-
-        public string GetSqlString(int siteId, int contentId, bool isOrderByCount, int totalNum)
-        {
-            var orderString = string.Empty;
-            if (isOrderByCount)
+            var tagNames = await GetTagNamesAsync(siteId);
+            if (!tagNames.Contains(tagName))
             {
-                orderString = "ORDER BY UseNum DESC";
-            }
-
-            return SqlUtils.ToTopSqlString("siteserver_Tag", "Id, SiteId, ContentIdCollection, Tag, UseNum", string.Empty, orderString, totalNum);
-        }
-
-        public async Task<List<ContentTag>> GetTagListAsync(int siteId, int contentId, bool isOrderByCount, int totalNum)
-        {
-            var query = GetQuery(null, siteId, contentId);
-            if (isOrderByCount)
-            {
-                query.OrderByDesc(nameof(ContentTag.UseNum));
-            }
-
-            query.Limit(totalNum);
-
-            var list = await _repository.GetAllAsync(query);
-            return list.ToList();
-        }
-
-        public async Task<List<string>> GetTagListByStartStringAsync(int siteId, string startString, int totalNum)
-        {
-            var list = await _repository.GetAllAsync<string>(Q
-                .Select(nameof(ContentTag.Tag))
-                .Where(nameof(ContentTag.SiteId), siteId)
-                .WhereContains(nameof(ContentTag.Tag), startString)
-                .OrderByDesc(nameof(ContentTag.UseNum))
-                .Distinct()
-                .Limit(totalNum));
-            return list.ToList();
-        }
-
-        public async Task<IEnumerable<string>> GetTagListAsync(int siteId)
-        {
-            return await _repository.GetAllAsync<string>(Q
-                .Select(nameof(ContentTag.Tag), nameof(ContentTag.UseNum))
-                .Where(nameof(ContentTag.SiteId), siteId)
-                .OrderByDesc(nameof(ContentTag.UseNum))
-                .Distinct()
-            );
-        }
-
-        public async Task DeleteTagsAsync(int siteId)
-        {
-            await _repository.DeleteAsync(Q.Where(nameof(ContentTag.SiteId), siteId));
-        }
-
-        public async Task DeleteTagAsync(string tag, int siteId)
-        {
-            var query = GetQuery(tag, siteId, 0);
-            await _repository.DeleteAsync(query);
-        }
-
-        public async Task<int> GetTagCountAsync(string tag, int siteId)
-        {
-            var query = GetQuery(tag, siteId, 0);
-            return await _repository.CountAsync(query);
-        }
-
-        private Query GetQuery(string tag, int siteId, int contentId)
-        {
-            var query = Q.Where(nameof(ContentTag.SiteId), siteId);
-            if (!string.IsNullOrEmpty(tag))
-            {
-                query.Where(nameof(ContentTag.Tag), tag);
-            }
-            if (contentId > 0)
-            {
-                query.Where(q => q
-                    .Where(Attr.ContentIdCollection, contentId)
-                    .OrWhereLike(Attr.ContentIdCollection, $"{contentId},%")
-                    .OrWhereLike(Attr.ContentIdCollection, $"%,{contentId},%")
-                    .OrWhereLike(Attr.ContentIdCollection, $"%,{contentId}")
+                await _repository.InsertAsync(new ContentTag
+                    {
+                        SiteId = siteId,
+                        TagName = tagName
+                    }, Q.CachingRemove(GetCacheKey(siteId))
                 );
             }
-
-            query.OrderBy(nameof(ContentTag.Tag));
-
-            return query;
         }
 
-        public async Task<List<int>> GetContentIdListByTagAsync(string tag, int siteId)
+        public async Task UpdateAsync(int siteId, string oldTagName, string newTagName)
         {
-            var idList = new List<int>();
-            if (string.IsNullOrEmpty(tag)) return idList;
-
-            var query = GetQuery(tag, siteId, 0);
-            query.Select(Attr.ContentIdCollection);
-
-            var list = await _repository.GetAllAsync<string>(query);
-            foreach (var contentIdCollection in list)
+            if (oldTagName != newTagName)
             {
-                var contentIdList = StringUtils.GetIntList(contentIdCollection);
-                foreach (var contentId in contentIdList)
-                {
-                    if (contentId > 0 && !idList.Contains(contentId))
-                    {
-                        idList.Add(contentId);
-                    }
-                }
+                await DeleteAsync(siteId, oldTagName);
+                await InsertAsync(siteId, newTagName);
             }
-
-            return idList;
         }
 
-        public async Task<List<int>> GetContentIdListByTagCollectionAsync(List<string> tagList, int siteId)
+        public async Task DeleteAsync(int siteId, string tagName)
         {
-            var contentIdList = new List<int>();
-            if (tagList.Count > 0)
-            {
-                var query = Q.Where(nameof(ContentTag.SiteId), siteId);
-                query.WhereIn(nameof(ContentTag.Tag), tagList);
-                query.Select(Attr.ContentIdCollection);
-
-                var allList = await _repository.GetAllAsync<string>(query);
-                foreach (var contentIdCollection in allList)
-                {
-                    var list = StringUtils.GetIntList(contentIdCollection);
-                    foreach (var contentId in list)
-                    {
-                        if (contentId > 0 && !contentIdList.Contains(contentId))
-                        {
-                            contentIdList.Add(contentId);
-                        }
-                    }
-                }
-            }
-            return contentIdList;
+            await _repository.DeleteAsync(Q
+                .Where(nameof(ContentTag.SiteId), siteId)
+                .Where(nameof(ContentTag.TagName), tagName)
+                .CachingRemove(GetCacheKey(siteId))
+            );
         }
-	}
+
+        public async Task DeleteAsync(int siteId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(ContentTag.SiteId), siteId)
+                .CachingRemove(GetCacheKey(siteId))
+            );
+        }
+    }
 }

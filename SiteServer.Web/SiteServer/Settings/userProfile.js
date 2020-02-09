@@ -1,29 +1,32 @@
 ﻿var $url = '/pages/settings/userProfile';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   userId: utils.getQueryInt('userId'),
   user: null,
   password: null,
   confirmPassword: null,
   uploadUrl: null,
   files: []
-};
+});
 
 var methods = {
-  getConfig: function () {
+  apiGet: function () {
     var $this = this;
 
-    $api.get($url + '?userId=' + $this.userId).then(function (response) {
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        userId: this.userId
+      }
+    }).then(function (response) {
       var res = response.data;
 
       $this.user = res.value;
-      $this.uploadUrl = apiUrl + '/pages/settings/userProfile/upload?adminToken=' + res.adminToken + '&userId=' + $this.userId;
+      $this.uploadUrl = apiUrl + $url + '/upload?adminToken=' + res.adminToken + '&userId=' + $this.userId;
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
@@ -42,9 +45,9 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    utils.loading($this, true);
-    $api.post($url + '?userId=' + $this.userId, _.assign({}, $this.user, {
-      password: $this.password
+    utils.loading(this, true);
+    $api.post($url + '?userId=' + this.userId, _.assign({}, this.user, {
+      password: this.password
     })).then(function (response) {
       var res = response.data;
 
@@ -91,6 +94,6 @@ new Vue({
   },
   methods: methods,
   created: function () {
-    this.getConfig();
+    this.apiGet();
   }
 });

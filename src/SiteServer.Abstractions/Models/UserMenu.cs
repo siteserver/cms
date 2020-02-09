@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
-using Newtonsoft.Json;
 
 namespace SiteServer.Abstractions
 {
@@ -13,24 +11,10 @@ namespace SiteServer.Abstractions
         public string SystemId { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string GroupIdCollection { get; set; }
-
-        public List<int> GroupIds
-        {
-            get => StringUtils.GetIntList(GroupIdCollection);
-            set => GroupIdCollection = StringUtils.Join(value);
-        }
+        public List<int> GroupIds { get; set; }
 
         [DataColumn]
-        [DataIgnore]
-        private string IsDisabled { get; set; }
-
-        public bool Disabled
-        {
-            get => TranslateUtils.ToBool(IsDisabled);
-            set => IsDisabled = value.ToString();
-        }
+        public bool Disabled { get; set; }
 
         [DataColumn]
         public int ParentId { get; set; }

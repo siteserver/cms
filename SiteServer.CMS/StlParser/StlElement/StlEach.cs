@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
@@ -58,7 +59,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var extendValues = content.Get<string>(extendAttributeName);
                 if (!string.IsNullOrEmpty(extendValues))
                 {
-                    foreach (var extendValue in StringUtils.GetStringList(extendValues))
+                    foreach (var extendValue in Utilities.GetStringList(extendValues))
                     {
                         eachList.Add(extendValue);
                     }

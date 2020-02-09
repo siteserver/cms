@@ -73,7 +73,6 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlSqlContent.ElementName.ToLower(), StlSqlContent.ParseAsync},
             {StlSqlContents.ElementName.ToLower(), StlSqlContents.ParseAsync},
             {StlTabs.ElementName.ToLower(), StlTabs.ParseAsync},
-            {StlTags.ElementName.ToLower(), StlTags.ParseAsync},
             {StlValue.ElementName.ToLower(), StlValue.ParseAsync},
             {StlVideo.ElementName.ToLower(), StlVideo.ParseAsync},
             {StlZoom.ElementName.ToLower(), StlZoom.ParseAsync}

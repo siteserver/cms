@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using Datory;
+using Datory.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -81,7 +82,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ReturnUrl = CmsPages.GetContentsUrl(SiteId, channelId);
             }
 
-            _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+            _channel = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
             Content content = null;
             _styleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
 
@@ -120,10 +121,10 @@ namespace SiteServer.BackgroundPages.Cms
                     PhTranslate.Visible = false;
                 }
 
-                CblContentAttributes.Items.Add(new ListItem("置顶", ContentAttribute.IsTop));
-                CblContentAttributes.Items.Add(new ListItem("推荐", ContentAttribute.IsRecommend));
-                CblContentAttributes.Items.Add(new ListItem("热点", ContentAttribute.IsHot));
-                CblContentAttributes.Items.Add(new ListItem("醒目", ContentAttribute.IsColor));
+                CblContentAttributes.Items.Add(new ListItem("置顶", nameof(Content.Top)));
+                CblContentAttributes.Items.Add(new ListItem("推荐", nameof(Content.Recommend)));
+                CblContentAttributes.Items.Add(new ListItem("热点", nameof(Content.Hot)));
+                CblContentAttributes.Items.Add(new ListItem("醒目", nameof(Content.Color)));
                 TbAddDate.DateTime = DateTime.Now;
                 TbAddDate.Now = true;
 
@@ -171,7 +172,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var fileName = AuthRequest.GetQueryString("fileName");
 
                         var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                        var (title, wordContent) = WordManager.GetWordAsync(Site, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, filePath).GetAwaiter().GetResult();
+                        var (title, wordContent) = WordManager.GetWordAsync(Site, isFirstLineTitle, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, filePath).GetAwaiter().GetResult();
 
                         TbTitle.Text = title;
                         attributes[ContentAttribute.Content] = wordContent;
@@ -185,24 +186,24 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     TbTitle.Text = content.Title;
 
-                    TbTags.Text = TranslateUtils.ObjectCollectionToString(content.TagNames);
+                    TbTags.Text = Utilities.ToString(content.TagNames);
 
                     var list = new List<string>();
                     if (content.Top)
                     {
-                        list.Add(ContentAttribute.IsTop);
+                        list.Add(nameof(Content.Top));
                     }
                     if (content.Recommend)
                     {
-                        list.Add(ContentAttribute.IsRecommend);
+                        list.Add(nameof(Content.Recommend));
                     }
                     if (content.Hot)
                     {
-                        list.Add(ContentAttribute.IsHot);
+                        list.Add(nameof(Content.Hot));
                     }
                     if (content.Color)
                     {
-                        list.Add(ContentAttribute.IsColor);
+                        list.Add(nameof(Content.Color));
                     }
                     ControlUtils.SelectMultiItems(CblContentAttributes, list);
                     TbLinkUrl.Text = content.LinkUrl;
@@ -247,7 +248,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         ChannelId = _channel.Id,
                         SiteId = SiteId,
-                        AddUserName = AuthRequest.AdminName,
+                        //AddUserName = AuthRequest.AdminName,
                         AdminId = AuthRequest.AdminId,
                         LastEditDate = DateTime.Now,
                         GroupNames = ControlUtils.SelectedItemsValueToStringList(CblContentGroups.Items),
@@ -261,7 +262,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
                     contentInfo.Set(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title), theFormatString);
 
-                    contentInfo.LastEditUserName = contentInfo.AddUserName;
+                    //contentInfo.LastEditUserName = contentInfo.AddUserName;
 
                     foreach (ListItem listItem in CblContentAttributes.Items)
                     {
@@ -275,7 +276,7 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.CheckedLevel = TranslateUtils.ToIntWithNegative(RblContentLevel.SelectedValue);
                     
                     contentInfo.Checked = contentInfo.CheckedLevel >= Site.CheckContentLevel;
-                    contentInfo.TagNames = ContentTagUtils.ParseTagsString(TbTags.Text);
+                    //contentInfo.TagNames = DataProvider.ContentTagRepository.ParseTagsString(TbTags.Text);
 
                     foreach (var service in PluginManager.GetServicesAsync().GetAwaiter().GetResult())
                     {
@@ -300,22 +301,22 @@ namespace SiteServer.BackgroundPages.Cms
                             contentInfo.CheckedLevel = 0;
                         }
 
-                        contentInfo.CheckUserName = AuthRequest.AdminName;
+                        contentInfo.CheckAdminId = AuthRequest.AdminId;
                         contentInfo.CheckDate = DateTime.Now;
                         contentInfo.CheckReasons = string.Empty;
                     }
 
                     contentInfo.Id = DataProvider.ContentRepository.InsertAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
 
-                    ContentTagUtils.UpdateTagsAsync(string.Empty, TbTags.Text, SiteId, contentInfo.Id).GetAwaiter().GetResult();
+                    //DataProvider.ContentTagRepository.UpdateTagsAsync(string.Empty, TbTags.Text, SiteId, contentInfo.ChannelId, contentInfo.Id).GetAwaiter().GetResult();
 
                     CreateManager.CreateContentAsync(SiteId, _channel.Id, contentInfo.Id).GetAwaiter().GetResult();
                     CreateManager.TriggerContentChangedEventAsync(SiteId, _channel.Id).GetAwaiter().GetResult();
 
                     AuthRequest.AddSiteLogAsync(SiteId, _channel.Id, contentInfo.Id, "添加内容",
-                        $"栏目:{ChannelManager.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult()},内容标题:{contentInfo.Title}").GetAwaiter().GetResult();
+                        $"栏目:{DataProvider.ChannelRepository.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult()},内容标题:{contentInfo.Title}").GetAwaiter().GetResult();
 
-                    ContentUtility.TranslateAsync(Site, _channel.Id, contentInfo.Id, Request.Form["translateCollection"], TranslateUtils.ToEnum(DdlTranslateType.SelectedValue, TranslateContentType.Copy), AuthRequest.AdminName).GetAwaiter().GetResult();
+                    ContentUtility.TranslateAsync(Site, _channel.Id, contentInfo.Id, Request.Form["translateCollection"], TranslateUtils.ToEnum(DdlTranslateType.SelectedValue, TranslateContentType.Copy)).GetAwaiter().GetResult();
 
                     redirectUrl = PageContentAddAfter.GetRedirectUrl(SiteId, _channel.Id, contentInfo.Id,
                         ReturnUrl);
@@ -331,7 +332,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
                 try
                 {
-                    contentInfo.LastEditUserName = AuthRequest.AdminName;
+                    //contentInfo.LastEditUserName = AuthRequest.AdminName;
                     contentInfo.LastEditDate = DateTime.Now;
 
                     var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, _styleList, Request.Form, ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
@@ -363,8 +364,8 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.Checked = checkedLevel >= Site.CheckContentLevel;
                     contentInfo.CheckedLevel = checkedLevel;
 
-                    ContentTagUtils.UpdateTagsAsync(TranslateUtils.ObjectCollectionToString(contentInfo.TagNames), TbTags.Text, SiteId, contentId).GetAwaiter().GetResult();
-                    contentInfo.TagNames = ContentTagUtils.ParseTagsString(TbTags.Text);
+                    //DataProvider.ContentTagRepository.UpdateTagsAsync(Utilities.ToString(contentInfo.TagNames), TbTags.Text, SiteId, _channel.Id, contentId).GetAwaiter().GetResult();
+                    //contentInfo.TagNames = DataProvider.ContentTagRepository.ParseTagsString(TbTags.Text);
 
                     foreach (var service in PluginManager.GetServicesAsync().GetAwaiter().GetResult())
                     {
@@ -381,13 +382,13 @@ namespace SiteServer.BackgroundPages.Cms
 
                     DataProvider.ContentRepository.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
 
-                    ContentUtility.TranslateAsync(Site, _channel.Id, contentInfo.Id, Request.Form["translateCollection"], TranslateUtils.ToEnum(DdlTranslateType.SelectedValue, TranslateContentType.Copy), AuthRequest.AdminName).GetAwaiter().GetResult();
+                    ContentUtility.TranslateAsync(Site, _channel.Id, contentInfo.Id, Request.Form["translateCollection"], TranslateUtils.ToEnum(DdlTranslateType.SelectedValue, TranslateContentType.Copy)).GetAwaiter().GetResult();
 
                     CreateManager.CreateContentAsync(SiteId, _channel.Id, contentId).GetAwaiter().GetResult();
                     CreateManager.TriggerContentChangedEventAsync(SiteId, _channel.Id).GetAwaiter().GetResult();
 
                     AuthRequest.AddSiteLogAsync(SiteId, _channel.Id, contentId, "修改内容",
-                        $"栏目:{ChannelManager.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult()},内容标题:{contentInfo.Title}").GetAwaiter().GetResult();
+                        $"栏目:{DataProvider.ChannelRepository.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult()},内容标题:{contentInfo.Title}").GetAwaiter().GetResult();
 
                     redirectUrl = ReturnUrl;
 

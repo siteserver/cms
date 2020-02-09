@@ -1,10 +1,7 @@
 var $url = "/pages/install";
 var $routeUnCheckedList = "unCheckedList";
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
-
+var data = utils.initData({
   productVersion: null,
   netVersion: null,
   contentRootPath: null,
@@ -33,7 +30,7 @@ var data = {
     oracleIsSid: null,
     oracleDatabase: null,
   }
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -53,7 +50,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
@@ -68,7 +65,7 @@ var methods = {
   btnConnectClick: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/actions/connect', this.form).then(function (response) {
       var res = response.data;
 

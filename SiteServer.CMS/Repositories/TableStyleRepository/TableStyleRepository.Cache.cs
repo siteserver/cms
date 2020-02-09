@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.DataCache;
 
@@ -90,7 +91,7 @@ namespace SiteServer.CMS.Repositories
         public async Task<List<TableStyle>> GetContentStyleListAsync(Site site, Channel channel)
         {
             var relatedIdentities = GetRelatedIdentities(channel);
-            var tableName = await ChannelManager.GetTableNameAsync(site, channel);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
             return await GetStyleListAsync(tableName, relatedIdentities);
         }
 
@@ -123,7 +124,7 @@ namespace SiteServer.CMS.Repositories
                     }
                     if (defaultValues.Count > 0)
                     {
-                        defaultValue = TranslateUtils.ObjectCollectionToString(defaultValues);
+                        defaultValue = Utilities.ToString(defaultValues);
                     }
                 }
 
@@ -170,9 +171,9 @@ namespace SiteServer.CMS.Repositories
                 TableName = tableName,
                 AttributeName = attributeName,
                 Taxis = 0,
-                DisplayName = attributeName,
+                DisplayName = string.Empty,
                 HelpText = string.Empty,
-                VisibleInList = false,
+                List = false,
                 InputType = InputType.Text,
                 DefaultValue = string.Empty,
                 Horizontal = true
@@ -219,7 +220,7 @@ namespace SiteServer.CMS.Repositories
                     channelIdCollection = "0," + channel.ParentsPath + "," + channel.Id;
                 }
 
-                list = StringUtils.GetIntList(channelIdCollection);
+                list = Utilities.GetIntList(channelIdCollection);
                 list.Reverse();
             }
             else
@@ -277,9 +278,9 @@ namespace SiteServer.CMS.Repositories
                 TableName = tableName,
                 AttributeName = attributeName,
                 Taxis = 0,
-                DisplayName = attributeName,
+                DisplayName = string.Empty,
                 HelpText = string.Empty,
-                VisibleInList = false,
+                List = false,
                 InputType = InputType.Text,
                 DefaultValue = string.Empty,
                 Horizontal = true
@@ -359,9 +360,9 @@ namespace SiteServer.CMS.Repositories
                 TableName = tableName,
                 AttributeName = attributeName,
                 Taxis = 0,
-                DisplayName = attributeName,
+                DisplayName = string.Empty,
                 HelpText = string.Empty,
-                VisibleInList = false,
+                List = false,
                 InputType = InputType.Text,
                 DefaultValue = string.Empty,
                 Horizontal = true

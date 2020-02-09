@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Extensions;
@@ -66,7 +67,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 Administrator = admin,
                 Level = level,
                 IsSuperAdmin = isSuperAdmin,
-                SiteNames = TranslateUtils.ObjectCollectionToString(siteNames, "<br />"),
+                SiteNames = Utilities.ToString(siteNames, "<br />"),
                 IsOrdinaryAdmin = isOrdinaryAdmin,
                 RoleNames = roleNames
             };

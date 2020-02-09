@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
@@ -37,14 +38,14 @@ namespace SiteServer.API.Controllers.V1
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
                 var contentModelPluginId = request.GetPostString(nameof(Channel.ContentModelPluginId));
-                var contentRelatedPluginIdList = StringUtils.GetStringList(request.GetPostString(nameof(Channel.ContentRelatedPluginIdList)));
+                var contentRelatedPluginIdList = Utilities.GetStringList(request.GetPostString(nameof(Channel.ContentRelatedPluginIds)));
 
                 var channelName = request.GetPostString(nameof(Channel.ChannelName));
                 var indexName = request.GetPostString(nameof(Channel.IndexName));
                 var filePath = request.GetPostString(nameof(Channel.FilePath));
                 var channelFilePathRule = request.GetPostString(nameof(Channel.ChannelFilePathRule));
                 var contentFilePathRule = request.GetPostString(nameof(Channel.ContentFilePathRule));
-                var groupNames = StringUtils.GetStringList(request.GetPostString(nameof(Channel.GroupNames)));
+                var groupNames = Utilities.GetStringList(request.GetPostString(nameof(Channel.GroupNames)));
                 var imageUrl = request.GetPostString(nameof(Channel.ImageUrl));
                 var content = request.GetPostString(nameof(Channel.Content));
                 var keywords = request.GetPostString(nameof(Channel.Keywords));
@@ -59,7 +60,7 @@ namespace SiteServer.API.Controllers.V1
                     SiteId = siteId,
                     ParentId = parentId,
                     ContentModelPluginId = contentModelPluginId,
-                    ContentRelatedPluginIdList = contentRelatedPluginIdList
+                    ContentRelatedPluginIds = contentRelatedPluginIdList
                 };
 
                 if (!string.IsNullOrEmpty(indexName))
@@ -114,7 +115,7 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                //var parentChannel = await ChannelManager.GetChannelAsync(siteId, parentId);
+                //var parentChannel = await DataProvider.ChannelRepository.GetAsync(siteId, parentId);
                 //var styleList = TableStyleManager.GetChannelStyleList(parentChannel);
                 //var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(site, styleList, Request.Form, null);
 
@@ -180,7 +181,7 @@ namespace SiteServer.API.Controllers.V1
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var dict = request.GetPostObject<Dictionary<string, object>>();
@@ -217,9 +218,9 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                if (request.IsPostExists(nameof(Channel.ContentRelatedPluginIdList)))
+                if (request.IsPostExists(nameof(Channel.ContentRelatedPluginIds)))
                 {
-                    channelInfo.ContentRelatedPluginIdList = StringUtils.GetStringList(request.GetPostString(nameof(Channel.ContentRelatedPluginIdList)));
+                    channelInfo.ContentRelatedPluginIds = Utilities.GetStringList(request.GetPostString(nameof(Channel.ContentRelatedPluginIds)));
                 }
 
                 if (request.IsPostExists(nameof(Channel.FilePath)))
@@ -289,7 +290,7 @@ namespace SiteServer.API.Controllers.V1
 
                 if (request.IsPostExists(nameof(Channel.GroupNames)))
                 {
-                    channelInfo.GroupNames = StringUtils.GetStringList(request.GetPostString(nameof(Channel.GroupNames)));
+                    channelInfo.GroupNames = Utilities.GetStringList(request.GetPostString(nameof(Channel.GroupNames)));
                 }
 
                 if (request.IsPostExists(nameof(Channel.ImageUrl)))
@@ -362,16 +363,15 @@ namespace SiteServer.API.Controllers.V1
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+                var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+                if (channel == null) return BadRequest("无法确定内容对应的栏目");
 
-                var tableName = await ChannelManager.GetTableNameAsync(site, channelId);
-                await DataProvider.ContentRepository.UpdateTrashContentsByChannelIdAsync(siteId, channelId, tableName);
+                await DataProvider.ContentRepository.RecycleContentsAsync(site, channel);
                 await DataProvider.ChannelRepository.DeleteAsync(siteId, channelId);
 
                 return Ok(new
                 {
-                    Value = channelInfo.ToDictionary()
+                    Value = channel.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -395,10 +395,10 @@ namespace SiteServer.API.Controllers.V1
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                channelInfo.Children = await ChannelManager.GetChildrenAsync(siteId, channelId);
+                channelInfo.Children = await DataProvider.ChannelRepository.GetChildrenAsync(siteId, channelId);
 
                 return Ok(new
                 {
@@ -426,7 +426,7 @@ namespace SiteServer.API.Controllers.V1
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfoList = await ChannelManager.GetChannelListAsync(siteId);
+                var channelInfoList = await DataProvider.ChannelRepository.GetChannelListAsync(siteId);
 
                 var dictInfoList = new List<IDictionary<string, object>>();
                 foreach (var channelInfo in channelInfoList)

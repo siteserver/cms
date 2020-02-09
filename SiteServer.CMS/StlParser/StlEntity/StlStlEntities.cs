@@ -98,7 +98,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(ChannelUrl, attributeName))//栏目页地址
                 {
-                    parsedContent = await PageUtility.GetChannelUrlAsync(pageInfo.Site, await ChannelManager.GetChannelAsync(pageInfo.SiteId, contextInfo.ChannelId), pageInfo.IsLocal);
+                    parsedContent = await PageUtility.GetChannelUrlAsync(pageInfo.Site, await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId), pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(HomeUrl, attributeName))//用户中心地址
                 {

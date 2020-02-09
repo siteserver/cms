@@ -26,7 +26,7 @@ namespace SiteServer.CMS.StlParser
             else if (createType == CreateType.Content)
             {
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 await CreateContentAsync(site, channelInfo, contentId);
             }
             else if (createType == CreateType.AllContent)
@@ -46,9 +46,9 @@ namespace SiteServer.CMS.StlParser
         private static async Task CreateContentsAsync(int siteId, int channelId)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
 
-            var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByTaxisDesc);
             var contentIdList = DataProvider.ContentRepository.GetContentIdListChecked(tableName, channelId, orderByString);
 
@@ -61,20 +61,20 @@ namespace SiteServer.CMS.StlParser
         private static async Task CreateChannelAsync(int siteId, int channelId)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
 
-            if (!await ChannelManager.IsCreatableAsync(site, channelInfo)) return;
+            if (!await DataProvider.ChannelRepository.IsCreatableAsync(site, channelInfo)) return;
 
             var templateInfo = channelId == siteId
-                ? await TemplateManager.GetIndexPageTemplateAsync(siteId)
-                : await TemplateManager.GetChannelTemplateAsync(siteId, channelId);
+                ? await DataProvider.TemplateRepository.GetIndexPageTemplateAsync(siteId)
+                : await DataProvider.TemplateRepository.GetChannelTemplateAsync(siteId, channelId);
             var filePath = await PathUtility.GetChannelPageFilePathAsync(site, channelId, 0);
             var pageInfo = await PageInfo.GetPageInfoAsync(channelId, 0, site, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo)
             {
                 ContextType = EContextType.Channel
             };
-            var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(site, templateInfo));
+            var contentBuilder = new StringBuilder(DataProvider.TemplateRepository.GetTemplateContent(site, templateInfo));
 
             var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
 
@@ -231,7 +231,7 @@ namespace SiteServer.CMS.StlParser
                 return;
             }
 
-            var templateInfo = await TemplateManager.GetContentTemplateAsync(site.Id, channel.Id);
+            var templateInfo = await DataProvider.TemplateRepository.GetContentTemplateAsync(site.Id, channel.Id);
             var pageInfo = await PageInfo.GetPageInfoAsync(channel.Id, contentId, site, templateInfo,
                 new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo)
@@ -240,7 +240,7 @@ namespace SiteServer.CMS.StlParser
             };
             contextInfo.SetContentInfo(contentInfo);
             var filePath = await PathUtility.GetContentPageFilePathAsync(site, pageInfo.PageChannelId, contentInfo, 0);
-            var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(site, templateInfo));
+            var contentBuilder = new StringBuilder(DataProvider.TemplateRepository.GetTemplateContent(site, templateInfo));
 
             var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
 
@@ -406,7 +406,7 @@ namespace SiteServer.CMS.StlParser
         private static async Task CreateFileAsync(int siteId, int fileTemplateId)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var templateInfo = await TemplateManager.GetTemplateAsync(siteId, fileTemplateId);
+            var templateInfo = await DataProvider.TemplateRepository.GetAsync(fileTemplateId);
             if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
             {
                 return;
@@ -416,7 +416,7 @@ namespace SiteServer.CMS.StlParser
             var contextInfo = new ContextInfo(pageInfo);
             var filePath = PathUtility.MapPath(site, templateInfo.CreatedFileFullName);
 
-            var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(site, templateInfo));
+            var contentBuilder = new StringBuilder(DataProvider.TemplateRepository.GetTemplateContent(site, templateInfo));
             await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
             await GenerateFileAsync(filePath, contentBuilder);
         }
@@ -424,7 +424,7 @@ namespace SiteServer.CMS.StlParser
         private static async Task CreateSpecialAsync(int siteId, int specialId)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var templateInfoList = await SpecialManager.GetTemplateListAsync(site, specialId);
+            var templateInfoList = await DataProvider.SpecialRepository.GetTemplateListAsync(site, specialId);
             foreach (var templateInfo in templateInfoList)
             {
                 var pageInfo = await PageInfo.GetPageInfoAsync(siteId, 0, site, templateInfo, new Dictionary<string, object>());

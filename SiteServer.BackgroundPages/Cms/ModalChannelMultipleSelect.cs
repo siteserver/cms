@@ -98,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (targetChannelId > 0)
             {
                 var siteName = DataProvider.SiteRepository.GetAsync(_targetSiteId).GetAwaiter().GetResult().SiteName;
-                var nodeNames = ChannelManager.GetChannelNameNavigationAsync(_targetSiteId, targetChannelId).GetAwaiter().GetResult();
+                var nodeNames = DataProvider.ChannelRepository.GetChannelNameNavigationAsync(_targetSiteId, targetChannelId).GetAwaiter().GetResult();
                 if (_targetSiteId != SiteId)
                 {
                     nodeNames = siteName + "：" + nodeNames;
@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                var nodeInfo = ChannelManager.GetChannelAsync(_targetSiteId, _targetSiteId).GetAwaiter().GetResult();
+                var nodeInfo = DataProvider.ChannelRepository.GetAsync(_targetSiteId).GetAwaiter().GetResult();
                 var linkUrl = GetRedirectUrl(_targetSiteId, _targetSiteId.ToString());
                 LtlChannelName.Text = $"<a href='{linkUrl}'>{nodeInfo.ChannelName}</a>";
 
@@ -123,7 +123,7 @@ namespace SiteServer.BackgroundPages.Cms
                 };
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(DataProvider.SiteRepository.GetAsync(_targetSiteId).GetAwaiter().GetResult(), string.Empty, ELoadingType.ChannelClickSelect, additional));
 
-                var channelIdList = ChannelManager.GetChannelIdListAsync(nodeInfo, EScopeType.Children, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult();
+                var channelIdList = DataProvider.ChannelRepository.GetChannelIdsAsync(nodeInfo, EScopeType.Children).GetAwaiter().GetResult();
 
                 RptChannel.DataSource = channelIdList;
                 RptChannel.ItemDataBound += RptChannel_ItemDataBound;
@@ -139,7 +139,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (!IsDescendantOwningChannelId(channelId)) e.Item.Visible = false;
             }
-            var nodeInfo = ChannelManager.GetChannelAsync(_targetSiteId, channelId).GetAwaiter().GetResult();
+            var nodeInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 

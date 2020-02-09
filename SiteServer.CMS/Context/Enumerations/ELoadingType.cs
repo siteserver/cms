@@ -5,12 +5,8 @@ namespace SiteServer.CMS.Context.Enumerations
     public enum ELoadingType
     {
         ContentTree,
-        Channel,
         ChannelClickSelect,
-        SiteAnalysis,
-        TemplateFilePathRule,
-        ConfigurationCreateDetails,
-        ConfigurationCrossSiteTrans
+        SiteAnalysis
     }
 
     public static class ELoadingTypeUtils
@@ -21,10 +17,6 @@ namespace SiteServer.CMS.Context.Enumerations
             {
                 return "ContentTree";
             }
-            if (type == ELoadingType.Channel)
-            {
-                return "Channel";
-            }
             if (type == ELoadingType.ChannelClickSelect)
             {
                 return "ChannelClickSelect";
@@ -33,32 +25,16 @@ namespace SiteServer.CMS.Context.Enumerations
             {
                 return "SiteAnalysis";
             }
-            if (type == ELoadingType.TemplateFilePathRule)
-            {
-                return "TemplateFilePathRule";
-            }
-            if (type == ELoadingType.ConfigurationCreateDetails)
-            {
-                return "ConfigurationCreateDetails";
-            }
-            if (type == ELoadingType.ConfigurationCrossSiteTrans)
-            {
-                return "ConfigurationCrossSiteTrans";
-            }
             throw new Exception();
         }
 
         public static ELoadingType GetEnumType(string typeStr)
         {
-            var retVal = ELoadingType.Channel;
+            var retVal = ELoadingType.ContentTree;
 
             if (Equals(ELoadingType.ContentTree, typeStr))
             {
                 retVal = ELoadingType.ContentTree;
-            }
-            else if (Equals(ELoadingType.Channel, typeStr))
-            {
-                retVal = ELoadingType.Channel;
             }
             else if (Equals(ELoadingType.ChannelClickSelect, typeStr))
             {
@@ -67,18 +43,6 @@ namespace SiteServer.CMS.Context.Enumerations
             else if (Equals(ELoadingType.SiteAnalysis, typeStr))
             {
                 retVal = ELoadingType.SiteAnalysis;
-            }
-            else if (Equals(ELoadingType.TemplateFilePathRule, typeStr))
-            {
-                retVal = ELoadingType.TemplateFilePathRule;
-            }
-            else if (Equals(ELoadingType.ConfigurationCreateDetails, typeStr))
-            {
-                retVal = ELoadingType.ConfigurationCreateDetails;
-            }
-            else if (Equals(ELoadingType.ConfigurationCrossSiteTrans, typeStr))
-            {
-                retVal = ELoadingType.ConfigurationCrossSiteTrans;
             }
 
             return retVal;

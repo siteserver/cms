@@ -32,6 +32,9 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
         [JsonProperty("contentGroupNameCollection")]
         public string ContentGroupNameCollection { get; set; }
 
+        [JsonProperty("groupNameCollection")]
+        public string GroupNameCollection { get; set; }
+
         [JsonProperty("tags")]
         public string Tags { get; set; }
 
@@ -236,7 +239,11 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 }
                 else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
                 {
-                    tableColumnInfo.AttributeName = ContentAttribute.GroupNameCollection;
+                    tableColumnInfo.AttributeName = nameof(Abstractions.Content.GroupNames);
+                }
+                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(GroupNameCollection)))
+                {
+                    tableColumnInfo.AttributeName = nameof(Abstractions.Content.GroupNames);
                 }
 
                 if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
@@ -264,7 +271,8 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             {
                 {nameof(Abstractions.Content.ChannelId), nameof(NodeId)},
                 {nameof(Abstractions.Content.SiteId), nameof(PublishmentSystemId)},
-                {ContentAttribute.GroupNameCollection, nameof(ContentGroupNameCollection)}
+                {nameof(Abstractions.Content.GroupNames), nameof(ContentGroupNameCollection)},
+                {nameof(Abstractions.Content.GroupNames), nameof(GroupNameCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

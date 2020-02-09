@@ -13,9 +13,6 @@ namespace SiteServer.Abstractions
         [DataColumn]
         public DateTime UpdateDate { get; set; }
 
-        [DataColumn(Extend = true, Text = true)]
-        private string SystemConfig { get; set; }
-
         public bool Initialized => Id > 0;
 
         public bool IsSeparatedApi { get; set; }
@@ -29,15 +26,6 @@ namespace SiteServer.Abstractions
         public bool IsLogUser { get; set; } = true;
 
         public bool IsLogError { get; set; } = true;
-
-        /// <summary>
-        /// 是否只查看自己添加的内容
-        /// 如果是，那么管理员只能查看自己添加的内容
-        /// 如果不是，那么管理员可以查看其他管理员的内容，默认false
-        /// 注意：超级管理与，站点管理员，审核管理员，此设置无效
-        /// add by sessionliang at 20151217
-        /// </summary>
-        public bool IsViewContentOnlySelf { get; set; }
 
         // 是否开启时间阈值
         public bool IsTimeThreshold { get; set; }

@@ -1,95 +1,109 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/userGroup');
+﻿var $url = '/pages/settings/userGroup';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
-  pageType: 'list',
-  items: null,
+var data = utils.initData({
+  groups: null,
   adminNames: null,
-};
+
+  panel: false,
+  form: null
+});
 
 var methods = {
-  getList: function () {
+  apiList: function (message) {
     var $this = this;
 
-    $api.get(null, function (err, res) {
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.get($url).then(function (response) {
+      var res = response.data;
 
-      $this.items = res.value;
+      $this.groups = res.groups;
       $this.adminNames = res.adminNames;
-
-      $this.pageLoad = true;
-    });
-  },
-  delete: function (id) {
-    var $this = this;
-
-    utils.loading($this, true);
-    $api.delete({
-      id: id
-    }, function (err, res) {
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
       utils.loading($this, false);
-      if (err || !res || !res.value) return;
-
-      $this.items = res.value;
-    });
-  },
-  submit: function (item) {
-    var $this = this;
-
-    utils.loading($this, true);
-    $api.post(item, function (err, res) {
-      utils.loading($this, false);
-      if (err) {
-        $this.pageAlert = {
-          type: 'danger',
-          html: err.message
-        };
-        return;
+      if (message) {
+        $this.$message.success(message);
       }
-
-      $this.pageAlert = {
-        type: 'success',
-        html: item.id === -1 ? '用户组添加成功！' : '用户组修改成功！'
-      };
-      $this.item = null;
-      $this.items = res.value;
-      $this.pageType = 'list';
     });
   },
-  btnEditClick: function (item) {
-    this.pageType = 'add';
-    this.item = item;
+
+  apiDelete: function (id) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.delete($url, {
+      data: { id: id}
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.groups = res.value;
+      $this.$message.success('用户组删除成功！');
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
   },
+
+  apiSubmit: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url, this.form).then(function (response) {
+      var res = response.data;
+      
+      $this.groups = res.value;
+      $this.$message.success($this.form.id === -1 ? '用户组添加成功！' : '用户组修改成功！');
+      $this.panel = false;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  getAdminUrl: function(adminName) {
+    return 'adminView.cshtml?pageType=admin&userName=' + adminName + '&returnUrl=' + encodeURIComponent(location.href);
+  },
+
+  btnEditClick: function (group) {
+    this.panel = true;
+    this.form = _.assign({}, group);
+  },
+
   btnAddClick: function () {
-    this.pageType = 'add';
-    this.item = {
+    this.panel = true;
+    this.form = {
       id: -1,
       groupName: '',
       adminName: ''
     };
   },
-  btnDeleteClick: function (item) {
+
+  btnDeleteClick: function (group) {
     var $this = this;
 
     utils.alertDelete({
       title: '删除用户组',
-      text: '此操作将删除用户组 ' + item.groupName + '，确定吗？',
+      text: '此操作将删除用户组 ' + group.groupName + '，确定吗？',
       callback: function () {
-        $this.delete(item.id);
+        $this.apiDelete(group.id);
       }
     });
   },
+
   btnSubmitClick: function () {
     var $this = this;
-    this.$validator.validate().then(function (result) {
-      if (result) {
-        $this.submit($this.item);
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
+        $this.apiSubmit();
       }
     });
   },
+
   btnCancelClick: function () {
-    this.pageType = 'list';
+    this.panel = false;
   }
 };
 
@@ -98,6 +112,6 @@ new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.getList();
+    this.apiList();
   }
 });

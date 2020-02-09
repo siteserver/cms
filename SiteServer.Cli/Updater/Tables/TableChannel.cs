@@ -141,12 +141,6 @@ namespace SiteServer.Cli.Updater.Tables
                 content = content.Replace("@upload", "@/upload");
                 row[nameof(Channel.Content)] = content;
             }
-            if (row.TryGetValue(nameof(Channel.ExtendValues), out contentObj))
-            {
-                var content = contentObj.ToString();
-                content = content.Replace("@upload", "@/upload");
-                row[nameof(Channel.ExtendValues)] = content;
-            }
 
             return row;
         }

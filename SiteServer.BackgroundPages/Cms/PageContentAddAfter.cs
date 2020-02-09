@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
             _contentId = AuthRequest.GetQueryInt("ContentID");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
-            _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+            _channel = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
 
             if (IsPostBack) return;
 

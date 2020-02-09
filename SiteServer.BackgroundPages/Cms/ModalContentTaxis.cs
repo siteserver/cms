@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core.Create;
@@ -37,8 +38,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
-            _contentIdList = StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
-            _tableName = ChannelManager.GetTableNameAsync(Site, _channelId).GetAwaiter().GetResult();
+            _contentIdList = Utilities.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
+            _tableName = DataProvider.ChannelRepository.GetTableNameAsync(Site, _channelId).GetAwaiter().GetResult();
 
             if (IsPostBack) return;
 
@@ -52,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
             var isUp = DdlTaxisType.SelectedValue == "Up";
             var taxisNum = TranslateUtils.ToInt(TbTaxisNum.Text);
 
-            var nodeInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
+            var nodeInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
             if (ETaxisTypeUtils.Equals(nodeInfo.DefaultTaxisType, TaxisType.OrderByTaxis))
             {
                 isUp = !isUp;
@@ -65,26 +66,26 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var contentId in _contentIdList)
             {
-                var isTop = DataProvider.ContentRepository.GetValueAsync(_tableName, contentId, ContentAttribute.IsTop).GetAwaiter().GetResult();
+                var isTop = DataProvider.ContentRepository.GetValueAsync(_tableName, contentId, nameof(Abstractions.Content.Top)).GetAwaiter().GetResult();
                 if (string.IsNullOrEmpty(isTop)) continue;
 
                 var top = TranslateUtils.ToBool(isTop);
                 for (var i = 1; i <= taxisNum; i++)
                 {
-                    if (isUp)
-                    {
-                        if (DataProvider.ContentRepository.SetTaxisToUpAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        if (DataProvider.ContentRepository.SetTaxisToDownAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
-                        {
-                            break;
-                        }
-                    }
+                    //if (isUp)
+                    //{
+                    //    if (DataProvider.ContentRepository.SetTaxisToUpAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    if (DataProvider.ContentRepository.SetTaxisToDownAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
                 }
             }
 

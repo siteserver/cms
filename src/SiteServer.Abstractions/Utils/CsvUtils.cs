@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using Datory.Utils;
 
 
 namespace SiteServer.Abstractions
@@ -44,12 +45,12 @@ namespace SiteServer.Abstractions
             var content = FileUtils.ReadText(filePath);
             if (!string.IsNullOrEmpty(content))
             {
-                valueList = StringUtils.GetStringList(content, '\n');
+                valueList = Utilities.GetStringList(content, '\n');
             }
 
             if (valueList.Count > 1)
             {
-                head = StringUtils.GetStringList(valueList[0]);
+                head = Utilities.GetStringList(valueList[0]);
                 valueList = valueList.GetRange(1, valueList.Count - 1);
             }
 
@@ -58,7 +59,7 @@ namespace SiteServer.Abstractions
                 var row = new List<string>();
 
                 var value = str.Replace(@"""""", @"""");
-                var list = StringUtils.GetStringList(value);
+                var list = Utilities.GetStringList(value);
 
                 if (list.Count != head.Count) continue;
                 foreach (var r in list)

@@ -1,8 +1,6 @@
 ﻿var $url = '/pages/settings/analysisSite';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: 'new',
   newX: null,
   newY: null,
@@ -14,7 +12,7 @@ var data = {
     dateTo: ''
   },
   chartOption:null
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -35,14 +33,14 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
   btnSearchClick() {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url, {
       dateFrom: this.formInline.dateFrom,
       dateTo: this.formInline.dateTo,

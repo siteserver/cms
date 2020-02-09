@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
@@ -37,14 +38,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             _channelId = AuthRequest.GetQueryInt("channelId");
 
-            var channelInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
-            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.ContentAttributesOfDisplay);
+            var channelInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
+            var attributesOfDisplay = Utilities.GetStringList(channelInfo.ListColumns);
             var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
             _pluginColumns = PluginContentManager.GetContentColumnsAsync(pluginIds).GetAwaiter().GetResult();
 
             if (IsPostBack) return;
 
-            var styleList = ContentUtility.GetAllTableStyleList(DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, channelInfo).GetAwaiter().GetResult());
+            var styleList = ColumnsManager.GetContentListStyles(DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, channelInfo).GetAwaiter().GetResult());
             foreach (var style in styleList)
             {
                 if (style.InputType == InputType.TextEditor) continue;
@@ -89,9 +90,9 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var channelInfo = ChannelManager.GetChannelAsync(SiteId, _channelId).GetAwaiter().GetResult();
+            var channelInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
             var attributesOfDisplay = ControlUtils.SelectedItemsValueToStringCollection(CblDisplayAttributes.Items);
-            channelInfo.ContentAttributesOfDisplay = attributesOfDisplay;
+            channelInfo.ListColumns = attributesOfDisplay;
 
             DataProvider.ChannelRepository.UpdateAsync(channelInfo).GetAwaiter().GetResult();
 

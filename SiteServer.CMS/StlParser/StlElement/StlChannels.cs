@@ -9,6 +9,7 @@ using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -137,7 +138,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var channelId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
 
-                var channelInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo != null)
                 {
                     channelInfoList.Add(channelInfo.ToDictionary());

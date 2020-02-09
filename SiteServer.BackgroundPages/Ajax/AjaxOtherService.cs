@@ -401,10 +401,9 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var eLoadingType = ELoadingTypeUtils.GetEnumType(loadingType);
 
+            var channel = await DataProvider.ChannelRepository.GetAsync(parentId == 0 ? siteId : parentId);
             var channelIdList =
-                await ChannelManager.GetChannelIdListAsync(
-                    await ChannelManager.GetChannelAsync(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children,
-                    string.Empty, string.Empty, string.Empty);
+                await DataProvider.ChannelRepository.GetChannelIdsAsync(channel, EScopeType.Children);
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
 
@@ -412,7 +411,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
             foreach (var channelId in channelIdList)
             {
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
 
                 var enabled = await request.AdminPermissionsImpl.IsOwningChannelIdAsync(channelId);
                 if (!string.IsNullOrEmpty(contentModelPluginId) &&
@@ -443,7 +442,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             if (string.IsNullOrEmpty(contentModelPluginId)) return true;
 
-            var channelIdList = await ChannelManager.GetChannelIdListAsync(channel, EScopeType.Descendant, string.Empty, string.Empty, contentModelPluginId);
+            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channel, EScopeType.Descendant, string.Empty, string.Empty, contentModelPluginId);
             return channelIdList.Count > 0;
         }
     }

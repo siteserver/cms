@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Repositories
 
         public LibraryGroupRepository()
         {
-            _repository = new Repository<LibraryGroup>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
+            _repository = new Repository<LibraryGroup>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -27,21 +27,27 @@ namespace SiteServer.CMS.Repositories
             public const string Type = nameof(Type);
         }
 
-        private string CacheKey(LibraryType type) => CacheManager.GetListKey(TableName, type.GetValue());
+        private string CacheKey(LibraryType type) => Caching.GetListKey(TableName, type.GetValue());
 
         public async Task<int> InsertAsync(LibraryGroup group)
         {
-            return await _repository.InsertAsync(group, Q.CachingRemove(CacheKey(group.Type)));
+            return await _repository.InsertAsync(group, Q
+                .CachingRemove(CacheKey(group.Type))
+            );
         }
 
         public async Task<bool> UpdateAsync(LibraryGroup group)
         {
-            return await _repository.UpdateAsync(group, Q.CachingRemove(CacheKey(group.Type)));
+            return await _repository.UpdateAsync(group, Q
+                .CachingRemove(CacheKey(group.Type))
+            );
         }
 
         public async Task<bool> DeleteAsync(LibraryType type, int groupId)
         {
-            return await _repository.DeleteAsync(groupId, Q.CachingRemove(CacheKey(type)));
+            return await _repository.DeleteAsync(groupId, Q
+                .CachingRemove(CacheKey(type))
+            );
         }
 
         public async Task<List<LibraryGroup>> GetAllAsync(LibraryType type)

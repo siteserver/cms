@@ -1,34 +1,43 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerState');
+﻿var $url = '/pages/cms/contents/contentsLayerState';
 
-var data = {
-  siteId: parseInt(utils.getQueryString('siteId')),
-  channelId: parseInt(utils.getQueryString('channelId')),
-  contentId: parseInt(utils.getQueryString('contentId')),
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
+  siteId: utils.getQueryInt('siteId'),
+  channelId: utils.getQueryInt('channelId'),
+  contentId: utils.getQueryInt('contentId'),
   contentChecks: null,
-  title: null,
-  checkState: null
-};
+  content: null
+});
 
 var methods = {
-  loadConfig: function () {
+  apiGet: function () {
     var $this = this;
 
-    $api.get({
-      siteId: $this.siteId,
-      channelId: $this.channelId,
-      contentId: $this.contentId
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        contentId: this.contentId
+      }
+    }).then(function (response) {
+      var res = response.data;
 
-      $this.contentChecks = res.value;
-      $this.title = res.title;
-      $this.checkState = res.checkState;
-
-      $this.pageLoad = true;
+      $this.contentChecks = res.contentChecks;
+      $this.content = res.content;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
+
+  getContentUrl: function (content) {
+    if (content.checked) {
+      return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
+    }
+    return apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
+  },
+  
   btnSubmitClick: function () {
     window.parent.layer.closeAll()
     window.parent.utils.openLayer({
@@ -43,6 +52,10 @@ var methods = {
         this.contentId,
       full: true
     });
+  },
+
+  btnCancelClick: function () {
+    utils.closeLayer();
   }
 };
 
@@ -51,6 +64,6 @@ new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.loadConfig();
+    this.apiGet();
   }
 });

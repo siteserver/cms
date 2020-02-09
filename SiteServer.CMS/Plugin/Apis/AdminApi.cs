@@ -40,7 +40,7 @@ namespace SiteServer.CMS.Plugin.Apis
             return await DataProvider.AdministratorRepository.GetByAccountAsync(account);
         }
 
-        public async Task<IEnumerable<string>> GetUserNameListAsync()
+        public async Task<List<string>> GetUserNameListAsync()
         {
             return await DataProvider.AdministratorRepository.GetUserNameListAsync();
         }

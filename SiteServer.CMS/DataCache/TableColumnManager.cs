@@ -8,9 +8,8 @@ namespace SiteServer.CMS.DataCache
 {
     public static class TableColumnManager
     {
-        public static async Task<IEnumerable<TableColumn>> GetTableColumnInfoListAsync(string tableName, List<string> excludeAttributeNameList)
+        public static async Task<List<TableColumn>> GetTableColumnInfoListAsync(string tableName, List<string> excludeAttributeNameList)
         {
-
             var list = await WebConfigUtils.Database.GetTableColumnsAsync(tableName);
             if (excludeAttributeNameList == null || excludeAttributeNameList.Count == 0) return list;
 

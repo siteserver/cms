@@ -60,13 +60,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         }
 
         [HttpDelete, Route(Route)]
-        public async Task<GenericResult<List<Style>>> Delete([FromBody] DeleteRequest request)
+        public async Task<ObjectResult<List<Style>>> Delete([FromBody] DeleteRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
             if (!auth.IsAdminLoggin ||
                 !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUserStyle))
             {
-                return Request.Unauthorized<GenericResult<List<Style>>>();
+                return Request.Unauthorized<ObjectResult<List<Style>>>();
             }
 
             await DataProvider.TableStyleRepository.DeleteAsync(0, DataProvider.UserRepository.TableName, request.AttributeName);
@@ -88,27 +88,27 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 });
             }
 
-            return new GenericResult<List<Style>>
+            return new ObjectResult<List<Style>>
             {
                 Value = styles
             };
         }
 
         [HttpPost, Route(RouteImport)]
-        public async Task<DefaultResult> Import()
+        public async Task<BoolResult> Import()
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
             if (!auth.IsAdminLoggin ||
                 !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
             {
-                return Request.Unauthorized<DefaultResult>();
+                return Request.Unauthorized<BoolResult>();
             }
 
             var fileName = auth.HttpRequest["fileName"];
             var fileCount = auth.HttpRequest.Files.Count;
             if (fileCount == 0)
             {
-                return Request.BadRequest<DefaultResult>("请选择有效的文件上传");
+                return Request.BadRequest<BoolResult>("请选择有效的文件上传");
             }
 
             var file = auth.HttpRequest.Files[0];
@@ -117,7 +117,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
             var sExt = PathUtils.GetExtension(fileName);
             if (!StringUtils.EqualsIgnoreCase(sExt, ".zip"))
             {
-                return Request.BadRequest<DefaultResult>("导入文件为 Zip 格式，请选择有效的文件上传");
+                return Request.BadRequest<BoolResult>("导入文件为 Zip 格式，请选择有效的文件上传");
             }
 
             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
@@ -131,41 +131,41 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
 
             await auth.AddAdminLogAsync("导入用户字段");
 
-            return new DefaultResult
+            return new BoolResult
             {
                 Value = true
             };
         }
 
         [HttpPost, Route(RouteExport)]
-        public async Task<GenericResult<string>> Export()
+        public async Task<StringResult> Export()
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
             if (!auth.IsAdminLoggin ||
                 !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
             {
-                return Request.Unauthorized<GenericResult<string>>();
+                return Request.Unauthorized<StringResult>();
             }
 
-            var fileName = await ExportObject.ExportRootSingleTableStyleAsync(DataProvider.UserRepository.TableName, DataProvider.TableStyleRepository.EmptyRelatedIdentities);
+            var fileName = await ExportObject.ExportRootSingleTableStyleAsync(0, DataProvider.UserRepository.TableName, DataProvider.TableStyleRepository.EmptyRelatedIdentities);
 
             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
             var downloadUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
 
-            return new GenericResult<string>
+            return new StringResult
             {
                 Value = downloadUrl
             };
         }
 
         [HttpPost, Route(RouteReset)]
-        public async Task<GenericResult<List<Style>>> Reset()
+        public async Task<ObjectResult<List<Style>>> Reset()
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
             if (!auth.IsAdminLoggin ||
                 !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUserStyle))
             {
-                return Request.Unauthorized<GenericResult<List<Style>>>();
+                return Request.Unauthorized<ObjectResult<List<Style>>>();
             }
 
             await DataProvider.TableStyleRepository.DeleteAllAsync(DataProvider.UserRepository.TableName);
@@ -187,7 +187,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 });
             }
 
-            return new GenericResult<List<Style>>
+            return new ObjectResult<List<Style>>
             {
                 Value = styles
             };

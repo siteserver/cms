@@ -1,96 +1,115 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerCopy');
-var $apiChannels = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerCopy/actions/getChannels');
+﻿var $url = '/pages/cms/contents/contentsLayerCopy';
 
-var data = {
-  siteId: parseInt(utils.getQueryString('siteId')),
-  channelId: parseInt(utils.getQueryString('channelId')),
+var data = utils.initData({
+  page: utils.getQueryInt('page'),
+  siteId: utils.getQueryInt('siteId'),
+  channelId: utils.getQueryInt('channelId'),
   channelContentIds: utils.getQueryString('channelContentIds'),
-  pageLoad: false,
-  pageAlert: null,
   contents: null,
-  sites: [],
-  channels: [],
-  site: {},
-  channel: null,
-  copyType: 'Copy',
-  isSubmit: false
-};
+  transSites: null,
+  transChannels: null,
+  form: {
+    transSiteId: null,
+    transChannelIds: null,
+    copyType: 'Copy',
+  }
+});
 
 var methods = {
-  loadConfig: function () {
+  apiGet: function () {
     var $this = this;
 
-    $api.get({
-        siteId: $this.siteId,
-        channelId: $this.channelId,
-        channelContentIds: $this.channelContentIds
-      },
-      function (err, res) {
-        if (err || !res || !res.value) return;
-
-        $this.contents = res.value;
-        $this.sites = res.sites;
-        $this.channels = res.channels;
-        $this.site = res.site;
-
-        $this.pageLoad = true;
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        channelContentIds: this.channelContentIds
       }
-    );
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.contents = res.contents;
+      $this.transSites = res.transSites;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
   },
 
-  onSiteSelect(site) {
-    if (site.id === this.site.id) return;
-    this.site = site;
+  apiSubmit: function () {
     var $this = this;
 
-    parent.utils.loading($this, true);
-    $apiChannels.get({
-        siteId: this.site.id
-      },
-      function (err, res) {
-        parent.utils.loading($this, false);
-        if (err || !res || !res.value) return;
+    utils.loading(this, true);
+    $api.post($url, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      channelContentIds: this.channelContentIds,
+      transSiteId: this.form.transSiteId,
+      transChannelId: this.form.transChannelIds[this.form.transChannelIds.length - 1],
+      copyType: this.form.copyType
+    }).then(function (response) {
+      var res = response.data;
 
-        $this.channels = res.value;
-        $this.channel = null;
-      }
-    );
+      parent.$vue.apiList($this.channelId, $this.page, '内容复制成功!', true);
+      utils.closeLayer();
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
   },
 
-  onChannelSelect(channel) {
-    this.channel = channel;
+  apiGetOptions: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/options', {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      transSiteId: this.form.transSiteId
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.transChannels = [res.transChannels];
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  getContentUrl: function (content) {
+    if (content.checked) {
+      return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
+    }
+    return apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
+  },
+
+  handleTransSiteIdChange: function() {
+    this.apiGetOptions();
   },
 
   btnSubmitClick: function () {
     var $this = this;
-    this.isSubmit = true;
-    if (!this.channel) return;
+      this.$refs.form.validate(function(valid) {
+        if (valid) {
+          $this.apiSubmit();
+        }
+      });
+  },
 
-    parent.utils.loading($this, true);
-    $api.post({
-        siteId: $this.siteId,
-        channelId: $this.channelId,
-        channelContentIds: $this.channelContentIds,
-        targetSiteId: $this.site.id,
-        targetChannelId: $this.channel.id,
-        copyType: $this.copyType
-      },
-      function (err, res) {
-        if (err || !res || !res.value) return;
-
-        parent.location.reload(true);
-      }
-    );
-  }
+  btnCancelClick: function () {
+    utils.closeLayer();
+  },
 };
-
-Vue.component("multiselect", window.VueMultiselect.default);
 
 new Vue({
   el: '#main',
   data: data,
   methods: methods,
   created: function () {
-    this.loadConfig();
+    this.apiGet();
   }
 });

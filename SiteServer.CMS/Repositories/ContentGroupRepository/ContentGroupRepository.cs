@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Microsoft.Extensions.Caching.Distributed;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -13,7 +12,7 @@ namespace SiteServer.CMS.Repositories
 
         public ContentGroupRepository()
         {
-            _repository = new Repository<ContentGroup>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), CacheManager.Cache);
+            _repository = new Repository<ContentGroup>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -26,16 +25,16 @@ namespace SiteServer.CMS.Repositories
         {
             group.Taxis = await GetMaxTaxisAsync(group.SiteId) + 1;
 
-            await _repository.InsertAsync(group);
-
-            await RemoveCacheAsync(group.SiteId);
+            await _repository.InsertAsync(group, Q
+                .CachingRemove(GetCacheKey(group.SiteId))
+            );
         }
 
         public async Task UpdateAsync(ContentGroup group)
         {
-            await _repository.UpdateAsync(group);
-
-            await RemoveCacheAsync(group.SiteId);
+            await _repository.UpdateAsync(group, Q
+                .CachingRemove(GetCacheKey(group.SiteId))
+            );
         }
 
         public async Task DeleteAsync(int siteId, string groupName)
@@ -43,9 +42,16 @@ namespace SiteServer.CMS.Repositories
             await _repository.DeleteAsync(Q
                 .Where(nameof(ContentGroup.SiteId), siteId)
                 .Where(nameof(ContentGroup.GroupName), groupName)
+                .CachingRemove(GetCacheKey(siteId))
             );
+        }
 
-            await RemoveCacheAsync(siteId);
+        public async Task DeleteAsync(int siteId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(ContentGroup.SiteId), siteId)
+                .CachingRemove(GetCacheKey(siteId))
+            );
         }
 
         public async Task UpdateTaxisToUpAsync(int siteId, string groupName)
@@ -70,8 +76,36 @@ namespace SiteServer.CMS.Repositories
                 await SetTaxisAsync(siteId, groupName, higherTaxis);
                 await SetTaxisAsync(siteId, higherGroupName, taxis);
             }
+        }
 
-            await RemoveCacheAsync(siteId);
+        public async Task UpdateTaxisDownAsync(int siteId, int groupId, int taxis)
+        {
+            var higherGroup = await _repository.GetAsync<ChannelGroup>(Q
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+                .Where(nameof(ChannelGroup.Taxis), ">", taxis)
+                .WhereNot(nameof(ChannelGroup.Id), groupId)
+                .OrderBy(nameof(ChannelGroup.Taxis)));
+
+            if (higherGroup != null)
+            {
+                await SetTaxisAsync(groupId, higherGroup.Taxis);
+                await SetTaxisAsync(higherGroup.Id, taxis);
+            }
+        }
+
+        public async Task UpdateTaxisUpAsync(int siteId, int groupId, int taxis)
+        {
+            var lowerGroup = await _repository.GetAsync<ChannelGroup>(Q
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+                .Where(nameof(ChannelGroup.Taxis), "<", taxis)
+                .WhereNot(nameof(ChannelGroup.Id), groupId)
+                .OrderByDesc(nameof(ChannelGroup.Taxis)));
+
+            if (lowerGroup != null)
+            {
+                await SetTaxisAsync(groupId, lowerGroup.Taxis);
+                await SetTaxisAsync(lowerGroup.Id, taxis);
+            }
         }
 
         public async Task UpdateTaxisToDownAsync(int siteId, string groupName)
@@ -96,13 +130,12 @@ namespace SiteServer.CMS.Repositories
                 await SetTaxisAsync(siteId, groupName, lowerTaxis);
                 await SetTaxisAsync(siteId, lowerGroupName, taxis);
             }
-
-            await RemoveCacheAsync(siteId);
         }
 
         private async Task<int> GetTaxisAsync(int siteId, string groupName)
         {
             return await _repository.GetAsync<int>(Q
+                .Select(nameof(ContentGroup.Taxis))
                 .Where(nameof(ContentGroup.SiteId), siteId)
                 .Where(nameof(ContentGroup.GroupName), groupName)
             );
@@ -114,6 +147,15 @@ namespace SiteServer.CMS.Repositories
                 .Set(nameof(ContentGroup.Taxis), taxis)
                 .Where(nameof(ContentGroup.SiteId), siteId)
                 .Where(nameof(ContentGroup.GroupName), groupName)
+                .CachingRemove(GetCacheKey(siteId))
+            );
+        }
+
+        private async Task SetTaxisAsync(int groupId, int taxis)
+        {
+            await _repository.UpdateAsync(Q
+                .Set(nameof(ChannelGroup.Taxis), taxis)
+                .Where(nameof(ChannelGroup.Id), groupId)
             );
         }
 
@@ -141,11 +183,19 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        public async Task<IEnumerable<ContentGroup>> GetContentGroupsAsync(int siteId)
+        public async Task<ContentGroup> GetAsync(int siteId, int groupId)
+        {
+            return await _repository.GetAsync(Q
+                .Where(nameof(ContentGroup.SiteId), siteId)
+                .Where(nameof(ContentGroup.Id), groupId)
+            );
+        }
+
+        public async Task<List<ContentGroup>> GetContentGroupsAsync(int siteId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(nameof(ContentGroup.SiteId), siteId)
-                .OrderByDesc(nameof(ContentGroup.Taxis))
+                .OrderBy(nameof(ContentGroup.Taxis))
                 .OrderBy(nameof(ContentGroup.GroupName))
             );
         }

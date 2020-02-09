@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -41,7 +42,7 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, site, siteId);
@@ -142,7 +143,7 @@ namespace SiteServer.API.Controllers.Home
                 var isClearFontFamily = request.GetPostBool("isClearFontFamily");
                 var isClearImages = request.GetPostBool("isClearImages");
                 var checkedLevel = request.GetPostInt("checkedLevel");
-                var fileNames = StringUtils.GetStringList(request.GetPostString("fileNames"));
+                var fileNames = Utilities.GetStringList(request.GetPostString("fileNames"));
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
@@ -154,10 +155,10 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
+                var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
                 var styleList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channelInfo);
                 var isChecked = checkedLevel >= site.CheckContentLevel;
 
@@ -168,7 +169,7 @@ namespace SiteServer.API.Controllers.Home
                     if (string.IsNullOrEmpty(fileName)) continue;
 
                     var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                    var (title, content) = await WordManager.GetWordAsync(site, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, filePath);
+                    var (title, content) = await WordManager.GetWordAsync(site, isFirstLineTitle, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, filePath);
 
                     if (string.IsNullOrEmpty(title)) continue;
 
@@ -178,16 +179,15 @@ namespace SiteServer.API.Controllers.Home
                     {
                         ChannelId = channelInfo.Id,
                         SiteId = siteId,
-                        AddUserName = request.AdminName,
                         AddDate = DateTime.Now,
                         SourceId = SourceManager.User,
                         AdminId = request.AdminId,
                         UserId = request.UserId,
+                        LastEditAdminId = request.AdminId,
                         Checked = isChecked,
                         CheckedLevel = checkedLevel
                     };
 
-                    contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = contentInfo.AddDate;
 
                     contentInfo.Title = title;

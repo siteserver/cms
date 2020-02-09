@@ -34,10 +34,10 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var attributes = await ChannelManager.GetContentsColumnsAsync(site, channelInfo, true);
+                var attributes = await ColumnsManager.GetContentListColumnsAsync(site, channelInfo, true);
 
                 return Ok(new
                 {
@@ -72,10 +72,10 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                channelInfo.ContentAttributesOfDisplay = attributeNames;
+                channelInfo.ListColumns = attributeNames;
 
                 await DataProvider.ChannelRepository.UpdateAsync(channelInfo);
 

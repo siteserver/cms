@@ -1,8 +1,6 @@
 ﻿var $url = '/pages/settings/siteAdd';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: utils.getQueryString('type') || 'selectType',
 
   siteTemplates: null,
@@ -31,7 +29,7 @@ var data = {
   tableHandWrite: '',
   isImportContents: true,
   isImportTableStyles: true
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -47,7 +45,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
       if ($this.pageType == 'selectCloud') {
         $this.load();
       }
@@ -111,9 +109,7 @@ var methods = {
   load: function () {
     var $this = this;
 
-    if (this.pageLoad) {
-      utils.loading($this, true);
-    }
+    utils.loading(this, true);
     $apiCloud.get('templates', {
         params: {
           page: this.page,
@@ -136,7 +132,6 @@ var methods = {
       })
       .then(function () {
         utils.loading($this, false);
-        this.pageLoad = true;
       });
   },
 
@@ -167,31 +162,37 @@ var methods = {
     this.pageType = 'create';
   },
 
+  apiSubmit: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url, {
+      createType: this.createType,
+      createTemplateId: this.createTemplateId,
+      siteName: this.siteName,
+      root: this.root,
+      parentId: this.parentId,
+      siteDir: this.siteDir,
+      tableRule: this.tableRule,
+      tableChoose: this.tableChoose,
+      tableHandWrite: this.tableHandWrite,
+      isImportContents: this.isImportContents,
+      isImportTableStyles: this.isImportTableStyles
+    }).then(function (response) {
+      var res = response.data;
+      location.href = res.value;
+    }).catch(function (error) {
+      utils.loading($this, false);
+      utils.error($this, error);
+    });
+  },
+
   btnSubmitClick: function () {
     var $this = this;
 
     this.$validator.validate().then(function (result) {
       if (result) {
-        utils.loading($this, true);
-        $api.post($url, {
-          createType: $this.createType,
-          createTemplateId: $this.createTemplateId,
-          siteName: $this.siteName,
-          root: $this.root,
-          parentId: $this.parentId,
-          siteDir: $this.siteDir,
-          tableRule: $this.tableRule,
-          tableChoose: $this.tableChoose,
-          tableHandWrite: $this.tableHandWrite,
-          isImportContents: $this.isImportContents,
-          isImportTableStyles: $this.isImportTableStyles
-        }).then(function (response) {
-          var res = response.data;
-          location.href = res.value;
-        }).catch(function (error) {
-          utils.loading($this, false);
-          utils.error($this, error);
-        });
+        $this.apiSubmit();
       }
     });
   }

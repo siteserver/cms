@@ -1,6 +1,5 @@
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using SiteServer.CMS.DataCache;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Repositories;
 
@@ -72,7 +71,7 @@ namespace SiteServer.CMS.StlParser.Model
         {
             if (_channel != null) return _channel;
             if (ChannelId <= 0) return null;
-            _channel = await ChannelManager.GetChannelAsync(Site.Id, ChannelId);
+            _channel = await DataProvider.ChannelRepository.GetAsync(ChannelId);
             return _channel;
         }
         public void SetChannel(Channel value)

@@ -1,11 +1,10 @@
-﻿var $url = "/pages/cms/channels"
-var $urlUpload = apiUrl + '/pages/cms/channels/actions/upload?siteId=' + utils.getQueryInt("siteId");
+﻿var $url = "/pages/cms/channels/channels"
+var $urlUpload = apiUrl + '/pages/cms/channels/channels/actions/upload?siteId=' + utils.getQueryInt("siteId");
 
-var data = {
+var data = utils.initData({
   siteId: utils.getQueryInt("siteId"),
-  pageLoad: false,
-  tableData: [],
-  channels: [],
+  root: null,
+  expandedChannelIds: [],
   indexNames: [],
   groupNames: [],
   channelTemplates: [],
@@ -13,42 +12,50 @@ var data = {
   contentPlugins: [],
   relatedPlugins: [],
 
-  expandedChannelIds: [],
+  channelIds: [],
+  isSetGroups: false,
+  selectedGroupNames: [],
+
   filterText: '',
   filterIndexName: '',
   filterGroupName: '',
 
   appendPanel: false,
-  appendParent: null,
   appendForm: null,
 
   editPanel: false,
   editChannel: null,
   editLinkTypes: [],
   editTaxisTypes: [],
-  editIsEditor: false,
   editEditor: null,
+  editStyles: [],
 
   deletePanel: false,
   deleteForm: null,
 
   importPanel: false,
   importForm: null,
-  importUploadList: [],
-
-  loading: null,
-
-  tableData: [{
-    id: 1,
-    date: '2016-05-02',
-    name: '王小虎',
-    address: '上海市普陀区金沙江路 1518 弄'
-  }],
-  value: true
-};
+  importUploadList: []
+});
 
 var methods = {
-  apiList: function(message) {
+  setRuleText: function(rule, isChannel) {
+    if (isChannel) {
+      this.editChannel.channelFilePathRule = rule;
+    } else {
+      this.editChannel.contentFilePathRule = rule;
+    }
+  },
+
+  insertEditor: function(attributeName, html)
+  {
+    if (html)
+    {
+      this.editEditor.cmd.do('insertHTML', html);
+    }
+  },
+
+  apiList: function(message, expandedChannelIds) {
     var $this = this;
 
     $api.get($url, {
@@ -58,57 +65,66 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.channels = [res.channel];
+      $this.root = [res.channel];
       $this.indexNames = res.indexNames;
       $this.groupNames = res.groupNames;
       $this.channelTemplates = res.channelTemplates;
       $this.contentTemplates = res.contentTemplates;
       $this.contentPlugins = res.contentPlugins;
       $this.relatedPlugins = res.relatedPlugins;
-      $this.expandedChannelIds = [$this.siteId];
+      $this.expandedChannelIds = expandedChannelIds ? expandedChannelIds : [$this.siteId];
 
       if (message) {
-        $this.$message({
-          type: 'success',
-          message: message
-        });
+        $this.$message.success(message);
       }
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
-      $this.loading && $this.loading.close();
+      utils.loading($this, false);
     });
   },
 
   apiGet: function(channelId) {
     var $this = this;
 
-    this.loading = this.$loading();
+    utils.loading(this, true);
     $api.get($url + '/' + this.siteId + '/' + channelId).then(function (response) {
       var res = response.data;
 
       $this.editChannel = res.channel;
       $this.editLinkTypes = res.linkTypes;
       $this.editTaxisTypes = res.taxisTypes;
+      $this.editStyles = res.styles;
       $this.editPanel = true;
+      setTimeout(function () {
+        $this.loadEditor();
+      }, 100)
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.loading.close();
+      utils.loading($this, false);
     });
   },
 
   apiAppend: function () {
     var $this = this;
 
-    this.loading = this.$loading();
-    $api.post($url + '/actions/append', this.appendForm).then(function (response) {
+    utils.loading(this, true);
+    $api.post($url + '/actions/append', {
+      siteId: this.siteId,
+      parentId: this.appendForm.parentIds[this.appendForm.parentIds.length - 1],
+      channelTemplateId: this.appendForm.channelTemplateId,
+      contentTemplateId: this.appendForm.contentTemplateId,
+      isParentTemplates: this.appendForm.isParentTemplates,
+      isIndexName: this.appendForm.isIndexName,
+      channels: this.appendForm.channels,
+    }).then(function (response) {
       var res = response.data;
 
       $this.appendPanel = false;
-      $this.apiList('栏目添加成功!');
+      $this.apiList('栏目添加成功!', res);
     }).catch(function (error) {
+      utils.loading($this, false);
       utils.error($this, error);
     });
   },
@@ -116,13 +132,14 @@ var methods = {
   apiEdit: function () {
     var $this = this;
 
-    this.loading = this.$loading();
+    utils.loading(this, true);
     $api.put($url, this.editChannel).then(function (response) {
       var res = response.data;
 
       $this.editPanel = false;
-      $this.apiList('栏目编辑成功!');
+      $this.apiList('栏目编辑成功!', res);
     }).catch(function (error) {
+      utils.loading($this, false);
       utils.error($this, error);
     });
   },
@@ -130,15 +147,16 @@ var methods = {
   apiDelete: function () {
     var $this = this;
 
-    this.loading = this.$loading();
+    utils.loading(this, true);
     $api.delete($url, {
       data: this.deleteForm
     }).then(function (response) {
       var res = response.data;
 
       $this.deletePanel = false;
-      $this.apiList('栏目删除成功!');
+      $this.apiList('栏目删除成功!', res);
     }).catch(function (error) {
+      utils.loading($this, false);
       utils.error($this, error);
     });
   },
@@ -146,7 +164,7 @@ var methods = {
   apiImport: function () {
     var $this = this;
 
-    this.loading = this.$loading();
+    utils.loading(this, true);
     $api.post($url + '/actions/import', {
       siteId: this.importForm.siteId,
       channelId: this.importForm.channelIds[this.importForm.channelIds.length - 1],
@@ -156,35 +174,64 @@ var methods = {
       var res = response.data;
 
       $this.importPanel = false;
-      $this.apiList('栏目导入成功!');
+      $this.apiList('栏目导入成功!', res);
     }).catch(function (error) {
+      utils.loading($this, false);
       utils.error($this, error);
-    });
+    })
   },
 
-  apiExport: function (channelIds) {
+  loadEditor: function () {
     var $this = this;
 
-    this.loading = this.$loading();
-    $api.post($url + '/actions/export', {
-      siteId: this.siteId,
-      channelIds: channelIds
-    }).then(function (response) {
-      var res = response.data;
+    var E = window.wangEditor;
+    this.editEditor = new E('#editChannel_Content1', '#editChannel_Content2');
+    this.editEditor.customConfig.menus = [
+      'head',  // 标题
+      'bold',  // 粗体
+      'fontSize',  // 字号
+      'fontName',  // 字体
+      'italic',  // 斜体
+      'underline',  // 下划线
+      'strikeThrough',  // 删除线
+      'foreColor',  // 文字颜色
+      'backColor',  // 背景颜色
+      'link',  // 插入链接
+      'list',  // 列表
+      'justify',  // 对齐方式
+      'quote',  // 引用
+      'table',  // 表格
+      'undo',  // 撤销
+      'redo'  // 重复
+    ];
+    this.editEditor.customConfig.onchange = function (html) {
+      $this.editChannel.content = html;
+    };
+    this.editEditor.create();
+    this.editEditor.txt.html(this.editChannel.content);
+  },
 
-      window.open(res.value);
-    }).catch(function (error) {
-      utils.error($this, error);
+  btnSelectGroupClick: function (groupName) {
+    if (this.selectedGroupNames.indexOf(groupName) !== -1) {
+      this.selectedGroupNames = _.reject(this.selectedGroupNames, function(o) { return o === groupName; });
+    } else {
+      this.selectedGroupNames.push(groupName);
+    }
+  },
+
+  btnSetClick: function(channelId, isChannel, rule) {
+    var url = 'settingsCreateRuleLayerSet.cshtml?siteId=' + this.siteId + '&isChannel=' + isChannel + '&channelId=' + channelId + '&rule=' + encodeURIComponent(rule);
+
+    utils.openLayer({
+      title: '构造',
+      url: url,
+      width: 800,
+      height: 500
     });
   },
 
-  appendChannels: function(channels) {
-    
-  },
-
-  btnAppendClick: function(data) {
-    this.appendPanel = true
-    this.appendParent = data
+  btnPreviewClick: function(imageUrl) {
+    window.open(imageUrl);
   },
 
   handleDragStart: function(node, ev) {
@@ -227,30 +274,26 @@ var methods = {
     return '../redirect.cshtml?siteId=' + this.siteId + '&channelId=' + data.value;
   },
 
-  getCheckedNodes: function() {
-    console.log(this.$refs.tree.getCheckedNodes());
-  },
-  
-  getCheckedKeys: function() {
-    return this.$refs.tree.getCheckedKeys();
+  handleCheckChange() {
+    this.channelIds = this.$refs.tree.getCheckedKeys();
   },
 
   filterNode: function(value, data) {
     if (!value) return true;
     if (value.channelName && value.indexName && value.groupName) {
-      return data.label.indexOf(value.channelName) !== -1 && data.dict.indexName === value.indexName && data.dict.groupNames.indexOf(value.groupName) !== -1;
+      return data.label.indexOf(value.channelName) !== -1 && data.indexName === value.indexName && data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.channelName && value.indexName) {
       return data.label.indexOf(value.channelName) !== -1 && data.indexName === value.indexName;
     } else if (value.channelName && value.groupName) {
-      return data.label.indexOf(value.channelName) !== -1 && data.dict.groupNames.indexOf(value.groupName) !== -1;
+      return data.label.indexOf(value.channelName) !== -1 && data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.indexName && value.groupName) {
-      return data.indexName === value.indexName && data.dict.groupNames.indexOf(value.groupName) !== -1;
+      return data.indexName === value.indexName && data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.channelName) {
       return data.label.indexOf(value.channelName) !== -1;
     } else if (value.groupName) {
-      return data.dict.groupNames.indexOf(value.groupName) !== -1;
+      return data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.indexName) {
-      return data.dict.indexName === value.indexName;
+      return data.indexName === value.indexName;
     }
     return true;
   },
@@ -262,13 +305,12 @@ var methods = {
     this.editPanel = false;
   },
 
-  btnAppendClick: function(row) {
-    this.appendParent = row;
+  btnAppendClick: function() {
     this.appendForm = {
-      siteId: this.siteId,
-      parentId: this.appendParent.value,
+      parentIds: [this.siteId],
       channelTemplateId: 0,
       contentTemplateId: 0,
+      isParentTemplates: true,
       isIndexName: false,
       channels: ''
     };
@@ -298,49 +340,27 @@ var methods = {
     });
   },
 
-  btnEditContentClick: function() {
-    this.editIsEditor = true;
-    if (!this.editEditor) {
-      var $this = this;
-      var E = window.wangEditor;
-      this.editEditor = new E('#editChannel_Content1', '#editChannel_Content2');
-      this.editEditor.customConfig.menus = [
-        'head',  // 标题
-        'bold',  // 粗体
-        'fontSize',  // 字号
-        'fontName',  // 字体
-        'italic',  // 斜体
-        'underline',  // 下划线
-        'strikeThrough',  // 删除线
-        'foreColor',  // 文字颜色
-        'backColor',  // 背景颜色
-        'link',  // 插入链接
-        'list',  // 列表
-        'justify',  // 对齐方式
-        'quote',  // 引用
-        'table',  // 表格
-        'undo',  // 撤销
-        'redo'  // 重复
-      ];
-      this.editEditor.customConfig.onchange = function (html) {
-        $this.editChannel.content = html;
-      };
-      this.editEditor.create();
-    }
-    this.editEditor.txt.html(this.editChannel.content);
+  btnOrderClick: function(row, isUp) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/order', {
+      siteId: this.siteId,
+      channelId: row.value,
+      parentId: row.parentId,
+      taxis: row.taxis,
+      isUp: isUp
+    }).then(function (response) {
+      var res = response.data;
+      
+      $this.apiList('栏目排序成功!', res);
+    }).catch(function (error) {
+      utils.loading($this, false);
+      utils.error($this, error);
+    });
   },
 
   btnDeleteClick: function(data) {
-    //   var $this = this;
-    //   this.$confirm('此操作将永久删除栏目 <span style="color:#F56C6C">' + data.label + '</span> 及其子栏目, 是否继续?', '警告', {
-    //     confirmButtonText: '永久删除',
-    //     confirmButtonClass: 'el-button--danger',
-    //     cancelButtonText: '取消',
-    //     type: 'warning',
-    //     dangerouslyUseHTMLString: true
-    //   }).then(function() {
-    //     $this.apiDelete(node, data);
-    //   })
     this.deleteForm = {
       siteId: this.siteId,
       channelId: data.value,
@@ -370,6 +390,10 @@ var methods = {
     this.importPanel = true;
   },
 
+  btnTranslateClick: function() {
+    location.href = 'channelsTranslate.cshtml?siteId=' + this.siteId + '&channelIds=' + this.channelIds.join(',') + '&returnUrl=' + encodeURIComponent(location.href);
+  },
+
   btnImportSubmitClick: function() {
     var $this = this;
     this.$refs.importForm.validate(function(valid) {
@@ -380,15 +404,59 @@ var methods = {
   },
 
   btnExportClick: function() {
-    var channelIds = this.getCheckedKeys();
-    if (!channelIds || channelIds.length === 0){
-      this.$message({
-        type: 'error',
-        message: '请选择需要导出的栏目!'
-      });
-    } else {
-      this.apiExport(channelIds);
-    }
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/export', {
+      siteId: this.siteId,
+      channelIds: this.channelIds
+    }).then(function (response) {
+      var res = response.data;
+
+      window.open(res.value);
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  btnSetGroupsClick: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/setGroups', {
+      siteId: this.siteId,
+      channelIds: this.channelIds,
+      groupNames: this.selectedGroupNames
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.isSetGroups = false;
+      $this.selectedGroupNames = [];
+      $this.apiList('栏目组设置成功!', res);
+    }).catch(function (error) {
+      utils.loading($this, false);
+      utils.error($this, error);
+    });
+  },
+
+  btnSetTaxisClick: function() {
+    utils.openLayer({
+      title: '栏目排序',
+      url: 'channelsLayerTaxis.cshtml?siteId=' + this.siteId + '&channelIds=' + this.channelIds.join(','),
+      width: 500,
+      height: 260
+    });
+  },
+
+  btnCreateClick: function() {
+    utils.openLayer({
+      title: '生成页面',
+      url: 'channelsLayerCreate.cshtml?siteId=' + this.siteId + '&channelIds=' + this.channelIds.join(','),
+      width: 500,
+      height: 260
+    });
   },
 
   uploadBefore(file) {
@@ -400,7 +468,7 @@ var methods = {
   },
 
   uploadProgress: function() {
-    this.loading = this.$loading();
+    utils.loading(this, true);
   },
 
   uploadSuccess: function(res, file) {
@@ -415,7 +483,7 @@ var methods = {
   },
 
   btnLayerClick: function(options) {
-    var url = "editorLayer" + options.name + ".cshtml?siteId=" + this.siteId;
+    var url = "../Shared/editorLayer" + options.name + ".cshtml?siteId=" + this.siteId;
 
     if (options.attributeName) {
       url += "&attributeName=" + options.attributeName;

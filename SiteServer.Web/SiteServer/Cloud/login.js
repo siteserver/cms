@@ -1,13 +1,11 @@
-var data = {
-  pageLoad: false,
+var data = utils.initData({
   pageSubmit: false,
-  pageAlert: null,
   account: null,
   password: null,
   isAutoLogin: false,
   captcha: null,
   captchaUrl: null
-};
+});
 
 var methods = {
   reload: function () {
@@ -20,7 +18,7 @@ var methods = {
   checkCaptcha: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $ssApi.post($urlCaptchaCheck, {
         captcha: $this.captcha
       })
@@ -39,11 +37,11 @@ var methods = {
   login: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $ssApi.post($urlLogin, {
-        account: $this.account,
-        password: md5($this.password),
-        isAutoLogin: $this.isAutoLogin
+        account: this.account,
+        password: md5(this.password),
+        isAutoLogin: this.isAutoLogin
       })
       .then(function (response) {
         var res = response.data;

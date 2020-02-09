@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -150,15 +150,15 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(loading))
             {
-                loading = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath);
+                loading = DataProvider.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath);
             }
             if (string.IsNullOrEmpty(yes))
             {
-                yes = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath);
+                yes = DataProvider.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath);
             }
             if (string.IsNullOrEmpty(no))
             {
-                no = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
+                no = DataProvider.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
             }
 
             pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.StlClient);

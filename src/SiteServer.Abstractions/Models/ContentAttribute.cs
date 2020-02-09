@@ -12,17 +12,16 @@ namespace SiteServer.Abstractions
         public const string LastModifiedDate = nameof(Abstractions.Content.LastModifiedDate);
         public const string ChannelId = nameof(Abstractions.Content.ChannelId);
         public const string SiteId = nameof(Abstractions.Content.SiteId);
-        public const string AddUserName = nameof(Abstractions.Content.AddUserName);
-        public const string LastEditUserName = nameof(Abstractions.Content.LastEditUserName);
-        public const string LastEditDate = nameof(Abstractions.Content.LastEditDate);
         public const string AdminId = nameof(Abstractions.Content.AdminId);
+        public const string LastEditAdminId = nameof(Abstractions.Content.LastEditAdminId);
         public const string UserId = nameof(Abstractions.Content.UserId);
+        public const string LastEditDate = nameof(Abstractions.Content.LastEditDate);
         public const string Taxis = nameof(Abstractions.Content.Taxis);
-        public const string GroupNameCollection = nameof(GroupNameCollection);
-        public const string Tags = nameof(Tags);
+        public const string GroupNames = nameof(Abstractions.Content.GroupNames);
+        public const string TagNames = nameof(TagNames);
         public const string SourceId = nameof(Abstractions.Content.SourceId);
         public const string ReferenceId = nameof(Abstractions.Content.ReferenceId);
-        public const string IsChecked = nameof(IsChecked);
+        public const string Checked = nameof(Abstractions.Content.Checked);
         public const string CheckedLevel = nameof(Abstractions.Content.CheckedLevel);
         public const string Hits = nameof(Abstractions.Content.Hits);
         public const string HitsByDay = nameof(Abstractions.Content.HitsByDay);
@@ -31,10 +30,10 @@ namespace SiteServer.Abstractions
         public const string LastHitsDate = nameof(Abstractions.Content.LastHitsDate);
         public const string Downloads = nameof(Abstractions.Content.Downloads);
         public const string Title = nameof(Abstractions.Content.Title);
-        public const string IsTop = nameof(IsTop);
-        public const string IsRecommend = nameof(IsRecommend);
-        public const string IsHot = nameof(IsHot);
-        public const string IsColor = nameof(IsColor);
+        public const string Top = nameof(Abstractions.Content.Top);
+        public const string Recommend = nameof(Abstractions.Content.Recommend);
+        public const string Hot = nameof(Abstractions.Content.Hot);
+        public const string Color = nameof(Abstractions.Content.Color);
         public const string LinkUrl = nameof(Abstractions.Content.LinkUrl);
         public const string AddDate = nameof(Abstractions.Content.AddDate);
 
@@ -46,7 +45,7 @@ namespace SiteServer.Abstractions
         public const string Author = nameof(Author);
         public const string Source = nameof(Source);
         public const string Content = nameof(Content);
-        public const string SettingsXml = nameof(SettingsXml);
+        public const string ExtendValues = nameof(ExtendValues);
 
         public static string GetFormatStringAttributeName(string attributeName)
         {
@@ -58,12 +57,6 @@ namespace SiteServer.Abstractions
             return attributeName + "_Extend";
         }
 
-        // 计算字段
-        public const string Sequence = nameof(Sequence);                            //序号
-        public const string PageContent = nameof(PageContent);
-        public const string NavigationUrl = nameof(NavigationUrl);
-        public const string CheckState = nameof(CheckState);
-
         public static readonly Lazy<List<string>> AllAttributes = new Lazy<List<string>>(() => new List<string>
         {
             Id,
@@ -72,17 +65,16 @@ namespace SiteServer.Abstractions
             LastModifiedDate,
             ChannelId,
             SiteId,
-            AddUserName,
-            LastEditUserName,
-            LastEditDate,
             AdminId,
+            LastEditAdminId,
             UserId,
+            LastEditDate,
             Taxis,
-            GroupNameCollection,
-            Tags,
+            GroupNames,
+            TagNames,
             SourceId,
             ReferenceId,
-            IsChecked,
+            Checked,
             CheckedLevel,
             Hits,
             HitsByDay,
@@ -91,10 +83,10 @@ namespace SiteServer.Abstractions
             LastHitsDate,
             Downloads,
             Title,
-            IsTop,
-            IsRecommend,
-            IsHot,
-            IsColor,
+            Top,
+            Recommend,
+            Hot,
+            Color,
             LinkUrl,
             AddDate
         });
@@ -107,17 +99,16 @@ namespace SiteServer.Abstractions
             LastModifiedDate,
             ChannelId,
             SiteId,
-            AddUserName,
-            LastEditUserName,
-            LastEditDate,
             AdminId,
+            LastEditAdminId,
             UserId,
+            LastEditDate,
             Taxis,
-            GroupNameCollection,
-            Tags,
+            GroupNames,
+            TagNames,
             SourceId,
             ReferenceId,
-            IsChecked,
+            Checked,
             CheckedLevel,
             Hits,
             HitsByDay,
@@ -125,24 +116,18 @@ namespace SiteServer.Abstractions
             HitsByMonth,
             LastHitsDate,
             Downloads,
-            IsTop,
-            IsRecommend,
-            IsHot,
-            IsColor,
+            Top,
+            Recommend,
+            Hot,
+            Color,
             AddDate,
             LinkUrl,
-            SettingsXml
+            ExtendValues
         });
 
-        public static readonly Lazy<List<string>> CalculateAttributes = new Lazy<List<string>>(() => new List<string>
-        {
-            Sequence,
-            AdminId,
-            UserId,
-            SourceId,
-            AddUserName,
-            LastEditUserName
-        });
+        public const string PageContent = nameof(PageContent);
+        public const string NavigationUrl = nameof(NavigationUrl);
+        public const string CheckState = nameof(CheckState);
 
         public static readonly Lazy<List<string>> DropAttributes = new Lazy<List<string>>(() => new List<string>
         {
@@ -154,7 +139,17 @@ namespace SiteServer.Abstractions
             "UnCheckTaskDate",
             "Photos",
             "Teleplays",
-            "MemberName"
+            "MemberName",
+            "GroupNameCollection",
+            "Tags",
+            "IsChecked",
+            "SettingsXml",
+            "IsTop",
+            "IsRecommend",
+            "IsHot",
+            "IsColor",
+            "AddUserName",
+            "LastEditUserName"
         });
     }
 }

@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
             var contentId = AuthRequest.ContentId;
 
             var site = DataProvider.SiteRepository.GetAsync(siteId).GetAwaiter().GetResult();
-            var channelInfo = ChannelManager.GetChannelAsync(siteId, channelId).GetAwaiter().GetResult();
+            var channelInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
             var styleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channelInfo).GetAwaiter().GetResult();
 
             var form = AuthRequest.HttpRequest.Form;
@@ -39,13 +39,13 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 ChannelId = channelId,
                 SiteId = siteId,
-                AddUserName = AuthRequest.AdminName,
-                LastEditUserName = AuthRequest.AdminName,
+                //AddUserName = AuthRequest.AdminName,
+                //LastEditUserName = AuthRequest.AdminName,
                 LastEditDate = DateTime.Now
             };
 
             //contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
-            var tagCollection = ContentTagUtils.ParseTagsString(form["TbTags"]);
+            //var tagCollection = DataProvider.ContentTagRepository.ParseTagsString(form["TbTags"]);
 
             contentInfo.Title = form["TbTitle"];
             var formatString = TranslateUtils.ToBool(form[ContentAttribute.Title + "_formatStrong"]);
@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
             //contentInfo.LinkUrl = TbLinkUrl.Text;
             contentInfo.AddDate = TranslateUtils.ToDateTime(form["TbAddDate"]);
             contentInfo.Checked = false;
-            contentInfo.TagNames = tagCollection;
+            //contentInfo.TagNames = tagCollection;
 
             foreach (var service in PluginManager.GetServicesAsync().GetAwaiter().GetResult())
             {

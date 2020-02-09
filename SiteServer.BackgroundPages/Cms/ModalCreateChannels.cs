@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -34,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
             var isIncludeChildren = TranslateUtils.ToBool(DdlIsIncludeChildren.SelectedValue);
             var isCreateContents = TranslateUtils.ToBool(DdlIsCreateContents.SelectedValue);
 
-            foreach (var channelId in StringUtils.GetIntList(_channelIdCollection))
+            foreach (var channelId in Utilities.GetIntList(_channelIdCollection))
             {
                 CreateManager.CreateChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
                 if (isCreateContents)
@@ -43,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 if (isIncludeChildren)
                 {
-                    foreach (var childChannelId in ChannelManager.GetChannelIdListAsync(ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult(), EScopeType.Descendant, string.Empty, string.Empty, string.Empty).GetAwaiter().GetResult())
+                    foreach (var childChannelId in DataProvider.ChannelRepository.GetChannelIdsAsync(DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult(), EScopeType.Descendant).GetAwaiter().GetResult())
                     {
                         CreateManager.CreateChannelAsync(SiteId, childChannelId).GetAwaiter().GetResult();
                         if (isCreateContents)

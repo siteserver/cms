@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
@@ -11,6 +12,7 @@ using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -95,15 +97,15 @@ namespace SiteServer.BackgroundPages.Cms
                 var fileName = string.Empty;
                 try
                 {
-                    if (_exportType == ExportTypeRelatedField)
-                    {
-                        var relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
-                        fileName = ExportRelatedFieldAsync(relatedFieldId).GetAwaiter().GetResult();
-                    }
-                    else if (_exportType == ExportTypeContentZip)
+                    //if (_exportType == ExportTypeRelatedField)
+                    //{
+                    //    var relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
+                    //    fileName = ExportRelatedFieldAsync(relatedFieldId).GetAwaiter().GetResult();
+                    //}
+                    if (_exportType == ExportTypeContentZip)
                     {
                         var channelId = AuthRequest.GetQueryInt("channelId");
-                        var contentIdCollection = StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
+                        var contentIdCollection = Utilities.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
                         var isPeriods = AuthRequest.GetQueryBool("isPeriods");
                         var startDate = AuthRequest.GetQueryString("startDate");
                         var endDate = AuthRequest.GetQueryString("endDate");
@@ -113,8 +115,8 @@ namespace SiteServer.BackgroundPages.Cms
                     else if (_exportType == ExportTypeContentExcel)
                     {
                         var channelId = AuthRequest.GetQueryInt("channelId");
-                        var contentIdCollection = StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
-                        var displayAttributes = StringUtils.GetStringList(AuthRequest.GetQueryString("DisplayAttributes"));
+                        var contentIdCollection = Utilities.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
+                        var displayAttributes = Utilities.GetStringList(AuthRequest.GetQueryString("DisplayAttributes"));
                         var isPeriods = AuthRequest.GetQueryBool("isPeriods");
                         var startDate = AuthRequest.GetQueryString("startDate");
                         var endDate = AuthRequest.GetQueryString("endDate");
@@ -123,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else if (_exportType == ExportTypeChannel)
                     {
-                        var channelIdList = StringUtils.GetIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
+                        var channelIdList = Utilities.GetIntList(AuthRequest.GetQueryString("ChannelIDCollection"));
                         fileName = ExportChannel(channelIdList);
                     }
                     else if (_exportType == ExportTypeSingleTableStyle)
@@ -155,15 +157,15 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-        private async Task<string> ExportRelatedFieldAsync(int relatedFieldId)
-        {
-            var exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
-            return await exportObject.ExportRelatedFieldAsync(relatedFieldId);
-        }
+        //private async Task<string> ExportRelatedFieldAsync(int relatedFieldId)
+        //{
+        //    var exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
+        //    return await exportObject.ExportRelatedFieldAsync(relatedFieldId);
+        //}
 
         private bool ExportContentZip(int channelId, List<int> contentIdArrayList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out string fileName)
         {
-            var nodeInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+            var nodeInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
             fileName = $"{nodeInfo.ChannelName}.zip";
             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
             var exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
@@ -172,7 +174,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         private void ExportContentExcel(int channelId, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out string fileName)
         {
-            var nodeInfo = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+            var nodeInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
 
             fileName = $"{nodeInfo.ChannelName}.csv";
             var filePath = PathUtils.GetTemporaryFilesPath(fileName);

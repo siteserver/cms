@@ -64,8 +64,6 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 config.AdminLockLoginType = TranslateUtils.ToEnum(request.GetPostString("adminLockLoginType"), LockType.Hours);
                 config.AdminLockLoginHours = request.GetPostInt("adminLockLoginHours");
 
-                config.IsViewContentOnlySelf = request.GetPostBool("isViewContentOnlySelf");
-
                 config.IsAdminEnforcePasswordChange = request.GetPostBool("isAdminEnforcePasswordChange");
                 config.AdminEnforcePasswordChangeDays = request.GetPostInt("adminEnforcePasswordChangeDays");
 

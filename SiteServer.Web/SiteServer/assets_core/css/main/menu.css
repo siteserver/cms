@@ -224,7 +224,7 @@ input.app-search-input:-ms-input-placeholder {
   background: #eeeeee;
   box-shadow: -4px 4px 40px rgba(0, 0, 0, 0.15);
   position: absolute;
-  top: 62px;
+  top: 45px;
 }
 
 body.fixed-left .side-menu.left {
@@ -679,22 +679,7 @@ body.fixed-left .side-menu.left {
   height: 100%;
 }
 
-
 /*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-
-
 
 #topnav {
   right: 0;
@@ -705,7 +690,6 @@ body.fixed-left .side-menu.left {
   border: 0;
   -webkit-transition: all .5s ease;
   transition: all .5s ease;
-  min-height: 62px;
 }
 
 #topnav .has-submenu.active a {
@@ -723,7 +707,7 @@ body.fixed-left .side-menu.left {
 #topnav .topbar-main {
   font-family: 'Microsoft YaHei', sans-serif;
   background-color: #00b19d;
-  height: 62px;
+  height: 45px;
 }
 
 #topnav .topbar-main .logo {
@@ -731,9 +715,10 @@ body.fixed-left .side-menu.left {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: .05em;
-  margin-top: 8px;
-  margin-left: 8px;
+  margin-top: 4px;
   float: left;
+  width: 200px;
+  text-align: center;
 }
 
 #topnav .topbar-main .toggle {
@@ -764,7 +749,7 @@ body.fixed-left .side-menu.left {
 
 #topnav .topbar-main .nav>li>a {
   color: #ffffff !important;
-  line-height: 60px;
+  line-height: 45px;
   padding: 0px 15px !important;
   position: relative;
   background: transparent !important;
@@ -772,10 +757,6 @@ body.fixed-left .side-menu.left {
 
 #topnav .topbar-main .nav>li>a i {
   font-size: 24px;
-}
-
-#topnav .topbar-main .nav>li>a {
-  padding: 0px 15px !important;
 }
 
 #topnav .topbar-main .navbar-nav>.open>a {
@@ -850,7 +831,7 @@ body.fixed-left .side-menu.left {
 
 #topnav .app-search {
   position: relative;
-  margin: 15px 20px 15px 10px;
+  margin: 4px 20px 15px 10px;
 }
 
 #topnav .app-search a {
@@ -1110,8 +1091,7 @@ body.fixed-left .side-menu.left {
 
 @media (min-width: 992px) {
   #topnav .navigation-menu>li>a {
-    padding-top: 22px;
-    padding-bottom: 12px;
+    padding-top: 13px;
   }
 }
 

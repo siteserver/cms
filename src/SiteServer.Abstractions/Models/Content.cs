@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
-using Newtonsoft.Json;
-
 
 namespace SiteServer.Abstractions
 {
@@ -26,44 +24,25 @@ namespace SiteServer.Abstractions
         public int SiteId { get; set; }
 
         [DataColumn]
-        public string AddUserName { get; set; }
-
-        [DataColumn]
-        public string LastEditUserName { get; set; }
-
-        [DataColumn]
-        public DateTime? LastEditDate { get; set; }
-
-        [DataColumn]
         public int AdminId { get; set; }
+
+        [DataColumn]
+        public int LastEditAdminId { get; set; }
 
         [DataColumn]
         public int UserId { get; set; }
 
         [DataColumn]
+        public DateTime? LastEditDate { get; set; }
+
+        [DataColumn]
         public int Taxis { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string GroupNameCollection { get; set; }
-
-        [DataIgnore]
-        public List<string> GroupNames
-        {
-            get => StringUtils.GetStringList(GroupNameCollection);
-            set => GroupNameCollection = TranslateUtils.ObjectCollectionToString(value);
-        }
+        public List<string> GroupNames { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string Tags { get; set; }
-
-        [DataIgnore]
-        public List<string> TagNames
-        {
-            get => StringUtils.GetStringList(Tags);
-            set => Tags = TranslateUtils.ObjectCollectionToString(value);
-        }
+        public List<string> TagNames { get; set; }
 
         [DataColumn] 
         public int SourceId { get; set; }
@@ -72,15 +51,7 @@ namespace SiteServer.Abstractions
         public int ReferenceId { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string IsChecked { get; set; }
-
-        [DataIgnore]
-        public bool Checked
-        {
-            get => TranslateUtils.ToBool(IsChecked);
-            set => IsChecked = value.ToString();
-        }
+        public bool Checked { get; set; }
 
         [DataColumn]
         public int CheckedLevel { get; set; }
@@ -107,48 +78,16 @@ namespace SiteServer.Abstractions
         public string Title { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string IsTop { get; set; }
-
-        [DataIgnore]
-        public bool Top
-        {
-            get => TranslateUtils.ToBool(IsTop);
-            set => IsTop = value.ToString();
-        }
+        public bool Top { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string IsRecommend { get; set; }
-
-        [DataIgnore]
-        public bool Recommend
-        {
-            get => TranslateUtils.ToBool(IsRecommend);
-            set => IsRecommend = value.ToString();
-        }
+        public bool Recommend { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string IsHot { get; set; }
-
-        [DataIgnore]
-        public bool Hot
-        {
-            get => TranslateUtils.ToBool(IsHot);
-            set => IsHot = value.ToString();
-        }
+        public bool Hot { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string IsColor { get; set; }
-
-        [DataIgnore]
-        public bool Color
-        {
-            get => TranslateUtils.ToBool(IsColor);
-            set => IsColor = value.ToString();
-        }
+        public bool Color { get; set; }
 
         [DataColumn] 
         public string LinkUrl { get; set; }
@@ -156,10 +95,7 @@ namespace SiteServer.Abstractions
         [DataColumn] 
         public DateTime? AddDate { get; set; }
 
-        [DataColumn(Text = true, Extend = true)]
-        private string SettingsXml { get; set; }
-
-        public string CheckUserName { get; set; } //审核者
+        public int CheckAdminId { get; set; } //审核人
 
         public DateTime? CheckDate { get; set; } //审核时间
 

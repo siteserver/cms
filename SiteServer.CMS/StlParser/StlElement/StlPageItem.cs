@@ -10,6 +10,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
 using SiteServer.CMS.Context;
+using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -157,7 +158,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 string pageUrl;
                 if (contextType == EContextType.Channel)
                 {
-                    node = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
+                    node = await DataProvider.ChannelRepository.GetAsync(channelId);
                     pageUrl = await PagerUtility.GetUrlInChannelPageAsync(type, pageInfo.Site, node, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
                 }
                 else
@@ -481,7 +482,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 if (contextType == EContextType.Channel)
                 {
-                    var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
+                    var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                     pageUrl = await PagerUtility.GetUrlInChannelPageAsync(type, pageInfo.Site, nodeInfo, 0, currentPageIndex, pageCount, pageInfo.IsLocal);
                 }
                 else

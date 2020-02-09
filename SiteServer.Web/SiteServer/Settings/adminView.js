@@ -2,9 +2,7 @@
 var $pageTypeAdmin = 'admin';
 var $pageTypeUser = 'user';
 
-var data = {
-  pageLoad: false,
-  pageAlert: null,
+var data = utils.initData({
   pageType: utils.getQueryString('pageType'),
   userId: parseInt(utils.getQueryString('userId') || '0'),
   userName: utils.getQueryString('userName'),
@@ -15,7 +13,7 @@ var data = {
   siteNames: null,
   isOrdinaryAdmin: null,
   roleNames: null
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -38,12 +36,12 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
   btnReturnClick: function () {
-    location.href = 'admin.cshtml';
+    location.href = this.returnUrl || 'admin.cshtml';
   }
 };
 

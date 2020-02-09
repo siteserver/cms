@@ -1,7 +1,9 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.HtmlControls;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
@@ -222,9 +224,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcSwfObject);
 
-                    var imageUrls = new StringCollection();
-                    var navigationUrls = new StringCollection();
-                    var titleCollection = new StringCollection();
+                    var imageUrls = new List<string>();
+                    var navigationUrls = new List<string>();
+                    var titleCollection = new List<string>();
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
@@ -292,9 +294,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     string scriptHtml = $@"
 <div id=""flashcontent_{uniqueId}""></div>
 <script type=""text/javascript"">
-var files_uniqueID='{TranslateUtils.ObjectCollectionToString(imageUrls, "|")}';
-var links_uniqueID='{TranslateUtils.ObjectCollectionToString(navigationUrls, "|")}';
-var texts_uniqueID='{TranslateUtils.ObjectCollectionToString(titleCollection, "|")}';
+var files_uniqueID='{Utilities.ToString(imageUrls, "|")}';
+var links_uniqueID='{Utilities.ToString(navigationUrls, "|")}';
+var texts_uniqueID='{Utilities.ToString(titleCollection, "|")}';
 
 var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Bcastr)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
@@ -309,9 +311,9 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                 {
                     pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcSwfObject);
 
-                    var imageUrls = new StringCollection();
-                    var navigationUrls = new StringCollection();
-                    var titleCollection = new StringCollection();
+                    var imageUrls = new List<string>();
+                    var navigationUrls = new List<string>();
+                    var titleCollection = new List<string>();
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
@@ -356,9 +358,9 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     string scriptHtml = $@"
 <div id=""flashcontent_{uniqueId}""></div>
 <script type=""text/javascript"">
-var urls_uniqueID='{TranslateUtils.ObjectCollectionToString(navigationUrls, "|")}';
-var imgs_uniqueID='{TranslateUtils.ObjectCollectionToString(imageUrls, "|")}';
-var titles_uniqueID='{TranslateUtils.ObjectCollectionToString(titleCollection, "|")}';
+var urls_uniqueID='{Utilities.ToString(navigationUrls, "|")}';
+var imgs_uniqueID='{Utilities.ToString(imageUrls, "|")}';
+var titles_uniqueID='{Utilities.ToString(titleCollection, "|")}';
 
 var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Ali)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
@@ -489,9 +491,9 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                 }
                 else
                 {
-                    var imageUrls = new StringCollection();
-                    var navigationUrls = new StringCollection();
-                    var titleCollection = new StringCollection();
+                    var imageUrls = new List<string>();
+                    var navigationUrls = new List<string>();
+                    var titleCollection = new List<string>();
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
@@ -538,7 +540,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     }
                     else
                     {
-                        titles = TranslateUtils.ObjectCollectionToString(titleCollection, "|");
+                        titles = Utilities.ToString(titleCollection, "|");
                     }
                     var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
                     genericControl.ID = uniqueId;
@@ -552,8 +554,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 	var uniqueID_text_height={textHeight}
 	var uniqueID_swf_height = uniqueID_focus_height + uniqueID_text_height
 	
-	var uniqueID_pics='{TranslateUtils.ObjectCollectionToString(imageUrls, "|")}'
-	var uniqueID_links='{TranslateUtils.ObjectCollectionToString(navigationUrls, "|")}'
+	var uniqueID_pics='{Utilities.ToString(imageUrls, "|")}'
+	var uniqueID_links='{Utilities.ToString(navigationUrls, "|")}'
 	var uniqueID_texts='{titles}'
 	
 	var uniqueID_FocusFlash = new bairongFlash(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.FocusViewer)}"", ""focusflash"", uniqueID_focus_width, uniqueID_swf_height, ""7"", ""{bgColor}"", false, ""High"");

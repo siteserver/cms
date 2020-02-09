@@ -8,43 +8,30 @@ namespace SiteServer.CMS.Repositories
 {
     public partial class ConfigRepository
     {
-        
-
-        private async Task RemoveCacheAsync()
+        public async Task ClearAllCache()
         {
-            await _cache.RemoveAsync(_cacheKey);
+            var cacheManager = await _repository.GetCacheManagerAsync();
+            cacheManager.Clear();
         }
 
         public async Task<Config> GetAsync()
         {
-            return await _cache.GetOrCreateAsync(_cacheKey,
-                async () =>
+            try
+            {
+                return await _repository.GetAsync(Q
+                    .OrderBy(nameof(Config.Id))
+                    .CachingGet(_cacheKey)
+                );
+            }
+            catch
+            {
+                return new Config
                 {
-                    Config info;
-
-                    try
-                    {
-                        info = await _repository.GetAsync(Q.OrderBy(nameof(Config.Id)));
-                    }
-                    catch
-                    {
-                        try
-                        {
-                            info = await _repository.GetAsync(Q.OrderBy(nameof(Config.Id)));
-                        }
-                        catch
-                        {
-                            info = new Config
-                            {
-                                Id = 0,
-                                DatabaseVersion = string.Empty,
-                                UpdateDate = DateTime.Now
-                            };
-                        }
-                    }
-
-                    return info;
-                });
+                    Id = 0,
+                    DatabaseVersion = string.Empty,
+                    UpdateDate = DateTime.Now
+                };
+            }
         }
     }
 }

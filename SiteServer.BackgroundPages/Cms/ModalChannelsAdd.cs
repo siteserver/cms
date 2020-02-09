@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             HlSelectChannel.Attributes.Add("onclick", ModalChannelSelect.GetOpenWindowString(SiteId));
             LtlSelectChannelScript.Text =
-                $@"<script>selectChannel('{ChannelManager.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()}', '{channelId}');</script>";
+                $@"<script>selectChannel('{DataProvider.ChannelRepository.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()}', '{channelId}');</script>";
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -163,7 +163,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var contentModelPluginId = DdlContentModelPluginId.SelectedValue;
                         if (string.IsNullOrEmpty(contentModelPluginId))
                         {
-                            var parentNodeInfo = ChannelManager.GetChannelAsync(SiteId, parentId).GetAwaiter().GetResult();
+                            var parentNodeInfo = DataProvider.ChannelRepository.GetAsync(parentId).GetAwaiter().GetResult();
                             contentModelPluginId = parentNodeInfo.ContentModelPluginId;
                         }
 
@@ -177,7 +177,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                AuthRequest.AddSiteLogAsync(SiteId, parentChannelId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelNameAsync(SiteId, parentChannelId).GetAwaiter().GetResult()},栏目:{TbNodeNames.Text.Replace('\n', ',')}").GetAwaiter().GetResult();
+                AuthRequest.AddSiteLogAsync(SiteId, parentChannelId, 0, "快速添加栏目", $"父栏目:{DataProvider.ChannelRepository.GetChannelNameAsync(SiteId, parentChannelId).GetAwaiter().GetResult()},栏目:{TbNodeNames.Text.Replace('\n', ',')}").GetAwaiter().GetResult();
 
                 isChanged = true;
             }

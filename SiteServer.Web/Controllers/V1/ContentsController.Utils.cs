@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Datory;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Repositories;
 using SqlKata;
 
 namespace SiteServer.API.Controllers.V1
@@ -16,31 +17,31 @@ namespace SiteServer.API.Controllers.V1
             if (channelId.HasValue)
             {
                 //query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
-                var channel = await ChannelManager.GetChannelAsync(siteId, channelId.Value);
-                var channelIds = await ChannelManager.GetChannelIdListAsync(channel, EScopeType.All);
+                var channel = await DataProvider.ChannelRepository.GetAsync(channelId.Value);
+                var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(channel, EScopeType.All);
 
                 query.WhereIn(nameof(Abstractions.Content.ChannelId), channelIds);
             }
 
             if (request.Checked.HasValue)
             {
-                query.Where(ContentAttribute.IsChecked, request.Checked.Value.ToString());
+                query.Where(nameof(Abstractions.Content.Checked), request.Checked.Value.ToString());
             }
             if (request.Top.HasValue)
             {
-                query.Where(ContentAttribute.IsTop, request.Top.Value.ToString());
+                query.Where(nameof(Abstractions.Content.Top), request.Top.Value.ToString());
             }
             if (request.Recommend.HasValue)
             {
-                query.Where(ContentAttribute.IsRecommend, request.Recommend.Value.ToString());
+                query.Where(nameof(Abstractions.Content.Recommend), request.Recommend.Value.ToString());
             }
             if (request.Color.HasValue)
             {
-                query.Where(ContentAttribute.IsColor, request.Color.Value.ToString());
+                query.Where(nameof(Abstractions.Content.Color), request.Color.Value.ToString());
             }
             if (request.Hot.HasValue)
             {
-                query.Where(ContentAttribute.IsHot, request.Hot.Value.ToString());
+                query.Where(nameof(Abstractions.Content.Hot), request.Hot.Value.ToString());
             }
 
             if (request.GroupNames != null)
@@ -52,10 +53,10 @@ namespace SiteServer.API.Controllers.V1
                         if (!string.IsNullOrEmpty(groupName))
                         {
                             q
-                                .OrWhere(ContentAttribute.GroupNameCollection, groupName)
-                                .OrWhereLike(ContentAttribute.GroupNameCollection, $"{groupName},%")
-                                .OrWhereLike(ContentAttribute.GroupNameCollection, $"%,{groupName},%")
-                                .OrWhereLike(ContentAttribute.GroupNameCollection, $"%,{groupName}");
+                                .OrWhere(nameof(Abstractions.Content.GroupNames), groupName)
+                                .OrWhereLike(nameof(Abstractions.Content.GroupNames), $"{groupName},%")
+                                .OrWhereLike(nameof(Abstractions.Content.GroupNames), $"%,{groupName},%")
+                                .OrWhereLike(nameof(Abstractions.Content.GroupNames), $"%,{groupName}");
                         }
                     }
                     return q;
@@ -71,10 +72,10 @@ namespace SiteServer.API.Controllers.V1
                         if (!string.IsNullOrEmpty(tagName))
                         {
                             q
-                                .OrWhere(ContentAttribute.Tags, tagName)
-                                .OrWhereLike(ContentAttribute.Tags, $"{tagName},%")
-                                .OrWhereLike(ContentAttribute.Tags, $"%,{tagName},%")
-                                .OrWhereLike(ContentAttribute.Tags, $"%,{tagName}");
+                                .OrWhere(nameof(Abstractions.Content.TagNames), tagName)
+                                .OrWhereLike(nameof(Abstractions.Content.TagNames), $"{tagName},%")
+                                .OrWhereLike(nameof(Abstractions.Content.TagNames), $"%,{tagName},%")
+                                .OrWhereLike(nameof(Abstractions.Content.TagNames), $"%,{tagName}");
                         }
                     }
                     return q;
@@ -88,11 +89,11 @@ namespace SiteServer.API.Controllers.V1
                     if (string.IsNullOrEmpty(where.Operator)) where.Operator = OpEquals;
                     if (StringUtils.EqualsIgnoreCase(where.Operator, OpIn))
                     {
-                        query.WhereIn(where.Column, StringUtils.GetStringList(where.Value));
+                        query.WhereIn(where.Column, Utilities.GetStringList(where.Value));
                     }
                     else if (StringUtils.EqualsIgnoreCase(where.Operator, OpNotIn))
                     {
-                        query.WhereNotIn(where.Column, StringUtils.GetStringList(where.Value));
+                        query.WhereNotIn(where.Column, Utilities.GetStringList(where.Value));
                     }
                     else if (StringUtils.EqualsIgnoreCase(where.Operator, OpLike))
                     {
@@ -125,7 +126,7 @@ namespace SiteServer.API.Controllers.V1
             }
             else
             {
-                query.OrderByDesc(ContentAttribute.IsTop, 
+                query.OrderByDesc(nameof(Abstractions.Content.Top), 
                     nameof(Abstractions.Content.ChannelId),
                     nameof(Abstractions.Content.Taxis),
                     nameof(Abstractions.Content.Id));

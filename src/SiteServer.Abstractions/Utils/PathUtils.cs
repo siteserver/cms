@@ -257,5 +257,10 @@ namespace SiteServer.Abstractions
         {
             return $"{StringUtils.GetShortGuid(false)}{GetExtension(filePath)}";
         }
+
+        public static string GetLibraryFilePath(string virtualUrl)
+        {
+            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, virtualUrl);
+        }
     }
 }

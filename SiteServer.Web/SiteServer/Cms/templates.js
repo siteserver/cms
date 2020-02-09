@@ -1,4 +1,4 @@
-﻿var $url = '/pages/cms/templates';
+﻿var $url = '/pages/cms/templates/templates';
 
 var data = utils.initData({
   siteId: utils.getQueryInt("siteId"),
@@ -14,7 +14,7 @@ var methods = {
   apiList: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.get($url, {
       params: {
         siteId: this.siteId
@@ -34,7 +34,7 @@ var methods = {
   apiDefault: function (template) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/actions/default', {
       siteId: this.siteId,
       templateId: template.id
@@ -58,7 +58,7 @@ var methods = {
   apiDelete: function (template) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.delete($url, {
       data: {
         siteId: this.siteId,
@@ -116,7 +116,7 @@ var methods = {
   btnCopyClick: function(template) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/actions/copy', {
       siteId: this.siteId,
       templateId: template.id
@@ -140,14 +140,14 @@ var methods = {
   btnCreateClick: function(template) {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($url + '/actions/create', {
       siteId: this.siteId,
       templateId: template.id
     }).then(function (response) {
       var res = response.data;
 
-      top.openPageCreateStatus();
+      parent.$vue.openPageCreateStatus();
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {

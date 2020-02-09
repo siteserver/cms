@@ -54,14 +54,12 @@ namespace SiteServer.API.Controllers.V1
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var attributes = request.GetPostObject<Dictionary<string, object>>();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
                 var checkedLevel = request.GetPostInt("checkedLevel");
-
-                var adminName = request.AdminName;
 
                 var isChecked = checkedLevel >= site.CheckContentLevel;
                 if (isChecked)
@@ -82,11 +80,10 @@ namespace SiteServer.API.Controllers.V1
                 {
                     SiteId = siteId,
                     ChannelId = channelId,
-                    AddUserName = adminName,
-                    LastEditDate = DateTime.Now,
-                    LastEditUserName = adminName,
                     AdminId = request.AdminId,
+                    LastEditAdminId = request.AdminId,
                     UserId = request.UserId,
+                    LastEditDate = DateTime.Now,
                     SourceId = sourceId,
                     Checked = isChecked,
                     CheckedLevel = checkedLevel
@@ -113,7 +110,7 @@ namespace SiteServer.API.Controllers.V1
                 }
 
                 await request.AddSiteLogAsync(siteId, channelId, contentInfo.Id, "添加内容",
-                    $"栏目:{await ChannelManager.GetChannelNameNavigationAsync(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
+                    $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 return Ok(new
                 {
@@ -156,13 +153,11 @@ namespace SiteServer.API.Controllers.V1
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var attributes = request.GetPostObject<Dictionary<string, object>>();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
-
-                var adminName = request.AdminName;
 
                 var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, id);
                 if (contentInfo == null) return NotFound();
@@ -174,9 +169,8 @@ namespace SiteServer.API.Controllers.V1
 
                 contentInfo.SiteId = siteId;
                 contentInfo.ChannelId = channelId;
-                contentInfo.AddUserName = adminName;
+                contentInfo.LastEditAdminId = request.AdminId;
                 contentInfo.LastEditDate = DateTime.Now;
-                contentInfo.LastEditUserName = adminName;
                 contentInfo.SourceId = sourceId;
 
                 var postCheckedLevel = request.GetPostInt(ContentAttribute.CheckedLevel.ToCamelCase());
@@ -207,7 +201,7 @@ namespace SiteServer.API.Controllers.V1
                 }
 
                 await request.AddSiteLogAsync(siteId, channelId, contentInfo.Id, "修改内容",
-                    $"栏目:{await ChannelManager.GetChannelNameNavigationAsync(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
+                    $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 return Ok(new
                 {
@@ -250,20 +244,16 @@ namespace SiteServer.API.Controllers.V1
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+                var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+                if (channel == null) return BadRequest("无法确定内容对应的栏目");
 
                 if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
                     Constants.ChannelPermissions.ContentDelete)) return Unauthorized();
 
-                var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
-
-                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, id);
+                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channel, id);
                 if (contentInfo == null) return NotFound();
 
-                await ContentUtility.DeleteAsync(tableName, site, channelId, id);
-
-                //DataProvider.ContentRepository.DeleteContent(tableName, site, channelId, id);
+                await DataProvider.ContentRepository.DeleteAsync(site, channel, id);
 
                 return Ok(new
                 {
@@ -306,7 +296,7 @@ namespace SiteServer.API.Controllers.V1
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
@@ -380,10 +370,9 @@ namespace SiteServer.API.Controllers.V1
         [HttpPost, Route(RouteCheck)]
         public async Task<CheckResult> CheckContents([FromBody] CheckRequest request)
         {
-            var req = await AuthenticatedRequest.GetAuthAsync();
-
-            if (!req.IsApiAuthenticated ||
-                !await DataProvider.AccessTokenRepository.IsScopeAsync(req.ApiToken, Constants.ScopeContents))
+            var auth = await AuthenticatedRequest.GetAuthAsync();
+            if (!auth.IsApiAuthenticated ||
+                !await DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents))
             {
                 return Request.Unauthorized<CheckResult>();
             }
@@ -394,14 +383,15 @@ namespace SiteServer.API.Controllers.V1
             var contents = new List<Content>();
             foreach (var channelContentId in request.Contents)
             {
-                var channel = await ChannelManager.GetChannelAsync(request.SiteId, channelContentId.ChannelId);
-                var tableName = await ChannelManager.GetTableNameAsync(site, channel);
+                var channel = await DataProvider.ChannelRepository.GetAsync(channelContentId.ChannelId);
+                var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
                 var content = await DataProvider.ContentRepository.GetAsync(site, channel, channelContentId.Id);
                 if (content == null) continue;
 
-                content.CheckUserName = req.AdminName;
+                content.CheckAdminId = auth.AdminId;
                 content.CheckDate = DateTime.Now;
                 content.CheckReasons = request.Reasons;
+
                 content.Checked = true;
                 content.CheckedLevel = 0;
 
@@ -415,7 +405,7 @@ namespace SiteServer.API.Controllers.V1
                     SiteId = request.SiteId,
                     ChannelId = content.ChannelId,
                     ContentId = content.Id,
-                    UserName = req.AdminName,
+                    AdminId = auth.AdminId,
                     Checked = true,
                     CheckedLevel = 0,
                     CheckDate = DateTime.Now,
@@ -425,7 +415,7 @@ namespace SiteServer.API.Controllers.V1
                 await DataProvider.ContentCheckRepository.InsertAsync(contentCheck);
             }
 
-            await req.AddSiteLogAsync(request.SiteId, "批量审核内容");
+            await auth.AddSiteLogAsync(request.SiteId, "批量审核内容");
 
             foreach (var content in request.Contents)
             {
@@ -530,13 +520,13 @@ namespace SiteServer.API.Controllers.V1
         //        var site = await DataProvider.SiteRepository.GetAsync(siteId);
         //        if (site == null) return BadRequest("无法确定内容对应的站点");
 
-        //        var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+        //        var channelInfo = await DataProvider.ChannelRepository.GetAsync(siteId, channelId);
         //        if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
         //        if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
         //            Constants.ChannelPermissions.ContentView)) return Unauthorized();
 
-        //        var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
+        //        var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
 
         //        var top = request.GetQueryInt("top", 20);
         //        var skip = request.GetQueryInt("skip");

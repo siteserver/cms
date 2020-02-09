@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Extensions;
 using SiteServer.CMS.Repositories;
 
@@ -34,7 +33,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 return Request.NotFound<GetResult>();
             }
 
-            var groupName = await UserGroupManager.GetUserGroupNameAsync(user.GroupId);
+            var groupName = await DataProvider.UserGroupRepository.GetUserGroupNameAsync(user.GroupId);
 
             return new GetResult
             {

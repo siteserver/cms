@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
@@ -28,7 +29,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
 
                 var dict = await PluginManager.GetPluginIdAndVersionDictAsync();
                 var list = dict.Keys.ToList();
-                var packageIds = TranslateUtils.ObjectCollectionToString(list);
+                var packageIds = Utilities.ToString(list);
 
                 return Ok(new
                 {

@@ -5,7 +5,6 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache.Stl;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
@@ -82,7 +81,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             try
             {
                 //totalNum = DatabaseApi.Instance.GetPageTotalCount(SqlString);
-                totalNum = StlDatabaseCache.GetPageTotalCount(SqlString);
+                totalNum = DataProvider.DatabaseRepository.GetPageTotalCount(SqlString);
                 if (ListInfo.PageNum != 0 && ListInfo.PageNum < totalNum)//需要翻页
                 {
                     pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(ListInfo.PageNum)));//需要生成的总页数
@@ -133,7 +132,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (!string.IsNullOrEmpty(SqlString))
                 {
                     //var pageSqlString = DatabaseApi.Instance.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
-                    var pageSqlString = StlDatabaseCache.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
+                    var pageSqlString = DataProvider.DatabaseRepository.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
 
                     var dataSource = DataProvider.DatabaseRepository.GetDataSource(pageSqlString);
 

@@ -41,7 +41,7 @@
   </el-col>
 </el-row>
 
-<hr />
+<el-divider></el-divider>
 
 <el-container style="padding-top: 0; padding-bottom: 0; overflow:auto;" :style="{height: mainHeight}">
   <el-main style="padding-top: 0;">
@@ -51,8 +51,7 @@
         <label>
           标题
           <span class="text-danger">*</span>
-          <small v-show="errors.has('title')" class="text-danger">{{
-            errors.first('title') }}</small>
+          
         </label>
       </el-col>
       <el-col :span="20" style="text-align: right">
@@ -61,7 +60,7 @@
     </el-row>
     <el-row class="mb-3">
       <el-input v-model="title" size="medium" autosize type="text" name="title"
-          data-vv-as="标题" v-validate="'required'" :class="{'is-invalid': errors.has('title')}"></el-input>
+          data-vv-as="标题" v-validate="'required'"></el-input>
     </el-row>
 
     <el-row>
@@ -69,8 +68,6 @@
         <label>
           正文
           <span class="text-danger">*</span>
-          <small v-show="errors.has('content')" class="text-danger">{{
-            errors.first('content') }}</small>
         </label>
       </el-col>
       <el-col :span="20" style="text-align: right">

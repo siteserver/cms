@@ -242,7 +242,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-            var channel = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
+            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
 
             var uniqueId = "Select_" + pageInfo.UniqueId;
             selectControl.ID = uniqueId;
@@ -282,7 +282,7 @@ selObj.selectedIndex=0;
                 {
                     foreach (var channelIdInSelect in channelIdList)
                     {
-                        var nodeInfo = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelIdInSelect);
+                        var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelIdInSelect);
 
                         if (nodeInfo != null)
                         {

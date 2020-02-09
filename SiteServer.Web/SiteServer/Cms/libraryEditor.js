@@ -1,5 +1,5 @@
-﻿var $url = "/pages/cms/libraryEditor";
-var $urlUpload = apiUrl + "/pages/cms/libraryEditor/actions/upload?siteId=" + utils.getQueryInt("siteId");
+﻿var $url = "/pages/cms/library/libraryEditor";
+var $urlUpload = apiUrl + "/pages/cms/library/libraryEditor/actions/upload?siteId=" + utils.getQueryInt("siteId");
 
 function insertHtml(html)
 {
@@ -10,12 +10,10 @@ function insertHtml(html)
     }
 }
 
-var data = {
+var data = utils.initData({
   siteId: utils.getQueryInt("siteId"),
   textId: utils.getQueryInt("textId"),
   mainHeight: '',
-  pageLoad: false,
-  pageAlert: null,
   isSettings: true,
   activeNames: ['0', '1'],
 
@@ -24,14 +22,14 @@ var data = {
   imageUrl: null,
   summary: null,
   editor: null,
-};
+});
 
 var methods = {
   getConfig: function() {
     var $this = this;
 
     if ($this.textId === 0) {
-      $this.pageLoad = true;
+      utils.loading($this, false);
       $this.loadEditor();
       return;
     }
@@ -54,7 +52,7 @@ var methods = {
         utils.error($this, error);
       })
       .then(function() {
-        $this.pageLoad = true;
+        utils.loading($this, false);
       });
   },
 
@@ -109,10 +107,9 @@ var methods = {
       return;
     }
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     if (this.textId === 0) {
-      $api
-      .post($url, {
+      $api.post($url, {
         title: this.title,
         content: this.content,
         imageUrl: this.imageUrl,
@@ -130,8 +127,7 @@ var methods = {
         utils.loading($this, false);
       });
     } else {
-      $api
-      .put($url + '/' + this.textId, {
+      $api.put($url + '/' + this.textId, {
         title: this.title,
         content: this.content,
         imageUrl: this.imageUrl,
@@ -173,11 +169,11 @@ var methods = {
 
   uploadSuccess(res, file) {
     this.imageUrl = res.value;
-    utils.loading($this, false);
+    utils.loading(this, false);
   },
 
   uploadError: function(err) {
-    utils.loading($this, false);
+    utils.loading(this, false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }

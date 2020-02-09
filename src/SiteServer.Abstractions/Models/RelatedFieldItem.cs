@@ -6,14 +6,17 @@ namespace SiteServer.Abstractions
     [DataTable("siteserver_RelatedFieldItem")]
     public class RelatedFieldItem : Entity
 	{
-	    [DataColumn]
+        [DataColumn]
+        public int SiteId { get; set; }
+
+        [DataColumn]
 	    public int RelatedFieldId { get; set; }
 
         [DataColumn]
-        public string ItemName { get; set; }
+        public string Label { get; set; }
 
         [DataColumn]
-        public string ItemValue { get; set; }
+        public string Value { get; set; }
 
         [DataColumn]
         public int ParentId { get; set; }

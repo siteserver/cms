@@ -5,22 +5,20 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Microsoft.Extensions.Caching.Distributed;
+using Datory.Utils;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Caching;
 using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
     public partial class AdministratorRepository : IRepository
     {
         private readonly Repository<Administrator> _repository;
-        private readonly IDistributedCache _cache;
 
         public AdministratorRepository()
         {
-            _repository = new Repository<Administrator>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
-            _cache = CacheManager.Cache;
+            _repository = new Repository<Administrator>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), new Redis(WebConfigUtils.RedisConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -29,12 +27,6 @@ namespace SiteServer.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private static class Attr
-        {
-            public const string IsLockedOut = nameof(IsLockedOut);
-            public static readonly string SiteIdCollection = nameof(SiteIdCollection);
-        }
-
         public async Task UpdateLastActivityDateAndCountOfFailedLoginAsync(Administrator administrator)
         {
             if (administrator == null) return;
@@ -42,13 +34,14 @@ namespace SiteServer.CMS.Repositories
             administrator.LastActivityDate = DateTime.Now;
             administrator.CountOfFailedLogin += 1;
 
+            var cacheKeys = GetCacheKeys(administrator);
+
             await _repository.UpdateAsync(Q
                 .Set(nameof(Administrator.LastActivityDate), administrator.LastActivityDate)
                 .Set(nameof(Administrator.CountOfFailedLogin), administrator.CountOfFailedLogin)
                 .Where(nameof(Administrator.Id), administrator.Id)
+                .CachingRemove(cacheKeys.ToArray())
             );
-
-            await RemoveCacheAsync(administrator);
         }
 
         public async Task UpdateLastActivityDateAsync(Administrator administrator)
@@ -57,12 +50,13 @@ namespace SiteServer.CMS.Repositories
 
             administrator.LastActivityDate = DateTime.Now;
 
+            var cacheKeys = GetCacheKeys(administrator);
+
             await _repository.UpdateAsync(Q
                 .Set(nameof(Administrator.LastActivityDate), administrator.LastActivityDate)
                 .Where(nameof(Administrator.Id), administrator.Id)
+                .CachingRemove(cacheKeys.ToArray())
             );
-
-            await RemoveCacheAsync(administrator);
         }
 
         public async Task UpdateLastActivityDateAndCountOfLoginAsync(Administrator administrator)
@@ -73,35 +67,37 @@ namespace SiteServer.CMS.Repositories
             administrator.CountOfLogin += 1;
             administrator.CountOfFailedLogin = 0;
 
+            var cacheKeys = GetCacheKeys(administrator);
+
             await _repository.UpdateAsync(Q
                 .Set(nameof(Administrator.LastActivityDate), administrator.LastActivityDate)
                 .Set(nameof(Administrator.CountOfLogin), administrator.CountOfLogin)
                 .Set(nameof(Administrator.CountOfFailedLogin), administrator.CountOfFailedLogin)
                 .Where(nameof(Administrator.Id), administrator.Id)
+                .CachingRemove(cacheKeys.ToArray())
             );
-
-            await RemoveCacheAsync(administrator);
         }
 
-        public async Task UpdateSiteIdCollectionAsync(Administrator administrator, List<int> siteIds)
+        public async Task UpdateSiteIdsAsync(Administrator administrator, List<int> siteIds)
         {
             if (administrator == null) return;
 
             administrator.SiteIds = siteIds;
 
-            await _repository.UpdateAsync(Q
-                .Set(Attr.SiteIdCollection, StringUtils.Join(administrator.SiteIds))
-                .Where(nameof(Administrator.Id), administrator.Id)
-            );
+            var cacheKeys = GetCacheKeys(administrator);
 
-            await RemoveCacheAsync(administrator);
+            await _repository.UpdateAsync(Q
+                .Set(nameof(Administrator.SiteIds), Utilities.ToString(administrator.SiteIds))
+                .Where(nameof(Administrator.Id), administrator.Id)
+                .CachingRemove(cacheKeys.ToArray())
+            );
         }
 
         public async Task<List<int>> UpdateSiteIdAsync(Administrator administrator, int siteId)
         {
             if (administrator == null) return null;
 
-            var siteIdListLatestAccessed = administrator.SiteIds;
+            var siteIdListLatestAccessed = Utilities.GetIntList(administrator.SiteIds);
             if (administrator.SiteId != siteId || siteIdListLatestAccessed.FirstOrDefault() != siteId)
             {
                 siteIdListLatestAccessed.Remove(siteId);
@@ -110,13 +106,14 @@ namespace SiteServer.CMS.Repositories
                 administrator.SiteIds = siteIdListLatestAccessed;
                 administrator.SiteId = siteId;
 
+                var cacheKeys = GetCacheKeys(administrator);
+
                 await _repository.UpdateAsync(Q
-                    .Set(Attr.SiteIdCollection, StringUtils.Join(administrator.SiteIds))
+                    .Set(nameof(Administrator.SiteIds), Utilities.ToString(administrator.SiteIds))
                     .Set(nameof(Administrator.SiteId), administrator.SiteId)
                     .Where(nameof(Administrator.Id), administrator.Id)
+                    .CachingRemove(cacheKeys.ToArray())
                 );
-
-                await RemoveCacheAsync(administrator);
             }
 
             return siteIdListLatestAccessed;
@@ -126,43 +123,48 @@ namespace SiteServer.CMS.Repositories
         {
             administrator.LastChangePasswordDate = DateTime.Now;
 
+            var cacheKeys = GetCacheKeys(administrator);
+
             await _repository.UpdateAsync(Q
                 .Set(nameof(Administrator.Password), password)
                 .Set(nameof(Administrator.PasswordFormat), passwordFormat.GetValue())
                 .Set(nameof(Administrator.PasswordSalt), passwordSalt)
                 .Set(nameof(Administrator.LastChangePasswordDate), administrator.LastChangePasswordDate)
                 .Where(nameof(Administrator.Id), administrator.Id)
+                .CachingRemove(cacheKeys.ToArray())
             );
-
-            await RemoveCacheAsync(administrator);
         }
 
         public async Task LockAsync(IList<string> userNameList)
         {
+            var cacheKeys = new List<string>();
             foreach (var userName in userNameList)
             {
-                var admin = await GetByUserNameAsync(userName);
-                await RemoveCacheAsync(admin);
+                var administrator = await GetByUserNameAsync(userName);
+                cacheKeys.AddRange(GetCacheKeys(administrator));
             }
 
             await _repository.UpdateAsync(Q
-                .Set(Attr.IsLockedOut, true.ToString())
+                .Set(nameof(Administrator.Locked), true)
                 .WhereIn(nameof(Administrator.UserName), userNameList)
+                .CachingRemove(cacheKeys.ToArray())
             );
         }
 
         public async Task UnLockAsync(IList<string> userNameList)
         {
+            var cacheKeys = new List<string>();
             foreach (var userName in userNameList)
             {
-                var admin = await GetByUserNameAsync(userName);
-                await RemoveCacheAsync(admin);
+                var administrator = await GetByUserNameAsync(userName);
+                cacheKeys.AddRange(GetCacheKeys(administrator));
             }
 
             await _repository.UpdateAsync(Q
-                .Set(Attr.IsLockedOut, false.ToString())
+                .Set(nameof(Administrator.Locked), false)
                 .Set(nameof(Administrator.CountOfFailedLogin), 0)
                 .WhereIn(nameof(Administrator.UserName), userNameList)
+                .CachingRemove(cacheKeys.ToArray())
             );
         }
 
@@ -281,14 +283,14 @@ namespace SiteServer.CMS.Repositories
             return await _repository.ExistsAsync(Q.Where(nameof(Administrator.Mobile), mobile));
         }
 
-        public async Task<IEnumerable<string>> GetUserNameListAsync()
+        public async Task<List<string>> GetUserNameListAsync()
         {
             return await _repository.GetAllAsync<string>(Q
                 .Select(nameof(Administrator.UserName))
             );
         }
 
-        public async Task<IEnumerable<int>> GetUserIdListAsync()
+        public async Task<List<int>> GetUserIdListAsync()
         {
             return await _repository.GetAllAsync<int>(Q
                 .Select(nameof(Administrator.Id))
@@ -455,7 +457,7 @@ namespace SiteServer.CMS.Repositories
         public async Task<(bool IsValid, string ErrorMessage)> UpdateAsync(Administrator administrator)
         {
             var admin = await GetByUserIdAsync(administrator.Id);
-            await RemoveCacheAsync(admin);
+            var cacheKeys = GetCacheKeys(admin);
 
             var valid = await UpdateValidateAsync(admin, administrator.UserName, administrator.Email, administrator.Mobile);
             if (!valid.IsValid) return valid;
@@ -465,8 +467,8 @@ namespace SiteServer.CMS.Repositories
                 .Set(nameof(Administrator.LastChangePasswordDate), administrator.LastChangePasswordDate)
                 .Set(nameof(Administrator.CountOfLogin), administrator.CountOfLogin)
                 .Set(nameof(Administrator.CountOfFailedLogin), administrator.CountOfFailedLogin)
-                .Set(Attr.IsLockedOut, administrator.Locked.ToString())
-                .Set(Attr.SiteIdCollection, StringUtils.Join(administrator.SiteIds))
+                .Set(nameof(Administrator.Locked), administrator.Locked)
+                .Set(nameof(Administrator.SiteIds), Utilities.ToString(administrator.SiteIds))
                 .Set(nameof(Administrator.SiteId), administrator.SiteId)
                 .Set(nameof(Administrator.DisplayName), administrator.DisplayName)
                 .Set(nameof(Administrator.Mobile), administrator.Mobile)
@@ -474,6 +476,7 @@ namespace SiteServer.CMS.Repositories
                 .Set(nameof(Administrator.AvatarUrl), administrator.AvatarUrl)
                 .Set(nameof(Administrator.UserName), administrator.UserName)
                 .Where(nameof(Administrator.Id), administrator.Id)
+                .CachingRemove(cacheKeys.ToArray())
             );
 
             return (true, string.Empty);
@@ -628,10 +631,9 @@ namespace SiteServer.CMS.Repositories
         public async Task<Administrator> DeleteAsync(int id)
         {
             var admin = await GetByUserIdAsync(id);
+            var cacheKeys = GetCacheKeys(admin);
 
-            await _repository.DeleteAsync(id);
-
-            await RemoveCacheAsync(admin);
+            await _repository.DeleteAsync(id, Q.CachingRemove(cacheKeys.ToArray()));
 
             return admin;
         }

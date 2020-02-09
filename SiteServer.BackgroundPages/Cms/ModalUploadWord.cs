@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
@@ -48,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
             var channelId = int.Parse(AuthRequest.GetQueryString("channelId"));
-            _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+            _channel = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
             _returnUrl = AuthRequest.GetQueryString("ReturnUrl");
 
             if (IsPostBack) return;
@@ -62,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var fileNames = StringUtils.GetStringList(HihFileNames.Value);
+            var fileNames = Utilities.GetStringList(HihFileNames.Value);
             if (fileNames.Count == 1)
             {
                 var fileName = fileNames[0];
@@ -84,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
                     if (!string.IsNullOrEmpty(fileName))
                     {
                         var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                        var (title, content) = WordManager.GetWordAsync(Site, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, filePath).GetAwaiter().GetResult();
+                        var (title, content) = WordManager.GetWordAsync(Site, CbIsFirstLineTitle.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, filePath).GetAwaiter().GetResult();
 
                         if (!string.IsNullOrEmpty(title))
                         {
@@ -94,11 +95,11 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 ChannelId = _channel.Id,
                                 SiteId = SiteId,
-                                AddUserName = AuthRequest.AdminName,
+                                //AddUserName = AuthRequest.AdminName,
                                 AddDate = DateTime.Now
                             };
 
-                            contentInfo.LastEditUserName = contentInfo.AddUserName;
+                            //contentInfo.LastEditUserName = contentInfo.AddUserName;
                             contentInfo.LastEditDate = contentInfo.AddDate;
 
                             contentInfo.CheckedLevel = TranslateUtils.ToIntWithNegative(DdlContentLevel.SelectedValue);

@@ -42,24 +42,10 @@ namespace SiteServer.Abstractions
         public int CountOfFailedLogin { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string IsChecked { get; set; }
-
-        public bool Checked
-        {
-            get => TranslateUtils.ToBool(IsChecked);
-            set => IsChecked = value.ToString();
-        }
+        public bool Checked { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string IsLockedOut { get; set; }
-
-        public bool Locked
-        {
-            get => TranslateUtils.ToBool(IsLockedOut);
-            set => IsLockedOut = value.ToString();
-        }
+        public bool Locked { get; set; }
 
         [DataColumn]
         public string DisplayName { get; set; }
@@ -88,10 +74,7 @@ namespace SiteServer.Abstractions
         [DataColumn]
         public string WeiBo { get; set; }
 
-        [DataColumn]
+        [DataColumn(Text = true)]
         public string Bio { get; set; }
-
-        [DataColumn(Extend = true, Text = true)]
-        public string SettingsXml { get; set; }
     }
 }

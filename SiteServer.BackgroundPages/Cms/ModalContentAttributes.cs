@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.DataCache;
@@ -46,8 +47,8 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "channelId");
 
             var channelId = AuthRequest.GetQueryInt("channelId");
-            _channel = ChannelManager.GetChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
-            _idList = StringUtils.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
+            _channel = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
+            _idList = Utilities.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)

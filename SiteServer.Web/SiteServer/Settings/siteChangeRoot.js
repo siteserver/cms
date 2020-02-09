@@ -1,9 +1,7 @@
 ﻿var $url = '/pages/settings/siteChangeRoot';
 
-var data = {
+var data = utils.initData({
   siteId: utils.getQueryInt('siteId'),
-  pageLoad: false,
-  pageAlert: null,
   pageTitle: null,
   root: false,
   directories: null,
@@ -15,7 +13,7 @@ var data = {
   checkAllDirectories: false,
   checkAllFiles: false,
   isMoveFiles: true
-};
+});
 
 var methods = {
   getConfig: function () {
@@ -38,7 +36,7 @@ var methods = {
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
-      $this.pageLoad = true;
+      utils.loading($this, false);
     });
   },
 
@@ -77,7 +75,8 @@ var methods = {
 
   apiSubmit: function () {
     var $this = this;
-    utils.loading($this, true);
+    
+    utils.loading(this, true);
     $api.post($url, {
       siteId: this.siteId,
       siteDir: this.siteDir,

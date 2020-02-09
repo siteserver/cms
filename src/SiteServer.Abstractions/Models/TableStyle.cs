@@ -26,15 +26,8 @@ namespace SiteServer.Abstractions
         [DataColumn] 
         public string HelpText { get; set; }
 
-        [JsonIgnore]
         [DataColumn]
-        private string IsVisibleInList { get; set; }
-
-        public bool VisibleInList
-        {
-            get => TranslateUtils.ToBool(IsVisibleInList);
-            set => IsVisibleInList = value.ToString();
-        }
+        public bool List { get; set; }
 
         [DataColumn] 
         public InputType InputType { get; set; }
@@ -43,20 +36,10 @@ namespace SiteServer.Abstractions
         public string DefaultValue { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string IsHorizontal { get; set; }
-
-        public bool Horizontal
-        {
-            get => TranslateUtils.ToBool(IsHorizontal);
-            set => IsHorizontal = value.ToString();
-        }
+        public bool Horizontal { get; set; }
 
         [DataIgnore]
         public List<TableStyleItem> Items { get; set; }
-
-        [DataColumn(Text = true, Extend = true)] 
-        public string ExtendValues { get; set; }
 
         public string ItemValues { get; set; }
 

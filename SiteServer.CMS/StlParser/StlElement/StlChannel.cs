@@ -1,13 +1,13 @@
 ﻿using System.Text;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 
 using System.Threading.Tasks;
 using Datory;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Repositories;
 
@@ -192,8 +192,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = await ChannelManager.GetChannelIdAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
-            var channel = await ChannelManager.GetChannelAsync(pageInfo.SiteId, channelId);
+            channelId = await DataProvider.ChannelRepository.GetChannelIdAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
+            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
 
             if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
             {
@@ -250,9 +250,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 parsedContent = channel.ContentModelPluginId;
             }
-            else if (type.Equals(nameof(Channel.ContentRelatedPluginIdList).ToLower()))
+            else if (type.Equals(nameof(Channel.ContentRelatedPluginIds).ToLower()))
             {
-                parsedContent = StringUtils.Join(channel.ContentRelatedPluginIdList);
+                parsedContent = Utilities.ToString(channel.ContentRelatedPluginIds);
             }
             else if (type.Equals(nameof(Channel.ParentId).ToLower()))
             {
@@ -286,7 +286,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.Equals(nameof(Channel.GroupNames).ToLower()))
             {
-                parsedContent = StringUtils.Join(channel.GroupNames);
+                parsedContent = Utilities.ToString(channel.GroupNames);
             }
             else if (type.Equals(nameof(Channel.Taxis).ToLower()))
             {
@@ -356,10 +356,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             else if (type.Equals(nameof(Channel.Description).ToLower()))
             {
                 parsedContent = channel.Description;
-            }
-            else if (type.Equals(nameof(Channel.ExtendValues).ToLower()))
-            {
-                parsedContent = channel.ToString();
             }
             else if (type.Equals(StlParserUtility.Title.ToLower()) || type.Equals(nameof(Channel.ChannelName).ToLower()))
             {
@@ -450,12 +446,12 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string GetValue(string attributeName, Channel attributes, bool isAddAndNotPostBack, string defaultValue)
         {
-            var value = attributes.Get(attributeName);
-            if (isAddAndNotPostBack && value == null)
+            var value = attributes.Get<string>(attributeName);
+            if (isAddAndNotPostBack && string.IsNullOrEmpty(value))
             {
                 value = defaultValue;
             }
-            return value.ToString();
+            return value;
         }
     }
 }

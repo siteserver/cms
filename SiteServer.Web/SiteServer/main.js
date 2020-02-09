@@ -6,9 +6,9 @@ var $url = '/pages/main';
 var $urlCreate = '/pages/main/actions/create';
 var $urlDownload = '/pages/main/actions/download';
 var $packageIdSsCms = 'SS.CMS';
-var $siteId = parseInt(utils.getQueryString('siteId') || '0');
 
 var data = utils.initData({
+  siteId: parseInt(utils.getQueryString('siteId') || '0'),
   pageAlert: null,
   defaultPageUrl: null,
   isNightly: null,
@@ -43,11 +43,23 @@ var data = utils.initData({
 });
 
 var methods = {
-  getConfig: function () {
+  openPageCreateStatus() {
+    utils.openLayer({
+      title: '生成进度查看',
+      url: "cms/createStatus.cshtml?siteId=" + this.siteId,
+      full: true
+    });
+    return false;
+  },
+
+  apiGet: function () {
     var $this = this;
 
-    utils.loading($this, true);
-    $api.get($url + '?siteId=' + $siteId).then(function (response) {
+    $api.get($url, {
+      params: {
+        siteId: this.siteId
+      }
+    }).then(function (response) {
       var res = response.data;
       if (res.value) {
         $this.defaultPageUrl = res.defaultPageUrl;
@@ -83,13 +95,28 @@ var methods = {
     });
   },
 
+  apiCache: function() {
+    var $this = this;
+
+    $api.post($url + '/actions/cache', {
+      siteId: this.siteId
+    }).then(function (response) {
+      var res = response.data;
+      
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      $this.create();
+    });
+  },
+
   ready: function () {
     var $this = this;
 
     window.onresize = $this.winResize;
     window.onresize();
 
-    $this.create();
+    $this.apiCache();
 
     if ($this.isSuperAdmin) {
       $this.getUpdates();
@@ -102,6 +129,8 @@ var methods = {
         $this.create();
       }
     }, 60000);
+
+    utils.loading($this, false);
   },
 
   getUpdates: function () {
@@ -165,6 +194,7 @@ var methods = {
 
   create: function () {
     var $this = this;
+    
     clearTimeout($this.timeoutId);
     var sessionId = localStorage.getItem('sessionId');
     $api.post($urlCreate, {
@@ -178,7 +208,6 @@ var methods = {
       } else {
         $this.timeoutId = setTimeout($this.create, 100);
       }
-      utils.loading($this, false);
     }).catch(function (error) {
       if (error.response && error.response.status === 401) {
         location.href = 'login.cshtml';
@@ -228,12 +257,12 @@ var methods = {
   }
 };
 
-new Vue({
+var $vue = new Vue({
   el: "#wrapper",
   data: data,
   methods: methods,
   created: function () {
-    this.getConfig();
+    this.apiGet();
   },
   computed: {
     leftMenuWidth: function () {
@@ -242,20 +271,3 @@ new Vue({
     }
   }
 });
-
-function redirect(url) {
-  $('#right').src = url;
-}
-
-function openPageCreateStatus() {
-  utils.openLayer({
-    title: '生成进度查看',
-    url: "cms/createStatus.cshtml?siteId=" + $siteId,
-    full: true
-  });
-  return false;
-}
-
-function reloadPage() {
-  document.getElementById('frmMain').contentWindow.location.reload(true);
-}

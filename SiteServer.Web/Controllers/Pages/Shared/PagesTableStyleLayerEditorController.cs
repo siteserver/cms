@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Dto.Result;
@@ -59,7 +60,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 }
 
                 isRapid = !isSelected && !isNotEquals;
-                rapidValues = StringUtils.Join(list);
+                rapidValues = Utilities.ToString(list);
             }
 
             var form = new SubmitRequest
@@ -89,10 +90,10 @@ namespace SiteServer.API.Controllers.Pages.Shared
         }
 
         [HttpPost, Route(Route)]
-        public async Task<DefaultResult> Submit([FromBody] SubmitRequest request)
+        public async Task<BoolResult> Submit([FromBody] SubmitRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            if (!auth.IsAdminLoggin) return Request.Unauthorized<DefaultResult>();
+            if (!auth.IsAdminLoggin) return Request.Unauthorized<BoolResult>();
 
             var styleDatabase =
                 await DataProvider.TableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities) ??
@@ -116,10 +117,10 @@ namespace SiteServer.API.Controllers.Pages.Shared
 
             if (!isSuccess)
             {
-                return Request.BadRequest<DefaultResult>(errorMessage);
+                return Request.BadRequest<BoolResult>(errorMessage);
             }
 
-            return new DefaultResult
+            return new BoolResult
             {
                 Value = true
             };

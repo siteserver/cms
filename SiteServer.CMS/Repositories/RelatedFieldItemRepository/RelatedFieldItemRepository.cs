@@ -1,11 +1,13 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
-    public class RelatedFieldItemRepository : IRepository
+    public partial class RelatedFieldItemRepository : IRepository
     {
         private readonly Repository<RelatedFieldItem> _repository;
 
@@ -20,71 +22,79 @@ namespace SiteServer.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
+        private string GetCacheKey(int siteId)
+        {
+            return Caching.GetListKey(_repository.TableName, siteId);
+        }
+
         public async Task<int> InsertAsync(RelatedFieldItem info)
         {
-            info.Taxis = await GetMaxTaxisAsync(info.ParentId) + 1;
+            info.Taxis = await GetMaxTaxisAsync(info.SiteId, info.ParentId) + 1;
 
-            info.Id = await _repository.InsertAsync(info);
+            info.Id = await _repository.InsertAsync(info, Q.CachingRemove(GetCacheKey(info.SiteId)));
             return info.Id;
         }
 
         public async Task<bool> UpdateAsync(RelatedFieldItem info)
         {
-            return await _repository.UpdateAsync(info);
+            return await _repository.UpdateAsync(info, Q.CachingRemove(GetCacheKey(info.SiteId)));
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int siteId, int id)
         {
-            await _repository.DeleteAsync(id);
+            var childIds = await _repository.GetAllAsync<int>(Q
+                .Select(nameof(RelatedFieldItem.Id))
+                .Where(nameof(RelatedFieldItem.ParentId), id)
+            );
+            if (childIds.Any())
+            {
+                foreach (var childId in childIds)
+                {
+                    await DeleteAsync(siteId, childId);
+                }
+            }
+            await _repository.DeleteAsync(id, Q.CachingRemove(GetCacheKey(siteId)));
         }
 
-        public async Task<IEnumerable<RelatedFieldItem>> GetRelatedFieldItemInfoListAsync(int relatedFieldId, int parentId)
+        public async Task UpdateTaxisToDownAsync(int siteId, int relatedFieldId, int id, int parentId)
         {
-            return await _repository.GetAllAsync(Q
+            var selectedTaxis = await GetTaxisAsync(id);
+            var item = await _repository.GetAsync(Q
+                .Where(nameof(RelatedFieldItem.Taxis), ">", selectedTaxis)
                 .Where(nameof(RelatedFieldItem.RelatedFieldId), relatedFieldId)
                 .Where(nameof(RelatedFieldItem.ParentId), parentId)
                 .OrderBy(nameof(RelatedFieldItem.Taxis)));
-        }
 
-        public async Task UpdateTaxisToUpAsync(int id, int parentId)
-        {
-            var selectedTaxis = await GetTaxisAsync(id);
-            var result = await _repository.GetAsync<(int Id, int Taxis)?>(Q
-                .Select(nameof(RelatedFieldItem.Id), nameof(RelatedFieldItem.Taxis))
-                .Where(nameof(RelatedFieldItem.Taxis), ">", selectedTaxis)
-                .Where(nameof(RelatedFieldItem.ParentId), parentId)
-                .OrderBy(nameof(RelatedFieldItem.Taxis)));
+            if (item == null) return;
 
-            if (result == null) return;
-
-            var higherId = result.Value.Id;
-            var higherTaxis = result.Value.Taxis;
+            var higherId = item.Id;
+            var higherTaxis = item.Taxis;
 
             if (higherId != 0)
             {
-                await SetTaxisAsync(id, higherTaxis);
-                await SetTaxisAsync(higherId, selectedTaxis);
+                await SetTaxisAsync(siteId, id, higherTaxis);
+                await SetTaxisAsync(siteId, higherId, selectedTaxis);
             }
         }
 
-        public async Task UpdateTaxisToDownAsync(int id, int parentId)
+        public async Task UpdateTaxisToUpAsync(int siteId, int relatedFieldId, int id, int parentId)
         {
             var selectedTaxis = await GetTaxisAsync(id);
-            var result = await _repository.GetAsync<(int Id, int Taxis)?>(Q
-                .Select(nameof(RelatedFieldItem.Id), nameof(RelatedFieldItem.Taxis))
+            var item = await _repository.GetAsync(Q
                 .Where(nameof(RelatedFieldItem.Taxis), "<", selectedTaxis)
+                .Where(nameof(RelatedFieldItem.RelatedFieldId), relatedFieldId)
                 .Where(nameof(RelatedFieldItem.ParentId), parentId)
                 .OrderByDesc(nameof(RelatedFieldItem.Taxis)));
 
-            if (result == null) return;
+            if (item == null) return;
 
-            var lowerId = result.Value.Id;
-            var lowerTaxis = result.Value.Taxis;
+            var lowerId = item.Id;
+            var lowerTaxis = item.Taxis;
 
             if (lowerId != 0)
             {
-                await SetTaxisAsync(id, lowerTaxis);
-                await SetTaxisAsync(lowerId, selectedTaxis);
+                await SetTaxisAsync(siteId, id, lowerTaxis);
+                await SetTaxisAsync(siteId, lowerId, selectedTaxis);
             }
         }
 
@@ -95,23 +105,21 @@ namespace SiteServer.CMS.Repositories
                 .Where(nameof(RelatedFieldItem.Id), id));
         }
 
-        private async Task SetTaxisAsync(int id, int taxis)
+        private async Task SetTaxisAsync(int siteId, int id, int taxis)
         {
             await _repository.UpdateAsync(Q
                 .Set(nameof(RelatedFieldItem.Taxis), taxis)
                 .Where(nameof(RelatedFieldItem.Id), id)
+                .CachingRemove(GetCacheKey(siteId))
             );
         }
 
-        private async Task<int> GetMaxTaxisAsync(int parentId)
+        public async Task<List<RelatedFieldItem>> GetAllAsync(int siteId)
         {
-            return await _repository.MaxAsync(nameof(RelatedFieldItem.Taxis), Q
-                       .Where(nameof(RelatedFieldItem.ParentId), parentId)) ?? 0;
-        }
-
-        public async Task<RelatedFieldItem> GetAsync(int id)
-        {
-            return await _repository.GetAsync(id);
+            return await _repository.GetAllAsync(Q
+                .Where(nameof(RelatedFieldItem.SiteId), siteId)
+                .CachingGet(GetCacheKey(siteId))
+            );
         }
     }
 }

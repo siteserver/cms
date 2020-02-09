@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -34,7 +35,7 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var contentGroupNameList = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(siteId);
@@ -60,9 +61,9 @@ namespace SiteServer.API.Controllers.Home
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIdList = StringUtils.GetIntList(request.GetPostString("contentIds"));
+                var contentIdList = Utilities.GetIntList(request.GetPostString("contentIds"));
                 var pageType = request.GetPostString("pageType");
-                var groupNames = StringUtils.GetStringList(request.GetPostString("groupNames"));
+                var groupNames = Utilities.GetStringList(request.GetPostString("groupNames"));
                 var groupName = request.GetPostString("groupName");
                 var description = request.GetPostString("description");
 
@@ -76,7 +77,7 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 if (pageType == "setGroup")
@@ -96,7 +97,7 @@ namespace SiteServer.API.Controllers.Home
                         await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
-                    await request.AddSiteLogAsync(siteId, "批量设置内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
+                    await request.AddSiteLogAsync(siteId, "批量设置内容组", $"内容组:{Utilities.ToString(groupNames)}");
                 }
                 else if(pageType == "cancelGroup")
                 {
@@ -115,7 +116,7 @@ namespace SiteServer.API.Controllers.Home
                         await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
-                    await request.AddSiteLogAsync(siteId, "批量取消内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
+                    await request.AddSiteLogAsync(siteId, "批量取消内容组", $"内容组:{Utilities.ToString(groupNames)}");
                 }
                 else if (pageType == "addGroup")
                 {

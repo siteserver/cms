@@ -23,7 +23,7 @@ var methods = {
   load: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.get($url).then(function (response) {
       var res = response.data;
 
@@ -50,9 +50,9 @@ var methods = {
   checkCaptcha: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($urlCheckCaptcha, {
-      captcha: $this.captcha
+      captcha: this.captcha
     }).then(function (response) {
       $this.login();
     }).catch(function (error) {
@@ -65,11 +65,11 @@ var methods = {
   login: function () {
     var $this = this;
 
-    utils.loading($this, true);
+    utils.loading(this, true);
     $api.post($urlLogin, {
-      account: $this.account,
-      password: md5($this.password),
-      isAutoLogin: $this.isAutoLogin
+      account: this.account,
+      password: md5(this.password),
+      isAutoLogin: this.isAutoLogin
     }).then(function (response) {
       localStorage.setItem('sessionId', response.data.sessionId);
       if (response.data.isEnforcePasswordChange) {

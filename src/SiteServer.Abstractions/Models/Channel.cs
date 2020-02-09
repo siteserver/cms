@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
-using Newtonsoft.Json;
 
 namespace SiteServer.Abstractions
 {
     [DataTable("siteserver_Channel")]
-    public class Channel : Entity
+    public class Channel : Entity, IChannelSummary
     {
         [DataColumn]
         public string ChannelName { get; set; }
@@ -19,15 +18,7 @@ namespace SiteServer.Abstractions
         public string ContentModelPluginId { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string ContentRelatedPluginIds { get; set; }
-
-        [DataIgnore]
-        public List<string> ContentRelatedPluginIdList
-        {
-            get => StringUtils.GetStringList(ContentRelatedPluginIds);
-            set => ContentRelatedPluginIds = StringUtils.Join(value);
-        }
+        public List<string> ContentRelatedPluginIds { get; set; }
 
         [DataColumn]
         public int ParentId { get; set; }
@@ -45,15 +36,7 @@ namespace SiteServer.Abstractions
         public string IndexName { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string GroupNameCollection { get; set; }
-
-        [DataIgnore]
-        public List<string> GroupNames
-        {
-            get => StringUtils.GetStringList(GroupNameCollection);
-            set => GroupNameCollection = StringUtils.Join(value);
-        }
+        public List<string> GroupNames { get; set; }
 
         [DataColumn]
         public int Taxis { get; set; }
@@ -94,16 +77,13 @@ namespace SiteServer.Abstractions
         [DataColumn]
         public string Description { get; set; }
 
-        [DataColumn(Text = true, Extend = true)]
-        public string ExtendValues { get; set; }
-
         public IList<Channel> Children { get; set; }
 
         public bool IsCreateChannelIfContentChanged { get; set; } = true;
 
         public string CreateChannelIdsIfContentChanged { get; set; }
 
-        public string ContentAttributesOfDisplay { get; set; }
+        public string ListColumns { get; set; }
 
         public TransType TransType { get; set; }
 
@@ -124,9 +104,6 @@ namespace SiteServer.Abstractions
 
         //显示下级栏目内容
         public bool IsAllContents { get; set; }
-
-        //只显示自己添加的内容
-        public bool IsSelfOnly { get; set; }
 
         public Channel Clone()
         {

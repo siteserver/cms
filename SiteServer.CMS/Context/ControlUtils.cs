@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Datory.Utils;
 using SiteServer.Abstractions;
 
 namespace SiteServer.CMS.Context
@@ -154,7 +155,7 @@ namespace SiteServer.CMS.Context
                     }
                 }
             }
-            return TranslateUtils.ObjectCollectionToString(list);
+            return Utilities.ToString(list);
         }
 
         public static ArrayList GetSelectedListControlValueArrayList(ListControl listControl)
@@ -390,7 +391,7 @@ namespace SiteServer.CMS.Context
                 if (builder.Length != 0)
                     builder.Remove(builder.Length - 1, 1);
             }
-            return StringUtils.GetStringList(builder.ToString());
+            return Utilities.GetStringList(builder.ToString());
         }
 
         public static Control FindControlBySelfAndChildren(string id, Control baseControl)

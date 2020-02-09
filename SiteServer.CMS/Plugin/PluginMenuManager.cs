@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
+using Datory.Utils;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
@@ -314,7 +315,7 @@ namespace SiteServer.CMS.Plugin
                 var permission = GetMenuPermission(pluginId, prefix, menu);
                 permissions.Add(permission);
             }
-            tab.Permissions = TranslateUtils.ObjectCollectionToString(permissions);
+            tab.Permissions = Utilities.ToString(permissions);
 
             return tab;
         }

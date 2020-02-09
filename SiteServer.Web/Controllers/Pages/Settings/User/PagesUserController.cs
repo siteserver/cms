@@ -35,7 +35,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                     return Unauthorized();
                 }
 
-                var groupInfoList = await UserGroupManager.GetUserGroupListAsync();
+                var groupInfoList = await DataProvider.UserGroupRepository.GetUserGroupListAsync();
 
                 var state = ETriStateUtils.GetEnumType(request.GetQueryString("state"));
                 var groupId = request.GetQueryInt("groupId");

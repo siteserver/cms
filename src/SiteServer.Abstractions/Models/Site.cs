@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
-using Newtonsoft.Json;
 
 namespace SiteServer.Abstractions
 {
@@ -19,24 +18,13 @@ namespace SiteServer.Abstractions
         public string TableName { get; set; }
 
         [DataColumn]
-        [JsonIgnore]
-        private string IsRoot { get; set; }
-
-        public bool Root
-        {
-            get => TranslateUtils.ToBool(IsRoot);
-            set => IsRoot = value.ToString();
-        }
+        public bool Root { get; set; }
 
         [DataColumn]
         public int ParentId { get; set; }
 
         [DataColumn]
         public int Taxis { get; set; }
-
-        [DataColumn(Extend = true, Text = true)]
-        [JsonIgnore]
-        private string SettingsXml { get; set; }
 
         public IList<Site> Children { get; set; }
 
@@ -202,7 +190,7 @@ namespace SiteServer.Abstractions
 
         public bool IsImageUploadChangeFileName { get; set; } = true;
 
-        public string ImageUploadTypeCollection { get; set; } = "gif|jpg|jpeg|bmp|png|pneg|swf|webp";
+        public string ImageUploadTypeCollection { get; set; } = "gif,jpg,jpeg,bmp,png,pneg,swf,webp";
 
         public int ImageUploadTypeMaxSize { get; set; } = 15360;
 
@@ -217,7 +205,7 @@ namespace SiteServer.Abstractions
         public bool IsVideoUploadChangeFileName { get; set; } = true;
 
         public string VideoUploadTypeCollection { get; set; } =
-            "asf|asx|avi|flv|mid|midi|mov|mp3|mp4|mpg|mpeg|ogg|ra|rm|rmb|rmvb|rp|rt|smi|swf|wav|webm|wma|wmv|viv";
+            "asf,asx,avi,flv,mid,midi,mov,mp3,mp4,mpg,mpeg,ogg,ra,rm,rmb,rmvb,rp,rt,smi,swf,wav,webm,wma,wmv,viv";
 
         public int VideoUploadTypeMaxSize { get; set; } = 307200;
 

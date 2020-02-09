@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Datory.Utils;
 using NDesk.Options;
 using Quartz;
 using Quartz.Impl;
@@ -67,7 +68,7 @@ namespace SiteServer.Cli
                     }
                 }
             }
-            CommandName = StringUtils.Join(commandNames, " ");
+            CommandName = Utilities.ToString(commandNames, " ");
             CommandArgs = commandArgs.ToArray();
 
             Console.WriteLine("欢迎使用 SiteServer Cli 命令行工具");
@@ -149,7 +150,7 @@ namespace SiteServer.Cli
 
                 if (pluginJobs != null && pluginJobs.Count > 0)
                 {
-                    Console.WriteLine($"插件命令: {TranslateUtils.ObjectCollectionToString(pluginJobs.Keys)}");
+                    Console.WriteLine($"插件命令: {Utilities.ToString(pluginJobs.Keys)}");
                     Console.WriteLine();
                 }
 

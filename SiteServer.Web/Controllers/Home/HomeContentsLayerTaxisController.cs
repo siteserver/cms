@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -24,7 +25,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIdList = StringUtils.GetIntList(request.GetPostString("contentIds"));
+                var contentIdList = Utilities.GetIntList(request.GetPostString("contentIds"));
                 var isUp = request.GetPostBool("isUp");
                 var taxis = request.GetPostInt("taxis");
 
@@ -38,7 +39,7 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 if (ETaxisTypeUtils.Equals(channelInfo.DefaultTaxisType, TaxisType.OrderByTaxis))
@@ -51,8 +52,6 @@ namespace SiteServer.API.Controllers.Home
                     contentIdList.Reverse();
                 }
 
-                var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
-
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
@@ -63,14 +62,14 @@ namespace SiteServer.API.Controllers.Home
                     {
                         if (isUp)
                         {
-                            if (await DataProvider.ContentRepository.SetTaxisToUpAsync(tableName, channelId, contentId, isTop) == false)
+                            if (await DataProvider.ContentRepository.SetTaxisToUpAsync(site, channelInfo, contentId, isTop) == false)
                             {
                                 break;
                             }
                         }
                         else
                         {
-                            if (await DataProvider.ContentRepository.SetTaxisToDownAsync(tableName, channelId, contentId, isTop) == false)
+                            if (await DataProvider.ContentRepository.SetTaxisToDownAsync(site, channelInfo, contentId, isTop) == false)
                             {
                                 break;
                             }

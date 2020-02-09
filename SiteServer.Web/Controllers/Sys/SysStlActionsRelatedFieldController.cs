@@ -21,25 +21,25 @@ namespace SiteServer.API.Controllers.Sys
             var callback = request.GetQueryString("callback");
             var relatedFieldId = request.GetQueryInt("relatedFieldId");
             var parentId = request.GetQueryInt("parentId");
-            var jsonString = await GetRelatedFieldAsync(relatedFieldId, parentId);
+            var jsonString = await GetRelatedFieldAsync(siteId, relatedFieldId, parentId);
             var call = callback + "(" + jsonString + ")";
 
             HttpContext.Current.Response.Write(call);
             HttpContext.Current.Response.End();
         }
 
-        private async Task<string> GetRelatedFieldAsync(int relatedFieldId, int parentId)
+        private async Task<string> GetRelatedFieldAsync(int siteId, int relatedFieldId, int parentId)
         {
             var jsonString = new StringBuilder();
 
             jsonString.Append("[");
 
-            var list = await DataProvider.RelatedFieldItemRepository.GetRelatedFieldItemInfoListAsync(relatedFieldId, parentId);
+            var list = await DataProvider.RelatedFieldItemRepository.GetListAsync(siteId, relatedFieldId, parentId);
             if (list.Any())
             {
                 foreach (var itemInfo in list)
                 {
-                    jsonString.AppendFormat(@"{{""id"":""{0}"",""name"":""{1}"",""value"":""{2}""}},", itemInfo.Id, StringUtils.ToJsString(itemInfo.ItemName), StringUtils.ToJsString(itemInfo.ItemValue));
+                    jsonString.AppendFormat(@"{{""id"":""{0}"",""name"":""{1}"",""value"":""{2}""}},", itemInfo.Id, StringUtils.ToJsString(itemInfo.Label), StringUtils.ToJsString(itemInfo.Value));
                 }
                 jsonString.Length -= 1;
             }

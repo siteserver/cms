@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -25,7 +26,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
-                var contentIdList = StringUtils.GetIntList(request.GetQueryString("contentIds"));
+                var contentIdList = Utilities.GetIntList(request.GetQueryString("contentIds"));
 
                 if (!request.IsUserLoggin ||
                     !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
@@ -37,7 +38,7 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
+                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var retVal = new List<IDictionary<string, object>>();
@@ -73,7 +74,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIdList = StringUtils.GetIntList(request.GetPostString("contentIds"));
+                var contentIdList = Utilities.GetIntList(request.GetPostString("contentIds"));
                 var isRetainFiles = request.GetPostBool("isRetainFiles");
 
                 if (!request.IsUserLoggin ||
@@ -86,30 +87,30 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await ChannelManager.GetChannelAsync(siteId, channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+                var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+                if (channel == null) return BadRequest("无法确定内容对应的栏目");
 
                 if (!isRetainFiles)
                 {
                     await DeleteManager.DeleteContentsAsync(site, channelId, contentIdList);
                 }
 
-                var tableName = await ChannelManager.GetTableNameAsync(site, channelInfo);
+                var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
 
                 if (contentIdList.Count == 1)
                 {
                     var contentId = contentIdList[0];
                     var contentTitle = await DataProvider.ContentRepository.GetValueAsync(tableName, contentId, ContentAttribute.Title);
                     await request.AddSiteLogAsync(siteId, channelId, contentId, "删除内容",
-                        $"栏目:{await ChannelManager.GetChannelNameNavigationAsync(siteId, channelId)},内容标题:{contentTitle}");
+                        $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteId, channelId)},内容标题:{contentTitle}");
                 }
                 else
                 {
                     await request.AddSiteLogAsync(siteId, "批量删除内容",
-                        $"栏目:{await ChannelManager.GetChannelNameNavigationAsync(siteId, channelId)},内容条数:{contentIdList.Count}");
+                        $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteId, channelId)},内容条数:{contentIdList.Count}");
                 }
 
-                await DataProvider.ContentRepository.UpdateTrashContentsAsync(siteId, channelId, tableName, contentIdList);
+                await DataProvider.ContentRepository.RecycleContentsAsync(site, channel, contentIdList);
 
                 await CreateManager.TriggerContentChangedEventAsync(siteId, channelId);
 
