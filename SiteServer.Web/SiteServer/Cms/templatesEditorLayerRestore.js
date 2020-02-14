@@ -95,7 +95,7 @@ var methods = {
       });
     } else {
       setTimeout(function () {
-        require.config({ paths: { 'vs': '../assets_core/lib/monaco-editor/min/vs' }});
+        require.config({ paths: { 'vs': '../assets/lib/monaco-editor/min/vs' }});
         require(['vs/editor/editor.main'], function() {
             var originalModel = monaco.editor.createModel(original, "text/html");
             var modifiedModel = monaco.editor.createModel(modified, "text/html");
@@ -122,7 +122,7 @@ var methods = {
   }
 };
 
-new Vue({
+var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,

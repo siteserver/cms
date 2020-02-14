@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
-
 
 namespace SiteServer.CMS.StlParser
 {
@@ -74,7 +72,7 @@ namespace SiteServer.CMS.StlParser
             {
                 ContextType = EContextType.Channel
             };
-            var contentBuilder = new StringBuilder(DataProvider.TemplateRepository.GetTemplateContent(site, templateInfo));
+            var contentBuilder = new StringBuilder(await DataProvider.TemplateRepository.GetTemplateContentAsync(site, templateInfo));
 
             var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
 
@@ -124,7 +122,7 @@ namespace SiteServer.CMS.StlParser
                 var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, pageInfo, contextInfo);
                 var (pageCount, totalNum) = await pageContentsElementParser.GetPageCountAsync();
 
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
                 await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -156,7 +154,7 @@ namespace SiteServer.CMS.StlParser
                 var pageChannelsElementParser = await StlPageChannels.GetAsync(stlElement, pageInfo, contextInfo);
                 var pageCount = pageChannelsElementParser.GetPageCount(out var totalNum);
 
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
                 await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -183,7 +181,7 @@ namespace SiteServer.CMS.StlParser
                 var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlElement, pageInfo, contextInfo);
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out var totalNum);
 
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
                 await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -240,7 +238,7 @@ namespace SiteServer.CMS.StlParser
             };
             contextInfo.SetContentInfo(contentInfo);
             var filePath = await PathUtility.GetContentPageFilePathAsync(site, pageInfo.PageChannelId, contentInfo, 0);
-            var contentBuilder = new StringBuilder(DataProvider.TemplateRepository.GetTemplateContent(site, templateInfo));
+            var contentBuilder = new StringBuilder(await DataProvider.TemplateRepository.GetTemplateContentAsync(site, templateInfo));
 
             var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
 
@@ -414,9 +412,9 @@ namespace SiteServer.CMS.StlParser
 
             var pageInfo = await PageInfo.GetPageInfoAsync(siteId, 0, site, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
-            var filePath = PathUtility.MapPath(site, templateInfo.CreatedFileFullName);
+            var filePath = await PathUtility.MapPathAsync(site, templateInfo.CreatedFileFullName);
 
-            var contentBuilder = new StringBuilder(DataProvider.TemplateRepository.GetTemplateContent(site, templateInfo));
+            var contentBuilder = new StringBuilder(await DataProvider.TemplateRepository.GetTemplateContentAsync(site, templateInfo));
             await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);
             await GenerateFileAsync(filePath, contentBuilder);
         }
@@ -429,7 +427,7 @@ namespace SiteServer.CMS.StlParser
             {
                 var pageInfo = await PageInfo.GetPageInfoAsync(siteId, 0, site, templateInfo, new Dictionary<string, object>());
                 var contextInfo = new ContextInfo(pageInfo);
-                var filePath = PathUtility.MapPath(site, templateInfo.CreatedFileFullName);
+                var filePath = await PathUtility.MapPathAsync(site, templateInfo.CreatedFileFullName);
 
                 var contentBuilder = new StringBuilder(templateInfo.Content);
                 await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, filePath, false);

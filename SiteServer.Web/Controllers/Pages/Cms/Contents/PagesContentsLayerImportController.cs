@@ -124,7 +124,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     if (!EFileSystemTypeUtils.Equals(EFileSystemType.Zip, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(request.SiteId, auth.AdminName);
+                    var importObject = new ImportObject(site, auth.AdminId);
                     contentIdList.AddRange(await importObject.ImportContentsByZipFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, auth.AdminId, 0, SourceManager.Default));
                 }
             }
@@ -137,7 +137,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     if (!EFileSystemTypeUtils.Equals(EFileSystemType.Csv, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(request.SiteId, auth.AdminName);
+                    var importObject = new ImportObject(site, auth.AdminId);
                     contentIdList.AddRange(await importObject.ImportContentsByCsvFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, auth.AdminId, 0, SourceManager.Default));
                 }
             }
@@ -149,7 +149,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     if (!EFileSystemTypeUtils.Equals(EFileSystemType.Txt, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(request.SiteId, auth.AdminName);
+                    var importObject = new ImportObject(site, auth.AdminId);
                     contentIdList.AddRange(await importObject.ImportContentsByTxtFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, auth.AdminId, 0, SourceManager.Default));
                 }
             }

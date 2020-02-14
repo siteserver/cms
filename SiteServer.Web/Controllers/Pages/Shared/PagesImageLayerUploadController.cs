@@ -39,7 +39,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 return Request.BadRequest<UploadResult>("文件只能是 Image 格式，请选择有效的文件上传!");
             }
 
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, UploadType.Image);
+            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, UploadType.Image);
             var filePath = PathUtils.Combine(localDirectoryPath, PathUtility.GetUploadFileName(site, fileName));
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
@@ -72,7 +72,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 var fileName = PathUtils.GetFileName(filePath);
 
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, fileExtName);
+                var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, fileExtName);
 
                 var imageUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
 

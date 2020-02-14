@@ -19,7 +19,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<GetResult> Default([FromUri] TemplateRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Templates);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            {
+                return Request.Unauthorized<GetResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<GetResult>();
@@ -39,7 +43,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
 
             return new GetResult
             {
-                Template = GetTemplateResult(template, site)
+                Template = await GetTemplateResultAsync(template, site)
             };
         }
 
@@ -47,7 +51,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<GetResult> Add([FromBody] Template request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Templates);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            {
+                return Request.Unauthorized<GetResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<GetResult>();
@@ -59,7 +67,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<GetResult> Edit([FromBody] Template request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Templates);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            {
+                return Request.Unauthorized<GetResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<GetResult>();
@@ -71,7 +83,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<BoolResult> Create([FromBody] TemplateRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Templates);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            {
+                return Request.Unauthorized<BoolResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<BoolResult>();

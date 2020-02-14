@@ -45,19 +45,19 @@ namespace SiteServer.CMS.Repositories
             await _repository.DeleteAsync();
         }
 
-        public async Task<int> GetCountAsync(List<int> siteIds, string logType, string userName, string keyword, string dateFrom, string dateTo)
+        public async Task<int> GetCountAsync(List<int> siteIds, string logType, int adminId, string keyword, string dateFrom, string dateTo)
         {
-            return await _repository.CountAsync(GetQuery(siteIds, logType, userName, keyword, dateFrom, dateTo));
+            return await _repository.CountAsync(GetQuery(siteIds, logType, adminId, keyword, dateFrom, dateTo));
         }
 
-        public async Task<List<SiteLog>> GetAllAsync(List<int> siteIds, string logType, string userName, string keyword, string dateFrom, string dateTo, int offset, int limit)
+        public async Task<List<SiteLog>> GetAllAsync(List<int> siteIds, string logType, int adminId, string keyword, string dateFrom, string dateTo, int offset, int limit)
         {
-            var query = GetQuery(siteIds, logType, userName, keyword, dateFrom, dateTo);
+            var query = GetQuery(siteIds, logType, adminId, keyword, dateFrom, dateTo);
             query.Offset(offset).Limit(limit);
             return await _repository.GetAllAsync(query);
         }
 
-        public Query GetQuery(List<int> siteIds, string logType, string userName, string keyword, string dateFrom, string dateTo)
+        public Query GetQuery(List<int> siteIds, string logType, int adminId, string keyword, string dateFrom, string dateTo)
         {
             var query = Q.OrderByDesc(nameof(SiteLog.Id));
 
@@ -78,9 +78,9 @@ namespace SiteServer.CMS.Repositories
                 }
             }
 
-            if (!string.IsNullOrEmpty(userName))
+            if (adminId > 0)
             {
-                query.Where(nameof(SiteLog.UserName), userName);
+                query.Where(nameof(SiteLog.AdminId), adminId);
             }
 
             if (!string.IsNullOrEmpty(keyword))

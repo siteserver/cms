@@ -999,20 +999,25 @@ namespace SiteServer.CMS.Core
 	        ControlUtils.SelectSingleItem(listControl, checkedLevel.ToString());
 	    }
 
-	    public static string GetCheckState(Site site, Content content)
+        public static string GetCheckState(Site site, Content content)
+        {
+            return GetCheckState(site, content.Checked, content.CheckedLevel);
+        }
+
+        public static string GetCheckState(Site site, bool isChecked, int checkedLevel)
 	    {
-	        if (content.Checked)
+	        if (isChecked)
 	        {
 	            return Level.YiShenHe;
 	        }
 
 	        var retVal = string.Empty;
 
-	        if (content.CheckedLevel == LevelInt.CaoGao)
+	        if (checkedLevel == LevelInt.CaoGao)
 	        {
 	            retVal = Level.CaoGao;
 	        }
-	        else if (content.CheckedLevel == LevelInt.DaiShen)
+	        else if (checkedLevel == LevelInt.DaiShen)
 	        {
 	            retVal = Level.DaiShen;
 	        }
@@ -1022,115 +1027,115 @@ namespace SiteServer.CMS.Core
 
 	            if (checkContentLevel == 1)
 	            {
-	                if (content.CheckedLevel == LevelInt.Fail1)
+	                if (checkedLevel == LevelInt.Fail1)
 	                {
 	                    retVal = Level1.Fail1;
 	                }
 	            }
 	            else if (checkContentLevel == 2)
 	            {
-	                if (content.CheckedLevel == LevelInt.Pass1)
+	                if (checkedLevel == LevelInt.Pass1)
 	                {
 	                    retVal = Level2.Pass1;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail1)
+	                else if (checkedLevel == LevelInt.Fail1)
 	                {
 	                    retVal = Level2.Fail1;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail2)
+	                else if (checkedLevel == LevelInt.Fail2)
 	                {
 	                    retVal = Level2.Fail2;
 	                }
 	            }
 	            else if (checkContentLevel == 3)
 	            {
-	                if (content.CheckedLevel == LevelInt.Pass1)
+	                if (checkedLevel == LevelInt.Pass1)
 	                {
 	                    retVal = Level3.Pass1;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Pass2)
+	                else if (checkedLevel == LevelInt.Pass2)
 	                {
 	                    retVal = Level3.Pass2;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail1)
+	                else if (checkedLevel == LevelInt.Fail1)
 	                {
 	                    retVal = Level3.Fail1;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail2)
+	                else if (checkedLevel == LevelInt.Fail2)
 	                {
 	                    retVal = Level3.Fail2;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail3)
+	                else if (checkedLevel == LevelInt.Fail3)
 	                {
 	                    retVal = Level3.Fail3;
 	                }
 	            }
 	            else if (checkContentLevel == 4)
 	            {
-	                if (content.CheckedLevel == LevelInt.Pass1)
+	                if (checkedLevel == LevelInt.Pass1)
 	                {
 	                    retVal = Level4.Pass1;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Pass2)
+	                else if (checkedLevel == LevelInt.Pass2)
 	                {
 	                    retVal = Level4.Pass2;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Pass3)
+	                else if (checkedLevel == LevelInt.Pass3)
 	                {
 	                    retVal = Level4.Pass3;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail1)
+	                else if (checkedLevel == LevelInt.Fail1)
 	                {
 	                    retVal = Level4.Fail1;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail2)
+	                else if (checkedLevel == LevelInt.Fail2)
 	                {
 	                    retVal = Level4.Fail2;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail3)
+	                else if (checkedLevel == LevelInt.Fail3)
 	                {
 	                    retVal = Level4.Fail3;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail4)
+	                else if (checkedLevel == LevelInt.Fail4)
 	                {
 	                    retVal = Level4.Fail4;
 	                }
 	            }
 	            else if (checkContentLevel == 5)
 	            {
-	                if (content.CheckedLevel == LevelInt.Pass1)
+	                if (checkedLevel == LevelInt.Pass1)
 	                {
 	                    retVal = Level5.Pass1;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Pass2)
+	                else if (checkedLevel == LevelInt.Pass2)
 	                {
 	                    retVal = Level5.Pass2;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Pass3)
+	                else if (checkedLevel == LevelInt.Pass3)
 	                {
 	                    retVal = Level5.Pass3;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Pass4)
+	                else if (checkedLevel == LevelInt.Pass4)
 	                {
 	                    retVal = Level5.Pass4;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail1)
+	                else if (checkedLevel == LevelInt.Fail1)
 	                {
 	                    retVal = Level5.Fail1;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail2)
+	                else if (checkedLevel == LevelInt.Fail2)
 	                {
 	                    retVal = Level5.Fail2;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail3)
+	                else if (checkedLevel == LevelInt.Fail3)
 	                {
 	                    retVal = Level5.Fail3;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail4)
+	                else if (checkedLevel == LevelInt.Fail4)
 	                {
 	                    retVal = Level5.Fail4;
 	                }
-	                else if (content.CheckedLevel == LevelInt.Fail5)
+	                else if (checkedLevel == LevelInt.Fail5)
 	                {
 	                    retVal = Level5.Fail5;
 	                }

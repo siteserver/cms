@@ -37,11 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
             });
 		}
 
-        public string SiteUrl => Site.GetWebUrl();
-
-	    public string RootUrl => PageUtils.ApplicationPath;
-
-	    public static string GetOpenWindowString(Site site, string textBoxClientId)
+        public static string GetOpenWindowString(Site site, string textBoxClientId)
 	    {
 	        return LayerUtils.GetOpenScript("选择视频",
 	            PageUtils.GetCmsUrl(site.Id, nameof(ModalSelectVideo), new NameValueCollection
@@ -73,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 
-			_directoryPath = PathUtility.MapPath(Site, _currentRootPath);
+			_directoryPath = PathUtility.MapPathAsync(Site, _currentRootPath).GetAwaiter().GetResult();
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
 
             if (Page.IsPostBack) return;

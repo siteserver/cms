@@ -28,44 +28,6 @@ namespace SiteServer.CMS.Repositories
             return channel?.SiteId ?? 0;
         }
 
-        private async Task<int> GetIdByParentIdAndOrderAsync(int siteId, int parentId, int order)
-        {
-            var summaries = await GetAllSummaryAsync(siteId);
-            var channelIds = summaries
-                .Where(x => x.ParentId == parentId)
-                .OrderBy(x => x.Taxis)
-                .Select(x => x.Id)
-                .ToList();
-
-            var channelId = parentId;
-
-            var index = 1;
-            foreach (var id in channelIds)
-            {
-                channelId = id;
-                if (index == order)
-                    break;
-                index++;
-            }
-            return channelId;
-        }
-
-        public async Task<int> GetIdAsync(int siteId, string orderString)
-        {
-            if (orderString == "1")
-                return siteId;
-
-            var channelId = siteId;
-
-            var orderArr = orderString.Split('_');
-            for (var index = 1; index < orderArr.Length; index++)
-            {
-                var order = TranslateUtils.ToInt(orderArr[index]);
-                channelId = await GetIdByParentIdAndOrderAsync(siteId, channelId, order);
-            }
-            return channelId;
-        }
-
         /// <summary>
         /// 得到最后一个添加的子节点
         /// </summary>
@@ -109,38 +71,6 @@ namespace SiteServer.CMS.Repositories
                     .OrderByDescending(x => x.Taxis)
                     .Select(x => x.Id)
                     .FirstOrDefault();
-        }
-
-        /// <summary>
-        /// 在节点树中得到此节点的排序号，以“1_2_5_2”的形式表示
-        /// </summary>
-        public async Task<string> GetOrderStringInSiteAsync(int siteId, int channelId)
-        {
-            var retVal = "";
-            if (channelId != 0)
-            {
-                var parentId = await GetParentIdAsync(channelId);
-                if (parentId != 0)
-                {
-                    var orderString = await GetOrderStringInSiteAsync(siteId, parentId);
-                    retVal = orderString + "_" + await GetOrderInSiblingAsync(siteId, channelId, parentId);
-                }
-                else
-                {
-                    retVal = "1";
-                }
-            }
-            return retVal;
-        }
-
-        private async Task<int> GetOrderInSiblingAsync(int siteId, int channelId, int parentId)
-        {
-            var summaries = await GetAllSummaryAsync(siteId);
-            var channelIds = summaries
-                .Where(x => x.ParentId == parentId)
-                .OrderBy(x => x.Taxis)
-                .Select(x => x.Id).ToList();
-            return channelIds.IndexOf(channelId) + 1;
         }
 
         public async Task<IEnumerable<string>> GetIndexNameListAsync(int siteId)
@@ -215,19 +145,23 @@ namespace SiteServer.CMS.Repositories
             return list;
         }
 
-        public async Task<Cascade<int>> GetCascadeAsync(Site site, IChannelSummary summary)
+        public async Task<Cascade<int>> GetCascadeAsync(Site site, IChannelSummary summary, bool notCount = false)
         {
             var cascade = new Cascade<int>
             {
                 Value = summary.Id,
                 Label = summary.ChannelName,
-                Children = await GetCascadeChildrenAsync(site, summary.Id)
+                Children = await GetCascadeChildrenAsync(site, summary.Id, notCount)
             };
-            cascade["count"] = await DataProvider.ContentRepository.GetCountAsync(site, summary);
+            if (!notCount)
+            {
+                cascade["count"] = await DataProvider.ContentRepository.GetCountAsync(site, summary);
+            }
+            
             return cascade;
         }
 
-        private async Task<List<Cascade<int>>> GetCascadeChildrenAsync(Site site, int parentId)
+        private async Task<List<Cascade<int>>> GetCascadeChildrenAsync(Site site, int parentId, bool notCount = false)
         {
             var list = new List<Cascade<int>>();
 
@@ -238,7 +172,7 @@ namespace SiteServer.CMS.Repositories
                 if (summary == null) continue;
                 if (summary.ParentId == parentId)
                 {
-                    list.Add(await GetCascadeAsync(site, summary));
+                    list.Add(await GetCascadeAsync(site, summary, notCount));
                 }
             }
 
@@ -367,6 +301,16 @@ namespace SiteServer.CMS.Repositories
             return summaries.OrderBy(c => c.Taxis).Where(channelInfo => !string.IsNullOrEmpty(channelInfo.IndexName)).Select(channelInfo => channelInfo.IndexName).ToList();
         }
 
+        private void GetParentIdsRecursive(List<ChannelSummary> summaries, List<int> list, int channelId)
+        {
+            var summary = summaries.First(x => x.Id == channelId);
+            if (summary.ParentId > 0)
+            {
+                list.Add(summary.ParentId);
+                GetParentIdsRecursive(summaries, list, summary.ParentId);
+            }
+        }
+
         private List<int> GetChildIds(List<ChannelSummary> summaries, int parentId)
         {
             return summaries.Where(x => x.ParentId == parentId).Select(x => x.Id).ToList();
@@ -385,42 +329,42 @@ namespace SiteServer.CMS.Repositories
             }
         }
 
-        public async Task<List<int>> GetChannelIdsAsync(Channel channel, EScopeType scopeType)
+        public async Task<List<int>> GetChannelIdsAsync(int siteId, int channelId, EScopeType scopeType)
         {
-            if (channel == null) return new List<int>();
+            if (siteId == 0 || channelId == 0) return new List<int>();
 
             if (scopeType == EScopeType.Self)
             {
-                return new List<int>{ channel.Id };
+                return new List<int>{ channelId };
             }
 
             if (scopeType == EScopeType.SelfAndChildren)
             {
-                var summaries = await GetAllSummaryAsync(channel.SiteId);
-                var list = GetChildIds(summaries, channel.Id);
-                list.Add(channel.Id);
+                var summaries = await GetAllSummaryAsync(siteId);
+                var list = GetChildIds(summaries, channelId);
+                list.Add(channelId);
                 return list;
             }
 
             if (scopeType == EScopeType.Children)
             {
-                var summaries = await GetAllSummaryAsync(channel.SiteId);
-                return GetChildIds(summaries, channel.Id);
+                var summaries = await GetAllSummaryAsync(siteId);
+                return GetChildIds(summaries, channelId);
             }
 
             if (scopeType == EScopeType.Descendant)
             {
-                var summaries = await GetAllSummaryAsync(channel.SiteId);
+                var summaries = await GetAllSummaryAsync(siteId);
                 var list = new List<int>();
-                GetChildIdsRecursive(summaries, list, channel.Id);
+                GetChildIdsRecursive(summaries, list, channelId);
                 return list;
             }
 
             if (scopeType == EScopeType.All)
             {
-                var summaries = await GetAllSummaryAsync(channel.SiteId);
-                var list = new List<int> {channel.Id};
-                GetChildIdsRecursive(summaries, list, channel.Id);
+                var summaries = await GetAllSummaryAsync(siteId);
+                var list = new List<int> { channelId };
+                GetChildIdsRecursive(summaries, list, channelId);
                 return list;
             }
 
@@ -431,7 +375,7 @@ namespace SiteServer.CMS.Repositories
         {
             if (channel == null) return new List<int>();
 
-            var channelIds = await GetChannelIdsAsync(channel, scopeType);
+            var channelIds = await GetChannelIdsAsync(channel.SiteId, channel.Id, scopeType);
 
             if (string.IsNullOrEmpty(group) && string.IsNullOrEmpty(groupNot) &&
                 string.IsNullOrEmpty(contentModelPluginId))
@@ -602,28 +546,35 @@ namespace SiteServer.CMS.Repositories
                 return channel.ChannelName;
             }
 
-            var parentsPath = await GetParentsPathAsync(siteId, channelId);
-            var channelIdList = new List<int>();
-            var indexOf = -1;
-            if (!string.IsNullOrEmpty(parentsPath))
+            var summaries = await GetAllSummaryAsync(siteId);
+            var parentIds = new List<int>
             {
-                channelIdList = Utilities.GetIntList(parentsPath);
-                indexOf = channelIdList.IndexOf(currentChannelId);
-            }
-            channelIdList.Add(channelId);
-            //channelIdList.Remove(siteId);
+                channelId
+            };
+            GetParentIdsRecursive(summaries, parentIds, channelId);
+            parentIds.Reverse();
 
-            for (var index = 0; index < channelIdList.Count; index++)
+            foreach (var parentId in parentIds)
             {
-                if (index > indexOf)
+                if (parentId == currentChannelId)
                 {
-                    var channel = await GetAsync(channelIdList[index]);
-                    if (channel != null)
-                    {
-                        channelNames.Add(channel.ChannelName);
-                    }
+                    channelNames.Clear();
                 }
+                var channelName = await GetChannelNameAsync(siteId, parentId);
+                channelNames.Add(channelName);
             }
+
+            //for (var index = 0; index < channelIdList.Count; index++)
+            //{
+            //    if (index > indexOf)
+            //    {
+            //        var channel = await GetAsync(channelIdList[index]);
+            //        if (channel != null)
+            //        {
+            //            channelNames.Add(channel.ChannelName);
+            //        }
+            //    }
+            //}
 
             return Utilities.ToString(channelNames, " > ");
         }

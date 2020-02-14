@@ -10,30 +10,25 @@
       padding: 5px 5px 20px 5px;
       overflow: hidden;
     }
-    .table-expand-form {
-      font-size: 0;
+    #commands .el-button {
+      margin-bottom: 5px;
     }
-    .table-expand-form label {
-      width: 90px;
-      color: #99a9bf;
+    #commands .el-button+.el-button {
+      margin-left: 0;
+    }
+    #search .el-select .el-input {
+      width: 100px;
+    }
+    .table-expand-form .el-form-item__label {
+      width: 120px;
+      color: #909399;
     }
     .table-expand-form .el-form-item {
       margin-right: 0;
       margin-bottom: 0;
       width: 50%;
     }
-    #commands .el-button {
-      margin-bottom: 5px;
-    }
-    #search .el-select .el-input {
-      width: 100px;
-    }
-    .el-table--medium td, .el-table--medium th{
-      padding: 5px 0;
-    }
-    .el-button+.el-button {
-      margin-left: 0;
-    }
+
     .input-with-select .el-input-group__prepend {
       background-color: #fff;
     }
@@ -142,8 +137,7 @@
               <el-dropdown-item command="Hits" :disabled="!permissions.isEdit || !isContentChecked"><i class="el-icon-mouse"></i>设置点击量</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-            
-          </el-button>
+
         </el-col>
       </el-row>
 
@@ -264,13 +258,79 @@
         v-on:selection-change="handleSelectionChange"
         v-on:row-click="toggleSelection">
         <el-table-column type="expand" width="25" align="right">
-          <template slot-scope="props">
+          <template slot-scope="scope">
             <el-form size="mini" label-position="left" inline class="table-expand-form">
               <el-form-item
                 v-for="column in columns"
                 :key="column.attributeName"
+                v-if="column.attributeName !== 'Title'"
                 :label="column.displayName">
-                <span v-html="props.row.getValue(column.attributeName)"></span>
+                
+                <!-- ChannelId -->
+                <template v-if="column.attributeName === 'ChannelId'">
+                  {{scope.row.channelName}}
+                </template>
+
+                <!-- GroupNames -->
+                <template v-else-if="column.attributeName === 'GroupNames'">
+                  <template v-if="scope.row.groupNames && groupNames" v-for="groupName in scope.row.groupNames">
+                    <el-tag v-if="groupNames.indexOf(groupName) !== -1" :key="groupName" size="mini" type="info">
+                      {{ groupName }}
+                    </el-tag>
+                  </template>
+                </template>
+
+                <!-- TagNames -->
+                <template v-else-if="column.attributeName === 'TagNames'">
+                  <template v-if="scope.row.tagNames && tagNames" v-for="tagName in scope.row.tagNames">
+                    <el-tag v-if="tagNames.indexOf(tagName) !== -1" :key="tagName" size="mini" type="info">
+                      {{ tagName }}
+                    </el-tag>
+                  </template>
+                </template>
+
+                <!-- ImageUrl -->
+                <template v-else-if="column.attributeName === 'ImageUrl'">
+                  <el-link :underline="false" :href="getUrl(scope.row.imageUrl)" target="_blank" v-on:click.stop.native>
+                    <el-image v-if="scope.row.imageUrl"  :src="getUrl(scope.row.imageUrl)" style="max-width: 100px; max-height: 100px"></el-image>
+                  </el-link>
+                </template>
+
+                <!-- LinkUrl -->
+                <template v-else-if="column.attributeName === 'LinkUrl'">
+                  <el-link v-if="scope.row.linkUrl" :underline="false" type="primary" :href="getUrl(scope.row.linkUrl)" target="_blank" v-on:click.stop.native>{{scope.row.linkUrl}}</el-link>
+                </template>
+
+                <!-- AdminId -->
+                <template v-else-if="column.attributeName === 'AdminId'">
+                  <el-link v-if="scope.row.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.adminId)">{{scope.row.adminName}}</el-link>
+                </template>
+
+                <!-- LastEditAdminId -->
+                <template v-else-if="column.attributeName === 'LastEditAdminId'">
+                  <el-link v-if="scope.row.lastEditAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.lastEditAdminId)">{{scope.row.lastEditAdminName}}</el-link>
+                </template>
+
+                <!-- UserId -->
+                <template v-else-if="column.attributeName === 'UserId'">
+                  <el-link v-if="scope.row.userId" :underline="false" type="primary" v-on:click.stop.native="btnUserClick(scope.row.userId)">{{scope.row.userName}}</el-link>
+                </template>
+
+                <!-- CheckAdminId -->
+                <template v-else-if="column.attributeName === 'CheckAdminId'">
+                  <el-link v-if="scope.row.checkAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.checkAdminId)">{{scope.row.checkAdminName}}</el-link>
+                </template>
+
+                <!-- SourceId -->
+                <template v-else-if="column.attributeName === 'SourceId'">
+                  {{scope.row.sourceName}}
+                </template>
+
+                <!-- Others -->
+                <template v-else>
+                  <span v-html="scope.row.getValue(column.attributeName)"></span>
+                </template>
+
               </el-form-item>
             </el-form>
           </template>
@@ -290,7 +350,8 @@
 
             <!-- Title -->
             <template v-if="column.attributeName === 'Title'">
-              <el-link type="primary" :underline="false" :href="getContentUrl(scope.row)" v-html="scope.row.title" target="_blank" v-on:click.stop.native></el-link>
+              <el-link v-if="scope.row.checked && scope.row.channelId > 0" type="primary" :underline="false" :href="getContentUrl(scope.row)" target="_blank" v-html="scope.row.title" v-on:click.stop.native></el-link>
+              <el-link v-else type="primary" :underline="false" v-on:click="btnTitleClick(scope.row)" v-html="scope.row.title" v-on:click.stop.native></el-link>
               <!-- top -->
               <el-tooltip v-if="scope.row.top" effect="light" content="置顶" placement="top">
                 <el-link size="mini" :underline="false" type="danger"><i class="el-icon-top"></i></el-link>
@@ -337,6 +398,11 @@
                   <i class="el-icon-link"></i>
                 </el-link>
               </el-tooltip>
+            </template>
+
+            <!-- ChannelId -->
+            <template v-else-if="column.attributeName === 'ChannelId'">
+              {{scope.row.channelName}}
             </template>
 
             <!-- GroupNames -->
@@ -389,6 +455,11 @@
               <el-link v-if="scope.row.checkAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.checkAdminId)">{{scope.row.checkAdminName}}</el-link>
             </template>
 
+            <!-- SourceId -->
+            <template v-else-if="column.attributeName === 'SourceId'">
+              {{scope.row.sourceName}}
+            </template>
+
             <!-- Others -->
             <template v-else>
               <span v-html="scope.row.getValue(column.attributeName)"></span>
@@ -404,8 +475,8 @@
           show-overflow-tooltip
           label="状态">
           <template slot-scope="scope">
-            <el-link size="mini" :underline="false" v-on:click="btnContentStateClick(scope.row.id)" :type="(scope.row.checked ? 'primary' : 'danger')">
-              {{ scope.row.checked ? '已审核' : '待审核' }}
+            <el-link size="mini" :underline="false" v-on:click.stop.native="btnContentStateClick(scope.row.id)" :type="(scope.row.checked ? 'primary' : 'danger')">
+              {{ scope.row.state }}
             </el-link>
           </template>
         </el-table-column>
@@ -419,7 +490,7 @@
           <template slot-scope="scope">
             <el-link size="mini" :underline="false" v-for="pluginMenu in scope.row.pluginMenus" :target="pluginMenu.target" :href="(pluginMenu.target === '_layer' ? 'javascript:;' : getPluginMenuUrl(pluginMenu))"
                 v-on:click="btnPluginMenuClick(pluginMenu)" class="mr-2" v-html="pluginMenu.text"></el-link>
-            <el-link size="mini" :underline="false" v-on:click.stop="btnEditClick(scope.row)" type="primary">编辑</el-link>
+            <el-link size="mini" :underline="false" v-on:click.stop.native="btnEditClick(scope.row)" type="primary">编辑</el-link>
           </template>
         </el-table-column>
       </el-table>

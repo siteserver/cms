@@ -68,10 +68,10 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(Site, fileExtName);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
                 if (!string.IsNullOrEmpty(_currentRootPath))
                 {
-                    localDirectoryPath = PathUtility.MapPath(Site, _currentRootPath);
+                    localDirectoryPath = PathUtility.MapPathAsync(Site, _currentRootPath).GetAwaiter().GetResult();
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
                 var localFileName = PathUtility.GetUploadFileName(Site, filePath);
@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (isImage && _isNeedWaterMark)
                 {
-                    FileUtility.AddWaterMark(Site, localFilePath);
+                    FileUtility.AddWaterMarkAsync(Site, localFilePath).GetAwaiter().GetResult();
                 }
 
                 if (string.IsNullOrEmpty(_textBoxClientId))

@@ -95,7 +95,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 var distinctChannel = await DataProvider.ChannelRepository.GetAsync(distinctChannelId);
                 var contentIdList = summaries.Where(x => x.ChannelId == distinctChannelId)
                     .Select(x => x.Id).ToList();
-                await DataProvider.ContentRepository.RecycleContentsAsync(site, distinctChannel, contentIdList);
+                await DataProvider.ContentRepository.RecycleContentsAsync(site, distinctChannel, contentIdList, auth.AdminId);
 
                 await CreateManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
             }

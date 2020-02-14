@@ -198,7 +198,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (isFileType)
             {
-                var filePath = PathUtility.MapPath(pageInfo.Site, fileUrl);
+                var filePath = await PathUtility.MapPathAsync(pageInfo.Site, fileUrl);
                 parsedContent = PathUtils.GetExtension(filePath).Trim('.');
                 if (isLower)
                 {
@@ -211,7 +211,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (isFileSize)
             {
-                var filePath = PathUtility.MapPath(pageInfo.Site, fileUrl);
+                var filePath = await PathUtility.MapPathAsync(pageInfo.Site, fileUrl);
                 parsedContent = FileUtils.GetFileSizeByFilePath(filePath);
             }
             else if (isCount)

@@ -163,7 +163,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.Site.GetWebUrl();
+                parsedContent = await pageInfo.Site.GetWebUrlAsync();
             }
             else if (type.ToLower().Equals(TypeDate.ToLower()))
             {
@@ -204,7 +204,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                             {
-                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                                parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                             }
                             else
                             {

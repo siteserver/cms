@@ -16,7 +16,6 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
         public async Task<TreeResult> Tree([FromBody]TreeRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-
             if (!auth.IsAdminLoggin ||
                 !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Contents))
@@ -25,23 +24,25 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-            if (site == null) return Request.BadRequest<TreeResult>("无法确定内容对应的站点");
+            if (site == null) return Request.NotFound<TreeResult>();
 
             var channel = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
             var root = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel);
 
             if (!request.Reload)
             {
-                var siteUrl = PageUtility.GetSiteUrl(site, true);
+                var siteUrl = await PageUtility.GetSiteUrlAsync(site, true);
                 var groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(request.SiteId);
                 var tagNames = await DataProvider.ContentTagRepository.GetTagNamesAsync(request.SiteId);
+                var checkedLevels = ElementUtils.GetCheckBoxes(CheckManager.GetCheckedLevels(site, true, site.CheckContentLevel, true));
 
                 return new TreeResult
                 {
                     Root = root,
                     SiteUrl = siteUrl,
                     GroupNames = groupNames,
-                    TagNames = tagNames
+                    TagNames = tagNames,
+                    CheckedLevels = checkedLevels
                 };
             }
 
@@ -62,6 +63,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             public string SiteUrl { get; set; }
             public IEnumerable<string> GroupNames { get; set; }
             public IEnumerable<string> TagNames { get; set; }
+            public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
         }
     }
 }

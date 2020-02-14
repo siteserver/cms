@@ -60,7 +60,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task<List<int>> GetChannelIdListAsync(int siteId, int parentId)
         {
-            return await DataProvider.ChannelRepository.GetChannelIdsAsync(await DataProvider.ChannelRepository.GetAsync(parentId == 0 ? siteId : parentId), EScopeType.Children);
+            return await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, parentId == 0 ? siteId : parentId, EScopeType.Children);
         }
 
         
@@ -110,7 +110,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public async Task DeleteAsync(int siteId, int channelId)
         {
-            await DataProvider.ChannelRepository.DeleteAsync(siteId, channelId);
+            await DataProvider.ChannelRepository.DeleteAsync(siteId, channelId, 0);
         }
 
         public async Task<string> GetChannelUrlAsync(int siteId, int channelId)

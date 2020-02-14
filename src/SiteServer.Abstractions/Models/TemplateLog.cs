@@ -17,7 +17,7 @@ namespace SiteServer.Abstractions
         public DateTime AddDate { get; set; }
 
         [DataColumn]
-        public string AddUserName { get; set; }
+        public int AdminId { get; set; }
 
         [DataColumn]
         public int ContentLength { get; set; }

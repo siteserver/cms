@@ -7,7 +7,6 @@ using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Repositories;
@@ -40,10 +39,10 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+                var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+                if (channel == null) return BadRequest("无法确定内容对应的栏目");
 
-                var columns = await ColumnsManager.GetContentListColumnsAsync(site, channelInfo, true);
+                var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
                 var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, site, siteId);
                 var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
@@ -91,15 +90,15 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+                var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+                if (channel == null) return BadRequest("无法确定内容对应的栏目");
 
-                var columns = await ColumnsManager.GetContentListColumnsAsync(site, channelInfo, true);
-                var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
+                var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+                var pluginIds = PluginContentManager.GetContentPluginIds(channel);
                 var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
                 var contentInfoList = new List<Content>();
-                var ccIds = await DataProvider.ContentRepository.GetSummariesAsync(site, channelInfo, true);
+                var ccIds = await DataProvider.ContentRepository.GetSummariesAsync(site, channel, true);
                 var count = ccIds.Count();
 
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
@@ -141,7 +140,7 @@ namespace SiteServer.API.Controllers.Home
                                 }
                             }
 
-                            contentInfoList.Add(await ColumnsManager.CalculateContentListAsync(sequence++, channelId, contentInfo, columns, pluginColumns));
+                            contentInfoList.Add(await ColumnsManager.CalculateContentListAsync(sequence++, site, channelId, contentInfo, columns, pluginColumns));
                         }
                     }
 
@@ -149,20 +148,20 @@ namespace SiteServer.API.Controllers.Home
                     {
                         if (exportType == "zip")
                         {
-                            var fileName = $"{channelInfo.ChannelName}.zip";
+                            var fileName = $"{channel.ChannelName}.zip";
                             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                            var exportObject = new ExportObject(siteId, request.AdminName);
+                            var exportObject = new ExportObject(site, request.AdminId);
                             contentInfoList.Reverse();
-                            if (await exportObject.ExportContentsAsync(filePath, contentInfoList))
+                            if (exportObject.ExportContents(filePath, contentInfoList))
                             {
                                 downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                             }
                         }
                         else if (exportType == "excel")
                         {
-                            var fileName = $"{channelInfo.ChannelName}.csv";
+                            var fileName = $"{channel.ChannelName}.csv";
                             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                            await ExcelObject.CreateExcelFileForContentsAsync(filePath, site, channelInfo, contentInfoList, columnNames);
+                            await ExcelObject.CreateExcelFileForContentsAsync(filePath, site, channel, contentInfoList, columnNames);
                             downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                         }
                     }

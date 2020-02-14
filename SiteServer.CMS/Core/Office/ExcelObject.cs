@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.DataCache;
@@ -72,7 +73,7 @@ namespace SiteServer.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, true);
+            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             foreach (var column in columns)
             {

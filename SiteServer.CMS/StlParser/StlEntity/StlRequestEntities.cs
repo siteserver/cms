@@ -15,7 +15,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
             var parsedContent = string.Empty;
             try
             {
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
 
                 var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
                 var entityValue = StlParserUtility.GetValueFromEntity(stlEntity);

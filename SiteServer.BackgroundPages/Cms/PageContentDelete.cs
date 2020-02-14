@@ -158,7 +158,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 $"栏目:{DataProvider.ChannelRepository.GetChannelNameNavigationAsync(SiteId, channelId).GetAwaiter().GetResult()},内容条数:{contentIdList.Count}").GetAwaiter().GetResult();
                         }
 
-                        DataProvider.ContentRepository.RecycleContentsAsync(Site, channel, contentIdList).GetAwaiter().GetResult();
+                        DataProvider.ContentRepository.RecycleContentsAsync(Site, channel, contentIdList, AuthRequest.AdminId).GetAwaiter().GetResult();
 
                         //引用内容，需要删除
                         //var siteTableNameList = DataProvider.SiteRepository.GetTableNameList();

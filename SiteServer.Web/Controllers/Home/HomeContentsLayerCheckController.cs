@@ -134,9 +134,8 @@ namespace SiteServer.API.Controllers.Home
 
                     contentInfoList.Add(contentInfo);
 
-                    var checkInfo = new ContentCheck
+                    await DataProvider.ContentCheckRepository.InsertAsync(new ContentCheck
                     {
-                        TableName = tableName,
                         SiteId = siteId,
                         ChannelId = contentInfo.ChannelId,
                         ContentId = contentInfo.Id,
@@ -145,9 +144,7 @@ namespace SiteServer.API.Controllers.Home
                         CheckedLevel = checkedLevel,
                         CheckDate = DateTime.Now,
                         Reasons = reasons
-                    };
-
-                    await DataProvider.ContentCheckRepository.InsertAsync(checkInfo);
+                    });
                 }
 
                 await request.AddSiteLogAsync(siteId, "批量审核内容");

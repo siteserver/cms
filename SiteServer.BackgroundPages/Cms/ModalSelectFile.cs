@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Images;
@@ -92,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 
-			_directoryPath = PathUtility.MapPath(Site, _currentRootPath);
+			_directoryPath = PathUtility.MapPathAsync(Site, _currentRootPath).GetAwaiter().GetResult();
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
 			if (!DirectoryUtils.IsDirectoryExists(_directoryPath))
 			{
@@ -154,7 +155,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             LtlCurrentDirectory.Text = navigationBuilder.ToString();
 
-            FillFileSystems(false);
+            FillFileSystemsAsync(false).GetAwaiter().GetResult();
         }
 
 		public void LinkButton_Command(object sender, CommandEventArgs e)
@@ -201,7 +202,7 @@ namespace SiteServer.BackgroundPages.Cms
 		}
 
 		#region Helper
-		private void FillFileSystems(bool isReload)
+		private async Task FillFileSystemsAsync(bool isReload)
 		{
 			const string cookieName = "SiteServer.BackgroundPages.Cms.Modal.SelectAttachment";
 			var isSetCookie = AuthRequest.IsQueryExists("ListType");
@@ -231,7 +232,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			if (DdlListType.SelectedValue == "List")
 			{
-				FillFileSystemsToList(isReload);
+                await FillFileSystemsToListAsync(isReload);
 			}
 			else if (DdlListType.SelectedValue == "Image")
 			{
@@ -383,7 +384,7 @@ namespace SiteServer.BackgroundPages.Cms
 			LtlFileSystems.Text = builder.ToString();
 		}
 
-		private void FillFileSystemsToList(bool isReload)
+		private async Task FillFileSystemsToListAsync(bool isReload)
 		{
 			var builder = new StringBuilder();
 			builder.Append(@"<table class=""table table-bordered table-hover""><tr class=""info thead""><td>名称</td><td width=""80"">大小</td><td width=""120"">类型</td><td width=""120"">修改日期</td></tr>");
@@ -418,7 +419,7 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				var fileModifyDateTime = fileInfo.LastWriteTime;
 				var linkUrl = PageUtils.Combine(directoryUrl, fileInfo.Name);
-				var attachmentUrl = linkUrl.Replace(Site.GetWebUrl(), "@");
+				var attachmentUrl = linkUrl.Replace(await Site.GetWebUrlAsync(), "@");
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.SiteId, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(SiteId, attachmentUrl,_hiddenClientId);
                 string trHtml =

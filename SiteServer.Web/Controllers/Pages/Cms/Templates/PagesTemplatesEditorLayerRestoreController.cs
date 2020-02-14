@@ -18,7 +18,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<GetResult> Get([FromUri] TemplateRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Templates);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            {
+                return Request.Unauthorized<GetResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<GetResult>();
@@ -33,7 +37,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             var original = logId == 0 ? string.Empty : await DataProvider.TemplateLogRepository.GetTemplateContentAsync(logId);
 
             var template = await DataProvider.TemplateRepository.GetAsync(request.TemplateId);
-            var modified = DataProvider.TemplateRepository.GetTemplateContent(site, template);
+            var modified = await DataProvider.TemplateRepository.GetTemplateContentAsync(site, template);
 
             return new GetResult
             {
@@ -48,7 +52,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<GetResult> Delete([FromBody] TemplateRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Templates);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            {
+                return Request.Unauthorized<GetResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<GetResult>();
@@ -65,7 +73,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             var original = logId == 0 ? string.Empty : await DataProvider.TemplateLogRepository.GetTemplateContentAsync(logId);
 
             var template = await DataProvider.TemplateRepository.GetAsync(request.TemplateId);
-            var modified = DataProvider.TemplateRepository.GetTemplateContent(site, template);
+            var modified = await DataProvider.TemplateRepository.GetTemplateContentAsync(site, template);
 
             return new GetResult
             {

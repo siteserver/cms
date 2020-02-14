@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.CMS", "SiteServer.CMS\SiteServer.CMS.csproj", "{944127C3-915D-4F02-A534-64EC668C46EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.BackgroundPages", "SiteServer.BackgroundPages\SiteServer.BackgroundPages.csproj", "{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.API", "SiteServer.Web\SiteServer.API.csproj", "{69C00F60-F28A-4CBC-B1A4-2DB73BB97471}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.Cli", "SiteServer.Cli\SiteServer.Cli.csproj", "{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}"
@@ -21,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.Abstractions.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.Abstractions", "src\SiteServer.Abstractions\SiteServer.Abstractions.csproj", "{66353195-4727-453E-8303-17A6A8D0471D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.BackgroundPages", "SiteServer.BackgroundPages\SiteServer.BackgroundPages.csproj", "{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,10 +31,6 @@ Global
 		{944127C3-915D-4F02-A534-64EC668C46EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{944127C3-915D-4F02-A534-64EC668C46EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{944127C3-915D-4F02-A534-64EC668C46EC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}.Release|Any CPU.Build.0 = Release|Any CPU
 		{69C00F60-F28A-4CBC-B1A4-2DB73BB97471}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{69C00F60-F28A-4CBC-B1A4-2DB73BB97471}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69C00F60-F28A-4CBC-B1A4-2DB73BB97471}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -55,6 +51,10 @@ Global
 		{66353195-4727-453E-8303-17A6A8D0471D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66353195-4727-453E-8303-17A6A8D0471D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66353195-4727-453E-8303-17A6A8D0471D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AA1713A-3B77-4B20-B8C7-FCB6DE556F64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

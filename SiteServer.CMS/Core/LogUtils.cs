@@ -155,7 +155,7 @@ stl: {stlContent}
                         SiteId = siteId,
                         ChannelId = channelId,
                         ContentId = contentId,
-                        UserName = adminInfo.UserName,
+                        AdminId = adminInfo.Id,
                         IpAddress = PageUtils.GetIpAddress(),
                         AddDate = DateTime.Now,
                         Action = action,
@@ -194,7 +194,7 @@ stl: {stlContent}
                 var logInfo = new Log
                 {
                     Id = 0,
-                    UserName = adminInfo.UserName,
+                    AdminId = adminInfo.Id,
                     IpAddress = PageUtils.GetIpAddress(),
                     AddDate = DateTime.Now,
                     Action = action,
@@ -211,12 +211,12 @@ stl: {stlContent}
             }
         }
 
-        public static async Task AddUserLoginLogAsync(string userName)
+        public static async Task AddUserLoginLogAsync(int userId)
         {
-            await AddUserLogAsync(userName, "用户登录", string.Empty);
+            await AddUserLogAsync(userId, "用户登录", string.Empty);
         }
 
-        public static async Task AddUserLogAsync(string userName, string actionType, string summary)
+        public static async Task AddUserLogAsync(int userId, string actionType, string summary)
         {
             var config = await DataProvider.ConfigRepository.GetAsync();
             if (!config.IsLogUser) return;
@@ -233,7 +233,7 @@ stl: {stlContent}
                 var userLogInfo = new UserLog
                 {
                     Id = 0,
-                    UserName = userName,
+                    UserId = userId,
                     IpAddress = PageUtils.GetIpAddress(),
                     AddDate = DateTime.Now,
                     Action = actionType,

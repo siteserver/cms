@@ -125,7 +125,6 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
             foreach (var summary in summaries)
             {
-                var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, summary.ChannelId);
                 var contentChannelInfo = await DataProvider.ChannelRepository.GetAsync(summary.ChannelId);
                 var contentInfo = await DataProvider.ContentRepository.GetAsync(site, contentChannelInfo, summary.Id);
                 if (contentInfo == null) continue;
@@ -139,9 +138,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
                 await DataProvider.ContentRepository.UpdateAsync(site, contentChannelInfo, contentInfo);
 
-                var checkInfo = new ContentCheck
+                await DataProvider.ContentCheckRepository.InsertAsync(new ContentCheck
                 {
-                    TableName = tableName,
                     SiteId = request.SiteId,
                     ChannelId = contentInfo.ChannelId,
                     ContentId = contentInfo.Id,
@@ -150,9 +148,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     CheckedLevel = request.CheckedLevel,
                     CheckDate = DateTime.Now,
                     Reasons = request.Reasons
-                };
-
-                await DataProvider.ContentCheckRepository.InsertAsync(checkInfo);
+                });
 
                 if (request.IsTranslate)
                 {

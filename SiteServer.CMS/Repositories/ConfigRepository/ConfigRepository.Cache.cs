@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Datory;
 using SiteServer.Abstractions;
 using Datory.Caching;
@@ -12,6 +13,12 @@ namespace SiteServer.CMS.Repositories
         {
             var cacheManager = await _repository.GetCacheManagerAsync();
             cacheManager.Clear();
+        }
+
+        public async Task<IReadOnlyCacheManagerConfiguration> GetCacheConfigurationAsync()
+        {
+            var cacheManager = await _repository.GetCacheManagerAsync();
+            return cacheManager.Configuration;
         }
 
         public async Task<Config> GetAsync()

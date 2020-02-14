@@ -127,7 +127,7 @@ var methods = {
     } else {
       var $this = this;
       setTimeout(function () {
-        require.config({ paths: { 'vs': '../assets_core/lib/monaco-editor/min/vs' }});
+        require.config({ paths: { 'vs': '../assets/lib/monaco-editor/min/vs' }});
         require(['vs/editor/editor.main'], function() {
             $this.contentEditor = monaco.editor.create(document.getElementById('content'), {
                 value: val,

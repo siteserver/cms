@@ -1,19 +1,25 @@
 ﻿var $url = '/pages/settings/utilityCache';
 
 var data = utils.initData({
-  parameters: null,
-  count: null
+  configuration: null,
+  parameters: null
 });
 
 var methods = {
-  getConfig: function () {
+  apiGet: function () {
     var $this = this;
 
     $api.get($url).then(function (response) {
       var res = response.data;
 
-      $this.parameters = res.value;
-      $this.count = res.count;
+      $this.configuration = res.configuration;
+      $this.parameters = [];
+      _.forOwn(res.configuration, function(value, key) {
+        $this.parameters.push({
+          key: key, 
+          value: value
+        });
+      });
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -28,8 +34,7 @@ var methods = {
     $api.post($url).then(function (response) {
       var res = response.data;
 
-      $this.parameters = res.value;
-      $this.count = res.count;
+      $this.$message.success('成功清空缓存！');
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -38,11 +43,11 @@ var methods = {
   }
 };
 
-new Vue({
+var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,
   created: function () {
-    this.getConfig();
+    this.apiGet();
   }
 });

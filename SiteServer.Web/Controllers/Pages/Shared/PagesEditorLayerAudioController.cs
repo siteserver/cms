@@ -36,7 +36,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 return Request.BadRequest<UploadResult>("文件只能是音频格式，请选择有效的文件上传!");
             }
 
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, UploadType.Audio);
+            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, UploadType.Audio);
             var filePath = PathUtils.Combine(localDirectoryPath, PathUtility.GetUploadFileName(site, fileName));
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);

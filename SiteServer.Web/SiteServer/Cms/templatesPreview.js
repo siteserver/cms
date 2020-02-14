@@ -29,7 +29,7 @@ var methods = {
       $this.content = res.content;
       
       setTimeout(function () {
-        require.config({ paths: { 'vs': '../assets_core/lib/monaco-editor/min/vs' }});
+        require.config({ paths: { 'vs': '../assets/lib/monaco-editor/min/vs' }});
         require(['vs/editor/editor.main'], function() {
             $this.contentEditor = monaco.editor.create(document.getElementById('content'), {
                 value: $this.content,
@@ -61,7 +61,7 @@ var methods = {
 
       $this.activeName = 'second';
       setTimeout(function () {
-        require.config({ paths: { 'vs': '../assets_core/lib/monaco-editor/min/vs' }});
+        require.config({ paths: { 'vs': '../assets/lib/monaco-editor/min/vs' }});
         require(['vs/editor/editor.main'], function() {
             $this.parsedContentEditor = monaco.editor.create(document.getElementById('parsedContent'), {
                 value: $this.parsedContent,
@@ -95,7 +95,7 @@ var methods = {
   }
 };
 
-new Vue({
+var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,

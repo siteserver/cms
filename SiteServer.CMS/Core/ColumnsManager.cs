@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory.Utils;
@@ -12,15 +13,16 @@ namespace SiteServer.CMS.Core
 {
     public static class ColumnsManager
     {
-        public const string Sequence = nameof(Sequence);                            //序号
-        public const string ChannelName = nameof(ChannelName);
-        public const string AdminName = nameof(AdminName);
-        public const string LastEditAdminName = nameof(LastEditAdminName);
-        public const string UserName = nameof(UserName);
-        public const string CheckAdminName = nameof(CheckAdminName);
-        public const string SourceName = nameof(SourceName);
+        private const string Sequence = nameof(Sequence);                            //序号
+        private const string ChannelName = nameof(ChannelName);
+        private const string AdminName = nameof(AdminName);
+        private const string LastEditAdminName = nameof(LastEditAdminName);
+        private const string UserName = nameof(UserName);
+        private const string CheckAdminName = nameof(CheckAdminName);
+        private const string SourceName = nameof(SourceName);
+        private const string State = nameof(State);
 
-        public static readonly List<string> CalculatedAttributes = new List<string>
+        private static readonly List<string> CalculatedAttributes = new List<string>
         {
             Sequence,
             nameof(Content.ChannelId),
@@ -31,11 +33,16 @@ namespace SiteServer.CMS.Core
             nameof(Content.CheckAdminId)
         };
 
-        public static readonly List<string> UnSearchableAttributes = new List<string>
+        private static readonly List<string> UnSearchableAttributes = new List<string>
         {
             Sequence,
+            nameof(Content.ChannelId),
+            nameof(Content.AddDate),
+            nameof(Content.LastEditDate),
+            nameof(Content.LastHitsDate),
+            nameof(Content.GroupNames),
+            nameof(Content.TagNames),
             nameof(Content.SourceId),
-            UserName,
             nameof(Content.CheckAdminId),
             nameof(Content.CheckDate),
             nameof(Content.CheckReasons),
@@ -93,7 +100,7 @@ namespace SiteServer.CMS.Core
                 },
                 new TableStyle
                 {
-                    AttributeName = nameof(ChannelName),
+                    AttributeName = nameof(Content.ChannelId),
                     DisplayName = "所属栏目",
                     Taxis = taxis++
                 },
@@ -204,11 +211,13 @@ namespace SiteServer.CMS.Core
             return list.OrderBy(styleInfo => styleInfo.Taxis == 0 ? int.MaxValue : styleInfo.Taxis).ToList();
         }
 
-        public static async Task<Content> CalculateContentListAsync(int sequence, int channelId, Content content, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
+        public static async Task<Content> CalculateContentListAsync(int sequence, Site site, int currentChannelId, Content source, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
         {
-            if (content == null) return null;
+            if (source == null) return null;
 
-            var retVal = new Content(content.ToDictionary(new List<string> {ContentAttribute.Content}));
+            var content = new Content(source.ToDictionary(new List<string> {ContentAttribute.Content}));
+
+            content.Set(State, CheckManager.GetCheckState(site, content));
 
             foreach (var column in columns)
             {
@@ -216,68 +225,39 @@ namespace SiteServer.CMS.Core
 
                 if (StringUtils.EqualsIgnoreCase(column.AttributeName, Sequence))
                 {
-                    retVal.Set(Sequence, sequence);
+                    content.Set(Sequence, sequence);
                 }
-                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ChannelName))
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.ChannelId)))
                 {
-                    var channelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(content.SiteId, channelId, content.ChannelId);
-                    retVal.Set(ChannelName, channelName);
+                    var channelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(source.SiteId, currentChannelId, source.ChannelId);
+                    content.Set(ChannelName, channelName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.AdminId)))
                 {
-                    var value = string.Empty;
-                    if (content.AdminId > 0)
-                    {
-                        var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(content.AdminId);
-                        if (adminInfo != null)
-                        {
-                            value = string.IsNullOrEmpty(adminInfo.DisplayName) || adminInfo.UserName == adminInfo.DisplayName ? adminInfo.UserName : $"{adminInfo.DisplayName}({adminInfo.UserName})";
-                        }
-                    }
-                    retVal.Set(AdminName, value);
+                    var adminName = await DataProvider.AdministratorRepository.GetDisplayAsync(source.AdminId);
+                    content.Set(AdminName, adminName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.LastEditAdminId)))
                 {
-                    var value = string.Empty;
-                    if (content.LastEditAdminId > 0)
-                    {
-                        var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(content.LastEditAdminId);
-                        if (adminInfo != null)
-                        {
-                            value = string.IsNullOrEmpty(adminInfo.DisplayName) || adminInfo.UserName == adminInfo.DisplayName ? adminInfo.UserName : $"{adminInfo.DisplayName}({adminInfo.UserName})";
-                        }
-                    }
-                    retVal.Set(LastEditAdminName, value);
+                    var lastEditAdminName =
+                        await DataProvider.AdministratorRepository.GetDisplayAsync(source.LastEditAdminId);
+                    content.Set(LastEditAdminName, lastEditAdminName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.UserId)))
                 {
-                    var value = string.Empty;
-                    if (content.UserId > 0)
-                    {
-                        var userInfo = await DataProvider.UserRepository.GetByUserIdAsync(content.UserId);
-                        if (userInfo != null)
-                        {
-                            value = string.IsNullOrEmpty(userInfo.DisplayName) || userInfo.UserName == userInfo.DisplayName ? userInfo.UserName : $"{userInfo.DisplayName}({userInfo.UserName})";
-                        }
-                    }
-                    retVal.Set(UserName, value);
+                    var userName = await DataProvider.UserRepository.GetDisplayAsync(source.UserId);
+                    content.Set(UserName, userName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.CheckAdminId)))
                 {
-                    var value = string.Empty;
-                    if (content.CheckAdminId > 0)
-                    {
-                        var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(content.CheckAdminId);
-                        if (adminInfo != null)
-                        {
-                            value = string.IsNullOrEmpty(adminInfo.DisplayName) || adminInfo.UserName == adminInfo.DisplayName ? adminInfo.UserName : $"{adminInfo.DisplayName}({adminInfo.UserName})";
-                        }
-                    }
-                    retVal.Set(CheckAdminName, value);
+                    var checkAdminName =
+                        await DataProvider.AdministratorRepository.GetDisplayAsync(source.CheckAdminId);
+                    content.Set(CheckAdminName, checkAdminName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.SourceId)))
                 {
-                    retVal.Set(SourceName, SourceManager.GetSourceNameAsync(content.SourceId));
+                    var sourceName = await SourceManager.GetSourceNameAsync(source.SiteId, source.SourceId);
+                    content.Set(SourceName, sourceName);
                 }
             }
 
@@ -298,12 +278,12 @@ namespace SiteServer.CMS.Core
                             var func = contentColumns[columnName];
                             var value = func(new ContentContextImpl
                             {
-                                SiteId = content.SiteId,
-                                ChannelId = content.ChannelId,
-                                ContentId = content.Id
+                                SiteId = source.SiteId,
+                                ChannelId = source.ChannelId,
+                                ContentId = source.Id
                             });
 
-                            retVal.Set(attributeName, value);
+                            content.Set(attributeName, value);
                         }
                         catch (Exception ex)
                         {
@@ -313,14 +293,60 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            return retVal;
+            return content;
         }
 
-        public static async Task<List<ContentColumn>> GetContentListColumnsAsync(Site site, Channel channel, bool includeAll)
+        public enum PageType
+        {
+            Contents,
+            SearchContents,
+            CheckContents,
+            RecycleContents
+        }
+
+        public static async Task<List<ContentColumn>> GetContentListColumnsAsync(Site site, Channel channel, PageType pageType)
         {
             var columns = new List<ContentColumn>();
+            var listColumns = new List<string>();
 
-            var attributesOfDisplay = Utilities.GetStringList(channel.ListColumns);
+            if (pageType == PageType.Contents)
+            {
+                listColumns = Utilities.GetStringList(channel.ListColumns);
+                if (listColumns.Count == 0)
+                {
+                    listColumns.Add(nameof(Content.Title));
+                    listColumns.Add(nameof(Content.AddDate));
+                }
+            }
+            else if (pageType == PageType.SearchContents)
+            {
+                listColumns = Utilities.GetStringList(site.SearchListColumns);
+                if (listColumns.Count == 0)
+                {
+                    listColumns.Add(nameof(Content.Title));
+                    listColumns.Add(nameof(Content.AddDate));
+                }
+            }
+            else if (pageType == PageType.CheckContents)
+            {
+                listColumns = Utilities.GetStringList(site.CheckListColumns);
+                if (listColumns.Count == 0)
+                {
+                    listColumns.Add(nameof(Content.Title));
+                    listColumns.Add(nameof(Content.ChannelId));
+                    listColumns.Add(nameof(Content.AdminId));
+                    listColumns.Add(nameof(Content.AddDate));
+                }
+            }
+            else if (pageType == PageType.RecycleContents)
+            {
+                listColumns = Utilities.GetStringList(site.RecycleListColumns);
+                if (listColumns.Count == 0)
+                {
+                    listColumns.Add(nameof(Content.Title));
+                }
+            }
+
             var pluginIds = PluginContentManager.GetContentPluginIds(channel);
             var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
@@ -348,7 +374,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    if (attributesOfDisplay.Contains(style.AttributeName))
+                    if (StringUtils.ContainsIgnoreCase(listColumns, style.AttributeName))
                     {
                         column.IsList = true;
                     }
@@ -359,10 +385,7 @@ namespace SiteServer.CMS.Core
                     column.IsSearchable = true;
                 }
 
-                if (includeAll || column.IsList)
-                {
-                    columns.Add(column);
-                }
+                columns.Add(column);
             }
 
             if (pluginColumns != null)
@@ -382,15 +405,12 @@ namespace SiteServer.CMS.Core
                             InputType = InputType.Text
                         };
 
-                        if (attributesOfDisplay.Contains(attributeName))
+                        if (StringUtils.ContainsIgnoreCase(listColumns, attributeName))
                         {
                             column.IsList = true;
                         }
 
-                        if (includeAll || column.IsList)
-                        {
-                            columns.Add(column);
-                        }
+                        columns.Add(column);
                     }
                 }
             }
@@ -472,5 +492,55 @@ namespace SiteServer.CMS.Core
 
         //    return items;
         //}
+
+        public static async Task<Dictionary<string, object>> SaveAttributesAsync(Site site, List<TableStyle> styleList, NameValueCollection formCollection, List<string> dontAddAttributes)
+        {
+            var dict = new Dictionary<string, object>();
+
+            if (dontAddAttributes == null)
+            {
+                dontAddAttributes = new List<string>();
+            }
+
+            foreach (var style in styleList)
+            {
+                if (StringUtils.ContainsIgnoreCase(dontAddAttributes, style.AttributeName)) continue;
+                //var theValue = GetValueByForm(style, site, formCollection);
+
+                var theValue = formCollection[style.AttributeName] ?? string.Empty;
+                var inputType = style.InputType;
+                if (inputType == InputType.TextEditor)
+                {
+                    theValue = await ContentUtility.TextEditorContentEncodeAsync(site, theValue);
+                    theValue = UEditorUtils.TranslateToStlElement(theValue);
+                }
+
+                if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && style.AttributeName != ContentAttribute.LinkUrl)
+                {
+                    theValue = AttackUtils.FilterXss(theValue);
+                }
+
+                dict[style.AttributeName] = theValue;
+
+                if (style.IsFormatString)
+                {
+                    var formatString = TranslateUtils.ToBool(formCollection[style.AttributeName + "_formatStrong"]);
+                    var formatEm = TranslateUtils.ToBool(formCollection[style.AttributeName + "_formatEM"]);
+                    var formatU = TranslateUtils.ToBool(formCollection[style.AttributeName + "_formatU"]);
+                    var formatColor = formCollection[style.AttributeName + "_formatColor"];
+                    var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
+
+                    dict[ContentAttribute.GetFormatStringAttributeName(style.AttributeName)] = theFormatString;
+                }
+
+                if (inputType == InputType.Image || inputType == InputType.File || inputType == InputType.Video)
+                {
+                    var attributeName = ContentAttribute.GetExtendAttributeName(style.AttributeName);
+                    dict[attributeName] = formCollection[attributeName];
+                }
+            }
+
+            return dict;
+        }
     }
 }

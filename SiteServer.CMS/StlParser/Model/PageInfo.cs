@@ -104,27 +104,27 @@ namespace SiteServer.CMS.StlParser.Model
             contextInfo.ContentId = pageContentId;
         }
 
-        public void AddPageBodyCodeIfNotExists(string pageJsName)
+        public async Task AddPageBodyCodeIfNotExistsAsync(string pageJsName)
         {
             if (!BodyCodes.ContainsKey(pageJsName))
             {
-                BodyCodes.Add(pageJsName, GetJsCode(pageJsName));
+                BodyCodes.Add(pageJsName, await GetJsCodeAsync(pageJsName));
             }
         }
 
-        public void AddPageAfterHtmlCodeIfNotExists(string pageJsName)
+        public async Task AddPageAfterHtmlCodeIfNotExistsAsync(string pageJsName)
         {
             if (!FootCodes.ContainsKey(pageJsName))
             {
-                FootCodes.Add(pageJsName, GetJsCode(pageJsName));
+                FootCodes.Add(pageJsName, await GetJsCodeAsync(pageJsName));
             }
         }
 
-        public void AddPageHeadCodeIfNotExists(string pageJsName)
+        public async Task AddPageHeadCodeIfNotExistsAsync(string pageJsName)
         {
             if (!HeadCodes.ContainsKey(pageJsName))
             {
-                HeadCodes.Add(pageJsName, GetJsCode(pageJsName));
+                HeadCodes.Add(pageJsName, await GetJsCodeAsync(pageJsName));
             }
         }
 
@@ -225,7 +225,7 @@ namespace SiteServer.CMS.StlParser.Model
             public const string VueElement = nameof(VueElement);
         }
 
-        private string GetJsCode(string pageJsName)
+        private async Task<string> GetJsCodeAsync(string pageJsName)
         {
             var retVal = string.Empty;
 
@@ -346,7 +346,7 @@ wnd_frame.src=url;}}
             {
                 retVal = $@"
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsPageScript)}""></script>
-<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{Site.Id}', {Site.GetWebUrl().TrimEnd('/')}');</script>
+<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{Site.Id}', {(await Site.GetWebUrlAsync()).TrimEnd('/')}');</script>
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsUserScript)}""></script>";
             }
             else if (pageJsName == Const.JsInnerCalendar)

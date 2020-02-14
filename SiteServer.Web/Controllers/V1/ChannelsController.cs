@@ -366,8 +366,8 @@ namespace SiteServer.API.Controllers.V1
                 var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
                 if (channel == null) return BadRequest("无法确定内容对应的栏目");
 
-                await DataProvider.ContentRepository.RecycleContentsAsync(site, channel);
-                await DataProvider.ChannelRepository.DeleteAsync(siteId, channelId);
+                await DataProvider.ContentRepository.RecycleContentsAsync(site, channel, request.AdminId);
+                await DataProvider.ChannelRepository.DeleteAsync(siteId, channelId, request.AdminId);
 
                 return Ok(new
                 {

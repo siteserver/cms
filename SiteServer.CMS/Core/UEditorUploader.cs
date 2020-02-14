@@ -33,7 +33,7 @@ namespace SiteServer.CMS.Core
                 originalName = uploadFile.FileName;
                 currentType = PathUtils.GetExtension(originalName);
 
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, uploadType);
+                var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, uploadType);
                 var localFileName = PathUtility.GetUploadFileName(site, originalName);
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
@@ -55,7 +55,7 @@ namespace SiteServer.CMS.Core
                     //URL = pathbase + filename;
                     if (uploadType == UploadType.Image)
                         //添加水印
-                        FileUtility.AddWaterMark(site, localFilePath);
+                        await FileUtility.AddWaterMarkAsync(site, localFilePath);
                 }
             }
             catch (Exception e)
@@ -72,7 +72,7 @@ namespace SiteServer.CMS.Core
             try
             {
                 var fileExtension = ".png";
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, fileExtension);
+                var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, fileExtension);
                 var fileName = Guid.NewGuid() + fileExtension;
                 var localFilePath = PathUtils.Combine(localDirectoryPath, fileName);
                 fs = File.Create(localFilePath);

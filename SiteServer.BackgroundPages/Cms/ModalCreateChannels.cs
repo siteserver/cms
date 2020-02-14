@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 if (isIncludeChildren)
                 {
-                    foreach (var childChannelId in DataProvider.ChannelRepository.GetChannelIdsAsync(DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult(), EScopeType.Descendant).GetAwaiter().GetResult())
+                    foreach (var childChannelId in DataProvider.ChannelRepository.GetChannelIdsAsync(SiteId, channelId, EScopeType.Descendant).GetAwaiter().GetResult())
                     {
                         CreateManager.CreateChannelAsync(SiteId, childChannelId).GetAwaiter().GetResult();
                         if (isCreateContents)

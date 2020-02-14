@@ -76,7 +76,7 @@ namespace SiteServer.CMS.UEditor
 
             var currentType = PathUtils.GetExtension(Result.OriginFileName);
             var siteInfo = DataProvider.SiteRepository.GetAsync(SiteId).GetAwaiter().GetResult();
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, UploadType);
+            var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(siteInfo, UploadType).GetAwaiter().GetResult();
             var localFileName = PathUtility.GetUploadFileName(siteInfo, uploadFileName);
             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
@@ -98,7 +98,7 @@ namespace SiteServer.CMS.UEditor
                     if (UploadType == UploadType.Image)
                     {
                         //添加水印
-                        FileUtility.AddWaterMark(siteInfo, localFilePath);
+                        FileUtility.AddWaterMarkAsync(siteInfo, localFilePath).GetAwaiter().GetResult();
                     }
                     Result.Url = PageUtility.GetSiteUrlByPhysicalPathAsync(siteInfo, localFilePath, true).GetAwaiter().GetResult();
                     Result.State = UploadState.Success;

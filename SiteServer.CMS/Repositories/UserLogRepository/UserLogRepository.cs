@@ -46,18 +46,18 @@ namespace SiteServer.CMS.Repositories
             await _repository.DeleteAsync();
         }
 
-        private Query GetQuery(string userName, string keyword, string dateFrom, string dateTo)
+        private Query GetQuery(int userId, string keyword, string dateFrom, string dateTo)
         {
             var query = Q.OrderByDesc(nameof(UserLog.Id));
 
-            if (string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
+            if (userId == 0 && string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
             {
                 return query;
             }
 
-            if (!string.IsNullOrEmpty(userName))
+            if (userId > 0)
             {
-                query.Where(nameof(UserLog.UserName), userName);
+                query.Where(nameof(UserLog.UserId), userId);
             }
 
             if (!string.IsNullOrEmpty(keyword))
@@ -80,21 +80,21 @@ namespace SiteServer.CMS.Repositories
             return query;
         }
 
-        public async Task<int> GetCountAsync(string userName, string keyword, string dateFrom, string dateTo)
+        public async Task<int> GetCountAsync(int userId, string keyword, string dateFrom, string dateTo)
         {
-            return await _repository.CountAsync(GetQuery(userName, keyword, dateFrom, dateTo));
+            return await _repository.CountAsync(GetQuery(userId, keyword, dateFrom, dateTo));
         }
 
-        public async Task<List<UserLog>> GetAllAsync(string userName, string keyword, string dateFrom, string dateTo, int offset, int limit)
+        public async Task<List<UserLog>> GetAllAsync(int userId, string keyword, string dateFrom, string dateTo, int offset, int limit)
         {
-            var query = GetQuery(userName, keyword, dateFrom, dateTo);
+            var query = GetQuery(userId, keyword, dateFrom, dateTo);
             query.Offset(offset).Limit(limit);
             return await _repository.GetAllAsync(query);
         }
 
-        public async Task<List<UserLog>> ListAsync(string userName, int totalNum, string action)
+        public async Task<List<UserLog>> ListAsync(int userId, int totalNum, string action)
         {
-            var query = Q.Where(nameof(UserLog.UserName), userName);
+            var query = Q.Where(nameof(UserLog.UserId), userId);
             if (!string.IsNullOrEmpty(action))
             {
                 query.Where(nameof(UserLog.Action), action);
@@ -106,19 +106,19 @@ namespace SiteServer.CMS.Repositories
             return await _repository.GetAllAsync(query);
         }
 
-        public async Task<List<UserLog>> GetLogsAsync(string userName, int offset, int limit)
+        public async Task<List<UserLog>> GetLogsAsync(int userId, int offset, int limit)
         {
             return await _repository.GetAllAsync(Q
-                .Where(nameof(UserLog.UserName), userName)
+                .Where(nameof(UserLog.UserId), userId)
                 .Offset(offset)
                 .Limit(limit)
                 .OrderByDesc(nameof(UserLog.Id))
             );
         }
 
-        public async Task<UserLog> InsertAsync(string userName, UserLog log)
+        public async Task<UserLog> InsertAsync(int userId, UserLog log)
         {
-            log.UserName = userName;
+            log.UserId = userId;
             log.IpAddress = PageUtils.GetIpAddress();
             log.AddDate = DateTime.Now;
 

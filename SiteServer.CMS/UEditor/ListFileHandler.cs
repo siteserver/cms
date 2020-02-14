@@ -61,7 +61,7 @@ namespace SiteServer.CMS.UEditor
             try
             {
                 var site = DataProvider.SiteRepository.GetAsync(SiteId).GetAwaiter().GetResult();
-                var sitePath = PathUtility.GetSitePath(site); // 本站点物理路径
+                var sitePath = PathUtility.GetSitePathAsync(site).GetAwaiter().GetResult(); // 本站点物理路径
                 var applicationPath = WebConfigUtils.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\'); // 系统物理路径
                 if (UploadType == UploadType.Image)
                 {

@@ -110,7 +110,7 @@ namespace SiteServer.API.Controllers.Home
                         $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteId, channelId)},内容条数:{contentIdList.Count}");
                 }
 
-                await DataProvider.ContentRepository.RecycleContentsAsync(site, channel, contentIdList);
+                await DataProvider.ContentRepository.RecycleContentsAsync(site, channel, contentIdList, request.AdminId);
 
                 await CreateManager.TriggerContentChangedEventAsync(siteId, channelId);
 

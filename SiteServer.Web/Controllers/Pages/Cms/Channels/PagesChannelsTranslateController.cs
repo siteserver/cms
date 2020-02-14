@@ -21,7 +21,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
         public async Task<GetResult> GetConfig([FromUri] SiteRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplateMatch);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
+            {
+                return Request.Unauthorized<GetResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<GetResult>();
@@ -86,12 +90,16 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
         public async Task<BoolResult> Translate([FromBody] SubmitRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Channels);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
+            {
+                return Request.Unauthorized<BoolResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<BoolResult>();
 
-            await TranslateAsync(site, request.TransSiteId, request.TransChannelId, request.TranslateType, request.ChannelIds, request.IsDeleteAfterTranslate);
+            await TranslateAsync(site, request.TransSiteId, request.TransChannelId, request.TranslateType, request.ChannelIds, request.IsDeleteAfterTranslate, auth.AdminId);
 
             return new BoolResult
             {

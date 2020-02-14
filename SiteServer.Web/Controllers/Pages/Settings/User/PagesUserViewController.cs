@@ -16,7 +16,10 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         public async Task<GetResult> Get([FromUri] GetRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            auth.CheckAdminLoggin(Request);
+            if (!auth.IsAdminLoggin)
+            {
+                return Request.Unauthorized<GetResult>();
+            }
 
             Abstractions.User user = null;
             if (request.UserId > 0)

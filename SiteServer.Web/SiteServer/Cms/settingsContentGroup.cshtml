@@ -62,31 +62,5 @@
 
 </el-card>
 
-<el-drawer
-  id="form"
-  v-if="form"
-  :title="form.id !== 0 ? '修改内容组' : '添加内容组'"
-  :visible.sync="panel"
-  destroy-on-close
-  direction="rtl"
-  size="50%">
-  <div class="drawer__content">
-    <el-form size="small" ref="form" :model="form" label-width="150px">
-      <el-form-item label="内容组名称" prop="groupName" :rules="{ required: true, message: '请输入内容组名称' }">
-        <el-input v-model="form.groupName" placeholder="请输入内容组名称"></el-input>
-      </el-form-item>
-      <el-form-item label="内容组说明" prop="description">
-        <el-input type="textarea" v-model="form.description" placeholder="请输入内容组说明"></el-input>
-      </el-form-item>
-
-      <el-divider></el-divider>
-      <div class="drawer__footer">
-        <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
-        <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
-      </div>
-    </el-form>
-  </div>
-</el-drawer>
-
 @section Scripts{
 <script src="settingsContentGroup.js" type="text/javascript"></script> }

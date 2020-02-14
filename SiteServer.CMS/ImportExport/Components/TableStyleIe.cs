@@ -4,7 +4,7 @@ using Datory;
 using Datory.Utils;
 using SiteServer.CMS.Context.Atom.Atom.Core;
 using SiteServer.Abstractions;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -12,12 +12,12 @@ namespace SiteServer.CMS.ImportExport.Components
 	internal class TableStyleIe
 	{
 		private readonly string _directoryPath;
-	    private readonly string _adminName;
+	    private readonly int _adminId;
 
-        public TableStyleIe(string directoryPath, string adminName)
+        public TableStyleIe(string directoryPath, int adminId)
 		{
 			_directoryPath = directoryPath;
-		    _adminName = adminName;
+            _adminId = adminId;
 		}
 
 		public async Task ExportTableStylesAsync(int siteId, string tableName)
@@ -86,7 +86,7 @@ namespace SiteServer.CMS.ImportExport.Components
             var orderString = string.Empty;
             if (siteId > 0 && tableStyle.RelatedIdentity != 0)
             {
-                orderString = await DataProvider.ChannelRepository.GetOrderStringInSiteAsync(siteId, tableStyle.RelatedIdentity);
+                orderString = await DataProvider.ChannelRepository.ImportGetOrderStringInSiteAsync(siteId, tableStyle.RelatedIdentity);
             }
 
             AtomUtility.AddDcElement(feed.AdditionalElements, "OrderString", orderString);
@@ -183,15 +183,16 @@ namespace SiteServer.CMS.ImportExport.Components
             }
         }
 
-        public async Task ImportTableStylesAsync(int siteId)
+        public async Task ImportTableStylesAsync(Site site, string guid)
 		{
 			if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
 
-            var importObject = new ImportObject(siteId, _adminName);
+            var importObject = new ImportObject(site, _adminId);
             var tableNameCollection = await importObject.GetTableNameCacheAsync();
 
 			var styleDirectoryPaths = DirectoryUtils.GetDirectoryPaths(_directoryPath);
 
+            var styles = new List<TableStyle>();
             foreach (var styleDirectoryPath in styleDirectoryPaths)
             {
                 var tableName = PathUtils.GetDirectoryName(styleDirectoryPath, false);
@@ -227,7 +228,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                         var orderString = AtomUtility.GetDcElementContent(feed.AdditionalElements, "OrderString");
 
-                        var relatedIdentity = !string.IsNullOrEmpty(orderString) ? await DataProvider.ChannelRepository.GetIdAsync(siteId, orderString) : siteId;
+                        var relatedIdentity = !string.IsNullOrEmpty(orderString) ? await DataProvider.ChannelRepository.ImportGetIdAsync(site.Id, orderString) : site.Id;
 
                         if (relatedIdentity <= 0 || await DataProvider.TableStyleRepository.IsExistsAsync(relatedIdentity, tableName, attributeName)) continue;
 
@@ -257,11 +258,17 @@ namespace SiteServer.CMS.ImportExport.Components
                             }
                         }
 
-                        await DataProvider.TableStyleRepository.InsertAsync(DataProvider.TableStyleRepository.GetRelatedIdentities(relatedIdentity), styleInfo);
+                        styles.Add(styleInfo);
                     }
                 }
             }
-		}
+
+            foreach (var styleInfo in styles)
+            {
+                Caching.SetProcess(guid, $"导入表字段: {styleInfo.AttributeName}");
+                await DataProvider.TableStyleRepository.InsertAsync(DataProvider.TableStyleRepository.GetRelatedIdentities(styleInfo.RelatedIdentity), styleInfo);
+            }
+        }
 
 	}
 }

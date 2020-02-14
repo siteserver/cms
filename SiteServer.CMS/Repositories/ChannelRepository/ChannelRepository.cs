@@ -9,7 +9,6 @@ using Datory;
 using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.Repositories
@@ -36,7 +35,7 @@ namespace SiteServer.CMS.Repositories
             if (parentChannel != null)
             {
                 channel.SiteId = parentChannel.SiteId;
-                if (parentChannel.ParentsPath.Length == 0)
+                if (string.IsNullOrEmpty(parentChannel.ParentsPath))
                 {
                     channel.ParentsPath = parentChannel.Id.ToString();
                 }
@@ -195,7 +194,7 @@ namespace SiteServer.CMS.Repositories
         /// <summary>
         /// 添加后台发布节点
         /// </summary>
-        public async Task<int> InsertSiteAsync(Channel channel, Site site, string administratorName)
+        public async Task<int> InsertSiteAsync(Channel channel, Site site, int adminId)
         {
             await InsertChannelAsync(null, channel);
 
@@ -203,7 +202,7 @@ namespace SiteServer.CMS.Repositories
 
             await DataProvider.SiteRepository.InsertAsync(site);
 
-            var adminEntity = await DataProvider.AdministratorRepository.GetByUserNameAsync(administratorName);
+            var adminEntity = await DataProvider.AdministratorRepository.GetByUserIdAsync(adminId);
             await DataProvider.AdministratorRepository.UpdateSiteIdAsync(adminEntity, channel.Id);
 
             await _repository.UpdateAsync(Q
@@ -211,13 +210,17 @@ namespace SiteServer.CMS.Repositories
                 .Where(nameof(Channel.Id), channel.Id)
             );
 
-            await DataProvider.TemplateRepository.CreateDefaultTemplateAsync(site, administratorName);
+            await DataProvider.TemplateRepository.CreateDefaultTemplateAsync(site, adminId);
 
             return channel.Id;
         }
 
         public async Task UpdateAsync(Channel channel)
         {
+            if (channel.ParentId == channel.Id)
+            {
+                channel.ParentId = 0;
+            }
             await _repository.UpdateAsync(channel, Q
                 .CachingRemove(GetListKey(channel.SiteId))
                 .CachingRemove(GetEntityKey(channel.Id))
@@ -269,7 +272,7 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        public async Task DeleteAsync(int siteId, int channelId)
+        public async Task DeleteAsync(int siteId, int channelId, int adminId)
         {
             var channelEntity = await GetAsync(channelId);
             if (channelEntity == null) return;
@@ -278,9 +281,16 @@ namespace SiteServer.CMS.Repositories
             var idList = new List<int>();
             if (channelEntity.ChildrenCount > 0)
             {
-                idList = await GetChannelIdsAsync(channelEntity, EScopeType.Descendant);
+                idList = await GetChannelIdsAsync(siteId, channelId, EScopeType.Descendant);
             }
             idList.Add(channelId);
+
+            foreach (var channelIdDeleted in idList)
+            {
+                var channelDeleted = await DataProvider.ChannelRepository.GetAsync(channelIdDeleted);
+                await DataProvider.ContentRepository.RecycleContentsAsync(site, channelDeleted, adminId);
+            }
+            //DataProvider.ContentRepository.DeleteContentsByDeletedChannelIdList(trans, site, idList);
 
             var deletedNum = await _repository.DeleteAsync(Q
                 .Where(nameof(Channel.SiteId), siteId)
@@ -301,13 +311,6 @@ namespace SiteServer.CMS.Repositories
                         .WhereIn(nameof(Channel.Id), Utilities.GetIntList(channelEntity.ParentsPath))
                     , deletedNum);
             }
-
-            foreach (var channelIdDeleted in idList)
-            {
-                var channelDeleted = await DataProvider.ChannelRepository.GetAsync(channelIdDeleted);
-                await DataProvider.ContentRepository.RecycleContentsAsync(site, channelDeleted);
-            }
-            //DataProvider.ContentRepository.DeleteContentsByDeletedChannelIdList(trans, site, idList);
 
             if (channelEntity.ParentId == 0)
             {
@@ -495,36 +498,67 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             );
         }
 
-        public int GetTemplateUseCount(int siteId, int templateId, TemplateType templateType, bool isDefault)
+        public async Task<int> GetTemplateUseCountAsync(int siteId, int templateId, TemplateType templateType, bool isDefault, List<Channel> channels)
         {
-            var sqlString = string.Empty;
-
             if (templateType == TemplateType.IndexPageTemplate)
             {
                 if (isDefault)
                 {
                     return 1;
                 }
-                return 0;
             }
-            if (templateType == TemplateType.FileTemplate)
+            else if (templateType == TemplateType.FileTemplate)
             {
                 return 1;
             }
-            if (templateType == TemplateType.ChannelTemplate)
+            else if (templateType == TemplateType.ChannelTemplate)
             {
-                sqlString = isDefault
-                    ? $"SELECT COUNT(*) FROM {TableName} WHERE ({nameof(Channel.ChannelTemplateId)} = {templateId} OR {nameof(Channel.ChannelTemplateId)} = 0) AND {nameof(Channel.SiteId)} = {siteId}"
-                    : $"SELECT COUNT(*) FROM {TableName} WHERE {nameof(Channel.ChannelTemplateId)} = {templateId} AND {nameof(Channel.SiteId)} = {siteId}";
+                foreach (var channel in channels)
+                {
+                    var count = 0;
+                    if (isDefault)
+                    {
+                        if (channel.ChannelTemplateId == templateId || channel.ChannelTemplateId == 0)
+                        {
+                            count++;
+                        }
+                    }
+                    else
+                    {
+                        if (channel.ChannelTemplateId == templateId)
+                        {
+                            count++;
+                        }
+                    }
+
+                    return count;
+                }
             }
             else if (templateType == TemplateType.ContentTemplate)
             {
-                sqlString = isDefault
-                    ? $"SELECT COUNT(*) FROM {TableName} WHERE ({nameof(Channel.ContentTemplateId)} = {templateId} OR {nameof(Channel.ContentTemplateId)} = 0) AND {nameof(Channel.SiteId)} = {siteId}"
-                    : $"SELECT COUNT(*) FROM {TableName} WHERE {nameof(Channel.ContentTemplateId)} = {templateId} AND {nameof(Channel.SiteId)} = {siteId}";
+                foreach (var channel in channels)
+                {
+                    var count = 0;
+                    if (isDefault)
+                    {
+                        if (channel.ContentTemplateId == templateId || channel.ContentTemplateId == 0)
+                        {
+                            count++;
+                        }
+                    }
+                    else
+                    {
+                        if (channel.ContentTemplateId == templateId)
+                        {
+                            count++;
+                        }
+                    }
+
+                    return count;
+                }
             }
 
-            return DataProvider.DatabaseRepository.GetIntResult(sqlString);
+            return 0;
         }
 
         public async Task<List<int>> GetChannelIdListAsync(Template template)
@@ -575,13 +609,11 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             );
         }
 
-        public async Task<List<int>> GetChannelIdListByTemplateIdAsync(int siteId, bool isChannelTemplate, int templateId)
+        public List<int> GetChannelIdListByTemplateId(bool isChannelTemplate, int templateId, List<Channel> channels)
         {
-            var name = isChannelTemplate ? nameof(Channel.ChannelTemplateId) : nameof(Channel.ContentTemplateId);
-            return await _repository.GetAllAsync<int>(Q
-                .Select(nameof(Channel.Id))
-                .Where(name, templateId)
-            );
+            return isChannelTemplate
+                ? channels.Where(x => x.ChannelTemplateId == templateId).Select(x => x.Id).ToList()
+                : channels.Where(x => x.ContentTemplateId == templateId).Select(x => x.Id).ToList();
         }
     }
 }

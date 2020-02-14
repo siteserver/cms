@@ -36,7 +36,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 return Request.BadRequest<UploadResult>("文件格式不正确，请更换文件上传!");
             }
 
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, UploadType.File);
+            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, UploadType.File);
             var filePath = PathUtils.Combine(localDirectoryPath, PathUtility.GetUploadFileName(site, fileName));
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);

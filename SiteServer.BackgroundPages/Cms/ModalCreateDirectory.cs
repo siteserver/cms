@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "CurrentRootPath");
 
 			_currentRootPath = AuthRequest.GetQueryString("CurrentRootPath").TrimEnd('/');
-			_directoryPath = PathUtility.MapPath(Site, _currentRootPath);
+			_directoryPath = PathUtility.MapPathAsync(Site, _currentRootPath).GetAwaiter().GetResult();
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)

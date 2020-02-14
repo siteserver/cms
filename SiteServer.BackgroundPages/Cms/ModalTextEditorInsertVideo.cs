@@ -98,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (isAllow)
                         {
-                            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(Site, fileExtName);
+                            var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
                             var localFileName = PathUtility.GetUploadFileName(Site, filePath);
                             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
@@ -140,7 +140,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (isAllow)
                         {
-                            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(Site, fileExtName);
+                            var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
                             var localFileName = PathUtility.GetUploadFileName(Site, filePath);
                             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 

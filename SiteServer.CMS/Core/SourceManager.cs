@@ -10,12 +10,8 @@ namespace SiteServer.CMS.Core
         public const int Preview = -99;     //预览
         public const int Default = 0;       //正常录入
 
-        public static async Task<string> GetSourceNameAsync(int sourceId)
+        public static async Task<string> GetSourceNameAsync(int siteId, int sourceId)
         {
-            if (sourceId == Default)
-            {
-                return "后台录入";
-            }
             if (sourceId == User)
             {
                 return "用户投稿";
@@ -27,15 +23,24 @@ namespace SiteServer.CMS.Core
             if (sourceId <= 0) return string.Empty;
 
             var sourceSiteId = await DataProvider.ChannelRepository.GetSiteIdAsync(sourceId);
-            var siteInfo = await DataProvider.SiteRepository.GetAsync(sourceSiteId);
-            if (siteInfo == null) return "内容转移";
-
-            var nodeNames = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteInfo.Id, sourceId);
-            if (!string.IsNullOrEmpty(nodeNames))
+            if (sourceSiteId == siteId)
             {
-                return siteInfo.SiteName + "：" + nodeNames;
+                var nodeNames = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(sourceSiteId, sourceId);
+                if (!string.IsNullOrEmpty(nodeNames))
+                {
+                    return "从栏目转移：" + nodeNames;
+                }
             }
-            return siteInfo.SiteName;
+            else
+            {
+                var siteInfo = await DataProvider.SiteRepository.GetAsync(sourceSiteId);
+                if (siteInfo != null)
+                {
+                    return "从站点转移：" + siteInfo.SiteName;
+                }
+            }
+
+            return "后台录入";
         }
 	}
 }

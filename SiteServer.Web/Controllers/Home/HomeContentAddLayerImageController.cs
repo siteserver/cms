@@ -84,7 +84,7 @@ namespace SiteServer.API.Controllers.Home
 
                     var filePath = file.FileName;
                     var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                    var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, fileExtName);
+                    var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, fileExtName);
                     var localFileName = PathUtility.GetUploadFileName(site, filePath);
                     path = PathUtils.Combine(localDirectoryPath, localFileName);
                     contentLength = file.ContentLength;
@@ -99,7 +99,7 @@ namespace SiteServer.API.Controllers.Home
                     }
 
                     file.SaveAs(path);
-                    FileUtility.AddWaterMark(site, path);
+                    await FileUtility.AddWaterMarkAsync(site, path);
 
                     url = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, path, true);
                 }
@@ -160,7 +160,7 @@ namespace SiteServer.API.Controllers.Home
                     var fileExtName = PathUtils.GetExtension(filePath).ToLower();
                     var fileName = PathUtility.GetUploadFileName(site, filePath);
 
-                    var directoryPath = PathUtility.GetUploadDirectoryPath(site, fileExtName);
+                    var directoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, fileExtName);
                     var fixFilePath = PathUtils.Combine(directoryPath, Constants.TitleImageAppendix + fileName);
                     var editorFixFilePath = PathUtils.Combine(directoryPath, Constants.SmallImageAppendix + fileName);
 

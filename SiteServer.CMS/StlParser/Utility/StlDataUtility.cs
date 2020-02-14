@@ -383,11 +383,8 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else
             {
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                if (nodeInfo == null) return null;
-
                 var sqlWhereString = DataProvider.ChannelRepository.GetWhereString(group, groupNot, isImageExists, isImage, where);
-                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(nodeInfo, scopeType);
+                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, channelId, scopeType);
                 //ie = DataProvider.ChannelRepository.GetStlDataSource(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
                 ie = DataProvider.ChannelRepository.GetStlDataSet(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
             }
@@ -406,11 +403,8 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else
             {
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                if (nodeInfo == null) return null;
-
                 var sqlWhereString = DataProvider.ChannelRepository.GetWhereString(group, groupNot, isImageExists, isImage, where);
-                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(nodeInfo, scopeType);
+                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, channelId, scopeType);
                 dataSet = DataProvider.ChannelRepository.GetStlDataSet(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
             }
             return dataSet;

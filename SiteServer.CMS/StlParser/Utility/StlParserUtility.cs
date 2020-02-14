@@ -400,7 +400,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var currentUrl = string.Empty;
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                currentUrl = site.GetWebUrl();
+                currentUrl = await site.GetWebUrlAsync();
             }
             else if (templateType == TemplateType.ContentTemplate)
             {

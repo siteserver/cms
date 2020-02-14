@@ -9,7 +9,6 @@ using SiteServer.CMS.Context.Atom.Atom.Core.Collections;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -25,12 +24,12 @@ namespace SiteServer.CMS.ImportExport.Components
             _site = site;
         }
 
-        public async Task ImportContentsAsync(string filePath, bool isOverride, Channel channel, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, string adminName)
+        public async Task ImportContentsAsync(string filePath, bool isOverride, Channel channel, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, int adminId, string guid)
         {
             if (!FileUtils.IsFileExists(filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-            await ImportContentsAsync(feed.Entries, channel, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride, adminName);
+            await ImportContentsAsync(feed.Entries, channel, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride, adminId, guid);
         }
 
         public async Task<List<int>> ImportContentsAsync(string filePath, bool isOverride, Channel channel, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
@@ -41,13 +40,13 @@ namespace SiteServer.CMS.ImportExport.Components
             return await ImportContentsAsync(feed.Entries, channel, taxis, false, isChecked, checkedLevel, isOverride, adminId, userId, sourceId);
         }
 
-        public async Task<List<int>> ImportContentsAsync(AtomEntryCollection entries, Channel channel, int taxis, bool isOverride, string adminName)
+        public async Task ImportContentsAsync(AtomEntryCollection entries, Channel channel, int taxis, bool isOverride, int adminId, string guid)
         {
-            return await ImportContentsAsync(entries, channel, taxis, 0, 0, true, true, 0, isOverride, adminName);
+            await ImportContentsAsync(entries, channel, taxis, 0, 0, true, true, 0, isOverride, adminId, guid);
         }
 
         // 内部消化掉错误
-        private async Task<List<int>> ImportContentsAsync(AtomEntryCollection entries, Channel channel, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, string adminName)
+        private async Task ImportContentsAsync(AtomEntryCollection entries, Channel channel, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int adminId, string guid)
         {
             if (importStart > 1 || importCount > 0)
             {
@@ -83,7 +82,7 @@ namespace SiteServer.CMS.ImportExport.Components
             }
 
             var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(_site, channel);
-            var contentIdList = new List<int>();
+            var contents = new List<Content>();
 
             foreach (AtomEntry entry in entries)
             {
@@ -130,6 +129,8 @@ namespace SiteServer.CMS.ImportExport.Components
                         ChannelId = channel.Id,
                         AddDate = TranslateUtils.ToDateTime(addDate),
                         LastEditDate = TranslateUtils.ToDateTime(lastEditDate),
+                        AdminId = adminId,
+                        LastEditAdminId = adminId,
                         GroupNames = Utilities.GetStringList(groupNameCollection),
                         TagNames = Utilities.GetStringList(tags),
                         Checked = isChecked,
@@ -166,7 +167,7 @@ namespace SiteServer.CMS.ImportExport.Components
                             foreach (var id in existsIDs)
                             {
                                 contentInfo.Id = id;
-                                await DataProvider.ContentRepository.UpdateAsync(_site, channel, contentInfo);
+                                contents.Add(contentInfo);
                             }
                         }
                         else
@@ -181,8 +182,8 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = await DataProvider.ContentRepository.InsertWithTaxisAsync(_site, channel, contentInfo, taxis);
-                        contentIdList.Add(contentId);
+                        contentInfo.Taxis = taxis;
+                        contents.Add(contentInfo);
 
                         if (!string.IsNullOrEmpty(tags))
                         {
@@ -204,13 +205,24 @@ namespace SiteServer.CMS.ImportExport.Components
                 }
             }
 
-            return contentIdList;
+            foreach (var content in contents)
+            {
+                Caching.SetProcess(guid, $"导入内容: {content.Title}");
+                if (content.Id > 0)
+                {
+                    await DataProvider.ContentRepository.UpdateAsync(_site, channel, content);
+                }
+                else
+                {
+                    await DataProvider.ContentRepository.InsertWithTaxisAsync(_site, channel, content, content.Taxis);
+                }
+            }
         }
 
         private async Task<List<int>> ImportContentsAsync(AtomEntryCollection entries, Channel channel, int taxis, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int adminId, int userId, int sourceId)
         {
             var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(_site, channel);
-            var contentIdList = new List<int>();
+            var contents = new List<Content>();
 
             foreach (AtomEntry entry in entries)
             {
@@ -289,10 +301,10 @@ namespace SiteServer.CMS.ImportExport.Components
                         var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                         if (existsIDs.Count > 0)
                         {
-                            foreach (int id in existsIDs)
+                            foreach (var id in existsIDs)
                             {
                                 contentInfo.Id = id;
-                                await DataProvider.ContentRepository.UpdateAsync(_site, channel, contentInfo);
+                                contents.Add(contentInfo);
                             }
                         }
                         else
@@ -307,9 +319,8 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = await DataProvider.ContentRepository.InsertWithTaxisAsync(_site, channel, contentInfo, taxis);
-
-                        contentIdList.Add(contentId);
+                        contentInfo.Taxis = taxis;
+                        contents.Add(contentInfo);
 
                         if (!string.IsNullOrEmpty(tags))
                         {
@@ -331,10 +342,24 @@ namespace SiteServer.CMS.ImportExport.Components
                 }
             }
 
+            var contentIdList = new List<int>();
+            foreach (var content in contents)
+            {
+                if (content.Id > 0)
+                {
+                    await DataProvider.ContentRepository.UpdateAsync(_site, channel, content);
+                }
+                else
+                {
+                    contentIdList.Add(await DataProvider.ContentRepository.InsertWithTaxisAsync(_site, channel, content, content.Taxis));
+                }
+                
+            }
+
             return contentIdList;
         }
 
-        public async Task<bool> ExportContentsAsync(Site site, int channelId, IEnumerable<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
+        public async Task<bool> ExportContentsAsync(Site site, int channelId, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
             var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);

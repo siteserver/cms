@@ -6,9 +6,9 @@ var data = utils.initData({
   channelId: utils.getQueryInt("channelId") || utils.getQueryInt("siteId"),
   root: null,
   siteUrl: null,
-  checkedLevels: [],
   groupNames: null,
   tagNames: null,
+  checkedLevels: [],
   expendedChannelIds: [],
 
   filterText: '',
@@ -45,10 +45,6 @@ var data = utils.initData({
 });
 
 var methods = {
-  deleteRow(index, rows) {
-    rows.splice(index, 1);
-  },
-  
   apiTree: function(reload) {
     var $this = this;
 
@@ -63,6 +59,8 @@ var methods = {
         $this.siteUrl = res.siteUrl;
         $this.groupNames = res.groupNames;
         $this.tagNames = res.tagNames;
+        $this.checkedLevels = res.checkedLevels;
+        $this.advancedForm.checkedLevels = _.map(res.checkedLevels, function(x) { return x.label; });
         $this.expendedChannelIds = [$this.siteId];
       }else{
         $this.expendedChannelIds = [$this.siteId, $this.channelId];
@@ -96,8 +94,6 @@ var methods = {
       $this.total = res.total;
       $this.pageSize = res.pageSize;
       $this.page = page;
-      $this.checkedLevels = res.checkedLevels;
-      $this.advancedForm.checkedLevels = _.map(res.checkedLevels, function(x) { return x.label; });
       $this.permissions = res.permissions;
       $this.expendedChannelIds = [$this.siteId, channelId];
       $this.searchForm.isAllContents = res.isAllContents;
@@ -153,10 +149,16 @@ var methods = {
   },
 
   getContentUrl: function (content) {
-    if (content.checked) {
-      return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
-    }
-    return apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
+    return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
+  },
+
+  btnTitleClick: function(content) {
+    if (content.checked && content.channelId > 0) return false;
+    utils.openLayer({
+      title: "查看内容",
+      url: 'contentsLayerView.cshtml?siteId=' + this.siteId + '&channelId=' + Math.abs(content.channelId) + '&contentId=' + content.id,
+      full: true
+    });
   },
 
   btnSearchClick: function() {
@@ -177,7 +179,7 @@ var methods = {
     } else if (command === 'Import') {
       this.btnLayerClick({title: '批量导入', name: 'Import', full: true});
     } else {
-      top.utils.openLayer({
+      utils.openLayer({
         title: "添加内容",
         url: this.getAddUrl(),
         full: true,
@@ -188,7 +190,7 @@ var methods = {
 
   btnMoreClick: function(command) {
     if (command === 'ExportAll') {
-      this.btnLayerClick({title: '导出全部', name: 'Export', full: true, withOptionalContents: true});
+      this.btnLayerClick({title: '导出全部', name: 'Export', full: true});
     } else if (command === 'ExportSelected') {
       this.btnLayerClick({title: '导出选中', name: 'Export', full: true, withContents: true});
     } else if (command === 'Arrange') {
@@ -218,12 +220,7 @@ var methods = {
   },
 
   getAddUrl: function() {
-    return "cms/editor.cshtml?siteId=" +
-    this.siteId +
-    "&channelId=" +
-    this.channelId +
-    "&returnUrl=" +
-    encodeURIComponent(location.href);
+    return "editor.cshtml?siteId=" + this.siteId + "&channelId=" + this.channelId + "&page=" + this.page;
   },
 
   getEditUrl: function(content) {
@@ -266,12 +263,6 @@ var methods = {
     if (options.withContents) {
       if (!this.isContentChecked) return;
       url += "&channelContentIds=" + this.channelContentIdsString;
-    }
-
-    if (options.withOptionalContents) {
-      if (this.isContentChecked) {
-        url += "&channelContentIds=" + this.channelContentIdsString;
-      }
     }
 
     options.url = url;
@@ -349,13 +340,13 @@ var methods = {
   },
 
   getColumnWidth: function(column) {
-    if (column.attributeName === 'Sequence' || column.attributeName === 'Id' || column.attributeName === 'Hits') {
+    if (column.attributeName === 'Sequence' || column.attributeName === 'Id' || column.attributeName === 'Hits' || column.attributeName === 'HitsByDay' || column.attributeName === 'HitsByWeek' || column.attributeName === 'HitsByMonth' || column.attributeName === 'Downloads') {
       return 70;
     }
     if (column.attributeName === 'ImageUrl') {
       return 100;
     }
-    if (column.attributeName === 'Guid') {
+    if (column.attributeName === 'Guid' || column.attributeName === 'SourceId') {
       return 310;
     }
     if (column.attributeName === 'Title') {

@@ -1,17 +1,13 @@
-﻿var $url = "/pages/cms/contents/contents";
+﻿var $url = "/pages/cms/contents/contentsSearch";
 var $defaultWidth = 160;
 
 var data = utils.initData({
   siteId: utils.getQueryInt("siteId"),
-  channelId: utils.getQueryInt("channelId") || utils.getQueryInt("siteId"),
   root: null,
   siteUrl: null,
-  checkedLevels: null,
   groupNames: null,
   tagNames: null,
-  expendedChannelIds: [],
-
-  filterText: '',
+  checkedLevels: [],
   
   pageContents: null,
   total: null,
@@ -20,89 +16,101 @@ var data = utils.initData({
   permissions: null,
   columns: null,
   
-  asideHeight: 0,
-  tableMaxHeight: 0,
   multipleSelection: [],
 
   checkedColumns: [],
+  searchColumns: [],
 
   searchForm: {
-    searchType: 'Title',
-    searchText: '',
-    isAllContents: false
-  },
-
-  isAdvancedForm: false,
-  advancedForm: {
+    searchType: 'All',
+    channelIds: [utils.getQueryInt("siteId")],
+    isAllContents: true,
+    startDate: null,
+    endDate: null,
     checkedLevels: [],
     isTop: false,
     isRecommend: false,
     isHot: false,
     isColor: false,
     groupNames: [],
-    tagNames: [],
-    startDate: null,
-    endDate: null,
-    keywords: '',
-    description: ''
-  }
+    tagNames: []
+  },
 });
 
 var methods = {
-  deleteRow(index, rows) {
-    rows.splice(index, 1);
-  },
-  
   apiTree: function() {
     var $this = this;
 
-    utils.loading(this, true);
     $api.post($url + '/actions/tree', {
-      siteId: this.siteId,
-      channelId: this.channelId
+      siteId: this.siteId
     }).then(function(response) {
       var res = response.data;
 
       $this.root = res.root;
       $this.siteUrl = res.siteUrl;
-      $this.checkedLevels = res.checkedLevels;
       $this.groupNames = res.groupNames;
       $this.tagNames = res.tagNames;
-      $this.expendedChannelIds = [$this.siteId];
-      $this.advancedForm.checkedLevels = _.map(res.checkedLevels, function(x) { return x.label; });
+      $this.checkedLevels = res.checkedLevels;
+      $this.columns = res.columns;
+      $this.permissions = res.permissions;
+      var titleColumn = _.find($this.columns, function(o) { return o.attributeName == 'Title'; });
+      var keyword = utils.getQueryString("keyword") || '';
+      $this.searchColumns.push({
+        attributeName: titleColumn.attributeName,
+        displayName: titleColumn.displayName,
+        value: keyword
+      });
+
+      $this.searchForm.checkedLevels = _.map(res.checkedLevels, function(x) { return x.label; });
+      if (keyword) {
+        $this.apiList($this.siteId, 1);
+      } else {
+        utils.loading($this, false);
+      }
     }).catch(function(error) {
-      utils.error($this, error);
-    }).then(function() {
-      $this.asideHeight = $(window).height() - 4;
-      $this.tableMaxHeight = $(window).height() - 128;
       utils.loading($this, false);
+      utils.error($this, error);
     });
   },
 
-  apiList: function(channelId, page, message) {
+  apiList: function(useless, page, message) {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url, {
-      params: {
-        siteId: this.siteId,
-        channelId: channelId,
-        searchType: this.searchForm.searchType,
-        searchText: this.searchForm.searchText,
-        isAllContents: this.searchForm.isAllContents,
-        page: page
+    var channelIds = [];
+    for (var i = 0; i < this.searchForm.channelIds.length; i++) {
+      var array = this.searchForm.channelIds[i];
+      var channelId = array[array.length - 1];
+      channelIds.push(channelId);
+    }
+
+    var items = [];
+    for (var i = 0; i < this.searchColumns.length; i++) {
+      var column = this.searchColumns[i];
+      if (column.attributeName && column.value) {
+        items.push({
+          key: column.attributeName,
+          value: column.value
+        });
       }
-    }).then(function(response) {
+    }
+
+    utils.loading(this, true);
+    var request = _.assign({
+      siteId: this.siteId,
+      isAdvanced: this.isAdvanced,
+      isCheckedLevels: this.isCheckedLevels,
+      channelIds: channelIds,
+      page: page,
+      items: items
+    }, this.searchForm);
+    $api.post($url + '/actions/list', request).then(function(response) {
       var res = response.data;
       
       $this.pageContents = res.pageContents;
-      $this.permissions = res.permissions;
-      $this.columns = res.columns;
+      
       $this.total = res.total;
       $this.pageSize = res.pageSize;
       $this.page = page;
-      $this.expendedChannelIds = [$this.siteId, channelId];
-      $this.searchForm.isAllContents = res.isAllContents;
 
       if (message) {
         $this.$message.success(message);
@@ -120,7 +128,6 @@ var methods = {
 
     $api.post($url + '/actions/columns', {
       siteId: this.siteId,
-      channelId: this.channelId,
       attributeNames: attributeNames
     }).then(function(response) {
       var res = response.data;
@@ -130,63 +137,54 @@ var methods = {
     });
   },
 
-  getChannelUrl: function(data) {
-    return '../redirect.cshtml?siteId=' + this.siteId + '&channelId=' + data.value;
-  },
-
-  getContentUrl: function (content) {
-    if (content.checked) {
-      return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
-    }
-    return apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
-  },
-
-  btnSearchClick: function() {
-    this.apiList(this.channelId, 1);
-  },
-
-  btnAdvancedSubmitClick: function() {
-    var $this = this;
-    this.$refs.advancedForm.validate(function(valid) {
-      if (valid) {
-        console.log($this.advancedForm);
-      }
-    });
-  },
-
-  btnAdvancedCancelClick: function() {
-    this.isAdvancedForm = false;
-  },
-
-  btnAddClick: function (command) {
-    if (command === 'Word') {
-      this.btnLayerClick({title: '批量导入Word', name: 'Word', full: true});
-    } else if (command === 'Import') {
-      this.btnLayerClick({title: '批量导入', name: 'Import', full: true});
+  btnSelectColumnClick: function(column) {
+    var searchColumn = _.find(this.searchColumns, function(o) { return o.attributeName == column.attributeName; });
+    if (searchColumn) {
+      this.searchColumns.splice(this.searchColumns.indexOf(searchColumn), 1);
     } else {
-      top.utils.openLayer({
-        title: "添加内容",
-        url: this.getAddUrl(),
-        full: true,
-        max: true
+      this.searchColumns.push({
+        attributeName: column.attributeName,
+        displayName: column.displayName,
+        value: ''
       });
     }
   },
 
-  btnMoreClick: function(command) {
-    if (command === 'ExportAll') {
-      this.btnLayerClick({title: '导出全部', name: 'Export', full: true, withOptionalContents: true});
-    } else if (command === 'ExportSelected') {
-      this.btnLayerClick({title: '导出选中', name: 'Export', full: true, withContents: true});
-    } else if (command === 'Arrange') {
-      this.btnLayerClick({title: '整理排序', name: 'Arrange', width: 550, height: 350});
-    } else if (command === 'Hits') {
-      this.btnLayerClick({title: '设置点击量', name: 'Hits', width: 450, height: 320, withContents: true});
+  getColumnEffect: function(column) {
+    var searchColumn = _.find(this.searchColumns, function(o) { return o.attributeName == column.attributeName; });
+    return searchColumn ? 'dark' : 'plain';
+  },
+
+  getContentUrl: function (content) {
+    return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
+  },
+
+  btnTitleClick: function(content) {
+    if (content.checked && content.channelId > 0) return false;
+    utils.openLayer({
+      title: "查看内容",
+      url: 'contentsLayerView.cshtml?siteId=' + this.siteId + '&channelId=' + Math.abs(content.channelId) + '&contentId=' + content.id,
+      full: true
+    });
+  },
+
+  btnTabClick: function () {
+    if (this.pageContents) {
+      this.btnSearchClick();
     }
   },
 
+  btnSearchClick: function () {
+    var $this = this;
+
+    this.$refs.searchForm.validate(function(valid) {
+      if (valid) {
+        $this.apiList($this.siteId, 1);
+      }
+    });
+  },
+
   btnEditClick: function(content) {
-    // location.href = 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId + '&contentId=' + this.contentId;
     utils.openLayer({
       title: "编辑内容",
       url: this.getEditUrl(content),
@@ -195,26 +193,17 @@ var methods = {
     });
   },
 
-  getAddUrl: function() {
-    return "cms/editor.cshtml?siteId=" +
-    this.siteId +
-    "&channelId=" +
-    this.channelId +
-    "&returnUrl=" +
-    encodeURIComponent(location.href);
+  btnAdminClick: function(adminId) {
+    utils.openLayer({
+      title: "管理员查看",
+      url: '../Shared/adminLayerView.cshtml?adminId=' + adminId,
+      width: 550,
+      height: 450
+    });
   },
 
   getEditUrl: function(content) {
-    return (
-      "editor.cshtml?siteId=" +
-      this.siteId +
-      "&channelId=" +
-      content.channelId +
-      "&contentId=" +
-      content.id +
-      "&returnUrl=" +
-      encodeURIComponent(location.href)
-    );
+    return "editor.cshtml?siteId=" + this.siteId + "&channelId=" + content.channelId + "&contentId=" + content.id + "&page=" + this.page;
   },
 
   btnCreateClick: function() {
@@ -243,7 +232,7 @@ var methods = {
     if (options.channelId) {
       url += "&channelId=" + options.channelId;
     } else {
-      url += "&channelId=" + this.channelId;
+      url += "&channelId=" + this.siteId;
     }
     url += '&page=' + this.page;
     if (options.contentId) {
@@ -253,12 +242,6 @@ var methods = {
     if (options.withContents) {
       if (!this.isContentChecked) return;
       url += "&channelContentIds=" + this.channelContentIdsString;
-    }
-
-    if (options.withOptionalContents) {
-      if (this.isContentChecked) {
-        url += "&channelContentIds=" + this.channelContentIdsString;
-      }
     }
 
     options.url = url;
@@ -273,7 +256,7 @@ var methods = {
         "contentsLayerView.cshtml?siteId=" +
         this.siteId +
         "&channelId=" +
-        this.channelId +
+        this.siteId +
         "&contentId=" +
         contentId,
       full: true
@@ -287,7 +270,7 @@ var methods = {
         "contentsLayerState.cshtml?siteId=" +
         this.siteId +
         "&channelId=" +
-        this.channelId +
+        this.siteId +
         "&contentId=" +
         contentId,
       full: true
@@ -305,34 +288,6 @@ var methods = {
     return '';
   },
 
-  getPluginMenuUrl: function(pluginMenu) {
-    return pluginMenu.href + "&returnUrl=" + encodeURIComponent(location.href);
-  },
-
-  btnPluginMenuClick: function(pluginMenu) {
-    if (pluginMenu.target === "_layer") {
-      utils.openLayer({
-        title: pluginMenu.text,
-        url: this.getPluginMenuUrl(pluginMenu),
-        full: true
-      });
-    }
-  },
-
-  treeIconClick: function(data) {
-    return false;
-  },
-
-  handleNodeClick: function(data) {
-    this.channelId = data.value;
-    this.apiList(data.value, 1);
-  },
-
-  filterNode: function(value, data) {
-    if (!value) return true;
-    return data.label.indexOf(value) !== -1;
-  },
-
   handleSelectionChange: function(val) {
     this.multipleSelection = val;
   },
@@ -342,7 +297,7 @@ var methods = {
   },
 
   handleCurrentChange: function(val) {
-    this.apiList(this.channelId, val);
+    this.apiList(this.siteId, val);
   },
 
   handleColumnsChange: function() {
@@ -354,10 +309,13 @@ var methods = {
   },
 
   getColumnWidth: function(column) {
-    if (column.attributeName === 'Sequence' || column.attributeName === 'Id' || column.attributeName === 'Hits') {
+    if (column.attributeName === 'Sequence' || column.attributeName === 'Id' || column.attributeName === 'Hits' || column.attributeName === 'HitsByDay' || column.attributeName === 'HitsByWeek' || column.attributeName === 'HitsByMonth' || column.attributeName === 'Downloads') {
       return 70;
     }
-    if (column.attributeName === 'Guid') {
+    if (column.attributeName === 'ImageUrl') {
+      return 100;
+    }
+    if (column.attributeName === 'Guid' || column.attributeName === 'SourceId') {
       return 310;
     }
     if (column.attributeName === 'Title') {
@@ -384,6 +342,31 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   computed: {
+    isAdvanced: function() {
+      if (this.searchForm.searchType !== 'All') return true;
+      if (this.searchForm.channelIds.length > 1) return true;
+      if (this.checkedLevels.length !== this.searchForm.checkedLevels.length) return true;
+      if (this.searchForm.isTop || this.searchForm.isRecommend || this.searchForm.isHot || this.searchForm.isColor) return true;
+      if (this.searchForm.groupNames.length > 0 || this.searchForm.tagNames.length > 0) return true;
+      if (this.searchForm.startDate || this.searchForm.endDate) return true;
+      for (var i = 0; i < this.searchColumns.length; i++) {
+        if (this.searchColumns[i].value) return true;
+      }
+      return false;
+    },
+
+    isCheckedLevels: function() {
+      if (this.checkedLevels.length !== this.searchForm.checkedLevels.length) return true;
+      return false;
+    },
+
+    isFiltered: function() {
+      if (this.checkedLevels.length !== this.searchForm.checkedLevels.length) return true;
+      if (this.searchForm.isTop || this.searchForm.isRecommend || this.searchForm.isHot || this.searchForm.isColor) return true;
+      if (this.searchForm.groupNames.length > 0 || this.searchForm.tagNames.length > 0) return true;
+      return false;
+    },
+
     isContentChecked: function() {
       return this.multipleSelection.length > 0;
     },
@@ -407,11 +390,6 @@ var $vue = new Vue({
         retVal.push(content.channelId + '_' + content.id);
       }
       return retVal.join(",");
-    }
-  },
-  watch: {
-    filterText: function(val) {
-      this.$refs.tree.filter(val);
     }
   },
   created: function() {

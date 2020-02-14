@@ -74,9 +74,9 @@ namespace SiteServer.CMS.Plugin.Apis
             return (valid.User != null, valid.UserName, valid.ErrorMessage);
         }
 
-        public async Task<(bool Success, string ErrorMessage)> ChangePasswordAsync(string userName, string password)
+        public async Task<(bool Success, string ErrorMessage)> ChangePasswordAsync(int userId, string password)
         {
-            var valid = await DataProvider.UserRepository.ChangePasswordAsync(userName, password);
+            var valid = await DataProvider.UserRepository.ChangePasswordAsync(userId, password);
             return (valid.IsValid, valid.ErrorMessage);
         }
 
@@ -90,14 +90,14 @@ namespace SiteServer.CMS.Plugin.Apis
             return await UserRepository.IsPasswordCorrectAsync(password);
         }
 
-        public async Task AddLogAsync(string userName, string action, string summary)
+        public async Task AddLogAsync(int userId, string action, string summary)
         {
-            await LogUtils.AddUserLogAsync(userName, action, summary);
+            await LogUtils.AddUserLogAsync(userId, action, summary);
         }
 
-        public async Task<List<UserLog>> GetLogsAsync(string userName, int totalNum, string action = "")
+        public async Task<List<UserLog>> GetLogsAsync(int userId, int totalNum, string action = "")
         {
-            return await DataProvider.UserLogRepository.ListAsync(userName, totalNum, action);
+            return await DataProvider.UserLogRepository.ListAsync(userId, totalNum, action);
         }
 
         public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)

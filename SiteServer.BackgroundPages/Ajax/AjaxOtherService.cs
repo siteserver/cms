@@ -401,9 +401,8 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var eLoadingType = ELoadingTypeUtils.GetEnumType(loadingType);
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(parentId == 0 ? siteId : parentId);
             var channelIdList =
-                await DataProvider.ChannelRepository.GetChannelIdsAsync(channel, EScopeType.Children);
+                await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, parentId == 0 ? siteId : parentId, EScopeType.Children);
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
 

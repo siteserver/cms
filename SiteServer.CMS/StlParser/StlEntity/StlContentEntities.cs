@@ -145,7 +145,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                            parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(VideoUrl, attributeName))//内容视频地址
@@ -162,7 +162,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                            parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(FileUrl, attributeName))//内容附件地址
@@ -179,7 +179,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                            parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(DownloadUrl, attributeName))//内容附件地址(可统计下载量)
@@ -225,7 +225,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                             parsedContent = await DataProvider.ContentRepository.GetValueAsync(tableName, contextInfo.ContentId, ContentAttribute.Content);
                         }
 
-                        parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                        parsedContent = await ContentUtility.TextEditorContentDecodeAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                     }
                     else if (StringUtils.EqualsIgnoreCase(Group, attributeName))//内容组别
                     {

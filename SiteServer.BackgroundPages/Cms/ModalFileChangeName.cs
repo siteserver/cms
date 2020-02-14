@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "RootPath");
 
             _rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
-            _directoryPath = PathUtility.MapPath(Site, _rootPath);
+            _directoryPath = PathUtility.MapPathAsync(Site, _rootPath).GetAwaiter().GetResult();
 
 			if (!Page.IsPostBack)
 			{

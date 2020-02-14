@@ -3,20 +3,19 @@ using System.Threading.Tasks;
 using Datory;
 using SiteServer.CMS.Context.Atom.Atom.Core;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
 	internal class TemplateIe
 	{
-		private readonly int _siteId;
+		private readonly Site _site;
 		private readonly string _filePath;
 
-		public TemplateIe(int siteId, string filePath)
+		public TemplateIe(Site site, string filePath)
 		{
-			_siteId = siteId;
+            _site = site;
 			_filePath = filePath;
 		}
 
@@ -24,13 +23,14 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-			var templateInfoList = await DataProvider.TemplateRepository.GetAllAsync(_siteId);
-
-			foreach (var templateInfo in templateInfoList)
-			{
-				var entry = await ExportTemplateInfoAsync(templateInfo);
-				feed.Entries.Add(entry);
+            var summaries = await DataProvider.TemplateRepository.GetSummariesAsync(_site.Id);
+            foreach (var summary in summaries)
+            {
+                var template = await DataProvider.TemplateRepository.GetAsync(summary.Id);
+                var entry = await ExportTemplateInfoAsync(template);
+                feed.Entries.Add(entry);
 			}
+
 			feed.Save(_filePath);
 		}
 
@@ -38,16 +38,12 @@ namespace SiteServer.CMS.ImportExport.Components
         {
             var feed = AtomUtility.GetEmptyFeed();
 
-            var templateInfoList = await DataProvider.TemplateRepository.GetAllAsync(_siteId);
-
-            foreach (var templateInfo in templateInfoList)
+            foreach (var templateId in templateIdList)
             {
-                if (templateIdList.Contains(templateInfo.Id))
-                {
-                    var entry = await ExportTemplateInfoAsync(templateInfo);
-                    feed.Entries.Add(entry);
-                }
-            }
+				var template = await DataProvider.TemplateRepository.GetAsync(templateId);
+                var entry = await ExportTemplateInfoAsync(template);
+                feed.Entries.Add(entry);
+			}
             feed.Save(_filePath);
         }
 
@@ -55,9 +51,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var entry = AtomUtility.GetEmptyEntry();
 
-            var site = await DataProvider.SiteRepository.GetAsync(_siteId);
-
-			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Template.Id), "TemplateID" }, template.Id.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Template.Id), "TemplateID" }, template.Id.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Template.SiteId), "PublishmentSystemID" }, template.SiteId.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.TemplateName), template.TemplateName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.TemplateType), template.TemplateType.GetValue());
@@ -66,68 +60,85 @@ namespace SiteServer.CMS.ImportExport.Components
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileExtName), template.CreatedFileExtName);
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.Default), template.Default.ToString());
 
-            var templateContent = DataProvider.TemplateRepository.GetTemplateContent(site, template);
+            var templateContent = await DataProvider.TemplateRepository.GetTemplateContentAsync(_site, template);
 			AtomUtility.AddDcElement(entry.AdditionalElements, "Body", AtomUtility.Encrypt(templateContent));
 
 			return entry;
 		}
 
-		public async Task ImportTemplatesAsync(bool overwrite, string administratorName)
+		public async Task ImportTemplatesAsync(bool overwrite, int adminId, string guid)
 		{
 			if (!FileUtils.IsFileExists(_filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
-		    var site = await DataProvider.SiteRepository.GetAsync(_siteId);
+            var templates = new List<Template>();
+
 			foreach (AtomEntry entry in feed.Entries)
 			{
 				var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.TemplateName));
 			    if (string.IsNullOrEmpty(templateName)) continue;
 
-			    var templateInfo = new Template
-			    {
-                    SiteId = _siteId,
-			        TemplateName = templateName,
+                var template = new Template
+                {
+                    SiteId = _site.Id,
+                    TemplateName = templateName,
                     TemplateType =
-			            TranslateUtils.ToEnum(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.TemplateType)), TemplateType.IndexPageTemplate),
-			        RelatedFileName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.RelatedFileName)),
-			        CreatedFileFullName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.CreatedFileFullName)),
-			        CreatedFileExtName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.CreatedFileExtName)),
-                    Default = false
-			    };
+                        TranslateUtils.ToEnum(
+                            AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.TemplateType)),
+                            TemplateType.IndexPageTemplate),
+                    RelatedFileName =
+                        AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.RelatedFileName)),
+                    CreatedFileFullName = AtomUtility.GetDcElementContent(entry.AdditionalElements,
+                        nameof(Template.CreatedFileFullName)),
+                    CreatedFileExtName =
+                        AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.CreatedFileExtName)),
+                    Default = false,
+                    Content = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Body"))
+                };
 
-			    var templateContent = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Body"));
-					
-			    var srcTemplateInfo = await DataProvider.TemplateRepository.GetTemplateByTemplateNameAsync(_siteId, templateInfo.TemplateType, templateInfo.TemplateName);
+                var exists =
+                    await DataProvider.TemplateRepository.ExistsAsync(_site.Id, template.TemplateType,
+                        templateName);
 
-			    int templateId;
-
-			    if (srcTemplateInfo != null)
+			    if (exists)
 			    {
 			        if (overwrite)
 			        {
-			            srcTemplateInfo.RelatedFileName = templateInfo.RelatedFileName;
-			            srcTemplateInfo.TemplateType = templateInfo.TemplateType;
-			            srcTemplateInfo.CreatedFileFullName = templateInfo.CreatedFileFullName;
-			            srcTemplateInfo.CreatedFileExtName = templateInfo.CreatedFileExtName;
-                        await DataProvider.TemplateRepository.UpdateAsync(site, srcTemplateInfo, templateContent, administratorName);
-			            templateId = srcTemplateInfo.Id;
-			        }
+                        var info = await DataProvider.TemplateRepository.GetTemplateByTemplateNameAsync(_site.Id, template.TemplateType, template.TemplateName);
+
+						info.RelatedFileName = template.RelatedFileName;
+			            info.TemplateType = template.TemplateType;
+			            info.CreatedFileFullName = template.CreatedFileFullName;
+			            info.CreatedFileExtName = template.CreatedFileExtName;
+                        info.Content = template.Content;
+
+                        templates.Add(info);
+                    }
 			        else
 			        {
-			            templateInfo.TemplateName = await DataProvider.TemplateRepository.GetImportTemplateNameAsync(_siteId, templateInfo.TemplateName);
-			            templateId = await DataProvider.TemplateRepository.InsertAsync(site, templateInfo, templateContent, administratorName);
-			        }
+			            template.TemplateName = await DataProvider.TemplateRepository.GetImportTemplateNameAsync(_site.Id, template.TemplateType, template.TemplateName);
+                        templates.Add(template);
+                    }
 			    }
 			    else
 			    {
-			        templateId = await DataProvider.TemplateRepository.InsertAsync(site, templateInfo, templateContent, administratorName);
-			    }
-
-			    if (templateInfo.TemplateType == TemplateType.FileTemplate)
-			    {
-			        await CreateManager.CreateFileAsync(_siteId, templateId);
+                    templates.Add(template);
 			    }
 			}
+
+            foreach (var template in templates)
+            {
+                Caching.SetProcess(guid, $"导入模板文件: {template.TemplateName}");
+
+                if (template.Id > 0)
+                {
+                    await DataProvider.TemplateRepository.UpdateAsync(_site, template, template.Content, adminId);
+				}
+                else
+                {
+                    await DataProvider.TemplateRepository.InsertAsync(_site, template, template.Content, adminId);
+                }
+            }
 		}
 
 	}

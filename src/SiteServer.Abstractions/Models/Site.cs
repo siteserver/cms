@@ -118,6 +118,14 @@ namespace SiteServer.Abstractions
 
         public bool IsCrossSiteTransChecked { get; set; }
 
+        /****************内容字段设置********************/
+
+        public List<string> SearchListColumns { get; set; }
+
+        public List<string> CheckListColumns { get; set; }
+
+        public List<string> RecycleListColumns { get; set; }
+
         /****************记录系统操作设置********************/
 
         public bool ConfigUEditorVideoIsImageUrl { get; set; }

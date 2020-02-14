@@ -495,7 +495,7 @@ namespace SiteServer.CMS.Core
             var accessToken = UserApi.Instance.GetAccessToken(UserId, UserName, expiresAt);
 
             await DataProvider.UserRepository.UpdateLastActivityDateAndCountOfLoginAsync(User);
-            await LogUtils.AddUserLoginLogAsync(userName);
+            await LogUtils.AddUserLoginLogAsync(user.Id);
 
             if (isAutoLogin)
             {
@@ -591,32 +591,6 @@ namespace SiteServer.CMS.Core
             }
 
             return new AccessTokenImpl();
-        }
-
-        public void CheckAdminLoggin(HttpRequestMessage request)
-        {
-            if (!IsAdminLoggin)
-            {
-                request.Unauthorized();
-            }
-        }
-
-        public async Task CheckSettingsPermissions(HttpRequestMessage request, params string[] permissions)
-        {
-            if (!IsAdminLoggin ||
-                !await AdminPermissionsImpl.HasSystemPermissionsAsync(permissions))
-            {
-                request.Unauthorized();
-            }
-        }
-
-        public async Task CheckSitePermissionsAsync(HttpRequestMessage request, int siteId, params string[] permissions)
-        {
-            if (!IsAdminLoggin ||
-                !await AdminPermissionsImpl.HasSitePermissionsAsync(siteId, permissions))
-            {
-                request.Unauthorized();
-            }
         }
     }
 }

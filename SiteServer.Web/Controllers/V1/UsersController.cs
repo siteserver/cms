@@ -328,7 +328,7 @@ namespace SiteServer.API.Controllers.V1
                 var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
                 if (user == null) return NotFound();
 
-                var retVal = await DataProvider.UserLogRepository.InsertAsync(user.UserName, log);
+                var retVal = await DataProvider.UserLogRepository.InsertAsync(user.Id, log);
 
                 return Ok(new
                 {
@@ -362,7 +362,7 @@ namespace SiteServer.API.Controllers.V1
                 var top = request.GetQueryInt("top", 20);
                 var skip = request.GetQueryInt("skip");
 
-                var logs = await DataProvider.UserLogRepository.GetLogsAsync(user.UserName, skip, top);
+                var logs = await DataProvider.UserLogRepository.GetLogsAsync(user.Id, skip, top);
 
                 return Ok(new PageResponse(logs, top, skip, request.HttpRequest.Url.AbsoluteUri)
                     {Count = await DataProvider.UserRepository.GetCountAsync()});
@@ -399,7 +399,7 @@ namespace SiteServer.API.Controllers.V1
                     return BadRequest("原密码不正确，请重新输入");
                 }
 
-                var valid = await DataProvider.UserRepository.ChangePasswordAsync(user.UserName, newPassword);
+                var valid = await DataProvider.UserRepository.ChangePasswordAsync(user.Id, newPassword);
                 if (!valid.IsValid)
                 {
                     return BadRequest(valid.ErrorMessage);

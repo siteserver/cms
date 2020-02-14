@@ -39,8 +39,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                     return BadRequest("专题不存在！");
                 }
 
-                var specialUrl = PageUtility.ParseNavigationUrl(site, $"@/{StringUtils.TrimSlash(specialInfo.Url)}/", true);
-                var filePath = PathUtils.Combine(DataProvider.SpecialRepository.GetSpecialDirectoryPath(site, specialInfo.Url), "index.html");
+                var specialUrl = PageUtility.ParseNavigationUrlAsync(site, $"@/{StringUtils.TrimSlash(specialInfo.Url)}/", true);
+                var filePath = PathUtils.Combine(await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, specialInfo.Url), "index.html");
                 var html = FileUtils.ReadText(filePath, Encoding.UTF8);
 
                 return Ok(new

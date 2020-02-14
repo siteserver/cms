@@ -52,7 +52,6 @@ namespace SiteServer.CMS.Repositories
 
                 await DataProvider.ContentCheckRepository.InsertAsync(new ContentCheck
                 {
-                    TableName = repository.TableName,
                     SiteId = site.Id,
                     ChannelId = channel.Id,
                     ContentId = contentId,
@@ -69,7 +68,7 @@ namespace SiteServer.CMS.Repositories
         {
             if (!site.IsAutoPageInTextEditor) return;
 
-            var tableNames = await DataProvider.SiteRepository.GetAllTableNameListAsync();
+            var tableNames = await DataProvider.SiteRepository.GetAllTableNamesAsync();
             foreach (var tableName in tableNames)
             {
                 var repository = GetRepository(tableName);
@@ -90,99 +89,6 @@ namespace SiteServer.CMS.Repositories
                     );
                 }
             }
-        }
-
-        public async Task RecycleContentsAsync(Site site, Channel channel, List<int> contentIdList)
-        {
-            if (contentIdList == null || contentIdList.Count == 0) return;
-
-            var repository = await GetRepositoryAsync(site, channel);
-
-            var cacheKeys = new List<string>
-            {
-                GetCountKey(repository.TableName, site.Id, channel.Id),
-                GetListKey(repository.TableName, channel.IsAllContents, site.Id, channel.Id)
-            };
-            foreach (var contentId in contentIdList)
-            {
-                cacheKeys.Add(GetEntityKey(repository.TableName, contentId));
-            }
-
-            var referenceSummaries = await GetReferenceIdListAsync(repository.TableName, contentIdList);
-            if (referenceSummaries.Count > 0)
-            {
-                foreach (var referenceSummary in referenceSummaries)
-                {
-                    await DeleteReferenceContentsAsync(site, referenceSummary);
-                }
-            }
-
-            await repository.UpdateAsync(
-                GetQuery(site.Id)
-                    .SetRaw("ChannelId = -ChannelId")
-                    .WhereIn(ContentAttribute.Id, contentIdList)
-                    .CachingRemove(cacheKeys.ToArray())
-            );
-        }
-
-        public async Task RecycleContentsAsync(Site site, Channel channel)
-        {
-            var contentIds = await GetContentIdsAsync(site, channel);
-            await RecycleContentsAsync(site, channel, contentIds);
-        }
-
-        public async Task UpdateRestoreContentsByTrashAsync(int siteId, string tableName)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
-
-            var repository = GetRepository(tableName);
-            await repository.UpdateAsync(
-                GetQuery(siteId)
-                .SetRaw("ChannelId = -ChannelId")
-                .Where(ContentAttribute.ChannelId, "<", 0)
-            );
-        }
-
-        public async Task DeleteAsync(Site site, Channel channel, int contentId)
-        {
-            if (site == null || channel == null || contentId <= 0) return;
-
-            var repository = await GetRepositoryAsync(site, channel);
-
-            await repository.DeleteAsync(contentId, Q
-                .CachingRemove(GetCountKey(repository.TableName, site.Id, channel.Id))
-                .CachingRemove(GetEntityKey(repository.TableName, contentId))
-                .CachingRemove(GetListKey(repository.TableName, channel.IsAllContents, site.Id, channel.Id))
-            );
-
-            foreach (var service in await PluginManager.GetServicesAsync())
-            {
-                try
-                {
-                    service.OnContentDeleteCompleted(new ContentEventArgs(site.Id, channel.Id, contentId));
-                }
-                catch (Exception ex)
-                {
-                    await LogUtils.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
-                }
-            }
-        }
-
-        private async Task DeleteReferenceContentsAsync(Site site, ContentSummary summary)
-        {
-            var channel = await DataProvider.ChannelRepository.GetAsync(summary.ChannelId);
-            var repository = await GetRepositoryAsync(site, channel);
-
-            await repository.DeleteAsync(
-                GetQuery(site.Id, channel.Id)
-                    .Where(ContentAttribute.ReferenceId, ">", 0)
-                    .Where(ContentAttribute.Id, summary.Id)
-                    .CachingRemove(
-                        GetCountKey(repository.TableName, site.Id, channel.Id),
-                        GetListKey(repository.TableName, channel.IsAllContents, site.Id, channel.Id),
-                        GetEntityKey(repository.TableName, summary.Id)
-                    )
-            );
         }
 
         public async Task UpdateArrangeTaxisAsync(Site site, Channel channel, string attributeName, bool isDesc)
@@ -222,8 +128,7 @@ namespace SiteServer.CMS.Repositories
             }
 
             await repository.RemoveCacheAsync(
-                GetListKey(repository.TableName, true, site.Id, channel.Id),
-                GetListKey(repository.TableName, false, site.Id, channel.Id)
+                GetListKey(repository.TableName, site.Id, channel.Id)
             );
         }
 
@@ -269,7 +174,7 @@ namespace SiteServer.CMS.Repositories
             await repository.RemoveCacheAsync(
                 GetEntityKey(repository.TableName, contentId),
                 GetEntityKey(repository.TableName, higherId),
-                GetListKey(repository.TableName, channel.IsAllContents, site.Id, channel.Id)
+                GetListKey(repository.TableName, site.Id, channel.Id)
             );
 
             return true;
@@ -317,7 +222,7 @@ namespace SiteServer.CMS.Repositories
             await repository.RemoveCacheAsync(
                 GetEntityKey(repository.TableName, contentId),
                 GetEntityKey(repository.TableName, lowerId),
-                GetListKey(repository.TableName, channel.IsAllContents, site.Id, channel.Id)
+                GetListKey(repository.TableName, site.Id, channel.Id)
             );
 
             return true;
@@ -551,7 +456,7 @@ group by tmp.userName";
 
             var repository = await GetRepositoryAsync(site, channel);
             await repository.UpdateAsync(content, Q
-                .CachingRemove(GetListKey(repository.TableName, channel.IsAllContents, content.SiteId, content.ChannelId))
+                .CachingRemove(GetListKey(repository.TableName, content.SiteId, content.ChannelId))
                 .CachingRemove(GetEntityKey(repository.TableName, content.Id))
             );
         }
@@ -565,14 +470,13 @@ group by tmp.userName";
                     .Set(name, value)
                     .Where(ContentAttribute.Id, contentId)
                     .CachingRemove(GetEntityKey(repository.TableName, contentId))
-                    .CachingRemove(GetListKey(repository.TableName, channel.IsAllContents, site.Id, channel.Id))
+                    .CachingRemove(GetListKey(repository.TableName, site.Id, channel.Id))
             );
         }
 
         public async Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, int channelId, EScopeType scope, DateTime begin, DateTime end, string userName)
         {
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo, scope);
+            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, channelId, scope);
             return GetCountOfContentUpdate(tableName, siteId, channelIdList, begin, end, userName);
         }
 
@@ -623,17 +527,7 @@ group by tmp.userName";
             return DataProvider.DatabaseRepository.GetIntResult(sqlString);
         }
 
-        public async Task<List<(int, int)>> GetContentIdListByTrashAsync(int siteId, string tableName)
-        {
-            var repository = GetRepository(tableName);
-            var list = await repository.GetAllAsync<(int Id, int ChannelId)>(
-                GetQuery(siteId)
-                    .Select(nameof(Content.Id), nameof(Content.ChannelId))
-                    .Where(nameof(Content.ChannelId), "<", 0)
-            );
-
-            return list.Select(o => (Math.Abs(o.ChannelId), o.Id)).ToList();
-        }
+        
 
         private async Task<DataSet> GetStlDataSourceCheckedAsync(string tableName, List<int> channelIdList, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
         {
@@ -928,8 +822,7 @@ group by tmp.userName";
                 {
                     var theChannel = await DataProvider.ChannelRepository.GetAsync(theChannelId);
                     channelIdList.AddRange(
-                        await DataProvider.ChannelRepository.GetChannelIdsAsync(theChannel,
-                            EScopeType.All));
+                        await DataProvider.ChannelRepository.GetChannelIdsAsync(theChannel.SiteId, theChannel.Id, EScopeType.All));
                 }
                 whereBuilder.Append(channelIdList.Count == 1
                     ? $"(ChannelId = {channelIdList[0]}) "
@@ -939,7 +832,7 @@ group by tmp.userName";
             {
                 whereBuilder.Append(" AND ");
 
-                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo, EScopeType.All);
+                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, channelId, EScopeType.All);
 
                 whereBuilder.Append(channelIdList.Count == 1
                     ? $"(ChannelId = {channelIdList[0]}) "
@@ -1307,14 +1200,14 @@ group by tmp.userName";
                 $"{ContentAttribute.Taxis} DESC");
         }
 
-        private async Task QueryWhereAsync(Query query, Site site, Channel channel, bool isAllContents)
+        private async Task QueryWhereAsync(Query query, Site site, IChannelSummary channel, bool isAllContents)
         {
             query.Where(nameof(Content.SiteId), site.Id);
             query.WhereNot(nameof(Content.SourceId), SourceManager.Preview);
 
             if (isAllContents)
             {
-                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channel, EScopeType.All);
+                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, channel.Id, EScopeType.All);
                 query.WhereIn(nameof(Content.ChannelId), channelIdList);
             }
             else

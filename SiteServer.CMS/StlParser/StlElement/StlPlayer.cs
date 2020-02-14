@@ -129,8 +129,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
-            playUrl = PageUtility.ParseNavigationUrl(pageInfo.Site, playUrl, pageInfo.IsLocal);
-            imageUrl = PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal);
+            playUrl = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
+            imageUrl = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
 
             var extension = PathUtils.GetExtension(playUrl);
             var uniqueId = pageInfo.UniqueId;
@@ -174,7 +174,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(playBy, PlayByJwPlayer))
             {
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcJwPlayer6);
+                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.JsAcJwPlayer6);
                 var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
                 return $@"
 <div id='{ajaxElementId}'></div>
@@ -193,7 +193,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             if (StringUtils.EqualsIgnoreCase(playBy, PlayByFlowPlayer))
             {
                 var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcFlowPlayer);
+                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.JsAcFlowPlayer);
 
                 var imageHtml = string.Empty;
                 if (!string.IsNullOrEmpty(imageUrl))

@@ -384,7 +384,6 @@ namespace SiteServer.API.Controllers.V1
             foreach (var channelContentId in request.Contents)
             {
                 var channel = await DataProvider.ChannelRepository.GetAsync(channelContentId.ChannelId);
-                var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
                 var content = await DataProvider.ContentRepository.GetAsync(site, channel, channelContentId.Id);
                 if (content == null) continue;
 
@@ -399,9 +398,8 @@ namespace SiteServer.API.Controllers.V1
 
                 contents.Add(content);
 
-                var contentCheck = new ContentCheck
+                await DataProvider.ContentCheckRepository.InsertAsync(new ContentCheck
                 {
-                    TableName = tableName,
                     SiteId = request.SiteId,
                     ChannelId = content.ChannelId,
                     ContentId = content.Id,
@@ -410,9 +408,7 @@ namespace SiteServer.API.Controllers.V1
                     CheckedLevel = 0,
                     CheckDate = DateTime.Now,
                     Reasons = request.Reasons
-                };
-
-                await DataProvider.ContentCheckRepository.InsertAsync(contentCheck);
+                });
             }
 
             await auth.AddSiteLogAsync(request.SiteId, "批量审核内容");

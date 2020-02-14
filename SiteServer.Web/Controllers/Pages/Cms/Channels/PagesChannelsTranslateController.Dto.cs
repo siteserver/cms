@@ -41,7 +41,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
             public bool IsDeleteAfterTranslate { get; set; }
         }
 
-        public static async Task TranslateAsync(Site site, int targetSiteId, int targetChannelId, TranslateType translateType, IEnumerable<int> channelIds, bool isDeleteAfterTranslate)
+        public static async Task TranslateAsync(Site site, int targetSiteId, int targetChannelId, TranslateType translateType, IEnumerable<int> channelIds, bool isDeleteAfterTranslate, int adminId)
         {
             var channelIdList = new List<int>();//需要转移的栏目ID
             foreach (var channelId in channelIds)
@@ -65,8 +65,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                 var channelIdListToTranslate = new List<int>(channelIdList);
                 foreach (var channelId in channelIdList)
                 {
-                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                    var subChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo, EScopeType.Descendant);
+                    var subChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, channelId, EScopeType.Descendant);
 
                     if (subChannelIdList != null && subChannelIdList.Count > 0)
                     {
@@ -95,7 +94,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                     {
                         try
                         {
-                            await DataProvider.ChannelRepository.DeleteAsync(site.Id, channelId);
+                            await DataProvider.ChannelRepository.DeleteAsync(site.Id, channelId, adminId);
                         }
                         catch
                         {
@@ -169,7 +168,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                     //var orderByString = ETaxisTypeUtils.GetChannelOrderByString(ETaxisType.OrderByTaxis);
                     //var childrenNodeInfoList = DataProvider.ChannelRepository.GetChannelInfoList(oldNodeInfo, 0, "", EScopeType.Children, orderByString);
 
-                    var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(oldNodeInfo, EScopeType.Children);
+                    var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, oldNodeInfo.Id, EScopeType.Children);
                     var childrenNodeInfoList = new List<Channel>();
                     foreach (var channelId in channelIdList)
                     {

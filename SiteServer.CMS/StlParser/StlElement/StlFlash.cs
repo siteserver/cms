@@ -196,7 +196,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {                    
-                    flashUrl = PageUtility.ParseNavigationUrl(pageInfo.Site, flashUrl, pageInfo.IsLocal);
+                    flashUrl = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, flashUrl, pageInfo.IsLocal);
 
                     parsedContent = $@"
 <embed src=""{flashUrl}"" allowfullscreen=""true"" width=""{width}"" height=""{height}"" align=""middle"" allowscriptaccess=""always"" type=""application/x-shockwave-flash"" />

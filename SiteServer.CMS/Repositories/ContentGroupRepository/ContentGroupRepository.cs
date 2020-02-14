@@ -54,30 +54,6 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        public async Task UpdateTaxisToUpAsync(int siteId, string groupName)
-        {
-            var taxis = await GetTaxisAsync(siteId, groupName);
-            var result = await _repository.GetAsync<(string GroupName, int Taxis)?>(Q
-                .Select(nameof(ContentGroup.GroupName), nameof(ContentGroup.Taxis))
-                .Where(nameof(ContentGroup.SiteId), siteId)
-                .Where(nameof(ContentGroup.Taxis), ">", taxis)
-                .OrderBy(nameof(ContentGroup.Taxis)));
-
-            var higherGroupName = string.Empty;
-            var higherTaxis = 0;
-            if (result != null)
-            {
-                higherGroupName = result.Value.GroupName;
-                higherTaxis = result.Value.Taxis;
-            }
-
-            if (!string.IsNullOrEmpty(higherGroupName))
-            {
-                await SetTaxisAsync(siteId, groupName, higherTaxis);
-                await SetTaxisAsync(siteId, higherGroupName, taxis);
-            }
-        }
-
         public async Task UpdateTaxisDownAsync(int siteId, int groupId, int taxis)
         {
             var higherGroup = await _repository.GetAsync<ChannelGroup>(Q
@@ -108,49 +84,6 @@ namespace SiteServer.CMS.Repositories
             }
         }
 
-        public async Task UpdateTaxisToDownAsync(int siteId, string groupName)
-        {
-            var taxis = await GetTaxisAsync(siteId, groupName);
-            var result = await _repository.GetAsync<(string GroupName, int Taxis)?>(Q
-                .Select(nameof(ContentGroup.GroupName), nameof(ContentGroup.Taxis))
-                .Where(nameof(ContentGroup.SiteId), siteId)
-                .Where(nameof(ContentGroup.Taxis), "<", taxis)
-                .OrderByDesc(nameof(ContentGroup.Taxis)));
-
-            var lowerGroupName = string.Empty;
-            var lowerTaxis = 0;
-            if (result != null)
-            {
-                lowerGroupName = result.Value.GroupName;
-                lowerTaxis = result.Value.Taxis;
-            }
-
-            if (!string.IsNullOrEmpty(lowerGroupName))
-            {
-                await SetTaxisAsync(siteId, groupName, lowerTaxis);
-                await SetTaxisAsync(siteId, lowerGroupName, taxis);
-            }
-        }
-
-        private async Task<int> GetTaxisAsync(int siteId, string groupName)
-        {
-            return await _repository.GetAsync<int>(Q
-                .Select(nameof(ContentGroup.Taxis))
-                .Where(nameof(ContentGroup.SiteId), siteId)
-                .Where(nameof(ContentGroup.GroupName), groupName)
-            );
-        }
-
-        private async Task SetTaxisAsync(int siteId, string groupName, int taxis)
-        {
-            await _repository.UpdateAsync(Q
-                .Set(nameof(ContentGroup.Taxis), taxis)
-                .Where(nameof(ContentGroup.SiteId), siteId)
-                .Where(nameof(ContentGroup.GroupName), groupName)
-                .CachingRemove(GetCacheKey(siteId))
-            );
-        }
-
         private async Task SetTaxisAsync(int groupId, int taxis)
         {
             await _repository.UpdateAsync(Q
@@ -165,22 +98,6 @@ namespace SiteServer.CMS.Repositories
                 .Where(nameof(ContentGroup.SiteId), siteId)
             );
             return max ?? 0;
-        }
-
-        public async Task<bool> IsExistsAsync(int siteId, string groupName)
-        {
-            return await _repository.ExistsAsync(Q
-                .Where(nameof(ContentGroup.SiteId), siteId)
-                .Where(nameof(ContentGroup.GroupName), groupName)
-            );
-        }
-
-        public async Task<ContentGroup> GetContentGroupAsync(int siteId, string groupName)
-        {
-            return await _repository.GetAsync(Q
-                .Where(nameof(ContentGroup.SiteId), siteId)
-                .Where(nameof(ContentGroup.GroupName), groupName)
-            );
         }
 
         public async Task<ContentGroup> GetAsync(int siteId, int groupId)

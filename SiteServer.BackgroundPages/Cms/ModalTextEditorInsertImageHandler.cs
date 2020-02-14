@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (string.IsNullOrEmpty(errorMessage))
                 {
-                    var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, fileExtName);
+                    var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(site, fileExtName).GetAwaiter().GetResult();
                     var localFileName = PathUtility.GetUploadFileName(site, filePath);
                     filePath = PathUtils.Combine(localDirectoryPath, localFileName);
                     file.SaveAs(filePath);

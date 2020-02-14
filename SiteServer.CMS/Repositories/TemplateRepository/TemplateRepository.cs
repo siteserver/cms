@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.Repositories
 {
@@ -23,138 +20,99 @@ namespace SiteServer.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private static class Attr
-        {
-            public const string IsDefault = nameof(IsDefault);
-        }
-
-        private string GetListKey(int siteId)
-        {
-            return Caching.GetListKey(_repository.TableName, siteId);
-        }
-
-        private string GetEntityKey(int templateId)
-        {
-            return Caching.GetEntityKey(_repository.TableName, templateId);
-        }
-
-        public async Task<int> InsertAsync(Site site, Template template, string templateContent, string administratorName)
+        public async Task<int> InsertAsync(Site site, Template template, string templateContent, int adminId)
         {
             if (template.Default)
             {
-                await SetAllTemplateDefaultToFalseAsync(site.Id, template.TemplateType);
+                var defaultTemplate = await GetDefaultTemplateAsync(site.Id, template.TemplateType);
+                if (defaultTemplate != null)
+                {
+                    defaultTemplate.Default = false;
+                    await _repository.UpdateAsync(defaultTemplate, Q
+                        .CachingRemove(GetListKey(site.Id, defaultTemplate.TemplateType))
+                        .CachingRemove(GetEntityKey(defaultTemplate.Id))
+                    );
+                }
             }
 
             template.Id = await _repository.InsertAsync(template, Q
-                .CachingRemove(GetListKey(site.Id))
+                .CachingRemove(GetListKey(site.Id, template.TemplateType))
             );
 
-            await WriteContentToTemplateFileAsync(site, template, templateContent, administratorName);
+            await WriteContentToTemplateFileAsync(site, template, templateContent, adminId);
 
             return template.Id;
         }
 
-        public async Task UpdateAsync(Site site, Template template, string templateContent, string administratorName)
+        public async Task UpdateAsync(Site site, Template template, string templateContent, int adminId)
         {
             var original = await GetAsync(template.Id);
             if (original.Default != template.Default && template.Default)
             {
-                await SetAllTemplateDefaultToFalseAsync(site.Id, template.TemplateType);
+                var defaultTemplate = await GetDefaultTemplateAsync(site.Id, template.TemplateType);
+                if (defaultTemplate != null)
+                {
+                    defaultTemplate.Default = false;
+                    await _repository.UpdateAsync(defaultTemplate, Q
+                        .CachingRemove(GetListKey(site.Id, defaultTemplate.TemplateType))
+                        .CachingRemove(GetEntityKey(defaultTemplate.Id))
+                    );
+                }
             }
 
             await _repository.UpdateAsync(template, Q
-                .CachingRemove(GetListKey(site.Id), GetEntityKey(template.Id))
+                .CachingRemove(GetListKey(site.Id, template.TemplateType))
+                .CachingRemove(GetEntityKey(template.Id))
             );
 
-            await WriteContentToTemplateFileAsync(site, template, templateContent, administratorName);
+            await WriteContentToTemplateFileAsync(site, template, templateContent, adminId);
         }
 
-        private async Task SetAllTemplateDefaultToFalseAsync(int siteId, TemplateType templateType)
-        {
-            await _repository.UpdateAsync(Q
-                .Set(Attr.IsDefault, false.ToString())
-                .Where(nameof(Template.SiteId), siteId)
-                .Where(nameof(Template.TemplateType), templateType.GetValue())
-                .CachingRemove(GetListKey(siteId))
-            );
-        }
+        //private async Task SetAllTemplateDefaultToFalseAsync(int siteId, TemplateType templateType)
+        //{
+        //    await _repository.UpdateAsync(Q
+        //        .Set(nameof(Template.Default), false)
+        //        .Where(nameof(Template.SiteId), siteId)
+        //        .Where(nameof(Template.TemplateType), templateType.GetValue())
+        //        .CachingRemove(GetListKey(siteId))
+        //    );
+        //}
 
         public async Task SetDefaultAsync(int templateId)
         {
             var template = await GetAsync(templateId);
-            await SetAllTemplateDefaultToFalseAsync(template.SiteId, template.TemplateType);
+
+            var defaultTemplate = await GetDefaultTemplateAsync(template.SiteId, template.TemplateType);
+            if (defaultTemplate != null && defaultTemplate.Id != templateId)
+            {
+                defaultTemplate.Default = false;
+                await _repository.UpdateAsync(defaultTemplate, Q
+                    .CachingRemove(GetListKey(template.SiteId, defaultTemplate.TemplateType))
+                    .CachingRemove(GetEntityKey(defaultTemplate.Id))
+                );
+            }
 
             await _repository.UpdateAsync(Q
-                .Set(Attr.IsDefault, true.ToString())
+                .Set(nameof(Template.Default), true)
                 .Where(nameof(Template.Id), templateId)
-                .CachingRemove(GetListKey(template.SiteId), GetEntityKey(template.Id))
+                .CachingRemove(GetListKey(template.SiteId, template.TemplateType))
+                .CachingRemove(GetEntityKey(template.Id))
             );
         }
 
         public async Task DeleteAsync(Site site, int templateId)
         {
             var template = await GetAsync(templateId);
-            var filePath = GetTemplateFilePath(site, template);
+            var filePath = await GetTemplateFilePathAsync(site, template);
 
-            await _repository.DeleteAsync(templateId, Q.
-                CachingRemove(GetListKey(site.Id), GetEntityKey(templateId))
+            await _repository.DeleteAsync(templateId, Q
+                .CachingRemove(GetListKey(template.SiteId, template.TemplateType))
+                .CachingRemove(GetEntityKey(template.Id))
             );
             FileUtils.DeleteFileIfExists(filePath);
         }
 
-        public async Task<string> GetImportTemplateNameAsync(int siteId, string templateName)
-        {
-            string importTemplateName;
-            if (templateName.IndexOf("_", StringComparison.Ordinal) != -1)
-            {
-                var templateNameCount = 0;
-                var lastTemplateName = templateName.Substring(templateName.LastIndexOf("_", StringComparison.Ordinal) + 1);
-                var firstTemplateName = templateName.Substring(0, templateName.Length - lastTemplateName.Length);
-                try
-                {
-                    templateNameCount = int.Parse(lastTemplateName);
-                }
-                catch
-                {
-                    // ignored
-                }
-                templateNameCount++;
-                importTemplateName = firstTemplateName + templateNameCount;
-            }
-            else
-            {
-                importTemplateName = templateName + "_1";
-            }
-
-            var exists = await _repository.ExistsAsync(Q
-                .Where(nameof(Template.SiteId), siteId)
-                .Where(nameof(Template.TemplateName), importTemplateName)
-            );
-            if (exists)
-            {
-                importTemplateName = await GetImportTemplateNameAsync(siteId, importTemplateName);
-            }
-
-            return importTemplateName;
-        }
-
-        public async Task<List<Template>> GetAllAsync(int siteId)
-        {
-            return await _repository.GetAllAsync(Q
-                .Where(nameof(Template.SiteId), siteId)
-                .OrderBy(nameof(Template.TemplateType), nameof(Template.RelatedFileName))
-                .CachingGet(GetListKey(siteId))
-            );
-        }
-
-        public async Task<Template> GetAsync(int templateId)
-        {
-            return await _repository.GetAsync(templateId, Q
-                .CachingGet(GetEntityKey(templateId))
-            );
-        }
-
-        public async Task CreateDefaultTemplateAsync(Site site, string administratorName)
+        public async Task CreateDefaultTemplateAsync(Site site, int adminId)
         {
             var templateList = new List<Template>();
 
@@ -199,7 +157,7 @@ namespace SiteServer.CMS.Repositories
 
             foreach (var theTemplate in templateList)
             {
-                await InsertAsync(site, theTemplate, theTemplate.Content, administratorName);
+                await InsertAsync(site, theTemplate, theTemplate.Content, adminId);
             }
         }
     }

@@ -52,7 +52,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 return Request.BadRequest<StringResult>("文件不存在，请重新选择");
             }
 
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, UploadType.File);
+            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, UploadType.File);
             var filePath = PathUtils.Combine(localDirectoryPath, PathUtility.GetUploadFileName(site, libraryFilePath));
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);

@@ -106,13 +106,6 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        public async Task<string> GetDisplayNameAsync(int adminId)
-        {
-            var administrator = await GetByUserIdAsync(adminId);
-            return administrator == null ? string.Empty :
-                string.IsNullOrEmpty(administrator.DisplayName) ? administrator.UserName : administrator.DisplayName;
-        }
-
         public async Task<List<int>> GetLatestTop10SiteIdListAsync(List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
         {
             var siteIdList = new List<int>();
@@ -212,6 +205,19 @@ namespace SiteServer.CMS.Repositories
         public string GetUserUploadUrl(int userId, string relatedUrl)
         {
             return GetUploadUrl(userId.ToString(), relatedUrl);
+        }
+
+        public async Task<string> GetDisplayAsync(int userId)
+        {
+            if (userId <= 0) return string.Empty;
+
+            var admin = await GetByUserIdAsync(userId);
+            if (admin != null)
+            {
+                return string.IsNullOrEmpty(admin.DisplayName) || admin.UserName == admin.DisplayName ? admin.UserName : $"{admin.DisplayName}({admin.UserName})";
+            }
+
+            return string.Empty;
         }
     }
 }

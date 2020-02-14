@@ -110,8 +110,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
                 channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(nodeInfo, scope);
+                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(pageInfo.SiteId, channelId, scope);
                 foreach (var theChannelId in channelIdList)
                 {
                     var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, theChannelId);

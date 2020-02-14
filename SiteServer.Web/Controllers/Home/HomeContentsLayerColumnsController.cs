@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -34,10 +35,10 @@ namespace SiteServer.API.Controllers.Home
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+                var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+                if (channel == null) return BadRequest("无法确定内容对应的栏目");
 
-                var attributes = await ColumnsManager.GetContentListColumnsAsync(site, channelInfo, true);
+                var attributes = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
                 return Ok(new
                 {

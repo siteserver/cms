@@ -123,7 +123,7 @@ namespace SiteServer.BackgroundPages.Cms
                 };
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(DataProvider.SiteRepository.GetAsync(_targetSiteId).GetAwaiter().GetResult(), string.Empty, ELoadingType.ChannelClickSelect, additional));
 
-                var channelIdList = DataProvider.ChannelRepository.GetChannelIdsAsync(nodeInfo, EScopeType.Children).GetAwaiter().GetResult();
+                var channelIdList = DataProvider.ChannelRepository.GetChannelIdsAsync(nodeInfo.SiteId, nodeInfo.Id, EScopeType.Children).GetAwaiter().GetResult();
 
                 RptChannel.DataSource = channelIdList;
                 RptChannel.ItemDataBound += RptChannel_ItemDataBound;

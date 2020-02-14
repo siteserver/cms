@@ -1,66 +1,75 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Extensions;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
-    
     [RoutePrefix("pages/cms/contents/contentsLayerView")]
-    public class PagesContentsLayerViewController : ApiController
+    public partial class PagesContentsLayerViewController : ApiController
     {
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public async Task<IHttpActionResult> Get()
+        public async Task<GetResult> Get([FromUri] GetRequest request)
         {
-            try
+            var auth = await AuthenticatedRequest.GetAuthAsync();
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId,
+                    Constants.SitePermissions.Contents) ||
+                !await auth.AdminPermissionsImpl.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
+                    Constants.ChannelPermissions.ContentView))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
+                return Request.Unauthorized<GetResult>();
+            }
 
-                var siteId = request.GetQueryInt("siteId");
-                var channelId = request.GetQueryInt("channelId");
-                var contentId = request.GetQueryInt("contentId");
+            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            if (site == null) return Request.NotFound<GetResult>();
 
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSitePermissionsAsync(siteId,
-                        Constants.SitePermissions.Contents) ||
-                    !await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                        Constants.ChannelPermissions.ContentView))
+            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var content = await DataProvider.ContentRepository.GetAsync(site, channel, request.ContentId);
+            if (content == null) return Request.NotFound<GetResult>();
+
+            var channelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
+
+            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+
+            var calculatedContent =
+                await ColumnsManager.CalculateContentListAsync(1, site, request.ChannelId, content, columns, null);
+            calculatedContent.Set(ContentAttribute.Content, content.Get(ContentAttribute.Content));
+
+            var siteUrl = await PageUtility.GetSiteUrlAsync(site, true);
+            var groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(request.SiteId);
+            var tagNames = await DataProvider.ContentTagRepository.GetTagNamesAsync(request.SiteId);
+
+            var editorColumns = new List<ContentColumn>();
+            var styleList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channel);
+            foreach (var tableStyle in styleList)
+            {
+                if (tableStyle.InputType == InputType.TextEditor)
                 {
-                    return Unauthorized();
+                    editorColumns.Add(new ContentColumn
+                    {
+                        AttributeName = tableStyle.AttributeName,
+                        DisplayName = tableStyle.DisplayName
+                    });
                 }
-
-                var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                if (site == null) return BadRequest("无法确定内容对应的站点");
-
-                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
-                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
-                if (contentInfo == null) return BadRequest("无法确定对应的内容");
-
-                contentInfo.Set(ContentAttribute.CheckState, CheckManager.GetCheckState(site, contentInfo));
-
-                var channelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteId, channelId);
-
-                var attributes = await ColumnsManager.GetContentListColumnsAsync(site, channelInfo, true);
-
-                return Ok(new
-                {
-                    Value = contentInfo,
-                    ChannelName = channelName,
-                    Attributes = attributes
-                });
             }
-            catch (Exception ex)
+
+            return new GetResult
             {
-                await LogUtils.AddErrorLogAsync(ex);
-                return InternalServerError(ex);
-            }
+                Content = calculatedContent,
+                ChannelName = channelName,
+                State = CheckManager.GetCheckState(site, content),
+                Columns = columns,
+                SiteUrl = siteUrl,
+                GroupNames = groupNames,
+                TagNames = tagNames,
+                EditorColumns = editorColumns
+            };
         }
     }
 }

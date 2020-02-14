@@ -121,7 +121,7 @@ namespace SiteServer.API.Controllers.Preview
                 ContextType = visualInfo.ContextType
             };
 
-            var contentBuilder = new StringBuilder(DataProvider.TemplateRepository.GetTemplateContent(site, templateInfo));
+            var contentBuilder = new StringBuilder(await DataProvider.TemplateRepository.GetTemplateContentAsync(site, templateInfo));
             if (templateInfo.CreatedFileExtName == ".shtml")
             {
                 //<!-- #include virtual="{Stl.SiteUrl}/include/head.html" -->

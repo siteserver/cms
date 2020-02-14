@@ -136,9 +136,6 @@
     <Compile Include="Ajax\AjaxCmsService.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Ajax\AjaxCreateService.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Ajax\AjaxOtherService.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -150,9 +147,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalChannelTaxis.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalAddToGroup.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalChannelEdit.cs">
@@ -183,9 +177,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalContentExport.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalContentGroupAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalContentImport.cs">
@@ -279,16 +270,10 @@
     <Compile Include="Cms\PageContentDelete.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageContentSearch.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\PageContentTranslate.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalContentView.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageProgressBar.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalTextEditorInsertImageHandler.cs" />
@@ -301,6 +286,7 @@
     <Compile Include="Controls\Flash.cs" />
     <Compile Include="Controls\Help.cs" />
     <Compile Include="Controls\Message.cs" />
+    <Compile Include="Core\BackgroundInputTypeParser.cs" />
     <Compile Include="Core\NavigationTree.cs" />
     <Compile Include="Controls\ChannelTree.cs" />
     <Compile Include="Controls\NoTagText.cs" />
@@ -313,7 +299,6 @@
     <Compile Include="Controls\UEditor.cs" />
     <Compile Include="Controls\Weather.cs" />
     <Compile Include="Core\AjaxManager.cs" />
-    <Compile Include="Core\BackgroundInputTypeParser.cs" />
     <Compile Include="Core\ChannelLoading.cs" />
     <Compile Include="Core\ControlUtility.cs" />
     <Compile Include="Core\NavigationTreeItem.cs" />

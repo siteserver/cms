@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Dto.Request;
 using SiteServer.CMS.Extensions;
 using SiteServer.CMS.StlParser.Model;
 
@@ -16,10 +17,14 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public async Task<List<Element>> List()
+        public async Task<List<Element>> List([FromUri] SiteRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, auth.SiteId, Constants.SitePermissions.TemplateReference);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateReference))
+            {
+                return Request.Unauthorized<List<Element>>();
+            }
 
             var list = new List<Element>();
             var elements = StlAll.Elements;
@@ -45,7 +50,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<List<Field>> ListFields([FromBody]FieldsRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplateReference);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateReference))
+            {
+                return Request.Unauthorized<List<Field>>();
+            }
 
             var elements = StlAll.Elements;
             if (!elements.TryGetValue(request.ElementName, out var elementType))

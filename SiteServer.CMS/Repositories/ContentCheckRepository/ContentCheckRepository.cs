@@ -25,29 +25,11 @@ namespace SiteServer.CMS.Repositories
             await _repository.InsertAsync(check);
         }
 
-		public async Task DeleteAsync(int checkId)
-        {
-            await _repository.DeleteAsync(checkId);
-        }
-
-		public async Task<ContentCheck> GetCheckAsync(int checkId)
-        {
-            return await _repository.GetAsync(checkId);
-        }
-
-        public async Task<ContentCheck> GetCheckByLastIdAsync(string tableName, int contentId)
-        {
-            return await _repository.GetAsync(Q
-                .Where(nameof(ContentCheck.TableName), tableName)
-                .Where(nameof(ContentCheck.ContentId), contentId)
-                .OrderByDesc(nameof(ContentCheck.Id))
-            );
-        }
-
-		public async Task<List<ContentCheck>> GetCheckListAsync(string tableName, int contentId)
+		public async Task<List<ContentCheck>> GetCheckListAsync(int siteId, int channelId, int contentId)
 		{
             return await _repository.GetAllAsync(Q
-                .Where(nameof(ContentCheck.TableName), tableName)
+                .Where(nameof(ContentCheck.SiteId), siteId)
+                .Where(nameof(ContentCheck.ChannelId), channelId)
                 .Where(nameof(ContentCheck.ContentId), contentId)
                 .OrderByDesc(nameof(ContentCheck.Id))
             );

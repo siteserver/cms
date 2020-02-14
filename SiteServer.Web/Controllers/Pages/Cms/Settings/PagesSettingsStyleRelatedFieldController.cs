@@ -100,6 +100,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Settings
                 return Request.Unauthorized<BoolResult>();
             }
 
+            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+
             var fileName = auth.HttpRequest["fileName"];
             var fileCount = auth.HttpRequest.Files.Count;
             if (fileCount == 0)
@@ -120,7 +122,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Settings
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             file.SaveAs(filePath);
 
-            var directoryPath = await ImportObject.ImportRelatedFieldByZipFileAsync(request.SiteId, filePath);
+            var directoryPath = await ImportObject.ImportRelatedFieldByZipFileAsync(site, filePath);
 
             FileUtils.DeleteFileIfExists(filePath);
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);

@@ -5,7 +5,6 @@ using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Extensions;
 using SiteServer.CMS.Repositories;
 
@@ -125,10 +124,10 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
 				template.CreatedFileExtName = request.CreatedFileExtName;
 				template.CreatedFileFullName = request.CreatedFileFullName + request.CreatedFileExtName;
 
-                await DataProvider.TemplateRepository.UpdateAsync(site, template, request.Content, auth.AdminName);
+                await DataProvider.TemplateRepository.UpdateAsync(site, template, request.Content, auth.AdminId);
 				if (previousTemplate != null)
 				{
-					FileUtils.DeleteFileIfExists(DataProvider.TemplateRepository.GetTemplateFilePath(site, previousTemplate));
+					FileUtils.DeleteFileIfExists(await DataProvider.TemplateRepository.GetTemplateFilePathAsync(site, previousTemplate));
 				}
 				await CreatePagesAsync(template);
 
@@ -160,7 +159,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                     Default = false
 				};
 
-				template.Id = await DataProvider.TemplateRepository.InsertAsync(site, template, request.Content, auth.AdminName);
+				template.Id = await DataProvider.TemplateRepository.InsertAsync(site, template, request.Content, auth.AdminId);
 				await CreatePagesAsync(template);
 				await auth.AddSiteLogAsync(request.SiteId,
 					$"添加{template.TemplateType.GetDisplayName()}",
@@ -169,11 +168,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
 
 			return new GetResult
 			{
-				Template = GetTemplateResult(template, site)
+				Template = await GetTemplateResultAsync(template, site)
 			};
 		}
 
-        private Template GetTemplateResult(Template templateInfo, Site site)
+        private async Task<Template> GetTemplateResultAsync(Template templateInfo, Site site)
         {
             var template = new Template
             {
@@ -188,7 +187,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                 template.CreatedFileExtName = GetTemplateFileExtension(templateInfo);
                 template.RelatedFileName = PathUtils.RemoveExtension(templateInfo.RelatedFileName);
                 template.CreatedFileFullName = PathUtils.RemoveExtension(templateInfo.CreatedFileFullName);
-                template.Content = DataProvider.TemplateRepository.GetTemplateContent(site, templateInfo);
+                template.Content = await DataProvider.TemplateRepository.GetTemplateContentAsync(site, templateInfo);
             }
             else
             {

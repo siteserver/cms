@@ -168,7 +168,7 @@ namespace SiteServer.BackgroundPages.Cms
             var nodeInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
             fileName = $"{nodeInfo.ChannelName}.zip";
             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-            var exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
+            var exportObject = new ExportObject(Site, AuthRequest.AdminId);
             return exportObject.ExportContentsAsync(filePath, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState).GetAwaiter().GetResult();
         }
 
@@ -183,13 +183,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         private string ExportChannel(List<int> channelIdList)
         {
-            var exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
+            var exportObject = new ExportObject(Site, AuthRequest.AdminId);
             return exportObject.ExportChannelsAsync(channelIdList).GetAwaiter().GetResult();
         }
 
         private string ExportSingleTableStyle(string tableName, int relatedIdentity)
         {
-            var exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
+            var exportObject = new ExportObject(Site, AuthRequest.AdminId);
             return exportObject.ExportSingleTableStyleAsync(tableName, relatedIdentity).GetAwaiter().GetResult();
         }
     }

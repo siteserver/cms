@@ -21,7 +21,7 @@ namespace SiteServer.CMS.Repositories
 
             if (!string.IsNullOrEmpty(special.Url) && special.Url != "/")
             {
-                var directoryPath = GetSpecialDirectoryPath(site, special.Url);
+                var directoryPath = await GetSpecialDirectoryPathAsync(site, special.Url);
                 DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             }
 
@@ -62,7 +62,7 @@ namespace SiteServer.CMS.Repositories
             var special = await GetSpecialAsync(site.Id, specialId);
             if (special != null)
             {
-                var directoryPath = GetSpecialDirectoryPath(site, special.Url);
+                var directoryPath = await GetSpecialDirectoryPathAsync(site, special.Url);
                 var srcDirectoryPath = GetSpecialSrcDirectoryPath(directoryPath);
                 if (!DirectoryUtils.IsDirectoryExists(srcDirectoryPath)) return list;
 
@@ -178,26 +178,26 @@ namespace SiteServer.CMS.Repositories
             }
         }
 
-        public string GetSpecialDirectoryPath(Site site, string url)
+        public async Task<string> GetSpecialDirectoryPathAsync(Site site, string url)
         {
             var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
-            return PathUtility.MapPath(site, virtualPath);
+            return await PathUtility.MapPathAsync(site, virtualPath);
         }
 
-        public string GetSpecialUrl(Site site, string url)
+        public async Task<string> GetSpecialUrlAsync(Site site, string url)
         {
             var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
             if (!PageUtils.IsVirtualUrl(virtualPath))
             {
                 virtualPath = $"@/{StringUtils.TrimSlash(virtualPath)}";
             }
-            return PageUtility.ParseNavigationUrl(site, virtualPath, false);
+            return await PageUtility.ParseNavigationUrlAsync(site, virtualPath, false);
         }
 
         public async Task<string> GetSpecialUrlAsync(Site site, int specialId)
         {
             var special = await GetSpecialAsync(site.Id, specialId);
-            return GetSpecialUrl(site, special.Url);
+            return await GetSpecialUrlAsync(site, special.Url);
         }
 
         public string GetSpecialZipFilePath(string title, string directoryPath)
@@ -205,9 +205,9 @@ namespace SiteServer.CMS.Repositories
             return PathUtils.Combine(directoryPath, $"{title}.zip");
         }
 
-        public string GetSpecialZipFileUrl(Site site, Special special)
+        public async Task<string> GetSpecialZipFileUrlAsync(Site site, Special special)
         {
-            return PageUtility.ParseNavigationUrl(site, $"@/{special.Url}/{special.Title}.zip", true);
+            return await PageUtility.ParseNavigationUrlAsync(site, $"@/{special.Url}/{special.Title}.zip", true);
         }
 
         public string GetSpecialSrcDirectoryPath(string directoryPath)

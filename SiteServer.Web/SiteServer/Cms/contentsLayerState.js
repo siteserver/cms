@@ -5,7 +5,8 @@ var data = utils.initData({
   channelId: utils.getQueryInt('channelId'),
   contentId: utils.getQueryInt('contentId'),
   contentChecks: null,
-  content: null
+  content: null,
+  state: null
 });
 
 var methods = {
@@ -24,6 +25,7 @@ var methods = {
 
       $this.contentChecks = res.contentChecks;
       $this.content = res.content;
+      $this.state = res.state;
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -36,6 +38,15 @@ var methods = {
       return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
     }
     return apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
+  },
+
+  btnAdminClick: function(adminId) {
+    utils.openLayer({
+      title: "管理员查看",
+      url: '../Shared/adminLayerView.cshtml?adminId=' + adminId,
+      width: 550,
+      height: 450
+    });
   },
   
   btnSubmitClick: function () {
@@ -59,7 +70,7 @@ var methods = {
   }
 };
 
-new Vue({
+var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,

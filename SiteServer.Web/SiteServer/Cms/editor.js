@@ -1,14 +1,15 @@
-﻿var $url = "/pages/cms/editor/editor";
+﻿var $url = '/pages/cms/editor/editor';
 
 var data = utils.initData({
-  page: utils.getQueryInt("page"),
-  siteId: utils.getQueryInt("siteId"),
-  channelId: utils.getQueryInt("channelId"),
-  contentId: utils.getQueryInt("contentId"),
+  page: utils.getQueryInt('page'),
+  siteId: utils.getQueryInt('siteId'),
+  channelId: utils.getQueryInt('channelId'),
+  contentId: utils.getQueryInt('contentId'),
   mainHeight: '',
   isSettings: true,
-  sideType: "first",
-  collapseType: "0",
+  sideType: 'first',
+  collapseSettings: ['checkedLevel', 'addDate'],
+  collapseMore: ['translations'],
 
   site: null,
   channel: null,
@@ -20,7 +21,6 @@ var data = utils.initData({
   styles: null,
   form: null,
 
-  transForm: null,
   translations: [],
   isPreviewSaving: false
 });
@@ -43,7 +43,21 @@ var methods = {
     this.form = _.assign({}, this.form);
   },
 
-  getConfig: function() {
+  addTranslation: function(transSiteId, transChannelId, transType, name) {
+    this.translations.push({
+      transSiteId: transSiteId,
+      transChannelId: transChannelId,
+      transType: transType,
+      name: name
+    });
+  },
+
+  updateGroups: function(res, message) {
+    this.groupNames = res.groupNames;
+    this.$message.success(message);
+  },
+
+  apiGet: function() {
     var $this = this;
 
     window.onresize = $this.winResize;
@@ -60,6 +74,30 @@ var methods = {
       var res = response.data;
 
       $this.loadEditor(res);
+    })
+    .catch(function(error) {
+      utils.error($this, error);
+    })
+    .then(function() {
+      utils.loading($this, false);
+    });
+  },
+
+  apiUpdate: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.put($url, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      contentId: this.contentId,
+      content: this.form,
+      translations: this.translations
+    }).then(function(response) {
+      var res = response.data;
+
+      parent.$vue.apiList($this.channelId, $this.page, '内容保存成功！');
+      utils.closeLayer();
     })
     .catch(function(error) {
       utils.error($this, error);
@@ -92,6 +130,25 @@ var methods = {
 
     this.styles = res.styles;
     this.form = _.assign({}, res.content);
+    if (this.form.checked) {
+      this.form.checkedLevel = this.site.checkContentLevel;
+    }
+    if (this.form.top || this.form.recommend || this.form.hot || this.form.color) {
+      this.collapseSettings.push('attributes');
+    }
+    if (this.form.groupNames && this.form.groupNames.length > 0) {
+      this.collapseSettings.push('groupNames');
+    } else {
+      this.form.groupNames = [];
+    }
+    if (this.form.tagNames && this.form.tagNames.length > 0) {
+      this.collapseSettings.push('tagNames');
+    } else {
+      this.form.tagNames = [];
+    }
+    if (this.form.linkUrl) {
+      this.collapseSettings.push('linkUrl');
+    }
 
     var $this = this;
     setTimeout(function () {
@@ -114,12 +171,11 @@ var methods = {
           });
         }
       }
-
     }, 100);
   },
 
   winResize: function () {
-    this.mainHeight = ($(window).height() - 100) + 'px';
+    this.mainHeight = ($(window).height() - 52) + 'px';
   },
 
   btnLayerClick: function(options) {
@@ -141,58 +197,42 @@ var methods = {
     });
   },
 
+  handleTranslationClose: function(name) {
+    this.translations = _.remove(this.translations, function(n) {
+      return name !== n.name;
+    });
+  },
+
   btnCancelClick: function() {
     utils.closeLayer();
   },
 
   btnSaveClick: function() {
-    console.log(parent.$vue);
     if (UE) {
       $.each(UE.instants, function (index, editor) {
         editor.sync();
       });
     }
 
-    var $this = this;
-    utils.loading(this, true);
-    $api.put($url, {
-      siteId: this.siteId,
-      channelId: this.channelId,
-      contentId: this.contentId,
-      content: this.form
-    }).then(function(response) {
-      var res = response.data;
+    this.apiUpdate();
+  },
 
-      parent.$vue.apiList($this.channelId, $this.page, '内容保存成功！');
-      utils.closeLayer();
-    })
-    .catch(function(error) {
-      utils.error($this, error);
-    })
-    .then(function() {
-      utils.loading($this, false);
+  btnGroupAddClick: function() {
+    utils.openLayer({
+      title: '新增内容组',
+      url: '../Shared/groupContentLayerAdd.cshtml?siteId=' + this.siteId,
+      width: 500,
+      height: 300
     });
   },
 
-  btnTransAddClick: function() {
-    this.transForm = {
-      siteId: this.siteId,
-      channelId: this.channelId,
-      transType: 'Copy'
-    };
-  },
-
-  btnTransSaveClick: function() {
-    this.translations.push({
-      siteId: this.transForm.siteId,
-      channelId: this.transForm.channelId,
-      transType: this.transForm.transType
+  btnTranslateAddClick: function() {
+    utils.openLayer({
+      title: "选择转移栏目",
+      url: "editorLayerTranslate.cshtml?siteId=" + this.siteId + '&channelId=' + this.channelId,
+      width: 550,
+      height: 400
     });
-    this.transForm = null;
-  },
-
-  btnTransCancelClick: function() {
-    this.transForm = null;
   },
 
   btnPreviewClick: function() {
@@ -244,6 +284,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function() {
-    this.getConfig();
+    this.apiGet();
   }
 });

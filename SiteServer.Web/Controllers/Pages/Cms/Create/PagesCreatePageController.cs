@@ -124,7 +124,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
                     var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                     if (channelInfo.ChildrenCount > 0)
                     {
-                        var descendentIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo, EScopeType.Descendant);
+                        var descendentIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, channelId, EScopeType.Descendant);
                         foreach (var descendentId in descendentIdList)
                         {
                             if (selectedChannelIdList.Contains(descendentId)) continue;

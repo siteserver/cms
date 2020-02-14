@@ -47,18 +47,18 @@ namespace SiteServer.CMS.Repositories
             await _repository.DeleteAsync();
         }
 
-        private Query GetQuery(string userName, string keyword, string dateFrom, string dateTo)
+        private Query GetQuery(int adminId, string keyword, string dateFrom, string dateTo)
         {
             var query = Q.OrderByDesc(nameof(Log.Id));
 
-            if (string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
+            if (adminId == 0 && string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
             {
                 return query;
             }
 
-            if (!string.IsNullOrEmpty(userName))
+            if (adminId > 0)
             {
-                query.Where(nameof(Log.UserName), userName);
+                query.Where(nameof(Log.AdminId), adminId);
             }
 
             if (!string.IsNullOrEmpty(keyword))
@@ -81,14 +81,14 @@ namespace SiteServer.CMS.Repositories
             return query;
         }
 
-        public async Task<int> GetCountAsync(string userName, string keyword, string dateFrom, string dateTo)
+        public async Task<int> GetCountAsync(int adminId, string keyword, string dateFrom, string dateTo)
         {
-            return await _repository.CountAsync(GetQuery(userName, keyword, dateFrom, dateTo));
+            return await _repository.CountAsync(GetQuery(adminId, keyword, dateFrom, dateTo));
         }
 
-        public async Task<List<Log>> GetAllAsync(string userName, string keyword, string dateFrom, string dateTo, int offset, int limit)
+        public async Task<List<Log>> GetAllAsync(int adminId, string keyword, string dateFrom, string dateTo, int offset, int limit)
         {
-            var query = GetQuery(userName, keyword, dateFrom, dateTo);
+            var query = GetQuery(adminId, keyword, dateFrom, dateTo);
             query.Offset(offset).Limit(limit);
             return await _repository.GetAllAsync(query);
         }

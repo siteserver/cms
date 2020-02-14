@@ -113,7 +113,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(Content, attributeName))//栏目正文
                 {
-                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.Site, nodeInfo.Content, pageInfo.IsLocal);
+                    parsedContent = await ContentUtility.TextEditorContentDecodeAsync(pageInfo.Site, nodeInfo.Content, pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(NavigationUrl, attributeName))//栏目链接地址
                 {
@@ -125,7 +125,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                        parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(AddDate, attributeName))//栏目添加日期
@@ -165,7 +165,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         {
                             if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                             {
-                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                                parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                             }
                             else
                             {

@@ -85,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var fileUrl = Request.Form["fileUrl"];
                 if (string.IsNullOrEmpty(fileUrl)) return;
 
-                var filePath = PathUtility.MapPath(Site, fileUrl);
+                var filePath = PathUtility.MapPathAsync(Site, fileUrl).GetAwaiter().GetResult();
                 if (!FileUtils.IsFileExists(filePath)) return;
 
                 var destImagePath = filePath.Substring(0, filePath.LastIndexOf('.')) + "_c" + filePath.Substring(filePath.LastIndexOf('.'));

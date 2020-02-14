@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var filePath = PathUtils.GetTemporaryFilesPath(fileName);
                     var (_, wordContent) = WordManager.GetWordAsync(Site, false, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, filePath).GetAwaiter().GetResult();
-                    wordContent = ContentUtility.TextEditorContentDecode(Site, wordContent, true);
+                    wordContent = ContentUtility.TextEditorContentDecodeAsync(Site, wordContent, true).GetAwaiter().GetResult();
                     builder.Append(wordContent);
                     FileUtils.DeleteFileIfExists(filePath);
                 }

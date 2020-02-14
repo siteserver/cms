@@ -79,7 +79,7 @@ namespace SiteServer.CMS.Core
             {
                 visualInfo.Template = await DataProvider.TemplateRepository.GetIndexPageTemplateAsync(visualInfo.Site.Id);
                 visualInfo.ContextType = EContextType.Channel;
-                visualInfo.FilePath = PathUtility.GetIndexPageFilePath(visualInfo.Site, visualInfo.Template.CreatedFileFullName, visualInfo.Site.Root, visualInfo.PageIndex);
+                visualInfo.FilePath = await PathUtility.GetIndexPageFilePathAsync(visualInfo.Site, visualInfo.Template.CreatedFileFullName, visualInfo.Site.Root, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
@@ -97,7 +97,7 @@ namespace SiteServer.CMS.Core
             {
                 visualInfo.Template = await DataProvider.TemplateRepository.GetFileTemplateAsync(visualInfo.Site.Id, fileTemplateId);
                 visualInfo.ContextType = EContextType.Undefined;
-                visualInfo.FilePath = PathUtility.MapPath(visualInfo.Site, visualInfo.Template.CreatedFileFullName);
+                visualInfo.FilePath = await PathUtility.MapPathAsync(visualInfo.Site, visualInfo.Template.CreatedFileFullName);
             }
 
             return visualInfo;

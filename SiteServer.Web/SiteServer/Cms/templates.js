@@ -172,7 +172,7 @@ var methods = {
   },
 
   getEditorUrl: function(templateType, templateId) {
-    return 'templateEditor.cshtml?siteId=' + this.siteId + '&templateId=' + templateId + '&templateType=' + templateType;
+    return 'templatesEditor.cshtml?siteId=' + this.siteId + '&templateId=' + templateId + '&templateType=' + templateType;
   },
 
   reload: function() {
@@ -203,7 +203,7 @@ var methods = {
   }
 };
 
-new Vue({
+var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,

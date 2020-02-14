@@ -4,7 +4,7 @@ var $pageTypeUser = 'user';
 
 var data = utils.initData({
   pageType: utils.getQueryString('pageType'),
-  userId: parseInt(utils.getQueryString('userId') || '0'),
+  userId: utils.getQueryInt('userId'),
   userName: utils.getQueryString('userName'),
   returnUrl: utils.getQueryString('returnUrl'),
   administrator: null,
@@ -45,7 +45,7 @@ var methods = {
   }
 };
 
-new Vue({
+var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,

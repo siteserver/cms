@@ -62,10 +62,10 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(Site, fileExtName);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
                 if (!string.IsNullOrEmpty(_realtedPath))
                 {
-                    localDirectoryPath = PathUtility.MapPath(Site, _realtedPath);
+                    localDirectoryPath = PathUtility.MapPathAsync(Site, _realtedPath).GetAwaiter().GetResult();
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
                 var localFileName = PathUtility.GetUploadFileName(filePath, TranslateUtils.ToBool(DdlIsFileUploadChangeFileName.SelectedValue));
@@ -96,7 +96,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 HifUpload.PostedFile.SaveAs(localFilePath);
 
-                FileUtility.AddWaterMark(Site, localFilePath);
+                FileUtility.AddWaterMarkAsync(Site, localFilePath).GetAwaiter().GetResult();
 
                 var fileUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localFilePath, true).GetAwaiter().GetResult();
                 var textBoxUrl = PageUtility.GetVirtualUrl(Site, fileUrl);

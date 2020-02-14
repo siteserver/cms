@@ -33,10 +33,10 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<GetResult>();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
-            if (channelInfo == null) return Request.BadRequest<GetResult>("无法确定内容对应的栏目");
+            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            if (channel == null) return Request.BadRequest<GetResult>("无法确定内容对应的栏目");
 
-            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channelInfo, true);
+            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(auth.AdminPermissionsImpl, site, request.SiteId);
             var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
@@ -64,11 +64,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<SubmitResult>();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
-            if (channelInfo == null) return Request.BadRequest<SubmitResult>("无法确定内容对应的栏目");
+            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            if (channel == null) return Request.BadRequest<SubmitResult>("无法确定内容对应的栏目");
 
-            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channelInfo, true);
-            var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
+            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var pluginIds = PluginContentManager.GetContentPluginIds(channel);
             var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
             var contentInfoList = new List<Content>();
@@ -76,7 +76,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
             if (summaries.Count == 0)
             {
-                var ccIds = await DataProvider.ContentRepository.GetSummariesAsync(site, channelInfo, channelInfo.IsAllContents);
+                var ccIds = await DataProvider.ContentRepository.GetSummariesAsync(site, channel, channel.IsAllContents);
                 var count = ccIds.Count();
 
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
@@ -119,7 +119,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                             }
 
                             contentInfoList.Add(contentInfo);
-                            calculatedContentInfoList.Add(await ColumnsManager.CalculateContentListAsync(sequence++, request.ChannelId, contentInfo, columns, pluginColumns));
+                            calculatedContentInfoList.Add(await ColumnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, contentInfo, columns, pluginColumns));
                         }
                     }
                 }
@@ -154,7 +154,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     }
 
                     contentInfoList.Add(contentInfo);
-                    calculatedContentInfoList.Add(await ColumnsManager.CalculateContentListAsync(sequence++, request.ChannelId, contentInfo, columns, pluginColumns));
+                    calculatedContentInfoList.Add(await ColumnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, contentInfo, columns, pluginColumns));
                 }
             }
 
@@ -163,11 +163,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             {
                 if (request.ExportType == "zip")
                 {
-                    var fileName = $"{channelInfo.ChannelName}.zip";
+                    var fileName = $"{channel.ChannelName}.zip";
                     var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                    var exportObject = new ExportObject(request.SiteId, auth.AdminName);
+                    var exportObject = new ExportObject(site, auth.AdminId);
                     contentInfoList.Reverse();
-                    if (await exportObject.ExportContentsAsync(filePath, contentInfoList))
+                    if (exportObject.ExportContents(filePath, contentInfoList))
                     {
                         downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                     }
@@ -176,9 +176,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 {
                     var exportColumnNames =
                         request.IsAllColumns ? columns.Select(x => x.AttributeName).ToList() : request.ColumnNames;
-                    var fileName = $"{channelInfo.ChannelName}.csv";
+                    var fileName = $"{channel.ChannelName}.csv";
                     var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                    await ExcelObject.CreateExcelFileForContentsAsync(filePath, site, channelInfo, calculatedContentInfoList, exportColumnNames);
+                    await ExcelObject.CreateExcelFileForContentsAsync(filePath, site, channel, calculatedContentInfoList, exportColumnNames);
                     downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                 }
             }

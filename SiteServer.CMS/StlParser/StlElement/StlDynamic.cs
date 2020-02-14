@@ -92,7 +92,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.StlClient);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.StlClient);
 
             //运行解析以便为页面生成所需JS引用
             if (!string.IsNullOrEmpty(template))

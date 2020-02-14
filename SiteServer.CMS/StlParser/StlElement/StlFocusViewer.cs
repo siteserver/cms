@@ -222,7 +222,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle2))
                 {
-                    pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcSwfObject);
+                    await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.JsAcSwfObject);
 
                     var imageUrls = new List<string>();
                     var navigationUrls = new List<string>();
@@ -239,7 +239,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(WebUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -309,7 +309,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                 }
                 else if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle3))
                 {
-                    pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcSwfObject);
+                    await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.JsAcSwfObject);
 
                     var imageUrls = new List<string>();
                     var navigationUrls = new List<string>();
@@ -326,7 +326,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(WebUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -384,7 +384,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
                             navigationUrls.Add(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal));
-                            imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal));
+                            imageUrls.Add(await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal));
                         }
                     }
 
@@ -429,7 +429,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         }
                     }
 
-                    var bgUrl = PageUtility.ParseNavigationUrl(pageInfo.Site,
+                    var bgUrl = PageUtility.ParseNavigationUrlAsync(pageInfo.Site,
                         "@/images/focusviewerbg.png", pageInfo.IsLocal);
                     string scriptHtml = $@"
 <style type=""text/css"">
@@ -508,7 +508,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(WebUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }

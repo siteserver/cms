@@ -1,9 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CacheManager.Core;
+using Datory;
+using Datory.Caching;
 using Datory.Utils;
 using SiteServer.Abstractions;
-using StackExchange.Redis;
+using SiteServer.CMS.Context;
 
 namespace SiteServer.CMS.Core
 {
@@ -68,19 +69,51 @@ namespace SiteServer.CMS.Core
         //    );
         //}
 
-        public static string GetAllKey(string tableName)
+        public static async Task<ICacheManager<object>> GetCacheManagerAsync()
         {
-            return $"ss:{tableName}:all";
+            return await CachingUtils.GetCacheManagerAsync(new Redis(WebConfigUtils.RedisConnectionString));
         }
 
-        public static string GetAllKey(string tableName, int siteId)
+        public class Process
         {
-            return $"ss:{tableName}:all:{siteId}";
+            public int Total { get; set; }
+            public int Current { get; set; }
+            public string Message { get; set; }
         }
 
-        public static string GetAllKey(string tableName, string type, string identity)
+        public static void SetProcess(string guid, string message)
         {
-            return $"ss:{tableName}:all:{type}:{identity}";
+            if (string.IsNullOrEmpty(guid)) return;
+
+            var cache = CacheUtils.Get<Process>(guid);
+            if (cache == null)
+            {
+                cache = new Process
+                {
+                    Total = 100,
+                    Current = 0,
+                    Message = message
+                };
+            }
+            else
+            {
+                cache.Total++;
+                cache.Current++;
+                cache.Message = message;
+            }
+            CacheUtils.InsertHours(guid, cache, 1);
+        }
+
+        public static Process GetProcess(string guid)
+        {
+            var cache = CacheUtils.Get<Process>(guid) ?? new Process
+            {
+                Total = 100,
+                Current = 0,
+                Message = string.Empty
+            };
+
+            return cache;
         }
 
         public static string GetEntityKey(string tableName)

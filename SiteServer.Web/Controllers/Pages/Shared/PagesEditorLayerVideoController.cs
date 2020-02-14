@@ -37,7 +37,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 return Request.BadRequest<UploadResult>("文件只能是主流视频格式，请选择有效的文件上传!");
             }
 
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, UploadType.Video);
+            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, UploadType.Video);
             var filePath = PathUtils.Combine(localDirectoryPath, PathUtility.GetUploadFileName(site, fileName));
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
@@ -76,7 +76,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 return Request.BadRequest<UploadResult>("文件只能是 Image 格式，请选择有效的文件上传!");
             }
 
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, UploadType.Image);
+            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, UploadType.Image);
             var filePath = PathUtils.Combine(localDirectoryPath, PathUtility.GetUploadFileName(site, fileName));
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);

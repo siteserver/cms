@@ -124,14 +124,8 @@ namespace SiteServer.API.Controllers.Pages
 
             var config = await DataProvider.ConfigRepository.GetAsync();
 
-            var siteUrl = PageUtility.GetSiteUrl(site, false);
+            var siteUrl = await PageUtility.GetSiteUrlAsync(site, false);
             var previewUrl = ApiRoutePreview.GetSiteUrl(site.Id);
-
-            var channels = await DataProvider.ChannelRepository.CacheAllAsync(request.SiteId);
-            if (channels != null)
-            {
-                await DataProvider.ContentRepository.CacheAllListAndCountAsync(site, channels);
-            }
 
             return new GetResult
             {
@@ -228,13 +222,14 @@ namespace SiteServer.API.Controllers.Pages
             }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-            var channelIds = await DataProvider.ChannelRepository.GetChannelIdListAsync(request.SiteId);
-
-            await DataProvider.ContentRepository.CacheAllEntityAsync(site, channelIds);
+            await DataProvider.ChannelRepository.CacheAllAsync(site);
+            var channelSummaries = await DataProvider.ChannelRepository.GetAllSummaryAsync(site.Id);
+            await DataProvider.ContentRepository.CacheAllListAndCountAsync(site, channelSummaries);
+            await DataProvider.ContentRepository.CacheAllEntityAsync(site, channelSummaries);
 
             return new IntResult
             {
-                Value = channelIds.Count
+                Value = channelSummaries.Count
             };
         }
 

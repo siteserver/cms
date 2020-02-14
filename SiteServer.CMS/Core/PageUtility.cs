@@ -9,16 +9,16 @@ namespace SiteServer.CMS.Core
 {
     public static class PageUtility
     {
-        public static string GetSiteUrl(Site site, bool isLocal)
+        public static async Task<string> GetSiteUrlAsync(Site site, bool isLocal)
         {
-            return GetSiteUrl(site, string.Empty, isLocal);
+            return await GetSiteUrlAsync(site, string.Empty, isLocal);
         }
 
-        public static string GetSiteUrl(Site site, string requestPath, bool isLocal)
+        public static async Task<string> GetSiteUrlAsync(Site site, string requestPath, bool isLocal)
         {
             var url = isLocal
-                ? GetLocalSiteUrl(site, requestPath)
-                : GetRemoteSiteUrl(site, requestPath);
+                ? await GetLocalSiteUrlAsync(site, requestPath)
+                : await GetRemoteSiteUrlAsync(site, requestPath);
 
             return RemoveDefaultFileName(site, url);
         }
@@ -30,19 +30,19 @@ namespace SiteServer.CMS.Core
                 var siteId = await PathUtility.GetCurrentSiteIdAsync();
                 site = await DataProvider.SiteRepository.GetAsync(siteId);
             }
-            if (string.IsNullOrEmpty(physicalPath)) return site.GetWebUrl();
+            if (string.IsNullOrEmpty(physicalPath)) return await site.GetWebUrlAsync();
 
-            var sitePath = PathUtility.GetSitePath(site);
+            var sitePath = await PathUtility.GetSitePathAsync(site);
             var requestPath = StringUtils.StartsWithIgnoreCase(physicalPath, sitePath)
                 ? StringUtils.ReplaceStartsWithIgnoreCase(physicalPath, sitePath, string.Empty)
                 : string.Empty;
 
-            return GetSiteUrl(site, requestPath, isLocal);
+            return await GetSiteUrlAsync(site, requestPath, isLocal);
         }
 
-        private static string GetRemoteSiteUrl(Site site, string requestPath)
+        private static async Task<string> GetRemoteSiteUrlAsync(Site site, string requestPath)
         {
-            var url = site.GetWebUrl();
+            var url = await site.GetWebUrlAsync();
 
             if (string.IsNullOrEmpty(url))
             {
@@ -69,19 +69,28 @@ namespace SiteServer.CMS.Core
 
             if (!site.IsSeparatedAssets) return url;
 
-            var assetsUrl = PageUtils.Combine(site.GetWebUrl(),
+            var assetsUrl = PageUtils.Combine(await site.GetWebUrlAsync(),
                 site.AssetsDir);
             if (StringUtils.StartsWithIgnoreCase(url, assetsUrl))
             {
-                url = StringUtils.ReplaceStartsWithIgnoreCase(url, assetsUrl, site.GetAssetsUrl());
+                url = StringUtils.ReplaceStartsWithIgnoreCase(url, assetsUrl, await site.GetAssetsUrlAsync());
             }
 
             return url;
         }
 
-        private static string GetLocalSiteUrl(Site site, string requestPath)
+        public static async Task<string> GetLocalSiteUrlAsync(Site site, string requestPath = null)
         {
-            var url = PageUtils.ParseNavigationUrl($"~/{site.SiteDir}");
+            string url;
+            if (site.ParentId == 0)
+            {
+                url = PageUtils.ParseNavigationUrl($"~/{(site.Root ? string.Empty : site.SiteDir)}");
+            }
+            else
+            {
+                var parent = await DataProvider.SiteRepository.GetAsync(site.ParentId);
+                url = await GetLocalSiteUrlAsync(parent, site.SiteDir);
+            }
 
             if (string.IsNullOrEmpty(url))
             {
@@ -117,7 +126,7 @@ namespace SiteServer.CMS.Core
 
             var url = isLocal
                 ? ApiRoutePreview.GetSiteUrl(site.Id)
-                : ParseNavigationUrl(site, createdFileFullName, false);
+                : await ParseNavigationUrlAsync(site, createdFileFullName, false);
 
             return RemoveDefaultFileName(site, url);
         }
@@ -128,7 +137,7 @@ namespace SiteServer.CMS.Core
 
             var url = isLocal
                 ? ApiRoutePreview.GetSpecialUrl(site.Id, specialId)
-                : ParseNavigationUrl(site, specialUrl, false);
+                : await ParseNavigationUrlAsync(site, specialUrl, false);
 
             return RemoveDefaultFileName(site, url);
         }
@@ -139,7 +148,7 @@ namespace SiteServer.CMS.Core
 
             var url = isLocal
                 ? ApiRoutePreview.GetFileUrl(site.Id, fileTemplateId)
-                : ParseNavigationUrl(site, createdFileFullName, false);
+                : await ParseNavigationUrlAsync(site, createdFileFullName, false);
 
             return RemoveDefaultFileName(site, url);
         }
@@ -211,10 +220,10 @@ namespace SiteServer.CMS.Core
 
             if (!string.IsNullOrEmpty(linkUrl))
             {
-                return ParseNavigationUrl(site, linkUrl, false);
+                return await ParseNavigationUrlAsync(site, linkUrl, false);
             }
             var contentUrl = await PathUtility.ContentFilePathRules.ParseAsync(site, channelId, contentCurrent);
-            return GetSiteUrl(site, contentUrl, false);
+            return await GetSiteUrlAsync(site, contentUrl, false);
         }
 
         private static async Task<string> GetContentUrlByIdAsync(Site site, int channelId, int contentId, int sourceId, int referenceId, string linkUrl, bool isLocal)
@@ -257,10 +266,10 @@ namespace SiteServer.CMS.Core
             }
             if (!string.IsNullOrEmpty(linkUrl))
             {
-                return ParseNavigationUrl(site, linkUrl, false);
+                return await ParseNavigationUrlAsync(site, linkUrl, false);
             }
             var contentUrl = await PathUtility.ContentFilePathRules.ParseAsync(site, channelId, contentId);
-            return GetSiteUrl(site, contentUrl, false);
+            return await GetSiteUrlAsync(site, contentUrl, false);
         }
 
         private static async Task<string> GetChannelUrlNotComputedAsync(Site site, int channelId, bool isLocal)
@@ -285,13 +294,13 @@ namespace SiteServer.CMS.Core
                     if (string.IsNullOrEmpty(filePath))
                     {
                         var channelUrl = PathUtility.ChannelFilePathRules.ParseAsync(site, channelId).GetAwaiter().GetResult();
-                        return GetSiteUrl(site, channelUrl, isLocal);
+                        return await GetSiteUrlAsync(site, channelUrl, isLocal);
                     }
-                    return ParseNavigationUrl(site, PathUtility.AddVirtualToPath(filePath), isLocal);
+                    return await ParseNavigationUrlAsync(site, PathUtility.AddVirtualToPath(filePath), isLocal);
                 }
             }
 
-            return ParseNavigationUrl(site, linkUrl, isLocal);
+            return await ParseNavigationUrlAsync(site, linkUrl, isLocal);
         }
 
         //得到栏目经过计算后的连接地址
@@ -432,7 +441,7 @@ namespace SiteServer.CMS.Core
             var channelUrl = await GetChannelUrlAsync(site, node, isLocal);
             if (string.IsNullOrEmpty(channelUrl)) return channelUrl;
 
-            channelUrl = StringUtils.ReplaceStartsWith(channelUrl, site.GetWebUrl(), string.Empty);
+            channelUrl = StringUtils.ReplaceStartsWith(channelUrl, await site.GetWebUrlAsync(), string.Empty);
             channelUrl = channelUrl.Trim('/');
             if (channelUrl != PageUtils.UnclickedUrl)
             {
@@ -455,7 +464,7 @@ namespace SiteServer.CMS.Core
         }
 
         //根据发布系统属性判断是否为相对路径并返回解析后路径
-        public static string ParseNavigationUrl(Site site, string url, bool isLocal)
+        public static async Task<string> ParseNavigationUrlAsync(Site site, string url, bool isLocal)
         {
             if (string.IsNullOrEmpty(url)) return string.Empty;
 
@@ -463,7 +472,7 @@ namespace SiteServer.CMS.Core
             {
                 if (!string.IsNullOrEmpty(url) && url.StartsWith("@"))
                 {
-                    return GetSiteUrl(site, url.Substring(1), isLocal);
+                    return await GetSiteUrlAsync(site, url.Substring(1), isLocal);
                 }
                 return PageUtils.ParseNavigationUrl(url);
             }

@@ -15,6 +15,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
         {
             public List<ContentCheck> ContentChecks { get; set; }
             public Content Content { get; set; }
+            public string State { get; set; }
         }
     }
 }

@@ -10,24 +10,54 @@ namespace SiteServer.CMS.Repositories
 {
     public partial class TemplateRepository
     {
+        public async Task<List<TemplateSummary>> GetSummariesAsync(int siteId)
+        {
+            var list = new List<TemplateSummary>();
+
+            var templateTypes = TranslateUtils.GetEnums<TemplateType>();
+            foreach (var templateType in templateTypes)
+            {
+                var summaries = await GetSummariesAsync(siteId, templateType);
+                list.AddRange(summaries);
+            }
+
+            return list;
+        }
+
         public async Task<List<Template>> GetTemplateListByTypeAsync(int siteId, TemplateType templateType)
         {
-            var list = await GetAllAsync(siteId);
-            return list.Where(x => x.TemplateType == templateType).ToList();
+            var list = new List<Template>();
+
+            var summaries = await GetSummariesAsync(siteId, templateType);
+            foreach (var summary in summaries)
+            {
+                list.Add(await GetAsync(summary.Id));
+            }
+
+            return list;
         }
 
         public async Task<Template> GetTemplateByTemplateNameAsync(int siteId, TemplateType templateType, string templateName)
         {
-            var list = await GetAllAsync(siteId);
-            return list.FirstOrDefault(x => x.TemplateType == templateType && x.TemplateName == templateName);
+            var summaries = await GetSummariesAsync(siteId, templateType);
+            var summary = summaries
+                .FirstOrDefault(x => x.TemplateName == templateName);
+            return summary != null ? await GetAsync(summary.Id) : null;
+        }
+
+        public async Task<bool> ExistsAsync(int siteId, TemplateType templateType, string templateName)
+        {
+            var summaries = await GetSummariesAsync(siteId, templateType);
+            return summaries
+                .Exists(x => x.TemplateName == templateName);
         }
 
         public async Task<Template> GetDefaultTemplateAsync(int siteId, TemplateType templateType)
         {
-            var list = await GetAllAsync(siteId);
-            var template = list.FirstOrDefault(x => x.TemplateType == templateType && x.Default);
-
-            return template ?? new Template
+            var summaries = await GetSummariesAsync(siteId, templateType);
+            var summary = summaries
+                .FirstOrDefault(x => x.Default);
+            return summary != null ? await GetAsync(summary.Id) : new Template
             {
                 SiteId = siteId,
                 TemplateType = templateType
@@ -36,76 +66,72 @@ namespace SiteServer.CMS.Repositories
 
         public async Task<int> GetDefaultTemplateIdAsync(int siteId, TemplateType templateType)
         {
-            var list = await GetAllAsync(siteId);
-            var template = list.FirstOrDefault(x => x.TemplateType == templateType && x.Default);
-            return template?.Id ?? 0;
+            var summaries = await GetSummariesAsync(siteId, templateType);
+            var summary = summaries
+                .FirstOrDefault(x => x.Default);
+            return summary?.Id ?? 0;
         }
 
         public async Task<int> GetTemplateIdByTemplateNameAsync(int siteId, TemplateType templateType, string templateName)
         {
-            var list = await GetAllAsync(siteId);
-            var template = list.FirstOrDefault(x => x.TemplateType == templateType && x.TemplateName == templateName);
-            return template?.Id ?? 0;
+            var summaries = await GetSummariesAsync(siteId, templateType);
+            var summary = summaries
+                .FirstOrDefault(x => x.TemplateName == templateName);
+            return summary?.Id ?? 0;
         }
 
         public async Task<List<string>> GetTemplateNameListAsync(int siteId, TemplateType templateType)
         {
-            var list = await GetAllAsync(siteId);
-            return list.Where(x => x.TemplateType == templateType).Select(x => x.TemplateName).ToList();
+            var summaries = await GetSummariesAsync(siteId, templateType);
+            return summaries.Select(x => x.TemplateName).ToList();
         }
 
         public async Task<List<string>> GetRelatedFileNameListAsync(int siteId, TemplateType templateType)
         {
-            var list = await GetAllAsync(siteId);
-            return list.Where(x => x.TemplateType == templateType).Select(x => x.RelatedFileName).ToList();
+            var list = new List<string>();
+
+            var summaries = await GetSummariesAsync(siteId, templateType);
+            foreach (var summary in summaries)
+            {
+                var template = await GetAsync(summary.Id);
+                list.Add(template.RelatedFileName);
+            }
+
+            return list;
         }
 
         public async Task<List<int>> GetAllFileTemplateIdListAsync(int siteId)
         {
-            var list = await GetAllAsync(siteId);
-            return list.Where(x => x.TemplateType == TemplateType.FileTemplate).Select(x => x.Id).ToList();
+            var summaries = await GetSummariesAsync(siteId, TemplateType.FileTemplate);
+            return summaries.Select(x => x.Id).ToList();
         }
 
         public async Task<string> GetCreatedFileFullNameAsync(int templateId)
         {
-            var createdFileFullName = string.Empty;
-
             var template = await GetAsync(templateId);
-            if (template != null)
-            {
-                createdFileFullName = template.CreatedFileFullName;
-            }
-
-            return createdFileFullName;
+            return template != null ? template.CreatedFileFullName : string.Empty;
         }
 
         public async Task<string> GetTemplateNameAsync(int templateId)
         {
-            var templateName = string.Empty;
-
             var template = await GetAsync(templateId);
-            if (template != null)
-            {
-                templateName = template.TemplateName;
-            }
-
-            return templateName;
+            return template != null ? template.TemplateName : string.Empty;
         }
 
-        public string GetTemplateFilePath(Site site, Template template)
+        public async Task<string> GetTemplateFilePathAsync(Site site, Template template)
         {
             string filePath;
             if (template.TemplateType == TemplateType.IndexPageTemplate)
             {
-                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir, template.RelatedFileName);
+                filePath = await PathUtility.GetSitePathAsync(site, template.RelatedFileName);
             }
             else if (template.TemplateType == TemplateType.ContentTemplate)
             {
-                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir, DirectoryUtils.PublishmentSytem.Template, DirectoryUtils.PublishmentSytem.Content, template.RelatedFileName);
+                filePath = await PathUtility.GetSitePathAsync(site, DirectoryUtils.PublishmentSytem.Template, DirectoryUtils.PublishmentSytem.Content, template.RelatedFileName);
             }
             else
             {
-                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir, DirectoryUtils.PublishmentSytem.Template, template.RelatedFileName);
+                filePath = await PathUtility.GetSitePathAsync(site, DirectoryUtils.PublishmentSytem.Template, template.RelatedFileName);
             }
             return filePath;
         }
@@ -178,10 +204,10 @@ namespace SiteServer.CMS.Repositories
             return template ?? await GetDefaultTemplateAsync(siteId, TemplateType.FileTemplate);
         }
 
-        private async Task WriteContentToTemplateFileAsync(Site site, Template template, string content, string administratorName)
+        private async Task WriteContentToTemplateFileAsync(Site site, Template template, string content, int adminId)
         {
             if (content == null) content = string.Empty;
-            var filePath = GetTemplateFilePath(site, template);
+            var filePath = await GetTemplateFilePathAsync(site, template);
             FileUtils.WriteText(filePath, content);
 
             if (template.Id > 0)
@@ -192,7 +218,7 @@ namespace SiteServer.CMS.Repositories
                     TemplateId = template.Id,
                     SiteId = template.SiteId,
                     AddDate = DateTime.Now,
-                    AddUserName = administratorName,
+                    AdminId = adminId,
                     ContentLength = content.Length,
                     TemplateContent = content
                 };
@@ -205,19 +231,19 @@ namespace SiteServer.CMS.Repositories
             return await GetDefaultTemplateIdAsync(siteId, TemplateType.IndexPageTemplate);
         }
 
-        public string GetTemplateContent(Site site, Template template)
+        public async Task<string> GetTemplateContentAsync(Site site, Template template)
         {
-            var filePath = GetTemplateFilePath(site, template);
-            return GetContentByFilePath(filePath);
+            var filePath = await GetTemplateFilePathAsync(site, template);
+            return await GetContentByFilePathAsync(filePath);
         }
 
-        public string GetIncludeContent(Site site, string file)
+        public async Task<string> GetIncludeContentAsync(Site site, string file)
         {
-            var filePath = PathUtility.MapPath(site, PathUtility.AddVirtualToPath(file));
-            return GetContentByFilePath(filePath);
+            var filePath = await PathUtility.MapPathAsync(site, PathUtility.AddVirtualToPath(file));
+            return await GetContentByFilePathAsync(filePath);
         }
 
-        public string GetContentByFilePath(string filePath)
+        public async Task<string> GetContentByFilePathAsync(string filePath)
         {
             try
             {
@@ -226,7 +252,7 @@ namespace SiteServer.CMS.Repositories
 
                 if (FileUtils.IsFileExists(filePath))
                 {
-                    content = FileUtils.ReadText(filePath);
+                    content = await FileUtils.ReadTextAsync(filePath);
                 }
 
                 DataCacheManager.Insert(filePath, content, TimeSpan.FromHours(12), filePath);
@@ -236,6 +262,39 @@ namespace SiteServer.CMS.Repositories
             {
                 return string.Empty;
             }
+        }
+
+        public async Task<string> GetImportTemplateNameAsync(int siteId, TemplateType templateType, string templateName)
+        {
+            string importTemplateName;
+            if (templateName.IndexOf("_", StringComparison.Ordinal) != -1)
+            {
+                var templateNameCount = 0;
+                var lastTemplateName = templateName.Substring(templateName.LastIndexOf("_", StringComparison.Ordinal) + 1);
+                var firstTemplateName = templateName.Substring(0, templateName.Length - lastTemplateName.Length);
+                try
+                {
+                    templateNameCount = int.Parse(lastTemplateName);
+                }
+                catch
+                {
+                    // ignored
+                }
+                templateNameCount++;
+                importTemplateName = firstTemplateName + templateNameCount;
+            }
+            else
+            {
+                importTemplateName = templateName + "_1";
+            }
+
+            var exists = await ExistsAsync(siteId, templateType, importTemplateName);
+            if (exists)
+            {
+                importTemplateName = await GetImportTemplateNameAsync(siteId, templateType, importTemplateName);
+            }
+
+            return importTemplateName;
         }
     }
 }

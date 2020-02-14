@@ -86,7 +86,7 @@ namespace SiteServer.CMS.Core
 
         public static async Task SyncContentTablesAsync()
         {
-            var tableNameList = await DataProvider.SiteRepository.GetAllTableNameListAsync();
+            var tableNameList = await DataProvider.SiteRepository.GetAllTableNamesAsync();
             foreach (var tableName in tableNameList)
             {
                 if (!await WebConfigUtils.Database.IsTableExistsAsync(tableName))

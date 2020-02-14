@@ -55,6 +55,11 @@ var methods = {
     }
   },
 
+  updateGroups: function(res, message) {
+    this.groupNames = res.groupNames;
+    this.$message.success(message);
+  },
+
   apiList: function(message, expandedChannelIds) {
     var $this = this;
 
@@ -92,6 +97,9 @@ var methods = {
       var res = response.data;
 
       $this.editChannel = res.channel;
+      if (!$this.editChannel.groupNames) {
+        $this.editChannel.groupNames = [];
+      }
       $this.editLinkTypes = res.linkTypes;
       $this.editTaxisTypes = res.taxisTypes;
       $this.editStyles = res.styles;
@@ -227,6 +235,15 @@ var methods = {
       url: url,
       width: 800,
       height: 500
+    });
+  },
+
+  btnEditAddGroupClick: function() {
+    utils.openLayer({
+      title: '新增栏目组',
+      url: '../Shared/groupChannelLayerAdd.cshtml?siteId=' + this.siteId,
+      width: 500,
+      height: 300
     });
   },
 

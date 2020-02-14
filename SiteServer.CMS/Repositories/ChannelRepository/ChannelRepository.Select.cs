@@ -10,11 +10,6 @@ namespace SiteServer.CMS.Repositories
 {
     public partial class ChannelRepository
     {
-        private string GetAllKey(int siteId)
-        {
-            return Caching.GetAllKey(_repository.TableName, siteId);
-        }
-
         private string GetListKey(int siteId)
         {
             return Caching.GetListKey(_repository.TableName, siteId);
@@ -25,17 +20,14 @@ namespace SiteServer.CMS.Repositories
             return Caching.GetEntityKey(_repository.TableName, channelId);
         }
 
-        public async Task<List<Channel>> CacheAllAsync(int siteId)
+        public async Task CacheAllAsync(Site site)
         {
-            List<Channel> channels = null;
-            var allKey = GetAllKey(siteId);
-
             var cacheManager = await _repository.GetCacheManagerAsync();
 
-            if (!cacheManager.Exists(allKey))
+            if (!cacheManager.Exists(GetListKey(site.Id)) || !cacheManager.Exists(GetEntityKey(site.Id)))
             {
-                channels = await _repository.GetAllAsync(Q
-                    .Where(nameof(Channel.SiteId), siteId)
+                var channels = await _repository.GetAllAsync(Q
+                    .Where(nameof(Channel.SiteId), site.Id)
                 );
 
                 foreach (var channel in channels)
@@ -58,15 +50,11 @@ namespace SiteServer.CMS.Repositories
                         AddDate = x.AddDate
                     }).ToList();
 
-                cacheManager.Put(GetListKey(siteId), summaries);
-
-                cacheManager.Put(allKey, true);
+                cacheManager.Put(GetListKey(site.Id), summaries);
             }
-
-            return channels;
         }
 
-        private async Task<List<ChannelSummary>> GetAllSummaryAsync(int siteId)
+        public async Task<List<ChannelSummary>> GetAllSummaryAsync(int siteId)
         {
             return await _repository.GetAllAsync<ChannelSummary>(Q
                 .Select(nameof(Channel.Id), nameof(Channel.ChannelName), nameof(Channel.ParentId), nameof(Channel.IndexName), nameof(Channel.Taxis), nameof(Channel.AddDate))

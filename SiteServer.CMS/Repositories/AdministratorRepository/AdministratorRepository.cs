@@ -95,7 +95,7 @@ namespace SiteServer.CMS.Repositories
 
         public async Task<List<int>> UpdateSiteIdAsync(Administrator administrator, int siteId)
         {
-            if (administrator == null) return null;
+            if (administrator == null || siteId <= 0) return null;
 
             var siteIdListLatestAccessed = Utilities.GetIntList(administrator.SiteIds);
             if (administrator.SiteId != siteId || siteIdListLatestAccessed.FirstOrDefault() != siteId)
@@ -103,7 +103,7 @@ namespace SiteServer.CMS.Repositories
                 siteIdListLatestAccessed.Remove(siteId);
                 siteIdListLatestAccessed.Insert(0, siteId);
 
-                administrator.SiteIds = siteIdListLatestAccessed;
+                administrator.SiteIds = siteIdListLatestAccessed.Distinct().ToList();
                 administrator.SiteId = siteId;
 
                 var cacheKeys = GetCacheKeys(administrator);

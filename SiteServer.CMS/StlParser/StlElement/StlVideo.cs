@@ -133,10 +133,10 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(videoUrl)) return string.Empty;
 
-            videoUrl = PageUtility.ParseNavigationUrl(pageInfo.Site, videoUrl, pageInfo.IsLocal);
-            imageUrl = PageUtility.ParseNavigationUrl(pageInfo.Site, imageUrl, pageInfo.IsLocal);
+            videoUrl = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, videoUrl, pageInfo.IsLocal);
+            imageUrl = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
 
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcVideoJs);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.JsAcVideoJs);
 
             var dict = new Dictionary<string, string>
             {

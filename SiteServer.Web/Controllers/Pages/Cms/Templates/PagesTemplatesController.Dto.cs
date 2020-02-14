@@ -25,10 +25,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
 
         private static async Task<GetResult> GetResultAsync(Site site)
         {
+            var channels = new List<Channel>();
             var children = await DataProvider.ChannelRepository.GetCascadeChildrenAsync(site, site.Id,
                 async summary =>
                 {
                     var entity = await DataProvider.ChannelRepository.GetAsync(summary.Id);
+                    channels.Add(entity);
                     return new
                     {
                         entity.ChannelTemplateId,
@@ -36,38 +38,33 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                     };
                 });
 
-            var allTemplates = await DataProvider.TemplateRepository.GetAllAsync(site.Id);
+            var summaries = await DataProvider.TemplateRepository.GetSummariesAsync(site.Id);
             var templates = new List<Template>();
-            foreach (var template in allTemplates)
+            foreach (var summary in summaries)
             {
-                template.Set("useCount", DataProvider.ChannelRepository.GetTemplateUseCount(site.Id, template.Id, template.TemplateType, template.Default));
+                var original = await DataProvider.TemplateRepository.GetAsync(summary.Id);
+                var template = original.Clone<Template>();
+
+                template.Set("useCount", await DataProvider.ChannelRepository.GetTemplateUseCountAsync(site.Id, template.Id, template.TemplateType, template.Default, channels));
+
                 if (template.TemplateType == TemplateType.IndexPageTemplate)
                 {
-                    template.Set("url", PageUtility.ParseNavigationUrl(site, template.CreatedFileFullName, false));
+                    template.Set("url", PageUtility.ParseNavigationUrlAsync(site, template.CreatedFileFullName, false));
                     templates.Add(template);
                 }
-            }
-            foreach (var template in allTemplates)
-            {
-                if (template.TemplateType == TemplateType.ChannelTemplate)
+                else if (template.TemplateType == TemplateType.ChannelTemplate)
                 {
-                    template.Set("channelIds", await DataProvider.ChannelRepository.GetChannelIdListByTemplateIdAsync(site.Id, true, template.Id));
+                    template.Set("channelIds", DataProvider.ChannelRepository.GetChannelIdListByTemplateId(true, template.Id, channels));
                     templates.Add(template);
                 }
-            }
-            foreach (var template in allTemplates)
-            {
-                if (template.TemplateType == TemplateType.ContentTemplate)
+                else if (template.TemplateType == TemplateType.ContentTemplate)
                 {
-                    template.Set("channelIds", await DataProvider.ChannelRepository.GetChannelIdListByTemplateIdAsync(site.Id, false, template.Id));
+                    template.Set("channelIds", DataProvider.ChannelRepository.GetChannelIdListByTemplateId(false, template.Id, channels));
                     templates.Add(template);
                 }
-            }
-            foreach (var template in allTemplates)
-            {
-                if (template.TemplateType == TemplateType.FileTemplate)
+                else if (template.TemplateType == TemplateType.FileTemplate)
                 {
-                    template.Set("url", PageUtility.ParseNavigationUrl(site, template.CreatedFileFullName, false));
+                    template.Set("url", PageUtility.ParseNavigationUrlAsync(site, template.CreatedFileFullName, false));
                     templates.Add(template);
                 }
             }

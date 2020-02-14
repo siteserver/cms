@@ -17,8 +17,7 @@ namespace SiteServer.API.Controllers.V1
             if (channelId.HasValue)
             {
                 //query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
-                var channel = await DataProvider.ChannelRepository.GetAsync(channelId.Value);
-                var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(channel, EScopeType.All);
+                var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, channelId.Value, EScopeType.All);
 
                 query.WhereIn(nameof(Abstractions.Content.ChannelId), channelIds);
             }

@@ -69,9 +69,9 @@ namespace SiteServer.BackgroundPages.Cms
 
                     HifFile.PostedFile.SaveAs(localFilePath);
 
-                    var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
+                    var importObject = new ImportObject(Site, AuthRequest.AdminId);
                     var nodeInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
-                    importObject.ImportContentsByZipFileAsync(nodeInfo, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel).GetAwaiter().GetResult();
+                    importObject.ImportContentsByZipFileAsync(nodeInfo, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel, null).GetAwaiter().GetResult();
                 }
                 else if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentExcel))
                 {
@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     HifFile.PostedFile.SaveAs(localFilePath);
 
-                    var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
+                    var importObject = new ImportObject(Site, AuthRequest.AdminId);
                     importObject.ImportContentsByCsvFileAsync(_channelId, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel).GetAwaiter().GetResult();
                 }
                 else if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentTxtZip))
@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     HifFile.PostedFile.SaveAs(localFilePath);
 
-                    var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
+                    var importObject = new ImportObject(Site, AuthRequest.AdminId);
                     importObject.ImportContentsByTxtZipFileAsync(_channelId, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel).GetAwaiter().GetResult();
                 }
 

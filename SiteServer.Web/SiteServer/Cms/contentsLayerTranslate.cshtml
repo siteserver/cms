@@ -35,13 +35,16 @@
 <div style="height: 10px"></div>
 
 <el-form size="small" ref="form" :model="form" :inline="true">
-  <el-form-item label="转移到站点" prop="transSiteId" :rules="{ required: true, message: '请选择转移到的站点' }">
-    <el-select
-      v-model="form.transSiteId"
+  <el-form-item label="转移到站点" prop="transSiteIds" :rules="{ required: true, message: '请选择转移到的站点' }">
+    <el-cascader
+      v-model="form.transSiteIds"
+      :options="transSites"
+      :props="{ checkStrictly: true }"
+      :multiple="false"
+      v-on:change="handleTransSiteIdChange"
       filterable
-      v-on:change="handleTransSiteIdChange">
-      <el-option v-for="transSite in transSites" :key="transSite.value" :value="transSite.value" :label="transSite.label"></el-option>
-    </el-select>
+      placeholder="请选择站点">
+    </el-cascader>
   </el-form-item>
   <el-form-item v-if="transChannels" label="转移到栏目" prop="transChannelIds" :rules="{ required: true, message: '请选择转移到的栏目' }">
     <el-cascader

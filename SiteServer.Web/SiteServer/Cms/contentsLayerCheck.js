@@ -13,7 +13,7 @@ var data = utils.initData({
     checkedLevel: null,
     reasons: null,
     isTranslate: false,
-    transSiteId: null,
+    transSiteIds: [],
     transChannelIds: [],
   }
 });
@@ -36,6 +36,8 @@ var methods = {
       $this.checkedLevels = res.checkedLevels;
       $this.transSites = res.transSites;
       $this.form.checkedLevel = res.checkedLevel;
+      $this.form.transSiteIds = [$this.siteId];
+      $this.apiGetOptions();
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -54,7 +56,7 @@ var methods = {
       checkedLevel: this.form.checkedLevel,
       reasons: this.form.reasons,
       isTranslate: this.form.isTranslate,
-      transSiteId: this.form.transSiteId,
+      transSiteId: this.form.transSiteIds.length === 0 ? 0 : this.form.transSiteIds[this.form.transSiteIds.length - 1],
       transChannelId: this.form.transChannelIds.length === 0 ? 0 : this.form.transChannelIds[this.form.transChannelIds.length - 1],
     }).then(function (response) {
       var res = response.data;
@@ -71,19 +73,17 @@ var methods = {
   apiGetOptions: function() {
     var $this = this;
 
-    utils.loading(this, true);
     $api.post($url + '/actions/options', {
       siteId: this.siteId,
       channelId: this.channelId,
-      transSiteId: this.form.transSiteId
+      transSiteId: this.form.transSiteIds.length === 0 ? 0 : this.form.transSiteIds[this.form.transSiteIds.length - 1],
     }).then(function (response) {
       var res = response.data;
 
       $this.transChannels = [res.transChannels];
+      $this.form.transChannelIds = null;
     }).catch(function (error) {
       utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
     });
   },
 
@@ -112,7 +112,7 @@ var methods = {
   },
 };
 
-new Vue({
+var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,

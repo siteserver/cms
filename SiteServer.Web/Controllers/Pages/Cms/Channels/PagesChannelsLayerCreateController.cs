@@ -19,7 +19,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
         public async Task<List<int>> Create([FromBody] CreateRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Channels);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
+            {
+                return Request.Unauthorized<List<int>>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<List<int>>();
@@ -44,7 +48,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                 }
                 if (request.IsIncludeChildren)
                 {
-                    var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(channel, EScopeType.Descendant);
+                    var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, channelId, EScopeType.Descendant);
 
                     foreach (var childChannelId in channelIds)
                     {

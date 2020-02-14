@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
             LtlTitle.Text = contentInfo.Title;
             LtlState.Text = CheckManager.GetCheckState(Site, contentInfo);
 
-            var checkInfoList = DataProvider.ContentCheckRepository.GetCheckListAsync(_tableName, _contentId).GetAwaiter().GetResult();
+            var checkInfoList = DataProvider.ContentCheckRepository.GetCheckListAsync(contentInfo.SiteId, contentInfo.ChannelId, _contentId).GetAwaiter().GetResult();
             if (checkInfoList.Any())
             {
                 PhCheckReasons.Visible = true;
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlCheckDate = (Literal)e.Item.FindControl("ltlCheckDate");
             var ltlReasons = (Literal)e.Item.FindControl("ltlReasons");
 
-            ltlUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(checkInfo.AdminId).GetAwaiter().GetResult();
+            ltlUserName.Text = DataProvider.AdministratorRepository.GetDisplayAsync(checkInfo.AdminId).GetAwaiter().GetResult();
             ltlCheckDate.Text = DateUtils.GetDateAndTimeString(checkInfo.CheckDate);
             ltlReasons.Text = checkInfo.Reasons;
         }

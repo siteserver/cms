@@ -48,12 +48,14 @@ namespace SiteServer.Abstractions
         {
             public const string PluginsAdd = "plugins_add";
             public const string PluginsManagement = "plugins_management";
-            public const string SettingsSiteAdd = "settings_siteAdd";
-            public const string SettingsSite = "settings_site";
-            public const string SettingsSiteUrl = "settings_siteUrl";
-            public const string SettingsSiteTables = "settings_siteTables";
-            public const string SettingsSiteTemplates = "settings_siteTemplates";
-            public const string SettingsSiteTemplatesOnline = "settings_siteTemplatesOnline";
+
+            public const string SettingsSitesAdd = "settings_sitesAdd";
+            public const string SettingsSites = "settings_sites";
+            public const string SettingsSitesUrl = "settings_sitesUrl";
+            public const string SettingsSitesTables = "settings_sitesTables";
+            public const string SettingsSitesTemplates = "settings_sitesTemplates";
+            public const string SettingsSitesTemplatesOnline = "settings_sitesTemplatesOnline";
+
             public const string SettingsAdmin = "settings_admin";
             public const string SettingsAdminRole = "settings_adminRole";
             public const string SettingsAdminConfig = "settings_adminConfig";
@@ -85,12 +87,10 @@ namespace SiteServer.Abstractions
             public const string Contents = "site_contents";
             public const string Channels = "site_channels";
             public const string ContentsSearch = "site_contentsSearch";
-            public const string ContentsWriting = "site_contentsWriting";
-            public const string ContentsMy = "site_contentsMy";
-            public const string ContentsTranslate = "site_contentsTranslate";
+            public const string ChannelsTranslate = "site_channelsTranslate";
             public const string ContentsCheck = "site_contentsCheck";
             public const string Library = "site_library";
-            public const string ContentsTrash = "site_contentsTrash";
+            public const string ContentsRecycle = "site_contentsRecycle";
             public const string Templates = "site_templates";
             public const string Specials = "site_specials";
             public const string TemplateMatch = "site_templateMatch";

@@ -1,16 +1,17 @@
-﻿using SiteServer.CMS.StlParser.Model;
+﻿using System.Threading.Tasks;
+using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
     public static class EditorUtility
     {
-        public static string Parse(PageInfo pageInfo, string parsedContent)
+        public static async Task<string> ParseAsync(PageInfo pageInfo, string parsedContent)
         {
             if (parsedContent.Contains(" data-vue="))
             {
-                pageInfo.AddPageHeadCodeIfNotExists(PageInfo.Const.Jquery);
-                pageInfo.AddPageHeadCodeIfNotExists(PageInfo.Const.Vue);
-                pageInfo.AddPageHeadCodeIfNotExists(PageInfo.Const.VueElement);
+                await pageInfo.AddPageHeadCodeIfNotExistsAsync(PageInfo.Const.Jquery);
+                await pageInfo.AddPageHeadCodeIfNotExistsAsync(PageInfo.Const.Vue);
+                await pageInfo.AddPageHeadCodeIfNotExistsAsync(PageInfo.Const.VueElement);
 
                 var uniqueId = pageInfo.UniqueId;
                 parsedContent = parsedContent.Replace("<p>", "<div>");

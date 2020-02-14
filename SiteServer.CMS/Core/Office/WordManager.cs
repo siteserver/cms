@@ -37,7 +37,7 @@ namespace SiteServer.CMS.Core.Office
             string imageDirectoryUrl;
             if (siteInfo != null)
             {
-                imageDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, UploadType.Image);
+                imageDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(siteInfo, UploadType.Image);
                 imageDirectoryUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(siteInfo, imageDirectoryPath, true);
             }
             else
@@ -66,7 +66,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (siteInfo != null)
             {
-                content = ContentUtility.TextEditorContentDecode(siteInfo, content, true);
+                content = await ContentUtility.TextEditorContentDecodeAsync(siteInfo, content, true);
             }
 
             return (title, content);

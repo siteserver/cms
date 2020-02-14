@@ -50,7 +50,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var pageParameters = pageInfo.Parameters;
             pageInfo.Parameters = parameters;
 
-            var content = DataProvider.TemplateRepository.GetIncludeContent(pageInfo.Site, file);
+            var content = await DataProvider.TemplateRepository.GetIncludeContentAsync(pageInfo.Site, file);
             var contentBuilder = new StringBuilder(content);
             await StlParserManager.ParseTemplateContentAsync(contentBuilder, pageInfo, contextInfo);
             var parsedContent = contentBuilder.ToString();

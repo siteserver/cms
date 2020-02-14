@@ -72,7 +72,7 @@ var methods = {
 
 Vue.component('v-chart', VueECharts);
 
-new Vue({
+var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,

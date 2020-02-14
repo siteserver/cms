@@ -1,1 +1,0 @@
-﻿<%@ WebHandler Language="C#" Class="SiteServer.BackgroundPages.Cms.ModalTextEditorInsertImageHandler" %>

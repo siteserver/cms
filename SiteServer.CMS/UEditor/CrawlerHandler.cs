@@ -102,7 +102,7 @@ namespace SiteServer.CMS.UEditor
                 }
                 //ServerUrl = PathFormatter.Format(Path.GetFileName(SourceUrl), Config.GetString("catcherPathFormat"));
                 //var savePath = Server.MapPath(ServerUrl);
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(PubSystemInfo, UploadType.Image);
+                var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(PubSystemInfo, UploadType.Image);
                 var localFileName = PathUtility.GetUploadFileName(PubSystemInfo, uploadFileName);
                 var savePath = PathUtils.Combine(localDirectoryPath, localFileName); 
                 

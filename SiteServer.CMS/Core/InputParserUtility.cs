@@ -85,11 +85,11 @@ namespace SiteServer.CMS.Core
             //}
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = ContentUtility.TextEditorContentDecode(site, parsedContent, true);
+                parsedContent = await ContentUtility.TextEditorContentDecodeAsync(site, parsedContent, true);
             }
             else if (inputType == InputType.Image)
             {
-                parsedContent = GetImageOrFlashHtml(site, parsedContent, attributes, isStlEntity);
+                parsedContent = await GetImageOrFlashHtmlAsync(site, parsedContent, attributes, isStlEntity);
             }
             else if (inputType == InputType.Video)
             {
@@ -154,13 +154,13 @@ namespace SiteServer.CMS.Core
             }
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = ContentUtility.TextEditorContentDecode(site, value, true);
+                parsedContent = await ContentUtility.TextEditorContentDecodeAsync(site, value, true);
             }
             else if (inputType == InputType.Image)
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetImageOrFlashHtml(site, value, attributes, isStlEntity);
+                    parsedContent = await GetImageOrFlashHtmlAsync(site, value, attributes, isStlEntity);
                 }
                 else
                 {
@@ -173,7 +173,7 @@ namespace SiteServer.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = GetImageOrFlashHtml(site, extendValue, attributes, isStlEntity);
+                                parsedContent = await GetImageOrFlashHtmlAsync(site, extendValue, attributes, isStlEntity);
                                 break;
                             }
                             index++;
@@ -239,12 +239,12 @@ namespace SiteServer.CMS.Core
             return parsedContent;
         }
 
-        public static string GetImageOrFlashHtml(Site site, string imageUrl, NameValueCollection attributes, bool isStlEntity)
+        public static async Task<string> GetImageOrFlashHtmlAsync(Site site, string imageUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(imageUrl))
             {
-                imageUrl = PageUtility.ParseNavigationUrl(site, imageUrl, false);
+                imageUrl = await PageUtility.ParseNavigationUrlAsync(site, imageUrl, false);
                 if (isStlEntity)
                 {
                     retVal = imageUrl;
@@ -305,7 +305,7 @@ namespace SiteServer.CMS.Core
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(videoUrl))
             {
-                videoUrl = PageUtility.ParseNavigationUrl(site, videoUrl, false);
+                videoUrl = await PageUtility.ParseNavigationUrlAsync(site, videoUrl, false);
                 if (isStlEntity)
                 {
                     retVal = videoUrl;

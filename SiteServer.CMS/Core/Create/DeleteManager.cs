@@ -101,7 +101,7 @@ namespace SiteServer.CMS.Core.Create
                     return;
                 }
 
-                var filePath = PathUtility.MapPath(site, templateInfo.CreatedFileFullName);
+                var filePath = await PathUtility.MapPathAsync(site, templateInfo.CreatedFileFullName);
 
                 FileUtils.DeleteFileIfExists(filePath);
             }

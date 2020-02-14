@@ -53,7 +53,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 return Request.BadRequest<StringResult>("图片文件不存在，请重新选择");
             }
 
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, UploadType.Image);
+            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, UploadType.Image);
             var filePath = PathUtils.Combine(localDirectoryPath, PathUtility.GetUploadFileName(site, libraryFilePath));
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);

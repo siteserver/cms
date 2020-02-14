@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context.Enumerations;
@@ -40,9 +40,9 @@ namespace SiteServer.CMS.Core
             return DirectoryUtils.IsDirectoryExists(siteTemplatePath);
         }
 
-        public SortedList GetSiteTemplateSortedList()
+        public List<SiteTemplateInfo> GetSiteTemplateInfoList()
         {
-            var sortedList = new SortedList();
+            var siteTemplateInfoList = new List<SiteTemplateInfo>();
             var directoryPaths = DirectoryUtils.GetDirectoryPaths(_rootPath);
             foreach (var siteTemplatePath in directoryPaths)
             {
@@ -63,9 +63,10 @@ namespace SiteServer.CMS.Core
                 }
 
                 siteTemplateInfo.DirectoryName = directoryName;
-                sortedList.Add(directoryName, siteTemplateInfo);
+                siteTemplateInfoList.Add(siteTemplateInfo);
             }
-            return sortedList;
+
+            return siteTemplateInfoList.OrderBy(x => x.DirectoryName).ToList();
         }
 
         public List<string> GetZipSiteTemplateList()
@@ -81,43 +82,47 @@ namespace SiteServer.CMS.Core
             return list;
         }
 
-        public async Task ImportSiteTemplateToEmptySiteAsync(int siteId, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, string administratorName)
+        public async Task ImportSiteTemplateToEmptySiteAsync(Site site, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, int adminId, string guid)
         {
             var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
-            if (DirectoryUtils.IsDirectoryExists(siteTemplatePath))
+            if (!DirectoryUtils.IsDirectoryExists(siteTemplatePath)) return;
+
+            var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
+            var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
+            var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
+            var siteContentDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
+
+            var importObject = new ImportObject(site, adminId);
+
+            Caching.SetProcess(guid, $"导入站点文件: {siteTemplatePath}");
+            await importObject.ImportFilesAsync(siteTemplatePath, true, guid);
+
+            Caching.SetProcess(guid, $"导入模板文件: {templateFilePath}");
+            await importObject.ImportTemplatesAsync(templateFilePath, true, adminId, guid);
+
+            Caching.SetProcess(guid, $"导入配置文件: {configurationFilePath}");
+            await importObject.ImportConfigurationAsync(configurationFilePath, guid);
+
+            var filePathList = ImportObject.GetSiteContentFilePathList(siteContentDirectoryPath);
+            foreach (var filePath in filePathList)
             {
-                var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
-                var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
-                var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
-                var siteContentDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
-
-                var importObject = new ImportObject(siteId, administratorName);
-
-                await importObject.ImportFilesAsync(siteTemplatePath, true);
-
-                await importObject.ImportTemplatesAsync(templateFilePath, true, administratorName);
-
-                await importObject.ImportConfigurationAsync(configurationFilePath);
-
-                var filePathList = ImportObject.GetSiteContentFilePathList(siteContentDirectoryPath);
-
-                foreach (var filePath in filePathList)
-                {
-                    await importObject.ImportSiteContentAsync(siteContentDirectoryPath, filePath, isImportContents);
-                }
-
-                if (isImportTableStyles)
-                {
-                    await importObject.ImportTableStylesAsync(tableDirectoryPath);
-                }
-
-                await importObject.RemoveDbCacheAsync();
+                Caching.SetProcess(guid, $"导入栏目文件: {filePath}");
+                await importObject.ImportSiteContentAsync(siteContentDirectoryPath, filePath, isImportContents, guid);
             }
+
+            if (isImportTableStyles)
+            {
+                Caching.SetProcess(guid, $"导入表字段: {tableDirectoryPath}");
+                await importObject.ImportTableStylesAsync(tableDirectoryPath, guid);
+            }
+
+            Caching.SetProcess(guid, "清除数据库缓存...");
+            await importObject.RemoveDbCacheAsync();
         }
 
-        public static async Task ExportSiteToSiteTemplateAsync(Site site, string siteTemplateDir, string adminName)
+        public static async Task ExportSiteToSiteTemplateAsync(Site site, string siteTemplateDir, int adminId)
         {
-            var exportObject = new ExportObject(site.Id, adminName);
+            var exportObject = new ExportObject(site, adminId);
 
             var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
 

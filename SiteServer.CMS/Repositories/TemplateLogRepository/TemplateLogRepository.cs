@@ -47,7 +47,12 @@ namespace SiteServer.CMS.Repositories
                 .OrderByDesc(nameof(TemplateLog.Id))
             );
 
-            return list.Select(templateLog => new KeyValuePair<int, string>(templateLog.Id, $"修订时间：{DateUtils.GetDateAndTimeString(templateLog.AddDate)}，修订人：{templateLog.AddUserName}，字符数：{templateLog.ContentLength}"));
+            return list.Select(templateLog =>
+            {
+                var display = DataProvider.AdministratorRepository.GetDisplayAsync(templateLog.AdminId);
+                return new KeyValuePair<int, string>(templateLog.Id,
+                    $"修订时间：{DateUtils.GetDateAndTimeString(templateLog.AddDate)}，修订人：{display}，字符数：{templateLog.ContentLength}");
+            });
         }
 
         public async Task DeleteAsync(int logId)

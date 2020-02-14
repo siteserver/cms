@@ -6,10 +6,8 @@ using Datory;
 using Datory.Utils;
 using SiteServer.CMS.Context.Atom.Atom.AdditionalElements;
 using SiteServer.CMS.Context.Atom.Atom.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Repositories;
-
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -26,55 +24,52 @@ namespace SiteServer.CMS.ImportExport.Components
             _site = site;
         }
 
-        public async Task ImportNodeInfoAsync(Channel node, ScopedElementCollection additionalElements, int parentId, IList indexNameList)
+        public async Task ImportChannelAsync(Channel channel, ScopedElementCollection additionalElements, int parentId, IList indexNameList)
         {
-            node.ChannelName = AtomUtility.GetDcElementContent(additionalElements, new List<string>{ nameof(Channel.ChannelName), "NodeName" });
-            node.SiteId = _site.Id;
+            channel.ChannelName = AtomUtility.GetDcElementContent(additionalElements, new List<string>{ nameof(Channel.ChannelName), "NodeName" });
+            channel.SiteId = _site.Id;
             var contentModelPluginId = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ContentModelPluginId));
             if (!string.IsNullOrEmpty(contentModelPluginId))
             {
-                node.ContentModelPluginId = contentModelPluginId;
+                channel.ContentModelPluginId = contentModelPluginId;
             }
             var contentRelatedPluginIdList = Utilities.GetStringList(AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ContentRelatedPluginIds)));
-            node.ContentRelatedPluginIds = contentRelatedPluginIdList;
-            node.ParentId = parentId;
+            channel.ContentRelatedPluginIds = contentRelatedPluginIdList;
+            channel.ParentId = parentId;
             var indexName = AtomUtility.GetDcElementContent(additionalElements, new List<string> { nameof(Channel.IndexName), "NodeIndexName" });
             if (!string.IsNullOrEmpty(indexName) && indexNameList.IndexOf(indexName) == -1)
             {
-                node.IndexName = indexName;
+                channel.IndexName = indexName;
                 indexNameList.Add(indexName);
             }
-            node.GroupNames = Utilities.GetStringList(AtomUtility.GetDcElementContent(additionalElements, new List<string> { nameof(Channel.GroupNames), "NodeGroupNameCollection" }));
-            node.AddDate = DateTime.Now;
-            node.ImageUrl = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ImageUrl));
-            node.Content = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.Content)));
-            node.FilePath = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.FilePath));
-            node.ChannelFilePathRule = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ChannelFilePathRule));
-            node.ContentFilePathRule = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ContentFilePathRule));
+            channel.GroupNames = Utilities.GetStringList(AtomUtility.GetDcElementContent(additionalElements, new List<string> { nameof(Channel.GroupNames), "NodeGroupNameCollection" }));
+            channel.AddDate = DateTime.Now;
+            channel.ImageUrl = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ImageUrl));
+            channel.Content = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.Content)));
+            channel.FilePath = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.FilePath));
+            channel.ChannelFilePathRule = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ChannelFilePathRule));
+            channel.ContentFilePathRule = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ContentFilePathRule));
 
-            node.LinkUrl = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.LinkUrl));
-            node.LinkType = TranslateUtils.ToEnum(AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.LinkType)), LinkType.None);
+            channel.LinkUrl = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.LinkUrl));
+            channel.LinkType = TranslateUtils.ToEnum(AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.LinkType)), LinkType.None);
 
             var channelTemplateName = AtomUtility.GetDcElementContent(additionalElements, ChannelTemplateName);
             if (!string.IsNullOrEmpty(channelTemplateName))
             {
-                node.ChannelTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ChannelTemplate, channelTemplateName);
+                channel.ChannelTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ChannelTemplate, channelTemplateName);
             }
             var contentTemplateName = AtomUtility.GetDcElementContent(additionalElements, ContentTemplateName);
             if (!string.IsNullOrEmpty(contentTemplateName))
             {
-                node.ContentTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ContentTemplate, contentTemplateName);
+                channel.ContentTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ContentTemplate, contentTemplateName);
             }
 
-            node.Keywords = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.Keywords));
-            node.Description = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.Description));
-
-            node.LoadExtend();
-
-            var json = AtomUtility.GetDcElementContent(additionalElements, "ExtendValues");
+            channel.Keywords = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.Keywords));
+            channel.Description = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.Description));
+            channel.LoadExtend(AtomUtility.GetDcElementContent(additionalElements, "ExtendValues"));
         }
 
-        public async Task<AtomFeed> ExportNodeInfoAsync(Channel channel)
+        public async Task<AtomFeed> ExportChannelAsync(Channel channel)
         {
             var feed = AtomUtility.GetEmptyFeed();
 

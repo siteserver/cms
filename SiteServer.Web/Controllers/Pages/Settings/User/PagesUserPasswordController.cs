@@ -57,7 +57,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
                 if (user == null) return NotFound();
 
                 var password = request.GetPostString("password");
-                var valid = await DataProvider.UserRepository.ChangePasswordAsync(user.UserName, password);
+                var valid = await DataProvider.UserRepository.ChangePasswordAsync(user.Id, password);
                 if (!valid.IsValid)
                 {
                     return BadRequest($"更改密码失败：{valid.ErrorMessage}");

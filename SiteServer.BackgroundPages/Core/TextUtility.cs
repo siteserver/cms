@@ -77,7 +77,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.SourceId))
             {
-                value = await SourceManager.GetSourceNameAsync(content.SourceId);
+                value = await SourceManager.GetSourceNameAsync(content.SiteId, content.SourceId);
             }
             else if (StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.TagNames)))
             {

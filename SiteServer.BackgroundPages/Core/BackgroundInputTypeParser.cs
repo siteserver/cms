@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (inputType == InputType.TextEditor)
             {
-                retVal = ParseTextEditor(attributes, style.AttributeName, site, pageScripts, extraBuilder);
+                retVal = await ParseTextEditorAsync(attributes, style.AttributeName, site, pageScripts, extraBuilder);
             }
             else if (inputType == InputType.SelectOne)
             {
@@ -265,11 +265,11 @@ $('#Title').keyup(function (e) {
                 $@"<textarea id=""{tableStyle.AttributeName}"" name=""{tableStyle.AttributeName}"" class=""form-control"" {style} {validateAttributes}>{value}</textarea>";
         }
 
-        public static string ParseTextEditor(IDictionary<string, object> attributes, string attributeName, Site site, NameValueCollection pageScripts, StringBuilder extraBuilder)
+        public static async Task<string> ParseTextEditorAsync(IDictionary<string, object> attributes, string attributeName, Site site, NameValueCollection pageScripts, StringBuilder extraBuilder)
         {
             var value = TranslateUtils.Get<string>(attributes, attributeName);
 
-            value = ContentUtility.TextEditorContentDecode(site, value, true);
+            value = await ContentUtility.TextEditorContentDecodeAsync(site, value, true);
             value = UEditorUtils.TranslateToHtml(value);
             value = CMS.Context.WebUtils.HtmlEncode(value);
 

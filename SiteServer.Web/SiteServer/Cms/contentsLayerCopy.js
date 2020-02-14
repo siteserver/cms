@@ -9,7 +9,7 @@ var data = utils.initData({
   transSites: null,
   transChannels: null,
   form: {
-    transSiteId: null,
+    transSiteIds: null,
     transChannelIds: null,
     copyType: 'Copy',
   }
@@ -31,6 +31,8 @@ var methods = {
 
       $this.contents = res.contents;
       $this.transSites = res.transSites;
+      $this.form.transSiteIds = [$this.siteId];
+      $this.apiGetOptions();
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -46,7 +48,7 @@ var methods = {
       siteId: this.siteId,
       channelId: this.channelId,
       channelContentIds: this.channelContentIds,
-      transSiteId: this.form.transSiteId,
+      transSiteId: this.form.transSiteIds[this.form.transSiteIds.length - 1],
       transChannelId: this.form.transChannelIds[this.form.transChannelIds.length - 1],
       copyType: this.form.copyType
     }).then(function (response) {
@@ -64,19 +66,18 @@ var methods = {
   apiGetOptions: function() {
     var $this = this;
 
-    utils.loading(this, true);
     $api.post($url + '/actions/options', {
       siteId: this.siteId,
       channelId: this.channelId,
-      transSiteId: this.form.transSiteId
+      transSiteId: this.form.transSiteIds[this.form.transSiteIds.length - 1],
     }).then(function (response) {
       var res = response.data;
 
       $this.transChannels = [res.transChannels];
+      $this.form.transChannelIds = null;
     }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
       utils.loading($this, false);
+      utils.error($this, error);
     });
   },
 
@@ -105,7 +106,7 @@ var methods = {
   },
 };
 
-new Vue({
+var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,

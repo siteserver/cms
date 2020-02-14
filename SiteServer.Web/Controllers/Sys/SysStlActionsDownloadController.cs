@@ -5,7 +5,6 @@ using SiteServer.Abstractions;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
 
@@ -33,7 +32,7 @@ namespace SiteServer.API.Controllers.Sys
                     }
 
                     var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                    var filePath = PathUtility.MapPath(site, fileUrl);
+                    var filePath = await PathUtility.MapPathAsync(site, fileUrl);
                     var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
                     if (EFileSystemTypeUtils.IsDownload(fileType))
                     {
@@ -45,7 +44,7 @@ namespace SiteServer.API.Controllers.Sys
                     }
                     else
                     {
-                        PageUtils.Redirect(PageUtility.ParseNavigationUrl(site, fileUrl, false));
+                        PageUtils.Redirect(await PageUtility.ParseNavigationUrlAsync(site, fileUrl, false));
                         return;
                     }
                 }
@@ -88,7 +87,7 @@ namespace SiteServer.API.Controllers.Sys
                             return;
                         }
 
-                        var filePath = PathUtility.MapPath(site, fileUrl, true);
+                        var filePath = await PathUtility.MapPathAsync(site, fileUrl, true);
                         var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
                         if (EFileSystemTypeUtils.IsDownload(fileType))
                         {
@@ -100,7 +99,7 @@ namespace SiteServer.API.Controllers.Sys
                         }
                         else
                         {
-                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(site, fileUrl, false));
+                            PageUtils.Redirect(await PageUtility.ParseNavigationUrlAsync(site, fileUrl, false));
                             return;
                         }
                     }

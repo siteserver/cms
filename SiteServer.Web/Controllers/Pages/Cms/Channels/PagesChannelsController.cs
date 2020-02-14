@@ -192,7 +192,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                 return Request.BadRequest<List<int>>("请检查您输入的栏目名称是否正确");
             }
 
-            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channel, EScopeType.All);
+            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, request.ChannelId, EScopeType.All);
 
             if (request.DeleteFiles)
             {
@@ -201,9 +201,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
 
             foreach (var channelId in channelIdList)
             {
-                var recycleChannel = await DataProvider.ChannelRepository.GetAsync(channelId);
-                await DataProvider.ContentRepository.RecycleContentsAsync(site, recycleChannel);
-                await DataProvider.ChannelRepository.DeleteAsync(request.SiteId, channelId);
+                await DataProvider.ChannelRepository.DeleteAsync(request.SiteId, channelId, auth.AdminId);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, "删除栏目", $"栏目:{channel.ChannelName}");
@@ -264,11 +262,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
 
             try
             {
+                var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
                 var filePath = PathUtils.GetTemporaryFilesPath(request.FileName);
 
-                var importObject = new ImportObject(request.SiteId, auth.AdminName);
+                var importObject = new ImportObject(site, auth.AdminId);
                 await importObject.ImportChannelsAndContentsByZipFileAsync(request.ChannelId, filePath,
-                    request.IsOverride);
+                    request.IsOverride, null);
 
                 await auth.AddSiteLogAsync(request.SiteId, "导入栏目");
             }
@@ -297,7 +296,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<StringResult>();
 
-            var exportObject = new ExportObject(request.SiteId, auth.AdminName);
+            var exportObject = new ExportObject(site, auth.AdminId);
             var fileName = await exportObject.ExportChannelsAsync(request.ChannelIds);
             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
             var url = ApiRouteActionsDownload.GetUrl(ApiManager.InnerApiUrl, filePath);
@@ -370,7 +369,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
         public async Task<BoolResult> SetOrders([FromBody] ChannelIdsRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.Channels);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
+            {
+                return Request.Unauthorized<BoolResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<BoolResult>();

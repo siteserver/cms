@@ -58,7 +58,7 @@ namespace SiteServer.CMS.Plugin.Impl
                     {
                         var kvp = ParseChannelPermissionDictKey(dictKey);
                         var channelInfo = await DataProvider.ChannelRepository.GetAsync(kvp.Value);
-                        _channelIdList.AddRange(await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo, EScopeType.All));
+                        _channelIdList.AddRange(await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo.SiteId, channelInfo.Id, EScopeType.All));
                     }
                 }
 
@@ -147,7 +147,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 {
                     var channelInfo = await DataProvider.ChannelRepository.GetAsync(kvp.Value);
 
-                    var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo, EScopeType.All);
+                    var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo.SiteId, channelInfo.Id, EScopeType.All);
 
                     foreach (var channelId in channelIdList)
                     {
@@ -485,7 +485,7 @@ namespace SiteServer.CMS.Plugin.Impl
             }
 
             var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo, EScopeType.Descendant);
+            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo.SiteId, channelInfo.Id, EScopeType.Descendant);
             foreach (var theChannelId in channelIdList)
             {
                 if (await IsOwningChannelIdAsync(theChannelId))

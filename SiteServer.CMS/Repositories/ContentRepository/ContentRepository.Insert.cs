@@ -63,8 +63,7 @@ namespace SiteServer.CMS.Repositories
             {
                 var cacheKeys = new List<string>
                 {
-                    GetListKey(tableName, false, content.SiteId, content.ChannelId),
-                    GetListKey(tableName, true, content.SiteId, content.ChannelId),
+                    GetListKey(tableName, content.SiteId, content.ChannelId),
                     GetCountKey(tableName, content.SiteId, content.ChannelId)
                 };
                 await repository.InsertAsync(content, Q.CachingRemove(cacheKeys.ToArray()));

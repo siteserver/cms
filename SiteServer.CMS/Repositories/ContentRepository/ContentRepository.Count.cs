@@ -7,10 +7,6 @@ namespace SiteServer.CMS.Repositories
 {
     public partial class ContentRepository
     {
-        
-
-        
-
         public async Task<int> GetCountCheckingAsync(Site site)
         {
             //var tableNames = await DataProvider.SiteRepository.GetTableNameListAsync(site);

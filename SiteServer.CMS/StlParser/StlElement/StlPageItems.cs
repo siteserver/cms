@@ -20,7 +20,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         //对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
         public static async Task<string> ParseAsync(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, EContextType contextType)
         {
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
             string parsedContent;
             try
             {

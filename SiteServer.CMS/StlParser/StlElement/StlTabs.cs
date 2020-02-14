@@ -89,7 +89,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string tabName, string type, string action, string classActive, string classNormal, int current)
         {
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
 
             var builder = new StringBuilder();
             var uniqueId = pageInfo.UniqueId;

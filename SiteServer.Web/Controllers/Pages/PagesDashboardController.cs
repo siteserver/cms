@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Dto.Result;
@@ -53,7 +52,6 @@ namespace SiteServer.API.Controllers.Pages
                     {
                         checkingList.Add(new Checking
                         {
-                            Url = PageContentSearch.GetRedirectUrlCheck(site.Id),
                             SiteName = site.SiteName,
                             Count = count
                         });
@@ -74,7 +72,6 @@ namespace SiteServer.API.Controllers.Pages
                         {
                             checkingList.Add(new Checking
                             {
-                                Url = PageContentSearch.GetRedirectUrlCheck(site.Id),
                                 SiteName = site.SiteName,
                                 Count = count
                             });

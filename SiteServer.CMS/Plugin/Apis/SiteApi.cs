@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Plugin.Apis
             if (siteId <= 0) return null;
 
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            return site == null ? null : PathUtility.GetSitePath(site);
+            return site == null ? null : await PathUtility.GetSitePathAsync(site);
         }
 
         public async Task<IEnumerable<int>> GetSiteIdListAsync()
@@ -48,19 +48,19 @@ namespace SiteServer.CMS.Plugin.Apis
         public async Task<string> GetSitePathAsync(int siteId, string virtualPath)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            return PathUtility.MapPath(site, virtualPath);
+            return await PathUtility.MapPathAsync(site, virtualPath);
         }
 
         public async Task<string> GetSiteUrlAsync(int siteId)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            return PageUtility.GetSiteUrl(site, false);
+            return await PageUtility.GetSiteUrlAsync(site, false);
         }
 
         public async Task<string> GetSiteUrlAsync(int siteId, string virtualPath)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            return PageUtility.ParseNavigationUrl(site, virtualPath, false);
+            return await PageUtility.ParseNavigationUrlAsync(site, virtualPath, false);
         }
 
         public async Task<string> GetSiteUrlByFilePathAsync(string filePath)
@@ -82,7 +82,7 @@ namespace SiteServer.CMS.Plugin.Apis
             {
                 if (!string.IsNullOrEmpty(relatedUrl) && !PageUtils.IsProtocolUrl(relatedUrl))
                 {
-                    FileUtility.MoveFile(site, targetSite, relatedUrl);
+                    await FileUtility.MoveFileAsync(site, targetSite, relatedUrl);
                 }
             }
         }
@@ -90,13 +90,13 @@ namespace SiteServer.CMS.Plugin.Apis
         public async Task AddWaterMarkAsync(int siteId, string filePath)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            FileUtility.AddWaterMark(site, filePath);
+            await FileUtility.AddWaterMarkAsync(site, filePath);
         }
 
         public async Task<string> GetUploadFilePathAsync(int siteId, string fileName)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, PathUtils.GetExtension(fileName));
+            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, PathUtils.GetExtension(fileName));
             var localFileName = PathUtility.GetUploadFileName(site, fileName);
             return PathUtils.Combine(localDirectoryPath, localFileName);
         }

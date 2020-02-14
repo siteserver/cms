@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (_isCreate == false)
             {
                 var filePath = Site != null
-                    ? PathUtility.MapPath(Site, PathUtils.Combine(_relatedPath, _theFileName))
+                    ? PathUtility.MapPathAsync(Site, PathUtils.Combine(_relatedPath, _theFileName)).GetAwaiter().GetResult()
                     : WebUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
 
                 if (!FileUtils.IsFileExists(filePath))
@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (_isCreate == false)
             {
-                var filePath = Site != null ? PathUtility.MapPath(Site, PathUtils.Combine(_relatedPath, _theFileName)) : WebUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
+                var filePath = Site != null ? PathUtility.MapPathAsync(Site, PathUtils.Combine(_relatedPath, _theFileName)).GetAwaiter().GetResult() : WebUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
                 TbFileName.Text = _theFileName;
                 TbFileName.Enabled = false;
                 TbFileContent.Text = FileUtils.ReadText(filePath);
@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (Site != null)
             {
                 LtlOpen.Text =
-                    $@"<a class=""btn btn-default m-l-10"" href=""{PageUtility.ParseNavigationUrl(Site,
+                    $@"<a class=""btn btn-default m-l-10"" href=""{PageUtility.ParseNavigationUrlAsync(Site,
                         PageUtils.Combine(_relatedPath, _theFileName), true)}"" target=""_blank"">浏 览</a>";
             }
             else
@@ -153,7 +153,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 var filePath = Site != null
-                    ? PathUtility.MapPath(Site, PathUtils.Combine(_relatedPath, _theFileName))
+                    ? PathUtility.MapPathAsync(Site, PathUtils.Combine(_relatedPath, _theFileName)).GetAwaiter().GetResult()
                     : WebUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
 
                 try
@@ -187,7 +187,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 var filePath = Site != null
-                    ? PathUtility.MapPath(Site, PathUtils.Combine(_relatedPath, TbFileName.Text))
+                    ? PathUtility.MapPathAsync(Site, PathUtils.Combine(_relatedPath, TbFileName.Text)).GetAwaiter().GetResult()
                     : WebUtils.MapPath(PathUtils.Combine(_relatedPath, TbFileName.Text));
 
                 if (FileUtils.IsFileExists(filePath))

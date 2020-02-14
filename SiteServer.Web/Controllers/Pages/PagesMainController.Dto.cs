@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using SiteServer.Abstractions;
-using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto.Request;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages
@@ -87,16 +83,13 @@ namespace SiteServer.API.Controllers.Pages
                     }
                     allSiteMenus.Add(new Tab
                     {
-                        Href = ModalSiteSelect.GetRedirectUrl(siteInfo.Id),
+                        Href = "select.cshtml",
                         Target = "_layer",
                         Text = "全部站点..."
                     });
                     menus.Add(new Tab
                     {
-                        Id = Constants.TopMenu.SiteCurrent,
                         Text = "切换站点",
-                        Href = ModalSiteSelect.GetRedirectUrl(siteInfo.Id),
-                        Target = "_layer",
                         Children = allSiteMenus.ToArray()
                     });
                 }

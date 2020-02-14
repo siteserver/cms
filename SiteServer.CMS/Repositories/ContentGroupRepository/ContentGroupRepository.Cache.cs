@@ -19,10 +19,16 @@ namespace SiteServer.CMS.Repositories
             return await _repository.GetAllAsync<string>(Q
                 .Select(nameof(ContentGroup.GroupName))
                 .Where(nameof(ContentGroup.SiteId), siteId)
-                .OrderByDesc(nameof(ContentGroup.Taxis))
+                .OrderBy(nameof(ContentGroup.Taxis))
                 .OrderBy(nameof(ContentGroup.GroupName))
                 .CachingGet(GetCacheKey(siteId))
             );
+        }
+
+        public async Task<bool> IsExistsAsync(int siteId, string groupName)
+        {
+            var groupNames = await GetGroupNamesAsync(siteId);
+            return groupNames.Contains(groupName);
         }
     }
 }

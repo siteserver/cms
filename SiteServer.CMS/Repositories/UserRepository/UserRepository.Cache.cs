@@ -164,6 +164,19 @@ namespace SiteServer.CMS.Repositories
 
             return DefaultAvatarUrl;
         }
+
+        public async Task<string> GetDisplayAsync(int userId)
+        {
+            if (userId <= 0) return string.Empty;
+
+            var user = await GetByUserIdAsync(userId);
+            if (user != null)
+            {
+                return string.IsNullOrEmpty(user.DisplayName) || user.UserName == user.DisplayName ? user.UserName : $"{user.DisplayName}({user.UserName})";
+            }
+
+            return string.Empty;
+        }
     }
 }
 

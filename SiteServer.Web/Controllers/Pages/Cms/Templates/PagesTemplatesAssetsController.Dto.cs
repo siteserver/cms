@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
@@ -33,9 +34,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             public string JsDir { get; set; }
         }
 
-        private void GetDirectoriesAndFiles(List<Cascade<string>> directories, List<KeyValuePair<string, string>> files, Site site, string virtualPath, string extName)
+        private async Task GetDirectoriesAndFilesAsync(List<Cascade<string>> directories, List<KeyValuePair<string, string>> files, Site site, string virtualPath, string extName)
         {
-            var directoryPath = PathUtility.GetSitePath(site, virtualPath);
+            var directoryPath = await PathUtility.GetSitePathAsync(site, virtualPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
             var fileNames = DirectoryUtils.GetFileNames(directoryPath);
             foreach (var fileName in fileNames)
@@ -58,7 +59,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                 dir.Children = new List<Cascade<string>>();
                 foreach (var directoryName in children)
                 {
-                    GetDirectoriesAndFiles(dir.Children, files, site, PageUtils.Combine(virtualPath, directoryName), extName);
+                    await GetDirectoriesAndFilesAsync(dir.Children, files, site, PageUtils.Combine(virtualPath, directoryName), extName);
                 }
             }
 

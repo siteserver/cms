@@ -44,7 +44,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                 return Ok(new
                 {
                     Value = specialInfoList,
-                    SiteUrl = PageUtility.GetSiteUrl(site, true)
+                    SiteUrl = PageUtility.GetSiteUrlAsync(site, true)
                 });
             }
             catch (Exception ex)
@@ -109,13 +109,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                 var site = await DataProvider.SiteRepository.GetAsync(siteId);
                 var specialInfo = await DataProvider.SpecialRepository.GetSpecialAsync(siteId, specialId);
 
-                var directoryPath = DataProvider.SpecialRepository.GetSpecialDirectoryPath(site, specialInfo.Url);
+                var directoryPath = await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, specialInfo.Url);
                 var srcDirectoryPath = DataProvider.SpecialRepository.GetSpecialSrcDirectoryPath(directoryPath);
                 var zipFilePath = DataProvider.SpecialRepository.GetSpecialZipFilePath(specialInfo.Title, directoryPath);
 
                 FileUtils.DeleteFileIfExists(zipFilePath);
                 ZipUtils.CreateZip(zipFilePath, srcDirectoryPath);
-                var url = DataProvider.SpecialRepository.GetSpecialZipFileUrl(site, specialInfo);
+                var url = await DataProvider.SpecialRepository.GetSpecialZipFileUrlAsync(site, specialInfo);
 
                 return Ok(new
                 {
@@ -209,8 +209,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                         return Request.BadRequest<ObjectResult<IEnumerable<Special>>>("专题修改失败，专题访问地址已存在！");
                     }
 
-                    oldDirectoryPath = DataProvider.SpecialRepository.GetSpecialDirectoryPath(site, specialInfo.Url);
-                    newDirectoryPath = DataProvider.SpecialRepository.GetSpecialDirectoryPath(site, request.Url);
+                    oldDirectoryPath = await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, specialInfo.Url);
+                    newDirectoryPath = await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, request.Url);
                 }
 
                 specialInfo.Title = request.Title;
@@ -226,7 +226,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             {
                 var specialInfo = await DataProvider.SpecialRepository.GetSpecialAsync(request.SiteId, specialId);
 
-                var directoryPath = DataProvider.SpecialRepository.GetSpecialDirectoryPath(site, specialInfo.Url);
+                var directoryPath = await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, specialInfo.Url);
                 var srcDirectoryPath = DataProvider.SpecialRepository.GetSpecialSrcDirectoryPath(directoryPath);
                 DirectoryUtils.CreateDirectoryIfNotExists(srcDirectoryPath);
 
@@ -259,7 +259,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                     return Request.BadRequest<ObjectResult<IEnumerable<Special>>>("专题添加失败，专题访问地址已存在！");
                 }
 
-                var directoryPath = DataProvider.SpecialRepository.GetSpecialDirectoryPath(site, request.Url);
+                var directoryPath = await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, request.Url);
                 var srcDirectoryPath = DataProvider.SpecialRepository.GetSpecialSrcDirectoryPath(directoryPath);
                 DirectoryUtils.CreateDirectoryIfNotExists(srcDirectoryPath);
 

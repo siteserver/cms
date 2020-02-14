@@ -8,7 +8,7 @@ namespace SiteServer.Abstractions
     public class UserLog : Entity
     {
         [DataColumn]
-        public string UserName { get; set; }
+        public int UserId { get; set; }
 
         [DataColumn]
         public string IpAddress { get; set; }

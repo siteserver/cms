@@ -63,7 +63,7 @@
             <tbody>
               <tr v-for="package in enabledPackages" v-if="package && package.metadata">
                 <td class="text-center text-nowrap">
-                  <img :src="package.metadata.iconUrl || '../assets/icons/favicon.png'" width="48" height="48">
+                  <img :src="package.metadata.iconUrl || '../assets/images/favicon.png'" width="48" height="48">
                 </td>
                 <td class="text-nowrap">
                   <a :href="'view.cshtml?pluginId=' + package.id + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.id }}</a>
@@ -115,7 +115,7 @@
             <tbody>
               <tr v-for="package in disabledPackages" v-if="package && package.metadata">
                 <td class="text-center text-nowrap">
-                  <img :src="package.metadata.iconUrl || '../assets/icons/favicon.png'" width="48" height="48">
+                  <img :src="package.metadata.iconUrl || '../assets/images/favicon.png'" width="48" height="48">
                 </td>
                 <td class="text-nowrap">
                   <a :href="'view.cshtml?pluginId=' + package.id + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.id }}</a>
@@ -203,7 +203,7 @@
               <tbody>
                 <tr v-for="package in updatePackages" v-if="package && package.metadata">
                   <td class="text-center text-nowrap">
-                    <img :src="package.metadata.iconUrl || '../assets/icons/favicon.png'" width="48" height="48">
+                    <img :src="package.metadata.iconUrl || '../assets/images/favicon.png'" width="48" height="48">
                   </td>
                   <td class="text-nowrap">
                     <a :href="'view.cshtml?pluginId=' + package.updatePackage.pluginId + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.updatePackage.pluginId }}</a>

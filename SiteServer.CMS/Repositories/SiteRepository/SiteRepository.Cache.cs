@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -170,10 +171,10 @@ namespace SiteServer.CMS.Repositories
             return optionList;
         }
 
-        public async Task<IEnumerable<int>> GetSiteIdListAsync()
+        public async Task<List<int>> GetSiteIdListAsync()
         {
             var summaries = await GetSummariesAsync();
-            return summaries.Select(x => x.Id);
+            return summaries.Select(x => x.Id).ToList();
         }
 
         public async Task<List<int>> GetSiteIdListOrderByLevelAsync()
@@ -187,6 +188,8 @@ namespace SiteServer.CMS.Repositories
             foreach (var siteId in siteIdList)
             {
                 var site = await GetAsync(siteId);
+                if (site == null) continue;
+                
                 if (site.Root)
                 {
                     hqSiteId = site.Id;
@@ -242,7 +245,7 @@ namespace SiteServer.CMS.Repositories
             }
         }
 
-        public async Task GetAllParentSiteIdListAsync(List<int> parentSiteIds, IEnumerable<int> siteIdCollection, int siteId)
+        public async Task GetAllParentSiteIdListAsync(List<int> parentSiteIds, List<int> siteIdCollection, int siteId)
         {
             var site = await GetAsync(siteId);
             var parentSiteId = -1;
@@ -275,17 +278,16 @@ namespace SiteServer.CMS.Repositories
 
         public async Task<List<string>> GetSiteTableNamesAsync()
         {
-            return await GetTableNameListAsync(true, false);
+            return await GetTableNamesAsync(true, false);
         }
 
-        public async Task<List<string>> GetAllTableNameListAsync()
+        public async Task<List<string>> GetAllTableNamesAsync()
         {
-            return await GetTableNameListAsync(true, true);
+            return await GetTableNamesAsync(true, true);
         }
 
-        private async Task<List<string>> GetTableNameListAsync(bool includeSiteTables, bool includePluginTables)
+        private async Task<List<string>> GetTableNamesAsync(bool includeSiteTables, bool includePluginTables)
         {
-
             var tableNames = new List<string>();
 
             if (includeSiteTables)
@@ -293,7 +295,7 @@ namespace SiteServer.CMS.Repositories
                 var summaries = await GetSummariesAsync();
                 foreach (var summary in summaries)
                 {
-                    if (!StringUtils.ContainsIgnoreCase(tableNames, summary.TableName))
+                    if (!string.IsNullOrEmpty(summary.TableName) && !StringUtils.ContainsIgnoreCase(tableNames, summary.TableName))
                     {
                         tableNames.Add(summary.TableName);
                     }
@@ -305,7 +307,7 @@ namespace SiteServer.CMS.Repositories
                 var pluginTableNames = await PluginContentManager.GetContentTableNameListAsync();
                 foreach (var pluginTableName in pluginTableNames)
                 {
-                    if (!StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))
+                    if (!string.IsNullOrEmpty(pluginTableName) && !StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))
                     {
                         tableNames.Add(pluginTableName);
                     }
@@ -315,15 +317,19 @@ namespace SiteServer.CMS.Repositories
             return tableNames;
         }
 
-        public async Task<List<string>> GetTableNameListAsync(Site site)
+        public async Task<List<string>> GetTableNamesAsync(Site site)
         {
             var tableNames = new List<string> { site.TableName };
-            var pluginTableNames = await PluginContentManager.GetContentTableNameListAsync();
-            foreach (var pluginTableName in pluginTableNames)
+            var channelSummaries = await DataProvider.ChannelRepository.GetAllSummaryAsync(site.Id);
+            foreach (var summary in channelSummaries)
             {
-                if (!StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))
+                if (!string.IsNullOrEmpty(summary.ContentModelPluginId))
                 {
-                    tableNames.Add(pluginTableName);
+                    var service = await PluginManager.GetServiceAsync(summary.ContentModelPluginId);
+                    if (service != null && !string.IsNullOrEmpty(service.ContentTableName) && !tableNames.Contains(service.ContentTableName))
+                    {
+                        tableNames.Add(service.ContentTableName);
+                    }
                 }
             }
             return tableNames;
@@ -403,6 +409,92 @@ namespace SiteServer.CMS.Repositories
             }
 
             return 0;
+        }
+
+        public async Task<Site> GetWithChildrenAsync(int siteId, Func<Site, Task<object>> func = null)
+        {
+            var entity = await GetAsync(siteId);
+            if (entity == null) return null;
+
+            object extra = null;
+            if (func != null)
+            {
+                extra = await func(entity);
+            }
+
+            var site = entity.Clone<Site>();
+            site.Children = await GetSitesWithChildrenAsync(siteId, func);
+
+            if (extra == null) return site;
+
+            var dict = TranslateUtils.ToDictionary(extra);
+            foreach (var o in dict)
+            {
+                site.Set(o.Key, o.Value);
+            }
+
+            return site;
+        }
+
+        public async Task<List<Site>> GetSitesWithChildrenAsync(int parentId, Func<Site, Task<object>> func = null)
+        {
+            var list = new List<Site>();
+
+            var summaries = await GetSummariesAsync(parentId);
+            foreach (var summary in summaries)
+            {
+                if (summary == null || summary.Id == 0) continue;
+
+                var site = await GetWithChildrenAsync(summary.Id, func);
+                if (site != null)
+                {
+                    list.Add(site);
+                }
+            }
+
+            return list;
+        }
+
+        public async Task<Cascade<int>> GetCascadeAsync(SiteSummary summary, Func<SiteSummary, Task<object>> func = null)
+        {
+            object extra = null;
+            if (func != null)
+            {
+                extra = await func(summary);
+            }
+            var cascade = new Cascade<int>
+            {
+                Value = summary.Id,
+                Label = summary.SiteName,
+                Children = await GetCascadeChildrenAsync(summary.Id, func)
+            };
+            if (extra == null) return cascade;
+
+            var dict = TranslateUtils.ToDictionary(extra);
+            foreach (var o in dict)
+            {
+                cascade[o.Key] = o.Value;
+            }
+
+            return cascade;
+        }
+
+        public async Task<List<Cascade<int>>> GetCascadeChildrenAsync(int parentId, Func<SiteSummary, Task<object>> func = null)
+        {
+            var list = new List<Cascade<int>>();
+
+            var summaries = await GetSummariesAsync(parentId);
+            foreach (var summary in summaries)
+            {
+                if (summary == null || summary.Id == 0) continue;
+                var site = await GetCascadeAsync(summary, func);
+                if (site != null)
+                {
+                    list.Add(site);
+                }
+            }
+
+            return list;
         }
     }
 }

@@ -37,7 +37,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 return Request.BadRequest<UploadResult>("视频格式不正确，请更换文件上传!");
             }
 
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, UploadType.Video);
+            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, UploadType.Video);
             var localFileName = PathUtility.GetUploadFileName(fileName, true);
             var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
 

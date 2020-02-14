@@ -119,7 +119,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 if (maxPage > 0 && currentPageIndex + 1 > maxPage)
                 {
-                    return ParseDynamic(totalNum, currentPageIndex, pageCount);
+                    return await ParseDynamicAsync(totalNum, currentPageIndex, pageCount);
                 }
             }
 
@@ -300,7 +300,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        private string ParseDynamic(int totalNum, int currentPageIndex, int pageCount)
+        private async Task<string> ParseDynamicAsync(int totalNum, int currentPageIndex, int pageCount)
         {
             var loading = ListInfo.LoadingTemplate;
             if (string.IsNullOrEmpty(loading))
@@ -315,7 +315,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 </div>";
             }
 
-            PageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+            await PageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(PageInfo.UniqueId);
             var apiUrl = ApiRouteActionsPageContents.GetUrl(PageInfo.ApiUrl);

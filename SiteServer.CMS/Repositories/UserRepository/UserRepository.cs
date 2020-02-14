@@ -25,12 +25,6 @@ namespace SiteServer.CMS.Repositories
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private static class Attr
-        {
-            public const string IsChecked = nameof(IsChecked);
-            public const string IsLockedOut = nameof(IsLockedOut);
-        }
-
         private async Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string email, string mobile, string password, string ipAddress)
         {
             var config = await DataProvider.ConfigRepository.GetAsync();
@@ -331,7 +325,7 @@ namespace SiteServer.CMS.Repositories
             return Convert.ToBase64String(data);
         }
 
-        public async Task<(bool IsValid, string ErrorMessage)> ChangePasswordAsync(string userName, string password)
+        public async Task<(bool IsValid, string ErrorMessage)> ChangePasswordAsync(int userId, string password)
         {
             var config = await DataProvider.ConfigRepository.GetAsync();
             if (password.Length < config.UserPasswordMinLength)
@@ -345,13 +339,13 @@ namespace SiteServer.CMS.Repositories
 
             var passwordSalt = GenerateSalt();
             password = EncodePassword(password, PasswordFormat.Encrypted, passwordSalt);
-            await ChangePasswordAsync(userName, PasswordFormat.Encrypted, passwordSalt, password);
+            await ChangePasswordAsync(userId, PasswordFormat.Encrypted, passwordSalt, password);
             return (true, string.Empty);
         }
 
-        private async Task ChangePasswordAsync(string userName, PasswordFormat passwordFormat, string passwordSalt, string password)
+        private async Task ChangePasswordAsync(int userId, PasswordFormat passwordFormat, string passwordSalt, string password)
         {
-            var user = await GetByUserNameAsync(userName);
+            var user = await GetByUserIdAsync(userId);
             if (user == null) return;
 
             user.LastResetPasswordDate = DateTime.Now;
@@ -365,7 +359,7 @@ namespace SiteServer.CMS.Repositories
                 .CachingRemove(GetCacheKeysToRemove(user))
             );
 
-            await LogUtils.AddUserLogAsync(userName, "修改密码", string.Empty);
+            await LogUtils.AddUserLogAsync(userId, "修改密码", string.Empty);
         }
 
         public async Task CheckAsync(IList<int> idList)
@@ -378,7 +372,7 @@ namespace SiteServer.CMS.Repositories
             }
 
             await _repository.UpdateAsync(Q
-                .Set(Attr.IsChecked, true.ToString())
+                .Set(nameof(User.Checked), true)
                 .WhereIn(nameof(User.Id), idList)
                 .CachingRemove(cacheKeys.ToArray())
             );
@@ -394,7 +388,7 @@ namespace SiteServer.CMS.Repositories
             }
 
             await _repository.UpdateAsync(Q
-                .Set(Attr.IsLockedOut, true.ToString())
+                .Set(nameof(User.Locked), true)
                 .WhereIn(nameof(User.Id), idList)
                 .CachingRemove(cacheKeys.ToArray())
             );
@@ -410,7 +404,7 @@ namespace SiteServer.CMS.Repositories
             }
 
             await _repository.UpdateAsync(Q
-                .Set(Attr.IsLockedOut, false.ToString())
+                .Set(nameof(User.Locked), false)
                 .Set(nameof(User.CountOfFailedLogin), 0)
                 .WhereIn(nameof(User.Id), idList)
                 .CachingRemove(cacheKeys.ToArray())
@@ -456,7 +450,7 @@ namespace SiteServer.CMS.Repositories
         public async Task<List<int>> GetIdListAsync(bool isChecked)
         {
             return await _repository.GetAllAsync<int>(Q
-                .Where(Attr.IsChecked, isChecked.ToString())
+                .Where(nameof(User.Checked), isChecked)
                 .OrderByDesc(nameof(User.Id))
             );
         }
@@ -527,7 +521,7 @@ namespace SiteServer.CMS.Repositories
             if (!CheckPassword(password, isPasswordMd5, userEntity.Password, userEntity.PasswordFormat, userEntity.PasswordSalt))
             {
                 await DataProvider.UserRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(user);
-                await LogUtils.AddUserLogAsync(userEntity.UserName, "用户登录失败", "帐号或密码错误");
+                await LogUtils.AddUserLogAsync(userEntity.Id, "用户登录失败", "帐号或密码错误");
                 return (null, user.UserName, "帐号或密码错误");
             }
 
@@ -619,7 +613,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
             if (state != ETriState.All)
             {
-                query.Where(Attr.IsChecked, state.ToString());
+                query.Where(nameof(User.Checked), TranslateUtils.ToBool(ETriStateUtils.GetValue(state)));
             }
 
             if (dayOfLastActivity > 0)

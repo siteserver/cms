@@ -77,7 +77,7 @@ namespace SiteServer.CMS.Repositories
         private static async Task SyncContentTablesAsync()
         {
             var database = new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
-            var tableNameList = await DataProvider.SiteRepository.GetAllTableNameListAsync();
+            var tableNameList = await DataProvider.SiteRepository.GetAllTableNamesAsync();
 
             foreach (var tableName in tableNameList)
             {

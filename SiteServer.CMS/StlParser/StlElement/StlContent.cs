@@ -277,7 +277,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (ContentAttribute.Content.ToLower().Equals(type))
                 {
-                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.Site, content.Get<string>(ContentAttribute.Content), pageInfo.IsLocal);
+                    parsedContent = await ContentUtility.TextEditorContentDecodeAsync(pageInfo.Site, content.Get<string>(ContentAttribute.Content), pageInfo.IsLocal);
 
                     if (isClearTags)
                     {
@@ -299,13 +299,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = string.Format(formatString, parsedContent);
                     }
 
-                    parsedContent = EditorUtility.Parse(pageInfo, parsedContent);
+                    parsedContent = await EditorUtility.ParseAsync(pageInfo, parsedContent);
                 }
                 else if (ContentAttribute.PageContent.ToLower().Equals(type))
                 {
                     //if (contextInfo.IsInnerElement)
                     // {
-                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.Site, content.Get<string>(ContentAttribute.Content), pageInfo.IsLocal);
+                    parsedContent = await ContentUtility.TextEditorContentDecodeAsync(pageInfo.Site, content.Get<string>(ContentAttribute.Content), pageInfo.IsLocal);
 
                     if (isClearTags)
                     {
@@ -327,7 +327,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = string.Format(formatString, parsedContent);
                     }
 
-                    parsedContent = EditorUtility.Parse(pageInfo, parsedContent);
+                    parsedContent = await EditorUtility.ParseAsync(pageInfo, parsedContent);
                 }
                 else if (ContentAttribute.AddDate.ToLower().Equals(type))
                 {
@@ -348,9 +348,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var sbParsedContent = new StringBuilder();
                         //第一条
                         sbParsedContent.Append(contextInfo.IsStlEntity
-                            ? PageUtility.ParseNavigationUrl(pageInfo.Site,
+                            ? await PageUtility.ParseNavigationUrlAsync(pageInfo.Site,
                                 content.Get<string>(ContentAttribute.ImageUrl), pageInfo.IsLocal)
-                            : InputParserUtility.GetImageOrFlashHtml(pageInfo.Site,
+                            : await InputParserUtility.GetImageOrFlashHtmlAsync(pageInfo.Site,
                                 content.Get<string>(ContentAttribute.ImageUrl),
                                 contextInfo.Attributes, false));
                         //第n条
@@ -362,8 +362,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 var newExtendValue = extendValue;
                                 sbParsedContent.Append(contextInfo.IsStlEntity
-                                    ? PageUtility.ParseNavigationUrl(pageInfo.Site, newExtendValue, pageInfo.IsLocal)
-                                    : InputParserUtility.GetImageOrFlashHtml(pageInfo.Site,
+                                    ? await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, newExtendValue, pageInfo.IsLocal)
+                                    : await InputParserUtility.GetImageOrFlashHtmlAsync(pageInfo.Site,
                                         newExtendValue, contextInfo.Attributes, false));
                             }
                         }
@@ -375,7 +375,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no);
                         if (num <= 1)
                         {
-                            parsedContent = contextInfo.IsStlEntity ? PageUtility.ParseNavigationUrl(pageInfo.Site, content.Get<string>(ContentAttribute.ImageUrl), pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.Site, content.Get<string>(ContentAttribute.ImageUrl), contextInfo.Attributes, false);
+                            parsedContent = contextInfo.IsStlEntity ? await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, content.Get<string>(ContentAttribute.ImageUrl), pageInfo.IsLocal) : await InputParserUtility.GetImageOrFlashHtmlAsync(pageInfo.Site, content.Get<string>(ContentAttribute.ImageUrl), contextInfo.Attributes, false);
                         }
                         else
                         {
@@ -389,7 +389,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     var newExtendValue = extendValue;
                                     if (index == num)
                                     {
-                                        parsedContent = contextInfo.IsStlEntity ? PageUtility.ParseNavigationUrl(pageInfo.Site, newExtendValue, pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.Site, newExtendValue, contextInfo.Attributes, false);
+                                        parsedContent = contextInfo.IsStlEntity ? await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, newExtendValue, pageInfo.IsLocal) : await InputParserUtility.GetImageOrFlashHtmlAsync(pageInfo.Site, newExtendValue, contextInfo.Attributes, false);
                                         break;
                                     }
                                     index++;
@@ -520,7 +520,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                             if (!string.IsNullOrEmpty(parsedContent))
                             {
-                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                                parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                             }
                         }
                         else

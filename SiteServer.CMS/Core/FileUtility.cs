@@ -1,6 +1,7 @@
 using System;
 using SiteServer.Abstractions;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Datory.Utils;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Context.Enumerations;
@@ -10,7 +11,7 @@ namespace SiteServer.CMS.Core
 {
     public static class FileUtility
     {
-        public static void AddWaterMark(Site site, string imagePath)
+        public static async Task AddWaterMarkAsync(Site site, string imagePath)
         {
             try
             {
@@ -23,7 +24,7 @@ namespace SiteServer.CMS.Core
                         {
                             if (!string.IsNullOrEmpty(site.WaterMarkImagePath))
                             {
-                                ImageUtils.AddImageWaterMark(imagePath, PathUtility.MapPath(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
+                                ImageUtils.AddImageWaterMark(imagePath, await PathUtility.MapPathAsync(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
                             }
                         }
                         else
@@ -43,12 +44,12 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void MoveFile(Site sourceSite, Site destSite, string relatedUrl)
+        public static async Task MoveFileAsync(Site sourceSite, Site destSite, string relatedUrl)
         {
             if (!string.IsNullOrEmpty(relatedUrl))
             {
-                var sourceFilePath = PathUtility.MapPath(sourceSite, relatedUrl);
-                var descFilePath = PathUtility.MapPath(destSite, relatedUrl);
+                var sourceFilePath = await PathUtility.MapPathAsync(sourceSite, relatedUrl);
+                var descFilePath = await PathUtility.MapPathAsync(destSite, relatedUrl);
                 if (FileUtils.IsFileExists(sourceFilePath))
                 {
                     FileUtils.MoveFile(sourceFilePath, descFilePath, false);
@@ -56,7 +57,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void MoveFileByContentInfo(Site sourceSite, Site destSite, Content content)
+        public static async Task MoveFileByContentAsync(Site sourceSite, Site destSite, Content content)
         {
             if (content == null || sourceSite.Id == destSite.Id) return;
 
@@ -109,7 +110,7 @@ namespace SiteServer.CMS.Core
                 {
                     if (!string.IsNullOrEmpty(fileUrl) && PageUtility.IsVirtualUrl(fileUrl))
                     {
-                        MoveFile(sourceSite, destSite, fileUrl);
+                        await MoveFileAsync(sourceSite, destSite, fileUrl);
                     }
                 }
             }
@@ -119,7 +120,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void MoveFileByVirtaulUrl(Site sourceSite, Site destSite, string fileVirtaulUrl)
+        public static async Task MoveFileByVirtaulUrlAsync(Site sourceSite, Site destSite, string fileVirtaulUrl)
         {
             if (string.IsNullOrEmpty(fileVirtaulUrl) || sourceSite.Id == destSite.Id) return;
 
@@ -127,7 +128,7 @@ namespace SiteServer.CMS.Core
             {
                 if (PageUtility.IsVirtualUrl(fileVirtaulUrl))
                 {
-                    MoveFile(sourceSite, destSite, fileVirtaulUrl);
+                    await MoveFileAsync(sourceSite, destSite, fileVirtaulUrl);
                 }
             }
             catch

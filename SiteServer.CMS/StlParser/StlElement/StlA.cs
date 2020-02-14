@@ -149,7 +149,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var onclick = string.Empty;
             if (!string.IsNullOrEmpty(href))
             {
-                url = PageUtility.ParseNavigationUrl(pageInfo.Site, href, pageInfo.IsLocal);
+                url = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, href, pageInfo.IsLocal);
 
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);

@@ -28,7 +28,10 @@ namespace SiteServer.CMS.Repositories
         public async Task<int> InsertAsync(Site site)
         {
             site.Taxis = await GetMaxTaxisAsync() + 1;
-            site.Id = await _repository.InsertAsync(site, Q.CachingRemove(GetListKey()));
+            site.Id = await _repository.InsertAsync(site, Q
+                .AllowIdentityInsert()
+                .CachingRemove(GetListKey())
+            );
             return site.Id;
         }
 

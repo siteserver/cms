@@ -128,7 +128,7 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(Site, fileExtName);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
                 var localFileName = PathUtility.GetUploadFileName(Site, filePath);
                 var localTitleFileName = Constants.TitleImageAppendix + localFileName;
                 var localSmallFileName = Constants.SmallImageAppendix + localFileName;
@@ -154,7 +154,7 @@ namespace SiteServer.BackgroundPages.Cms
                 //处理上半部分
                 if (isImage)
                 {
-                    FileUtility.AddWaterMark(Site, localFilePath);
+                    FileUtility.AddWaterMarkAsync(Site, localFilePath).GetAwaiter().GetResult();
                     if (CbIsTitleImage.Checked)
                     {
                         var width = TranslateUtils.ToInt(TbTitleImageWidth.Text);

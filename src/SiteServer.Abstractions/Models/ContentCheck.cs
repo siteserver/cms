@@ -8,9 +8,6 @@ namespace SiteServer.Abstractions
 	public class ContentCheck : Entity
 	{
         [DataColumn]
-        public string TableName { get; set; }
-
-        [DataColumn]
         public int SiteId { get; set; }
 
         [DataColumn]

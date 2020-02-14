@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
                             foreach (var contentId in _contentIdList)
                             {
                                 var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channelId, contentId).GetAwaiter().GetResult();
-                                FileUtility.MoveFileByContentInfo(Site, targetSite, contentInfo);
+                                FileUtility.MoveFileByContentAsync(Site, targetSite, contentInfo).GetAwaiter().GetResult();
                                 contentInfo.SiteId = targetSiteId;
                                 contentInfo.SourceId = contentInfo.ChannelId;
                                 contentInfo.ChannelId = targetChannelId;

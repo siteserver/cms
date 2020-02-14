@@ -12,7 +12,6 @@
 
         public class Checking
         {
-            public string Url { get; set; }
             public string SiteName { get; set; }
             public int Count { get; set; }
         }

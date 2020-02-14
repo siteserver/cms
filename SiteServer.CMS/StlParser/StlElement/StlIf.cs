@@ -421,7 +421,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return string.Empty;
             }
 
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.StlClient);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.StlClient);
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
 
             //运行解析以便为页面生成所需JS引用

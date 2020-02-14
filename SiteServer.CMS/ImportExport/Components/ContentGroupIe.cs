@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using SiteServer.CMS.Context.Atom.Atom.Core;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Context.Atom.Atom.Core.Collections;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -20,26 +22,36 @@ namespace SiteServer.CMS.ImportExport.Components
             return entry;
         }
 
-        public static async Task<bool> ImportAsync(AtomEntry entry, int siteId)
+        public static async Task ImportAsync(AtomFeed feed, int siteId, string guid)
         {
-            var isNodeGroup = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "IsContentGroup"));
-            if (!isNodeGroup) return false;
+            var groups = new List<ContentGroup>();
 
-            var groupName = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(ContentGroup.GroupName), "ContentGroupName" });
-            if (string.IsNullOrEmpty(groupName)) return true;
-            if (await DataProvider.ContentGroupRepository.IsExistsAsync(siteId, groupName)) return true;
-
-            var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Taxis)));
-            var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Description));
-            await DataProvider.ContentGroupRepository.InsertAsync(new ContentGroup
+            foreach (AtomEntry entry in feed.Entries)
             {
-                GroupName = groupName, 
-                SiteId = siteId, 
-                Taxis = taxis, 
-                Description = description
-            });
+                var isNodeGroup = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "IsContentGroup"));
+                if (!isNodeGroup) continue;
 
-            return true;
+                var groupName = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(ContentGroup.GroupName), "ContentGroupName" });
+                if (string.IsNullOrEmpty(groupName)) continue;
+
+                if (await DataProvider.ContentGroupRepository.IsExistsAsync(siteId, groupName)) continue;
+
+                var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Taxis)));
+                var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Description));
+                groups.Add(new ContentGroup
+                {
+                    GroupName = groupName,
+                    SiteId = siteId,
+                    Taxis = taxis,
+                    Description = description
+                });
+            }
+
+            foreach (var group in groups)
+            {
+                Caching.SetProcess(guid, $"导入内容组: {group.GroupName}");
+                await DataProvider.ContentGroupRepository.InsertAsync(group);
+            }
         }
     }
 }

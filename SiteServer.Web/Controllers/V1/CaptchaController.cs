@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 
@@ -30,10 +29,10 @@ namespace SiteServer.API.Controllers.V1
         {
             var response = HttpContext.Current.Response;
 
-            var code = VcManager.CreateValidateCode();
+            var code = CaptchaManager.CreateValidateCode();
             if (CacheUtils.Exists($"SiteServer.API.Controllers.V1.CaptchaController.{code}"))
             {
-                code = VcManager.CreateValidateCode();
+                code = CaptchaManager.CreateValidateCode();
             }
 
             CookieUtils.SetCookie("SS-" + name, code, DateTime.Now.AddMinutes(10));

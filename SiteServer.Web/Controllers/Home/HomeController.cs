@@ -198,7 +198,7 @@ namespace SiteServer.API.Controllers.Home
                     {
                         site.Id,
                         site.SiteName,
-                        SiteUrl = PageUtility.GetSiteUrl(site, false)
+                        SiteUrl = PageUtility.GetSiteUrlAsync(site, false)
                     };
                 }
 
@@ -288,7 +288,7 @@ namespace SiteServer.API.Controllers.Home
                     {
                         siteInfo.Id,
                         siteInfo.SiteName,
-                        SiteUrl = PageUtility.GetSiteUrl(siteInfo, false)
+                        SiteUrl = PageUtility.GetSiteUrlAsync(siteInfo, false)
                     };
 
                     groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(siteInfo.Id);

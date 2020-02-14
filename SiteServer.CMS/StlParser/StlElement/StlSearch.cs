@@ -150,19 +150,19 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(loading))
             {
-                loading = DataProvider.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath);
+                loading = await DataProvider.TemplateRepository.GetContentByFilePathAsync(SiteFilesAssets.Search.LoadingTemplatePath);
             }
             if (string.IsNullOrEmpty(yes))
             {
-                yes = DataProvider.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath);
+                yes = await DataProvider.TemplateRepository.GetContentByFilePathAsync(SiteFilesAssets.Search.YesTemplatePath);
             }
             if (string.IsNullOrEmpty(no))
             {
-                no = DataProvider.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
+                no = await DataProvider.TemplateRepository.GetContentByFilePathAsync(SiteFilesAssets.Search.NoTemplatePath);
             }
 
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.StlClient);
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.StlClient);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
 
             var apiUrl = ApiRouteActionsSearch.GetUrl(pageInfo.ApiUrl);

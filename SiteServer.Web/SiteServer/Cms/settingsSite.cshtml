@@ -1,6 +1,6 @@
 ﻿@{ Layout = "../Shared/_Layout.cshtml"; }
 @section Styles{
-  <link rel="stylesheet" href="../assets_core/lib/ueditor/third-party/xiumi/xiumi-ue-v5.css">
+  <link rel="stylesheet" href="../assets/lib/ueditor/third-party/xiumi/xiumi-ue-v5.css">
   <style>
     .el-upload, .el-upload-dragger {width: 100%;}
     .video-js {
@@ -43,7 +43,7 @@
             <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'imageLayerSelect', attributeName: style.attributeName, no: 0, full: true})">
               选择
             </el-button>
-            <el-button size="mini" type="info" plain v-if="form[style.attributeName]" v-on:click="btnPreviewClick(style.attributeName, 0)">
+            <el-button size="mini" type="info" plain v-if="form[_.lowerFirst(style.attributeName)]" v-on:click="btnPreviewClick(style.attributeName, 0)">
               预览
             </el-button>
             <el-button size="mini" type="info" plain v-on:click="btnExtendAddClick(style)">
@@ -51,7 +51,7 @@
             </el-button>
           </el-button-group>
           <el-input
-            v-model="form[style.attributeName]"
+            v-model="form[_.lowerFirst(style.attributeName)]"
             size="small"
             placeholder="请输入图片地址或点击上方按钮上传">
           </el-input>
@@ -93,7 +93,7 @@
             </el-button>
           </el-button-group>
           <el-input
-            v-model="form[style.attributeName]"
+            v-model="form[_.lowerFirst(style.attributeName)]"
             size="small"
             placeholder="请输入附件地址或点击上方按钮上传">
           </el-input>
@@ -132,7 +132,7 @@
             </el-button>
           </el-button-group>
           <el-input
-            v-model="form[style.attributeName]"
+            v-model="form[_.lowerFirst(style.attributeName)]"
             size="small"
             placeholder="请输入视频地址或点击上方按钮上传">
           </el-input>
@@ -182,7 +182,7 @@
           <textarea
             :id="style.attributeName"
             :name="style.attributeName"
-            v-html="form[style.attributeName]"
+            v-html="form[_.lowerFirst(style.attributeName)]"
             style="width: 100%;">
           </textarea>
         </el-form-item>
@@ -191,7 +191,7 @@
       <template v-else-if="style.inputType === 'TextArea'">
         <el-form-item :label="style.displayName" :prop="style.attributeName" :rules="utils.getRules(style.rules)">
           <el-input
-            v-model="form[style.attributeName]"
+            v-model="form[_.lowerFirst(style.attributeName)]"
             type="textarea"
             size="small"
             :autosize="{ minRows: 4, maxRows: 10}">
@@ -202,7 +202,7 @@
       <template v-else-if="style.inputType === 'Text'">
         <el-form-item :label="style.displayName" :prop="style.attributeName" :rules="utils.getRules(style.rules)">
           <el-input
-            v-model="form[style.attributeName]"
+            v-model="form[_.lowerFirst(style.attributeName)]"
             type="text">
           </el-input>
         </el-form-item>
@@ -210,7 +210,7 @@
       <!-- CheckBox -->
       <template v-else-if="style.inputType === 'CheckBox'">
         <el-form-item :label="style.displayName" :prop="style.attributeName" :rules="utils.getRules(style.rules)">
-          <el-checkbox-group v-model="form[style.attributeName]">
+          <el-checkbox-group v-model="form[_.lowerFirst(style.attributeName)]">
             <el-checkbox v-for="item in style.items" :key="item.value" :label="item.label" :value="item.value"></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
@@ -218,7 +218,7 @@
       <!-- Radio -->
       <template v-else-if="style.inputType === 'Radio'">
         <el-form-item :label="style.displayName" :prop="style.attributeName" :rules="utils.getRules(style.rules)">
-          <el-radio-group v-model="form[style.attributeName]">
+          <el-radio-group v-model="form[_.lowerFirst(style.attributeName)]">
             <el-radio v-for="item in style.items" :key="item.value" :label="item.label" :value="item.value"></el-radio>
           </el-radio-group>
         </el-form-item>
@@ -226,7 +226,7 @@
       <!-- SelectOne -->
       <template v-else-if="style.inputType === 'SelectOne'">
         <el-form-item :label="style.displayName" :prop="style.attributeName" :rules="utils.getRules(style.rules)">
-          <el-select v-model="form[style.attributeName]" placeholder="请选择">
+          <el-select v-model="form[_.lowerFirst(style.attributeName)]" placeholder="请选择">
             <el-option
               v-for="item in style.items"
               :key="item.value"
@@ -238,7 +238,7 @@
       <!-- SelectMultiple -->
       <template v-else-if="style.inputType === 'SelectMultiple'">
         <el-form-item :label="style.displayName" :prop="style.attributeName" :rules="utils.getRules(style.rules)">
-          <el-select v-model="form[style.attributeName]" multiple placeholder="请选择">
+          <el-select v-model="form[_.lowerFirst(style.attributeName)]" multiple placeholder="请选择">
             <el-option
               v-for="item in style.items"
               :key="item.value"
@@ -251,7 +251,7 @@
       <template v-else-if="style.inputType === 'Date'">
         <el-form-item :label="style.displayName" :prop="style.attributeName" :rules="utils.getRules(style.rules)">
           <el-date-picker
-            v-model="form[style.attributeName]"
+            v-model="form[_.lowerFirst(style.attributeName)]"
             type="date"
             placeholder="请选择日期">
           </el-date-picker>
@@ -261,14 +261,15 @@
       <template v-else-if="style.inputType === 'DateTime'">
         <el-form-item :label="style.displayName" :prop="style.attributeName" :rules="utils.getRules(style.rules)">
           <el-date-picker
-            v-model="form[style.attributeName]"
+            v-model="form[_.lowerFirst(style.attributeName)]"
             type="datetime"
             placeholder="请选择日期时间">
           </el-date-picker>
         </el-form-item>
       </template>
     </template>
-
+    <el-divider></el-divider>
+    <div style="height: 10px"></div>
     <el-form-item>
       <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
     </el-form-item>
@@ -278,10 +279,10 @@
 
 @section Scripts{
 <script type="text/javascript">
-  window.UEDITOR_HOME_URL = "../assets_core/lib/ueditor/";
+  window.UEDITOR_HOME_URL = "../assets/lib/ueditor/";
   window.UEDITOR_CONTROLLER_URL = apiUrl + "/sys/editors/ueditor/" + utils.getQueryInt("siteId");
 </script>
-<script src="../assets_core/lib/ueditor/editor_config.js" type="text/javascript" ></script>
-<script src="../assets_core/lib/ueditor/ueditor_all_min.js" type="text/javascript" ></script>
-<script src="../assets_core/lib/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js" type="text/javascript" ></script>
+<script src="../assets/lib/ueditor/editor_config.js" type="text/javascript" ></script>
+<script src="../assets/lib/ueditor/ueditor_all_min.js" type="text/javascript" ></script>
+<script src="../assets/lib/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js" type="text/javascript" ></script>
 <script src="settingsSite.js" type="text/javascript"></script> }

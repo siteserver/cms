@@ -17,12 +17,16 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<GetResult> Get([FromUri] FileRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplateAssets);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            {
+                return Request.Unauthorized<GetResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<GetResult>();
 
-            var filePath = PathUtility.GetSitePath(site, request.DirectoryPath, request.FileName);
+            var filePath = await PathUtility.GetSitePathAsync(site, request.DirectoryPath, request.FileName);
             var content = string.Empty;
             if (FileUtils.IsFileExists(filePath))
             {
@@ -59,7 +63,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<ContentResult> Add([FromBody] ContentRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplateAssets);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            {
+                return Request.Unauthorized<ContentResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<ContentResult>();
@@ -71,7 +79,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<ContentResult> Edit([FromBody] ContentRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplateAssets);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            {
+                return Request.Unauthorized<ContentResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<ContentResult>();
@@ -84,15 +96,15 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             var filePath = string.Empty; 
             if (StringUtils.EqualsIgnoreCase(request.ExtName, ".html"))
             {
-                filePath = PathUtility.GetSitePath(site, site.TemplatesAssetsIncludeDir, request.Path + ".html");
+                filePath = await PathUtility.GetSitePathAsync(site, site.TemplatesAssetsIncludeDir, request.Path + ".html");
             }
             else if (StringUtils.EqualsIgnoreCase(request.ExtName, ".css"))
             {
-                filePath = PathUtility.GetSitePath(site, site.TemplatesAssetsCssDir, request.Path + ".css");
+                filePath = await PathUtility.GetSitePathAsync(site, site.TemplatesAssetsCssDir, request.Path + ".css");
             }
             else if (StringUtils.EqualsIgnoreCase(request.ExtName, ".js"))
             {
-                filePath = PathUtility.GetSitePath(site, site.TemplatesAssetsJsDir, request.Path + ".js");
+                filePath = await PathUtility.GetSitePathAsync(site, site.TemplatesAssetsJsDir, request.Path + ".js");
             }
 
             var filePathToDelete = string.Empty;
@@ -105,7 +117,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             }
             else
             {
-                var originalFilePath = PathUtility.GetSitePath(site, request.DirectoryPath, request.FileName);
+                var originalFilePath = await PathUtility.GetSitePathAsync(site, request.DirectoryPath, request.FileName);
                 if (!StringUtils.EqualsIgnoreCase(originalFilePath, filePath))
                 {
                     filePathToDelete = originalFilePath;
@@ -124,7 +136,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             }
 
             var fileName = PathUtils.GetFileName(filePath);
-            var sitePath = PathUtility.GetSitePath(site);
+            var sitePath = await PathUtility.GetSitePathAsync(site);
             var directoryPath = StringUtils.ReplaceStartsWithIgnoreCase(filePath, sitePath, string.Empty);
             directoryPath = StringUtils.ReplaceEndsWithIgnoreCase(directoryPath, fileName, string.Empty);
             directoryPath = StringUtils.TrimSlash(directoryPath);

@@ -300,10 +300,25 @@
     <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsTranslateController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerTaxisController.cs" />
     <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerTaxisController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerViewController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsCheckController.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsCheckController.Columns.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsRecycleController.Delete.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsRecycleController.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsRecycleController.Columns.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsCheckController.List.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsCheckController.Tree.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsSearchController.Columns.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsSearchController.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.All.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsSearchController.Create.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsRecycleController.List.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsSearchController.List.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.List.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.Create.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.Columns.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsRecycleController.Tree.cs" />
+    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsSearchController.Tree.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.Tree.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerArrangeController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerCheckController.Dto.cs" />
@@ -326,12 +341,25 @@
     <Compile Include="Controllers\Pages\Cms\Create\PagesCreateSpecialController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\Create\PagesCreateFileController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\Create\PagesCreatePageController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.Preview.cs" />
+    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.Update.cs" />
+    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.Get.cs" />
+    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorLayerTranslateController.cs" />
+    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorLayerTranslateController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryFileController.cs" />
     <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryFileController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryVideoController.cs" />
     <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryVideoController.Dto.cs" />
     <Compile Include="Controllers\Pages\PagesMainController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesAddController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesAddController.Utils.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Settings\Utility\PagesUtilityCacheController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Shared\PagesGroupContentLayerAddController.cs" />
+    <Compile Include="Controllers\Pages\Shared\PagesGroupChannelLayerAddController.cs" />
     <Compile Include="Controllers\Pages\Shared\PagesAdminLayerViewController.cs" />
+    <Compile Include="Controllers\Pages\Shared\PagesGroupContentLayerAddController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Shared\PagesGroupChannelLayerAddController.Dto.cs" />
     <Compile Include="Controllers\Pages\Shared\PagesAdminLayerViewController.Dto.cs" />
     <Compile Include="Controllers\Pages\Shared\PagesVideoLayerSelectController.cs" />
     <Compile Include="Controllers\Pages\Shared\PagesVideoLayerSelectController.Dto.cs" />
@@ -397,7 +425,6 @@
     <Compile Include="Controllers\Pages\Shared\PagesEditorLayerImageController.Dto.cs" />
     <Compile Include="Controllers\Pages\Shared\PagesEditorLayerWordController.Dto.cs" />
     <Compile Include="Controllers\Pages\Shared\PagesEditorLayerWordController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerArrangeController.cs" />
@@ -483,12 +510,12 @@
     <Compile Include="Controllers\Pages\Settings\Log\PagesLogSiteController.cs" />
     <Compile Include="Controllers\Pages\Settings\Log\PagesLogConfigController.cs" />
     <Compile Include="Controllers\Pages\Settings\Log\PagesLogAdminController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Site\PagesSiteTemplatesOnlineController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Site\PagesSiteTemplatesController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Site\PagesSiteChangeRootController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Site\PagesSiteUrlController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Site\PagesSiteSaveController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Site\PagesSiteController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesTemplatesOnlineController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesTemplatesController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesChangeRootController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesUrlController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesSaveController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesController.cs" />
     <Compile Include="Controllers\Pages\Settings\User\PagesUserGroupController.Dto.cs" />
     <Compile Include="Controllers\Pages\Settings\User\PagesUserStyleController.Dto.cs" />
     <Compile Include="Controllers\Pages\Settings\User\PagesUserViewController.Dto.cs" />
@@ -505,8 +532,8 @@
     <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminPasswordController.cs" />
     <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminProfileController.cs" />
     <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminViewController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Site\PagesSiteAddController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Site\PagesSiteTableController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesAddController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesTableController.cs" />
     <Compile Include="Controllers\Pages\Settings\User\PagesUserConfigController.cs" />
     <Compile Include="Controllers\Pages\Settings\User\PagesUserGroupController.cs" />
     <Compile Include="Controllers\Pages\Settings\User\PagesUserStyleController.cs" />
@@ -555,10 +582,6 @@
     <ProjectReference Include="..\..\Datory\src\Datory\Datory.csproj">
       <Project>{c6df816e-0eb3-4e71-b446-0b24bbb2f6f0}</Project>
       <Name>Datory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SiteServer.BackgroundPages\SiteServer.BackgroundPages.csproj">
-      <Project>{6aa1713a-3b77-4b20-b8c7-fcb6de556f64}</Project>
-      <Name>SiteServer.BackgroundPages</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>

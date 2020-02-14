@@ -30,7 +30,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Settings
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             var families = new InstalledFontCollection().Families.Select(x => x.Name);
-            var imageUrl = PageUtility.ParseNavigationUrl(site, site.WaterMarkImagePath, true);
+            var imageUrl = await PageUtility.ParseNavigationUrlAsync(site, site.WaterMarkImagePath, true);
 
             return new GetResult
             {
@@ -62,7 +62,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Settings
             var file = auth.HttpRequest.Files[0];
             var filePath = file.FileName;
             var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, fileExtName);
+            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, fileExtName);
             var localFileName = PathUtility.GetUploadFileName(site, filePath);
             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 

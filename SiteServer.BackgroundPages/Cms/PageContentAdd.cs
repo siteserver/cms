@@ -135,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
                     CblContentGroups.Items.Add(item);
                 }
                 
-                BtnContentGroupAdd.Attributes.Add("onClick", ModalContentGroupAdd.GetOpenWindowString(SiteId));
+                //BtnContentGroupAdd.Attributes.Add("onClick", ModalContentGroupAdd.GetOpenWindowString(SiteId));
 
                 LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(SiteId));
 

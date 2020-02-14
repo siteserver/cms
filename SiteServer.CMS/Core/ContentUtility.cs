@@ -33,7 +33,7 @@ namespace SiteServer.CMS.Core
 
             var builder = new StringBuilder(content);
 
-            var url = site.GetWebUrl();
+            var url = await site.GetWebUrlAsync();
             if (!string.IsNullOrEmpty(url) && url != "/")
             {
                 StringUtils.ReplaceHrefOrSrc(builder, url, "@");
@@ -52,7 +52,7 @@ namespace SiteServer.CMS.Core
             return builder.ToString();
         }
 
-        public static string TextEditorContentDecode(Site site, string content, bool isLocal)
+        public static async Task<string> TextEditorContentDecodeAsync(Site site, string content, bool isLocal)
         {
             if (site == null) return content;
             
@@ -62,16 +62,16 @@ namespace SiteServer.CMS.Core
             string assetsUrl;
             if (isLocal)
             {
-                assetsUrl = PageUtility.GetSiteUrl(site,
+                assetsUrl = await PageUtility.GetSiteUrlAsync(site,
                     site.AssetsDir, true);
             }
             else
             {
-                assetsUrl = site.GetAssetsUrl();
+                assetsUrl = await site.GetAssetsUrlAsync();
             }
             StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@/", site.GetWebUrl()+ "/");
-            StringUtils.ReplaceHrefOrSrc(builder, "@", site.GetWebUrl() + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@/", site.GetWebUrlAsync()+ "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@", site.GetWebUrlAsync() + "/");
             StringUtils.ReplaceHrefOrSrc(builder, "//", "/");
 
             builder.Replace("&#xa0;", "&nbsp;");
@@ -151,15 +151,15 @@ namespace SiteServer.CMS.Core
 
             if (!string.IsNullOrEmpty(imageUrl) && PageUtility.IsVirtualUrl(imageUrl))
             {
-                collection[imageUrl] = PathUtility.MapPath(site, imageUrl);
+                collection[imageUrl] = PathUtility.MapPathAsync(site, imageUrl).GetAwaiter().GetResult();
             }
             if (!string.IsNullOrEmpty(videoUrl) && PageUtility.IsVirtualUrl(videoUrl))
             {
-                collection[videoUrl] = PathUtility.MapPath(site, videoUrl);
+                collection[videoUrl] = PathUtility.MapPathAsync(site, videoUrl).GetAwaiter().GetResult();
             }
             if (!string.IsNullOrEmpty(fileUrl) && PageUtility.IsVirtualUrl(fileUrl))
             {
-                collection[fileUrl] = PathUtility.MapPath(site, fileUrl);
+                collection[fileUrl] = PathUtility.MapPathAsync(site, fileUrl).GetAwaiter().GetResult();
             }
 
             var srcList = RegexUtils.GetOriginalImageSrcs(body);
@@ -167,7 +167,7 @@ namespace SiteServer.CMS.Core
             {
                 if (PageUtility.IsVirtualUrl(src))
                 {
-                    collection[src] = PathUtility.MapPath(site, src);
+                    collection[src] = PathUtility.MapPathAsync(site, src).GetAwaiter().GetResult();
                 }
                 else if (PageUtility.IsRelativeUrl(src))
                 {
@@ -180,7 +180,7 @@ namespace SiteServer.CMS.Core
             {
                 if (PageUtility.IsVirtualUrl(href))
                 {
-                    collection[href] = PathUtility.MapPath(site, href);
+                    collection[href] = PathUtility.MapPathAsync(site, href).GetAwaiter().GetResult();
                 }
                 else if (PageUtility.IsRelativeUrl(href))
                 {
@@ -317,7 +317,7 @@ namespace SiteServer.CMS.Core
 
             if (translateType == TranslateContentType.Copy)
             {
-                FileUtility.MoveFileByContentInfo(site, targetSite, contentInfo);
+                await FileUtility.MoveFileByContentAsync(site, targetSite, contentInfo);
 
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
@@ -342,7 +342,7 @@ namespace SiteServer.CMS.Core
             }
             else if (translateType == TranslateContentType.Cut)
             {
-                FileUtility.MoveFileByContentInfo(site, targetSite, contentInfo);
+                await FileUtility.MoveFileByContentAsync(site, targetSite, contentInfo);
 
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
@@ -389,7 +389,7 @@ namespace SiteServer.CMS.Core
             {
                 if (contentInfo.ReferenceId != 0) return;
 
-                FileUtility.MoveFileByContentInfo(site, targetSite, contentInfo);
+                await FileUtility.MoveFileByContentAsync(site, targetSite, contentInfo);
 
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
@@ -599,7 +599,7 @@ $('#TbTags').keyup(function (e) {
             {
                 return new ContentSummary
                 {
-                    ChannelId = TranslateUtils.ToInt(arr[0]),
+                    ChannelId = TranslateUtils.ToIntWithNegative(arr[0]),
                     Id = TranslateUtils.ToInt(arr[1])
                 };
             }

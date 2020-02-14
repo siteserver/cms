@@ -130,7 +130,7 @@ namespace SiteServer.CMS.Repositories
             );
         }
 
-        public async Task<List<ChannelGroup>> GetChannelGroupListAsync(int siteId)
+        public async Task<List<ChannelGroup>> GetChannelGroupsAsync(int siteId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(nameof(ChannelGroup.SiteId), siteId)

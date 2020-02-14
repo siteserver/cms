@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var fileName = PathUtils.GetFileName(filePath);
 
                     var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                    var localDirectoryPath = PathUtility.GetUploadDirectoryPath(Site, fileExtName);
+                    var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
 
                     var imageUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, filePath, true).GetAwaiter().GetResult();
 

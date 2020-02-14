@@ -188,7 +188,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
             var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
             var contentIdList = new List<int> { contentId };
-            await DataProvider.ContentRepository.RecycleContentsAsync(site, nodeInfo, contentIdList);
+            await DataProvider.ContentRepository.RecycleContentsAsync(site, nodeInfo, contentIdList, 0);
         }
 
         public async Task<List<int>> GetContentIdListAsync(int siteId, int channelId)

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Datory.Utils;
 using SiteServer.Abstractions;
-using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
@@ -173,7 +172,7 @@ namespace SiteServer.API.Controllers.Home
 
                     if (string.IsNullOrEmpty(title)) continue;
 
-                    var dict = await BackgroundInputTypeParser.SaveAttributesAsync(site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value);
+                    var dict = await ColumnsManager.SaveAttributesAsync(site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value);
 
                     var contentInfo = new Content(dict)
                     {

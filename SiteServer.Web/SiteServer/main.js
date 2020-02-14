@@ -8,7 +8,7 @@ var $urlDownload = '/pages/main/actions/download';
 var $packageIdSsCms = 'SS.CMS';
 
 var data = utils.initData({
-  siteId: parseInt(utils.getQueryString('siteId') || '0'),
+  siteId: utils.getQueryInt('siteId'),
   pageAlert: null,
   defaultPageUrl: null,
   isNightly: null,
@@ -68,7 +68,7 @@ var methods = {
         $this.productVersion = res.productVersion;
         $this.targetFramework = res.targetFramework;
         $this.environmentVersion = res.environmentVersion;
-        $this.adminLogoUrl = res.adminLogoUrl || './assets/icons/logo.png';
+        $this.adminLogoUrl = res.adminLogoUrl || './assets/images/logo.png';
         $this.adminTitle = res.adminTitle || 'SiteServer CMS';
         $this.isSuperAdmin = res.isSuperAdmin;
         $this.packageList = res.packageList;
@@ -195,6 +195,7 @@ var methods = {
   create: function () {
     var $this = this;
     
+    $this.lastExecuteTime = new Date();
     clearTimeout($this.timeoutId);
     var sessionId = localStorage.getItem('sessionId');
     $api.post($urlCreate, {
@@ -213,8 +214,6 @@ var methods = {
         location.href = 'login.cshtml';
       }
       $this.timeoutId = setTimeout($this.create, 1000);
-    }).then(function () {
-      $this.lastExecuteTime = new Date();
     });
   },
 
@@ -225,7 +224,7 @@ var methods = {
   },
 
   getHref: function (menu) {
-    return menu.href && menu.target != '_layer' ? menu.href : "javascript:;";
+    return menu.target != '_layer' ? menu.href : "javascript:;";
   },
 
   getTarget: function (menu) {
@@ -236,13 +235,15 @@ var methods = {
     this.menu = menu;
   },
 
-  btnLeftMenuClick: function (menu) {
+  btnLeftMenuClick: function (menu, e) {
     if (menu.hasChildren) {
       this.activeParentMenu = this.activeParentMenu === menu ? null : menu;
     } else {
       this.activeChildMenu = menu;
       this.isMobileMenu = false;
       if (menu.target == '_layer') {
+        e.stopPropagation();
+        e.preventDefault();
         utils.openLayer({
           title: menu.text,
           url: menu.href,

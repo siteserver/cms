@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SiteServer.CMS.Context.Atom.Atom.Core;
 using SiteServer.Abstractions;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
 
 
@@ -12,7 +11,7 @@ namespace SiteServer.CMS.ImportExport.Components
 {
 	public class ConfigurationIe
 	{
-		private readonly int _siteId;
+		private readonly Site _site;
 		private readonly string _filePath;
 
 		private const string DefaultIndexTemplateName = "DefaultIndexTemplateName";
@@ -20,55 +19,53 @@ namespace SiteServer.CMS.ImportExport.Components
 		private const string DefaultContentTemplateName = "DefaultContentTemplateName";
 		private const string DefaultFileTemplateName = "DefaultFileTemplateName";
 
-		public ConfigurationIe(int siteId, string filePath)
+		public ConfigurationIe(Site site, string filePath)
 		{
-			_siteId = siteId;
+            _site = site;
 			_filePath = filePath;
 		}
 
 		public async Task ExportAsync()
 		{
-			var site = await DataProvider.SiteRepository.GetAsync(_siteId);
-
 			var feed = AtomUtility.GetEmptyFeed();
 
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.Id), "PublishmentSystemId" }, site.Id.ToString());
-			AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.SiteName), "PublishmentSystemName" }, site.SiteName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.SiteDir), "PublishmentSystemDir" }, site.SiteDir);
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.TableName), "AuxiliaryTableForContent" }, site.TableName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.ParentId), "ParentPublishmentSystemId" }, site.ParentId.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Site.Taxis), site.Taxis.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "SettingsXml", site.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.Id), "PublishmentSystemId" }, _site.Id.ToString());
+			AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.SiteName), "PublishmentSystemName" }, _site.SiteName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.SiteDir), "PublishmentSystemDir" }, _site.SiteDir);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.TableName), "AuxiliaryTableForContent" }, _site.TableName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.ParentId), "ParentPublishmentSystemId" }, _site.ParentId.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Site.Taxis), _site.Taxis.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, "SettingsXml", _site.ToString());
 
-            var indexTemplateId = await DataProvider.TemplateRepository.GetDefaultTemplateIdAsync(site.Id, TemplateType.IndexPageTemplate);
+            var indexTemplateId = await DataProvider.TemplateRepository.GetDefaultTemplateIdAsync(_site.Id, TemplateType.IndexPageTemplate);
 			if (indexTemplateId != 0)
 			{
                 var indexTemplateName = await DataProvider.TemplateRepository.GetTemplateNameAsync(indexTemplateId);
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultIndexTemplateName, indexTemplateName);
 			}
 
-            var channelTemplateId = await DataProvider.TemplateRepository.GetDefaultTemplateIdAsync(site.Id, TemplateType.ChannelTemplate);
+            var channelTemplateId = await DataProvider.TemplateRepository.GetDefaultTemplateIdAsync(_site.Id, TemplateType.ChannelTemplate);
 			if (channelTemplateId != 0)
 			{
                 var channelTemplateName = await DataProvider.TemplateRepository.GetTemplateNameAsync(channelTemplateId);
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultChannelTemplateName, channelTemplateName);
 			}
 
-            var contentTemplateId = await DataProvider.TemplateRepository.GetDefaultTemplateIdAsync(site.Id, TemplateType.ContentTemplate);
+            var contentTemplateId = await DataProvider.TemplateRepository.GetDefaultTemplateIdAsync(_site.Id, TemplateType.ContentTemplate);
 			if (contentTemplateId != 0)
 			{
                 var contentTemplateName = await DataProvider.TemplateRepository.GetTemplateNameAsync(contentTemplateId);
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultContentTemplateName, contentTemplateName);
 			}
 
-            var fileTemplateId = await DataProvider.TemplateRepository.GetDefaultTemplateIdAsync(site.Id, TemplateType.FileTemplate);
+            var fileTemplateId = await DataProvider.TemplateRepository.GetDefaultTemplateIdAsync(_site.Id, TemplateType.FileTemplate);
 			if (fileTemplateId != 0)
 			{
                 var fileTemplateName = await DataProvider.TemplateRepository.GetTemplateNameAsync(fileTemplateId);
 				AtomUtility.AddDcElement(feed.AdditionalElements, DefaultFileTemplateName, fileTemplateName);
 			}
 
-			var channelGroupList = await DataProvider.ChannelGroupRepository.GetChannelGroupListAsync(site.Id);
+			var channelGroupList = await DataProvider.ChannelGroupRepository.GetChannelGroupsAsync(_site.Id);
 
             foreach (var channelGroup in channelGroupList)
 			{
@@ -76,7 +73,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 feed.Entries.Add(entry);
 			}
 
-			var contentGroupList = await DataProvider.ContentGroupRepository.GetContentGroupsAsync(site.Id);
+			var contentGroupList = await DataProvider.ContentGroupRepository.GetContentGroupsAsync(_site.Id);
 
             foreach (var contentGroup in contentGroupList)
 			{
@@ -108,13 +105,11 @@ namespace SiteServer.CMS.ImportExport.Components
         //    return site;
         //}
 
-		public async Task ImportAsync()
+		public async Task ImportAsync(string guid)
 		{
 			if (!FileUtils.IsFileExists(_filePath)) return;
 
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
-
-			var site = await DataProvider.SiteRepository.GetAsync(_siteId);
 
             var json = AtomUtility.GetDcElementContent(feed.AdditionalElements,
                 "SettingsXml");
@@ -123,7 +118,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var dict = Utilities.ToDictionary(json);
                 foreach (var o in dict)
                 {
-                    site.Set(o.Key, o.Value);
+                    _site.Set(o.Key, o.Value);
                 }
 			}
             json = AtomUtility.GetDcElementContent(feed.AdditionalElements,
@@ -133,19 +128,20 @@ namespace SiteServer.CMS.ImportExport.Components
                 var dict = Utilities.ToDictionary(json);
                 foreach (var o in dict)
                 {
-                    site.Set(o.Key, o.Value);
+                    _site.Set(o.Key, o.Value);
                 }
             }
 
-			site.IsSeparatedWeb = false;
-            site.IsCreateDoubleClick = false;
+            _site.IsSeparatedWeb = false;
+            _site.IsCreateDoubleClick = false;
 
-            await DataProvider.SiteRepository.UpdateAsync(site);
+            Caching.SetProcess(guid, $"更新站点配置...");
+			await DataProvider.SiteRepository.UpdateAsync(_site);
 
 			var indexTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultIndexTemplateName);
 			if (!string.IsNullOrEmpty(indexTemplateName))
 			{
-				var indexTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(site.Id, TemplateType.IndexPageTemplate, indexTemplateName);
+				var indexTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.IndexPageTemplate, indexTemplateName);
 				if (indexTemplateId != 0)
 				{
 					await DataProvider.TemplateRepository.SetDefaultAsync(indexTemplateId);
@@ -155,7 +151,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			var channelTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultChannelTemplateName);
 			if (!string.IsNullOrEmpty(channelTemplateName))
 			{
-                var channelTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(site.Id, TemplateType.ChannelTemplate, channelTemplateName);
+                var channelTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ChannelTemplate, channelTemplateName);
 				if (channelTemplateId != 0)
 				{
 					await DataProvider.TemplateRepository.SetDefaultAsync(channelTemplateId);
@@ -165,7 +161,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			var contentTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultContentTemplateName);
 			if (!string.IsNullOrEmpty(contentTemplateName))
 			{
-                var contentTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(site.Id, TemplateType.ContentTemplate, contentTemplateName);
+                var contentTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ContentTemplate, contentTemplateName);
 				if (contentTemplateId != 0)
 				{
 					await DataProvider.TemplateRepository.SetDefaultAsync(contentTemplateId);
@@ -175,20 +171,14 @@ namespace SiteServer.CMS.ImportExport.Components
 			var fileTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultFileTemplateName);
 			if (!string.IsNullOrEmpty(fileTemplateName))
 			{
-                var fileTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(site.Id, TemplateType.FileTemplate, fileTemplateName);
+                var fileTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.FileTemplate, fileTemplateName);
 				if (fileTemplateId != 0)
 				{
 					await DataProvider.TemplateRepository.SetDefaultAsync(fileTemplateId);
 				}
 			}
 
-			foreach (AtomEntry entry in feed.Entries)
-			{
-			    if (!await ChannelGroupIe.ImportAsync(entry, site.Id))
-			    {
-                    await ContentGroupIe.ImportAsync(entry, site.Id);
-                }
-			}
+            await ContentGroupIe.ImportAsync(feed, _site.Id, guid);
 		}
 
 	}

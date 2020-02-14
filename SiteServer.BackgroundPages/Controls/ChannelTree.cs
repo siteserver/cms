@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Controls
                     var scripts = ChannelLoading.GetScript(site, contentModelPluginId, ELoadingType.ContentTree, additional);
                     builder.Append(scripts);
 
-                    var channelIdList = DataProvider.ChannelRepository.GetChannelIdsAsync(DataProvider.ChannelRepository.GetAsync(site.Id).GetAwaiter().GetResult(), EScopeType.SelfAndChildren).GetAwaiter().GetResult();
+                    var channelIdList = DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, site.Id, EScopeType.SelfAndChildren).GetAwaiter().GetResult();
                     foreach (var channelId in channelIdList)
                     {
                         var channelInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();

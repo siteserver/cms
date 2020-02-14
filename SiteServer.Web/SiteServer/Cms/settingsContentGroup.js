@@ -2,13 +2,15 @@
 
 var data = utils.initData({
   siteId: utils.getQueryInt("siteId"),
-  groups: null,
-
-  panel: false,
-  form: null
+  groups: null
 });
 
 var methods = {
+  updateGroups: function(res, message) {
+    this.groups = res.groups;
+    this.$message.success(message);
+  },
+  
   apiList: function (message) {
     var $this = this;
 
@@ -52,50 +54,22 @@ var methods = {
     });
   },
 
-  apiSubmit: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    if (this.form.id === 0) {
-      $api.post($url, this.form).then(function (response) {
-        var res = response.data;
-        
-        $this.groups = res.groups;
-        $this.$message.success('内容组添加成功！');
-        $this.panel = false;
-      }).catch(function (error) {
-        utils.error($this, error);
-      }).then(function () {
-        utils.loading($this, false);
-      });
-    } else {
-      $api.put($url, this.form).then(function (response) {
-        var res = response.data;
-        
-        $this.groups = res.groups;
-        $this.$message.success('内容组修改成功！');
-        $this.panel = false;
-      }).catch(function (error) {
-        utils.error($this, error);
-      }).then(function () {
-        utils.loading($this, false);
-      });
-    }
-  },
-
   btnEditClick: function (group) {
-    this.panel = true;
-    this.form = _.assign({}, group);
+    utils.openLayer({
+      title: '编辑内容组',
+      url: '../Shared/groupContentLayerAdd.cshtml?siteId=' + this.siteId + '&groupId=' + group.id,
+      width: 500,
+      height: 300
+    });
   },
 
   btnAddClick: function () {
-    this.panel = true;
-    this.form = {
-      id: 0,
-      siteId: this.siteId,
-      groupName: '',
-      description: ''
-    };
+    utils.openLayer({
+      title: '新增内容组',
+      url: '../Shared/groupContentLayerAdd.cshtml?siteId=' + this.siteId,
+      width: 500,
+      height: 300
+    });
   },
 
   btnDeleteClick: function (group) {
@@ -124,29 +98,15 @@ var methods = {
       
       $this.groups = res.groups;
       $this.$message.success('内容组排序成功！');
-      $this.panel = false;
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
       utils.loading($this, false);
     });
-  },
-
-  btnSubmitClick: function () {
-    var $this = this;
-    this.$refs.form.validate(function(valid) {
-      if (valid) {
-        $this.apiSubmit();
-      }
-    });
-  },
-
-  btnCancelClick: function () {
-    this.panel = false;
   }
 };
 
-new Vue({
+var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,

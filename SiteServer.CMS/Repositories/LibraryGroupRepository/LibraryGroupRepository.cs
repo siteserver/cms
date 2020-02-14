@@ -22,11 +22,6 @@ namespace SiteServer.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private static class Attr
-        {
-            public const string Type = nameof(Type);
-        }
-
         private string CacheKey(LibraryType type) => Caching.GetListKey(TableName, type.GetValue());
 
         public async Task<int> InsertAsync(LibraryGroup group)
@@ -53,7 +48,7 @@ namespace SiteServer.CMS.Repositories
         public async Task<List<LibraryGroup>> GetAllAsync(LibraryType type)
         {
             var list = await _repository.GetAllAsync(Q
-                .Where(Attr.Type, type.GetValue())
+                .Where(nameof(LibraryGroup.Type), type.GetValue())
                 .OrderByDesc(nameof(LibraryGroup.Id))
                 .CachingGet(CacheKey(type))
             );
@@ -68,7 +63,7 @@ namespace SiteServer.CMS.Repositories
         public async Task<bool> IsExistsAsync(LibraryType type, string groupName)
         {
             return await _repository.ExistsAsync(Q
-                .Where(Attr.Type, type.GetValue())
+                .Where(nameof(LibraryGroup.Type), type.GetValue())
                 .Where(nameof(LibraryGroup.GroupName), groupName)
             );
         }

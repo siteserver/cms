@@ -28,22 +28,23 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             if (site == null) return Request.NotFound<GetResult>();
 
             var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
-            if (channel == null) return Request.BadRequest<GetResult>("无法确定内容对应的栏目");
+            if (channel == null) return Request.NotFound<GetResult>();
 
-            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channel, request.ContentId);
-            if (contentInfo == null) return Request.BadRequest<GetResult>("无法确定对应的内容");
+            var content = await DataProvider.ContentRepository.GetAsync(site, channel, request.ContentId);
+            if (content == null) return Request.NotFound<GetResult>();
 
-            //var title = WebUtils.GetContentTitle(site, contentInfo, string.Empty);
-            //var checkState =
-            //    CheckManager.GetCheckState(site, contentInfo);
-
-            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
-            var contentChecks = await DataProvider.ContentCheckRepository.GetCheckListAsync(tableName, request.ContentId);
+            var contentChecks = await DataProvider.ContentCheckRepository.GetCheckListAsync(content.SiteId, content.ChannelId, request.ContentId);
+            contentChecks.ForEach(async x =>
+            {
+                x.Set("State", CheckManager.GetCheckState(site, x.Checked, x.CheckedLevel));
+                x.Set("AdminName", await DataProvider.AdministratorRepository.GetDisplayAsync(x.AdminId));
+            });
 
             return new GetResult
             {
                 ContentChecks = contentChecks,
-                Content = contentInfo
+                Content = content,
+                State = CheckManager.GetCheckState(site, content)
             };
         }
     }

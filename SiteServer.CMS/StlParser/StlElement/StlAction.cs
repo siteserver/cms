@@ -60,7 +60,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (StringUtils.EqualsIgnoreCase(type, TypeTranslate))
                 {
-                    pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAhTranslate);
+                    await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.JsAhTranslate);
 
                     var msgToTraditionalChinese = "繁體";
                     var msgToSimplifiedChinese = "简体";

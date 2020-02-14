@@ -80,7 +80,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Library
                 var fileName = PathUtils.GetFileName(filePath);
 
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, fileExtName);
+                var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, fileExtName);
 
                 var imageUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
 

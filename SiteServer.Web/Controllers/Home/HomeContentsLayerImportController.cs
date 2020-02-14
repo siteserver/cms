@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
@@ -159,7 +158,7 @@ namespace SiteServer.API.Controllers.Home
                         if (!EFileSystemTypeUtils.Equals(EFileSystemType.Zip, PathUtils.GetExtension(localFilePath)))
                             continue;
 
-                        var importObject = new ImportObject(siteId, request.AdminName);
+                        var importObject = new ImportObject(site, request.AdminId);
                         await importObject.ImportContentsByZipFileAsync(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, request.UserId, SourceManager.User);
                     }
                 }
@@ -173,7 +172,7 @@ namespace SiteServer.API.Controllers.Home
                         if (!EFileSystemTypeUtils.Equals(EFileSystemType.Csv, PathUtils.GetExtension(localFilePath)))
                             continue;
 
-                        var importObject = new ImportObject(siteId, request.AdminName);
+                        var importObject = new ImportObject(site, request.AdminId);
                         await importObject.ImportContentsByCsvFileAsync(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, request.UserId, SourceManager.User);
                     }
                 }
@@ -185,7 +184,7 @@ namespace SiteServer.API.Controllers.Home
                         if (!EFileSystemTypeUtils.Equals(EFileSystemType.Txt, PathUtils.GetExtension(localFilePath)))
                             continue;
 
-                        var importObject = new ImportObject(siteId, request.AdminName);
+                        var importObject = new ImportObject(site, request.AdminId);
                         await importObject.ImportContentsByTxtFileAsync(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, request.UserId, SourceManager.User);
                     }
                 }

@@ -250,7 +250,7 @@ namespace SiteServer.CMS.Core
         public static async Task TransContentInfoAsync(Site site, Channel channel, int contentId, Site targetSite, int targetChannelId)
         {
             var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channel, contentId);
-            FileUtility.MoveFileByContentInfo(site, targetSite, contentInfo);
+            await FileUtility.MoveFileByContentAsync(site, targetSite, contentInfo);
             contentInfo.SiteId = targetSite.Id;
             contentInfo.SourceId = channel.Id;
             contentInfo.ChannelId = targetChannelId;
@@ -288,7 +288,7 @@ namespace SiteServer.CMS.Core
             if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.ImageUrl)))
             {
                 //修改图片
-                var sourceImageUrl = PathUtility.MapPath(site, contentInfo.Get<string>(ContentAttribute.ImageUrl));
+                var sourceImageUrl = await PathUtility.MapPathAsync(site, contentInfo.Get<string>(ContentAttribute.ImageUrl));
                 CopyReferenceFiles(targetSite, sourceImageUrl, site);
 
             }
@@ -298,14 +298,14 @@ namespace SiteServer.CMS.Core
 
                 foreach (string imageUrl in sourceImageUrls)
                 {
-                    var sourceImageUrl = PathUtility.MapPath(site, imageUrl);
+                    var sourceImageUrl = await PathUtility.MapPathAsync(site, imageUrl);
                     CopyReferenceFiles(targetSite, sourceImageUrl, site);
                 }
             }
             if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.FileUrl)))
             {
                 //修改附件
-                var sourceFileUrl = PathUtility.MapPath(site, contentInfo.Get<string>(ContentAttribute.FileUrl));
+                var sourceFileUrl = await PathUtility.MapPathAsync(site, contentInfo.Get<string>(ContentAttribute.FileUrl));
                 CopyReferenceFiles(targetSite, sourceFileUrl, site);
 
             }
@@ -315,7 +315,7 @@ namespace SiteServer.CMS.Core
 
                 foreach (string fileUrl in sourceFileUrls)
                 {
-                    var sourceFileUrl = PathUtility.MapPath(site, fileUrl);
+                    var sourceFileUrl = await PathUtility.MapPathAsync(site, fileUrl);
                     CopyReferenceFiles(targetSite, sourceFileUrl, site);
                 }
             }

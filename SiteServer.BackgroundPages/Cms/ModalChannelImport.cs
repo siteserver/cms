@@ -90,8 +90,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                     HifFile.PostedFile.SaveAs(localFilePath);
 
-					var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
-                    importObject.ImportChannelsAndContentsByZipFileAsync(TranslateUtils.ToInt(DdlParentChannelId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue)).GetAwaiter().GetResult();
+					var importObject = new ImportObject(Site, AuthRequest.AdminId);
+                    importObject.ImportChannelsAndContentsByZipFileAsync(TranslateUtils.ToInt(DdlParentChannelId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), null).GetAwaiter().GetResult();
 
                     AuthRequest.AddSiteLogAsync(SiteId, "导入栏目").GetAwaiter().GetResult();
 

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using SiteServer.Abstractions;
 using System.Text.RegularExpressions;
@@ -18,31 +16,41 @@ namespace SiteServer.CMS.Core
 {
     public static class PathUtility
     {
-        public static string GetSitePath(Site site)
+        public static async Task<string> GetSitePathAsync(Site site)
         {
-            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.SiteDir);
+            return await GetSitePathAsync(site, null);
+        }
+
+        public static async Task<string> GetSitePathAsync(Site site, params string[] paths)
+        {
+            string sitePath;
+            if (site.ParentId == 0)
+            {
+                sitePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, site.Root ? string.Empty : site.SiteDir);
+            }
+            else
+            {
+                var parent = await DataProvider.SiteRepository.GetAsync(site.ParentId);
+                sitePath = await GetSitePathAsync(parent, site.SiteDir);
+            }
+
+            if (paths == null || paths.Length <= 0) return sitePath;
+
+            foreach (var t in paths)
+            {
+                var path = t?.Replace(Constants.PageSeparatorChar, PathUtils.SeparatorChar).Trim(PathUtils.SeparatorChar) ?? string.Empty;
+                sitePath = PathUtils.Combine(sitePath, path);
+            }
+            return sitePath;
         }
 
         public static async Task<string> GetSitePathAsync(int siteId, params string[] paths)
         {
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            return GetSitePath(site, paths);
+            return await GetSitePathAsync(site, paths);
         }
 
-        public static string GetSitePath(Site site, params string[] paths)
-        {
-            var retVal = GetSitePath(site);
-            if (paths == null || paths.Length <= 0) return retVal;
-
-            foreach (var t in paths)
-            {
-                var path = t?.Replace(Constants.PageSeparatorChar, PathUtils.SeparatorChar).Trim(PathUtils.SeparatorChar) ?? string.Empty;
-                retVal = PathUtils.Combine(retVal, path);
-            }
-            return retVal;
-        }
-
-        public static string GetIndexPageFilePath(Site site, string createFileFullName, bool isHeadquarters, int currentPageIndex)
+        public static async Task<string> GetIndexPageFilePathAsync(Site site, string createFileFullName, bool isHeadquarters, int currentPageIndex)
         {
             if (isHeadquarters)
             {
@@ -63,7 +71,7 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            var filePath = MapPath(site, createFileFullName);
+            var filePath = await MapPathAsync(site, createFileFullName);
 
             if (currentPageIndex != 0)
             {
@@ -90,12 +98,12 @@ namespace SiteServer.CMS.Core
             return PathUtils.Combine(PathUtils.PhysicalSiteFilesPath, DirectoryUtils.SiteFiles.BackupFiles, site.SiteDir, DateTime.Now.ToString("yyyy-MM"), EBackupTypeUtils.GetValue(backupType) + "_" + siteName + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + extention);
         }
 
-        public static string GetUploadDirectoryPath(Site site, string fileExtension)
+        public static async Task<string> GetUploadDirectoryPathAsync(Site site, string fileExtension)
         {
-            return GetUploadDirectoryPath(site, DateTime.Now, fileExtension);
+            return await GetUploadDirectoryPathAsync(site, DateTime.Now, fileExtension);
         }
 
-        public static string GetUploadDirectoryPath(Site site, DateTime datetime, string fileExtension)
+        public static async Task<string> GetUploadDirectoryPathAsync(Site site, DateTime datetime, string fileExtension)
         {
             var uploadDateFormatString = site.FileUploadDateFormatString;
             var uploadDirectoryName = site.FileUploadDirectoryName;
@@ -113,7 +121,7 @@ namespace SiteServer.CMS.Core
 
             string directoryPath;
             var dateFormatType = uploadDateFormatString;
-            var sitePath = GetSitePath(site);
+            var sitePath = await GetSitePathAsync(site);
             if (dateFormatType == DateFormatType.Year)
             {
                 directoryPath = PathUtils.Combine(sitePath, uploadDirectoryName, datetime.Year.ToString());
@@ -130,12 +138,12 @@ namespace SiteServer.CMS.Core
             return directoryPath;
         }
 
-        public static string GetUploadDirectoryPath(Site site, UploadType uploadType)
+        public static async Task<string> GetUploadDirectoryPathAsync(Site site, UploadType uploadType)
         {
-            return GetUploadDirectoryPath(site, DateTime.Now, uploadType);
+            return await GetUploadDirectoryPathAsync(site, DateTime.Now, uploadType);
         }
 
-        public static string GetUploadDirectoryPath(Site site, DateTime datetime, UploadType uploadType)
+        public static async Task<string> GetUploadDirectoryPathAsync(Site site, DateTime datetime, UploadType uploadType)
         {
             var uploadDateFormatString = DateFormatType.Month;
             var uploadDirectoryName = string.Empty;
@@ -168,7 +176,7 @@ namespace SiteServer.CMS.Core
 
             string directoryPath;
             var dateFormatType = uploadDateFormatString;
-            var sitePath = GetSitePath(site);
+            var sitePath = await GetSitePathAsync(site);
             if (dateFormatType == DateFormatType.Year)
             {
                 directoryPath = PathUtils.Combine(sitePath, uploadDirectoryName, datetime.Year.ToString());
@@ -307,7 +315,7 @@ namespace SiteServer.CMS.Core
             return resolvedPath;
         }
 
-        public static string MapPath(Site site, string virtualPath)
+        public static async Task<string> MapPathAsync(Site site, string virtualPath)
         {
             var resolvedPath = virtualPath;
             if (string.IsNullOrEmpty(virtualPath))
@@ -322,14 +330,14 @@ namespace SiteServer.CMS.Core
 
             if (site != null)
             {
-                resolvedPath = site.Root ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(site.SiteDir, virtualPath.Substring(1));
+                return await GetSitePathAsync(site, virtualPath.Substring(1));
             }
             return WebUtils.MapPath(resolvedPath);
         }
 
-        public static string MapPath(Site site, string virtualPath, bool isCopyToSite)
+        public static async Task<string> MapPathAsync(Site site, string virtualPath, bool isCopyToSite)
         {
-            if (!isCopyToSite) return MapPath(site, virtualPath);
+            if (!isCopyToSite) return await MapPathAsync(site, virtualPath);
 
             var resolvedPath = virtualPath;
             if (string.IsNullOrEmpty(virtualPath))
@@ -344,7 +352,7 @@ namespace SiteServer.CMS.Core
 
             if (site != null)
             {
-                resolvedPath = site.Root ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(site.SiteDir, virtualPath.Substring(1));
+                return await GetSitePathAsync(site, virtualPath.Substring(1));
             }
             return WebUtils.MapPath(resolvedPath);
         }
@@ -382,13 +390,13 @@ namespace SiteServer.CMS.Core
             {
                 if (!PageUtils.IsProtocolUrl(originalImageSrc) ||
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, PageUtils.ApplicationPath) ||
-                    StringUtils.StartsWithIgnoreCase(originalImageSrc, site.GetWebUrl()))
+                    StringUtils.StartsWithIgnoreCase(originalImageSrc, await site.GetWebUrlAsync()))
                     continue;
                 var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);
                 if (!EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName)) continue;
 
                 var fileName = GetUploadFileName(site, originalImageSrc);
-                var directoryPath = GetUploadDirectoryPath(site, fileExtName);
+                var directoryPath = await GetUploadDirectoryPathAsync(site, fileExtName);
                 var filePath = PathUtils.Combine(directoryPath, fileName);
 
                 try
@@ -398,7 +406,7 @@ namespace SiteServer.CMS.Core
                         WebClientUtils.SaveRemoteFileToLocal(originalImageSrc, filePath);
                         if (EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                         {
-                            FileUtility.AddWaterMark(site, filePath);
+                            await FileUtility.AddWaterMarkAsync(site, filePath);
                         }
                     }
                     var fileUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
@@ -963,7 +971,7 @@ namespace SiteServer.CMS.Core
             if (nodeInfo.ParentId == 0)
             {
                 var templateInfo = await DataProvider.TemplateRepository.GetDefaultTemplateAsync(site.Id, TemplateType.IndexPageTemplate);
-                return GetIndexPageFilePath(site, templateInfo.CreatedFileFullName, site.Root, currentPageIndex);
+                return await GetIndexPageFilePathAsync(site, templateInfo.CreatedFileFullName, site.Root, currentPageIndex);
             }
             var filePath = nodeInfo.FilePath;
 
@@ -972,7 +980,7 @@ namespace SiteServer.CMS.Core
                 filePath = await ChannelFilePathRules.ParseAsync(site, channelId);
             }
 
-            filePath = MapPath(site, filePath);// PathUtils.Combine(sitePath, filePath);
+            filePath = await MapPathAsync(site, filePath);// PathUtils.Combine(sitePath, filePath);
             if (PathUtils.IsDirectoryPath(filePath))
             {
                 filePath = PathUtils.Combine(filePath, channelId + ".html");
@@ -999,7 +1007,7 @@ namespace SiteServer.CMS.Core
         {
             var filePath = await ContentFilePathRules.ParseAsync(site, channelId, content);
 
-            filePath = MapPath(site, filePath);
+            filePath = await MapPathAsync(site, filePath);
             if (PathUtils.IsDirectoryPath(filePath))
             {
                 filePath = PathUtils.Combine(filePath, content.Id + ".html");

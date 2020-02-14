@@ -81,7 +81,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Library
 
                 var filePath = PathUtils.GetTemporaryFilesPath(fileName);
                 var (_, wordContent) = await WordManager.GetWordAsync(site, false, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
-                wordContent = ContentUtility.TextEditorContentDecode(site, wordContent, true);
+                wordContent = await ContentUtility.TextEditorContentDecodeAsync(site, wordContent, true);
                 builder.Append(wordContent);
                 FileUtils.DeleteFileIfExists(filePath);
             }

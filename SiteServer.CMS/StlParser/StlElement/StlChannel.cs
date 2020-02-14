@@ -300,11 +300,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             else if (type.Equals(nameof(Channel.ImageUrl).ToLower()))
             {
                 inputType = InputType.Image;
-                parsedContent = InputParserUtility.GetImageOrFlashHtml(pageInfo.Site, channel.ImageUrl, contextInfo.Attributes, contextInfo.IsStlEntity); // contextInfo.IsStlEntity = true 表示实体标签
+                parsedContent = await InputParserUtility.GetImageOrFlashHtmlAsync(pageInfo.Site, channel.ImageUrl, contextInfo.Attributes, contextInfo.IsStlEntity); // contextInfo.IsStlEntity = true 表示实体标签
             }
             else if (type.Equals(nameof(Channel.Content).ToLower()))
             {
-                parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.Site, channel.Content, pageInfo.IsLocal);
+                parsedContent = await ContentUtility.TextEditorContentDecodeAsync(pageInfo.Site, channel.Content, pageInfo.IsLocal);
 
                 if (isClearTags)
                 {
@@ -380,7 +380,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (contextInfo.IsInnerElement || pageInfo.Template.TemplateType != TemplateType.ChannelTemplate)
                 {
-                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.Site, channel.Content, pageInfo.IsLocal);
+                    parsedContent = await ContentUtility.TextEditorContentDecodeAsync(pageInfo.Site, channel.Content, pageInfo.IsLocal);
 
                     if (isClearTags)
                     {

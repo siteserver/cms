@@ -5,6 +5,7 @@ using System.Web.Http;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Extensions;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Analysis
@@ -19,7 +20,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.Analysis
         public async Task<QueryResult> List([FromBody] QueryRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSettingsPermissions(Request, Constants.AppPermissions.SettingsAnalysisUser);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAnalysisUser))
+            {
+                return Request.Unauthorized<QueryResult>();
+            }
 
             var dateFrom = TranslateUtils.ToDateTime(request.DateFrom);
             var dateTo = TranslateUtils.ToDateTime(request.DateTo, DateTime.Now);

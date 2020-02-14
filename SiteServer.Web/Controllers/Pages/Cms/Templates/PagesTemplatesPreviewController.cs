@@ -24,7 +24,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<GetResult> GetConfig([FromUri] SiteRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplatePreview);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
+            {
+                return Request.Unauthorized<GetResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<GetResult>();
@@ -52,7 +56,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<BoolResult> Cache([FromBody]CacheRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplatePreview);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
+            {
+                return Request.Unauthorized<BoolResult>();
+            }
 
             CacheUtils.InsertHours(CacheKey, request.Content, 1);
 
@@ -66,7 +74,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<StringResult> Submit([FromBody]SubmitRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplatePreview);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
+            {
+                return Request.Unauthorized<StringResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<StringResult>();

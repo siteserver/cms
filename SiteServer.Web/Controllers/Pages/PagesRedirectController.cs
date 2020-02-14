@@ -96,7 +96,7 @@ namespace SiteServer.API.Controllers.Pages
                         site = await DataProvider.SiteRepository.GetAsync(siteId);
                         url = site.IsSeparatedWeb
                             ? ApiRoutePreview.GetSiteUrl(siteId)
-                            : site.GetWebUrl();
+                            : await site.GetWebUrlAsync();
                     }
                     else
                     {

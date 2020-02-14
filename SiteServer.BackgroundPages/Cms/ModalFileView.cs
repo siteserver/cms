@@ -119,7 +119,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var textBoxId = AuthRequest.GetQueryString("TextBoxID");
                 var virtualUrl = AuthRequest.GetQueryString(textBoxId);
-                _filePath = PathUtility.MapPath(Site, virtualUrl);
+                _filePath = PathUtility.MapPathAsync(Site, virtualUrl).GetAwaiter().GetResult();
                 _relatedPath = PageUtils.RemoveFileNameFromUrl(virtualUrl);
                 _fileName = PathUtils.GetFileName(_filePath);
             }
@@ -137,7 +137,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     _fileName = _updateName;
                 }
-                _filePath = PathUtility.MapPath(Site, PathUtils.Combine(_relatedPath, _fileName));
+                _filePath = PathUtility.MapPathAsync(Site, PathUtils.Combine(_relatedPath, _fileName)).GetAwaiter().GetResult();
             }
 
             if (!FileUtils.IsFileExists(_filePath))

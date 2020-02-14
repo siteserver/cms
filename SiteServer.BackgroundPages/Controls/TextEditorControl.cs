@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Controls
 		    attributes[_attributeName] = _value;
 
 		    var extraBuilder = new StringBuilder();
-		    var inputHtml = BackgroundInputTypeParser.ParseTextEditor(attributes, _attributeName, _site, pageScripts, extraBuilder);
+		    var inputHtml = BackgroundInputTypeParser.ParseTextEditorAsync(attributes, _attributeName, _site, pageScripts, extraBuilder).GetAwaiter().GetResult();
 
 		    output.Write(inputHtml + extraBuilder);
 

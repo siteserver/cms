@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory.Utils;
 using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Dto;
@@ -46,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             var pluginIds = PluginContentManager.GetContentPluginIds(channel);
             var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
-            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, true);
+            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             var pageContents = new List<Content>();
             List<ContentSummary> summaries;
@@ -65,8 +66,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             if (total > 0)
             {
                 var offset = site.PageSize * (request.Page - 1);
-                var limit = site.PageSize;
-                var pageSummaries = summaries.Skip(offset).Take(limit).ToList();
+                var pageSummaries = summaries.Skip(offset).Take(site.PageSize).ToList();
 
                 var sequence = offset + 1;
                 foreach (var summary in pageSummaries)
@@ -75,7 +75,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     if (content == null) continue;
 
                     var pageContent =
-                        await ColumnsManager.CalculateContentListAsync(sequence++, request.ChannelId, content, columns, pluginColumns);
+                        await ColumnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, content, columns, pluginColumns);
 
                     var menus = await PluginMenuManager.GetContentMenusAsync(pluginIds, pageContent);
                     pageContent.Set("PluginMenus", menus);
@@ -113,7 +113,6 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
         public class ListRequest : ChannelRequest
         {
-            public bool IsAllContents { get; set; }
             public int Page { get; set; }
             public string SearchType { get; set; }
             public string SearchText { get; set; }
@@ -146,7 +145,6 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             public int PageSize { get; set; }
             public List<ContentColumn> Columns { get; set; }
             public bool IsAllContents { get; set; }
-
             public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
             public Permissions Permissions { get; set; }
         }

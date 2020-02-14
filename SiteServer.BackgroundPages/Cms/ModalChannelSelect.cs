@@ -109,7 +109,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BindGrid()
         {
-            var channelIdList = DataProvider.ChannelRepository.GetChannelIdsAsync(DataProvider.ChannelRepository.GetAsync(SiteId).GetAwaiter().GetResult(), EScopeType.Children).GetAwaiter().GetResult();
+            var channelIdList = DataProvider.ChannelRepository.GetChannelIdsAsync(SiteId, SiteId, EScopeType.Children).GetAwaiter().GetResult();
             RptChannel.DataSource = channelIdList;
             RptChannel.ItemDataBound += rptChannel_ItemDataBound;
             RptChannel.DataBind();

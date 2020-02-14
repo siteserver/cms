@@ -8,12 +8,12 @@ namespace SiteServer.CMS.ImportExport.Components
 {
 	internal class RelatedFieldIe
 	{
-		private readonly int _siteId;
+		private readonly Site _site;
 		private readonly string _directoryPath;
 
-        public RelatedFieldIe(int siteId, string directoryPath)
+        public RelatedFieldIe(Site site, string directoryPath)
 		{
-			_siteId = siteId;
+            _site = site;
 			_directoryPath = directoryPath;
 		}
 
@@ -23,11 +23,11 @@ namespace SiteServer.CMS.ImportExport.Components
 
             var feed = ExportRelatedFieldInfo(relatedField);
 
-            var relatedFieldItemInfoList = await DataProvider.RelatedFieldItemRepository.GetListAsync(_siteId, relatedField.Id, 0);
+            var relatedFieldItemInfoList = await DataProvider.RelatedFieldItemRepository.GetListAsync(_site.Id, relatedField.Id, 0);
 
             foreach (var relatedFieldItemInfo in relatedFieldItemInfoList)
 			{
-                await AddAtomEntryAsync(feed, _siteId, relatedFieldItemInfo, 1);
+                await AddAtomEntryAsync(feed, _site.Id, relatedFieldItemInfo, 1);
 			}
 			feed.Save(filePath);
 		}
@@ -80,10 +80,10 @@ namespace SiteServer.CMS.ImportExport.Components
                 {
                     Id = 0,
                     Title = title,
-                    SiteId = _siteId
+                    SiteId = _site.Id
                 };
 
-                var srcRelatedFieldInfo = await DataProvider.RelatedFieldRepository.GetRelatedFieldAsync(_siteId, title);
+                var srcRelatedFieldInfo = await DataProvider.RelatedFieldRepository.GetRelatedFieldAsync(_site.Id, title);
                 if (srcRelatedFieldInfo != null)
                 {
                     if (overwrite)
@@ -92,7 +92,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     }
                     else
                     {
-                        relatedFieldInfo.Title = await DataProvider.RelatedFieldRepository.GetImportTitleAsync(_siteId, relatedFieldInfo.Title);
+                        relatedFieldInfo.Title = await DataProvider.RelatedFieldRepository.GetImportTitleAsync(_site.Id, relatedFieldInfo.Title);
                     }
                 }
 

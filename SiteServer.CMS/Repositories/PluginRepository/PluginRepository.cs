@@ -20,11 +20,6 @@ namespace SiteServer.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private static class Attr
-        {
-            public const string IsDisabled = nameof(IsDisabled);
-        }
-
         public async Task DeleteAsync(string pluginId)
         {
             await _repository.DeleteAsync(Q.Where(nameof(Abstractions.Plugin.PluginId), pluginId));
@@ -33,7 +28,7 @@ namespace SiteServer.CMS.Repositories
         public async Task UpdateIsDisabledAsync(string pluginId, bool isDisabled)
         {
             await _repository.UpdateAsync(Q
-                .Set(Attr.IsDisabled, isDisabled.ToString())
+                .Set(nameof(Abstractions.Plugin.Disabled), isDisabled)
                 .Where(nameof(Abstractions.Plugin.PluginId), pluginId)
             );
         }

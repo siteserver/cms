@@ -52,7 +52,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 return Request.BadRequest<StringResult>("视频不存在，请重新选择");
             }
 
-            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(site, UploadType.Video);
+            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, UploadType.Video);
             var filePath = PathUtils.Combine(localDirectoryPath, PathUtility.GetUploadFileName(site, libraryFilePath));
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);

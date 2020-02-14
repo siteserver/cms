@@ -25,18 +25,22 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<GetResult> List([FromUri] SiteRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplateAssets);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            {
+                return Request.Unauthorized<GetResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<GetResult>();
 
             var directories = new List<Cascade<string>>();
             var files = new List<KeyValuePair<string, string>>();
-            GetDirectoriesAndFiles(directories, files, site, site.TemplatesAssetsIncludeDir, ExtInclude);
-            GetDirectoriesAndFiles(directories, files, site, site.TemplatesAssetsCssDir, ExtCss);
-            GetDirectoriesAndFiles(directories, files, site, site.TemplatesAssetsJsDir, ExtJs);
+            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsIncludeDir, ExtInclude);
+            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsCssDir, ExtCss);
+            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsJsDir, ExtJs);
 
-            var siteUrl = PageUtility.GetSiteUrl(site, string.Empty, true).TrimEnd('/');
+            var siteUrl = (await PageUtility.GetSiteUrlAsync(site, string.Empty, true)).TrimEnd('/');
 
             return new GetResult
             {
@@ -53,12 +57,16 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<BoolResult> Delete([FromBody] FileRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplateAssets);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            {
+                return Request.Unauthorized<BoolResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<BoolResult>();
 
-            FileUtils.DeleteFileIfExists(PathUtility.GetSitePath(site, request.DirectoryPath, request.FileName));
+            FileUtils.DeleteFileIfExists(await PathUtility.GetSitePathAsync(site, request.DirectoryPath, request.FileName));
             await auth.AddSiteLogAsync(request.SiteId, "删除资源文件", $"{request.DirectoryPath}:{request.FileName}");
 
             return new BoolResult
@@ -71,7 +79,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         public async Task<GetResult> Config([FromBody] ConfigRequest request)
         {
             var auth = await AuthenticatedRequest.GetAuthAsync();
-            await auth.CheckSitePermissionsAsync(Request, request.SiteId, Constants.SitePermissions.TemplateAssets);
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            {
+                return Request.Unauthorized<GetResult>();
+            }
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<GetResult>();
@@ -85,11 +97,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
 
             var directories = new List<Cascade<string>>();
             var files = new List<KeyValuePair<string, string>>();
-            GetDirectoriesAndFiles(directories, files, site, site.TemplatesAssetsIncludeDir, ExtInclude);
-            GetDirectoriesAndFiles(directories, files, site, site.TemplatesAssetsCssDir, ExtCss);
-            GetDirectoriesAndFiles(directories, files, site, site.TemplatesAssetsJsDir, ExtJs);
+            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsIncludeDir, ExtInclude);
+            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsCssDir, ExtCss);
+            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsJsDir, ExtJs);
 
-            var siteUrl = PageUtility.GetSiteUrl(site, string.Empty, true).TrimEnd('/');
+            var siteUrl = (await PageUtility.GetSiteUrlAsync(site, string.Empty, true)).TrimEnd('/');
 
             return new GetResult
             {

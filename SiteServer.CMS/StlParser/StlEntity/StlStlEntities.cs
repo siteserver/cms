@@ -85,7 +85,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(SiteUrl, attributeName))//域名地址
                 {
-                    parsedContent = PageUtility.GetSiteUrl(pageInfo.Site, pageInfo.IsLocal).TrimEnd('/');
+                    parsedContent = (await PageUtility.GetSiteUrlAsync(pageInfo.Site, pageInfo.IsLocal)).TrimEnd('/');
                 }
                 else if (StringUtils.EqualsIgnoreCase(SiteDir, attributeName))//文件夹
                 {
@@ -151,7 +151,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                             {
                                 parsedContent = InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image,
                                     InputType.File)
-                                    ? PageUtility.ParseNavigationUrl(pageInfo.Site, parsedContent,
+                                    ? await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent,
                                         pageInfo.IsLocal)
                                     : await InputParserUtility.GetContentByTableStyleAsync(parsedContent, string.Empty,
                                         pageInfo.Site, styleInfo, string.Empty, null, string.Empty,

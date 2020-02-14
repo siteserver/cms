@@ -7,11 +7,11 @@ namespace SiteServer.Abstractions
     [JsonConverter(typeof(StringEnumConverter))]
     public enum TranslateContentType
     {
-        [DataEnum(DisplayName = "复制")]
+        [DataEnum(DisplayName = "完整复制")]
         Copy,
         [DataEnum(DisplayName = "剪切")]
         Cut,
-        [DataEnum(DisplayName = "引用")]
+        [DataEnum(DisplayName = "引用地址")]
         Reference,
         [DataEnum(DisplayName = "引用内容")]
         ReferenceContent,
