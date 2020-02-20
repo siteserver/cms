@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.API.Controllers.V1
@@ -91,35 +91,27 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(ApiRouteActionsCheck)]
-        public async Task<IHttpActionResult> Check(string name, [FromBody] CaptchaInfo captchaInfo)
+        public IHttpActionResult Check(string name, [FromBody] CaptchaInfo captchaInfo)
         {
-            try
+            var code = CookieUtils.GetCookie("SS-" + name);
+
+            if (string.IsNullOrEmpty(code) || CacheUtils.Exists($"SiteServer.API.Controllers.V1.CaptchaController.{code}"))
             {
-                var code = CookieUtils.GetCookie("SS-" + name);
-
-                if (string.IsNullOrEmpty(code) || CacheUtils.Exists($"SiteServer.API.Controllers.V1.CaptchaController.{code}"))
-                {
-                    return BadRequest("验证码已超时，请点击刷新验证码！");
-                }
-
-                CookieUtils.Erase("SS-" + name);
-                CacheUtils.InsertMinutes($"SiteServer.API.Controllers.V1.CaptchaController.{code}", true, 10);
-
-                if (!StringUtils.EqualsIgnoreCase(code, captchaInfo.Captcha))
-                {
-                    return BadRequest("验证码不正确，请重新输入！");
-                }
-
-                return Ok(new
-                {
-                    Value = true
-                });
+                return BadRequest("验证码已超时，请点击刷新验证码！");
             }
-            catch (Exception ex)
+
+            CookieUtils.Erase("SS-" + name);
+            CacheUtils.InsertMinutes($"SiteServer.API.Controllers.V1.CaptchaController.{code}", true, 10);
+
+            if (!StringUtils.EqualsIgnoreCase(code, captchaInfo.Captcha))
             {
-                await LogUtils.AddErrorLogAsync(ex);
-                return InternalServerError(ex);
+                return BadRequest("验证码不正确，请重新输入！");
             }
+
+            return Ok(new
+            {
+                Value = true
+            });
         }
     }
 }

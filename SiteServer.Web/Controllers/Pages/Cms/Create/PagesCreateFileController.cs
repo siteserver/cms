@@ -1,20 +1,24 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Create
 {
-    
     [RoutePrefix("pages/cms/create/createFile")]
     public partial class PagesCreateFileController : ApiController
     {
         private const string Route = "";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesCreateFileController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> Get([FromUri] SiteRequest request)
@@ -51,7 +55,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
 
             foreach (var templateId in request.TemplateIds)
             {
-                await CreateManager.CreateFileAsync(request.SiteId, templateId);
+                await _createManager.CreateFileAsync(request.SiteId, templateId);
             }
 
             return new BoolResult

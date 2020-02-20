@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions.Dto;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Repositories;
 
@@ -19,6 +17,7 @@ namespace SiteServer.API.Controllers.Pages
     {
         public class GetResult
         {
+            public bool Forbidden { get; set; }
             public string ProductVersion { get; set; }
 
             public string NetVersion { get; set; }
@@ -44,7 +43,7 @@ namespace SiteServer.API.Controllers.Pages
             public string Port { get; set; }
             public string UserName { get; set; }
             public string Password { get; set; }
-            public EOraclePrivilege OraclePrivilege { get; set; }
+            public OraclePrivilege OraclePrivilege { get; set; }
             public bool OracleIsSid { get; set; }
             public string OracleDatabase { get; set; }
         }

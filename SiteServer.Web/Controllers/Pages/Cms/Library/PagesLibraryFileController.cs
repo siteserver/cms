@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Library
@@ -156,8 +156,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Library
             }
 
             var library = await DataProvider.LibraryFileRepository.GetAsync(request.LibraryId);
-            var filePath = PathUtils.GetLibraryFilePath(library.Url);
-            PageUtils.Download(HttpContext.Current.Response, filePath);
+            var filePath = PathUtility.GetLibraryFilePath(library.Url);
+            auth.Download(HttpContext.Current.Response, filePath);
         }
 
         [HttpPost, Route(RouteGroups)]

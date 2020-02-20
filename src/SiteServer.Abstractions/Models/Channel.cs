@@ -104,10 +104,5 @@ namespace SiteServer.Abstractions
 
         //显示下级栏目内容
         public bool IsAllContents { get; set; }
-
-        public Channel Clone()
-        {
-            return (Channel) MemberwiseClone();
-        }
     }
 }

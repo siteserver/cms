@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Serialization;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Sites
 {
@@ -73,7 +74,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Sites
                 var files = new List<string>();
 
                 var siteDirList = await DataProvider.SiteRepository.GetSiteDirListAsync(0);
-                var fileSystems = FileManager.GetFileSystemInfoExtendCollection(await PathUtility.GetSitePathAsync(site), true);
+                var fileSystems = FileUtility.GetFileSystemInfoExtendCollection(await PathUtility.GetSitePathAsync(site));
                 foreach (FileSystemInfoExtend fileSystem in fileSystems)
                 {
                     if (!fileSystem.IsDirectory) continue;

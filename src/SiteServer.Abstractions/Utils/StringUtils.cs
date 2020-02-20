@@ -71,6 +71,13 @@ namespace SiteServer.Abstractions
             return string.IsNullOrEmpty(text) ? string.Empty : text.Trim().Trim('/');
         }
 
+        public static string TrimEnd(string text, string end)
+        {
+            if (string.IsNullOrEmpty(text)) return string.Empty;
+            if (string.IsNullOrEmpty(end)) return text;
+            return EndsWithIgnoreCase(text, end) ? text.Substring(0, text.Length - end.Length) : text;
+        }
+
         public static string TrimAndToLower(string text)
         {
             return string.IsNullOrEmpty(text) ? string.Empty : text.ToLower().Trim();
@@ -578,6 +585,12 @@ namespace SiteServer.Abstractions
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
             return input.First().ToString().ToLower() + input.Substring(1);
+        }
+
+        public static string UpperFirst(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return string.Empty;
+            return input.First().ToString().ToUpper() + input.Substring(1);
         }
     }
 }

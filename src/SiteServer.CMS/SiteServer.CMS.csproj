@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--<TargetFrameworks>net461</TargetFrameworks>-->
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>SiteServer.CMS</PackageId>
+    <Version>1.0.0</Version>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>SiteServer CMS</Authors>
+    <Company>SiteServer CMS</Company>
+    <Product>SiteServer CMS</Product>
+    <Description>SiteServer.CMS</Description>
+    <PackageLicense>GPL-3.0</PackageLicense>
+    <PackageProjectUrl>https://github.com/siteserver/SiteServer.Abstractions</PackageProjectUrl>
+    <PackageIconUrl>https://www.siteserver.cn/assets/images/favicon.png</PackageIconUrl>
+    <Copyright>Copyright © SiteServer CMS 2019</Copyright>
+    <PackageTags>SiteServer CMS Plugin</PackageTags>
+    <RepositoryUrl>https://github.com/siteserver/SiteServer.Abstractions</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Add netstandard2.0 support</PackageReleaseNotes>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Plugin\Apis\**" />
+    <EmbeddedResource Remove="Plugin\Apis\**" />
+    <None Remove="Plugin\Apis\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Core\ContentColumn.cs" />
+    <Compile Remove="Core\RoleManager.cs" />
+    <Compile Remove="Packaging\PackageType.cs" />
+    <Compile Remove="Plugin\Impl\ApiCollectionImpl.cs" />
+    <Compile Remove="StlParser\StlElement\StlTags.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="NuGet.Packaging" Version="5.3.1" />
+    <PackageReference Include="NuGet.Versioning" Version="5.3.1" />
+    <PackageReference Include="Open-Xml-PowerTools" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Datory\src\Datory\Datory.csproj" />
+    <ProjectReference Include="..\SiteServer.Abstractions\SiteServer.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Api\V1\" />
+    <Folder Include="Services\ParseManager\" />
+    <Folder Include="Services\UrlManager\" />
+  </ItemGroup>
+
+</Project>

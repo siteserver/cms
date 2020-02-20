@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
@@ -27,7 +29,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 }
 
                 var tokenInfo = await DataProvider.AccessTokenRepository.GetAsync(id);
-                var accessToken = WebConfigUtils.DecryptStringBySecretKey(tokenInfo.Token);
+                var accessToken = TranslateUtils.DecryptStringBySecretKey(tokenInfo.Token, WebConfigUtils.SecretKey);
 
                 return Ok(new
                 {
@@ -55,7 +57,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 var accessTokenInfo = await DataProvider.AccessTokenRepository.GetAsync(id);
 
-                var accessToken = WebConfigUtils.DecryptStringBySecretKey(await DataProvider.AccessTokenRepository.RegenerateAsync(accessTokenInfo));
+                var accessToken = TranslateUtils.DecryptStringBySecretKey(await DataProvider.AccessTokenRepository.RegenerateAsync(accessTokenInfo), WebConfigUtils.SecretKey);
 
                 return Ok(new
                 {

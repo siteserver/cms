@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Utility
 {
@@ -28,8 +30,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
                 var value = request.GetPostString("value");
 
                 var encoded = isEncrypt
-                    ? WebConfigUtils.EncryptStringBySecretKey(value)
-                    : WebConfigUtils.DecryptStringBySecretKey(value);
+                    ? TranslateUtils.EncryptStringBySecretKey(value, WebConfigUtils.SecretKey)
+                    : TranslateUtils.DecryptStringBySecretKey(value, WebConfigUtils.SecretKey);
 
                 if (!isEncrypt && string.IsNullOrEmpty(encoded))
                 {

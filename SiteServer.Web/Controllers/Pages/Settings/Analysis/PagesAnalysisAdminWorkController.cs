@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Extensions;
+using SiteServer.API.Context;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Analysis
@@ -50,8 +49,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Analysis
             var site = await DataProvider.SiteRepository.GetAsync(siteId);
             if (site != null)
             {
-                var rows = DataProvider.ContentRepository.GetDataSetOfAdminExcludeRecycle(site.TableName, siteId, dateFrom, dateTo);
-                if (rows != null)
+                var list = DataProvider.ContentRepository.GetDataSetOfAdminExcludeRecycle(site.TableName, siteId, dateFrom, dateTo);
+                if (list != null)
                 {
                     var userNameList = new List<string>();
                     var xHashtableUser = new Hashtable();
@@ -60,19 +59,21 @@ namespace SiteServer.API.Controllers.Pages.Settings.Analysis
                     var horizontalHashtableUser = new Hashtable();
                     var verticalHashtableUser = new Hashtable();
 
-                    foreach (DataRow dr in rows)
+                    foreach (var ( userName, addCount, updateCount) in list)
                     {
                         var item = new QueryResultItem
                         {
-                            UserName = dr["userName"].ToString(),
-                            AddCount = TranslateUtils.ToInt(dr["addCount"].ToString()),
-                            UpdateCount = TranslateUtils.ToInt(dr["updateCount"].ToString())
+                            UserName = userName,
+                            AddCount = addCount,
+                            UpdateCount = updateCount
                         };
                         result.Items.Add(item);
 
                         SetXHashtableUser(item.UserName, item.UserName, xHashtableUser, userNameList);
-                        SetYHashtableUser(item.UserName, item.AddCount, YTypeNew, yHashtableUserNew, yHashtableUserUpdate, verticalHashtableUser, horizontalHashtableUser);
-                        SetYHashtableUser(item.UserName, item.UpdateCount, YTypeUpdate, yHashtableUserNew, yHashtableUserUpdate, verticalHashtableUser, horizontalHashtableUser);
+                        SetYHashtableUser(item.UserName, item.AddCount, YTypeNew, yHashtableUserNew,
+                            yHashtableUserUpdate, verticalHashtableUser, horizontalHashtableUser);
+                        SetYHashtableUser(item.UserName, item.UpdateCount, YTypeUpdate, yHashtableUserNew,
+                            yHashtableUserUpdate, verticalHashtableUser, horizontalHashtableUser);
                     }
 
                     var xArrayNewList = new List<string>();

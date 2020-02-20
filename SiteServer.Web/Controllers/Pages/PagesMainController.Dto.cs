@@ -3,8 +3,8 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages
@@ -66,9 +66,10 @@ namespace SiteServer.API.Controllers.Pages
 
                 if (siteIdListWithPermissions.Count > 1)
                 {
+                    var switchMenus = new List<Tab>();
                     var allSiteMenus = new List<Tab>();
 
-                    var siteIdList = await DataProvider.AdministratorRepository.GetLatestTop10SiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
+                    var siteIdList = await DataProvider.SiteRepository.GetLatestSiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
                     foreach (var siteId in siteIdList)
                     {
                         var site = await DataProvider.SiteRepository.GetAsync(siteId);
@@ -81,16 +82,26 @@ namespace SiteServer.API.Controllers.Pages
                             Text = site.SiteName
                         });
                     }
-                    allSiteMenus.Add(new Tab
+
+                    switchMenus.Add(new Tab
                     {
-                        Href = "select.cshtml",
+                        IconClass = "el-icon-refresh",
+                        Href = "settings/sitesLayerSelect.cshtml",
                         Target = "_layer",
-                        Text = "全部站点..."
+                        Text = "选择站点"
                     });
+                    switchMenus.Add(new Tab
+                    {
+                        IconClass = "ion-earth",
+                        Text = "最近访问",
+                        Selected = true,
+                        Children = allSiteMenus.ToArray()
+                    });
+
                     menus.Add(new Tab
                     {
                         Text = "切换站点",
-                        Children = allSiteMenus.ToArray()
+                        Children = switchMenus.ToArray()
                     });
                 }
             }

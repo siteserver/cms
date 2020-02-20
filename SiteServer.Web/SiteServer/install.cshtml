@@ -1,9 +1,20 @@
 @{ Layout = "./Shared/_LayoutRoot.cshtml"; }
 
-<el-card class="box-card">
+<div v-if="forbidden">
+  <el-alert
+    title="错误提示"
+    type="error"
+    description="系统已安装，安装向导被禁用！"
+    :closable="false"
+    show-icon>
+  </el-alert>
+</div>
+
+<el-card v-else class="box-card">
   <div slot="header" class="clearfix">
     <span>SiteServer CMS 安装向导</span>
   </div>
+
   <el-steps :active="pageIndex" class="mb-3" finish-status="success">
     <el-step title="许可协议"></el-step>
     <el-step title="环境检测"></el-step>
@@ -13,7 +24,7 @@
     <el-step title="安装完成"></el-step>
   </el-steps>
 
-  <div v-if="pageIndex === 0" class="p-2">
+  <div v-if="pageIndex === 0">
     <div class="form-group">
       <label class="col-form-label">
         SiteServer CMS 开源协议（GPL-3.0）
@@ -33,7 +44,7 @@
     </div>
   </div>
 
-  <div v-if="pageIndex === 1" class="p-2">
+  <div v-if="pageIndex === 1">
     <div class="form-group">
       <label class="col-form-label">
         服务器信息
@@ -131,7 +142,7 @@
     </div>
   </div>
 
-  <div v-if="pageIndex === 2" class="p-2">
+  <div v-if="pageIndex === 2">
 
     <el-alert v-if="connectErrorMessage" show-icon :closable="false" class="mb-2" :title="connectErrorMessage" type="error"></el-alert>
 

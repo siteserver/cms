@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.Cli.Core
 {

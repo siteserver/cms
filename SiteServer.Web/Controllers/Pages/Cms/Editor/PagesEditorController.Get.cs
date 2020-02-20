@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Editor
@@ -36,7 +37,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Editor
             var groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(site.Id);
             var tagNames = await DataProvider.ContentTagRepository.GetTagNamesAsync(site.Id);
 
-            var allStyles = await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channel);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
+            var allStyles = await DataProvider.TableStyleRepository.GetContentStyleListAsync(channel, tableName);
             var styles = allStyles.Where(style =>
                     !string.IsNullOrEmpty(style.DisplayName) && !StringUtils.ContainsIgnoreCase(ContentAttribute.MetadataAttributes.Value, style.AttributeName)).Select(
                 x =>

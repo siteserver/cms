@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Datory.Utils;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Pages.Plugins

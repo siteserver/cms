@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using SiteServer.API.Context;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
@@ -18,7 +19,7 @@ namespace SiteServer.API.Controllers.Sys
             {
                 var request = await AuthenticatedRequest.GetAuthAsync();
 
-                var dynamicInfo = DynamicInfo.GetDynamicInfo(request, request.User);
+                var dynamicInfo = DynamicInfo.GetDynamicInfo(request.GetPostString("value"), request.GetPostInt("page"), request.User, Request.RequestUri.PathAndQuery);
 
                 return Ok(new
                 {

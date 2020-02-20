@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Datory.Utils;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.Repositories;
 
@@ -55,7 +56,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var siteIdListWithPermissions = await permissions.GetSiteIdListAsync();
                 foreach (var siteId in siteIdListWithPermissions)
                 {
-                    siteNames.Add(await DataProvider.SiteRepository.GetSiteNameAsync(await DataProvider.SiteRepository.GetAsync(siteId)));
+                    var site = await DataProvider.SiteRepository.GetAsync(siteId);
+                    siteNames.Add(site.SiteName);
                 }
             }
             var isOrdinaryAdmin = !await permissions.IsSuperAdminAsync();

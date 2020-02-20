@@ -163,22 +163,14 @@ namespace SiteServer.Abstractions
             return string.Empty;
         }
 
-        public static string GetBinDirectoryPath(string relatedPath)
+        public static string GetLangPath(string contentRootPath, string language, string fileName)
         {
-            relatedPath = RemoveParentPath(relatedPath);
-            return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.Bin.DirectoryName, relatedPath);
-        }
-
-        public static string GetAdminDirectoryPath(string relatedPath)
-        {
-            relatedPath = RemoveParentPath(relatedPath);
-            return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory, relatedPath);
-        }
-
-        public static string GetHomeDirectoryPath(string relatedPath)
-        {
-            relatedPath = RemoveParentPath(relatedPath);
-            return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, relatedPath);
+            var langPath = PathUtils.Combine(contentRootPath, $"lang/{language}/{fileName}");
+            if (!FileUtils.IsFileExists(langPath))
+            {
+                langPath = PathUtils.Combine(contentRootPath, $"lang/{Constants.DefaultLanguage}/{fileName}");
+            }
+            return langPath;
         }
 
         public static string RemovePathInvalidChar(string filePath)
@@ -199,25 +191,6 @@ namespace SiteServer.Abstractions
             sAllowedExt = sAllowedExt.Replace("|", ",");
             var aExt = sAllowedExt.Split(',');
             return aExt.Any(t => StringUtils.EqualsIgnoreCase(sExt, t));
-        }
-
-        public static string GetTemporaryFilesPath(string relatedPath)
-        {
-            return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
-        }
-
-        public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory);
-
-        public static string PhysicalSiteFilesPath => Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName);
-
-        public static string GetLangPath(string contentRootPath, string language, string fileName)
-        {
-            var langPath = PathUtils.Combine(contentRootPath, $"lang/{language}/{fileName}");
-            if (!FileUtils.IsFileExists(langPath))
-            {
-                langPath = PathUtils.Combine(contentRootPath, $"lang/{Constants.DefaultLanguage}/{fileName}");
-            }
-            return langPath;
         }
 
         public static string GetLibraryVirtualDirectoryPath(UploadType uploadType)
@@ -258,9 +231,6 @@ namespace SiteServer.Abstractions
             return $"{StringUtils.GetShortGuid(false)}{GetExtension(filePath)}";
         }
 
-        public static string GetLibraryFilePath(string virtualUrl)
-        {
-            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, virtualUrl);
-        }
+        
     }
 }

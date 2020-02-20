@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.API
@@ -49,7 +50,7 @@ namespace SiteServer.API
                     }
                     HttpContext.Current.Server.ClearError();
 
-                    LogUtils.AddErrorLogAndRedirectAsync(lastError, "Server Error in Application").GetAwaiter().GetResult();
+                    ContextUtils.AddErrorLogAndRedirectAsync(lastError, "Server Error in Application").GetAwaiter().GetResult();
                 }
 
 

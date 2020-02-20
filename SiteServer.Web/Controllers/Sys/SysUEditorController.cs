@@ -1,9 +1,9 @@
 ﻿using System.Web;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context.UEditor;
 using SiteServer.CMS.Api.Sys.Editors;
-using SiteServer.CMS.UEditor;
-using Config = SiteServer.CMS.UEditor.Config;
+using Config = SiteServer.API.Context.UEditor.Config;
 
 namespace SiteServer.API.Controllers.Sys
 {

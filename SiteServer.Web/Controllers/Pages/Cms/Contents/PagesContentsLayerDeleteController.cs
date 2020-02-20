@@ -3,11 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -15,6 +14,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
     public partial class PagesContentsLayerDeleteController : ApiController
     {
         private const string Route = "";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesContentsLayerDeleteController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> Get([FromUri] GetRequest request)
@@ -72,17 +78,20 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             {
                 foreach (var summary in summaries)
                 {
-                    await DeleteManager.DeleteContentAsync(site, summary.ChannelId, summary.Id);
+                    await _createManager.DeleteContentAsync(site, summary.ChannelId, summary.Id);
                 }
             }
 
             if (summaries.Count == 1)
             {
                 var summary = summaries[0];
-                var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, summary.ChannelId);
-                var contentTitle = await DataProvider.ContentRepository.GetValueAsync(tableName, summary.Id, ContentAttribute.Title);
-                await auth.AddSiteLogAsync(request.SiteId, summary.ChannelId, summary.Id, "删除内容",
-                    $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, summary.ChannelId)},内容标题:{contentTitle}");
+
+                var content = await DataProvider.ContentRepository.GetAsync(site, summary.ChannelId, summary.Id);
+                if (content != null)
+                {
+                    await auth.AddSiteLogAsync(request.SiteId, summary.ChannelId, summary.Id, "删除内容",
+                        $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, summary.ChannelId)},内容标题:{content.Title}");
+                }
             }
             else
             {
@@ -97,7 +106,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     .Select(x => x.Id).ToList();
                 await DataProvider.ContentRepository.RecycleContentsAsync(site, distinctChannel, contentIdList, auth.AdminId);
 
-                await CreateManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
+                await _createManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
             }
 
             return new BoolResult

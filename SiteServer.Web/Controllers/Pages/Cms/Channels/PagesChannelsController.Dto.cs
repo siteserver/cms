@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Dto;
-using SiteServer.CMS.Dto.Request;
+using SiteServer.Abstractions.Dto;
+using SiteServer.Abstractions.Dto.Request;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Channels
 {
@@ -53,12 +53,6 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
         public class ChannelIdsRequest : SiteRequest
         {
             public List<int> ChannelIds { get; set; }
-        }
-
-        public class SetGroupsRequest : SiteRequest
-        {
-            public List<int> ChannelIds { get; set; }
-            public List<string> GroupNames { get; set; }
         }
 
         public class DeleteRequest : SiteRequest

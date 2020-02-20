@@ -2,8 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
@@ -46,7 +47,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             var tagNames = await DataProvider.ContentTagRepository.GetTagNamesAsync(request.SiteId);
 
             var editorColumns = new List<ContentColumn>();
-            var styleList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channel);
+
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
+            var styleList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(channel, tableName);
             foreach (var tableStyle in styleList)
             {
                 if (tableStyle.InputType == InputType.TextEditor)

@@ -184,36 +184,27 @@
   <el-row>
     <el-divider></el-divider>
     <div style="height: 10px"></div>
-    <el-button size="small" type="primary" style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAppendClick">添 加</el-button>
-    <el-button size="small" type="primary" style="margin-left: 0px;" icon="el-icon-upload" v-on:click="btnImportClick">导 入</el-button>
-    <el-button size="small" type="primary" style="margin-left: 0px;" :disabled="channelIds.length === 0" icon="el-icon-download" v-on:click="btnExportClick">导 出</el-button>
-    
-    <el-popover
-      placement="top"
-      width="400"
-      v-model="isSetGroups"
-      trigger="click">
-      <div>
-        <el-tag
-          title="设置栏目组"
-          v-for="groupName in groupNames"
-          :key="groupName"
-          type="info"
-          style="cursor: pointer; margin: 0 3px 6px 0;"
-          v-on:click="btnSelectGroupClick(groupName)"
-          :effect="selectedGroupNames.indexOf(groupName) > -1 ? 'dark' : 'plain'">
-          {{ groupName }}
-        </el-tag>
-        <hr />
-        <el-button size="small" v-on:click="btnSetGroupsClick" type="primary">确 定</el-button>
-        <el-button size="small" v-on:click="isSetGroups = false;">取 消</el-button>
-      </div>
-      <el-button slot="reference" size="small" type="primary" style="margin-left: 0px;" :disabled="channelIds.length === 0 || groupNames.length === 0" icon="el-icon-menu">设置栏目组</el-button>
-    </el-popover>
-
-    <el-button size="small" type="primary" style="margin-left: 0px;" :disabled="channelIds.length === 0" icon="el-icon-sort" v-on:click="btnSetTaxisClick">排 序</el-button>
-    <el-button size="small" type="primary" style="margin-left: 0px;" :disabled="channelIds.length === 0" icon="el-icon-right" v-on:click="btnTranslateClick">转 移</el-button>
-    <el-button size="small" type="primary" style="margin-left: 0px;" :disabled="channelIds.length === 0" icon="el-icon-magic-stick" v-on:click="btnCreateClick">生 成</el-button>
+    <el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAppendClick">
+      添 加
+    </el-button>
+    <el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-upload" v-on:click="btnImportClick">
+      导 入
+    </el-button>
+    <el-button size="small" type="primary" plain style="margin-left: 0px;" :disabled="channelIds.length === 0" icon="el-icon-download" v-on:click="btnExportClick">
+      导 出
+    </el-button>
+    <el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-files" :disabled="channelIds.length === 0" v-on:click="btnSetGroupClick">
+      分 组
+    </el-button>
+    <el-button size="small" type="primary" plain style="margin-left: 0px;" :disabled="channelIds.length === 0" icon="el-icon-sort" v-on:click="btnSetTaxisClick">
+      排 序
+    </el-button>
+    <el-button size="small" type="primary" plain style="margin-left: 0px;" :disabled="channelIds.length === 0" icon="el-icon-right" v-on:click="btnTranslateClick">
+      转 移
+    </el-button>
+    <el-button size="small" type="primary" plain style="margin-left: 0px;" :disabled="channelIds.length === 0" icon="el-icon-magic-stick" v-on:click="btnCreateClick">
+      生 成
+    </el-button>
   </el-row>
 
 </el-card>

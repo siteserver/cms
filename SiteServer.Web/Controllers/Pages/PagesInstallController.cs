@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions.Dto;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -20,24 +18,33 @@ namespace SiteServer.API.Controllers.Pages
         private const string Route = "";
         private const string RouteActionsConnect = "actions/connect";
 
+        private readonly ISettingsManager _settingsManager;
+        private readonly IConfigRepository _configRepository;
+
+        public PagesInstallController(ISettingsManager settingsManager, IConfigRepository configRepository)
+        {
+            _settingsManager = settingsManager;
+            _configRepository = configRepository;
+        }
+
         [HttpGet, Route(Route)]
         public async Task<GetResult> Get()
         {
-            if (!await SystemManager.IsNeedInstallAsync())
+            if (!await _configRepository.IsNeedInstallAsync())
             {
-                throw new HttpResponseException(Request.CreateErrorResponse(
-                    HttpStatusCode.BadRequest,
-                    "系统已安装成功，向导被禁用"
-                ));
+                return new GetResult
+                {
+                    Forbidden = true
+                };
             }
 
             var rootWritable = false;
             try
             {
-                var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "version.txt");
+                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, "version.txt");
                 FileUtils.WriteText(filePath, SystemManager.ProductVersion);
 
-                var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, WebConfigUtils.PhysicalApplicationPath);
+                var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, _settingsManager.ContentRootPath);
                 ioPermission.Demand();
 
                 rootWritable = true;
@@ -50,10 +57,10 @@ namespace SiteServer.API.Controllers.Pages
             var siteFilesWritable = false;
             try
             {
-                var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, "index.html");
+                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName, "index.html");
                 FileUtils.WriteText(filePath, Constants.Html5Empty);
 
-                var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName));
+                var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName));
                 ioPermission.Demand();
 
                 siteFilesWritable = true;
@@ -67,7 +74,7 @@ namespace SiteServer.API.Controllers.Pages
             {
                 ProductVersion = SystemManager.ProductVersion,
                 NetVersion = SystemManager.TargetFramework,
-                ContentRootPath = WebConfigUtils.PhysicalApplicationPath,
+                ContentRootPath = _settingsManager.ContentRootPath,
                 RootWritable = rootWritable,
                 SiteFilesWritable = siteFilesWritable,
                 DatabaseTypes = new List<Select<string>>(),
@@ -79,7 +86,7 @@ namespace SiteServer.API.Controllers.Pages
             {
                 result.DatabaseTypes.Add(new Select<string>(databaseType));
             }
-            foreach (var oraclePrivilege in TranslateUtils.GetEnums<EOraclePrivilege>())
+            foreach (var oraclePrivilege in TranslateUtils.GetEnums<OraclePrivilege>())
             {
                 result.OraclePrivileges.Add(new Select<string>(oraclePrivilege));
             }
@@ -143,7 +150,7 @@ namespace SiteServer.API.Controllers.Pages
             return result;
         }
 
-        private string GetConnectionString(bool isDatabaseName, DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string selectedDatabaseName, string oracleDatabase, bool oracleIsSid, EOraclePrivilege oraclePrivilege)
+        private string GetConnectionString(bool isDatabaseName, DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string selectedDatabaseName, string oracleDatabase, bool oracleIsSid, OraclePrivilege oraclePrivilege)
         {
             var databaseName = string.Empty;
             if (isDatabaseName)

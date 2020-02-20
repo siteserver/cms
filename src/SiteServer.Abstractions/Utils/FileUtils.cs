@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Datory;
 
 
 namespace SiteServer.Abstractions
@@ -401,5 +402,135 @@ namespace SiteServer.Abstractions
                 return string.Empty;
             }
         }
-	}
+
+        public static bool IsTextEditable(FileType type)
+        {
+            return type == FileType.Ascx || type == FileType.Asp || type == FileType.Aspx || type == FileType.Css || type == FileType.Htm || type == FileType.Html || type == FileType.Js || type == FileType.Jsp || type == FileType.Php || type == FileType.SHtml || type == FileType.Txt || type == FileType.Xml || type == FileType.Json;
+        }
+
+        public static bool IsHtml(string fileExtName)
+        {
+            var retVal = false;
+            if (!string.IsNullOrEmpty(fileExtName))
+            {
+                fileExtName = fileExtName.ToLower().Trim();
+                if (!fileExtName.StartsWith("."))
+                {
+                    fileExtName = "." + fileExtName;
+                }
+                if (fileExtName == ".asp" || fileExtName == ".aspx" || fileExtName == ".htm" || fileExtName == ".html" || fileExtName == ".jsp" || fileExtName == ".php" || fileExtName == ".shtml")
+                {
+                    retVal = true;
+                }
+            }
+            return retVal;
+        }
+
+        public static bool IsImage(string fileExtName)
+        {
+            var retVal = false;
+            if (!string.IsNullOrEmpty(fileExtName))
+            {
+                fileExtName = fileExtName.ToLower().Trim();
+                if (!fileExtName.StartsWith("."))
+                {
+                    fileExtName = "." + fileExtName;
+                }
+                if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".webp")
+                {
+                    retVal = true;
+                }
+            }
+            return retVal;
+        }
+
+        public static bool IsZip(string typeStr)
+        {
+            return StringUtils.EqualsIgnoreCase(".zip", typeStr);
+        }
+
+        public static bool IsFlash(string fileExtName)
+        {
+            var retVal = false;
+            if (!string.IsNullOrEmpty(fileExtName))
+            {
+                fileExtName = fileExtName.ToLower().Trim();
+                if (!fileExtName.StartsWith("."))
+                {
+                    fileExtName = "." + fileExtName;
+                }
+                if (fileExtName == ".swf")
+                {
+                    retVal = true;
+                }
+            }
+            return retVal;
+        }
+
+        public static bool IsPlayer(string fileExtName)
+        {
+            var retVal = false;
+            if (!string.IsNullOrEmpty(fileExtName))
+            {
+                fileExtName = fileExtName.ToLower().Trim();
+                if (!fileExtName.StartsWith("."))
+                {
+                    fileExtName = "." + fileExtName;
+                }
+                if (fileExtName == ".flv" || fileExtName == ".avi" || fileExtName == ".mpg" || fileExtName == ".mpeg" || fileExtName == ".smi" || fileExtName == ".mp3" || fileExtName == ".mid" || fileExtName == ".midi" || fileExtName == ".rm" || fileExtName == ".rmb" || fileExtName == ".rmvb" || fileExtName == ".wmv" || fileExtName == ".wma" || fileExtName == ".asf" || fileExtName == ".mov" || fileExtName == ".mp4")
+                {
+                    retVal = true;
+                }
+            }
+            return retVal;
+        }
+
+        public static bool IsImageOrPlayer(string fileExtName)
+        {
+            var retVal = false;
+            if (!string.IsNullOrEmpty(fileExtName))
+            {
+                fileExtName = fileExtName.ToLower().Trim();
+                if (!fileExtName.StartsWith("."))
+                {
+                    fileExtName = "." + fileExtName;
+                }
+                if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpeg" || fileExtName == ".jpg" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".webp")
+                {
+                    retVal = true;
+                }
+                if (retVal == false) retVal = IsPlayer(fileExtName);
+            }
+            return retVal;
+        }
+
+        public static FileType GetType(string typeStr)
+        {
+            return TranslateUtils.ToEnum(StringUtils.UpperFirst(typeStr), FileType.Unknown);
+        }
+
+        public static bool IsType(FileType type, string typeStr)
+        {
+            if (string.IsNullOrEmpty(typeStr)) return false;
+            if (StringUtils.EqualsIgnoreCase("." + type.GetValue(), typeStr))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool IsDownload(FileType type)
+        {
+            var download = false;
+            if (IsTextEditable(type) || IsImageOrPlayer(type.GetValue()))
+            {
+                download = true;
+            }
+            else if (type == FileType.Pdf || type == FileType.Doc || type == FileType.Docx || type == FileType.Ppt || type == FileType.Pptx || type == FileType.Xls || type == FileType.Xlsx || type == FileType.Mdb)
+            {
+                download = true;
+            }
+            return download;
+        }
+    }
 }

@@ -3,13 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions.Dto;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Sites
@@ -19,6 +17,13 @@ namespace SiteServer.API.Controllers.Pages.Settings.Sites
     {
         private const string Route = "";
         private const string RouteProcess = "actions/process";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesSitesAddController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> Get()
@@ -87,11 +92,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.Sites
             channelInfo.ContentModelPluginId = string.Empty;
 
             var tableName = string.Empty;
-            if (request.TableRule == ETableRule.Choose)
+            if (request.TableRule == TableRule.Choose)
             {
                 tableName = request.TableChoose;
             }
-            else if (request.TableRule == ETableRule.HandWrite)
+            else if (request.TableRule == TableRule.HandWrite)
             {
                 tableName = request.TableHandWrite;
 
@@ -105,7 +110,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Sites
                 }
             }
 
-            var siteId = await DataProvider.ChannelRepository.InsertSiteAsync(channelInfo, new Site
+            var siteId = await DataProvider.SiteRepository.InsertSiteAsync(channelInfo, new Site
             {
                 SiteName = request.SiteName,
                 SiteDir = request.SiteDir,
@@ -138,7 +143,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Sites
                 await SiteTemplateManager.Instance.ImportSiteTemplateToEmptySiteAsync(site, request.CreateTemplateId, request.IsImportContents, request.IsImportTableStyles, auth.AdminId, request.Guid);
 
                 Caching.SetProcess(request.Guid, "生成站点页面...");
-                await CreateManager.CreateByAllAsync(site.Id);
+                await _createManager.CreateByAllAsync(site.Id);
 
                 Caching.SetProcess(request.Guid, "清除系统缓存...");
                 CacheUtils.ClearAll();
@@ -164,7 +169,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Sites
                 await SiteTemplateManager.Instance.ImportSiteTemplateToEmptySiteAsync(site, siteTemplateDir, request.IsImportContents, request.IsImportTableStyles, auth.AdminId, request.Guid);
 
                 Caching.SetProcess(request.Guid, "生成站点页面...");
-                await CreateManager.CreateByAllAsync(site.Id);
+                await _createManager.CreateByAllAsync(site.Id);
 
                 Caching.SetProcess(request.Guid, "清除系统缓存...");
                 CacheUtils.ClearAll();

@@ -4,10 +4,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Datory.Utils;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -18,162 +17,145 @@ namespace SiteServer.API.Controllers.Home
         private const string Route = "";
         private const string RouteGetChannels = "actions/getChannels";
 
+        private readonly ICreateManager _createManager;
+
+        public HomeContentsLayerCutController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
+
         [HttpGet, Route(Route)]
         public async Task<IHttpActionResult> GetConfig()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+
+            var siteId = request.GetQueryInt("siteId");
+            var channelId = request.GetQueryInt("channelId");
+            var contentIdList = Utilities.GetIntList(request.GetQueryString("contentIds"));
+
+            if (!request.IsUserLoggin ||
+                !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
+                    Constants.ChannelPermissions.ContentTranslate))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
+                return Unauthorized();
+            }
 
-                var siteId = request.GetQueryInt("siteId");
-                var channelId = request.GetQueryInt("channelId");
-                var contentIdList = Utilities.GetIntList(request.GetQueryString("contentIds"));
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            if (site == null) return BadRequest("无法确定内容对应的站点");
 
-                if (!request.IsUserLoggin ||
-                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                        Constants.ChannelPermissions.ContentTranslate))
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+            if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+            var retVal = new List<IDictionary<string, object>>();
+            foreach (var contentId in contentIdList)
+            {
+                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
+                if (contentInfo == null) continue;
+
+                var dict = contentInfo.ToDictionary();
+                dict["checkState"] =
+                    CheckManager.GetCheckState(site, contentInfo);
+                retVal.Add(dict);
+            }
+
+            var sites = new List<object>();
+            var channels = new List<object>();
+
+            var siteIdList = await request.UserPermissionsImpl.GetSiteIdListAsync();
+            foreach (var permissionSiteId in siteIdList)
+            {
+                var permissionSite = await DataProvider.SiteRepository.GetAsync(permissionSiteId);
+                sites.Add(new
                 {
-                    return Unauthorized();
-                }
-
-                var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                if (site == null) return BadRequest("无法确定内容对应的站点");
-
-                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
-                var retVal = new List<IDictionary<string, object>>();
-                foreach (var contentId in contentIdList)
-                {
-                    var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
-                    if (contentInfo == null) continue;
-
-                    var dict = contentInfo.ToDictionary();
-                    dict["checkState"] =
-                        CheckManager.GetCheckState(site, contentInfo);
-                    retVal.Add(dict);
-                }
-
-                var sites = new List<object>();
-                var channels = new List<object>();
-
-                var siteIdList = await request.UserPermissionsImpl.GetSiteIdListAsync();
-                foreach (var permissionSiteId in siteIdList)
-                {
-                    var permissionSite = await DataProvider.SiteRepository.GetAsync(permissionSiteId);
-                    sites.Add(new
-                    {
-                        permissionSite.Id,
-                        permissionSite.SiteName
-                    });
-                }
-
-                var channelIdList = await request.UserPermissionsImpl.GetChannelIdListAsync(site.Id,
-                    Constants.ChannelPermissions.ContentAdd);
-                foreach (var permissionChannelId in channelIdList)
-                {
-                    var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
-                    channels.Add(new
-                    {
-                        permissionChannelInfo.Id,
-                        ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
-                    });
-                }
-
-                return Ok(new
-                {
-                    Value = retVal,
-                    Sites = sites,
-                    Channels = channels,
-                    Site = site
+                    permissionSite.Id,
+                    permissionSite.SiteName
                 });
             }
-            catch (Exception ex)
+
+            var channelIdList = await request.UserPermissionsImpl.GetChannelIdListAsync(site.Id,
+                Constants.ChannelPermissions.ContentAdd);
+            foreach (var permissionChannelId in channelIdList)
             {
-                await LogUtils.AddErrorLogAsync(ex);
-                return InternalServerError(ex);
+                var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
+                channels.Add(new
+                {
+                    permissionChannelInfo.Id,
+                    ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
+                });
             }
+
+            return Ok(new
+            {
+                Value = retVal,
+                Sites = sites,
+                Channels = channels,
+                Site = site
+            });
         }
 
         [HttpGet, Route(RouteGetChannels)]
         public async Task<IHttpActionResult> GetChannels()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+
+            var siteId = request.GetQueryInt("siteId");
+
+            var channels = new List<object>();
+            var channelIdList = await request.UserPermissionsImpl.GetChannelIdListAsync(siteId,
+                Constants.ChannelPermissions.ContentAdd);
+            foreach (var permissionChannelId in channelIdList)
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-
-                var siteId = request.GetQueryInt("siteId");
-
-                var channels = new List<object>();
-                var channelIdList = await request.UserPermissionsImpl.GetChannelIdListAsync(siteId,
-                    Constants.ChannelPermissions.ContentAdd);
-                foreach (var permissionChannelId in channelIdList)
+                var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
+                channels.Add(new
                 {
-                    var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
-                    channels.Add(new
-                    {
-                        permissionChannelInfo.Id,
-                        ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteId, permissionChannelId)
-                    });
-                }
-
-                return Ok(new
-                {
-                    Value = channels
+                    permissionChannelInfo.Id,
+                    ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteId, permissionChannelId)
                 });
             }
-            catch (Exception ex)
+
+            return Ok(new
             {
-                await LogUtils.AddErrorLogAsync(ex);
-                return InternalServerError(ex);
-            }
+                Value = channels
+            });
         }
 
         [HttpPost, Route(Route)]
         public async Task<IHttpActionResult> Submit()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+
+            var siteId = request.GetPostInt("siteId");
+            var channelId = request.GetPostInt("channelId");
+            var contentIdList = Utilities.GetIntList(request.GetPostString("contentIds"));
+            var targetSiteId = request.GetPostInt("targetSiteId");
+            var targetChannelId = request.GetPostInt("targetChannelId");
+
+            if (!request.IsUserLoggin ||
+                !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
+                    Constants.ChannelPermissions.ContentTranslate))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-
-                var siteId = request.GetPostInt("siteId");
-                var channelId = request.GetPostInt("channelId");
-                var contentIdList = Utilities.GetIntList(request.GetPostString("contentIds"));
-                var targetSiteId = request.GetPostInt("targetSiteId");
-                var targetChannelId = request.GetPostInt("targetChannelId");
-
-                if (!request.IsUserLoggin ||
-                    !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                        Constants.ChannelPermissions.ContentTranslate))
-                {
-                    return Unauthorized();
-                }
-
-                var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                if (site == null) return BadRequest("无法确定内容对应的站点");
-
-                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
-                foreach (var contentId in contentIdList)
-                {
-                    await ContentUtility.TranslateAsync(site, channelId, contentId, targetSiteId, targetChannelId, TranslateContentType.Cut);
-                }
-
-                await request.AddSiteLogAsync(siteId, channelId, "转移内容", string.Empty);
-
-                await CreateManager.TriggerContentChangedEventAsync(siteId, channelId);
-
-                return Ok(new
-                {
-                    Value = contentIdList
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            if (site == null) return BadRequest("无法确定内容对应的站点");
+
+            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+            if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+            foreach (var contentId in contentIdList)
             {
-                await LogUtils.AddErrorLogAsync(ex);
-                return InternalServerError(ex);
+                await ContentUtility.TranslateAsync(site, channelId, contentId, targetSiteId, targetChannelId, TranslateContentType.Cut, _createManager);
             }
+
+            await request.AddSiteLogAsync(siteId, channelId, "转移内容", string.Empty);
+
+            await _createManager.TriggerContentChangedEventAsync(siteId, channelId);
+
+            return Ok(new
+            {
+                Value = contentIdList
+            });
         }
     }
 }

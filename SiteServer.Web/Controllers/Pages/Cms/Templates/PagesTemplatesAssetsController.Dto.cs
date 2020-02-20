@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Abstractions.Dto;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Templates
 {

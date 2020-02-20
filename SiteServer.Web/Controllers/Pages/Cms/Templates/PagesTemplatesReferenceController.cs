@@ -4,9 +4,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Extensions;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Templates

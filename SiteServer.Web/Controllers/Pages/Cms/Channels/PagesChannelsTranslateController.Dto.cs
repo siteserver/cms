@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions.Dto;
+using SiteServer.Abstractions.Dto.Request;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Channels
 {
@@ -41,7 +39,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
             public bool IsDeleteAfterTranslate { get; set; }
         }
 
-        public static async Task TranslateAsync(Site site, int targetSiteId, int targetChannelId, TranslateType translateType, IEnumerable<int> channelIds, bool isDeleteAfterTranslate, int adminId)
+        public async Task TranslateAsync(Site site, int targetSiteId, int targetChannelId, TranslateType translateType, IEnumerable<int> channelIds, bool isDeleteAfterTranslate, int adminId)
         {
             var channelIdList = new List<int>();//需要转移的栏目ID
             foreach (var channelId in channelIds)
@@ -65,7 +63,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                 var channelIdListToTranslate = new List<int>(channelIdList);
                 foreach (var channelId in channelIdList)
                 {
-                    var subChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, channelId, EScopeType.Descendant);
+                    var subChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, channelId, ScopeType.Descendant);
 
                     if (subChannelIdList != null && subChannelIdList.Count > 0)
                     {
@@ -92,14 +90,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                 {
                     foreach (var channelId in channelIdListToTranslate)
                     {
-                        try
-                        {
-                            await DataProvider.ChannelRepository.DeleteAsync(site.Id, channelId, adminId);
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
+                        await DataProvider.ContentRepository.RecycleAllAsync(site, channelId, adminId);
+                        await DataProvider.ChannelRepository.DeleteAsync(site, channelId, adminId);
                     }
                 }
             }
@@ -107,7 +99,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
 
         }
 
-        private static async Task TranslateChannelAndContentAsync(Site site, List<Channel> nodeInfoList, int targetSiteId, int parentId, TranslateType translateType, List<string> nodeIndexNameList, List<string> filePathList, bool isDeleteAfterTranslate)
+        private async Task TranslateChannelAndContentAsync(Site site, List<Channel> nodeInfoList, int targetSiteId, int parentId, TranslateType translateType, List<string> nodeIndexNameList, List<string> filePathList, bool isDeleteAfterTranslate)
         {
             if (nodeInfoList == null || nodeInfoList.Count == 0)
             {
@@ -126,7 +118,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
 
             foreach (var oldNodeInfo in nodeInfoList)
             {
-                var nodeInfo = oldNodeInfo.Clone();
+                var nodeInfo = oldNodeInfo.Clone<Channel>();
 
                 nodeInfo.SiteId = targetSiteId;
                 nodeInfo.ParentId = parentId;
@@ -168,7 +160,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                     //var orderByString = ETaxisTypeUtils.GetChannelOrderByString(ETaxisType.OrderByTaxis);
                     //var childrenNodeInfoList = DataProvider.ChannelRepository.GetChannelInfoList(oldNodeInfo, 0, "", EScopeType.Children, orderByString);
 
-                    var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, oldNodeInfo.Id, EScopeType.Children);
+                    var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, oldNodeInfo.Id, ScopeType.Children);
                     var childrenNodeInfoList = new List<Channel>();
                     foreach (var channelId in channelIdList)
                     {
@@ -180,20 +172,15 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                         await TranslateChannelAndContentAsync(site, childrenNodeInfoList, targetSiteId, targetChannelId, translateType, nodeIndexNameList, filePathList, isDeleteAfterTranslate);
                     }
 
-                    await CreateManager.CreateChannelAsync(targetSiteId, targetChannelId);
+                    await _createManager.CreateChannelAsync(targetSiteId, targetChannelId);
                 }
             }
         }
 
-        private static async Task TranslateContentAsync(Site site, int channelId, int targetSiteId, int targetChannelId, bool isDeleteAfterTranslate)
+        private async Task TranslateContentAsync(Site site, int channelId, int targetSiteId, int targetChannelId, bool isDeleteAfterTranslate)
         {
-            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelId);
-
-            var orderByString = ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByTaxis);
-
-            //var contentIdList = DataProvider.ContentRepository.GetContentIdListChecked(tableName, channelId, orderByString);
-
-            var contentIdList = await DataProvider.ContentRepository.GetContentIdListAsync(tableName, channelId);
+            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var contentIdList = await DataProvider.ContentRepository.GetContentIdsAsync(site, channel);
 
             var translateType = isDeleteAfterTranslate
                 ? TranslateContentType.Cut
@@ -201,7 +188,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
 
             foreach (var contentId in contentIdList)
             {
-                await ContentUtility.TranslateAsync(site, channelId, contentId, targetSiteId, targetChannelId, translateType);
+                await ContentUtility.TranslateAsync(site, channelId, contentId, targetSiteId, targetChannelId, translateType, _createManager);
             }
         }
     }

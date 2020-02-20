@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Datory.Utils;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
@@ -28,7 +29,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             if (site == null) return Request.NotFound<TreeResult>();
 
             var channel = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
-            var root = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel, true);
+            var root = await DataProvider.ChannelRepository.GetCascadeCountAsync(site, channel, null);
 
             var siteUrl = await PageUtility.GetSiteUrlAsync(site, true);
             var groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(request.SiteId);

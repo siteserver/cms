@@ -3,10 +3,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Shared
@@ -41,7 +42,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 return Request.BadRequest<UploadResult>("文件只能是 Word 格式，请选择有效的文件上传!");
             }
 
-            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             file.SaveAs(filePath);
 
@@ -68,7 +69,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
             {
                 if (string.IsNullOrEmpty(fileName)) continue;
 
-                var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                var filePath = PathUtility.GetTemporaryFilesPath(fileName);
                 var (_, wordContent) = await WordManager.GetWordAsync(site, false, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
                 wordContent = await ContentUtility.TextEditorContentDecodeAsync(site, wordContent, true);
                 builder.Append(wordContent);

@@ -8,7 +8,7 @@
 
         PluginBase Plugin { get; }
 
-        IService Service { get; }
+        IPluginService Service { get; }
 
         long InitTime { get; }
 

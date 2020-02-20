@@ -4,11 +4,10 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.User
@@ -26,289 +25,239 @@ namespace SiteServer.API.Controllers.Pages.Settings.User
         [HttpGet, Route(Route)]
         public async Task<IHttpActionResult> GetConfig()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            if (!request.IsAdminLoggin ||
+                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
-                {
-                    return Unauthorized();
-                }
-
-                var groupInfoList = await DataProvider.UserGroupRepository.GetUserGroupListAsync();
-
-                var state = ETriStateUtils.GetEnumType(request.GetQueryString("state"));
-                var groupId = request.GetQueryInt("groupId");
-                var order = request.GetQueryString("order");
-                var lastActivityDate = request.GetQueryInt("lastActivityDate");
-                var keyword = request.GetQueryString("keyword");
-                var offset = request.GetQueryInt("offset");
-                var limit = request.GetQueryInt("limit");
-
-                var count = await DataProvider.UserRepository.GetCountAsync(state, groupId, lastActivityDate, keyword);
-                var users = await DataProvider.UserRepository.GetUsersAsync(state,groupId, lastActivityDate, keyword, order, offset, limit);
-
-                return Ok(new
-                {
-                    Value = users,
-                    Count = count,
-                    Groups = groupInfoList
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            var groupInfoList = await DataProvider.UserGroupRepository.GetUserGroupListAsync();
+
+            var state = TranslateUtils.ToBoolNullable(request.GetQueryString("state"));
+            var groupId = request.GetQueryInt("groupId");
+            var order = request.GetQueryString("order");
+            var lastActivityDate = request.GetQueryInt("lastActivityDate");
+            var keyword = request.GetQueryString("keyword");
+            var offset = request.GetQueryInt("offset");
+            var limit = request.GetQueryInt("limit");
+
+            var count = await DataProvider.UserRepository.GetCountAsync(state, groupId, lastActivityDate, keyword);
+            var users = await DataProvider.UserRepository.GetUsersAsync(state, groupId, lastActivityDate, keyword, order, offset, limit);
+
+            return Ok(new
             {
-                return InternalServerError(ex);
-            }
+                Value = users,
+                Count = count,
+                Groups = groupInfoList
+            });
         }
 
         [HttpDelete, Route(Route)]
         public async Task<IHttpActionResult> Delete()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            if (!request.IsAdminLoggin ||
+                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
-                {
-                    return Unauthorized();
-                }
-
-                var id = request.GetPostInt("id");
-
-                var user = await DataProvider.UserRepository.DeleteAsync(id);
-
-                await request.AddAdminLogAsync("删除用户", $"用户:{user.UserName}");
-
-                return Ok(new
-                {
-                    Value = true
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            var id = request.GetPostInt("id");
+
+            var user = await DataProvider.UserRepository.DeleteAsync(id);
+
+            await request.AddAdminLogAsync("删除用户", $"用户:{user.UserName}");
+
+            return Ok(new
             {
-                return InternalServerError(ex);
-            }
+                Value = true
+            });
         }
 
         [HttpPost, Route(RouteImport)]
         public async Task<IHttpActionResult> Import()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            if (!request.IsAdminLoggin ||
+                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
+                return Unauthorized();
+            }
+
+            var fileName = request.HttpRequest["fileName"];
+            var fileCount = request.HttpRequest.Files.Count;
+            if (fileCount == 0)
+            {
+                return BadRequest("请选择有效的文件上传");
+            }
+
+            var file = request.HttpRequest.Files[0];
+            if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(file.FileName);
+
+            var sExt = PathUtils.GetExtension(fileName);
+            if (!StringUtils.EqualsIgnoreCase(sExt, ".xlsx"))
+            {
+                return BadRequest("导入文件为Excel格式，请选择有效的文件上传");
+            }
+
+            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+            file.SaveAs(filePath);
+
+            var errorMessage = string.Empty;
+            var success = 0;
+            var failure = 0;
+
+            var sheet = ExcelUtils.GetDataTable(filePath);
+            if (sheet != null)
+            {
+                for (var i = 1; i < sheet.Rows.Count; i++) //行
                 {
-                    return Unauthorized();
-                }
+                    if (i == 1) continue;
 
-                var fileName = request.HttpRequest["fileName"];
-                var fileCount = request.HttpRequest.Files.Count;
-                if (fileCount == 0)
-                {
-                    return BadRequest("请选择有效的文件上传");
-                }
+                    var row = sheet.Rows[i];
 
-                var file = request.HttpRequest.Files[0];
-                if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(file.FileName);
+                    var userName = row[0].ToString().Trim();
+                    var password = row[1].ToString().Trim();
+                    var displayName = row[2].ToString().Trim();
+                    var mobile = row[3].ToString().Trim();
+                    var email = row[4].ToString().Trim();
 
-                var sExt = PathUtils.GetExtension(fileName);
-                if (!StringUtils.EqualsIgnoreCase(sExt, ".xlsx"))
-                {
-                    return BadRequest("导入文件为Excel格式，请选择有效的文件上传");
-                }
-
-                var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-                file.SaveAs(filePath);
-
-                var errorMessage = string.Empty;
-                var success = 0;
-                var failure = 0;
-
-                var sheet = ExcelUtils.GetDataTable(filePath);
-                if (sheet != null)
-                {
-                    for (var i = 1; i < sheet.Rows.Count; i++) //行
+                    if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password))
                     {
-                        if (i == 1) continue;
-
-                        var row = sheet.Rows[i];
-
-                        var userName = row[0].ToString().Trim();
-                        var password = row[1].ToString().Trim();
-                        var displayName = row[2].ToString().Trim();
-                        var mobile = row[3].ToString().Trim();
-                        var email = row[4].ToString().Trim();
-
-                        if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password))
+                        var (userId, message) = await DataProvider.UserRepository.InsertAsync(new Abstractions.User
                         {
-                            var (userId, message) = await DataProvider.UserRepository.InsertAsync(new Abstractions.User
-                            {
-                                UserName = userName,
-                                DisplayName = displayName,
-                                Mobile = mobile,
-                                Email = email
-                            }, password, string.Empty);
-                            if (userId == 0)
-                            {
-                                failure++;
-                                errorMessage = message;
-                            }
-                            else
-                            {
-                                success++;
-                            }
+                            UserName = userName,
+                            DisplayName = displayName,
+                            Mobile = mobile,
+                            Email = email
+                        }, password, string.Empty);
+                        if (userId == 0)
+                        {
+                            failure++;
+                            errorMessage = message;
                         }
                         else
                         {
-                            failure++;
+                            success++;
                         }
                     }
+                    else
+                    {
+                        failure++;
+                    }
                 }
+            }
 
-                return Ok(new
-                {
-                    Value = true,
-                    Success = success,
-                    Failure = failure,
-                    ErrorMessage = errorMessage
-                });
-            }
-            catch (Exception ex)
+            return Ok(new
             {
-                await LogUtils.AddErrorLogAsync(ex);
-                return InternalServerError(ex);
-            }
+                Value = true,
+                Success = success,
+                Failure = failure,
+                ErrorMessage = errorMessage
+            });
         }
 
         [HttpPost, Route(RouteExport)]
         public async Task<IHttpActionResult> Export()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            if (!request.IsAdminLoggin ||
+                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
-                {
-                    return Unauthorized();
-                }
-
-                const string fileName = "users.csv";
-                var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-
-                await ExcelObject.CreateExcelFileForUsersAsync(filePath, ETriState.All);
-                var downloadUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
-
-                return Ok(new
-                {
-                    Value = downloadUrl
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            const string fileName = "users.csv";
+            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+
+            await ExcelObject.CreateExcelFileForUsersAsync(filePath, null);
+            var downloadUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
+
+            return Ok(new
             {
-                return InternalServerError(ex);
-            }
+                Value = downloadUrl
+            });
         }
 
         [HttpPost, Route(RouteCheck)]
         public async Task<IHttpActionResult> Check()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            if (!request.IsAdminLoggin ||
+                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
-                {
-                    return Unauthorized();
-                }
-
-                var id = request.GetPostInt("id");
-
-                await DataProvider.UserRepository.CheckAsync(new List<int>
-                {
-                    id
-                });
-
-                await request.AddAdminLogAsync("审核用户", $"用户Id:{id}");
-
-                return Ok(new
-                {
-                    Value = true
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            var id = request.GetPostInt("id");
+
+            await DataProvider.UserRepository.CheckAsync(new List<int>
             {
-                return InternalServerError(ex);
-            }
+                id
+            });
+
+            await request.AddAdminLogAsync("审核用户", $"用户Id:{id}");
+
+            return Ok(new
+            {
+                Value = true
+            });
         }
 
         [HttpPost, Route(RouteLock)]
         public async Task<IHttpActionResult> Lock()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            if (!request.IsAdminLoggin ||
+                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
-                {
-                    return Unauthorized();
-                }
-
-                var id = request.GetPostInt("id");
-
-                var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
-
-                await DataProvider.UserRepository.LockAsync(new List<int>
-                {
-                    id
-                });
-
-                await request.AddAdminLogAsync("锁定用户", $"用户:{user.UserName}");
-
-                return Ok(new
-                {
-                    Value = true
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            var id = request.GetPostInt("id");
+
+            var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
+
+            await DataProvider.UserRepository.LockAsync(new List<int>
             {
-                return InternalServerError(ex);
-            }
+                id
+            });
+
+            await request.AddAdminLogAsync("锁定用户", $"用户:{user.UserName}");
+
+            return Ok(new
+            {
+                Value = true
+            });
         }
 
         [HttpPost, Route(RouteUnLock)]
         public async Task<IHttpActionResult> UnLock()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            if (!request.IsAdminLoggin ||
+                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUser))
-                {
-                    return Unauthorized();
-                }
-
-                var id = request.GetPostInt("id");
-
-                var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
-
-                await DataProvider.UserRepository.UnLockAsync(new List<int>
-                {
-                    id
-                });
-
-                await request.AddAdminLogAsync("解锁用户", $"用户:{user.UserName}");
-
-                return Ok(new
-                {
-                    Value = true
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            var id = request.GetPostInt("id");
+
+            var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
+
+            await DataProvider.UserRepository.UnLockAsync(new List<int>
             {
-                return InternalServerError(ex);
-            }
+                id
+            });
+
+            await request.AddAdminLogAsync("解锁用户", $"用户:{user.UserName}");
+
+            return Ok(new
+            {
+                Value = true
+            });
         }
     }
 }

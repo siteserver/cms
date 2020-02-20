@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.Cli.Updater.Tables.GovPublic
 {

@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -31,7 +29,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
             foreach (var summary in summaries)
             {
-                await CreateManager.CreateContentAsync(request.SiteId, summary.ChannelId, summary.Id);
+                await _createManager.CreateContentAsync(request.SiteId, summary.ChannelId, summary.Id);
             }
 
             return new BoolResult

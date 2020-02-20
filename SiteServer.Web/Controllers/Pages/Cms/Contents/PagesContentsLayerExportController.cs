@@ -4,14 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Serialization;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -164,7 +163,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 if (request.ExportType == "zip")
                 {
                     var fileName = $"{channel.ChannelName}.zip";
-                    var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                    var filePath = PathUtility.GetTemporaryFilesPath(fileName);
                     var exportObject = new ExportObject(site, auth.AdminId);
                     contentInfoList.Reverse();
                     if (exportObject.ExportContents(filePath, contentInfoList))
@@ -177,7 +176,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                     var exportColumnNames =
                         request.IsAllColumns ? columns.Select(x => x.AttributeName).ToList() : request.ColumnNames;
                     var fileName = $"{channel.ChannelName}.csv";
-                    var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                    var filePath = PathUtility.GetTemporaryFilesPath(fileName);
                     await ExcelObject.CreateExcelFileForContentsAsync(filePath, site, channel, calculatedContentInfoList, exportColumnNames);
                     downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                 }

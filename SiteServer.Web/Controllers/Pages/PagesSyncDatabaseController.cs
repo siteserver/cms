@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -27,7 +28,7 @@ namespace SiteServer.API.Controllers.Pages
                     return BadRequest("系统未安装，向导被禁用！");
                 }
 
-                await SystemManager.SyncDatabaseAsync();
+                await DataProvider.DatabaseRepository.SyncDatabaseAsync();
 
                 return Ok(new
                 {

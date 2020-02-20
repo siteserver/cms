@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Api.V1;
-using SiteServer.CMS.Core;
+using SiteServer.API.Context;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.StlParser.Parsers;
-using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -17,57 +15,49 @@ namespace SiteServer.API.Controllers.V1
         [HttpGet, Route(Route)]
         public async Task<IHttpActionResult> Get(string elementName)
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            var isApiAuthorized = request.IsApiAuthenticated && await DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeStl);
+
+            var stlRequest = new StlRequest();
+            await stlRequest.LoadAsync(request, isApiAuthorized);
+
+            if (!stlRequest.IsApiAuthorized)
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                var isApiAuthorized = request.IsApiAuthenticated && await DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeStl);
+                return Unauthorized();
+            }
 
-                var stlRequest = new StlRequest();
-                await stlRequest.LoadAsync(request, isApiAuthorized);
+            var site = stlRequest.Site;
 
-                if (!stlRequest.IsApiAuthorized)
+            if (site == null)
+            {
+                return NotFound();
+            }
+
+            elementName = $"stl:{elementName.ToLower()}";
+
+            object value = null;
+
+            if (StlElementParser.ElementsToParseDic.ContainsKey(elementName))
+            {
+                if (StlElementParser.ElementsToParseDic.TryGetValue(elementName, out var func))
                 {
-                    return Unauthorized();
-                }
+                    var obj = await func(stlRequest.PageInfo, stlRequest.ContextInfo);
 
-                var site = stlRequest.Site;
-
-                if (site == null)
-                {
-                    return NotFound();
-                }
-
-                elementName = $"stl:{elementName.ToLower()}";
-
-                object value = null;
-
-                if (StlElementParser.ElementsToParseDic.ContainsKey(elementName))
-                {
-                    if (StlElementParser.ElementsToParseDic.TryGetValue(elementName, out var func))
+                    if (obj is string)
                     {
-                        var obj = await func(stlRequest.PageInfo, stlRequest.ContextInfo);
-
-                        if (obj is string)
-                        {
-                            value = (string)obj;
-                        }
-                        else
-                        {
-                            value = obj;
-                        }
+                        value = (string)obj;
+                    }
+                    else
+                    {
+                        value = obj;
                     }
                 }
+            }
 
-                return Ok(new
-                {
-                    Value = value
-                });
-            }
-            catch (Exception ex)
+            return Ok(new
             {
-                await LogUtils.AddErrorLogAsync(ex);
-                return InternalServerError(ex);
-            }
+                Value = value
+            });
         }
     }
 }

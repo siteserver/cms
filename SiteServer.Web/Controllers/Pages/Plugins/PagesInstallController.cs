@@ -2,8 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Repositories;

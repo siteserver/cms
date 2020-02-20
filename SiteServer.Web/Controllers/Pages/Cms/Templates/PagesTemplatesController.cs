@@ -2,12 +2,10 @@
 using System.Web.Http;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Templates
 {
@@ -18,6 +16,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         private const string RouteCreate = "actions/create";
         private const string RouteCopy = "actions/copy";
         private const string RouteDefault = "actions/default";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesTemplatesController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> List([FromUri] SiteRequest request)
@@ -73,7 +78,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             if (site == null) return Request.NotFound<BoolResult>();
 
-            await CreateManager.CreateByTemplateAsync(request.SiteId, request.TemplateId);
+            await _createManager.CreateByTemplateAsync(request.SiteId, request.TemplateId);
 
             return new BoolResult
             {

@@ -1,11 +1,10 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
+using SiteServer.Abstractions.Dto.Create;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Create
 {
@@ -15,6 +14,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
     {
         private const string Route = "";
         private const string RouteActionsCancel = "actions/cancel";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesCreateStatusController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<ObjectResult<CreateTaskSummary>> Get([FromUri] SiteRequest request)
@@ -26,7 +32,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
                 return Request.Unauthorized<ObjectResult<CreateTaskSummary>>();
             }
 
-            var summary = CreateTaskManager.GetTaskSummary(request.SiteId);
+            var summary = _createManager.GetTaskSummary(request.SiteId);
 
             return new ObjectResult<CreateTaskSummary>
             {
@@ -44,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
                 return Request.Unauthorized<BoolResult>();
             }
 
-            CreateTaskManager.ClearAllTask(request.SiteId);
+            _createManager.ClearAllTask(request.SiteId);
 
             return new BoolResult
             {

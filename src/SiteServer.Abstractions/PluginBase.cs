@@ -36,7 +36,7 @@ namespace SiteServer.Abstractions
         /// Startup方法是插件机制的核心，用于定义插件能够提供的各种服务。
         /// </summary>
         /// <param name="service">插件服务注册接口。</param>
-        public abstract void Startup(IService service);
+        public abstract void Startup(IPluginService service);
 
         /// <inheritdoc />
         public string Id { get; private set; }

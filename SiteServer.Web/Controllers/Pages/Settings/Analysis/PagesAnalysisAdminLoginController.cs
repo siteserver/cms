@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Datory;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Analysis
@@ -28,25 +29,25 @@ namespace SiteServer.API.Controllers.Pages.Settings.Analysis
 
             var dateFrom = TranslateUtils.ToDateTime(request.DateFrom);
             var dateTo = TranslateUtils.ToDateTime(request.DateTo, DateTime.Now);
-            var xType = EStatictisXTypeUtils.GetEnumType(request.XType);
+            var xType = TranslateUtils.ToEnum(request.XType, AnalysisType.Day);
 
             var trackingDayDictionary = DataProvider.LogRepository.GetAdminLoginDictionaryByDate(dateFrom, dateTo,
-                EStatictisXTypeUtils.GetValue(xType), Constants.AdminLogin);
+                request.XType, Constants.AdminLogin);
             var adminNumDictionaryName =
-                DataProvider.LogRepository.GetAdminLoginDictionaryByName(dateFrom, dateTo, Constants.AdminLogin);
+                await DataProvider.LogRepository.GetAdminLoginDictionaryByNameAsync(dateFrom, dateTo, Constants.AdminLogin);
 
             var count = 0;
             var dictionaryDay = new Dictionary<int, int>();
             var maxAdminNum = 0;
-            if (xType == EStatictisXType.Day)
+            if (xType == AnalysisType.Day)
             {
                 count = 30;
             }
-            else if (xType == EStatictisXType.Month)
+            else if (xType == AnalysisType.Month)
             {
                 count = 12;
             }
-            else if (xType == EStatictisXType.Year)
+            else if (xType == AnalysisType.Year)
             {
                 count = 10;
             }
@@ -55,17 +56,17 @@ namespace SiteServer.API.Controllers.Pages.Settings.Analysis
             for (var i = 0; i < count; i++)
             {
                 var datetime = now.AddDays(-i);
-                if (xType == EStatictisXType.Day)
+                if (xType == AnalysisType.Day)
                 {
                     now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
                     datetime = now.AddDays(-i);
                 }
-                else if (xType == EStatictisXType.Month)
+                else if (xType == AnalysisType.Month)
                 {
                     now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1, 0, 0, 0);
                     datetime = now.AddMonths(-i);
                 }
-                else if (xType == EStatictisXType.Year)
+                else if (xType == AnalysisType.Year)
                 {
                     now = new DateTime(DateTime.Now.Year, 1, 1, 0, 0, 0);
                     datetime = now.AddYears(-i);
@@ -106,21 +107,21 @@ namespace SiteServer.API.Controllers.Pages.Settings.Analysis
             return result;
         }
 
-        private static string GetGraphicX(int index, EStatictisXType xType, int count)
+        private static string GetGraphicX(int index, AnalysisType xType, int count)
         {
             var xNum = 0;
             var datetime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
-            if (xType == EStatictisXType.Day)
+            if (xType == AnalysisType.Day)
             {
                 datetime = datetime.AddDays(-(count - index));
                 xNum = datetime.Day;
             }
-            else if (xType == EStatictisXType.Month)
+            else if (xType == AnalysisType.Month)
             {
                 datetime = datetime.AddMonths(-(count - index));
                 xNum = datetime.Month;
             }
-            else if (xType == EStatictisXType.Year)
+            else if (xType == AnalysisType.Year)
             {
                 datetime = datetime.AddYears(-(count - index));
                 xNum = datetime.Year;

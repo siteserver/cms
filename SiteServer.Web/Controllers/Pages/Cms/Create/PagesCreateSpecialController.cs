@@ -1,12 +1,10 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Create
 {
@@ -15,6 +13,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
     public partial class PagesCreateSpecialController : ApiController
     {
         private const string Route = "";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesCreateSpecialController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> Get([FromUri] SiteRequest request)
@@ -51,7 +56,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
 
             foreach (var specialId in request.SpecialIds)
             {
-                await CreateManager.CreateSpecialAsync(request.SiteId, specialId);
+                await _createManager.CreateSpecialAsync(request.SiteId, specialId);
             }
 
             return new BoolResult

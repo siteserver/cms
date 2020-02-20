@@ -276,6 +276,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CentralizedPrefixProvider.cs" />
+    <Compile Include="Context\ApiContentsParameters.cs" />
+    <Compile Include="Context\AuthenticatedRequest.cs" />
+    <Compile Include="Context\AuthenticatedRequest.Utils.cs" />
+    <Compile Include="Context\CaptchaManager.cs" />
+    <Compile Include="Context\ContextUtils.cs" />
+    <Compile Include="Context\CookieUtils.cs" />
+    <Compile Include="Context\Extensions.cs" />
+    <Compile Include="Context\PageResponse.cs" />
+    <Compile Include="Context\StlRequest.cs" />
+    <Compile Include="Context\UEditor\Config.cs" />
+    <Compile Include="Context\UEditor\ConfigHandler.cs" />
+    <Compile Include="Context\UEditor\CrawlerHandler.cs" />
+    <Compile Include="Context\UEditor\Handler.cs" />
+    <Compile Include="Context\UEditor\ListFileHandler.cs" />
+    <Compile Include="Context\UEditor\NotSupportedHandler.cs" />
+    <Compile Include="Context\UEditor\PathFormater.cs" />
+    <Compile Include="Context\UEditor\UEditorUploader.cs" />
+    <Compile Include="Context\UEditor\UploadHandler.cs" />
     <Compile Include="Controllers\Home\HomeContentAddLayerImageController.cs" />
     <Compile Include="Controllers\Home\HomeContentsController.cs" />
     <Compile Include="Controllers\Home\HomeContentsLayerArrangeController.cs" />
@@ -300,6 +318,8 @@
     <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsTranslateController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerTaxisController.cs" />
     <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerTaxisController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerGroupController.cs" />
+    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerGroupController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerViewController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsCheckController.cs" />
     <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsCheckController.Columns.cs" />
@@ -350,9 +370,10 @@
     <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryFileController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryVideoController.cs" />
     <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryVideoController.Dto.cs" />
-    <Compile Include="Controllers\Pages\PagesMainController.Dto.cs" />
     <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesAddController.Dto.cs" />
     <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesAddController.Utils.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesLayerSelectController.cs" />
+    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesLayerSelectController.Dto.cs" />
     <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesController.Dto.cs" />
     <Compile Include="Controllers\Pages\Settings\Utility\PagesUtilityCacheController.Dto.cs" />
     <Compile Include="Controllers\Pages\Shared\PagesGroupContentLayerAddController.cs" />
@@ -479,10 +500,7 @@
     <Compile Include="Controllers\Pages\PagesRedirectController.cs" />
     <Compile Include="Controllers\Pages\PagesLoadingController.cs" />
     <Compile Include="Controllers\Pages\PagesUpdateSystemController.cs" />
-    <Compile Include="Controllers\Pages\PagesSyncDatabaseController.cs" />
     <Compile Include="Controllers\Pages\PagesDashboardController.cs" />
-    <Compile Include="Controllers\Pages\PagesLoginController.cs" />
-    <Compile Include="Controllers\Pages\PagesMainController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesAddController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesAddLayerUploadController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesInstallController.cs" />
@@ -548,7 +566,7 @@
     <Compile Include="Controllers\Pages\Shared\PagesTableStyleLayerEditorController.cs" />
     <Compile Include="Controllers\Pages\Shared\PagesTableStyleLayerValidateController.cs" />
     <Compile Include="Controllers\Preview\PreviewController.cs" />
-    <Compile Include="Controllers\Sys\SysErrorController.cs" />
+    <Compile Include="Controllers\Pages\PagesErrorController.cs" />
     <Compile Include="Controllers\Sys\SysPackagingClearCacheController.cs" />
     <Compile Include="Controllers\Sys\SysPackagingDownloadController.cs" />
     <Compile Include="Controllers\Sys\SysPackagingSyncDatabaseController.cs" />
@@ -583,13 +601,13 @@
       <Project>{c6df816e-0eb3-4e71-b446-0b24bbb2f6f0}</Project>
       <Name>Datory</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
-      <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
-      <Name>SiteServer.CMS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\src\SiteServer.Abstractions\SiteServer.Abstractions.csproj">
       <Project>{66353195-4727-453e-8303-17a6a8d0471d}</Project>
       <Name>SiteServer.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\src\SiteServer.CMS\SiteServer.CMS.csproj">
+      <Project>{0be74ec6-cfe6-438d-b966-a968ed39ba37}</Project>
+      <Name>SiteServer.CMS</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

@@ -5,17 +5,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Serialization;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Channels
 {
@@ -30,8 +28,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
         private const string RouteImport = "actions/import";
         private const string RouteExport = "actions/export";
         private const string RouteOrder = "actions/order";
-        private const string RouteSetGroups = "actions/setGroups";
-        private const string RouteSetOrders = "actions/setOrders";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesChannelsController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<ChannelsResult> List([FromUri] SiteRequest request)
@@ -63,7 +66,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
             });
 
             var indexNames = await DataProvider.ChannelRepository.GetChannelIndexNameListAsync(request.SiteId);
-            var groupNameList = await DataProvider.ChannelGroupRepository.GetGroupNameListAsync(request.SiteId);
+            var groupNameList = await DataProvider.ChannelGroupRepository.GetGroupNamesAsync(request.SiteId);
 
             var channelTemplates = await DataProvider.TemplateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
             var contentTemplates = await DataProvider.TemplateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
@@ -164,7 +167,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                     insertedChannelIdHashtable[count + 1] = insertedChannelId;
                     expandedChannelIds.Add(insertedChannelId);
 
-                    await CreateManager.CreateChannelAsync(request.SiteId, insertedChannelId);
+                    await _createManager.CreateChannelAsync(request.SiteId, insertedChannelId);
                 }
             }
 
@@ -192,16 +195,17 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                 return Request.BadRequest<List<int>>("请检查您输入的栏目名称是否正确");
             }
 
-            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, request.ChannelId, EScopeType.All);
+            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, request.ChannelId, ScopeType.All);
 
             if (request.DeleteFiles)
             {
-                await DeleteManager.DeleteChannelsAsync(site, channelIdList);
+                await _createManager.DeleteChannelsAsync(site, channelIdList);
             }
 
             foreach (var channelId in channelIdList)
             {
-                await DataProvider.ChannelRepository.DeleteAsync(request.SiteId, channelId, auth.AdminId);
+                await DataProvider.ContentRepository.RecycleAllAsync(site, channelId, auth.AdminId);
+                await DataProvider.ChannelRepository.DeleteAsync(site, channelId, auth.AdminId);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, "删除栏目", $"栏目:{channel.ChannelName}");
@@ -240,7 +244,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
             }
 
             fileName = $"{StringUtils.GetShortGuid(false)}.zip";
-            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             file.SaveAs(filePath);
 
@@ -263,7 +267,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
             try
             {
                 var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-                var filePath = PathUtils.GetTemporaryFilesPath(request.FileName);
+                var filePath = PathUtility.GetTemporaryFilesPath(request.FileName);
 
                 var importObject = new ImportObject(site, auth.AdminId);
                 await importObject.ImportChannelsAndContentsByZipFileAsync(request.ChannelId, filePath,
@@ -298,7 +302,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
 
             var exportObject = new ExportObject(site, auth.AdminId);
             var fileName = await exportObject.ExportChannelsAsync(request.ChannelIds);
-            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
             var url = ApiRouteActionsDownload.GetUrl(ApiManager.InnerApiUrl, filePath);
 
             return new StringResult
@@ -331,61 +335,6 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
             {
                 request.SiteId,
                 request.ChannelId
-            };
-        }
-
-        [HttpPost, Route(RouteSetGroups)]
-        public async Task<List<int>> SetGroups([FromBody] SetGroupsRequest request)
-        {
-            var auth = await AuthenticatedRequest.GetAuthAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
-            {
-                return Request.Unauthorized<List<int>>();
-            }
-
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-            if (site == null) return Request.NotFound<List<int>>();
-
-            var expendedChannelIds = new List<int>
-            {
-                request.SiteId
-            };
-            foreach (var channelId in request.ChannelIds)
-            {
-                if (!expendedChannelIds.Contains(channelId))
-                {
-                    expendedChannelIds.Add(channelId);
-                }
-                await DataProvider.ChannelRepository.SetGroupNamesAsync(request.SiteId, channelId, request.GroupNames);
-            }
-
-            await auth.AddSiteLogAsync(request.SiteId, "设置栏目组");
-
-            return expendedChannelIds;
-        }
-
-        [HttpPost, Route(RouteSetOrders)]
-        public async Task<BoolResult> SetOrders([FromBody] ChannelIdsRequest request)
-        {
-            var auth = await AuthenticatedRequest.GetAuthAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissionsImpl.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
-            {
-                return Request.Unauthorized<BoolResult>();
-            }
-
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-            if (site == null) return Request.NotFound<BoolResult>();
-
-            foreach (var channelId in request.ChannelIds)
-            {
-                await CreateManager.CreateChannelAsync(request.SiteId, channelId);
-            }
-
-            return new BoolResult
-            {
-                Value = true
             };
         }
     }

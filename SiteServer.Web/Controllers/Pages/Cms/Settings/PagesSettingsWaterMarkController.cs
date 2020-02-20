@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Settings
@@ -66,7 +66,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Settings
             var localFileName = PathUtility.GetUploadFileName(site, filePath);
             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-            if (!EFileSystemTypeUtils.IsImage(fileExtName))
+            if (!FileUtils.IsImage(fileExtName))
             {
                 return Request.BadRequest<UploadResult>("请选择有效的图片文件上传");
             }

@@ -49,7 +49,7 @@
       width="100"
       label="Id">
       <template slot-scope="scope">
-        <el-link :underline="false" type="primary" :href="'../error.html?logId=' + scope.row.id" target="_blank">{{scope.row.id}}</el-link>
+        <el-link :underline="false" type="primary" :href="'../error.cshtml?logId=' + scope.row.id" target="_blank">{{scope.row.id}}</el-link>
       </template>
     </el-table-column>
     <el-table-column
@@ -58,12 +58,16 @@
       label="日期">
     </el-table-column>
     <el-table-column
-      prop="summary"
       label="错误摘要">
+      <template slot-scope="scope">
+        <span v-html="scope.row.summary"></span>
+      </template>
     </el-table-column>
     <el-table-column
-      prop="message"
       label="错误消息">
+      <template slot-scope="scope">
+        <span v-html="scope.row.message"></span>
+      </template>
     </el-table-column>
   </el-table>
   

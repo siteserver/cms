@@ -4,10 +4,11 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
 using Datory;
+using SiteServer.API.Context;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Utility
 {
@@ -35,9 +36,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Utility
                 {
                     new KeyValuePair<string, string>("系统主机名", Dns.GetHostName().ToUpper()),
                     new KeyValuePair<string, string>("系统根目录地址", WebConfigUtils.PhysicalApplicationPath),
-                    new KeyValuePair<string, string>("系统程序目录地址", PathUtils.PhysicalSiteServerPath),
-                    new KeyValuePair<string, string>("域名", PageUtils.GetHost()),
-                    new KeyValuePair<string, string>("访问IP", PageUtils.GetIpAddress()),
+                    new KeyValuePair<string, string>("系统程序目录地址", PathUtility.PhysicalSiteServerPath),
                     new KeyValuePair<string, string>(".NET 框架", SystemManager.TargetFramework),
                     new KeyValuePair<string, string>(".NET CLR 版本", SystemManager.EnvironmentVersion),
                     new KeyValuePair<string, string>("SiteServer CMS 版本", SystemManager.ProductVersion),

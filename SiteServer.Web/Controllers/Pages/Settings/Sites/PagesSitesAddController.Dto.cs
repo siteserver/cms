@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions.Dto;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Sites
 {
@@ -25,7 +24,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Sites
             public bool Root { get; set; }
             public int ParentId { get; set; }
             public string SiteDir { get; set; }
-            public ETableRule TableRule { get; set; }
+            public TableRule TableRule { get; set; }
             public string TableChoose { get; set; }
             public string TableHandWrite { get; set; }
             public bool IsImportContents { get; set; }

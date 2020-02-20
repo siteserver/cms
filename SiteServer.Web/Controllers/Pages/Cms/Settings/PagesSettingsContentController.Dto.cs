@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using SiteServer.CMS.Dto.Request;
+using SiteServer.Abstractions.Dto.Request;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Settings
 {

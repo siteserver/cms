@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Sites
@@ -38,7 +39,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Sites
                 var directories = new List<string>();
                 var files = new List<string>();
 
-                var fileSystems = FileManager.GetFileSystemInfoExtendCollection(WebConfigUtils.PhysicalApplicationPath, true);
+                var fileSystems = FileUtility.GetFileSystemInfoExtendCollection(WebConfigUtils.PhysicalApplicationPath);
                 var siteDirList = await DataProvider.SiteRepository.GetSiteDirListAsync(0);
                 foreach (FileSystemInfoExtend fileSystem in fileSystems)
                 {

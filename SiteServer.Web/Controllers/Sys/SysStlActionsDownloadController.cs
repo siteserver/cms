@@ -2,10 +2,10 @@
 using System.Web;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Sys
@@ -23,47 +23,47 @@ namespace SiteServer.API.Controllers.Sys
                 if (!string.IsNullOrEmpty(request.GetQueryString("siteId")) && !string.IsNullOrEmpty(request.GetQueryString("fileUrl")) && string.IsNullOrEmpty(request.GetQueryString("contentId")))
                 {
                     var siteId = request.GetQueryInt("siteId");
-                    var fileUrl = WebConfigUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
+                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"), WebConfigUtils.SecretKey);
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
-                        PageUtils.Redirect(fileUrl);
+                        ContextUtils.Redirect(fileUrl);
                         return;
                     }
 
                     var site = await DataProvider.SiteRepository.GetAsync(siteId);
                     var filePath = await PathUtility.MapPathAsync(site, fileUrl);
-                    var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
-                    if (EFileSystemTypeUtils.IsDownload(fileType))
+                    var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
+                    if (FileUtils.IsDownload(fileType))
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            PageUtils.Download(HttpContext.Current.Response, filePath);
+                            request.Download(HttpContext.Current.Response, filePath);
                             return;
                         }
                     }
                     else
                     {
-                        PageUtils.Redirect(await PageUtility.ParseNavigationUrlAsync(site, fileUrl, false));
+                        ContextUtils.Redirect(await PageUtility.ParseNavigationUrlAsync(site, fileUrl, false));
                         return;
                     }
                 }
                 else if (!string.IsNullOrEmpty(request.GetQueryString("filePath")))
                 {
-                    var filePath = WebConfigUtils.DecryptStringBySecretKey(request.GetQueryString("filePath"));
-                    var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
-                    if (EFileSystemTypeUtils.IsDownload(fileType))
+                    var filePath = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("filePath"), WebConfigUtils.SecretKey);
+                    var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
+                    if (FileUtils.IsDownload(fileType))
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            PageUtils.Download(HttpContext.Current.Response, filePath);
+                            request.Download(HttpContext.Current.Response, filePath);
                             return;
                         }
                     }
                     else
                     {
                         var fileUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
-                        PageUtils.Redirect(PageUtils.ParseNavigationUrl(fileUrl));
+                        ContextUtils.Redirect(PageUtils.ParseNavigationUrl(fileUrl));
                         return;
                     }
                 }
@@ -72,7 +72,7 @@ namespace SiteServer.API.Controllers.Sys
                     var siteId = request.GetQueryInt("siteId");
                     var channelId = request.GetQueryInt("channelId");
                     var contentId = request.GetQueryInt("contentId");
-                    var fileUrl = WebConfigUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
+                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"), WebConfigUtils.SecretKey);
                     var site = await DataProvider.SiteRepository.GetAsync(siteId);
                     var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                     var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
@@ -83,23 +83,23 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {
-                            PageUtils.Redirect(fileUrl);
+                            ContextUtils.Redirect(fileUrl);
                             return;
                         }
 
                         var filePath = await PathUtility.MapPathAsync(site, fileUrl, true);
-                        var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
-                        if (EFileSystemTypeUtils.IsDownload(fileType))
+                        var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
+                        if (FileUtils.IsDownload(fileType))
                         {
                             if (FileUtils.IsFileExists(filePath))
                             {
-                                PageUtils.Download(HttpContext.Current.Response, filePath);
+                                request.Download(HttpContext.Current.Response, filePath);
                                 return;
                             }
                         }
                         else
                         {
-                            PageUtils.Redirect(await PageUtility.ParseNavigationUrlAsync(site, fileUrl, false));
+                            ContextUtils.Redirect(await PageUtility.ParseNavigationUrlAsync(site, fileUrl, false));
                             return;
                         }
                     }

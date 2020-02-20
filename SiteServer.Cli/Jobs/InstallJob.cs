@@ -6,7 +6,7 @@ using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Repositories;
 using Datory;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -102,7 +102,7 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            if (!await SystemManager.IsNeedInstallAsync())
+            if (!await DataProvider.ConfigRepository.IsNeedInstallAsync())
             {
                 await CliUtils.PrintErrorAsync("系统已安装在 web.config 指定的数据库中，命令执行失败");
                 return;
@@ -112,7 +112,7 @@ namespace SiteServer.Cli.Jobs
 
             DataProvider.Reset();
 
-            await SystemManager.InstallDatabaseAsync(_userName, _password);
+            await DataProvider.DatabaseRepository.InstallDatabaseAsync(_userName, _password);
 
             await Console.Out.WriteLineAsync("恭喜，系统安装成功！");
         }

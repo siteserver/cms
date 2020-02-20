@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Datory.Annotations;
-using Datory.Utils;
+﻿using Datory.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -28,83 +26,8 @@ namespace SiteServer.Abstractions
 
     public static class ETaxisTypeUtils
 	{
-        public static string GetChannelOrderByString(TaxisType taxisType)
-        {
-            return GetChannelOrderByString(taxisType, string.Empty, null);
-        }
 
-        public static string GetChannelOrderByString(TaxisType taxisType, string orderByString, List<int> orderedContentIdList)
-        {
-            if (!string.IsNullOrEmpty(orderByString))
-            {
-                if (orderByString.Trim().ToUpper().StartsWith("ORDER BY "))
-                {
-                    return orderByString;
-                }
-                return "ORDER BY " + orderByString;
-            }
-
-            var retVal = string.Empty;
-            if (taxisType == TaxisType.OrderById)
-            {
-                retVal = $"ORDER BY {nameof(Channel.Id)} ASC";
-            }
-            else if (taxisType == TaxisType.OrderByIdDesc)
-            {
-                retVal = $"ORDER BY {nameof(Channel.Id)} DESC";
-            }
-            else if (taxisType == TaxisType.OrderByChannelId)
-            {
-                retVal = $"ORDER BY {nameof(Channel.Id)} ASC";
-            }
-            else if (taxisType == TaxisType.OrderByChannelIdDesc)
-            {
-                retVal = $"ORDER BY {nameof(Channel.Id)} DESC";
-            }
-            else if (taxisType == TaxisType.OrderByAddDate)
-            {
-                retVal = $"ORDER BY {nameof(Channel.AddDate)} ASC";
-            }
-            else if (taxisType == TaxisType.OrderByAddDateDesc)
-            {
-                retVal = $"ORDER BY {nameof(Channel.AddDate)} DESC";
-            }
-            else if (taxisType == TaxisType.OrderByLastEditDate)
-            {
-                retVal = $"ORDER BY {nameof(Channel.AddDate)} ASC";
-            }
-            else if (taxisType == TaxisType.OrderByLastEditDateDesc)
-            {
-                retVal = $"ORDER BY {nameof(Channel.AddDate)} DESC";
-            }
-            else if (taxisType == TaxisType.OrderByTaxis)
-            {
-                retVal = $"ORDER BY {nameof(Channel.Taxis)} ASC";
-            }
-            else if (taxisType == TaxisType.OrderByTaxisDesc)
-            {
-                retVal = $"ORDER BY {nameof(Channel.Taxis)} DESC";
-            }
-            else if (taxisType == TaxisType.OrderByHits)
-            {
-                if (orderedContentIdList != null && orderedContentIdList.Count > 0)
-                {
-                    orderedContentIdList.Reverse();
-                    retVal =
-                        $"ORDER BY CHARINDEX(CONVERT(VARCHAR, {nameof(Channel.Id)}), '{Utilities.ToString(orderedContentIdList)}') DESC, {nameof(Channel.Taxis)} ASC";
-                }
-                else
-                {
-                    retVal = $"ORDER BY {nameof(Channel.Taxis)} ASC";
-                }
-            }
-            else if (taxisType == TaxisType.OrderByRandom)
-            {
-                //retVal = SqlUtils.GetOrderByRandom();
-            }
-
-            return retVal;
-        }
+        
 
         public static string GetContentOrderByString(TaxisType taxisType)
         {

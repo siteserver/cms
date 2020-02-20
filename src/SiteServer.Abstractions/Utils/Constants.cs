@@ -9,6 +9,13 @@ namespace SiteServer.Abstractions
     {
         public const string ConfigFileName = "ss.json";
         public const string DefaultLanguage = "en";
+        public const string ApiPrefix = "/api";
+        public const string AdminPrefix = "/admin";
+        public const string AbstractionsAssemblyName = "SiteServer.Abstractions.dll";
+        public const string EncryptStingIndicator = "0secret0";
+
+        public const string AuthKeySessionId = "X-SS-SESSION-ID";
+        public const string AuthKeyAdminCaptchaCookie = "SS-ADMIN-CAPTCHA";
 
         public const string AuthKeyUserHeader = "X-SS-USER-TOKEN";
         public const string AuthKeyUserCookie = "SS-USER-TOKEN";
@@ -26,6 +33,8 @@ namespace SiteServer.Abstractions
         public const string ScopeAdministrators = "Administrators";
         public const string ScopeUsers = "Users";
         public const string ScopeStl = "STL";
+
+        public const string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页占位符
 
         public static readonly List<string> ScopeList = new List<string>
         {

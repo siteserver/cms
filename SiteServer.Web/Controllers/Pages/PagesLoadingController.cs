@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -27,7 +29,7 @@ namespace SiteServer.API.Controllers.Pages
 
                 return Ok(new
                 {
-                    Value = WebConfigUtils.DecryptStringBySecretKey(redirectUrl)
+                    Value = TranslateUtils.DecryptStringBySecretKey(redirectUrl, WebConfigUtils.SecretKey)
                 });
             }
             catch (Exception ex)

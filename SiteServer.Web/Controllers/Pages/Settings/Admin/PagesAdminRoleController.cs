@@ -3,8 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
@@ -31,7 +32,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     ? await DataProvider.RoleRepository.GetRoleListAsync()
                     : await DataProvider.RoleRepository.GetRoleListByCreatorUserNameAsync(request.AdminName);
 
-                var roles = roleInfoList.Where(x => !EPredefinedRoleUtils.IsPredefinedRole(x.RoleName)).ToList();
+                var roles = roleInfoList.Where(x => !DataProvider.RoleRepository.IsPredefinedRole(x.RoleName)).ToList();
 
                 return Ok(new
                 {

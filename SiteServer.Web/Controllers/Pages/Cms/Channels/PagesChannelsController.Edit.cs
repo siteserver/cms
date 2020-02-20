@@ -4,10 +4,10 @@ using System.Web.Http;
 using Datory;
 using Datory.Utils;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions.Dto;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Channels
@@ -30,8 +30,14 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
 
             var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
 
-            var linkTypes = ELinkTypeUtilsExtensions.GetAll();
-            var taxisTypes = ETaxisTypeUtilsExtensions.GetAllForChannel();
+            var linkTypes = PageUtility.GetLinkTypeSelects();
+            var taxisTypes = new List<Select<string>>
+            {
+                new Select<string>(TaxisType.OrderByTaxisDesc),
+                new Select<string>(TaxisType.OrderByTaxis),
+                new Select<string>(TaxisType.OrderByAddDateDesc),
+                new Select<string>(TaxisType.OrderByAddDate)
+            };
 
             var styles = new List<Style>();
             foreach (var style in await DataProvider.TableStyleRepository.GetChannelStyleListAsync(channel))

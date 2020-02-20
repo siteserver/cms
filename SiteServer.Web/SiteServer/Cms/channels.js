@@ -13,8 +13,6 @@ var data = utils.initData({
   relatedPlugins: [],
 
   channelIds: [],
-  isSetGroups: false,
-  selectedGroupNames: [],
 
   filterText: '',
   filterIndexName: '',
@@ -63,6 +61,7 @@ var methods = {
   apiList: function(message, expandedChannelIds) {
     var $this = this;
 
+    utils.loading(this, true);
     $api.get($url, {
       params: {
         siteId: this.siteId
@@ -217,14 +216,6 @@ var methods = {
     };
     this.editEditor.create();
     this.editEditor.txt.html(this.editChannel.content);
-  },
-
-  btnSelectGroupClick: function (groupName) {
-    if (this.selectedGroupNames.indexOf(groupName) !== -1) {
-      this.selectedGroupNames = _.reject(this.selectedGroupNames, function(o) { return o === groupName; });
-    } else {
-      this.selectedGroupNames.push(groupName);
-    }
   },
 
   btnSetClick: function(channelId, isChannel, rule) {
@@ -438,23 +429,12 @@ var methods = {
     });
   },
 
-  btnSetGroupsClick: function() {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url + '/actions/setGroups', {
-      siteId: this.siteId,
-      channelIds: this.channelIds,
-      groupNames: this.selectedGroupNames
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.isSetGroups = false;
-      $this.selectedGroupNames = [];
-      $this.apiList('栏目组设置成功!', res);
-    }).catch(function (error) {
-      utils.loading($this, false);
-      utils.error($this, error);
+  btnSetGroupClick: function() {
+    utils.openLayer({
+      title: '设置栏目组',
+      url: 'channelsLayerGroup.cshtml?siteId=' + this.siteId + '&channelIds=' + this.channelIds.join(','),
+      width: 700,
+      height: 400
     });
   },
 

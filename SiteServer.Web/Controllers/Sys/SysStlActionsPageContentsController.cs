@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.Repositories;
@@ -29,7 +30,7 @@ namespace SiteServer.API.Controllers.Sys
                 var totalNum = request.GetPostInt("totalNum");
                 var pageCount = request.GetPostInt("pageCount");
                 var currentPageIndex = request.GetPostInt("currentPageIndex");
-                var stlPageContentsElement = WebConfigUtils.DecryptStringBySecretKey(request.GetPostString("stlPageContentsElement"));
+                var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("stlPageContentsElement"), WebConfigUtils.SecretKey);
 
                 var nodeInfo = await DataProvider.ChannelRepository.GetAsync(pageChannelId);
                 var templateInfo = await DataProvider.TemplateRepository.GetAsync(templateId);

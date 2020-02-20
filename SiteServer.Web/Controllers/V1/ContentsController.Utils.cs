@@ -2,7 +2,7 @@
 using Datory;
 using Datory.Utils;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 using SqlKata;
 
@@ -17,7 +17,7 @@ namespace SiteServer.API.Controllers.V1
             if (channelId.HasValue)
             {
                 //query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
-                var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, channelId.Value, EScopeType.All);
+                var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, channelId.Value, ScopeType.All);
 
                 query.WhereIn(nameof(Abstractions.Content.ChannelId), channelIds);
             }

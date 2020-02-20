@@ -8,16 +8,14 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Api.Preview;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
-
 
 namespace SiteServer.API.Controllers.Preview
 {
@@ -35,7 +33,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                await LogUtils.AddErrorLogAndRedirectAsync(ex);
+                await ContextUtils.AddErrorLogAndRedirectAsync(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -53,7 +51,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                await LogUtils.AddErrorLogAndRedirectAsync(ex);
+                await ContextUtils.AddErrorLogAndRedirectAsync(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -72,7 +70,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                await LogUtils.AddErrorLogAndRedirectAsync(ex);
+                await ContextUtils.AddErrorLogAndRedirectAsync(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -90,7 +88,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                await LogUtils.AddErrorLogAndRedirectAsync(ex);
+                await ContextUtils.AddErrorLogAndRedirectAsync(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -154,7 +152,7 @@ namespace SiteServer.API.Controllers.Preview
 
             if (!string.IsNullOrEmpty(contentInfo.LinkUrl))
             {
-                PageUtils.Redirect(contentInfo.LinkUrl);
+                ContextUtils.Redirect(contentInfo.LinkUrl);
                 return null;
             }
 
@@ -169,12 +167,12 @@ namespace SiteServer.API.Controllers.Preview
                 var innerBuilder = new StringBuilder(stlElement);
                 await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
                 var pageContentHtml = innerBuilder.ToString();
-                var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, pageContentHtml) + 1; //一共需要的页数
+                var pageCount = StringUtils.GetCount(Constants.PagePlaceHolder, pageContentHtml) + 1; //一共需要的页数
                 await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var index = pageContentHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
+                    var index = pageContentHtml.IndexOf(Constants.PagePlaceHolder, StringComparison.Ordinal);
                     var length = index == -1 ? pageContentHtml.Length : index;
 
                     if (currentPageIndex == visualInfo.PageIndex)
@@ -194,7 +192,7 @@ namespace SiteServer.API.Controllers.Preview
 
                     if (index != -1)
                     {
-                        pageContentHtml = pageContentHtml.Substring(length + ContentUtility.PagePlaceHolder.Length);
+                        pageContentHtml = pageContentHtml.Substring(length + Constants.PagePlaceHolder.Length);
                     }
                 }
             }
@@ -205,7 +203,7 @@ namespace SiteServer.API.Controllers.Preview
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, pageInfo, contextInfo);
-                var (pageCount, totalNum) = await pageContentsElementParser.GetPageCountAsync();
+                var (pageCount, totalNum) = pageContentsElementParser.GetPageCount();
 
                 await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 
@@ -297,7 +295,7 @@ namespace SiteServer.API.Controllers.Preview
             {
                 if (!string.IsNullOrEmpty(nodeInfo.LinkUrl))
                 {
-                    PageUtils.Redirect(nodeInfo.LinkUrl);
+                    ContextUtils.Redirect(nodeInfo.LinkUrl);
                     return null;
                 }
             }
@@ -321,7 +319,7 @@ namespace SiteServer.API.Controllers.Preview
                 var innerBuilder = new StringBuilder(stlContentElement);
                 await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
                 var contentAttributeHtml = innerBuilder.ToString();
-                var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, contentAttributeHtml) + 1; //一共需要的页数
+                var pageCount = StringUtils.GetCount(Constants.PagePlaceHolder, contentAttributeHtml) + 1; //一共需要的页数
                 if (pageCount > 1)
                 {
                     await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
@@ -331,7 +329,7 @@ namespace SiteServer.API.Controllers.Preview
                         var thePageInfo = await pageInfo.CloneAsync();
                         thePageInfo.IsLocal = true;
 
-                        var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
+                        var index = contentAttributeHtml.IndexOf(Constants.PagePlaceHolder, StringComparison.Ordinal);
                         var length = index == -1 ? contentAttributeHtml.Length : index;
 
                         if (currentPageIndex == visualInfo.PageIndex)
@@ -348,7 +346,7 @@ namespace SiteServer.API.Controllers.Preview
                         if (index != -1)
                         {
                             contentAttributeHtml =
-                                contentAttributeHtml.Substring(length + ContentUtility.PagePlaceHolder.Length);
+                                contentAttributeHtml.Substring(length + Constants.PagePlaceHolder.Length);
                         }
                     }
 
@@ -364,7 +362,7 @@ namespace SiteServer.API.Controllers.Preview
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, pageInfo, contextInfo);
-                var (pageCount, totalNum) = await pageContentsElementParser.GetPageCountAsync();
+                var (pageCount, totalNum) = pageContentsElementParser.GetPageCount();
 
                 await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 

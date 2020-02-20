@@ -5,13 +5,12 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -21,6 +20,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
     {
         private const string Route = "";
         private const string RouteUpload = "actions/upload";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesContentsLayerWordController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> Get([FromUri] ChannelRequest request)
@@ -83,7 +89,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 return Request.BadRequest<UploadResult>("文件只能是 Word 格式，请选择有效的文件上传!");
             }
 
-            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             file.SaveAs(filePath);
 
@@ -115,7 +121,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return Request.BadRequest<ObjectResult<List<int>>>("无法确定内容对应的栏目");
 
-            var styleList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channelInfo);
+            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
+            var styleList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(channelInfo, tableName);
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
 
             var contentIdList = new List<int>();
@@ -123,7 +130,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             {
                 if (string.IsNullOrEmpty(fileName)) continue;
 
-                var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                var filePath = PathUtility.GetTemporaryFilesPath(fileName);
                 var (title, content) = await WordManager.GetWordAsync(site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
 
                 if (string.IsNullOrEmpty(title)) continue;
@@ -152,9 +159,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             {
                 foreach (var contentId in contentIdList)
                 {
-                    await CreateManager.CreateContentAsync(request.SiteId, channelInfo.Id, contentId);
+                    await _createManager.CreateContentAsync(request.SiteId, channelInfo.Id, contentId);
                 }
-                await CreateManager.TriggerContentChangedEventAsync(request.SiteId, channelInfo.Id);
+                await _createManager.TriggerContentChangedEventAsync(request.SiteId, channelInfo.Id);
             }
 
             return new ObjectResult<List<int>>

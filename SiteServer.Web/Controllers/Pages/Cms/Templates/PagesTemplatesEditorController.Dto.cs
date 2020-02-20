@@ -1,12 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Templates
 {
@@ -42,13 +39,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
 		{
 			if (template.TemplateType == TemplateType.FileTemplate)
 			{
-				await CreateManager.CreateFileAsync(template.SiteId, template.Id);
+				await _createManager.CreateFileAsync(template.SiteId, template.Id);
 			}
 			else if (template.TemplateType == TemplateType.IndexPageTemplate)
 			{
 				if (template.Default)
 				{
-					await CreateManager.CreateChannelAsync(template.SiteId, template.SiteId);
+					await _createManager.CreateChannelAsync(template.SiteId, template.SiteId);
 				}
 			}
 		}
@@ -193,7 +190,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
             {
                 template.RelatedFileName = "T_";
                 template.CreatedFileFullName = template.TemplateType == TemplateType.ChannelTemplate ? "index" : "@/";
-                template.CreatedFileExtName = EFileSystemTypeUtils.GetValue(EFileSystemType.Html);
+                template.CreatedFileExtName = ".html";
             }
 
             return template;

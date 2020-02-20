@@ -2,11 +2,10 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -15,6 +14,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
     {
         private const string Route = "";
         private const string RouteOptions = "actions/options";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesContentsLayerCopyController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> Get([FromUri] GetRequest request)
@@ -112,12 +118,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
             foreach (var summary in summaries)
             {
-                await ContentUtility.TranslateAsync(site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, request.CopyType);
+                await ContentUtility.TranslateAsync(site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, request.CopyType, _createManager);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, "复制内容", string.Empty);
 
-            await CreateManager.TriggerContentChangedEventAsync(request.SiteId, request.ChannelId);
+            await _createManager.TriggerContentChangedEventAsync(request.SiteId, request.ChannelId);
 
             return new BoolResult
             {

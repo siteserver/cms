@@ -41,4 +41,9 @@
     <ProjectReference Include="..\..\..\Datory\src\Datory\Datory.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Dto\Parse\" />
+    <Folder Include="Services\ParseManager\" />
+  </ItemGroup>
+
 </Project>

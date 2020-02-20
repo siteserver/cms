@@ -7,6 +7,7 @@ using SiteServer.Cli.Core;
 using SiteServer.CMS.Repositories;
 using Datory;
 using Datory.Utils;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -111,7 +112,9 @@ namespace SiteServer.Cli.Jobs
 
         public static async Task Backup(List<string> includes, List<string> excludes, int maxRows, TreeInfo treeInfo)
         {
-            var allTableNames = DataProvider.DatabaseRepository.GetTableNameList();
+            var database = DataProvider.DatabaseRepository.GetDatabase();
+            var allTableNames = await database.GetTableNamesAsync();
+
             var tableNames = new List<string>();
 
             foreach (var tableName in allTableNames)

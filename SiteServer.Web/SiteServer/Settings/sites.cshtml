@@ -14,7 +14,7 @@
     :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
     <el-table-column prop="siteName" label="站点名称" :sortable="true">
       <template slot-scope="scope">
-        <el-badge v-if="scope.row.root" style="margin-top: 10px;" value="根目录">
+        <el-badge v-if="scope.row.root" style="margin-top: 10px;" value="主站">
           <el-link :underline="false" type="primary" :href="scope.row.siteUrl" target="_blank">{{scope.row.siteName}}</el-link>
         </el-badge>
         <el-link :underline="false" type="primary" v-else :href="scope.row.siteUrl" target="_blank">{{scope.row.siteName}}</el-link>

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -25,45 +25,37 @@ namespace SiteServer.API.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<IHttpActionResult> GetConfig()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            var pageName = request.GetQueryString("pageName");
+
+            if (pageName == PageNameRegister)
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                var pageName = request.GetQueryString("pageName");
-
-                if (pageName == PageNameRegister)
-                {
-                    return Ok(await GetRegisterAsync(request));
-                }
-                if (pageName == PageNameIndex)
-                {   
-                    return Ok(await GetIndexAsync(request));
-                }
-                if (pageName == PageNameProfile)
-                {
-                    return Ok(await GetProfileAsync(request));
-                }
-                if (pageName == PageNameContents)
-                {
-                    return Ok(await GetContentsAsync(request));
-                }
-                if (pageName == PageNameContentAdd)
-                {
-                    return Ok(await GetContentAddAsync(request));
-                }
-
-                var config = await DataProvider.ConfigRepository.GetAsync();
-
-                return Ok(new
-                {
-                    Value = request.User,
-                    Config = config
-                });
+                return Ok(await GetRegisterAsync(request));
             }
-            catch (Exception ex)
+            if (pageName == PageNameIndex)
             {
-                await LogUtils.AddErrorLogAsync(ex);
-                return InternalServerError(ex);
+                return Ok(await GetIndexAsync(request));
             }
+            if (pageName == PageNameProfile)
+            {
+                return Ok(await GetProfileAsync(request));
+            }
+            if (pageName == PageNameContents)
+            {
+                return Ok(await GetContentsAsync(request));
+            }
+            if (pageName == PageNameContentAdd)
+            {
+                return Ok(await GetContentAddAsync(request));
+            }
+
+            var config = await DataProvider.ConfigRepository.GetAsync();
+
+            return Ok(new
+            {
+                Value = request.User,
+                Config = config
+            });
         }
 
         private async Task<object> GetRegisterAsync(AuthenticatedRequest request)
@@ -303,7 +295,8 @@ namespace SiteServer.API.Controllers.Home
                         ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteInfo.Id, channelInfo.Id)
                     };
 
-                    styles = await DataProvider.TableStyleRepository.GetContentStyleListAsync(siteInfo, channelInfo);
+                    var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(siteInfo, channelInfo);
+                    styles = await DataProvider.TableStyleRepository.GetContentStyleListAsync(channelInfo, tableName);
 
                     var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, siteInfo, siteInfo.Id);
                     checkedLevels = CheckManager.GetCheckedLevels(siteInfo, userIsChecked, userCheckedLevel, true);

@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
-using SiteServer.CMS.Context;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Sys

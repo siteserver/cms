@@ -3,11 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -16,6 +15,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
     {
         private const string Route = "";
         private const string RouteOptions = "actions/options";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesContentsLayerTranslateController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> Get([FromUri] GetRequest request)
@@ -113,17 +119,17 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
             foreach (var summary in summaries)
             {
-                await ContentUtility.TranslateAsync(site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, TranslateContentType.Cut);
+                await ContentUtility.TranslateAsync(site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, TranslateContentType.Cut, _createManager);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, "转移内容", string.Empty);
 
             foreach (var distinctChannelId in summaries.Select(x => x.ChannelId).Distinct())
             {
-                await CreateManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
+                await _createManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
             }
 
-            await CreateManager.TriggerContentChangedEventAsync(request.TransSiteId, request.TransChannelId);
+            await _createManager.TriggerContentChangedEventAsync(request.TransSiteId, request.TransChannelId);
 
             return new BoolResult
             {

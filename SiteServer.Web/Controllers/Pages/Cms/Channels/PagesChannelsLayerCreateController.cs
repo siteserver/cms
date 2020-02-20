@@ -2,11 +2,8 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.API.Context;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Channels
 {
@@ -14,6 +11,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
     public partial class PagesChannelsLayerCreateController : ApiController
     {
         private const string Route = "";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesChannelsLayerCreateController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpPost, Route(Route)]
         public async Task<List<int>> Create([FromBody] CreateRequest request)
@@ -41,21 +45,21 @@ namespace SiteServer.API.Controllers.Pages.Cms.Channels
                     expendedChannelIds.Add(channel.ParentId);
                 }
 
-                await CreateManager.CreateChannelAsync(request.SiteId, channelId);
+                await _createManager.CreateChannelAsync(request.SiteId, channelId);
                 if (request.IsCreateContents)
                 {
-                    await CreateManager.CreateAllContentAsync(request.SiteId, channelId);
+                    await _createManager.CreateAllContentAsync(request.SiteId, channelId);
                 }
                 if (request.IsIncludeChildren)
                 {
-                    var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, channelId, EScopeType.Descendant);
+                    var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, channelId, ScopeType.Descendant);
 
                     foreach (var childChannelId in channelIds)
                     {
-                        await CreateManager.CreateChannelAsync(request.SiteId, childChannelId);
+                        await _createManager.CreateChannelAsync(request.SiteId, childChannelId);
                         if (request.IsCreateContents)
                         {
-                            await CreateManager.CreateAllContentAsync(request.SiteId, channelId);
+                            await _createManager.CreateAllContentAsync(request.SiteId, channelId);
                         }
                     }
                 }

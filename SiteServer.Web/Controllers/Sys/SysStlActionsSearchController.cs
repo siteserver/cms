@@ -5,8 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
@@ -46,7 +48,7 @@ namespace SiteServer.API.Controllers.Sys
                 var isHighlight = request.GetPostBool(StlSearch.IsHighlight.ToLower());
                 var siteId = request.GetPostInt("siteid");
                 var ajaxDivId = AttackUtils.FilterSqlAndXss(request.GetPostString("ajaxdivid"));
-                template = WebConfigUtils.DecryptStringBySecretKey(request.GetPostString("template"));
+                template = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("template"), WebConfigUtils.SecretKey);
                 var pageIndex = request.GetPostInt("page", 1) - 1;
 
                 var templateInfo = new Template
@@ -78,7 +80,7 @@ namespace SiteServer.API.Controllers.Sys
                     var whereString = await DataProvider.ContentRepository.GetWhereStringByStlSearchAsync(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form);
 
                     var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, pageInfo, contextInfo, pageNum, site.TableName, whereString);
-                    var (pageCount, totalNum) = await stlPageContents.GetPageCountAsync();
+                    var (pageCount, totalNum) = stlPageContents.GetPageCount();
                     if (totalNum == 0)
                     {
                         return NotFound();

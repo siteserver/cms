@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Editor
@@ -68,7 +69,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Editor
             {
                 foreach (var translation in request.Translations)
                 {
-                    await ContentUtility.TranslateAsync(site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType);
+                    await ContentUtility.TranslateAsync(site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager);
                 }
             }
 

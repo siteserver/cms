@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Dto;
+using SiteServer.Abstractions.Dto;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Templates
 {

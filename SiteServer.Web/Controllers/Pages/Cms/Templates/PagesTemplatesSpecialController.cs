@@ -4,12 +4,10 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Templates
 {
@@ -21,6 +19,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
         private const string RouteId = "{siteId:int}/{specialId:int}";
         private const string RouteDownload = "actions/download";
         private const string RouteUpload = "actions/upload";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesSpecialController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<IHttpActionResult> List()
@@ -168,7 +173,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
 
             if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(file.FileName);
 
-            var filePath = PathUtils.GetTemporaryFilesPath($"{request.Guid}/{fileName}");
+            var filePath = PathUtility.GetTemporaryFilesPath($"{request.Guid}/{fileName}");
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             file.SaveAs(filePath);
 
@@ -230,13 +235,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                 var srcDirectoryPath = DataProvider.SpecialRepository.GetSpecialSrcDirectoryPath(directoryPath);
                 DirectoryUtils.CreateDirectoryIfNotExists(srcDirectoryPath);
 
-                var uploadDirectoryPath = PathUtils.GetTemporaryFilesPath(request.Guid);
+                var uploadDirectoryPath = PathUtility.GetTemporaryFilesPath(request.Guid);
                 foreach (var filePath in DirectoryUtils.GetFilePaths(uploadDirectoryPath))
                 {
                     var fileName = PathUtils.GetFileName(filePath);
                     if (!StringUtils.ContainsIgnoreCase(request.FileNames, fileName)) continue;
 
-                    if (EFileSystemTypeUtils.IsZip(PathUtils.GetExtension(filePath)))
+                    if (FileUtils.IsZip(PathUtils.GetExtension(filePath)))
                     {
                         ZipUtils.ExtractZip(filePath, srcDirectoryPath);
                     }
@@ -263,13 +268,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                 var srcDirectoryPath = DataProvider.SpecialRepository.GetSpecialSrcDirectoryPath(directoryPath);
                 DirectoryUtils.CreateDirectoryIfNotExists(srcDirectoryPath);
 
-                var uploadDirectoryPath = PathUtils.GetTemporaryFilesPath(request.Guid);
+                var uploadDirectoryPath = PathUtility.GetTemporaryFilesPath(request.Guid);
                 foreach (var filePath in DirectoryUtils.GetFilePaths(uploadDirectoryPath))
                 {
                     var fileName = PathUtils.GetFileName(filePath);
                     if (!StringUtils.ContainsIgnoreCase(request.FileNames, fileName)) continue;
 
-                    if (EFileSystemTypeUtils.IsZip(PathUtils.GetExtension(filePath)))
+                    if (FileUtils.IsZip(PathUtils.GetExtension(filePath)))
                     {
                         ZipUtils.ExtractZip(filePath, srcDirectoryPath);
                     }
@@ -293,7 +298,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                 await auth.AddSiteLogAsync(request.SiteId, "新建专题", $"专题名称:{request.Title}");
             }
 
-            await CreateManager.CreateSpecialAsync(request.SiteId, specialId);
+            await _createManager.CreateSpecialAsync(request.SiteId, specialId);
 
             var specialInfoList = await DataProvider.SpecialRepository.GetSpecialListAsync(request.SiteId);
 

@@ -2,6 +2,7 @@
 using Datory;
 using Newtonsoft.Json;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 

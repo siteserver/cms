@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Analysis
@@ -59,8 +59,8 @@ namespace SiteServer.API.Controllers.Pages.Settings.Analysis
                 //x轴信息
                 SetXDict(key, site.SiteName, xDict);
                 //y轴信息
-                SetYDict(key, await DataProvider.ContentRepository.GetCountOfContentAddAsync(site.TableName, site.Id, site.Id, EScopeType.All, dateFrom, dateTo, string.Empty, ETriState.All), YTypeNew, yDictNew, yDictUpdate, verticalDict, horizontalDict);
-                SetYDict(key, await DataProvider.ContentRepository.GetCountOfContentUpdateAsync(site.TableName, site.Id, site.Id, EScopeType.All, dateFrom, dateTo, string.Empty), YTypeUpdate, yDictNew, yDictUpdate, verticalDict, horizontalDict);
+                SetYDict(key, await DataProvider.ContentRepository.GetCountOfContentAddAsync(site.TableName, site.Id, site.Id, ScopeType.All, dateFrom, dateTo, 0, null), YTypeNew, yDictNew, yDictUpdate, verticalDict, horizontalDict);
+                SetYDict(key, await DataProvider.ContentRepository.GetCountOfContentUpdateAsync(site.TableName, site.Id, site.Id, ScopeType.All, dateFrom, dateTo, 0), YTypeUpdate, yDictNew, yDictUpdate, verticalDict, horizontalDict);
 
                 var item = new QueryResultItem
                 {

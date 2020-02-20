@@ -2,13 +2,12 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions.Dto;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Dto;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Templates
@@ -257,7 +256,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                     continue;
                 }
                 var insertedTemplateId = await DataProvider.TemplateRepository.InsertAsync(site, templateInfo, string.Empty, adminId);
-                var childChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, channelId, EScopeType.Descendant);
+                var childChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, channelId, ScopeType.Descendant);
                 foreach (var childChannelId in childChannelIdList)
                 {
                     var childChannelInfo = await DataProvider.ChannelRepository.GetAsync(childChannelId);
@@ -351,7 +350,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                     continue;
                 }
                 var insertedTemplateId = await DataProvider.TemplateRepository.InsertAsync(site, templateInfo, string.Empty, adminId);
-                var childChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, channelId, EScopeType.Descendant);
+                var childChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, channelId, ScopeType.Descendant);
                 foreach (var childChannelId in childChannelIdList)
                 {
                     var childChannelInfo = await DataProvider.ChannelRepository.GetAsync(childChannelId);

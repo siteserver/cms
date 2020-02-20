@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using SiteServer.Abstractions;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -10,5 +11,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
         private const string RouteCreate = "actions/create";
         private const string RouteColumns = "actions/columns";
         private const string RouteAll = "actions/all";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesContentsController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
     }
 }

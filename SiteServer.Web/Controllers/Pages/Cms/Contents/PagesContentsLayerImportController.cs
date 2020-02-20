@@ -4,14 +4,12 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
+using SiteServer.CMS.Serialization;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -20,6 +18,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
     {
         private const string Route = "";
         private const string RouteUpload = "actions/upload";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesContentsLayerImportController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> Get([FromUri] ChannelRequest request)
@@ -80,7 +85,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
                 return Request.BadRequest<UploadResult>("请选择有效的文件上传!");
             }
 
-            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             file.SaveAs(filePath);
 
@@ -119,9 +124,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             {
                 foreach (var fileName in request.FileNames)
                 {
-                    var localFilePath = PathUtils.GetTemporaryFilesPath(fileName);
+                    var localFilePath = PathUtility.GetTemporaryFilesPath(fileName);
 
-                    if (!EFileSystemTypeUtils.Equals(EFileSystemType.Zip, PathUtils.GetExtension(localFilePath)))
+                    if (!FileUtils.IsType(FileType.Zip, PathUtils.GetExtension(localFilePath)))
                         continue;
 
                     var importObject = new ImportObject(site, auth.AdminId);
@@ -132,9 +137,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             {
                 foreach (var fileName in request.FileNames)
                 {
-                    var localFilePath = PathUtils.GetTemporaryFilesPath(fileName);
+                    var localFilePath = PathUtility.GetTemporaryFilesPath(fileName);
 
-                    if (!EFileSystemTypeUtils.Equals(EFileSystemType.Csv, PathUtils.GetExtension(localFilePath)))
+                    if (!FileUtils.IsType(FileType.Csv, PathUtils.GetExtension(localFilePath)))
                         continue;
 
                     var importObject = new ImportObject(site, auth.AdminId);
@@ -145,8 +150,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
             {
                 foreach (var fileName in request.FileNames)
                 {
-                    var localFilePath = PathUtils.GetTemporaryFilesPath(fileName);
-                    if (!EFileSystemTypeUtils.Equals(EFileSystemType.Txt, PathUtils.GetExtension(localFilePath)))
+                    var localFilePath = PathUtility.GetTemporaryFilesPath(fileName);
+                    if (!FileUtils.IsType(FileType.Txt, PathUtils.GetExtension(localFilePath)))
                         continue;
 
                     var importObject = new ImportObject(site, auth.AdminId);
@@ -156,9 +161,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
             foreach (var contentId in contentIdList)
             {
-                await CreateManager.CreateContentAsync(request.SiteId, channelInfo.Id, contentId);
+                await _createManager.CreateContentAsync(request.SiteId, channelInfo.Id, contentId);
             }
-            await CreateManager.CreateChannelAsync(request.SiteId, channelInfo.Id);
+            await _createManager.CreateChannelAsync(request.SiteId, channelInfo.Id);
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "导入内容", string.Empty);
 

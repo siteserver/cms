@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Admin
@@ -332,7 +332,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var sitePermissionsInRolesInfoList =
                     request.GetPostObject<List<SitePermissions>>("sitePermissions");
 
-                if (EPredefinedRoleUtils.IsPredefinedRole(roleName))
+                if (DataProvider.RoleRepository.IsPredefinedRole(roleName))
                 {
                     return BadRequest($"角色添加失败，{roleName}为系统角色！");
                 }
@@ -368,7 +368,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                     }
                 }
 
-                PermissionsImpl.ClearAllCache();
+                CacheUtils.ClearAll();
 
                 await request.AddAdminLogAsync("新增管理员角色", $"角色名称:{roleName}");
 
@@ -404,7 +404,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
                 var roleInfo = await DataProvider.RoleRepository.GetRoleAsync(roleId);
                 if (roleInfo.RoleName != roleName)
                 {
-                    if (EPredefinedRoleUtils.IsPredefinedRole(roleName))
+                    if (DataProvider.RoleRepository.IsPredefinedRole(roleName))
                     {
                         return BadRequest($"角色添加失败，{roleName}为系统角色！");
                     }
@@ -442,7 +442,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Admin
 
                 await DataProvider.RoleRepository.UpdateRoleAsync(roleInfo);
 
-                PermissionsImpl.ClearAllCache();
+                CacheUtils.ClearAll();
 
                 await request.AddAdminLogAsync("修改管理员角色", $"角色名称:{roleName}");
 

@@ -2,11 +2,10 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Contents
 {
@@ -14,6 +13,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
     public partial class PagesContentsLayerTaxisController : ApiController
     {
         private const string Route = "";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesContentsLayerTaxisController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpPost, Route(Route)]
         public async Task<BoolResult> Submit([FromBody] SubmitRequest request)
@@ -66,7 +72,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Contents
 
             foreach (var distinctChannelId in summaries.Select(x => x.ChannelId).Distinct())
             {
-                await CreateManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
+                await _createManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "对内容排序", string.Empty);

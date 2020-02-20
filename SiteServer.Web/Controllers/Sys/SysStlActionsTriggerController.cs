@@ -3,18 +3,22 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
-using SiteServer.CMS.StlParser;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    
     public class SysStlActionsTriggerController : ApiController
     {
+        private readonly ICreateManager _createManager;
+
+        public SysStlActionsTriggerController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
+
         [HttpGet]
         [Route(ApiRouteActionsTrigger.Route)]
         public async Task Main()
@@ -38,23 +42,23 @@ namespace SiteServer.API.Controllers.Sys
 
                 if (specialId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, CreateType.Special, 0, 0, 0, specialId);
+                    await _createManager.ExecuteAsync(siteId, CreateType.Special, 0, 0, 0, specialId);
                 }
                 else if (fileTemplateId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, CreateType.File, 0, 0, fileTemplateId, 0);
+                    await _createManager.ExecuteAsync(siteId, CreateType.File, 0, 0, fileTemplateId, 0);
                 }
                 else if (contentId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, CreateType.Content, channelId, contentId, 0, 0);
+                    await _createManager.ExecuteAsync(siteId, CreateType.Content, channelId, contentId, 0, 0);
                 }
                 else if (channelId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, CreateType.Channel, channelId, 0, 0, 0);
+                    await _createManager.ExecuteAsync(siteId, CreateType.Channel, channelId, 0, 0, 0);
                 }
                 else if (siteId != 0)
                 {
-                    await FileSystemObjectAsync.ExecuteAsync(siteId, CreateType.Channel, siteId, 0, 0, 0);
+                    await _createManager.ExecuteAsync(siteId, CreateType.Channel, siteId, 0, 0, 0);
                 }
 
                 if (isRedirect)
@@ -95,7 +99,7 @@ namespace SiteServer.API.Controllers.Sys
 
                         parameters["__r"] = StringUtils.GetRandomInt(1, 10000).ToString();
 
-                        PageUtils.Redirect(PageUtils.AddQueryString(redirectUrl, parameters));
+                        ContextUtils.Redirect(PageUtils.AddQueryString(redirectUrl, parameters));
                         return;
                     }
                 }
@@ -103,7 +107,7 @@ namespace SiteServer.API.Controllers.Sys
             catch
             {
                 var redirectUrl = await PageUtility.GetIndexPageUrlAsync(site, false);
-                PageUtils.Redirect(redirectUrl);
+                ContextUtils.Redirect(redirectUrl);
                 return;
             }
 

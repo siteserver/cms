@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,29 +12,30 @@ namespace SiteServer.Abstractions.Tests
 {
     public class SettingsManager : ISettingsManager
     {
-        private readonly IConfiguration _config;
         public SettingsManager(IConfiguration config, string contentRootPath, string webRootPath)
         {
-            _config = config;
             ContentRootPath = contentRootPath;
             WebRootPath = webRootPath;
 
-            try
+            var entryAssembly = Assembly.GetEntryAssembly();
+            if (entryAssembly != null)
             {
-                ProductVersion = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+                ProductVersion = entryAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                    .InformationalVersion;
 
-                PluginVersion = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SS.CMS.Abstractions.dll")).ProductVersion;
+                var abstractionsPath = PathUtils.Combine(Path.GetDirectoryName(entryAssembly.Location),
+                    Constants.AbstractionsAssemblyName);
+                if (FileUtils.IsFileExists(abstractionsPath))
+                {
+                    PluginVersion = FileVersionInfo.GetVersionInfo(abstractionsPath).ProductVersion;
+                }
 
-                if (Assembly.GetEntryAssembly()
+                if (entryAssembly
                     .GetCustomAttributes(typeof(TargetFrameworkAttribute), false)
                     .SingleOrDefault() is TargetFrameworkAttribute targetFrameworkAttribute)
                 {
                     TargetFramework = targetFrameworkAttribute.FrameworkName;
                 }
-            }
-            catch
-            {
-                // ignored
             }
 
             var menusPath = PathUtils.GetLangPath(contentRootPath, "en", "menus.yml");
@@ -43,11 +43,78 @@ namespace SiteServer.Abstractions.Tests
             {
                 Menus = YamlUtils.FileToObject<IList<Menu>>(menusPath);
             }
+
             var permissionsPath = PathUtils.GetLangPath(contentRootPath, "en", "permissions.yml");
             if (FileUtils.IsFileExists(permissionsPath))
             {
                 Permissions = YamlUtils.FileToObject<PermissionsSettings>(permissionsPath);
             }
+
+            IsNightlyUpdate = config.GetValue<bool>(nameof(IsNightlyUpdate));
+            IsProtectData = config.GetValue<bool>(nameof(IsProtectData));
+            AdminDirectory = config.GetValue<string>(nameof(AdminDirectory)) ?? "admin";
+            HomeDirectory = config.GetValue<string>(nameof(HomeDirectory)) ?? "home";
+            SecurityKey = config.GetValue<string>(nameof(SecurityKey)) ?? StringUtils.GetShortGuid().ToUpper();
+
+            DatabaseType databaseType;
+            string connectionString;
+            if (IsProtectData)
+            {
+                databaseType =
+                    TranslateUtils.ToEnum(Decrypt(config.GetValue<string>("Database:Type")), DatabaseType.MySql);
+                connectionString = Decrypt(config.GetValue<string>("Database:ConnectionString"));
+                Redis = new Redis(Decrypt(config.GetValue<string>("Redis:ConnectionString")));
+            }
+            else
+            {
+                databaseType = TranslateUtils.ToEnum(config.GetValue<string>("Database:Type"), DatabaseType.MySql);
+                connectionString = config.GetValue<string>("Database:ConnectionString");
+                Redis = new Redis(config.GetValue<string>("Redis:ConnectionString"));
+            }
+
+            Database = new Database(databaseType, GetConnectionString(databaseType, connectionString));
+
+            if (AdminDirectory == null)
+            {
+                AdminDirectory = "SiteServer";
+            }
+            if (HomeDirectory == null)
+            {
+                HomeDirectory = "Home";
+            }
+            if (string.IsNullOrEmpty(SecurityKey))
+            {
+                SecurityKey = StringUtils.GetShortGuid();
+                //SecretKey = "vEnfkn16t8aeaZKG3a4Gl9UUlzf4vgqU9xwh8ZV5";
+            }
+        }
+
+        private static string GetConnectionString(DatabaseType databaseType, string connectionString)
+        {
+            if (string.IsNullOrEmpty(connectionString)) return string.Empty;
+
+            if (databaseType == DatabaseType.MySql)
+            {
+                connectionString = connectionString.TrimEnd(';');
+                if (!StringUtils.ContainsIgnoreCase(connectionString, "SslMode="))
+                {
+                    connectionString += ";SslMode=Preferred;";
+                }
+                if (!StringUtils.ContainsIgnoreCase(connectionString, "CharSet="))
+                {
+                    connectionString += ";CharSet=utf8;";
+                }
+            }
+            else if (databaseType == DatabaseType.Oracle)
+            {
+                connectionString = connectionString.TrimEnd(';');
+                if (!StringUtils.ContainsIgnoreCase(connectionString, "pooling="))
+                {
+                    connectionString += ";pooling=false;";
+                }
+            }
+
+            return connectionString;
         }
 
         public string ContentRootPath { get; }
@@ -55,57 +122,60 @@ namespace SiteServer.Abstractions.Tests
         public string ProductVersion { get; }
         public string PluginVersion { get; }
         public string TargetFramework { get; }
-        public bool IsNightlyUpdate => _config.GetValue<bool>(nameof(IsNightlyUpdate));
-        public bool IsProtectData => _config.GetValue<bool>(nameof(IsProtectData));
-        public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey)) ?? StringUtils.GetShortGuid().ToUpper();
+        public bool IsNightlyUpdate { get; }
+        public bool IsProtectData { get; }
+        public string AdminDirectory { get; }
+        public string HomeDirectory { get; }
+        public string SecurityKey { get; }
 
-        public DatabaseType DatabaseType =>
-            TranslateUtils.ToEnum(_config.GetValue<string>("Database:InputType"), DatabaseType.MySql);
-        public string DatabaseConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Database:ConnectionString")) : _config.GetValue<string>("Database:ConnectionString");
-        public CacheType CacheType => TranslateUtils.ToEnum(_config.GetValue<string>("Cache:InputType"), CacheType.Memory);
-        public string CacheConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Cache:ConnectionString")) : _config.GetValue<string>("Cache:ConnectionString");
+        public IDatabase Database { get; }
+
+        public IRedis Redis { get; }
 
         public IList<Menu> Menus { get; }
         public PermissionsSettings Permissions { get; }
 
         public string Encrypt(string inputString)
         {
-            return WebConfigUtils.EncryptStringBySecretKey(inputString, SecurityKey);
+            return TranslateUtils.EncryptStringBySecretKey(inputString, SecurityKey);
         }
 
         public string Decrypt(string inputString)
         {
-            return WebConfigUtils.DecryptStringBySecretKey(inputString, SecurityKey);
+            return TranslateUtils.DecryptStringBySecretKey(inputString, SecurityKey);
         }
 
-        public async Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, string securityKey, DatabaseType databaseType, string databaseConnectionString, CacheType cacheType, string cacheConnectionString)
+        public async Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, string adminDirectory,
+            string homeDirectory, string securityKey, DatabaseType databaseType, string databaseConnectionString,
+            string redisConnectionString)
         {
             var path = PathUtils.Combine(ContentRootPath, Constants.ConfigFileName);
 
             var databaseConnectionStringValue = databaseConnectionString;
-            var cacheConnectionStringValue = cacheConnectionString;
+            var redisConnectionStringValue = redisConnectionString;
             if (isProtectData)
             {
                 databaseConnectionStringValue = Encrypt(databaseConnectionStringValue);
-                cacheConnectionStringValue = Encrypt(cacheConnectionString);
+                redisConnectionStringValue = Encrypt(redisConnectionString);
             }
 
             var json = $@"
 {{
   ""IsNightlyUpdate"": {isNightlyUpdate.ToString().ToLower()},
   ""IsProtectData"": {isProtectData.ToString().ToLower()},
+  ""AdminDirectory"": ""{adminDirectory}"",
+  ""HomeDirectory"": ""{homeDirectory}"",
   ""SecurityKey"": ""{securityKey}"",
   ""Database"": {{
-    ""InputType"": ""{databaseType.GetValue()}"",
+    ""Type"": ""{databaseType.GetValue()}"",
     ""ConnectionString"": ""{databaseConnectionStringValue}""
   }},
   ""Redis"": {{
-    ""InputType"": ""{cacheType.GetValue()}"",
-    ""ConnectionString"": ""{cacheConnectionStringValue}""
+    ""ConnectionString"": ""{redisConnectionStringValue}""
   }}
 }}";
 
-            await File.WriteAllTextAsync(path, json.Trim());
+            await FileUtils.WriteTextAsync(path, json.Trim());
         }
     }
 }

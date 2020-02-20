@@ -1,0 +1,213 @@
+﻿var $url = '/pages/settings/configHomeMenu';
+
+var data = utils.initData({
+  pageType: 'list',
+  items: null,
+  groups: null,
+  item: null
+});
+
+var methods = {
+  getItems: function (menus) {
+    var items = [];
+    for (var i = 0; i < menus.length; i++) {
+      var menu = menus[i];
+      menu.isGroup = false;
+      menu.groupIds = [];
+      if (menu.groupIdCollection) {
+        menu.isGroup = true;
+        menu.groupIds = menu.groupIdCollection.split(',');
+      }
+      if (menu.parentId === 0) {
+        menu.children = [];
+        items.push(menu);
+      }
+    }
+    for (var i = 0; i < menus.length; i++) {
+      var menu = menus[i];
+      if (menu.parentId > 0) {
+        var parent = _.find(items, function (x) {
+          return x.id === menu.parentId
+        })
+        if (parent) {
+          parent.children.push(menu);
+        }
+      }
+    }
+
+    return items;
+  },
+
+  getList: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.get($url).then(function (response) {
+      var res = response.data;
+
+      $this.items = $this.getItems(res.value);
+      $this.groups = res.groups;
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  getUserGroups: function (item) {
+    if (item.isGroup) {
+      var str = '';
+      _.forEach(this.groups, function (group) {
+        if (item.groupIds.indexOf(group.id + '') !== -1) {
+          str += ', ' + group.groupName;
+        }
+      });
+      return str ? str.substr(2) : '';
+    }
+    return '所有用户组';
+  },
+  
+  delete: function (id) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.delete($url, {
+      data: {
+        id: id
+      }
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.items = $this.getItems(res.value);
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  reset: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/reset').then(function (response) {
+      var res = response.data;
+
+      $this.items = $this.getItems(res.value);
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  submit: function (item) {
+    var $this = this;
+    item.groupIdCollection = item.isGroup ? item.groupIds.join(',') : '';
+
+    utils.loading(this, true);
+    $api.post($url, item).then(function (response) {
+      var res = response.data;
+
+      $this.item = null;
+      $this.items = $this.getItems(res.value);
+      $this.pageType = 'list';
+      $this.$message.success(item.id === -1 ? '用户菜单添加成功！' : '用户菜单修改成功！');
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  btnAddClick: function (parentId) {
+    var taxis = 0;
+    var parent = null;
+    if (parentId > 0) {
+      parent = this.items.find(function (x) {
+        return x.id === parentId;
+      })
+    }
+    if (parent) {
+      _.forEach(parent.children, function (value) {
+        if (value.taxis > taxis) {
+          taxis = value.taxis;
+        }
+      });
+    } else {
+      _.forEach(this.items, function (value) {
+        if (value.taxis > taxis) {
+          taxis = value.taxis;
+        }
+      });
+    }
+
+    this.item = {
+      id: 0,
+      systemId: '',
+      groupIdCollection: '',
+      isDisabled: false,
+      parentId: parentId,
+      taxis: taxis + 1,
+      text: '',
+      href: '',
+      iconClass: '',
+      target: '',
+      isGroup: false,
+      groupIds: []
+    };
+    this.pageType = 'add';
+  },
+
+  btnResetClick: function () {
+    var $this = this;
+
+    utils.alertDelete({
+      title: '重置用户菜单',
+      text: '此操作将把用户菜单恢复为系统默认值，确定吗？',
+      button: '确认重置',
+      callback: function () {
+        $this.reset();
+      }
+    });
+  },
+
+  btnEditClick: function (item) {
+    this.pageType = 'add';
+    this.item = item;
+  },
+
+  btnDeleteClick: function (item) {
+    var $this = this;
+
+    utils.alertDelete({
+      title: '删除用户菜单',
+      text: '此操作将删除用户菜单 ' + item.text + '，确定吗？',
+      callback: function () {
+        $this.delete(item.id);
+      }
+    });
+  },
+
+  btnSubmitClick: function () {
+    var $this = this;
+    this.$validator.validate().then(function (result) {
+      if (result) {
+        $this.submit($this.item);
+      }
+    });
+  },
+  
+  btnCancelClick: function () {
+    this.pageType = 'list';
+  }
+};
+
+var $vue = new Vue({
+  el: '#main',
+  data: data,
+  methods: methods,
+  created: function () {
+    this.getList();
+  }
+});

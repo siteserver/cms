@@ -1,11 +1,10 @@
-﻿using System;
-
-namespace SiteServer.Abstractions
+﻿namespace SiteServer.Abstractions
 {
     public class TemplateSummary
     {
         public int Id { get; set; }
         public string TemplateName { get; set; }
+        public TemplateType TemplateType { get; set; }
         public bool Default { get; set; }
     }
 }

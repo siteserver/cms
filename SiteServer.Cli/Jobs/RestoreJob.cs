@@ -11,6 +11,7 @@ using Dapper;
 using Datory.Utils;
 using SiteServer.CMS.Repositories;
 using SiteServer.Abstractions;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -111,14 +112,14 @@ namespace SiteServer.Cli.Jobs
 
             if (!_dataOnly)
             {
-                if (!await SystemManager.IsNeedInstallAsync())
+                if (!await DataProvider.ConfigRepository.IsNeedInstallAsync())
                 {
                     await CliUtils.PrintErrorAsync("数据无法在已安装系统的数据库中恢复，命令执行失败");
                     return;
                 }
 
                 // 恢复前先创建表，确保系统在恢复的数据库中能够使用
-                await SystemManager.CreateSiteServerTablesAsync();
+                await DataProvider.DatabaseRepository.CreateSiteServerTablesAsync();
             }
 
             await CliUtils.PrintRowLineAsync();
@@ -213,8 +214,9 @@ namespace SiteServer.Cli.Jobs
 
             if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                var tableNameList = DataProvider.DatabaseRepository.GetTableNameList();
-                foreach (var tableName in tableNameList)
+                var database = DataProvider.DatabaseRepository.GetDatabase();
+                var allTableNames = await database.GetTableNamesAsync();
+                foreach (var tableName in allTableNames)
                 {
                     try
                     {
@@ -240,8 +242,8 @@ namespace SiteServer.Cli.Jobs
             if (!dataOnly)
             {
                 // 恢复后同步表，确保内容辅助表字段与系统一致
-                await SystemManager.SyncContentTablesAsync();
-                await SystemManager.UpdateConfigVersionAsync();
+                await DataProvider.DatabaseRepository.SyncContentTablesAsync();
+                await DataProvider.ConfigRepository.UpdateConfigVersionAsync(SystemManager.ProductVersion);
             }
         }
     }

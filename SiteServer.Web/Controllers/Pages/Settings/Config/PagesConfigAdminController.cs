@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Config
@@ -19,108 +20,86 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         [HttpGet, Route(Route)]
         public async Task<IHttpActionResult> GetConfig()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            if (!request.IsAdminLoggin ||
+                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigAdmin))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigAdmin))
-                {
-                    return Unauthorized();
-                }
-
-                var config = await DataProvider.ConfigRepository.GetAsync();
-
-                return Ok(new
-                {
-                    Value = config,
-                    request.AdminToken
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            var config = await DataProvider.ConfigRepository.GetAsync();
+
+            return Ok(new
             {
-                return InternalServerError(ex);
-            }
+                Value = config,
+                request.AdminToken
+            });
         }
 
         [HttpPost, Route(Route)]
         public async Task<IHttpActionResult> Submit()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            if (!request.IsAdminLoggin ||
+                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigAdmin))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigAdmin))
-                {
-                    return Unauthorized();
-                }
-
-                var config = await DataProvider.ConfigRepository.GetAsync();
-
-                config.AdminTitle = request.GetPostString("adminTitle");
-                config.AdminLogoUrl = request.GetPostString("adminLogoUrl");
-                config.AdminWelcomeHtml = request.GetPostString("adminWelcomeHtml");
-
-                await DataProvider.ConfigRepository.UpdateAsync(config);
-
-                await request.AddAdminLogAsync("修改管理后台设置");
-
-                return Ok(new
-                {
-                    Value = config
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            var config = await DataProvider.ConfigRepository.GetAsync();
+
+            config.AdminTitle = request.GetPostString("adminTitle");
+            config.AdminLogoUrl = request.GetPostString("adminLogoUrl");
+            config.AdminWelcomeHtml = request.GetPostString("adminWelcomeHtml");
+
+            await DataProvider.ConfigRepository.UpdateAsync(config);
+
+            await request.AddAdminLogAsync("修改管理后台设置");
+
+            return Ok(new
             {
-                return InternalServerError(ex);
-            }
+                Value = config
+            });
         }
 
         [HttpPost, Route(RouteUpload)]
         public async Task<IHttpActionResult> Upload()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            if (!request.IsAdminLoggin ||
+                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigAdmin))
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigAdmin))
+                return Unauthorized();
+            }
+
+            var adminLogoUrl = string.Empty;
+
+            foreach (string name in HttpContext.Current.Request.Files)
+            {
+                var postFile = HttpContext.Current.Request.Files[name];
+
+                if (postFile == null)
                 {
-                    return Unauthorized();
+                    return BadRequest("Could not read image from body");
                 }
 
-                var adminLogoUrl = string.Empty;
+                var fileName = postFile.FileName;
+                var filePath = PathUtility.GetAdminDirectoryPath(fileName);
 
-                foreach (string name in HttpContext.Current.Request.Files)
+                if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
                 {
-                    var postFile = HttpContext.Current.Request.Files[name];
-
-                    if (postFile == null)
-                    {
-                        return BadRequest("Could not read image from body");
-                    }
-
-                    var fileName = postFile.FileName;
-                    var filePath = PathUtils.GetAdminDirectoryPath(fileName);
-
-                    if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
-                    {
-                        return BadRequest("image file extension is not correct");
-                    }
-
-                    postFile.SaveAs(filePath);
-
-                    adminLogoUrl = fileName;
+                    return BadRequest("image file extension is not correct");
                 }
 
-                return Ok(new
-                {
-                    Value = adminLogoUrl
-                });
+                postFile.SaveAs(filePath);
+
+                adminLogoUrl = fileName;
             }
-            catch (Exception ex)
+
+            return Ok(new
             {
-                await LogUtils.AddErrorLogAsync(ex);
-                return InternalServerError(ex);
-            }
+                Value = adminLogoUrl
+            });
         }
     }
 }

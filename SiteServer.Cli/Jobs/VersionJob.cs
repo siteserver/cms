@@ -6,6 +6,7 @@ using NDesk.Options;
 using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
 using Datory;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -68,7 +69,7 @@ namespace SiteServer.Cli.Jobs
 
                 await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.GetValue()}");
                 await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
-                await Console.Out.WriteLineAsync($"连接字符串（加密）: {WebConfigUtils.EncryptStringBySecretKey(WebConfigUtils.ConnectionString, WebConfigUtils.SecretKey)}");
+                await Console.Out.WriteLineAsync($"连接字符串（加密）: {TranslateUtils.EncryptStringBySecretKey(WebConfigUtils.ConnectionString, WebConfigUtils.SecretKey)}");
             }
         }
     }

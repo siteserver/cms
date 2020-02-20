@@ -224,7 +224,8 @@ var methods = {
   },
 
   getHref: function (menu) {
-    return menu.target != '_layer' ? menu.href : "javascript:;";
+    var href = menu.target != '_layer' ? menu.href : '';
+    return href || "javascript:;";
   },
 
   getTarget: function (menu) {
@@ -232,6 +233,15 @@ var methods = {
   },
 
   btnTopMenuClick: function (menu) {
+    if (menu.hasChildren) {
+      for(var i = 0; i < menu.children.length; i++) {
+        var child = menu.children[i];
+        if (child.hasChildren) {
+          this.activeParentMenu = child;
+          break;
+        }
+      }
+    }
     this.menu = menu;
   },
 

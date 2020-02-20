@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Sites
@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Sites
 
             var sites = await DataProvider.SiteRepository.GetSitesWithChildrenAsync(0, async x => new
             {
-                SiteUrl = await PageUtility.GetSiteUrlAsync(x, true)
+                SiteUrl = await PageUtility.GetSiteUrlAsync(x, false)
             });
 
             var tableNames = await DataProvider.SiteRepository.GetSiteTableNamesAsync();
@@ -126,7 +126,7 @@ namespace SiteServer.API.Controllers.Pages.Settings.Sites
             var siteName = auth.GetPostString("siteName");
             var parentId = auth.GetPostInt("parentId");
             var taxis = auth.GetPostInt("taxis");
-            var tableRule = ETableRuleUtils.GetEnumType(auth.GetPostString("tableRule"));
+            var tableRule = TranslateUtils.ToEnum(auth.GetPostString("tableRule"), TableRule.Create);
             var tableChoose = auth.GetPostString("tableChoose");
             var tableHandWrite = auth.GetPostString("tableHandWrite");
 
@@ -135,11 +135,11 @@ namespace SiteServer.API.Controllers.Pages.Settings.Sites
             site.Taxis = taxis;
 
             var tableName = string.Empty;
-            if (tableRule == ETableRule.Choose)
+            if (tableRule == TableRule.Choose)
             {
                 tableName = tableChoose;
             }
-            else if (tableRule == ETableRule.HandWrite)
+            else if (tableRule == TableRule.HandWrite)
             {
                 if (string.IsNullOrEmpty(tableHandWrite))
                 {

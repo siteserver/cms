@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Datory;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Serialization;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Settings
 {
@@ -116,7 +116,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Settings
                 return Request.BadRequest<BoolResult>("导入文件为 Zip 格式，请选择有效的文件上传");
             }
 
-            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             file.SaveAs(filePath);
 
@@ -146,7 +146,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Settings
 
             var fileName = await ExportObject.ExportRootSingleTableStyleAsync(request.SiteId, DataProvider.SiteRepository.TableName, DataProvider.TableStyleRepository.GetRelatedIdentities(request.SiteId));
 
-            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
             var downloadUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
 
             return new StringResult

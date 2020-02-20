@@ -1,48 +1,49 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Packaging;
 
 namespace SiteServer.API.Controllers.Pages
 {
-    
     [RoutePrefix("pages/updateSystem")]
     public class PagesUpdateSystemController : ApiController
     {
         private const string Route = "";
 
+        private readonly ISettingsManager _settingsManager;
+        private readonly IConfigRepository _configRepository;
+
+        public PagesUpdateSystemController(ISettingsManager settingsManager, IConfigRepository configRepository)
+        {
+            _settingsManager = settingsManager;
+            _configRepository = configRepository;
+        }
+
         [HttpGet, Route(Route)]
         public async Task<IHttpActionResult> Get()
         {
-            try
+            var request = await AuthenticatedRequest.GetAuthAsync();
+            if (!request.IsAdminLoggin || !await request.AdminPermissionsImpl.IsSuperAdminAsync())
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
-                if (!request.IsAdminLoggin || !await request.AdminPermissionsImpl.IsSuperAdminAsync())
-                {
-                    return Unauthorized();
-                }
-
-                if (await SystemManager.IsNeedInstallAsync())
-                {
-                    return BadRequest("系统未安装，向导被禁用");
-                }
-
-                return Ok(new
-                {
-                    Value = true,
-                    PackageId = PackageUtils.PackageIdSsCms,
-                    InstalledVersion = SystemManager.ProductVersion,
-                    IsNightly = WebConfigUtils.IsNightlyUpdate,
-                    Version = SystemManager.PluginVersion
-                });
+                return Unauthorized();
             }
-            catch (Exception ex)
+
+            if (await _configRepository.IsNeedInstallAsync())
             {
-                return InternalServerError(ex);
+                return BadRequest("系统未安装，向导被禁用");
             }
+
+            return Ok(new
+            {
+                Value = true,
+                PackageId = PackageUtils.PackageIdSsCms,
+                InstalledVersion = _settingsManager.ProductVersion,
+                IsNightly = _settingsManager.IsNightlyUpdate,
+                Version = _settingsManager.PluginVersion
+            });
         }
 
         [HttpPost, Route(Route)]
@@ -66,9 +67,9 @@ namespace SiteServer.API.Controllers.Pages
                 WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), WebUtils.GetSiteFilesPath(string.Empty), true);
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), PathUtils.GetHomeDirectoryPath(string.Empty), true);
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtility.GetAdminDirectoryPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), PathUtility.GetHomeDirectoryPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtility.GetBinDirectoryPath(string.Empty), true);
             FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
 
             //SystemManager.SyncDatabase();

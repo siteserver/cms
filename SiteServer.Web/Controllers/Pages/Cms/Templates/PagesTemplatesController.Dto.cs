@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Org.BouncyCastle.Asn1.Crmf;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Dto;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Templates
@@ -45,7 +45,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Templates
                 var original = await DataProvider.TemplateRepository.GetAsync(summary.Id);
                 var template = original.Clone<Template>();
 
-                template.Set("useCount", await DataProvider.ChannelRepository.GetTemplateUseCountAsync(site.Id, template.Id, template.TemplateType, template.Default, channels));
+                template.Set("useCount", DataProvider.ChannelRepository.GetTemplateUseCount(site.Id, template.Id, template.TemplateType, template.Default, channels));
 
                 if (template.TemplateType == TemplateType.IndexPageTemplate)
                 {

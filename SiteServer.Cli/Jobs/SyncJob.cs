@@ -6,6 +6,7 @@ using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
 using Datory;
 using Datory.Utils;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.Cli.Jobs
 {

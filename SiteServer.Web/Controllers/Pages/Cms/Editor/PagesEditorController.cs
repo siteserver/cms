@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using SiteServer.Abstractions;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Editor
 {
@@ -7,5 +8,12 @@ namespace SiteServer.API.Controllers.Pages.Cms.Editor
     {
         private const string Route = "";
         private const string RoutePreview = "actions/preview";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesEditorController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
     }
 }

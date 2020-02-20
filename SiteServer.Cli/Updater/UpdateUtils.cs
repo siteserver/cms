@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater.Tables;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Repositories;
 using TableInfo = SiteServer.Cli.Core.TableInfo;
 

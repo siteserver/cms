@@ -4,17 +4,14 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.Abstractions;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
 using SiteServer.CMS.Api.Preview;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
+using SiteServer.CMS.Framework;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Repositories;
-using SiteServer.CMS.StlParser;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -25,6 +22,13 @@ namespace SiteServer.API.Controllers.Pages
         private const string RouteActionsCreate = "actions/create";
         private const string RouteActionsCache = "actions/cache";
         private const string RouteActionsDownload = "actions/download";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesMainController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> Get([FromUri] SiteRequest request)
@@ -182,27 +186,27 @@ namespace SiteServer.API.Controllers.Pages
                 }
             }
 
-            var count = CreateTaskManager.PendingTaskCount;
+            var count = _createManager.PendingTaskCount;
 
-            var pendingTask = CreateTaskManager.GetFirstPendingTask();
+            var pendingTask = _createManager.GetFirstPendingTask();
             if (pendingTask != null)
             {
                 try
                 {
                     var start = DateTime.Now;
-                    await FileSystemObjectAsync.ExecuteAsync(pendingTask.SiteId, pendingTask.CreateType,
+                    await _createManager.ExecuteAsync(pendingTask.SiteId, pendingTask.CreateType,
                         pendingTask.ChannelId,
                         pendingTask.ContentId, pendingTask.FileTemplateId, pendingTask.SpecialId);
                     var timeSpan = DateUtils.GetRelatedDateTimeString(start);
-                    CreateTaskManager.AddSuccessLog(pendingTask, timeSpan);
+                    _createManager.AddSuccessLog(pendingTask, timeSpan);
                 }
                 catch (Exception ex)
                 {
-                    CreateTaskManager.AddFailureLog(pendingTask, ex);
+                    _createManager.AddFailureLog(pendingTask, ex);
                 }
                 finally
                 {
-                    CreateTaskManager.RemovePendingTask(pendingTask);
+                    _createManager.RemovePendingTask(pendingTask);
                 }
             }
 
@@ -223,7 +227,7 @@ namespace SiteServer.API.Controllers.Pages
 
             var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
             await DataProvider.ChannelRepository.CacheAllAsync(site);
-            var channelSummaries = await DataProvider.ChannelRepository.GetAllSummaryAsync(site.Id);
+            var channelSummaries = await DataProvider.ChannelRepository.GetSummaryAsync(site.Id);
             await DataProvider.ContentRepository.CacheAllListAndCountAsync(site, channelSummaries);
             await DataProvider.ContentRepository.CacheAllEntityAsync(site, channelSummaries);
 

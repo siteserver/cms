@@ -2,14 +2,10 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Dto.Result;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.Abstractions.Dto.Result;
+using SiteServer.API.Context;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Create
 {
@@ -19,6 +15,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
     {
         private const string Route = "";
         private const string RouteAll = "all";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesCreatePageController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> Get([FromUri] GetRequest request)
@@ -109,6 +112,8 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
                 return Request.Unauthorized<BoolResult>();
             }
 
+            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+
             var selectedChannelIdList = new List<int>();
 
             if (request.IsAllChecked)
@@ -124,7 +129,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
                     var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
                     if (channelInfo.ChildrenCount > 0)
                     {
-                        var descendentIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, channelId, EScopeType.Descendant);
+                        var descendentIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, channelId, ScopeType.Descendant);
                         foreach (var descendentId in descendentIdList)
                         {
                             if (selectedChannelIdList.Contains(descendentId)) continue;
@@ -143,12 +148,9 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
 
             if (request.Scope == "1month" || request.Scope == "1day" || request.Scope == "2hours")
             {
-                var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-                var tableName = site.TableName;
-
                 if (request.Scope == "1month")
                 {
-                    var lastEditList = DataProvider.ContentRepository.GetChannelIdListCheckedByLastEditDateHour(tableName, request.SiteId, 720);
+                    var lastEditList = await DataProvider.ContentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 720);
                     foreach (var channelId in lastEditList)
                     {
                         if (selectedChannelIdList.Contains(channelId))
@@ -159,7 +161,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
                 }
                 else if (request.Scope == "1day")
                 {
-                    var lastEditList = DataProvider.ContentRepository.GetChannelIdListCheckedByLastEditDateHour(tableName, request.SiteId, 24);
+                    var lastEditList = await DataProvider.ContentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 24);
                     foreach (var channelId in lastEditList)
                     {
                         if (selectedChannelIdList.Contains(channelId))
@@ -170,7 +172,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
                 }
                 else if (request.Scope == "2hours")
                 {
-                    var lastEditList = DataProvider.ContentRepository.GetChannelIdListCheckedByLastEditDateHour(tableName, request.SiteId, 2);
+                    var lastEditList = await DataProvider.ContentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 2);
                     foreach (var channelId in lastEditList)
                     {
                         if (selectedChannelIdList.Contains(channelId))
@@ -189,11 +191,11 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
             {
                 if (request.IsChannelPage)
                 {
-                    await CreateManager.CreateChannelAsync(request.SiteId, channelId);
+                    await _createManager.CreateChannelAsync(request.SiteId, channelId);
                 }
                 if (request.IsContentPage)
                 {
-                    await CreateManager.CreateAllContentAsync(request.SiteId, channelId);
+                    await _createManager.CreateAllContentAsync(request.SiteId, channelId);
                 }
             }
 
@@ -213,7 +215,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Create
                 return Request.Unauthorized<BoolResult>();
             }
 
-            await CreateManager.CreateByAllAsync(request.SiteId);
+            await _createManager.CreateByAllAsync(request.SiteId);
 
             return new BoolResult
             {

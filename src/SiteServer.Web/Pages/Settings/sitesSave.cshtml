@@ -1,0 +1,157 @@
+@page
+@{ Layout = "../Shared/_Layout.cshtml"; }
+
+@section Styles{
+<style>
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
+.el-tree .el-checkbox__input {
+    margin-top: 8px;
+}
+</style>
+}
+
+<div class="header-title mt-3 mb-4"> 保存站点模板 </div>
+
+<el-steps :active="active" finish-status="success">
+  <el-step title="基础设置"></el-step>
+  <el-step title="保存文件"></el-step>
+  <el-step title="保存数据"></el-step>
+  <el-step title="完成"></el-step>
+</el-steps>
+
+<el-divider></el-divider>
+
+<template v-if="active === 0">
+  <div class="form-group">
+    <label>
+      站点模板名称
+      <small class="text-danger">{{ errors.first('templateName') || '*' }}</small>
+    </label>
+    <input v-model="templateName" name="templateName" data-vv-as="站点模板名称" v-validate="'required'"
+      :class="{'is-invalid': errors.has('templateName') }" type="text" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label>
+      站点模板文件夹名称
+      <small class="text-danger">{{ errors.first('templateDir') || '*' }}</small>
+    </label>
+    <input v-model="templateDir" name="templateDir" data-vv-as="站点模板名称" v-validate="'required'"
+      :class="{'is-invalid': errors.has('templateDir') }" type="text" class="form-control" />
+    <small class="form-text text-muted">文件名必须以T_开头，且以英文或拼音取名</small>
+  </div>
+  <div class="form-group">
+    <label>
+      站点模板网站地址
+    </label>
+    <input v-model="webSiteUrl" type="text" class="form-control" />
+  </div>
+  <div class="form-group">
+    <label>
+      备注
+    </label>
+    <textarea v-model="description" type="text" class="form-control"></textarea>
+  </div>
+</template>
+
+<template v-else-if="active === 1">
+  <div class="form-group">
+    <label>
+      是否保存全部文件
+    </label>
+    <div class="m-2">
+      <el-radio-group v-model="isAllFiles">
+        <el-radio :label="true">全部文件</el-radio>
+        <el-radio :label="false">指定文件</el-radio>
+      </el-radio-group>
+    </div>
+  </div>
+  <div v-if="!isAllFiles" class="form-group">
+    <label>
+      需要保存的文件夹
+      <el-checkbox style="margin-left: 5px" v-model="checkAllDirectories" v-on:change="handleCheckAllDirectoriesChange">全选</el-checkbox>
+    </label>
+    <div class="m-2">
+      <el-checkbox-group v-model="checkedDirectories">
+        <el-checkbox v-for="dir in directories" :label="dir" :key="dir" v-on:change="handleCheckedDirectoriesChange">{{dir}}</el-checkbox>
+      </el-checkbox-group>
+    </div>
+  </div>
+  <div v-if="!isAllFiles" class="form-group">
+    <label>
+      需要保存的文件
+      <el-checkbox style="margin-left: 5px" v-model="checkAllFiles" v-on:change="handleCheckAllFilesChange">全选</el-checkbox>
+    </label>
+    <div class="m-2">
+      <el-checkbox-group v-model="checkedFiles">
+        <el-checkbox v-for="file in files" :label="file" :key="file" v-on:change="handleCheckedFilesChange">{{file}}</el-checkbox>
+      </el-checkbox-group>
+    </div>
+  </div>
+</template>
+
+<template v-else-if="active === 2">
+  <div class="form-group">
+    <label>
+      是否保存内容数据
+    </label>
+    <div class="m-2">
+      <el-radio-group v-model="isSaveContents">
+        <el-radio :label="true">保存内容数据</el-radio>
+        <el-radio :label="false">不保存内容数据</el-radio>
+      </el-radio-group>
+    </div>
+  </div>
+  <div class="form-group">
+    <label> 是否保存全部栏目 </label>
+    <div class="m-2">
+      <el-radio-group v-model="isSaveAllChannels">
+        <el-radio :label="true">保存全部栏目</el-radio>
+        <el-radio :label="false">保存指定栏目</el-radio>
+      </el-radio-group>
+    </div>
+  </div>
+  <div v-if="!isSaveAllChannels && channelInfo" class="form-group">
+    <label> 指定保存的栏目 </label>
+    <small class="form-text text-muted">从下边选择需要保存的栏目，所选栏目的下级栏目将自动保存到站点模板中</small>
+    <hr />
+
+      <el-tree
+        :data="[channelInfo]"
+        ref="tree"
+        show-checkbox
+        node-key="id"
+        :check-on-click-node="true"
+        :default-expanded-keys="[channelInfo.id]"
+        :default-checked-keys="checkedChannelIds"
+        :expand-on-click-node="true"
+        v-on:check-change="handleTreeChanged">
+        <span class="custom-tree-node" slot-scope="{ node, data }">
+          {{ data.channelName }}
+        </span>
+      </el-tree>
+    
+  </div>
+</template>
+
+<template v-else-if="active === 3">
+  <div class="alert alert-success mt-3 mb-3">
+    <h4>保存成功，站点模版保存在"SiteFiles\SiteTemplates\{{ templateDir }}"文件夹中</h4>
+  </div>
+</template>
+
+<hr />
+
+<div class="text-center">
+  <button class="btn m-r-5" v-on:click="btnCancelClick">返 回</button>
+  <button class="btn btn-primary m-r-5" v-on:click="btnNextClick">下一步</button>
+</div>
+
+@section Scripts{
+<script src="sitesSave.js" type="text/javascript"></script> }

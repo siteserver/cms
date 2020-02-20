@@ -1,14 +1,10 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Abstractions.Dto.Request;
+using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Dto.Request;
-using SiteServer.CMS.Extensions;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Framework;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Settings
 {
@@ -17,6 +13,13 @@ namespace SiteServer.API.Controllers.Pages.Cms.Settings
     {
         private const string Route = "";
         private const string RouteGet = "{siteId:int}/{channelId:int}";
+
+        private readonly ICreateManager _createManager;
+
+        public PagesSettingsCreateRuleController(ICreateManager createManager)
+        {
+            _createManager = createManager;
+        }
 
         [HttpGet, Route(Route)]
         public async Task<GetResult> List([FromUri] SiteRequest request)
@@ -73,7 +76,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Settings
 
             var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
 
-            var linkTypes = ELinkTypeUtilsExtensions.GetAll();
+            var linkTypes = PageUtility.GetLinkTypeSelects();
             var filePath = string.IsNullOrEmpty(channel.FilePath) ? await PageUtility.GetInputChannelUrlAsync(site, channel, false) : channel.FilePath;
             var channelFilePathRule = string.IsNullOrEmpty(channel.ChannelFilePathRule) ? await PathUtility.GetChannelFilePathRuleAsync(site, channelId) : channel.ChannelFilePathRule;
             var contentFilePathRule = string.IsNullOrEmpty(channel.ContentFilePathRule) ? await PathUtility.GetContentFilePathRuleAsync(site, channelId) : channel.ContentFilePathRule;
@@ -172,7 +175,7 @@ namespace SiteServer.API.Controllers.Pages.Cms.Settings
 
             await DataProvider.ChannelRepository.UpdateAsync(channel);
 
-            await CreateManager.CreateChannelAsync(request.SiteId, request.ChannelId);
+            await _createManager.CreateChannelAsync(request.SiteId, request.ChannelId);
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "设置页面生成规则", $"栏目:{channel.ChannelName}");
 

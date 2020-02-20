@@ -53,9 +53,9 @@ namespace SiteServer.Abstractions
             return Enum.TryParse<T>(value, true, out var result) ? result : defaultValue;
         }
 
-        public static IEnumerable<T> GetEnums<T>()
+        public static List<T> GetEnums<T>()
         {
-            return Enum.GetValues(typeof(T)).Cast<T>();
+            return Enum.GetValues(typeof(T)).Cast<T>().ToList();
         }
 
         public static int ToInt(string intStr, int defaultValue = 0)
@@ -118,6 +118,12 @@ namespace SiteServer.Abstractions
                 boolean = defaultValue;
             }
             return boolean;
+        }
+
+        public static bool? ToBoolNullable(string boolStr)
+        {
+            if (string.IsNullOrEmpty(boolStr)) return null;
+            return ToBool(boolStr);
         }
 
         public static DateTime ToDateTime(string dateTimeStr)
@@ -554,6 +560,62 @@ namespace SiteServer.Abstractions
             var comparer = StringComparer.OrdinalIgnoreCase;
             var caseInsensitiveDictionary = new NameValueCollection(comparer);
             return caseInsensitiveDictionary;
+        }
+
+        public static void AddAttributeIfNotExists(NameValueCollection target, string attributeName, string attributeValue)
+        {
+            if (target == null || attributeName == null) return;
+
+            if (string.IsNullOrEmpty(target[attributeName]))
+            {
+                target[attributeName] = attributeValue;
+            }
+        }
+
+        public static void AddAttributesIfNotExists(NameValueCollection target, NameValueCollection attributes)
+        {
+            if (target == null || attributes == null) return;
+
+            foreach (var attributeName in attributes.AllKeys)
+            {
+                if (string.IsNullOrEmpty(target[attributeName]))
+                {
+                    target[attributeName] = attributes[attributeName];
+                }
+            }
+        }
+
+        public static string EncryptStringBySecretKey(string inputString, string secretKey)
+        {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+
+            var encryptor = new DesEncryptor
+            {
+                InputString = inputString,
+                EncryptKey = secretKey
+            };
+            encryptor.DesEncrypt();
+
+            var retVal = encryptor.OutString;
+            retVal = retVal.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
+
+            return retVal + Constants.EncryptStingIndicator;
+        }
+
+        public static string DecryptStringBySecretKey(string inputString, string secretKey)
+        {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+
+            inputString = inputString.Replace(Constants.EncryptStingIndicator, string.Empty).Replace("0add0", "+").Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'").Replace("0slash0", "/");
+
+            var encryptor = new DesEncryptor
+            {
+                InputString = inputString,
+                DecryptKey = secretKey
+            };
+            encryptor.DesDecrypt();
+
+            return encryptor.OutString;
         }
     }
 }
