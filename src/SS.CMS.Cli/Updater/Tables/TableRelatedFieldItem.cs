@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Repositories;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -33,16 +34,17 @@ namespace SS.CMS.Cli.Updater.Tables
             "wcm_RelatedFieldItem"
         };
 
-        public static ConvertInfo GetConverter(IRelatedFieldItemRepository relatedFieldItemRepository)
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            return new ConvertInfo
-            {
-                NewTableName = relatedFieldItemRepository.TableName,
-                NewColumns = relatedFieldItemRepository.TableColumns,
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            }; ;
-        }
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
+
+        private static readonly string NewTableName = DataProvider.RelatedFieldItemRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldItemRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict = null;
 

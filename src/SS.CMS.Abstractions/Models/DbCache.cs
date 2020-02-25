@@ -1,16 +1,16 @@
-using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_DbCache")]
-    public class DbCache : Entity
+	public class DbCache : Entity
     {
         [DataColumn]
         public string CacheKey { get; set; }
 
-        [DataColumn]
+        [DataColumn(Length = 500)]
         public string CacheValue { get; set; }
     }
 }

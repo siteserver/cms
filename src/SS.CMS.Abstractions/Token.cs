@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SS.CMS
+namespace SS.CMS.Abstractions
 {
     public class Token
     {

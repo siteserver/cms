@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+using SS.CMS.Abstractions;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -31,16 +32,17 @@ namespace SS.CMS.Cli.Updater.Tables
             "wcm_NodeGroup"
         };
 
-        public static ConvertInfo GetConverter(IChannelGroupRepository channelGroupRepository)
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            return new ConvertInfo
-            {
-                NewTableName = channelGroupRepository.TableName,
-                NewColumns = channelGroupRepository.TableColumns,
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
+
+        private static readonly string NewTableName = DataProvider.ChannelGroupRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.ChannelGroupRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>

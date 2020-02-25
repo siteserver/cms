@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Data;
 
 namespace SS.CMS.Cli.Updater.Tables.GovInteract
 {

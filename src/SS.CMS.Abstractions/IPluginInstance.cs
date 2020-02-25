@@ -1,4 +1,4 @@
-﻿namespace SS.CMS
+﻿namespace SS.CMS.Abstractions
 {
     public interface IPluginInstance
     {
@@ -8,7 +8,7 @@
 
         PluginBase Plugin { get; }
 
-        IService Service { get; }
+        IPluginService Service { get; }
 
         long InitTime { get; }
 

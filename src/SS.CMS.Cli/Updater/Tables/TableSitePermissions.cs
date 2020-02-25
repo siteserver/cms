@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+using SS.CMS.Abstractions;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -15,9 +16,6 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("nodeIDCollection")]
         public string NodeIdCollection { get; set; }
-
-        [JsonProperty("channelIdCollection")]
-        public string ChannelIdCollection { get; set; }
 
         [JsonProperty("channelPermissions")]
         public string ChannelPermissions { get; set; }
@@ -37,21 +35,23 @@ namespace SS.CMS.Cli.Updater.Tables
             "wcm_SystemPermissions"
         };
 
-        public static ConvertInfo GetConverter(IPermissionRepository permissionRepository) => new ConvertInfo
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            NewTableName = permissionRepository.TableName,
-            NewColumns = permissionRepository.TableColumns,
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
             ConvertKeyDict = ConvertKeyDict,
             ConvertValueDict = ConvertValueDict
         };
 
+        private static readonly string NewTableName = DataProvider.SitePermissionsRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.SitePermissionsRepository.TableColumns;
+
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(Models.Permission.SiteId), nameof(PublishmentSystemId)},
-                {nameof(Models.Permission.SitePermissions), nameof(WebsitePermissions)},
-                {nameof(Models.Permission.ChannelId), nameof(ChannelIdCollection)},
-                {nameof(Models.Permission.ChannelId), nameof(NodeIdCollection)}
+                {nameof(SitePermissions.SiteId), nameof(PublishmentSystemId)},
+                {"ChannelIdCollection", nameof(NodeIdCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

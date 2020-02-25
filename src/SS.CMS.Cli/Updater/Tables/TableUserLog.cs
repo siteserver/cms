@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Repositories;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -30,13 +31,17 @@ namespace SS.CMS.Cli.Updater.Tables
     {
         public const string OldTableName = "bairong_UserLog";
 
-        public static ConvertInfo GetConverter(IUserLogRepository userLogRepository) => new ConvertInfo
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            NewTableName = userLogRepository.TableName,
-            NewColumns = userLogRepository.TableColumns,
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
             ConvertKeyDict = ConvertKeyDict,
             ConvertValueDict = ConvertValueDict
         };
+
+        private static readonly string NewTableName = DataProvider.UserLogRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.UserLogRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict = null;
 

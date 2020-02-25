@@ -1,41 +1,26 @@
-using System;
+using Datory.Annotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
-namespace SS.CMS.Enums
+
+namespace SS.CMS.Abstractions
 {
-    public sealed class CreateType
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum CreateType
     {
-        public static readonly CreateType Channel = new CreateType("Channel");
-        public static readonly CreateType Content = new CreateType("Content");
-        public static readonly CreateType File = new CreateType("File");
-        public static readonly CreateType Special = new CreateType("Special");
-        public static readonly CreateType AllContent = new CreateType("AllContent");
-
-        private CreateType(string value)
-        {
-            Value = value;
-        }
-
-        public string Value { get; private set; }
-
-        public static CreateType Parse(string val)
-        {
-            if (string.Equals(Content.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return Content;
-            }
-            if (string.Equals(File.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return File;
-            }
-            if (string.Equals(Special.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return Special;
-            }
-            if (string.Equals(AllContent.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return AllContent;
-            }
-            return Channel;
-        }
+        [DataEnum(DisplayName = "��ҳ")]
+        Index,
+        [DataEnum(DisplayName = "��Ŀҳ")]
+        Channel,
+        [DataEnum(DisplayName = "����ҳ")]
+        Content,
+        [DataEnum(DisplayName = "�ļ�ҳ")]
+        File,
+        [DataEnum(DisplayName = "ר��ҳ")]
+        Special,
+        [DataEnum(DisplayName = "��Ŀ����������ҳ")]
+        AllContent,
+        [DataEnum(DisplayName = "����ҳ��")]
+        All
     }
 }

@@ -1,9 +1,8 @@
-﻿using System;
-using SS.CMS.Data;
+﻿using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_UserGroup")]
     public class UserGroup : Entity
     {

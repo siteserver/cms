@@ -4,9 +4,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
 using SS.CMS.Cli.Services;
-using SS.CMS.Utils;
+using SS.CMS.Cli.Updater;
+using SS.CMS.Core;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.Cli
 {
@@ -39,16 +42,11 @@ namespace SS.CMS.Cli
                 IConfigurationRoot configuration = builder.Build();
 
                 var services = new ServiceCollection();
-
                 var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
-                services.AddDistributedCache(settingsManager.CacheType, settingsManager.CacheConnectionString);
-
+                GlobalSettings.Load(settingsManager);
+                services.AddCache(settingsManager.Redis.ConnectionString);
                 services.AddRepositories();
-                services.AddPathManager();
-                services.AddPluginManager();
-                services.AddUrlManager();
-                services.AddFileManager();
-                services.AddCreateManager();
+                services.AddServices();
 
                 services.AddTransient<Application>();
                 services.AddTransient<BackupJob>();

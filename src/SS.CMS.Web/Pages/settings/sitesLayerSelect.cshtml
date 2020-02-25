@@ -1,0 +1,28 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-table
+  :data="sites"
+  style="width: 100%;margin-bottom: 20px;"
+  row-key="id"
+  default-expand-all
+  :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+  <el-table-column prop="siteName" label="站点名称" :sortable="true">
+    <template slot-scope="scope">
+      <el-badge v-if="scope.row.root" style="margin-top: 10px;" value="主站">
+        <el-link :underline="false" type="primary" :href="getMainUrl(scope.row)" _target="_top">{{scope.row.siteName}}</el-link>
+      </el-badge>
+      <el-link :underline="false" type="primary" v-else :href="getMainUrl(scope.row)" _target="_top">{{scope.row.siteName}}</el-link>
+    </template>
+  </el-table-column>
+  <el-table-column prop="id" label="站点Id" :sortable="true" align="center" width="90"></el-table-column>
+  <el-table-column prop="siteDir" label="站点文件夹" :sortable="true"></el-table-column>
+  <el-table-column prop="siteUrl" label="站点地址" :sortable="true">
+    <template slot-scope="scope">
+      <el-link :underline="false" type="primary" :href="scope.row.siteUrl" target="_blank">{{scope.row.siteUrl}}</el-link>
+    </template>
+  </el-table-column>
+</el-table>
+
+@section Scripts{
+<script src="~/assets/js/settings/sitesLayerSelect.js" type="text/javascript"></script> }

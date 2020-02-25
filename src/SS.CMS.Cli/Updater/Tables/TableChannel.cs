@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+using SS.CMS.Abstractions;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -101,16 +102,18 @@ namespace SS.CMS.Cli.Updater.Tables
             "wcm_Node"
         };
 
-        public static ConvertInfo GetConverter(IChannelRepository channelRepository)
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            return new ConvertInfo
-            {
-                NewTableName = channelRepository.TableName,
-                NewColumns = channelRepository.TableColumns,
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict,
+            Process = Process
+        };
+
+        private static readonly string NewTableName = DataProvider.ChannelRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.ChannelRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
@@ -119,7 +122,7 @@ namespace SS.CMS.Cli.Updater.Tables
                 {nameof(Channel.ChannelName), nameof(NodeName)},
                 {nameof(Channel.SiteId), nameof(PublishmentSystemId)},
                 {nameof(Channel.IndexName), nameof(NodeIndexName)},
-                {nameof(Channel.GroupNameCollection), nameof(NodeGroupNameCollection)},
+                {"GroupNameCollection", nameof(NodeGroupNameCollection)},
                 {nameof(Channel.ContentModelPluginId), nameof(ContentModelId)}
             };
 
@@ -129,5 +132,17 @@ namespace SS.CMS.Cli.Updater.Tables
             {UpdateUtils.GetConvertValueDictKey(nameof(Channel.ContentModelPluginId), "GovPublic"), "SS.GovPublic"},
             {UpdateUtils.GetConvertValueDictKey(nameof(Channel.ContentModelPluginId), "Job"), "SS.Jobs"},
         };
+
+        private static Dictionary<string, object> Process(Dictionary<string, object> row)
+        {
+            if (row.TryGetValue(nameof(Channel.Content), out var contentObj))
+            {
+                var content = contentObj.ToString();
+                content = content.Replace("@upload", "@/upload");
+                row[nameof(Channel.Content)] = content;
+            }
+
+            return row;
+        }
     }
 }

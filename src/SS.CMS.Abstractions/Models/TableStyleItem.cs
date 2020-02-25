@@ -1,22 +1,11 @@
-using System;
-using SS.CMS.Data;
-
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
-    [DataTable("siteserver_TableStyleItem")]
-    public class TableStyleItem : Entity
+    public class TableStyleItem
     {
-        [DataColumn]
-        public int TableStyleId { get; set; }
+        public string Label { get; set; }
 
-        [DataColumn]
-        public string ItemTitle { get; set; }
+        public string Value { get; set; }
 
-        [DataColumn]
-        public string ItemValue { get; set; }
-
-        [DataColumn]
-        public bool IsSelected { get; set; }
+        public bool Selected { get; set; }
     }
 }

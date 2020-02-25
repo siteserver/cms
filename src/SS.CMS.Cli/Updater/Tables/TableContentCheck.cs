@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+using SS.CMS.Abstractions;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -46,16 +47,17 @@ namespace SS.CMS.Cli.Updater.Tables
     {
         public const string OldTableName = "bairong_ContentCheck";
 
-        public static ConvertInfo GetConverter(IContentCheckRepository contentCheckRepository)
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            return new ConvertInfo
-            {
-                NewTableName = contentCheckRepository.TableName,
-                NewColumns = contentCheckRepository.TableColumns,
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
+
+        private static readonly string NewTableName = DataProvider.ContentCheckRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.ContentCheckRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>

@@ -1,0 +1,103 @@
+﻿using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Dto.Result;
+using SS.CMS.Framework;
+using SS.CMS.Web.Extensions;
+
+namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
+{
+    [Route("admin/settings/configsAdmin")]
+    public partial class ConfigsAdminController : ControllerBase
+    {
+        private const string Route = "";
+        private const string RouteUpload = "actions/upload";
+
+        private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+
+        public ConfigsAdminController(IAuthManager authManager, IPathManager pathManager)
+        {
+            _authManager = authManager;
+            _pathManager = pathManager;
+        }
+
+        [HttpGet, Route(Route)]
+        public async Task<ActionResult<GetResult>> Get()
+        {
+            var auth = await _authManager.GetAdminAsync();
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsAdmin))
+            {
+                return Unauthorized();
+            }
+
+            var config = await DataProvider.ConfigRepository.GetAsync();
+
+            return new GetResult
+            {
+                AdminTitle = config.AdminTitle,
+                AdminLogoUrl = config.AdminLogoUrl,
+                AdminWelcomeHtml = config.AdminWelcomeHtml
+            };
+        }
+
+        [HttpPost, Route(Route)]
+        public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
+        {
+            var auth = await _authManager.GetAdminAsync();
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsAdmin))
+            {
+                return Unauthorized();
+            }
+
+            var config = await DataProvider.ConfigRepository.GetAsync();
+
+            config.AdminTitle = request.AdminTitle;
+            config.AdminLogoUrl = request.AdminLogoUrl;
+            config.AdminWelcomeHtml = request.AdminWelcomeHtml;
+
+            await DataProvider.ConfigRepository.UpdateAsync(config);
+
+            await auth.AddAdminLogAsync("修改管理后台设置");
+
+            return new BoolResult
+            {
+                Value = true
+            };
+        }
+
+        [HttpPost, Route(RouteUpload)]
+        public async Task<ActionResult<StringResult>> Upload([FromForm]IFormFile file)
+        {
+            var auth = await _authManager.GetAdminAsync();
+            if (!auth.IsAdminLoggin ||
+                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsAdmin))
+            {
+                return Unauthorized();
+            }
+
+            if (file == null) return this.Error("请选择有效的文件上传");
+            var extension = PathUtils.GetExtension(file.FileName);
+            if (!FileUtils.IsImage(extension))
+            {
+                return this.Error("文件只能是图片格式，请选择有效的文件上传!");
+            }
+            var fileName = $"logo{extension}";
+            var filePath = _pathManager.GetSiteFilesPath(fileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            var adminLogoUrl = _pathManager.GetSiteFilesUrl(fileName);
+
+            return new StringResult
+            {
+                Value = adminLogoUrl
+            };
+        }
+    }
+}

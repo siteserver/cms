@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Mono.Options;
-using SS.CMS.Data;
-using SS.CMS.Utils;
+using SS.CMS.Abstractions;
+using SS.CMS.Framework;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Core
 {
@@ -103,7 +103,7 @@ namespace SS.CMS.Cli.Core
 
             if (!FileUtils.IsFileExists(filePath))
             {
-                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, string.Empty);
+                await FileUtils.WriteTextAsync(filePath, string.Empty);
             }
 
             var builder = new StringBuilder();
@@ -124,7 +124,7 @@ namespace SS.CMS.Cli.Core
 
             if (!FileUtils.IsFileExists(filePath))
             {
-                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, string.Empty);
+                await FileUtils.WriteTextAsync(filePath, string.Empty);
             }
 
             var builder = new StringBuilder();
@@ -136,49 +136,12 @@ namespace SS.CMS.Cli.Core
             await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
         }
 
-        public static (Database Database, string ErrorMessage) GetDatabase(string databaseType, string connectionString, string configFile)
-        {
-            if (connectionString == null)
-            {
-                var configPath = GetConfigFilePath(configFile);
-                if (FileUtils.IsFileExists(configPath))
-                {
-                    var ext = PathUtils.GetExtension(configPath);
-                    if (StringUtils.EqualsIgnoreCase(ext, ".json"))
-                    {
-
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(ext, ".config"))
-                    {
-
-                    }
-
-                    if (string.IsNullOrEmpty(connectionString))
-                    {
-                        return (null, $"{configPath} 中数据库连接字符串 connectionString 未设置");
-                    }
-                }
-            }
-
-            if (connectionString == null)
-            {
-                return (null, "请在命令行设置数据库连接参数或者指定数据库连接配置文件");
-            }
-            var db = new Database(DatabaseType.Parse(databaseType), connectionString);
-            var (isConnectionWorks, errorMessage) = db.IsConnectionWorks();
-            if (isConnectionWorks)
-            {
-                return (db, null);
-            }
-            return (null, errorMessage);
-        }
-
-        private static string GetConfigFilePath(string configFile)
+        public static string GetWebConfigPath(string configFile)
         {
             return PathUtils.IsFilePath(configFile)
                 ? configFile
                 : PathUtils.Combine(PhysicalApplicationPath,
-                    !string.IsNullOrEmpty(configFile) ? configFile : "Web.config");
+                    !string.IsNullOrEmpty(configFile) ? configFile : WebConfigUtils.WebConfigFileName);
         }
     }
 }

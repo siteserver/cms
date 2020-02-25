@@ -3,22 +3,22 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageId>SS.CMS.Plugin</PackageId>
+    <PackageId>SS.CMS.Abstractions</PackageId>
     <Version>1.0.0</Version>
     <PackageVersion>1.0.0</PackageVersion>
     <Authors>SS CMS</Authors>
     <Company>SS CMS</Company>
     <Product>SS CMS</Product>
-    <Description>Reference this library if you want to develop a SS CMS plugin.</Description>
+    <Description>SS.CMS.Abstractions</Description>
     <PackageLicense>GPL-3.0</PackageLicense>
-    <PackageProjectUrl>https://github.com/siteserver/SiteServer.Plugin</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/siteserver/SS.CMS.Abstractions</PackageProjectUrl>
     <PackageIconUrl>https://www.siteserver.cn/assets/images/favicon.png</PackageIconUrl>
     <Copyright>Copyright © SS CMS 2019</Copyright>
-    <PackageTags>SS CMS Plugin</PackageTags>
+    <PackageTags>SS.CMS.Abstractions</PackageTags>
     <RepositoryUrl>https://github.com/siteserver/cms</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Add netstandard2.0 support</PackageReleaseNotes>
-    <RootNamespace>SS.CMS</RootNamespace>
+    <RootNamespace>SS.CMS.Abstractions</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Services\IIdentityManager\**" />
@@ -27,15 +27,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="3.0.0-preview6.19307.2" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.0.0-preview6.19304.6" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.0.0-preview6.19304.6" />
+    <PackageReference Include="HtmlSanitizer" Version="4.0.217" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="SqlKata" Version="1.1.7" />
+    <PackageReference Include="YamlDotNet" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SS.CMS.Data\SS.CMS.Data.csproj" />
+    <ProjectReference Include="..\..\..\Datory\src\Datory\Datory.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\ParseManager\" />
   </ItemGroup>
 
 </Project>

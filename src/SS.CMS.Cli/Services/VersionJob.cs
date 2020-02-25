@@ -2,9 +2,11 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
+using Datory;
 using Mono.Options;
+using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
-using SS.CMS.Utils;
+using SS.CMS.Framework;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Services
@@ -19,30 +21,27 @@ namespace SS.CMS.Cli.Services
             await application.RunAsync(context);
         }
 
+        private string _configFile;
+        private bool _isHelp;
+
+        private readonly OptionSet _options;
+
+        public VersionJob()
+        {
+            _options = new OptionSet {
+                { "c|config-file=", "指定配置文件Web.config路径或文件名",
+                    v => _configFile = v },
+                { "h|help",  "命令说明",
+                    v => _isHelp = v != null }
+            };
+        }
+
         public static void PrintUsage()
         {
             Console.WriteLine("显示当前版本: siteserver version");
             var job = new VersionJob();
             job._options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
-        }
-        private string _configFile;
-        private string _databaseType;
-        private string _connectionString;
-        private bool _isHelp;
-        private readonly OptionSet _options;
-        public VersionJob()
-        {
-            _options = new OptionSet {
-                { "c|config-file=", "指定配置文件Web.config路径或文件名",
-                    v => _configFile = v },
-                { "database-type=", "指定需要查看的数据库类型",
-                    v => _databaseType = v },
-                { "connection-string=", "指定需要查看的数据库连接字符串",
-                    v => _connectionString = v },
-                { "h|help",  "命令说明",
-                    v => _isHelp = v != null }
-            };
         }
 
         public async Task RunAsync(IJobContext context)
@@ -60,12 +59,15 @@ namespace SS.CMS.Cli.Services
             await Console.Out.WriteLineAsync($"当前文件夹: {CliUtils.PhysicalApplicationPath}");
             await Console.Out.WriteLineAsync();
 
-            var (db, errorMessage) = CliUtils.GetDatabase(_databaseType, _connectionString, _configFile);
-            if (db != null)
+            var webConfigPath = CliUtils.GetWebConfigPath(_configFile);
+
+            if (FileUtils.IsFileExists(webConfigPath))
             {
+                WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigPath);
+
                 try
                 {
-                    var cmsVersion = FileVersionInfo.GetVersionInfo(PathUtils.Combine(CliUtils.PhysicalApplicationPath, "Bin", "SiteServer.CMS.dll")).ProductVersion;
+                    var cmsVersion = FileVersionInfo.GetVersionInfo(PathUtils.Combine(CliUtils.PhysicalApplicationPath, "Bin", "SS.CMS.dll")).ProductVersion;
                     await Console.Out.WriteLineAsync($"SitServer CMS Version: {cmsVersion}");
                 }
                 catch
@@ -73,8 +75,9 @@ namespace SS.CMS.Cli.Services
                     // ignored
                 }
 
-                await Console.Out.WriteLineAsync($"数据库类型: {db.DatabaseType.Value}");
-                await Console.Out.WriteLineAsync($"连接字符串: {db.ConnectionString}");
+                await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.GetValue()}");
+                await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
+                await Console.Out.WriteLineAsync($"连接字符串（加密）: {TranslateUtils.EncryptStringBySecretKey(WebConfigUtils.ConnectionString, WebConfigUtils.SecretKey)}");
             }
         }
     }

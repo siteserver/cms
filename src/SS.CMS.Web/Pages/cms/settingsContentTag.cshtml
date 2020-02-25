@@ -1,0 +1,96 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-menu default-active="3" mode="horizontal"
+  background-color="#545c64"
+  text-color="#fff"
+  active-text-color="#ffd04b"
+>
+  <el-menu-item index="1"><el-link :underline="false" :href="'settingsChannelGroup.cshtml?siteId=' + siteId">栏目组管理</el-link></el-menu-item>
+  <el-menu-item index="2"><el-link :underline="false" :href="'settingsContentGroup.cshtml?siteId=' + siteId">内容组管理</el-link></el-menu-item>
+  <el-menu-item index="3"><el-link :underline="false" :href="'settingsContentTag.cshtml?siteId=' + siteId">内容标签管理</el-link></el-menu-item>
+</el-menu>
+
+<el-card>
+  <div slot="header" class="clearfix">
+    <span>内容标签管理</span>
+  </div>
+
+  <el-table :data="tagNames">
+    <el-table-column label="标签">
+      <template slot-scope="scope">
+        {{scope.row}}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="100">
+      <template slot-scope="scope">
+        <el-link
+          :underline="false"
+          type="danger"
+          v-on:click="btnDeleteClick(scope.row)">
+          删除
+        </el-link>
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <div style="text-align: center; margin-top: 10px">
+    <el-pagination
+      v-on:size-change="handleSizeChange"
+      v-on:current-change="handleCurrentChange"
+      :current-page="page"
+      :page-sizes="[30, 60, 120, 200, 300]"
+      :page-size="perPage"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
+  </div>
+
+  <div style="height: 10px"></div>
+  <el-divider></el-divider>
+  <div style="height: 10px"></div>
+
+  <el-button
+    size="small"
+    type="primary"
+    v-on:click="btnAddClick">
+    新增内容标签
+  </el-button>
+
+</el-card>
+
+<el-drawer
+  id="form"
+  v-if="form"
+  :title="form.tagName ? '修改内容标签' : '添加内容标签'"
+  :visible.sync="panel"
+  destroy-on-close
+  direction="rtl"
+  size="50%">
+  <div class="drawer__content">
+    <el-form size="small" ref="form" :model="form" label-width="150px" label-position="top">
+      <el-form-item label="内容标签" prop="tagNames" :rules="{ required: true, message: '请输入内容标签' }">
+        <el-select
+          v-model="form.tagNames"
+          multiple
+          filterable
+          allow-create
+          default-first-option
+          placeholder="请输入内容标签"
+          style="width: 100%"
+          >
+        </el-select>
+        <div class="tips">可以批量添加多个标签</div>
+      </el-form-item>
+
+      <el-divider></el-divider>
+      <div class="drawer__footer">
+        <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+        <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+      </div>
+    </el-form>
+  </div>
+</el-drawer>
+
+@section Scripts{
+<script src="~/assets/js/cms/settingsContentTag.js" type="text/javascript"></script> }

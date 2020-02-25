@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Reflection;
@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 using Mono.Options;
 using Quartz;
 using Quartz.Impl;
+using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
 using SS.CMS.Cli.Services;
-using SS.CMS.Services;
-using SS.CMS.Utils;
 
 namespace SS.CMS.Cli
 {

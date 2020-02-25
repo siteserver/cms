@@ -1,59 +1,38 @@
 using System;
-using SS.CMS.Data;
+using System.Collections.Generic;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_Site")]
-    public partial class Site : Entity
+    public class Site : Entity
     {
-        /// <summary>
-        /// 站点名称。
-        /// </summary>
-        [DataColumn]
-        public string SiteName { get; set; }
-
-        /// <summary>
-        /// 站点文件夹。
-        /// </summary>
         [DataColumn]
         public string SiteDir { get; set; }
 
-        /// <summary>
-        /// 站点内容表。
-        /// </summary>
+        [DataColumn]
+        public string SiteName { get; set; }
+
         [DataColumn]
         public string TableName { get; set; }
 
-
-        /// <summary>
-        /// 是否主站。
-        /// </summary>
         [DataColumn]
-        public bool IsRoot { get; set; }
+        public bool Root { get; set; }
 
-        /// <summary>
-        /// 如果没有上级站点，则返回 0，否则返回上级站点Id。
-        /// </summary>
         [DataColumn]
         public int ParentId { get; set; }
 
-        /// <summary>
-        /// 排序。
-        /// </summary>
         [DataColumn]
         public int Taxis { get; set; }
 
-        [DataColumn(Text = true, Extend = true)]
-        public string ExtendValues { get; set; }
-
-        /****************站点设置********************/
+        public IList<Site> Children { get; set; }
 
         public int PageSize { get; set; } = 30;
 
-        public bool IsCheckContentLevel { get; set; }
+        public int CheckContentLevel { get; set; } = 1;
 
-        public int CheckContentLevel { get; set; }
+        public int CheckContentDefaultLevel { get; set; }
 
         public bool IsSaveImageInTextEditor { get; set; } = true;
 
@@ -63,13 +42,15 @@ namespace SS.CMS.Models
 
         public bool IsContentTitleBreakLine { get; set; } = true;
 
+        public bool IsContentSubTitleBreakLine { get; set; } = true;
+
         public bool IsAutoCheckKeywords { get; set; }
 
         public int PhotoSmallWidth { get; set; } = 70;
 
         public int PhotoMiddleWidth { get; set; } = 400;
 
-        /****************图片水印设置********************/
+        /****************ͼƬˮӡ����********************/
 
         public bool IsWaterMark { get; set; }
 
@@ -91,7 +72,7 @@ namespace SS.CMS.Models
 
         public string WaterMarkImagePath { get; set; }
 
-        /****************生成页面设置********************/
+        /****************����ҳ������********************/
 
         public bool IsSeparatedWeb { get; set; }
 
@@ -131,15 +112,21 @@ namespace SS.CMS.Models
 
         public bool IsCreateStaticContentByAddDate { get; set; }
 
-        public DateTime? CreateStaticContentAddDate { get; set; }
+        public DateTime CreateStaticContentAddDate { get; set; } = DateTime.MinValue;
 
-        /****************跨站转发设置********************/
+        /****************��վת������********************/
 
         public bool IsCrossSiteTransChecked { get; set; }
 
-        /****************记录系统操作设置********************/
+        /****************�����ֶ�����********************/
 
-        public bool ConfigTemplateIsCodeMirror { get; set; } = true;
+        public List<string> SearchListColumns { get; set; }
+
+        public List<string> CheckListColumns { get; set; }
+
+        public List<string> RecycleListColumns { get; set; }
+
+        /****************��¼ϵͳ��������********************/
 
         public bool ConfigUEditorVideoIsImageUrl { get; set; }
 
@@ -203,32 +190,36 @@ namespace SS.CMS.Models
 
         public bool ConfigImageEditorIsLinkToOriginal { get; set; }
 
-        /****************上传设置*************************/
+        /****************�ϴ�����*************************/
 
         public string ImageUploadDirectoryName { get; set; } = "upload/images";
 
-        public string ImageUploadDateFormatString { get; set; } = "Month";
+        public DateFormatType ImageUploadDateFormatString { get; set; } = DateFormatType.Month;
 
         public bool IsImageUploadChangeFileName { get; set; } = true;
 
-        public string ImageUploadTypeCollection { get; set; } = "gif|jpg|jpeg|bmp|png|pneg|swf|webp";
+        public string ImageUploadTypeCollection { get; set; } = "gif,jpg,jpeg,bmp,png,pneg,swf,webp";
 
         public int ImageUploadTypeMaxSize { get; set; } = 15360;
 
+        public string AudioUploadDirectoryName { get; set; } = "upload/audio";
+
+        public DateFormatType AudioUploadDateFormatString { get; set; } = DateFormatType.Month;
+
         public string VideoUploadDirectoryName { get; set; } = "upload/videos";
 
-        public string VideoUploadDateFormatString { get; set; } = "Month";
+        public DateFormatType VideoUploadDateFormatString { get; set; } = DateFormatType.Month;
 
         public bool IsVideoUploadChangeFileName { get; set; } = true;
 
         public string VideoUploadTypeCollection { get; set; } =
-            "asf|asx|avi|flv|mid|midi|mov|mp3|mp4|mpg|mpeg|ogg|ra|rm|rmb|rmvb|rp|rt|smi|swf|wav|webm|wma|wmv|viv";
+            "asf,asx,avi,flv,mid,midi,mov,mp3,mp4,mpg,mpeg,ogg,ra,rm,rmb,rmvb,rp,rt,smi,swf,wav,webm,wma,wmv,viv";
 
         public int VideoUploadTypeMaxSize { get; set; } = 307200;
 
         public string FileUploadDirectoryName { get; set; } = "upload/files";
 
-        public string FileUploadDateFormatString { get; set; } = "Month";
+        public DateFormatType FileUploadDateFormatString { get; set; } = DateFormatType.Month;
 
         public bool IsFileUploadChangeFileName { get; set; } = true;
 
@@ -236,7 +227,7 @@ namespace SS.CMS.Models
 
         public int FileUploadTypeMaxSize { get; set; } = 307200;
 
-        /****************模板资源文件夹设置*************************/
+        /****************ģ����Դ�ļ�������*************************/
 
         public string TemplatesAssetsIncludeDir { get; set; } = "include";
 

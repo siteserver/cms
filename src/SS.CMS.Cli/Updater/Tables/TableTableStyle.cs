@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
-using SS.CMS.Utils;
+using SS.CMS.Abstractions;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -58,14 +58,18 @@ namespace SS.CMS.Cli.Updater.Tables
     {
         public const string OldTableName = "bairong_TableStyle";
 
-        public static ConvertInfo GetConverter(ITableStyleRepository tableStyleRepository, ISiteRepository siteRepository, IChannelRepository channelRepository) => new ConvertInfo
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            NewTableName = tableStyleRepository.TableName,
-            NewColumns = tableStyleRepository.TableColumns,
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
             ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict(siteRepository, channelRepository),
+            ConvertValueDict = ConvertValueDict,
             Process = Process
         };
+
+        private static readonly string NewTableName = DataProvider.TableStyleRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.TableStyleRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
@@ -74,12 +78,10 @@ namespace SS.CMS.Cli.Updater.Tables
                 {nameof(TableStyle.TableName), nameof(TableName)}
             };
 
-        private static Dictionary<string, string> ConvertValueDict(ISiteRepository siteRepository, IChannelRepository channelRepository) => new Dictionary<string, string>
+        private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
         {
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_PublishmentSystem"), siteRepository.TableName
-            },
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_Node"), channelRepository.TableName
-            }
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_PublishmentSystem"), DataProvider.SiteRepository.TableName},
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_Node"), DataProvider.ChannelRepository.TableName}
         };
 
         private static Dictionary<string, object> Process(Dictionary<string, object> row)
@@ -88,7 +90,7 @@ namespace SS.CMS.Cli.Updater.Tables
             {
                 if (isVisible != null && StringUtils.EqualsIgnoreCase(isVisible.ToString(), "False"))
                 {
-                    row["InputType"] = SS.CMS.Enums.InputType.Hidden.Value;
+                    row[nameof(TableStyle.InputType)] = SS.CMS.Abstractions.InputType.Hidden.GetValue();
                 }
             }
 

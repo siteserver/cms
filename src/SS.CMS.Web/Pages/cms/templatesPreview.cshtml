@@ -1,0 +1,50 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-card>
+  <div slot="header" class="clearfix">
+    <span>模板在线解析</span>
+  </div>
+
+  <el-tabs tab-position="right" v-model="activeName">
+    <el-tab-pane label="STL 标签" name="first">
+
+      <el-form :inline="true" :model="form" size="mini">
+        <el-form-item label="模板类型">
+          <el-select v-model="form.templateType" placeholder="请选择">
+            <el-option label="首页模板" value="IndexPageTemplate"></el-option>
+            <el-option label="栏目模板" value="ChannelTemplate"></el-option>
+            <el-option label="内容模板" value="ContentTemplate"></el-option>
+            <el-option label="单页模板" value="FileTemplate"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="form.templateType === 'ChannelTemplate' || form.templateType === 'ContentTemplate'" label="栏目" prop="channelIds">
+          <el-cascader
+            v-model="form.channelIds"
+            :options="channels"
+            :props="{ checkStrictly: true }"
+            placeholder="请选择栏目">
+          </el-cascader>
+        </el-form-item>
+      </el-form>
+
+      <div id="content" style="width:99%; height: 450px; border: 1px solid #d7dae2;"></div>
+
+      <div style="margin-top: 15px; text-align: center">
+        <el-button type="primary" size="small" v-on:click="btnSubmitClick">开始解析</el-button>
+      </div>
+
+    </el-tab-pane>
+    <el-tab-pane label="解析结果" name="second">
+      <div id="parsedContent" style="width:99%; height: 450px; border: 1px solid #d7dae2;"></div>
+    </el-tab-pane>
+    <el-tab-pane label="界面预览" name="third">
+      <div v-html="parsedContent" style="width:99%; min-height: 450px; border: 1px solid #d7dae2;"></div>
+    </el-tab-pane>
+  </el-tabs>
+</el-card>
+
+@section Scripts{
+<script src="~/assets/js/cms/../assets/lib/monaco-editor/min/vs/loader.js"></script>
+<script src="~/assets/js/cms/templatesPreview.js" type="text/javascript"></script>
+}

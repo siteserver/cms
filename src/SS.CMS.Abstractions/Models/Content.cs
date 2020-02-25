@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     public class Content : Entity
     {
-        public Content() { }
+        public Content()
+        {
+
+        }
 
         public Content(IDictionary<string, object> dict) : base(dict)
         {
@@ -21,28 +24,34 @@ namespace SS.CMS.Models
         public int SiteId { get; set; }
 
         [DataColumn]
+        public int AdminId { get; set; }
+
+        [DataColumn]
+        public int LastEditAdminId { get; set; }
+
+        [DataColumn]
         public int UserId { get; set; }
 
         [DataColumn]
-        public int LastModifiedUserId { get; set; }
+        public DateTime? LastEditDate { get; set; }
 
         [DataColumn]
         public int Taxis { get; set; }
 
         [DataColumn]
-        public string GroupNameCollection { get; set; }
+        public List<string> GroupNames { get; set; }
 
         [DataColumn]
-        public string Tags { get; set; }
+        public List<string> TagNames { get; set; }
 
-        [DataColumn]
+        [DataColumn] 
         public int SourceId { get; set; }
 
-        [DataColumn]
+        [DataColumn] 
         public int ReferenceId { get; set; }
 
         [DataColumn]
-        public bool IsChecked { get; set; }
+        public bool Checked { get; set; }
 
         [DataColumn]
         public int CheckedLevel { get; set; }
@@ -62,62 +71,36 @@ namespace SS.CMS.Models
         [DataColumn]
         public DateTime? LastHitsDate { get; set; }
 
-        [DataColumn]
+        [DataColumn] 
         public int Downloads { get; set; }
 
-        [DataColumn]
+        [DataColumn] 
         public string Title { get; set; }
 
         [DataColumn]
-        public bool IsTop { get; set; }
+        public bool Top { get; set; }
 
         [DataColumn]
-        public bool IsRecommend { get; set; }
+        public bool Recommend { get; set; }
 
         [DataColumn]
-        public bool IsHot { get; set; }
+        public bool Hot { get; set; }
 
         [DataColumn]
-        public bool IsColor { get; set; }
+        public bool Color { get; set; }
 
-        [DataColumn]
-        public DateTime? AddDate { get; set; }
-
-        [DataColumn]
+        [DataColumn] 
         public string LinkUrl { get; set; }
 
-        [DataColumn]
-        public string SubTitle { get; set; }
+        [DataColumn] 
+        public DateTime? AddDate { get; set; }
 
-        [DataColumn]
-        public string ImageUrl { get; set; }
+        public int CheckAdminId { get; set; } //审核人
 
-        [DataColumn]
-        public string VideoUrl { get; set; }
+        public DateTime? CheckDate { get; set; } //审核时间
 
-        [DataColumn]
-        public string FileUrl { get; set; }
-
-        [DataColumn]
-        public string Author { get; set; }
-
-        [DataColumn]
-        public string Source { get; set; }
-
-        [DataColumn(Text = true)]
-        public string Summary { get; set; }
-
-        [DataColumn(Text = true)]
-        public string Body { get; set; }
-
-        [DataColumn(Text = true, Extend = true)]
-        public string ExtendValues { get; set; }
-
-        public string TitleFormatString { get; set; }
-
-        public int CheckUserId { get; set; } //审核者
-        public string CheckDate { get; set; }//审核时间
         public string CheckReasons { get; set; } //审核原因
-        public string TranslateContentType { get; set; }//转移内容类型
+
+        public TranslateContentType TranslateContentType { get; set; } //转移内容类型
     }
 }

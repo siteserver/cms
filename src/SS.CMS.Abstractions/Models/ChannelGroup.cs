@@ -1,13 +1,12 @@
-using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_ChannelGroup")]
     public class ChannelGroup : Entity
     {
-        [DataColumn]
+	    [DataColumn]
         public string GroupName { get; set; }
 
         [DataColumn]
@@ -16,7 +15,7 @@ namespace SS.CMS.Models
         [DataColumn]
         public int Taxis { get; set; }
 
-        [DataColumn(Length = 2000)]
+        [DataColumn]
         public string Description { get; set; }
-    }
+	}
 }

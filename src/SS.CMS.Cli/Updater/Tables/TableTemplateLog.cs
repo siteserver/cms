@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+using SS.CMS.Abstractions;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -38,13 +39,17 @@ namespace SS.CMS.Cli.Updater.Tables
             "wcm_TemplateLog"
         };
 
-        public static ConvertInfo GetConverter(ITemplateLogRepository templateLogRepository) => new ConvertInfo
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            NewTableName = templateLogRepository.TableName,
-            NewColumns = templateLogRepository.TableColumns,
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
             ConvertKeyDict = ConvertKeyDict,
             ConvertValueDict = ConvertValueDict
         };
+
+        private static readonly string NewTableName = DataProvider.TemplateLogRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.TemplateLogRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>

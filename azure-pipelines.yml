@@ -4,16 +4,16 @@ pool:
   vmImage: 'windows-2019'
 
 variables:
-  solution: 'siteserver.sln'
+  solution: 'sscms.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  version: 6.10.$(Build.BuildNumber)
+  version: 7.0.$(Build.BuildNumber)
 
 steps:
 - task: DotNetCoreInstaller@0
   displayName: install dotnet
   inputs:
-    version: '3.0.100-preview5-011568'
+    version: '3.0.100'
 
 - task: NuGetToolInstaller@1
   displayName: install nuget
@@ -24,11 +24,11 @@ steps:
 - script: dotnet restore $(solution)
   displayName: dotnet restore
 
-- script: nuget restore src/SiteServer.Cli/packages.config -PackagesDirectory ./packages
-  displayName: nuget restore SiteServer.Cli
+- script: nuget restore src/SS.CMS.Cli/packages.config -PackagesDirectory ./packages
+  displayName: nuget restore SS.CMS.Cli
 
-- script: nuget restore src/SiteServer.Web/packages.config -PackagesDirectory ./packages
-  displayName: nuget restore SiteServer.Web
+- script: nuget restore src/SS.CMS.Web/packages.config -PackagesDirectory ./packages
+  displayName: nuget restore SS.CMS.Web
 
 - task: DotNetCoreCLI@2
   displayName: dotnet build
@@ -46,23 +46,3 @@ steps:
 
 - script: dotnet pack /p:PackageVersion=$(version)
   displayName: dotnet pack
-
-- task: NodeTool@0
-  displayName: install node.js
-  inputs:
-    versionSpec: '8.x'
-
-- script: npm install gulp -g
-  displayName: install gulp
-
-- script: npm install
-  displayName: npm install
-
-- script: gulp build
-  displayName: gulp build
-
-- script: nuget pack build/SS.CMS.nuspec
-  displayName: nuget pack
-
-- script: gulp zip
-  displayName: gulp zip

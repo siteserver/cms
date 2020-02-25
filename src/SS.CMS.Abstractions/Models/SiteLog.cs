@@ -1,14 +1,14 @@
 using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_SiteLog")]
-    public class SiteLog : Entity
+	public class SiteLog : Entity
     {
         [DataColumn]
-        public int SiteId { get; set; }
+	    public int SiteId { get; set; }
 
         [DataColumn]
         public int ChannelId { get; set; }
@@ -17,10 +17,13 @@ namespace SS.CMS.Models
         public int ContentId { get; set; }
 
         [DataColumn]
-        public int UserId { get; set; }
+        public int AdminId { get; set; }
 
         [DataColumn]
         public string IpAddress { get; set; }
+
+        [DataColumn]
+        public DateTime AddDate { get; set; }
 
         [DataColumn]
         public string Action { get; set; }

@@ -1,5 +1,4 @@
 using SS.CMS.Cli.Services;
-using SS.CMS.Utils;
 using Xunit;
 
 namespace SS.CMS.Cli.Tests.Services

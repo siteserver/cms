@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Repositories;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -18,22 +19,19 @@ namespace SS.CMS.Cli.Updater.Tables
 
     public partial class TableAdministratorsInRoles
     {
-        public static readonly List<string> OldTableNames = new List<string>
+        public const string OldTableName = "bairong_AdministratorsInRoles";
+
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            "bairong_AdministratorsInRoles",
-            "siteserver_AdministratorsInRoles"
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
         };
 
-        public static ConvertInfo GetConverter(IUserRoleRepository userRoleRepository)
-        {
-            return new ConvertInfo
-            {
-                NewTableName = userRoleRepository.TableName,
-                NewColumns = userRoleRepository.TableColumns,
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
+        private static readonly string NewTableName = DataProvider.AdministratorsInRolesRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.AdministratorsInRolesRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict = null;
 

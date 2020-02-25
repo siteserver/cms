@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Repositories;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -26,13 +27,17 @@ namespace SS.CMS.Cli.Updater.Tables
     {
         public const string OldTableName = "bairong_Roles";
 
-        public static ConvertInfo GetConverter(IRoleRepository roleRepository) => new ConvertInfo
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            NewTableName = roleRepository.TableName,
-            NewColumns = roleRepository.TableColumns,
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
             ConvertKeyDict = ConvertKeyDict,
             ConvertValueDict = ConvertValueDict
         };
+
+        private static readonly string NewTableName = DataProvider.RoleRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.RoleRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict = null;
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Repositories;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -20,16 +21,17 @@ namespace SS.CMS.Cli.Updater.Tables
     {
         public const string OldTableName = "bairong_Cache";
 
-        public static ConvertInfo GetConverter(IDbCacheRepository dbCacheRepository)
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            return new ConvertInfo
-            {
-                NewTableName = dbCacheRepository.TableName,
-                NewColumns = dbCacheRepository.TableColumns,
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
+
+        private static readonly string NewTableName = DataProvider.DbCacheRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.DbCacheRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict = null;
 

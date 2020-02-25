@@ -1,92 +1,154 @@
-﻿using System;
+﻿using Datory.Annotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
-namespace SS.CMS.Enums
+namespace SS.CMS.Abstractions
 {
-    public sealed class TaxisType
-    {
-        public static readonly TaxisType OrderById = new TaxisType("OrderById");
-        public static readonly TaxisType OrderByIdDesc = new TaxisType("OrderByIdDesc");
-        public static readonly TaxisType OrderByChannelId = new TaxisType("OrderByChannelId");
-        public static readonly TaxisType OrderByChannelIdDesc = new TaxisType("OrderByChannelIdDesc");
-        public static readonly TaxisType OrderByAddDate = new TaxisType("OrderByAddDate");
-        public static readonly TaxisType OrderByAddDateDesc = new TaxisType("OrderByAddDateDesc");
-        public static readonly TaxisType OrderByLastModifiedDate = new TaxisType("OrderByLastModifiedDate");
-        public static readonly TaxisType OrderByLastModifiedDateDesc = new TaxisType("OrderByLastModifiedDateDesc");
-        public static readonly TaxisType OrderByTaxis = new TaxisType("OrderByTaxis");
-        public static readonly TaxisType OrderByTaxisDesc = new TaxisType("OrderByTaxisDesc");
-        public static readonly TaxisType OrderByHits = new TaxisType("OrderByHits");
-        public static readonly TaxisType OrderByHitsByDay = new TaxisType("OrderByHitsByDay");
-        public static readonly TaxisType OrderByHitsByWeek = new TaxisType("OrderByHitsByWeek");
-        public static readonly TaxisType OrderByHitsByMonth = new TaxisType("OrderByHitsByMonth");
-        public static readonly TaxisType OrderByRandom = new TaxisType("OrderByRandom");
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum TaxisType
+	{
+        [DataEnum(DisplayName = "内容ID（升序）")] OrderById,
+        [DataEnum(DisplayName = "内容ID（降序）")] OrderByIdDesc,
+        [DataEnum(DisplayName = "栏目ID（升序）")] OrderByChannelId,
+        [DataEnum(DisplayName = "栏目ID（降序）")] OrderByChannelIdDesc,
+        [DataEnum(DisplayName = "添加时间（升序）")] OrderByAddDate,
+        [DataEnum(DisplayName = "添加时间（降序）")] OrderByAddDateDesc,
+        [DataEnum(DisplayName = "更新时间（升序）")] OrderByLastEditDate,
+        [DataEnum(DisplayName = "更新时间（降序）")] OrderByLastEditDateDesc,
+        [DataEnum(DisplayName = "默认排序（升序）")] OrderByTaxis,
+        [DataEnum(DisplayName = "默认排序（降序）")] OrderByTaxisDesc,
+        [DataEnum(DisplayName = "按点击量排序")] OrderByHits,
+        [DataEnum(DisplayName = "按日点击量排序")] OrderByHitsByDay,
+        [DataEnum(DisplayName = "按周点击量排序")] OrderByHitsByWeek,
+        [DataEnum(DisplayName = "按月点击量排序")] OrderByHitsByMonth,
+        [DataEnum(DisplayName = "随机排序")] OrderByRandom
+    }
 
-        private TaxisType(string value)
+    public static class ETaxisTypeUtils
+	{
+
+        
+
+        public static string GetContentOrderByString(TaxisType taxisType)
         {
-            Value = value;
+            return GetContentOrderByString(taxisType, string.Empty);
         }
 
-        public string Value { get; private set; }
-
-        public static TaxisType Parse(string val)
+        public static string GetContentOrderByString(TaxisType taxisType, string orderByString)
         {
-            if (string.Equals(OrderById.Value, val, StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(orderByString))
             {
-                return OrderById;
-            }
-            if (string.Equals(OrderByIdDesc.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByIdDesc;
-            }
-            if (string.Equals(OrderByChannelId.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByChannelId;
-            }
-            if (string.Equals(OrderByChannelIdDesc.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByChannelIdDesc;
-            }
-            if (string.Equals(OrderByAddDate.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByAddDate;
-            }
-            if (string.Equals(OrderByAddDateDesc.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByAddDateDesc;
-            }
-            if (string.Equals(OrderByLastModifiedDate.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByLastModifiedDate;
-            }
-            if (string.Equals(OrderByLastModifiedDateDesc.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByLastModifiedDateDesc;
-            }
-            if (string.Equals(OrderByTaxis.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByTaxis;
-            }
-            if (string.Equals(OrderByTaxisDesc.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByTaxisDesc;
-            }
-            if (string.Equals(OrderByHits.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByHits;
-            }
-            if (string.Equals(OrderByHitsByDay.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByHitsByDay;
-            }
-            if (string.Equals(OrderByHitsByWeek.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByHitsByWeek;
-            }
-            if (string.Equals(OrderByHitsByMonth.Value, val, StringComparison.OrdinalIgnoreCase))
-            {
-                return OrderByHitsByMonth;
+                if (orderByString.Trim().ToUpper().StartsWith("ORDER BY "))
+                {
+                    return orderByString;
+                }
+                return "ORDER BY " + orderByString;
             }
 
-            return OrderByTaxisDesc;
+            var retVal = string.Empty;
+
+            if (taxisType == TaxisType.OrderById)
+            {
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.Id)} ASC";
+            }
+            else if (taxisType == TaxisType.OrderByIdDesc)
+            {
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByChannelId)
+            {
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.ChannelId)} ASC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByChannelIdDesc)
+            {
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.ChannelId)} DESC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByAddDate)
+            {
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.AddDate)} ASC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByAddDateDesc)
+            {
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.AddDate)} DESC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByLastEditDate)
+            {
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.LastEditDate)} ASC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByLastEditDateDesc)
+            {
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.LastEditDate)} DESC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByTaxis)
+            {
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.Taxis)} ASC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByTaxisDesc)
+            {
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.Taxis)} DESC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByHits)
+            {
+                retVal = $"ORDER BY {nameof(Content.Hits)} DESC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByHitsByDay)
+            {
+                retVal = $"ORDER BY {nameof(Content.HitsByDay)} DESC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByHitsByWeek)
+            {
+                retVal = $"ORDER BY {nameof(Content.HitsByWeek)} DESC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByHitsByMonth)
+            {
+                retVal = $"ORDER BY {nameof(Content.HitsByMonth)} DESC, {nameof(Content.Id)} DESC";
+            }
+            else if (taxisType == TaxisType.OrderByRandom)
+            {
+                //retVal = SqlUtils.GetOrderByRandom();
+            }
+
+            return retVal;
         }
+
+        public static string GetContentOrderAttributeName(TaxisType taxisType)
+        {
+            var retVal = nameof(Content.Taxis);
+
+            switch (taxisType)
+            {
+                case TaxisType.OrderById:
+                case TaxisType.OrderByIdDesc:
+                    retVal = nameof(Content.Id);
+                    break;
+                case TaxisType.OrderByChannelId:
+                case TaxisType.OrderByChannelIdDesc:
+                    retVal = nameof(Content.ChannelId);
+                    break;
+                case TaxisType.OrderByAddDate:
+                case TaxisType.OrderByAddDateDesc:
+                    retVal = nameof(Content.AddDate);
+                    break;
+                case TaxisType.OrderByLastEditDate:
+                case TaxisType.OrderByLastEditDateDesc:
+                    retVal = nameof(Content.LastEditDate);
+                    break;
+                case TaxisType.OrderByHits:
+                    retVal = nameof(Content.Hits);
+                    break;
+                case TaxisType.OrderByHitsByDay:
+                    retVal = nameof(Content.HitsByDay);
+                    break;
+                case TaxisType.OrderByHitsByWeek:
+                    retVal = nameof(Content.HitsByWeek);
+                    break;
+                case TaxisType.OrderByHitsByMonth:
+                    retVal = nameof(Content.HitsByMonth);
+                    break;
+            }
+
+            return retVal;
+        }
+
     }
 }

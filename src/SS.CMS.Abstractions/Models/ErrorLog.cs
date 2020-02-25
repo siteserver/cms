@@ -1,9 +1,10 @@
 using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_ErrorLog")]
     public class ErrorLog : Entity
     {
@@ -17,9 +18,12 @@ namespace SS.CMS.Models
         public string Message { get; set; }
 
         [DataColumn(Text = true)]
-        public string Stacktrace { get; set; }
+        public string StackTrace { get; set; }
 
         [DataColumn(Text = true)]
         public string Summary { get; set; }
+
+        [DataColumn]
+        public DateTime AddDate { get; set; }
     }
 }

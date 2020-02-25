@@ -1,0 +1,289 @@
+﻿var $url = '/admin/cms/editor/editor';
+
+var data = utils.initData({
+  page: utils.getQueryInt('page'),
+  siteId: utils.getQueryInt('siteId'),
+  channelId: utils.getQueryInt('channelId'),
+  contentId: utils.getQueryInt('contentId'),
+  mainHeight: '',
+  isSettings: true,
+  sideType: 'first',
+  collapseSettings: ['checkedLevel', 'addDate'],
+  collapseMore: ['translations'],
+
+  site: null,
+  channel: null,
+  groupNames: null,
+  tagNames: null,
+  checkedLevels: null,
+  siteOptions: null,
+  channelOptions: null,
+  styles: null,
+  form: null,
+
+  translations: [],
+  isPreviewSaving: false
+});
+
+var methods = {
+  insertEditor: function(attributeName, html)
+  {
+    if (html)
+    {
+      UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
+    }
+  },
+
+  insertText: function(attributeName, no, text) {
+    var count = this.form[utils.getCountName(attributeName)];
+    if (count < no) {
+      this.form[utils.getCountName(attributeName)] = no;
+    }
+    this.form[utils.getExtendName(attributeName, no)] = text;
+    this.form = _.assign({}, this.form);
+  },
+
+  addTranslation: function(transSiteId, transChannelId, transType, name) {
+    this.translations.push({
+      transSiteId: transSiteId,
+      transChannelId: transChannelId,
+      transType: transType,
+      name: name
+    });
+  },
+
+  updateGroups: function(res, message) {
+    this.groupNames = res.groupNames;
+    this.$message.success(message);
+  },
+
+  apiGet: function() {
+    var $this = this;
+
+    window.onresize = $this.winResize;
+    window.onresize();
+
+    $api.get($url, {
+      params: {
+        siteId: $this.siteId,
+        channelId: $this.channelId,
+        contentId: $this.contentId
+      }
+    })
+    .then(function(response) {
+      var res = response.data;
+
+      $this.loadEditor(res);
+    })
+    .catch(function(error) {
+      utils.error($this, error);
+    })
+    .then(function() {
+      utils.loading($this, false);
+    });
+  },
+
+  apiUpdate: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.put($url, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      contentId: this.contentId,
+      content: this.form,
+      translations: this.translations
+    }).then(function(response) {
+      var res = response.data;
+
+      parent.$vue.apiList($this.channelId, $this.page, '内容保存成功！');
+      utils.closeLayer();
+    })
+    .catch(function(error) {
+      utils.error($this, error);
+    })
+    .then(function() {
+      utils.loading($this, false);
+    });
+  },
+
+  loadEditor: function(res) {
+    this.site = res.site;
+    this.channel = res.channel;
+    this.groupNames = res.groupNames;
+    this.tagNames = res.tagNames;
+    this.checkedLevels = res.checkedLevels;
+    
+    this.siteOptions = res.siteOptions;
+    this.channelOptions = res.channelOptions;
+    // this.styles = [];
+    // this.content = res.content;
+    // for (let i = 0; i < res.styles.length; i++) {
+    //   var style = res.styles[i];
+    //   if (this.contentId) {
+    //     style.value = this.content[_.camelCase(style.attributeName)];
+    //   } else {
+    //     style.value = style.defaultValue || '';
+    //   }
+    //   this.styles.push(style);
+    // }
+
+    this.styles = res.styles;
+    this.form = _.assign({}, res.content);
+    if (this.form.checked) {
+      this.form.checkedLevel = this.site.checkContentLevel;
+    }
+    if (this.form.top || this.form.recommend || this.form.hot || this.form.color) {
+      this.collapseSettings.push('attributes');
+    }
+    if (this.form.groupNames && this.form.groupNames.length > 0) {
+      this.collapseSettings.push('groupNames');
+    } else {
+      this.form.groupNames = [];
+    }
+    if (this.form.tagNames && this.form.tagNames.length > 0) {
+      this.collapseSettings.push('tagNames');
+    } else {
+      this.form.tagNames = [];
+    }
+    if (this.form.linkUrl) {
+      this.collapseSettings.push('linkUrl');
+    }
+
+    var $this = this;
+    setTimeout(function () {
+      for (var i = 0; i < $this.styles.length; i++) {
+        var style = $this.styles[i];
+        if (style.inputType === 'TextEditor') {
+          // var editor = new FroalaEditor('textarea#' + style.attributeName, {
+          //   language: 'zh_cn',
+          //   heightMin: 350
+          // });
+          var editor = UE.getEditor(style.attributeName, {
+            allowDivTransToP: false,
+            maximumWords: 99999999
+          });
+          editor.styleIndex = i;
+          editor.ready(function () {
+            editor.addListener("contentChange", function () {
+              $this.styles[this.styleIndex].value = this.getContent();
+            });
+          });
+        }
+      }
+    }, 100);
+  },
+
+  winResize: function () {
+    this.mainHeight = ($(window).height() - 52) + 'px';
+  },
+
+  btnLayerClick: function(options) {
+    var url = "../shared/" + options.name + ".cshtml?siteId=" + this.siteId + "&channelId=" + this.channelId;
+
+    if (options.attributeName) {
+      url += "&attributeName=" + options.attributeName;
+    }
+    if (options.contentId) {
+      url += "&contentId=" + options.contentId;
+    }
+
+    utils.openLayer({
+      title: options.title,
+      url: url,
+      full: options.full,
+      width: options.width ? options.width : 700,
+      height: options.height ? options.height : 500
+    });
+  },
+
+  handleTranslationClose: function(name) {
+    this.translations = _.remove(this.translations, function(n) {
+      return name !== n.name;
+    });
+  },
+
+  btnCancelClick: function() {
+    utils.closeLayer();
+  },
+
+  btnSaveClick: function() {
+    if (UE) {
+      $.each(UE.instants, function (index, editor) {
+        editor.sync();
+      });
+    }
+
+    this.apiUpdate();
+  },
+
+  btnGroupAddClick: function() {
+    utils.openLayer({
+      title: '新增内容组',
+      url: '../shared/groupContentLayerAdd.cshtml?siteId=' + this.siteId,
+      width: 500,
+      height: 300
+    });
+  },
+
+  btnTranslateAddClick: function() {
+    utils.openLayer({
+      title: "选择转移栏目",
+      url: "editorLayerTranslate.cshtml?siteId=" + this.siteId + '&channelId=' + this.channelId,
+      width: 550,
+      height: 400
+    });
+  },
+
+  btnPreviewClick: function() {
+    if (!this.styles[0].value) return;
+    if (this.isPreviewSaving) return;
+
+    if (UE) {
+      $.each(UE.instants, function (index, editor) {
+        editor.sync();
+      });
+    }
+
+    var $this = this;
+    utils.loading(this, true);
+    $api.post($url + '/actions/preview', {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      contentId: this.contentId,
+      content: this.form
+    }).then(function(response) {
+      var res = response.data;
+
+      $this.isPreviewSaving = false;
+      window.open(res.url);
+    })
+    .catch(function(error) {
+      utils.error($this, error);
+    })
+    .then(function() {
+      utils.loading($this, false);
+    });
+  },
+
+  btnExtendAddClick: function(style) {
+    var no = this.form[utils.getCountName(style.attributeName)] + 1;
+    this.form[utils.getCountName(style.attributeName)] = no;
+    this.form[utils.getExtendName(style.attributeName, no)] = '';
+  },
+
+  btnExtendRemoveClick: function(style) {
+    var no = this.form[utils.getCountName(style.attributeName)] - 1;
+    this.form[utils.getCountName(style.attributeName)] = no;
+    this.form[utils.getExtendName(style.attributeName, no)] = '';
+  },
+};
+
+var $vue = new Vue({
+  el: "#main",
+  data: data,
+  methods: methods,
+  created: function() {
+    this.apiGet();
+  }
+});

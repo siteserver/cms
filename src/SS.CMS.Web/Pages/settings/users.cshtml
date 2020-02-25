@@ -1,0 +1,200 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-card class="box-card">
+
+  <div slot="header" class="clearfix">
+    <span>用户管理</span>
+  </div>
+
+  <el-form :inline="true" :model="formInline" size="mini">
+    <el-form-item label="状态">
+      <el-select v-model="formInline.state" placeholder="用户组">
+        <el-option label="<全部状态>" value=""></el-option>
+        <el-option label="待审核" value="false"></el-option>
+        <el-option label="已审核" value="true"></el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="用户组">
+      <el-select v-model="formInline.groupId" placeholder="用户组">
+        <el-option label="<全部用户组>" :value="-1"></el-option>
+        <el-option
+          v-for="group in groups"
+          :key="group.id"
+          :label="group.groupName"
+          :value="group.id">
+        </el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="排序">
+      <el-select v-model="formInline.order" placeholder="排序">
+        <el-option label="<默认>" value=""></el-option>
+        <el-option label="登录名称" value="UserName"></el-option>
+        <el-option label="最后登录日期" value="LastActivityDate"></el-option>
+        <el-option label="创建日期" value="CreationDate"></el-option>
+        <el-option label="登录次数" value="CountOfLogin"></el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="最后登录">
+      <el-select v-model="formInline.lastActivityDate" placeholder="最后登录">
+        <el-option label="<全部时间>" :value="0"></el-option>
+        <el-option label="1天内" :value="1"></el-option>
+        <el-option label="2天内" :value="2"></el-option>
+        <el-option label="3天内" :value="3"></el-option>
+        <el-option label="1周内" :value="7"></el-option>
+        <el-option label="1个月内" :value="30"></el-option>
+        <el-option label="3个月内" :value="90"></el-option>
+        <el-option label="半年内" :value="180"></el-option>
+        <el-option label="1年内" :value="365"></el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="关键字">
+      <el-input v-model="formInline.keyword" placeholder="关键字"></el-input>
+    </el-form-item>
+    
+    <el-form-item>
+      <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+    </el-form-item>
+  </el-form>
+  
+  <el-table
+    :data="items"
+    style="width: 100%">
+    <el-table-column
+      label="头像" width="100">
+      <template slot-scope="scope">
+        <el-badge v-if="!scope.row.checked" style="margin-top: 10px;" value="待审核">
+          <img :src="scope.row.avatarUrl || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
+        </el-badge>
+        <el-badge v-else-if="scope.row.locked" style="margin-top: 10px;" value="锁定">
+          <img :src="scope.row.avatarUrl || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
+        </el-badge>
+        <img v-else :src="scope.row.avatarUrl || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
+      </template>
+    </el-table-column>
+    <el-table-column
+      label="账号">
+      <template slot-scope="scope">
+        <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row.id)">{{scope.row.userName}}</el-link>
+      </template>
+    </el-table-column>
+    <el-table-column
+      prop="userName"
+      label="账号">
+    </el-table-column>
+    <el-table-column
+      prop="displayName"
+      label="姓名">
+    </el-table-column>
+    <el-table-column
+      prop="mobile"
+      label="手机">
+    </el-table-column>
+    <el-table-column
+      width="180"
+      prop="lastActivityDate"
+      label="最后登录">
+    </el-table-column>
+    <el-table-column
+      prop="countOfLogin"
+      label="登录次数">
+    </el-table-column>
+    <el-table-column
+      prop="groupName"
+      label="用户组">
+    </el-table-column>
+    <el-table-column label="操作" width="350">
+      <template slot-scope="scope">
+        <el-button-group>
+          <el-button
+            size="mini"
+            v-on:click="btnEditClick(scope.row)">编辑</el-button>
+          <el-button
+            size="mini"
+            v-on:click="btnPasswordClick(scope.row)">更改密码</el-button>
+          <el-button
+            v-if="!scope.row.checked"
+            size="mini"
+            v-on:click="btnCheckClick(scope.row)">审核</el-button>
+          <el-button
+            v-if="scope.row.locked"
+            size="mini"
+            v-on:click="btnUnLockClick(scope.row)">解锁</el-button>
+          <el-button
+            v-else
+            size="mini"
+            v-on:click="btnLockClick(scope.row)">锁定</el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            v-on:click="btnDeleteClick(scope.row)">删除</el-button>
+        </el-button-group>
+      </template>
+    </el-table-column>
+  </el-table>
+  
+  <div style="text-align: center; margin-top: 10px;">
+    <el-pagination
+      v-on:current-change="handleCurrentChange"
+      :current-page="formInline.currentPage"
+      :page-size="formInline.limit"
+      layout="total, prev, pager, next, jumper"
+      :total="count">
+    </el-pagination>
+  </div>
+
+  <div style="height: 10px"></div>
+
+  <el-row>
+    <el-divider></el-divider>
+    <div style="height: 10px"></div>
+    <el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAddClick">
+      新 增
+    </el-button>
+    <el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-upload" v-on:click="btnImportClick">
+      导 入
+    </el-button>
+    <el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-download" v-on:click="btnExportClick">
+      导 出
+    </el-button>
+  </el-row>
+  
+</el-card>
+
+<el-drawer
+  title="导入用户"
+  ref="uploadPanel"
+  :visible.sync="uploadPanel"
+  destroy-on-close
+  direction="rtl"
+  size="50%">
+  <div class="drawer__content">
+    <br />
+    <el-form ref="uploadForm" label-width="200px">
+      <el-upload
+        :drag="true"
+        :limit="1"
+        :action="$urlUpload"
+        :auto-upload="true"
+        :with-credentials="true"
+        :file-list="uploadList"
+        :before-upload="uploadBefore"
+        :on-progress="uploadProgress"
+        :on-success="uploadSuccess"
+        :on-error="uploadError"
+        :multiple="false">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或 <em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">
+          <el-link :underline="false" href="../assets/upload-templates/用户导入模版.xlsx" target="_blank">
+            <i class="el-icon-download"></i>
+            下载导入模版
+          </el-link>
+        </div>
+      </el-upload>
+    </el-form>
+  </div>
+</el-drawer>
+
+@section Scripts{
+<script src="~/assets/js/settings/users.js" type="text/javascript"></script> }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -34,31 +34,28 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("settingsXML")]
         public string SettingsXml { get; set; }
-
-        [JsonProperty("systemConfig")]
-        public string SystemConfig { get; set; }
     }
 
     public partial class TableConfig
     {
         public const string OldTableName = "bairong_Config";
 
-        public static ConvertInfo GetConverter(IConfigRepository configRepository)
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            return new ConvertInfo
-            {
-                NewTableName = configRepository.TableName,
-                NewColumns = configRepository.TableColumns,
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
+        };
+
+        private static readonly string NewTableName = DataProvider.ConfigRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.ConfigRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(Config.ExtendValues), nameof(SystemConfig)},
-                {nameof(Config.ExtendValues), nameof(SettingsXml)}
+                {"SystemConfig", nameof(SettingsXml)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

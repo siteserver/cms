@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -19,25 +19,21 @@ namespace SS.CMS.Cli.Updater.Tables
 
     public partial class TablePermissionsInRoles
     {
-        public static readonly List<string> OldTableNames = new List<string>
-        {
-            "bairong_PermissionsInRoles",
-            "siteserver_PermissionsInRoles"
-        };
+        public const string OldTableName = "bairong_PermissionsInRoles";
 
-        public static ConvertInfo GetConverter(IPermissionRepository permissionRepository) => new ConvertInfo
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            NewTableName = permissionRepository.TableName,
-            NewColumns = permissionRepository.TableColumns,
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
             ConvertKeyDict = ConvertKeyDict,
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(Models.Permission.AppPermissions), nameof(GeneralPermissions)},
-            };
+        private static readonly string NewTableName = DataProvider.PermissionsInRolesRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.PermissionsInRolesRepository.TableColumns;
+
+        private static readonly Dictionary<string, string> ConvertKeyDict = null;
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;
     }

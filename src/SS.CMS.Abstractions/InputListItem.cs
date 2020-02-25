@@ -1,4 +1,4 @@
-﻿namespace SS.CMS
+﻿namespace SS.CMS.Abstractions
 {
     /// <summary>
     /// 表示列表中的数据项。

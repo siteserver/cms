@@ -1,9 +1,9 @@
-﻿using System;
-using SS.CMS.Data;
+﻿using System.Collections.Generic;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_AccessToken")]
     public class AccessToken : Entity
     {
@@ -14,12 +14,9 @@ namespace SS.CMS.Models
         public string Token { get; set; }
 
         [DataColumn]
-        public int UserId { get; set; }
+        public string AdminName { get; set; }
 
         [DataColumn]
-        public string Scopes { get; set; }
-
-        [DataColumn]
-        public int RateLimit { get; set; }
+        public List<string> Scopes { get; set; }
     }
 }

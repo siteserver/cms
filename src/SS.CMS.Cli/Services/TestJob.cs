@@ -2,8 +2,8 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Mono.Options;
+using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
-using SS.CMS.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Services
@@ -19,17 +19,17 @@ namespace SS.CMS.Cli.Services
         }
 
         private bool _isHelp;
-        private string _configFileName;
+        private string _webConfigFileName;
+
         private readonly OptionSet _options;
-        private readonly ISettingsManager _settingsManager;
-        public TestJob(ISettingsManager settingsManager)
+
+        public TestJob()
         {
-            _settingsManager = settingsManager;
-            _options = new OptionSet()
+            _options = new OptionSet
             {
                 {
                     "c|config=", "the {web.config} file name.",
-                    v => _configFileName = v
+                    v => _webConfigFileName = v
                 },
                 {
                     "h|help", "命令说明",

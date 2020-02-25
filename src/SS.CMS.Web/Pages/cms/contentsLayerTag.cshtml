@@ -1,0 +1,38 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-form size="small" ref="form" :model="form" label-width="120px">
+  <el-form-item label="操作">
+    <el-radio-group v-model="form.isCancel">
+      <el-radio-button :label="false">设置内容标签</el-radio-button>
+      <el-radio-button :label="true">取消内容标签</el-radio-button>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item label="内容标签" prop="tagNames" :rules="{ required: true, message: '请输入内容标签' }">
+    <el-select
+      v-model="form.tagNames"
+      multiple
+      filterable
+      allow-create
+      default-first-option
+      placeholder="请输入内容标签"
+      style="width: 100%"
+      >
+      <el-option v-for="tagName in tagNames" :key="tagName" :label="tagName" :value="tagName"></el-option>
+    </el-select>
+    <div class="tips">可以批量选择或添加多个标签</div>
+  </el-form-item>
+</el-form>
+
+<div style="height: 10px"></div>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="~/assets/js/cms/contentsLayerTag.js" type="text/javascript"></script> }

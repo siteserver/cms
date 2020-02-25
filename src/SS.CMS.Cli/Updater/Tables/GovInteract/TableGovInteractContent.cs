@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Data;
-using SS.CMS.Models;
-using SS.CMS.Utils;
+using SS.CMS.Abstractions;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables.GovInteract
 {
@@ -32,6 +32,9 @@ namespace SS.CMS.Cli.Updater.Tables.GovInteract
 
         [JsonProperty("contentGroupNameCollection")]
         public string ContentGroupNameCollection { get; set; }
+
+        [JsonProperty("groupNameCollection")]
+        public string GroupNameCollection { get; set; }
 
         [JsonProperty("tags")]
         public string Tags { get; set; }
@@ -188,7 +191,7 @@ namespace SS.CMS.Cli.Updater.Tables.GovInteract
             },
             new TableColumn
             {
-                AttributeName = "Content",
+                AttributeName = "Body",
                 DataType = DataType.Text
             },
             new TableColumn
@@ -256,27 +259,30 @@ namespace SS.CMS.Cli.Updater.Tables.GovInteract
             }
         };
 
-        private static List<TableColumn> GetNewColumns(IList<TableColumn> oldColumns)
+        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
-            var tableColumns = (new Database(null, null)).GetTableColumns<Content>();
-
-            columns.AddRange(tableColumns);
+            var repository = new Repository<Content>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
+            columns.AddRange(repository.TableColumns);
             columns.AddRange(NewColumns);
 
             foreach (var tableColumnInfo in oldColumns)
             {
                 if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
                 {
-                    tableColumnInfo.AttributeName = nameof(Models.Content.ChannelId);
+                    tableColumnInfo.AttributeName = nameof(SS.CMS.Abstractions.Content.ChannelId);
                 }
                 else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
                 {
-                    tableColumnInfo.AttributeName = nameof(Models.Content.SiteId);
+                    tableColumnInfo.AttributeName = nameof(SS.CMS.Abstractions.Content.SiteId);
                 }
                 else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
                 {
-                    tableColumnInfo.AttributeName = nameof(Models.Content.GroupNameCollection);
+                    tableColumnInfo.AttributeName = nameof(SS.CMS.Abstractions.Content.GroupNames);
+                }
+                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(GroupNameCollection)))
+                {
+                    tableColumnInfo.AttributeName = nameof(SS.CMS.Abstractions.Content.GroupNames);
                 }
 
                 if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
@@ -288,7 +294,7 @@ namespace SS.CMS.Cli.Updater.Tables.GovInteract
             return columns;
         }
 
-        public static ConvertInfo GetConverter(IList<TableColumn> oldColumns)
+        public static ConvertInfo GetConverter(List<TableColumn> oldColumns)
         {
             return new ConvertInfo
             {
@@ -302,9 +308,10 @@ namespace SS.CMS.Cli.Updater.Tables.GovInteract
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(Models.Content.ChannelId), nameof(NodeId)},
-                {nameof(Models.Content.SiteId), nameof(PublishmentSystemId)},
-                {nameof(Models.Content.GroupNameCollection), nameof(ContentGroupNameCollection)}
+                {nameof(SS.CMS.Abstractions.Content.ChannelId), nameof(NodeId)},
+                {nameof(SS.CMS.Abstractions.Content.SiteId), nameof(PublishmentSystemId)},
+                {nameof(SS.CMS.Abstractions.Content.GroupNames), nameof(ContentGroupNameCollection)},
+                {nameof(SS.CMS.Abstractions.Content.GroupNames), nameof(GroupNameCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

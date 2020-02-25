@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
 using SS.CMS.Cli.Updater.Tables;
-using SS.CMS.Core.Repositories;
-using SS.CMS.Models;
+using SS.CMS.Framework;
 using SS.CMS.Repositories;
-using SS.CMS.Utils;
 using TableInfo = SS.CMS.Cli.Core.TableInfo;
 
 namespace SS.CMS.Cli.Updater
@@ -65,7 +64,7 @@ namespace SS.CMS.Cli.Updater
 
         public static void LoadSites(TreeInfo oldTreeInfo, List<int> siteIdList, List<string> tableNameListForContent, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob)
         {
-            foreach (string oldSiteTableName in TableSite.OldTableNames)
+            foreach(string oldSiteTableName in TableSite.OldTableNames)
             {
                 var siteMetadataFilePath = oldTreeInfo.GetTableMetadataFilePath(oldSiteTableName);
                 if (FileUtils.IsFileExists(siteMetadataFilePath))
@@ -124,15 +123,15 @@ namespace SS.CMS.Cli.Updater
             }
         }
 
-        public static async Task UpdateSitesSplitTableNameAsync(TreeInfo newTreeInfo, Dictionary<int, TableInfo> splitSiteTableDict, ISiteRepository siteRepository)
+        public static async Task UpdateSitesSplitTableNameAsync(TreeInfo newTreeInfo, Dictionary<int, TableInfo> splitSiteTableDict)
         {
-            var siteMetadataFilePath = newTreeInfo.GetTableMetadataFilePath(siteRepository.TableName);
+            var siteMetadataFilePath = newTreeInfo.GetTableMetadataFilePath(DataProvider.SiteRepository.TableName);
             if (FileUtils.IsFileExists(siteMetadataFilePath))
             {
                 var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(siteMetadataFilePath, Encoding.UTF8));
                 foreach (var fileName in siteTableInfo.RowFiles)
                 {
-                    var filePath = newTreeInfo.GetTableContentFilePath(siteRepository.TableName, fileName);
+                    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteRepository.TableName, fileName);
                     var oldRows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
                     var newRows = new List<Dictionary<string, object>>();
                     foreach (var row in oldRows)
@@ -141,13 +140,13 @@ namespace SS.CMS.Cli.Updater
                         if (dict.ContainsKey(nameof(Site.Id)))
                         {
                             var siteId = Convert.ToInt32(dict[nameof(Site.Id)]);
-                            dict[nameof(Site.TableName)] = StringUtils.GetContentTableName(siteId);
+                            dict[nameof(Site.TableName)] = ContentRepository.GetContentTableName(siteId);
                         }
 
                         newRows.Add(dict);
                     }
 
-                    await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
+                    await FileUtils.WriteTextAsync(filePath, TranslateUtils.JsonSerialize(newRows));
                 }
             }
 
@@ -155,7 +154,7 @@ namespace SS.CMS.Cli.Updater
             //{
             //    var siteTableInfo = splitSiteTableDict[siteId];
             //    var siteTableName = UpdateUtils.GetSplitContentTableName(siteId);
-
+                
             //    siteTableInfo.Columns
             //}
 
@@ -163,9 +162,9 @@ namespace SS.CMS.Cli.Updater
             //if (FileUtils.IsFileExists(tableFilePath))
             //{
             //    var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(tableFilePath, Encoding.UTF8));
-            //    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteDao.TableName, siteTableInfo.RowFiles[siteTableInfo.RowFiles.Count]);
+            //    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteRepository.TableName, siteTableInfo.RowFiles[siteTableInfo.RowFiles.Count]);
             //    var tableInfoList = TranslateUtils.JsonDeserialize<List<CMS.Model.TableInfo>>(FileUtils.ReadText(filePath, Encoding.UTF8));
-
+                
 
 
             //    await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, TranslateUtils.JsonSerialize(tableInfoList));

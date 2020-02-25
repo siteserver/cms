@@ -1,20 +1,24 @@
 using System;
-using SS.CMS.Data;
+using System.Collections.Generic;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_Config")]
-    public partial class Config : Entity
+    public class Config : Entity
     {
         [DataColumn]
         public string DatabaseVersion { get; set; }
 
         [DataColumn]
-        public DateTime? UpdateDate { get; set; }
+        public DateTime UpdateDate { get; set; }
 
-        [DataColumn(Text = true, Extend = true)]
-        public string ExtendValues { get; set; }
+        public bool Initialized => Id > 0;
+
+        public bool IsSeparatedApi { get; set; }
+
+        public string SeparatedApiUrl { get; set; }
 
         public bool IsLogSite { get; set; } = true;
 
@@ -24,29 +28,40 @@ namespace SS.CMS.Models
 
         public bool IsLogError { get; set; } = true;
 
-        public bool IsViewContentOnlySelf { get; set; }
-
+        // �Ƿ���ʱ����ֵ
         public bool IsTimeThreshold { get; set; }
 
         public int TimeThreshold { get; set; } = 60;
+
+        /****************����Ա����********************/
 
         public int AdminUserNameMinLength { get; set; }
 
         public int AdminPasswordMinLength { get; set; } = 6;
 
-        public string AdminPasswordRestriction { get; set; } = "LetterAndDigit";
+        public PasswordRestriction AdminPasswordRestriction { get; set; } = PasswordRestriction.LetterAndDigit;
 
         public bool IsAdminLockLogin { get; set; }
 
         public int AdminLockLoginCount { get; set; } = 3;
 
-        public string AdminLockLoginType { get; set; } = "Hours";
+        public LockType AdminLockLoginType { get; set; } = LockType.Hours;
 
         public int AdminLockLoginHours { get; set; } = 3;
 
+        public bool IsAdminEnforcePasswordChange { get; set; }
+
+        public int AdminEnforcePasswordChangeDays { get; set; } = 90;
+
+        public bool IsAdminEnforceLogout { get; set; }
+
+        public int AdminEnforceLogoutMinutes { get; set; } = 960;
+
+        /****************�û�����********************/
+
         public bool IsUserRegistrationAllowed { get; set; } = true;
 
-        public string UserRegistrationAttributes { get; set; }
+        public List<string> UserRegistrationAttributes { get; set; }
 
         public bool IsUserRegistrationGroup { get; set; }
 
@@ -56,9 +71,9 @@ namespace SS.CMS.Models
 
         public int UserPasswordMinLength { get; set; } = 6;
 
-        public string UserPasswordRestriction { get; set; } = "LetterAndDigit";
+        public PasswordRestriction UserPasswordRestriction { get; set; } = PasswordRestriction.LetterAndDigit;
 
-        public int UserRegistrationMinMinutes { get; set; }
+        public int UserRegistrationMinMinutes { get; set; } = 3;
 
         public bool IsUserLockLogin { get; set; }
 
@@ -70,10 +85,30 @@ namespace SS.CMS.Models
 
         public string UserDefaultGroupAdminName { get; set; }
 
-        public string RepositoryOwner { get; set; }
+        /****************������̨����********************/
 
-        public string RepositoryName { get; set; }
+        public string AdminTitle { get; set; } = "SiteServer CMS";
 
-        public string RepositoryToken { get; set; }
+        public string AdminLogoUrl { get; set; }
+
+        public string AdminWelcomeHtml { get; set; } = @"��ӭʹ�� SiteServer CMS ������̨";
+
+        /****************�û���������********************/
+
+        public bool IsHomeClosed { get; set; }
+
+        public string HomeTitle { get; set; } = "�û�����";
+
+        public bool IsHomeLogo { get; set; }
+
+        public string HomeLogoUrl { get; set; }
+
+        public string HomeDefaultAvatarUrl { get; set; }
+
+        public bool IsHomeAgreement { get; set; }
+
+        public string HomeAgreementHtml { get; set; } =
+            @"�Ķ�������<a href=""/agreement.html"" target=""_blank"">���û�Э�顷</a>";
+
     }
 }

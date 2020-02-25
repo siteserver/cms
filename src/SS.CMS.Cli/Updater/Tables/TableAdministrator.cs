@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Data;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+using SS.CMS.Abstractions;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -78,27 +78,24 @@ namespace SS.CMS.Cli.Updater.Tables
 
     public partial class TableAdministrator
     {
-        public static readonly List<string> OldTableNames = new List<string>
+        public const string OldTableName = "bairong_Administrator";
+
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            "bairong_Administrator",
-            "siteserver_Administrator"
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
         };
 
-        public static ConvertInfo GetConverter(IUserRepository userRepository)
-        {
-            return new ConvertInfo
-            {
-                NewTableName = userRepository.TableName,
-                NewColumns = userRepository.TableColumns,
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
+        private static readonly string NewTableName = DataProvider.AdministratorRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.AdministratorRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(User.SiteId), nameof(PublishmentSystemId)}
+                {nameof(Administrator.SiteId), nameof(PublishmentSystemId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

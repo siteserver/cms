@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+using SS.CMS.Abstractions;
+using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
@@ -64,13 +65,17 @@ namespace SS.CMS.Cli.Updater.Tables
             "wcm_PublishmentSystem"
         };
 
-        public static ConvertInfo GetConverter(ISiteRepository siteRepository) => new ConvertInfo
+        public static ConvertInfo Converter => new ConvertInfo
         {
-            NewTableName = siteRepository.TableName,
-            NewColumns = siteRepository.TableColumns,
+            NewTableName = NewTableName,
+            NewColumns = NewColumns,
             ConvertKeyDict = ConvertKeyDict,
             ConvertValueDict = ConvertValueDict
         };
+
+        private static readonly string NewTableName = DataProvider.SiteRepository.TableName;
+
+        private static readonly List<TableColumn> NewColumns = DataProvider.SiteRepository.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
@@ -79,7 +84,7 @@ namespace SS.CMS.Cli.Updater.Tables
                 {nameof(Site.SiteName), nameof(PublishmentSystemName)},
                 {nameof(Site.TableName), nameof(AuxiliaryTableForContent)},
                 {nameof(Site.SiteDir), nameof(PublishmentSystemDir)},
-                {nameof(Site.IsRoot), nameof(IsHeadquarters)},
+                {"IsRoot", nameof(IsHeadquarters)},
                 {nameof(Site.ParentId), nameof(ParentPublishmentSystemId)}
             };
 
