@@ -6,7 +6,6 @@ using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -21,10 +20,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         private const string ExtJs = ".js";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
 
-        public TemplatesAssetsController(IAuthManager authManager)
+        public TemplatesAssetsController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -37,7 +40,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var directories = new List<Cascade<string>>();
@@ -46,7 +49,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsCssDir, ExtCss);
             await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsJsDir, ExtJs);
 
-            var siteUrl = (await PageUtility.GetSiteUrlAsync(site, string.Empty, true)).TrimEnd('/');
+            var siteUrl = (await _pathManager.GetSiteUrlAsync(site, string.Empty, true)).TrimEnd('/');
 
             return new GetResult
             {
@@ -69,10 +72,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            FileUtils.DeleteFileIfExists(await PathUtility.GetSitePathAsync(site, request.DirectoryPath, request.FileName));
+            FileUtils.DeleteFileIfExists(await _pathManager.GetSitePathAsync(site, request.DirectoryPath, request.FileName));
             await auth.AddSiteLogAsync(request.SiteId, "删除资源文件", $"{request.DirectoryPath}:{request.FileName}");
 
             return new BoolResult
@@ -91,14 +94,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             site.TemplatesAssetsIncludeDir = request.IncludeDir.Trim('/');
             site.TemplatesAssetsCssDir = request.CssDir.Trim('/');
             site.TemplatesAssetsJsDir = request.JsDir.Trim('/');
 
-            await DataProvider.SiteRepository.UpdateAsync(site);
+            await _siteRepository.UpdateAsync(site);
             await auth.AddSiteLogAsync(request.SiteId, "资源文件文件夹设置");
 
             var directories = new List<Cascade<string>>();
@@ -107,7 +110,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsCssDir, ExtCss);
             await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsJsDir, ExtJs);
 
-            var siteUrl = (await PageUtility.GetSiteUrlAsync(site, string.Empty, true)).TrimEnd('/');
+            var siteUrl = (await _pathManager.GetSiteUrlAsync(site, string.Empty, true)).TrimEnd('/');
 
             return new GetResult
             {

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -12,11 +11,15 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         private const string Route = "";
         private const string RouteRegenerate = "actions/regenerate";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly IAccessTokenRepository _accessTokenRepository;
 
-        public AdministratorsAccessTokensViewLayerController(IAuthManager authManager)
+        public AdministratorsAccessTokensViewLayerController(ISettingsManager settingsManager, IAuthManager authManager, IAccessTokenRepository accessTokenRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
+            _accessTokenRepository = accessTokenRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -29,8 +32,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var tokenInfo = await DataProvider.AccessTokenRepository.GetAsync(id);
-            var accessToken = TranslateUtils.DecryptStringBySecretKey(tokenInfo.Token, WebConfigUtils.SecretKey);
+            var tokenInfo = await _accessTokenRepository.GetAsync(id);
+            var accessToken = _settingsManager.Decrypt(tokenInfo.Token);
 
             return new GetResult
             {
@@ -49,9 +52,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var accessTokenInfo = await DataProvider.AccessTokenRepository.GetAsync(request.Id);
+            var accessTokenInfo = await _accessTokenRepository.GetAsync(request.Id);
 
-            var accessToken = TranslateUtils.DecryptStringBySecretKey(await DataProvider.AccessTokenRepository.RegenerateAsync(accessTokenInfo), WebConfigUtils.SecretKey);
+            var accessToken = _settingsManager.Decrypt(await _accessTokenRepository.RegenerateAsync(accessTokenInfo));
 
             return new RegenerateResult
             {

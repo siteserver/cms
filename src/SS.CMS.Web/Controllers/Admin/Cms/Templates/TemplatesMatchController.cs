@@ -4,7 +4,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -15,10 +14,20 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         private const string RouteCreate = "actions/create";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly ITemplateRepository _templateRepository;
 
-        public TemplatesMatchController(IAuthManager authManager)
+        public TemplatesMatchController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITemplateRepository templateRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _templateRepository = templateRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -31,14 +40,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
-            var cascade = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel, async summary =>
+            var channel = await _channelRepository.GetAsync(request.SiteId);
+            var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
-                var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
-                var entity = await DataProvider.ChannelRepository.GetAsync(summary.Id);
+                var count = await _contentRepository.GetCountAsync(site, summary);
+                var entity = await _channelRepository.GetAsync(summary.Id);
                 return new
                 {
                     Count = count,
@@ -47,8 +56,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 };
             });
 
-            var channelTemplates = await DataProvider.TemplateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var contentTemplates = await DataProvider.TemplateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
+            var channelTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var contentTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
 
             return new GetResult
             {
@@ -68,7 +77,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             if (request.ChannelIds != null && request.ChannelIds.Count > 0)
@@ -77,29 +86,29 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 {
                     foreach (var channelId in request.ChannelIds)
                     {
-                        var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                        var channelInfo = await _channelRepository.GetAsync(channelId);
                         channelInfo.ChannelTemplateId = request.TemplateId;
-                        await DataProvider.ChannelRepository.UpdateChannelTemplateIdAsync(channelInfo);
+                        await _channelRepository.UpdateChannelTemplateIdAsync(channelInfo);
                     }
                 }
                 else
                 {
                     foreach (var channelId in request.ChannelIds)
                     {
-                        var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                        var channelInfo = await _channelRepository.GetAsync(channelId);
                         channelInfo.ContentTemplateId = request.TemplateId;
-                        await DataProvider.ChannelRepository.UpdateContentTemplateIdAsync(channelInfo);
+                        await _channelRepository.UpdateContentTemplateIdAsync(channelInfo);
                     }
                 }
             }
 
             await auth.AddSiteLogAsync(request.SiteId, "模板匹配");
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
-            var cascade = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel, async summary =>
+            var channel = await _channelRepository.GetAsync(request.SiteId);
+            var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
-                var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
-                var entity = await DataProvider.ChannelRepository.GetAsync(summary.Id);
+                var count = await _contentRepository.GetCountAsync(site, summary);
+                var entity = await _channelRepository.GetAsync(summary.Id);
                 return new
                 {
                     Count = count,
@@ -124,7 +133,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             if (request.IsChannelTemplate && request.IsChildren)
@@ -146,11 +155,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
             await auth.AddSiteLogAsync(request.SiteId, "生成并匹配栏目模版");
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
-            var cascade = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel, async summary =>
+            var channel = await _channelRepository.GetAsync(request.SiteId);
+            var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
-                var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
-                var entity = await DataProvider.ChannelRepository.GetAsync(summary.Id);
+                var count = await _contentRepository.GetCountAsync(site, summary);
+                var entity = await _channelRepository.GetAsync(summary.Id);
                 return new
                 {
                     Count = count,
@@ -159,8 +168,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 };
             });
 
-            var channelTemplates = await DataProvider.TemplateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var contentTemplates = await DataProvider.TemplateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
+            var channelTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var contentTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
 
             return new GetResult
             {
@@ -172,15 +181,15 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
         private async Task CreateChannelTemplateAsync(Site site, CreateRequest request, int adminId)
         {
-            var defaultChannelTemplateId = await DataProvider.TemplateRepository.GetDefaultTemplateIdAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var relatedFileNameList = await DataProvider.TemplateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var templateNameList = await DataProvider.TemplateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var defaultChannelTemplateId = await _templateRepository.GetDefaultTemplateIdAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var relatedFileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
 
             foreach (var channelId in request.ChannelIds)
             {
                 var channelTemplateId = -1;
 
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                var nodeInfo = await _channelRepository.GetAsync(channelId);
                 if (nodeInfo.ParentId > 0)
                 {
                     channelTemplateId = nodeInfo.ChannelTemplateId;
@@ -188,7 +197,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
                 if (channelTemplateId != -1 && channelTemplateId != 0 && channelTemplateId != defaultChannelTemplateId)
                 {
-                    if (await DataProvider.TemplateRepository.GetAsync(channelTemplateId) == null)
+                    if (await _templateRepository.GetAsync(channelTemplateId) == null)
                     {
                         channelTemplateId = -1;
                     }
@@ -216,11 +225,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                     {
                         continue;
                     }
-                    var insertedTemplateId = await DataProvider.TemplateRepository.InsertAsync(site, templateInfo, string.Empty, adminId);
+                    var insertedTemplateId = await _templateRepository.InsertAsync(_pathManager, site, templateInfo, string.Empty, adminId);
                     if (nodeInfo.ParentId > 0)
                     {
                         nodeInfo.ChannelTemplateId = insertedTemplateId;
-                        await DataProvider.ChannelRepository.UpdateChannelTemplateIdAsync(nodeInfo);
+                        await _channelRepository.UpdateChannelTemplateIdAsync(nodeInfo);
 
                         //TemplateManager.UpdateChannelTemplateId(SiteId, channelId, insertedTemplateId);
                         //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(channelId, insertedTemplateID);
@@ -232,11 +241,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
         private async Task CreateChannelChildrenTemplateAsync(Site site, CreateRequest request, int adminId)
         {
-            var relatedFileNameList = await DataProvider.TemplateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var templateNameList = await DataProvider.TemplateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var relatedFileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
             foreach (var channelId in request.ChannelIds)
             {
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                var nodeInfo = await _channelRepository.GetAsync(channelId);
 
                 var templateInfo = new Template
                 {
@@ -258,13 +267,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 {
                     continue;
                 }
-                var insertedTemplateId = await DataProvider.TemplateRepository.InsertAsync(site, templateInfo, string.Empty, adminId);
-                var childChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, channelId, ScopeType.Descendant);
+                var insertedTemplateId = await _templateRepository.InsertAsync(_pathManager, site, templateInfo, string.Empty, adminId);
+                var childChannelIdList = await _channelRepository.GetChannelIdsAsync(site.Id, channelId, ScopeType.Descendant);
                 foreach (var childChannelId in childChannelIdList)
                 {
-                    var childChannelInfo = await DataProvider.ChannelRepository.GetAsync(childChannelId);
+                    var childChannelInfo = await _channelRepository.GetAsync(childChannelId);
                     childChannelInfo.ChannelTemplateId = insertedTemplateId;
-                    await DataProvider.ChannelRepository.UpdateChannelTemplateIdAsync(childChannelInfo);
+                    await _channelRepository.UpdateChannelTemplateIdAsync(childChannelInfo);
 
                     //TemplateManager.UpdateChannelTemplateId(SiteId, childChannelId, insertedTemplateId);
                     //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(childChannelId, insertedTemplateID);
@@ -274,18 +283,18 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
         private async Task CreateContentTemplateAsync(Site site, CreateRequest request, int adminId)
         {
-            var defaultContentTemplateId = await DataProvider.TemplateRepository.GetDefaultTemplateIdAsync(request.SiteId, TemplateType.ContentTemplate);
-            var relatedFileNameList = await DataProvider.TemplateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ContentTemplate);
-            var templateNameList = await DataProvider.TemplateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ContentTemplate);
+            var defaultContentTemplateId = await _templateRepository.GetDefaultTemplateIdAsync(request.SiteId, TemplateType.ContentTemplate);
+            var relatedFileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ContentTemplate);
+            var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ContentTemplate);
             foreach (var channelId in request.ChannelIds)
             {
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                var nodeInfo = await _channelRepository.GetAsync(channelId);
 
                 var contentTemplateId = nodeInfo.ContentTemplateId;
 
                 if (contentTemplateId != 0 && contentTemplateId != defaultContentTemplateId)
                 {
-                    if (await DataProvider.TemplateRepository.GetAsync(contentTemplateId) == null)
+                    if (await _templateRepository.GetAsync(contentTemplateId) == null)
                     {
                         contentTemplateId = -1;
                     }
@@ -312,11 +321,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                     {
                         continue;
                     }
-                    var insertedTemplateId = await DataProvider.TemplateRepository.InsertAsync(site, templateInfo, string.Empty, adminId);
+                    var insertedTemplateId = await _templateRepository.InsertAsync(_pathManager, site, templateInfo, string.Empty, adminId);
 
-                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                    var channelInfo = await _channelRepository.GetAsync(channelId);
                     channelInfo.ContentTemplateId = insertedTemplateId;
-                    await DataProvider.ChannelRepository.UpdateContentTemplateIdAsync(channelInfo);
+                    await _channelRepository.UpdateContentTemplateIdAsync(channelInfo);
 
                     //TemplateManager.UpdateContentTemplateId(SiteId, channelId, insertedTemplateId);
                     //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(channelId, insertedTemplateID);
@@ -326,11 +335,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
         private async Task CreateContentChildrenTemplateAsync(Site site, CreateRequest request, int adminId)
         {
-            var relatedFileNameList = await DataProvider.TemplateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ContentTemplate);
-            var templateNameList = await DataProvider.TemplateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ContentTemplate);
+            var relatedFileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ContentTemplate);
+            var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ContentTemplate);
             foreach (var channelId in request.ChannelIds)
             {
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                var nodeInfo = await _channelRepository.GetAsync(channelId);
 
                 var templateInfo = new Template
                 {
@@ -352,13 +361,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 {
                     continue;
                 }
-                var insertedTemplateId = await DataProvider.TemplateRepository.InsertAsync(site, templateInfo, string.Empty, adminId);
-                var childChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, channelId, ScopeType.Descendant);
+                var insertedTemplateId = await _templateRepository.InsertAsync(_pathManager, site, templateInfo, string.Empty, adminId);
+                var childChannelIdList = await _channelRepository.GetChannelIdsAsync(request.SiteId, channelId, ScopeType.Descendant);
                 foreach (var childChannelId in childChannelIdList)
                 {
-                    var childChannelInfo = await DataProvider.ChannelRepository.GetAsync(childChannelId);
+                    var childChannelInfo = await _channelRepository.GetAsync(childChannelId);
                     childChannelInfo.ContentTemplateId = insertedTemplateId;
-                    await DataProvider.ChannelRepository.UpdateContentTemplateIdAsync(childChannelInfo);
+                    await _channelRepository.UpdateContentTemplateIdAsync(childChannelInfo);
 
                     //TemplateManager.UpdateContentTemplateId(SiteId, childChannelId, insertedTemplateId);
                     //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(childChannelId, insertedTemplateID);

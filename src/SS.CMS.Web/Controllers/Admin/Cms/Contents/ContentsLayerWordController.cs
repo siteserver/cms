@@ -9,7 +9,6 @@ using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
 using SS.CMS.Core.Office;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
@@ -21,12 +20,22 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         private const string RouteUpload = "actions/upload";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ContentsLayerWordController(IAuthManager authManager, ICreateManager createManager)
+        public ContentsLayerWordController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -42,10 +51,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return this.Error("无法确定内容对应的栏目");
 
             var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(auth.AdminPermissions, site, request.SiteId);
@@ -71,7 +80,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             if (request.File == null)
             {
@@ -86,11 +95,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return this.Error("文件只能是 Word 格式，请选择有效的文件上传!");
             }
 
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
-            var url = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            var url = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
 
             return new UploadResult
             {
@@ -112,14 +121,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return this.Error("无法确定内容对应的栏目");
 
-            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
-            var styleList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(channelInfo, tableName);
+            var tableName = await _channelRepository.GetTableNameAsync(site, channelInfo);
+            var styleList = await _tableStyleRepository.GetContentStyleListAsync(channelInfo, tableName);
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
 
             var contentIdList = new List<int>();
@@ -127,12 +136,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             {
                 if (string.IsNullOrEmpty(fileName)) continue;
 
-                var filePath = PathUtility.GetTemporaryFilesPath(fileName);
-                var (title, content) = await WordManager.GetWordAsync(site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
+                var filePath = _pathManager.GetTemporaryFilesPath(fileName);
+                var (title, content) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
 
                 if (string.IsNullOrEmpty(title)) continue;
 
-                var dict = await ColumnsManager.SaveAttributesAsync(site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value);
+                var dict = await ColumnsManager.SaveAttributesAsync(_pathManager, site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value);
 
                 var contentInfo = new Content(dict)
                 {
@@ -148,7 +157,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 };
 
                 contentInfo.Set(ContentAttribute.Content, content);
-                await DataProvider.ContentRepository.InsertAsync(site, channelInfo, contentInfo);
+                await _contentRepository.InsertAsync(site, channelInfo, contentInfo);
                 contentIdList.Add(contentInfo.Id);
             }
 

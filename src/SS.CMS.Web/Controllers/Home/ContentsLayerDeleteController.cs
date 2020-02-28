@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Home
 {
@@ -15,11 +14,17 @@ namespace SS.CMS.Web.Controllers.Home
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerDeleteController(IAuthManager authManager, ICreateManager createManager)
+        public ContentsLayerDeleteController(IAuthManager authManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -32,16 +37,16 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
             var retVal = new List<IDictionary<string, object>>();
             foreach (var contentId in request.ContentIds)
             {
-                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channel, contentId);
+                var contentInfo = await _contentRepository.GetAsync(site, channel, contentId);
                 if (contentInfo == null) continue;
 
                 var dict = contentInfo.ToDictionary();
@@ -66,10 +71,10 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
             if (!request.IsRetainFiles)
@@ -80,21 +85,21 @@ namespace SS.CMS.Web.Controllers.Home
             if (request.ContentIds.Count == 1)
             {
                 var contentId = request.ContentIds[0];
-                var content = await DataProvider.ContentRepository.GetAsync(site, channel, contentId);
+                var content = await _contentRepository.GetAsync(site, channel, contentId);
                 if (content != null)
                 {
                     await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, contentId, "删除内容",
-                        $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId)},内容标题:{content.Title}");
+                        $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId)},内容标题:{content.Title}");
                 }
 
             }
             else
             {
                 await auth.AddSiteLogAsync(request.SiteId, "批量删除内容",
-                    $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId)},内容条数:{request.ContentIds.Count}");
+                    $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId)},内容条数:{request.ContentIds.Count}");
             }
 
-            await DataProvider.ContentRepository.RecycleContentsAsync(site, channel, request.ContentIds, auth.AdminId);
+            await _contentRepository.RecycleContentsAsync(site, channel, request.ContentIds, auth.AdminId);
 
             await _createManager.TriggerContentChangedEventAsync(request.SiteId, request.ChannelId);
 

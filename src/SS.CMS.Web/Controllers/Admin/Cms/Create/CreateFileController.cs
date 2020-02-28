@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Create
 {
@@ -14,11 +13,15 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly ITemplateRepository _templateRepository;
 
-        public CreateFileController(IAuthManager authManager, ICreateManager createManager)
+        public CreateFileController(IAuthManager authManager, ICreateManager createManager, ISiteRepository siteRepository, ITemplateRepository templateRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _templateRepository = templateRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -31,11 +34,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var templates =
-                await DataProvider.TemplateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.FileTemplate);
+                await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.FileTemplate);
 
             return new GetResult
             {

@@ -2,12 +2,13 @@
 using System.Text;
 using SS.CMS.Abstractions;
 using SS.CMS.StlParser.Model;
-using SS.CMS.StlParser.Parsers;
 using SS.CMS.StlParser.StlEntity;
 using SS.CMS.StlParser.Utility;
 using System.Threading.Tasks;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.Api.Stl;
-using SS.CMS.Framework;
+using SS.CMS.Core;
+using SS.CMS.Services;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -35,8 +36,11 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "动态请求失败后执行的JS代码")]
         private const string OnError = nameof(OnError);
 
-        internal static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        internal static async Task<object> ParseAsync(IParseManager parseManager)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             // 如果是实体标签则返回空
             if (contextInfo.IsStlEntity)
             {
@@ -55,7 +59,7 @@ namespace SS.CMS.StlParser.StlElement
 
                 if (StringUtils.EqualsIgnoreCase(name, Context))
                 {
-                    contextInfo.ContextType = TranslateUtils.ToEnum(value, ContextType.Undefined);
+                    contextInfo.ContextType = TranslateUtils.ToEnum(value, ParseType.Undefined);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Inline))
                 {
@@ -63,19 +67,19 @@ namespace SS.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, OnBeforeSend))
                 {
-                    onBeforeSend = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    onBeforeSend = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, OnSuccess))
                 {
-                    onSuccess = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    onSuccess = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, OnComplete))
                 {
-                    onComplete = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    onComplete = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, OnError))
                 {
-                    onError = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    onError = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
             }
 
@@ -83,31 +87,31 @@ namespace SS.CMS.StlParser.StlElement
             if (!string.IsNullOrEmpty(loading))
             {
                 var innerBuilder = new StringBuilder(loading);
-                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+                await parseManager.ParseInnerContentAsync(innerBuilder);
                 loading = innerBuilder.ToString();
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, loading, template, inline, onBeforeSend, onSuccess, onComplete, onError);
+            return await ParseImplAsync(parseManager, loading, template, inline, onBeforeSend, onSuccess, onComplete, onError);
         }
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.StlClient);
+            await parseManager.PageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.StlClient);
 
             //运行解析以便为页面生成所需JS引用
             if (!string.IsNullOrEmpty(template))
             {
-                await StlParserManager.ParseInnerContentAsync(new StringBuilder(template), pageInfo, contextInfo);
+                await parseManager.ParseInnerContentAsync(new StringBuilder(template));
             }
 
             var dynamicInfo = new DynamicInfo
             {
                 ElementName = ElementName,
-                SiteId = pageInfo.SiteId,
-                ChannelId = contextInfo.ChannelId,
-                ContentId = contextInfo.ContentId,
-                TemplateId = pageInfo.Template.Id,
-                AjaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId),
+                SiteId = parseManager.PageInfo.SiteId,
+                ChannelId = parseManager.ContextInfo.ChannelId,
+                ContentId = parseManager.ContextInfo.ContentId,
+                TemplateId = parseManager.PageInfo.Template.Id,
+                AjaxDivId = StlParserUtility.GetAjaxDivId(parseManager.PageInfo.UniqueId),
                 LoadingTemplate = loading,
                 SuccessTemplate = template,
                 OnBeforeSend = onBeforeSend,
@@ -116,28 +120,29 @@ namespace SS.CMS.StlParser.StlElement
                 OnError = onError
             };
 
-            return dynamicInfo.GetScript(ApiRouteActionsDynamic.GetUrl(pageInfo.ApiUrl), inline);
+            return dynamicInfo.GetScript(ApiRouteActionsDynamic.GetUrl(parseManager.PageInfo.ApiUrl), inline);
         }
 
-        internal static async Task<string> ParseDynamicElementAsync(string stlElement, PageInfo pageInfo, ContextInfo contextInfo)
+        internal static async Task<string> ParseDynamicElementAsync(string stlElement, IParseManager parseManager)
         {
             stlElement = StringUtils.ReplaceIgnoreCase(stlElement, "isdynamic=\"true\"", string.Empty);
-            return await ParseImplAsync(pageInfo, contextInfo, string.Empty, stlElement, true, string.Empty, string.Empty, string.Empty, string.Empty);
+            return await ParseImplAsync(parseManager, string.Empty, stlElement, true, string.Empty, string.Empty, string.Empty, string.Empty);
         }
 
-        public static async Task<string> ParseDynamicContentAsync(DynamicInfo dynamicInfo, string template)
+        public static async Task<string> ParseDynamicContentAsync(IParseManager parseManager, DynamicInfo dynamicInfo, string template)
         {
+            var databaseManager = parseManager.DatabaseManager;
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
-            var templateInfo = await DataProvider.TemplateRepository.GetAsync(dynamicInfo.TemplateId);
-            var siteInfo = await DataProvider.SiteRepository.GetAsync(dynamicInfo.SiteId);
-            var pageInfo = await PageInfo.GetPageInfoAsync(dynamicInfo.ChannelId, dynamicInfo.ContentId, siteInfo,
+            var templateInfo = await databaseManager.TemplateRepository.GetAsync(dynamicInfo.TemplateId);
+            var siteInfo = await databaseManager.SiteRepository.GetAsync(dynamicInfo.SiteId);
+            var pageInfo = ParsePage.GetPageInfo(parseManager.PathManager, parseManager.PageInfo.Config, dynamicInfo.ChannelId, dynamicInfo.ContentId, siteInfo,
                 templateInfo, new Dictionary<string, object>());
 
             pageInfo.UniqueId = 1000;
             pageInfo.User = dynamicInfo.User;
 
-            var contextInfo = new ContextInfo(pageInfo);
+            var contextInfo = new ParseContext(pageInfo);
 
             var templateContent = StlRequestEntities.ParseRequestEntities(dynamicInfo.QueryString, template);
             var contentBuilder = new StringBuilder(templateContent);
@@ -152,7 +157,7 @@ namespace SS.CMS.StlParser.StlElement
                 var stlPageContentsElement = stlElement;
                 var stlPageContentsElementReplaceString = stlElement;
 
-                var pageContentsElementParser = await StlPageContents.GetAsync(stlPageContentsElement, pageInfo, contextInfo);
+                var pageContentsElementParser = await StlPageContents.GetAsync(stlPageContentsElement, parseManager);
                 var (pageCount, totalNum) = pageContentsElementParser.GetPageCount();
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -162,7 +167,7 @@ namespace SS.CMS.StlParser.StlElement
                         var pageHtml = await pageContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                         contentBuilder.Replace(stlPageContentsElementReplaceString, pageHtml);
 
-                        await StlParserManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
+                        await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
 
                         break;
                     }
@@ -175,7 +180,7 @@ namespace SS.CMS.StlParser.StlElement
                 var stlPageChannelsElement = stlElement;
                 var stlPageChannelsElementReplaceString = stlElement;
 
-                var pageChannelsElementParser = await StlPageChannels.GetAsync(stlPageChannelsElement, pageInfo, contextInfo);
+                var pageChannelsElementParser = await StlPageChannels.GetAsync(stlPageChannelsElement, parseManager);
                 var pageCount = pageChannelsElementParser.GetPageCount(out var totalNum);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -185,7 +190,7 @@ namespace SS.CMS.StlParser.StlElement
                     var pageHtml = await pageChannelsElementParser.ParseAsync(currentPageIndex, pageCount);
                     contentBuilder.Replace(stlPageChannelsElementReplaceString, pageHtml);
 
-                    await StlParserManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
+                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
 
                     break;
                 }
@@ -197,7 +202,7 @@ namespace SS.CMS.StlParser.StlElement
                 var stlPageSqlContentsElement = stlElement;
                 var stlPageSqlContentsElementReplaceString = stlElement;
 
-                var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlPageSqlContentsElement, pageInfo, contextInfo);
+                var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlPageSqlContentsElement, parseManager);
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out var totalNum);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -207,7 +212,7 @@ namespace SS.CMS.StlParser.StlElement
                     var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                     contentBuilder.Replace(stlPageSqlContentsElementReplaceString, pageHtml);
 
-                    await StlParserManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
+                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
 
                     break;
                 }
@@ -223,13 +228,13 @@ namespace SS.CMS.StlParser.StlElement
                 {
                     if (currentPageIndex != pageIndex) continue;
 
-                    await StlParserManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, pageContentsAjaxDivId);
+                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, pageContentsAjaxDivId);
 
                     break;
                 }
             }
 
-            await StlParserManager.ParseInnerContentAsync(contentBuilder, pageInfo, contextInfo);
+            await parseManager.ParseInnerContentAsync(contentBuilder);
 
             //var parsedContent = StlParserUtility.GetBackHtml(contentBuilder.ToString(), pageInfo);
             //return pageInfo.HeadCodesHtml + pageInfo.BodyCodesHtml + parsedContent + pageInfo.FootCodesHtml;

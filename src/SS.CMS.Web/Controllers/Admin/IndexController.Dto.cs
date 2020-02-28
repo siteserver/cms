@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Controllers.Admin.Settings.Sites;
 
 namespace SS.CMS.Web.Controllers.Admin
@@ -34,7 +33,6 @@ namespace SS.CMS.Web.Controllers.Admin
             public string ProductVersion { get; set; }
             public string PluginVersion { get; set; }
             public string TargetFramework { get; set; }
-            public string EnvironmentVersion { get; set; }
             public string AdminLogoUrl { get; set; }
             public string AdminTitle { get; set; }
             public bool IsSuperAdmin { get; set; }
@@ -57,7 +55,7 @@ namespace SS.CMS.Web.Controllers.Admin
             public string Version { get; set; }
         }
 
-        private async Task<List<Tab>> GetTopMenusAsync(Site siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions, List<string> permissionList, List<Tab> siteMenus)
+        private async Task<List<Tab>> GetTopMenusAsync(TabManager tabManager, Site siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions, List<string> permissionList, List<Tab> siteMenus)
         {
             var menus = new List<Tab>();
 
@@ -75,10 +73,10 @@ namespace SS.CMS.Web.Controllers.Admin
                     var switchMenus = new List<Tab>();
                     var allSiteMenus = new List<Tab>();
 
-                    var siteIdList = await DataProvider.SiteRepository.GetLatestSiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
+                    var siteIdList = await _siteRepository.GetLatestSiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
                     foreach (var siteId in siteIdList)
                     {
-                        var site = await DataProvider.SiteRepository.GetAsync(siteId);
+                        var site = await _siteRepository.GetAsync(siteId);
                         if (site == null) continue;
 
                         allSiteMenus.Add(new Tab
@@ -114,9 +112,9 @@ namespace SS.CMS.Web.Controllers.Admin
 
             if (isSuperAdmin)
             {
-                foreach (var tab in TabManager.GetTopMenuTabs())
+                foreach (var tab in tabManager.GetTopMenuTabs())
                 {
-                    var tabs = await TabManager.GetTabListAsync(tab.Id, 0);
+                    var tabs = await tabManager.GetTabListAsync(tab.Id, 0);
                     tab.Children = tabs.ToArray();
 
                     menus.Add(tab);
@@ -124,9 +122,9 @@ namespace SS.CMS.Web.Controllers.Admin
             }
             else
             {
-                foreach (var tab in TabManager.GetTopMenuTabs())
+                foreach (var tab in tabManager.GetTopMenuTabs())
                 {
-                    if (!TabManager.IsValid(tab, permissionList)) continue;
+                    if (!tabManager.IsValid(tab, permissionList)) continue;
 
                     var tabToAdd = new Tab
                     {
@@ -136,16 +134,16 @@ namespace SS.CMS.Web.Controllers.Admin
                         Target = tab.Target,
                         Href = tab.Href
                     };
-                    var tabs = await TabManager.GetTabListAsync(tab.Id, 0);
+                    var tabs = await tabManager.GetTabListAsync(tab.Id, 0);
                     var tabsToAdd = new List<Tab>();
                     foreach (var menu in tabs)
                     {
-                        if (!TabManager.IsValid(menu, permissionList)) continue;
+                        if (!tabManager.IsValid(menu, permissionList)) continue;
 
                         Tab[] children = null;
                         if (menu.Children != null)
                         {
-                            children = menu.Children.Where(child => TabManager.IsValid(child, permissionList))
+                            children = menu.Children.Where(child => tabManager.IsValid(child, permissionList))
                                 .ToArray();
                         }
 
@@ -168,14 +166,14 @@ namespace SS.CMS.Web.Controllers.Admin
             return menus;
         }
 
-        private static async Task<List<Tab>> GetLeftMenusAsync(Site site, string topId, bool isSuperAdmin, List<string> permissionList)
+        private static async Task<List<Tab>> GetLeftMenusAsync(TabManager tabManager, Site site, string topId, bool isSuperAdmin, List<string> permissionList)
         {
             var menus = new List<Tab>();
 
-            var tabs = await TabManager.GetTabListAsync(topId, site.Id);
+            var tabs = await tabManager.GetTabListAsync(topId, site.Id);
             foreach (var parent in tabs)
             {
-                if (!isSuperAdmin && !TabManager.IsValid(parent, permissionList)) continue;
+                if (!isSuperAdmin && !tabManager.IsValid(parent, permissionList)) continue;
 
                 var children = new List<Tab>();
                 if (parent.Children != null && parent.Children.Length > 0)
@@ -185,7 +183,7 @@ namespace SS.CMS.Web.Controllers.Admin
                     {
                         foreach (var childTab in tabCollection.Tabs)
                         {
-                            if (!isSuperAdmin && !TabManager.IsValid(childTab, permissionList)) continue;
+                            if (!isSuperAdmin && !tabManager.IsValid(childTab, permissionList)) continue;
 
                             children.Add(new Tab
                             {
@@ -224,6 +222,28 @@ namespace SS.CMS.Web.Controllers.Admin
             }
 
             return href;
+        }
+
+        public async Task<(bool redirect, string redirectUrl)> AdminRedirectCheckAsync()
+        {
+            var redirect = false;
+            var redirectUrl = string.Empty;
+
+            var config = await _configRepository.GetAsync();
+
+            if (string.IsNullOrEmpty(_settingsManager.Database.ConnectionString))
+            {
+                redirect = true;
+                redirectUrl = _pathManager.GetAdminUrl(InstallController.Route);
+            }
+            else if (config.Initialized &&
+                     config.DatabaseVersion != _settingsManager.ProductVersion)
+            {
+                redirect = true;
+                redirectUrl = _pathManager.GetAdminUrl(SyncDatabaseController.Route);
+            }
+
+            return (redirect, redirectUrl);
         }
     }
 }

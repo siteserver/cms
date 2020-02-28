@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using SS.CMS.StlParser.Model;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
+using SS.CMS.Abstractions.Parse;
 
 namespace SS.CMS.Core
 {
@@ -27,36 +26,5 @@ namespace SS.CMS.Core
                 };
                 return list;
             });
-
-        public static async Task<string> AddStlErrorLogAsync(PageInfo pageInfo, string elementName, string stlContent, Exception ex)
-        {
-            var summary = string.Empty;
-            if (pageInfo != null)
-            {
-                summary = $@"站点名称：{pageInfo.Site.SiteName}，
-模板类型：{pageInfo.Template.TemplateType.GetDisplayName()}，
-模板名称：{pageInfo.Template.TemplateName}
-<br />";
-            }
-
-            summary += $@"STL标签：{WebUtils.HtmlEncode(stlContent)}";
-            await DataProvider.ErrorLogRepository.AddErrorLogAsync(new ErrorLog
-            {
-                Id = 0,
-                Category = LogUtils.CategoryStl,
-                PluginId = string.Empty,
-                Message = ex.Message,
-                StackTrace = ex.StackTrace,
-                Summary = summary,
-                AddDate = DateTime.Now
-            });
-
-            return $@"
-<!--
-{elementName}
-error: {ex.Message}
-stl: {stlContent}
--->";
-        }
     }
 }

@@ -10,7 +10,7 @@ namespace SS.CMS.Core
 {
     public static class FileUtility
     {
-        public static async Task AddWaterMarkAsync(Site site, string imagePath)
+        public static async Task AddWaterMarkAsync(IPathManager pathManager, Site site, string imagePath)
         {
             try
             {
@@ -23,7 +23,7 @@ namespace SS.CMS.Core
                         {
                             if (!string.IsNullOrEmpty(site.WaterMarkImagePath))
                             {
-                                ImageUtils.AddImageWaterMark(imagePath, await PathUtility.MapPathAsync(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
+                                ImageUtils.AddImageWaterMark(imagePath, await pathManager.MapPathAsync(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
                             }
                         }
                         else
@@ -43,12 +43,12 @@ namespace SS.CMS.Core
             }
         }
 
-        public static async Task MoveFileAsync(Site sourceSite, Site destSite, string relatedUrl)
+        public static async Task MoveFileAsync(IPathManager pathManager, Site sourceSite, Site destSite, string relatedUrl)
         {
             if (!string.IsNullOrEmpty(relatedUrl))
             {
-                var sourceFilePath = await PathUtility.MapPathAsync(sourceSite, relatedUrl);
-                var descFilePath = await PathUtility.MapPathAsync(destSite, relatedUrl);
+                var sourceFilePath = await pathManager.MapPathAsync(sourceSite, relatedUrl);
+                var descFilePath = await pathManager.MapPathAsync(destSite, relatedUrl);
                 if (FileUtils.IsFileExists(sourceFilePath))
                 {
                     FileUtils.MoveFile(sourceFilePath, descFilePath, false);
@@ -56,7 +56,7 @@ namespace SS.CMS.Core
             }
         }
 
-        public static async Task MoveFileByContentAsync(Site sourceSite, Site destSite, Content content)
+        public static async Task MoveFileByContentAsync(IPathManager pathManager, Site sourceSite, Site destSite, Content content)
         {
             if (content == null || sourceSite.Id == destSite.Id) return;
 
@@ -107,9 +107,9 @@ namespace SS.CMS.Core
 
                 foreach (var fileUrl in fileUrls)
                 {
-                    if (!string.IsNullOrEmpty(fileUrl) && PageUtility.IsVirtualUrl(fileUrl))
+                    if (!string.IsNullOrEmpty(fileUrl) && pathManager.IsVirtualUrl(fileUrl))
                     {
-                        await MoveFileAsync(sourceSite, destSite, fileUrl);
+                        await MoveFileAsync(pathManager, sourceSite, destSite, fileUrl);
                     }
                 }
             }
@@ -119,15 +119,15 @@ namespace SS.CMS.Core
             }
         }
 
-        public static async Task MoveFileByVirtaulUrlAsync(Site sourceSite, Site destSite, string fileVirtaulUrl)
+        public static async Task MoveFileByVirtaulUrlAsync(IPathManager pathManager, Site sourceSite, Site destSite, string fileVirtaulUrl)
         {
             if (string.IsNullOrEmpty(fileVirtaulUrl) || sourceSite.Id == destSite.Id) return;
 
             try
             {
-                if (PageUtility.IsVirtualUrl(fileVirtaulUrl))
+                if (pathManager.IsVirtualUrl(fileVirtaulUrl))
                 {
-                    await MoveFileAsync(sourceSite, destSite, fileVirtaulUrl);
+                    await MoveFileAsync(pathManager, sourceSite, destSite, fileVirtaulUrl);
                 }
             }
             catch

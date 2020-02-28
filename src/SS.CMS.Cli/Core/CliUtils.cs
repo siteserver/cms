@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mono.Options;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Core
@@ -12,12 +12,36 @@ namespace SS.CMS.Cli.Core
     public static class CliUtils
     {
         public const int PageSize = 500;
-
-        public static readonly string PhysicalApplicationPath = Environment.CurrentDirectory;
-
-        public static ServiceProvider Provider { get; set; }
+        private static ServiceProvider Provider { get; set; }
 
         private const int ConsoleTableWidth = 77;
+
+        public static void SetProvider(ServiceProvider provider)
+        {
+            Provider = provider;
+        }
+
+        public static Application GetApplication()
+        {
+            return Provider.GetRequiredService<Application>();
+        }
+
+        public static IJobService GetJobService(string commandName)
+        {
+            var services = Provider.GetServices<IJobService>();
+            return services.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.CommandName, commandName));
+        }
+
+        public static IEnumerable<string> GetJobServiceCommandNames()
+        {
+            var services = Provider.GetServices<IJobService>();
+            return services.Select(x => x.CommandName);
+        }
+
+        public static IEnumerable<IJobService> GetJobServices()
+        {
+            return Provider.GetServices<IJobService>();
+        }
 
         private static string AlignCentre(string text, int width)
         {
@@ -90,9 +114,9 @@ namespace SS.CMS.Cli.Core
             await Console.Out.WriteLineAsync(errorMessage);
         }
 
-        public static string CreateErrorLogFile(string commandName)
+        public static string CreateErrorLogFile(string commandName, ISettingsManager settingsManager)
         {
-            var filePath = PathUtils.Combine(PhysicalApplicationPath, $"{commandName}.error.log");
+            var filePath = PathUtils.Combine(settingsManager.ContentRootPath, $"{commandName}.error.log");
             FileUtils.DeleteFileIfExists(filePath);
             return filePath;
         }
@@ -136,12 +160,12 @@ namespace SS.CMS.Cli.Core
             await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
         }
 
-        public static string GetWebConfigPath(string configFile)
+        public static string GetWebConfigPath(string configFile, ISettingsManager settingsManager)
         {
             return PathUtils.IsFilePath(configFile)
                 ? configFile
-                : PathUtils.Combine(PhysicalApplicationPath,
-                    !string.IsNullOrEmpty(configFile) ? configFile : WebConfigUtils.WebConfigFileName);
+                : PathUtils.Combine(settingsManager.ContentRootPath,
+                    !string.IsNullOrEmpty(configFile) ? configFile : Constants.ConfigFileName);
         }
     }
 }

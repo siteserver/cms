@@ -12,8 +12,6 @@ namespace SS.CMS.Web.Controllers.Admin
 {
     public partial class LoginController
     {
-        private const string RouteCaptcha = "actions/captcha";
-
         private static readonly Color[] Colors = { Color.FromArgb(37, 72, 91), Color.FromArgb(68, 24, 25), Color.FromArgb(17, 46, 2), Color.FromArgb(70, 16, 100), Color.FromArgb(24, 88, 74) };
 
         public class CheckRequest

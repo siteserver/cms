@@ -2,9 +2,10 @@
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
+using SS.CMS.Core;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -26,7 +27,7 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "页面当前位置的 Id 属性")]
         private const string LocationId = nameof(LocationId);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
 		    var titleId = string.Empty;
             var bodyId = string.Empty;
@@ -34,9 +35,9 @@ namespace SS.CMS.StlParser.StlElement
             var locationId = string.Empty;
             var attributes = new NameValueCollection();
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, TitleId))
                 {
@@ -60,17 +61,20 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, attributes, titleId, bodyId, logoId, locationId);
+            return await ParseImplAsync(parseManager, attributes, titleId, bodyId, logoId, locationId);
 		}
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string titleId, string bodyId, string logoId, string locationId)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, NameValueCollection attributes, string titleId, string bodyId, string logoId, string locationId)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             var jsUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Print.Js);
 
             var iconUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Print.IconUrl);
-            if (!pageInfo.BodyCodes.ContainsKey(PageInfo.Const.JsAfStlPrinter))
+            if (!pageInfo.BodyCodes.ContainsKey(ParsePage.Const.JsAfStlPrinter))
             {
-                pageInfo.BodyCodes.Add(PageInfo.Const.JsAfStlPrinter, $@"
+                pageInfo.BodyCodes.Add(ParsePage.Const.JsAfStlPrinter, $@"
 <script language=""JavaScript"" type=""text/javascript"">
 function stlLoadPrintJsCallBack()
 {{
@@ -145,7 +149,7 @@ function stlLoadPrintJs()
             else
             {
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+                await parseManager.ParseInnerContentAsync(innerBuilder);
                 innerHtml = innerBuilder.ToString();
             }
 

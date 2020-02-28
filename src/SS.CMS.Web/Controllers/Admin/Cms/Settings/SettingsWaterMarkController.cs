@@ -7,7 +7,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
@@ -19,10 +18,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string RouteUpload = "actions/upload";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
 
-        public SettingsWaterMarkController(IAuthManager authManager)
+        public SettingsWaterMarkController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -35,9 +38,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             var families = new InstalledFontCollection().Families.Select(x => x.Name);
-            var imageUrl = await PageUtility.ParseNavigationUrlAsync(site, site.WaterMarkImagePath, true);
+            var imageUrl = await _pathManager.ParseNavigationUrlAsync(site, site.WaterMarkImagePath, true);
 
             return new GetResult
             {
@@ -58,7 +61,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             if (request.File == null)
             {
@@ -68,8 +71,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             var fileName = Path.GetFileName(request.File.FileName);
 
             var fileExtName = PathUtils.GetExtension(fileName).ToLower();
-            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, fileExtName);
-            var localFileName = PathUtility.GetUploadFileName(site, fileName);
+            var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
+            var localFileName = _pathManager.GetUploadFileName(site, fileName);
             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
             if (!FileUtils.IsImage(fileExtName))
@@ -78,8 +81,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             }
 
             request.File.CopyTo(new FileStream(localFilePath, FileMode.Create));
-            var imageUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, localFilePath, true);
-            var virtualUrl = PageUtility.GetVirtualUrl(site, imageUrl);
+            var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, localFilePath, true);
+            var virtualUrl = _pathManager.GetVirtualUrl(site, imageUrl);
 
             return new UploadResult
             {
@@ -98,7 +101,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             site.IsWaterMark = request.IsWaterMark;
             site.WaterMarkPosition = request.WaterMarkPosition;
@@ -109,9 +112,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             site.WaterMarkFormatString = request.WaterMarkFormatString;
             site.WaterMarkFontName = request.WaterMarkFontName;
             site.WaterMarkFontSize = request.WaterMarkFontSize;
-            site.WaterMarkImagePath = PageUtility.GetVirtualUrl(site, request.WaterMarkImagePath);
+            site.WaterMarkImagePath = _pathManager.GetVirtualUrl(site, request.WaterMarkImagePath);
 
-            await DataProvider.SiteRepository.UpdateAsync(site);
+            await _siteRepository.UpdateAsync(site);
 
             await auth.AddSiteLogAsync(request.SiteId, "修改图片水印设置");
 

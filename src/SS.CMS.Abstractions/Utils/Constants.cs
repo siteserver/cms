@@ -9,7 +9,10 @@ namespace SS.CMS.Abstractions
     {
         public const string AdminRootDirectory = "Pages";
         public const string ConfigFileName = "ss.json";
+        public const string DefaultAdminDirectory = "siteserver";
+        public const string DefaultHomeDirectory = "home";
         public const string DefaultLanguage = "en";
+        public const string DefaultSQLiteFileName = "ss.sqlite";
         public const string ApiPrefix = "/api";
         public const string ApiRoute = "admin";
         public const string AbstractionsAssemblyName = "SS.CMS.Abstractions.dll";

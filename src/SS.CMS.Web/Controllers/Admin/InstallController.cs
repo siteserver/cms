@@ -9,19 +9,28 @@ using SS.CMS.Core;
 
 namespace SS.CMS.Web.Controllers.Admin
 {
-    [Route("admin/install")]
+    [Route(Constants.ApiRoute)]
     public partial class InstallController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteActionsConnect = "actions/connect";
+        public const string Route = "install";
+        private const string RouteDatabaseConnect = "install/actions/databaseConnect";
+        private const string RouteRedisConnect = "install/actions/redisConnect";
+        private const string RouteInstall = "install/actions/install";
+        private const string RoutePrepare = "install/actions/prepare";
 
         private readonly ISettingsManager _settingsManager;
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
         private readonly IConfigRepository _configRepository;
+        private readonly IAdministratorRepository _administratorRepository;
 
-        public InstallController(ISettingsManager settingsManager, IConfigRepository configRepository)
+        public InstallController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
         {
             _settingsManager = settingsManager;
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
             _configRepository = configRepository;
+            _administratorRepository = administratorRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -39,7 +48,7 @@ namespace SS.CMS.Web.Controllers.Admin
             try
             {
                 var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, "version.txt");
-                FileUtils.WriteText(filePath, SystemManager.ProductVersion);
+                FileUtils.WriteText(filePath, _settingsManager.ProductVersion);
 
                 var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, _settingsManager.ContentRootPath);
                 ioPermission.Demand();
@@ -69,13 +78,14 @@ namespace SS.CMS.Web.Controllers.Admin
 
             var result = new GetResult
             {
-                ProductVersion = SystemManager.ProductVersion,
-                NetVersion = SystemManager.TargetFramework,
+                ProductVersion = _settingsManager.ProductVersion,
+                NetVersion = _settingsManager.TargetFramework,
                 ContentRootPath = _settingsManager.ContentRootPath,
+                WebRootPath = _settingsManager.WebRootPath,
                 RootWritable = rootWritable,
                 SiteFilesWritable = siteFilesWritable,
                 DatabaseTypes = new List<Select<string>>(),
-                AdminUrl = PageUtils.GetLoginUrl(),
+                AdminUrl = _pathManager.GetAdminUrl(LoginController.Route),
                 OraclePrivileges = new List<Select<string>>()
             };
 

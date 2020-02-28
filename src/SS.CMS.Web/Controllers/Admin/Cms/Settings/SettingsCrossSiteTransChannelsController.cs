@@ -8,7 +8,6 @@ using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
@@ -20,10 +19,18 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string RouteOptions = "actions/options";
 
         private readonly IAuthManager _authManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public SettingsCrossSiteTransChannelsController(IAuthManager authManager)
+        public SettingsCrossSiteTransChannelsController(IAuthManager authManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -37,15 +44,17 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
-            var cascade = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel, async summary =>
+            var crossSiteTransManager = new CrossSiteTransManager(_databaseManager);
+
+            var channel = await _channelRepository.GetAsync(request.SiteId);
+            var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
-                var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
-                var entity = await DataProvider.ChannelRepository.GetAsync(summary.Id);
-                var contribute = await CrossSiteTransUtility.GetDescriptionAsync(request.SiteId, entity);
+                var count = await _contentRepository.GetCountAsync(site, summary);
+                var entity = await _channelRepository.GetAsync(summary.Id);
+                var contribute = await crossSiteTransManager.GetDescriptionAsync(request.SiteId, entity);
 
                 return new
                 {
@@ -91,10 +100,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
 
             var result = new GetOptionsResult
             {
@@ -136,10 +145,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                     result.TransSiteId = request.SiteId;
                 }
                 
-                var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
+                var siteIdList = await _siteRepository.GetSiteIdListAsync();
                 foreach (var siteId in siteIdList)
                 {
-                    var info = await DataProvider.SiteRepository.GetAsync(siteId);
+                    var info = await _siteRepository.GetAsync(siteId);
                     var show = false;
                     if (request.TransType == TransType.SpecifiedSite)
                     {
@@ -184,11 +193,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 
             if (result.IsTransChannelIds && result.TransSiteId > 0)
             {
-                var transChannels = await DataProvider.ChannelRepository.GetAsync(result.TransSiteId);
-                var transSite = await DataProvider.SiteRepository.GetAsync(result.TransSiteId);
-                var cascade = await DataProvider.ChannelRepository.GetCascadeAsync(transSite, transChannels, async summary =>
+                var transChannels = await _channelRepository.GetAsync(result.TransSiteId);
+                var transSite = await _siteRepository.GetAsync(result.TransSiteId);
+                var cascade = await _channelRepository.GetCascadeAsync(transSite, transChannels, async summary =>
                 {
-                    var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
+                    var count = await _contentRepository.GetCountAsync(site, summary);
 
                     return new
                     {
@@ -213,10 +222,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
 
             channel.TransType = request.TransType;
             channel.TransSiteId = request.TransType == TransType.SpecifiedSite ? request.TransSiteId : 0;
@@ -225,7 +234,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             channel.TransIsAutomatic = request.TransIsAutomatic;
             channel.TransDoneType = request.TransDoneType;
 
-            await DataProvider.ChannelRepository.UpdateAsync(channel);
+            await _channelRepository.UpdateAsync(channel);
 
             await auth.AddSiteLogAsync(request.SiteId, "修改跨站转发设置");
 

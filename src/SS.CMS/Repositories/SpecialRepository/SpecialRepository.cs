@@ -33,7 +33,7 @@ namespace SS.CMS.Repositories
             RemoveCache(special.SiteId);
         }
 
-        private async Task DeleteAsync(int siteId, int specialId)
+        public async Task DeleteAsync(int siteId, int specialId)
         {
             if (specialId <= 0) return;
             await _repository.DeleteAsync(specialId);

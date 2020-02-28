@@ -1,3 +1,4 @@
+using SS.CMS.Cli.Core;
 using SS.CMS.Cli.Services;
 using Xunit;
 
@@ -8,7 +9,8 @@ namespace SS.CMS.Cli.Tests.Services
         [Fact]
         public void TestReplaceEndsWith()
         {
-            Assert.Equal("backup", BackupJob.CommandName);
+            var backup = CliUtils.GetJobService("backup");
+            Assert.Equal("backup", backup.CommandName);
         }
     }
 }

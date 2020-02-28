@@ -21,14 +21,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Plugins\Apis\**" />
+    <Compile Remove="StlParser\Parsers\**" />
     <EmbeddedResource Remove="Plugins\Apis\**" />
+    <EmbeddedResource Remove="StlParser\Parsers\**" />
     <None Remove="Plugins\Apis\**" />
+    <None Remove="StlParser\Parsers\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Core\ContentColumn.cs" />
     <Compile Remove="Core\RoleManager.cs" />
     <Compile Remove="Packaging\PackageType.cs" />
     <Compile Remove="Plugins\Impl\ApiCollectionImpl.cs" />
+    <Compile Remove="StlParser\Parser.cs" />
     <Compile Remove="StlParser\StlElement\StlTags.cs" />
   </ItemGroup>
 
@@ -37,22 +41,17 @@
     <PackageReference Include="CacheManager.Microsoft.Extensions.Configuration" Version="1.2.0" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.17" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.21" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="NuGet.Packaging" Version="5.3.1" />
-    <PackageReference Include="NuGet.Versioning" Version="5.3.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.2" />
+    <PackageReference Include="NuGet.Packaging" Version="5.4.0" />
+    <PackageReference Include="NuGet.Versioning" Version="5.4.0" />
     <PackageReference Include="Open-Xml-PowerTools" Version="4.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Datory\src\Datory\Datory.csproj" />
     <ProjectReference Include="..\SS.CMS.Abstractions\SS.CMS.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\ParseManager\" />
   </ItemGroup>
 
 </Project>

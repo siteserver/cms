@@ -1,8 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Admin.Plugins
@@ -12,10 +10,12 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
     {
         private const string Route = "{pluginId}";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
 
-        public ViewController(IAuthManager authManager)
+        public ViewController(ISettingsManager settingsManager, IAuthManager authManager)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
         }
 
@@ -33,8 +33,8 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
 
             return new GetResult
             {
-                IsNightly = WebConfigUtils.IsNightlyUpdate,
-                PluginVersion = SystemManager.PluginVersion,
+                IsNightly = _settingsManager.IsNightlyUpdate,
+                PluginVersion = _settingsManager.PluginVersion,
                 Installed = plugin != null,
                 InstalledVersion = plugin != null ? plugin.Version : string.Empty,
                 Package = plugin

@@ -2,10 +2,11 @@
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
+using SS.CMS.Core;
 using SS.CMS.StlParser.Mock;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -17,21 +18,24 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "显示相关内容列表")]
         public const string IsRelatedContents = nameof(IsRelatedContents);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
-            var listInfo = await ListInfo.GetListInfoAsync(pageInfo, contextInfo, ContextType.Content);
-            var dataSource = await GetContentsDataSourceAsync(pageInfo, contextInfo, listInfo);
+            var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Content);
+            var dataSource = await GetContentsDataSourceAsync(parseManager, listInfo);
 
-            if (contextInfo.IsStlEntity)
+            if (parseManager.ContextInfo.IsStlEntity)
             {
                 return ParseEntity(dataSource);
             }
 
-            return await ParseElementAsync(pageInfo, contextInfo, listInfo, dataSource);
+            return await ParseElementAsync(parseManager, listInfo, dataSource);
         }
 
-        protected static async Task<string> ParseElementAsync(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, List<KeyValuePair<int, Content>> dataSource)
+        protected static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Content>> dataSource)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (dataSource == null || dataSource.Count == 0) return string.Empty;
 
             var builder = new StringBuilder();
@@ -64,7 +68,7 @@ namespace SS.CMS.StlParser.StlElement
 
                     pageInfo.ContentItems.Push(content);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(await TemplateUtility.GetContentsItemTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, ContextType.Content, contextInfo));
+                    builder.Append(await TemplateUtility.GetContentsItemTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.Content));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -108,7 +112,7 @@ namespace SS.CMS.StlParser.StlElement
                             pageInfo.ContentItems.Push(content);
 
                             var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                            cellHtml = await TemplateUtility.GetContentsItemTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, ContextType.Content, contextInfo);
+                            cellHtml = await TemplateUtility.GetContentsItemTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.Content);
                         }
                         tr.AddCell(cellHtml, cellAttributes);
                         itemIndex++;
@@ -147,14 +151,18 @@ namespace SS.CMS.StlParser.StlElement
             return contentInfoList;
         }
 
-        protected static async Task<List<KeyValuePair<int, Content>>> GetContentsDataSourceAsync(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        protected static async Task<List<KeyValuePair<int, Content>>> GetContentsDataSourceAsync(IParseManager parseManager, ListInfo listInfo)
         {
-            var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
 
-            channelId = await DataProvider.ChannelRepository.GetChannelIdAsync(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+            var dataManager = new StlDataManager(parseManager.DatabaseManager);
+            var channelId = await dataManager.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+
+            channelId = await parseManager.DatabaseManager.ChannelRepository.GetChannelIdAsync(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
             var taxisType = GetTaxisType(listInfo.Order);
 
-            return await DataProvider.ContentRepository.ParserGetContentsDataSourceAsync(pageInfo.Site, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
+            return await parseManager.DatabaseManager.ContentRepository.ParserGetContentsDataSourceAsync(pageInfo.Site, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         }
 
         public static TaxisType GetTaxisType(string order)

@@ -1,12 +1,20 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Framework;
+using SS.CMS.Abstractions;
+using SS.CMS.Core;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TablePermissionsInRoles
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TablePermissionsInRoles(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public long Id { get; set; }
 
@@ -15,26 +23,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("generalPermissions")]
         public string GeneralPermissions { get; set; }
-    }
-
-    public partial class TablePermissionsInRoles
-    {
-        public const string OldTableName = "bairong_PermissionsInRoles";
-
-        public static ConvertInfo Converter => new ConvertInfo
-        {
-            NewTableName = NewTableName,
-            NewColumns = NewColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
-        };
-
-        private static readonly string NewTableName = DataProvider.PermissionsInRolesRepository.TableName;
-
-        private static readonly List<TableColumn> NewColumns = DataProvider.PermissionsInRolesRepository.TableColumns;
-
-        private static readonly Dictionary<string, string> ConvertKeyDict = null;
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

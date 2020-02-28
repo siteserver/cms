@@ -1,14 +1,18 @@
 using System;
-using System.Collections.Generic;
-using Datory;
 using Newtonsoft.Json;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableTemplateLog
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableTemplateLog(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public long Id { get; set; }
 
@@ -29,34 +33,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("templateContent")]
         public string TemplateContent { get; set; }
-    }
-
-    public partial class TableTemplateLog
-    {
-        public static readonly List<string> OldTableNames = new List<string>
-        {
-            "siteserver_TemplateLog",
-            "wcm_TemplateLog"
-        };
-
-        public static ConvertInfo Converter => new ConvertInfo
-        {
-            NewTableName = NewTableName,
-            NewColumns = NewColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
-        };
-
-        private static readonly string NewTableName = DataProvider.TemplateLogRepository.TableName;
-
-        private static readonly List<TableColumn> NewColumns = DataProvider.TemplateLogRepository.TableColumns;
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(TemplateLog.SiteId), nameof(PublishmentSystemId)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

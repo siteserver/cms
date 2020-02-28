@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -13,10 +12,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
 
-        public SettingsUploadImageController(IAuthManager authManager)
+        public SettingsUploadImageController(IAuthManager authManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -29,7 +30,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             return new ObjectResult<Site>
             {
@@ -47,7 +48,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             site.ImageUploadDirectoryName = request.ImageUploadDirectoryName;
             site.ImageUploadDateFormatString = request.ImageUploadDateFormatString;
@@ -57,7 +58,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             site.PhotoSmallWidth = request.PhotoSmallWidth;
             site.PhotoMiddleWidth = request.PhotoMiddleWidth;
 
-            await DataProvider.SiteRepository.UpdateAsync(site);
+            await _siteRepository.UpdateAsync(site);
 
             await auth.AddSiteLogAsync(request.SiteId, "修改图片上传设置");
 

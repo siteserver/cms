@@ -4,8 +4,9 @@ using SS.CMS.Abstractions;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using System.Threading.Tasks;
+using SS.CMS.Abstractions.Parse;
+using SS.CMS.Core;
 using SS.CMS.StlParser.Mock;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -18,25 +19,29 @@ namespace SS.CMS.StlParser.StlElement
 
         [StlAttribute(Title = "显示所有级别的子栏目")] private const string IsAllChildren = nameof(IsAllChildren);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
-            var listInfo = await ListInfo.GetListInfoAsync(pageInfo, contextInfo, ContextType.Channel);
+            var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Channel);
 
-            var dataSource = await GetChannelsDataSourceAsync(pageInfo, contextInfo, listInfo);
+            var dataSource = await GetChannelsDataSourceAsync(parseManager, listInfo);
 
-            if (contextInfo.IsStlEntity)
+            if (parseManager.ContextInfo.IsStlEntity)
             {
                 return ParseEntity(dataSource);
             }
 
-            return await ParseElementAsync(pageInfo, contextInfo, listInfo, dataSource);
+            return await ParseElementAsync(parseManager, listInfo, dataSource);
         }
 
-        protected static async Task<List<KeyValuePair<int, Channel>>> GetChannelsDataSourceAsync(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        protected static async Task<List<KeyValuePair<int, Channel>>> GetChannelsDataSourceAsync(IParseManager parseManager, ListInfo listInfo)
         {
-            var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
 
-            channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+            var dataManager = new StlDataManager(parseManager.DatabaseManager);
+            var channelId = await dataManager.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+
+            channelId = await dataManager.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
             var isTotal = TranslateUtils.ToBool(listInfo.Others.Get(nameof(IsTotal)));
 
@@ -47,7 +52,7 @@ namespace SS.CMS.StlParser.StlElement
 
             var taxisType = GetChannelTaxisTypeByOrder(listInfo.Order);
 
-            return await DataProvider.ChannelRepository.ParserGetChannelsAsync(pageInfo.SiteId, channelId,
+            return await parseManager.DatabaseManager.ChannelRepository.ParserGetChannelsAsync(pageInfo.SiteId, channelId,
                 listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage,
                 listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Scope, isTotal);
         }
@@ -86,8 +91,11 @@ namespace SS.CMS.StlParser.StlElement
             return taxisType;
         }
 
-        protected static async Task<string> ParseElementAsync(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, List<KeyValuePair<int, Channel>> channels)
+        protected static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Channel>> channels)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (channels == null || channels.Count == 0) return string.Empty;
 
             var builder = new StringBuilder();
@@ -121,8 +129,7 @@ namespace SS.CMS.StlParser.StlElement
                     pageInfo.ChannelItems.Push(channel);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                     var parsedString = await TemplateUtility.GetChannelsItemTemplateStringAsync(templateString,
-                        listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, ContextType.Channel,
-                        contextInfo);
+                        listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.Channel);
                     builder.Append(parsedString);
                 }
 
@@ -169,8 +176,8 @@ namespace SS.CMS.StlParser.StlElement
                                 ? listInfo.AlternatingItemTemplate
                                 : listInfo.ItemTemplate;
                             cellHtml = await TemplateUtility.GetChannelsItemTemplateStringAsync(templateString,
-                                listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo,
-                                ContextType.Channel, contextInfo);
+                                listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager,
+                                ParseType.Channel);
                         }
 
                         tr.AddCell(cellHtml, cellAttributes);
@@ -348,7 +355,7 @@ namespace SS.CMS.StlParser.StlElement
 //            {
 //                var channelId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
 
-//                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+//                var channelInfo = await parseManager.DatabaseManager.ChannelRepository.GetAsync(channelId);
 //                if (channelInfo != null)
 //                {
 //                    channelInfoList.Add(channelInfo.ToDictionary());

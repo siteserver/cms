@@ -3,14 +3,14 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.Api.Stl;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core
 {
     public static class InputParserUtility
     {
-        public static async Task<string> GetContentByTableStyleAsync(string content, string separator, Site site, TableStyle style, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static async Task<string> GetContentByTableStyleAsync(IPathManager pathManager, string content, string separator, Config config, Site site, TableStyle style, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var parsedContent = content;
 
@@ -72,25 +72,25 @@ namespace SS.CMS.Core
             //}
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = await ContentUtility.TextEditorContentDecodeAsync(site, parsedContent, true);
+                parsedContent = await ContentUtility.TextEditorContentDecodeAsync(pathManager, site, parsedContent, true);
             }
             else if (inputType == InputType.Image)
             {
-                parsedContent = await GetImageOrFlashHtmlAsync(site, parsedContent, attributes, isStlEntity);
+                parsedContent = await GetImageOrFlashHtmlAsync(pathManager, site, parsedContent, attributes, isStlEntity);
             }
             else if (inputType == InputType.Video)
             {
-                parsedContent = await GetVideoHtmlAsync(site, parsedContent, attributes, isStlEntity);
+                parsedContent = await GetVideoHtmlAsync(pathManager, config, site, parsedContent, attributes, isStlEntity);
             }
             else if (inputType == InputType.File)
             {
-                parsedContent = await GetFileHtmlWithoutCountAsync(site, parsedContent, attributes, innerHtml, isStlEntity, false, false);
+                parsedContent = await GetFileHtmlWithoutCountAsync(pathManager, config, site, parsedContent, attributes, innerHtml, isStlEntity, false, false);
             }
 
             return parsedContent;
         }
 
-        public static async Task<string> GetContentByTableStyleAsync(Content content, string separator, Site site, TableStyle style, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static async Task<string> GetContentByTableStyleAsync(IPathManager pathManager, Content content, string separator, Config config, Site site, TableStyle style, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var value = content.Get<string>(style.AttributeName);
             var parsedContent = string.Empty;
@@ -141,13 +141,13 @@ namespace SS.CMS.Core
             }
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = await ContentUtility.TextEditorContentDecodeAsync(site, value, true);
+                parsedContent = await ContentUtility.TextEditorContentDecodeAsync(pathManager, site, value, true);
             }
             else if (inputType == InputType.Image)
             {
                 if (no <= 1)
                 {
-                    parsedContent = await GetImageOrFlashHtmlAsync(site, value, attributes, isStlEntity);
+                    parsedContent = await GetImageOrFlashHtmlAsync(pathManager, site, value, attributes, isStlEntity);
                 }
                 else
                 {
@@ -160,7 +160,7 @@ namespace SS.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = await GetImageOrFlashHtmlAsync(site, extendValue, attributes, isStlEntity);
+                                parsedContent = await GetImageOrFlashHtmlAsync(pathManager, site, extendValue, attributes, isStlEntity);
                                 break;
                             }
                             index++;
@@ -172,7 +172,7 @@ namespace SS.CMS.Core
             {
                 if (no <= 1)
                 {
-                    parsedContent = await GetVideoHtmlAsync(site, value, attributes, isStlEntity);
+                    parsedContent = await GetVideoHtmlAsync(pathManager, config, site, value, attributes, isStlEntity);
                 }
                 else
                 {
@@ -185,7 +185,7 @@ namespace SS.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = await GetVideoHtmlAsync(site, extendValue, attributes, isStlEntity);
+                                parsedContent = await GetVideoHtmlAsync(pathManager, config, site, extendValue, attributes, isStlEntity);
                                 break;
                             }
                             index++;
@@ -197,7 +197,7 @@ namespace SS.CMS.Core
             {
                 if (no <= 1)
                 {
-                    parsedContent = await GetFileHtmlWithoutCountAsync(site, value, attributes, innerHtml, isStlEntity, false, false);
+                    parsedContent = await GetFileHtmlWithoutCountAsync(pathManager, config, site, value, attributes, innerHtml, isStlEntity, false, false);
                 }
                 else
                 {
@@ -210,7 +210,7 @@ namespace SS.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = await GetFileHtmlWithoutCountAsync(site, extendValue, attributes, innerHtml, isStlEntity, false, false);
+                                parsedContent = await GetFileHtmlWithoutCountAsync(pathManager, config, site, extendValue, attributes, innerHtml, isStlEntity, false, false);
                                 break;
                             }
                             index++;
@@ -226,12 +226,12 @@ namespace SS.CMS.Core
             return parsedContent;
         }
 
-        public static async Task<string> GetImageOrFlashHtmlAsync(Site site, string imageUrl, NameValueCollection attributes, bool isStlEntity)
+        public static async Task<string> GetImageOrFlashHtmlAsync(IPathManager pathManager, Site site, string imageUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(imageUrl))
             {
-                imageUrl = await PageUtility.ParseNavigationUrlAsync(site, imageUrl, false);
+                imageUrl = await pathManager.ParseNavigationUrlAsync(site, imageUrl, false);
                 if (isStlEntity)
                 {
                     retVal = imageUrl;
@@ -274,22 +274,20 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static async Task<string> GetVideoHtmlAsync(Site site, string videoUrl, NameValueCollection attributes, bool isStlEntity)
+        public static async Task<string> GetVideoHtmlAsync(IPathManager pathManager, Config config, Site site, string videoUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(videoUrl))
             {
-                videoUrl = await PageUtility.ParseNavigationUrlAsync(site, videoUrl, false);
+                videoUrl = await pathManager.ParseNavigationUrlAsync(site, videoUrl, false);
                 if (isStlEntity)
                 {
                     retVal = videoUrl;
                 }
                 else
                 {
-                    var config = await DataProvider.ConfigRepository.GetAsync();
-
                     retVal = $@"
-<embed src=""{SiteFilesAssets.GetUrl(config.GetApiUrl(), SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
+<embed src=""{SiteFilesAssets.GetUrl(pathManager.GetApiUrl(config), SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
                         .ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
 ";
                 }
@@ -297,23 +295,21 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static async Task<string> GetFileHtmlWithCountAsync(Site site, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public static async Task<string> GetFileHtmlWithCountAsync(IPathManager pathManager, Config config, Site site, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
             if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
-
-            var config = await DataProvider.ConfigRepository.GetAsync();
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(config.GetApiUrl(), site.Id, channelId, contentId,
+                retVal = ApiRouteActionsDownload.GetUrl(pathManager.GetApiUrl(config), site.Id, channelId, contentId,
                     fileUrl);
             }
             else
             {
                 var linkAttributes = new NameValueCollection();
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(config.GetApiUrl(), site.Id, channelId,
+                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(pathManager.GetApiUrl(config), site.Id, channelId,
                     contentId, fileUrl);
 
                 innerHtml = string.IsNullOrEmpty(innerHtml)
@@ -335,22 +331,20 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static async Task<string> GetFileHtmlWithoutCountAsync(Site site, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public static async Task<string> GetFileHtmlWithoutCountAsync(IPathManager pathManager, Config config, Site site, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
             if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
-
-            var config = await DataProvider.ConfigRepository.GetAsync();
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(config.GetApiUrl(), site.Id, fileUrl);
+                retVal = ApiRouteActionsDownload.GetUrl(pathManager.GetApiUrl(config), site.Id, fileUrl);
             }
             else
             {
                 var linkAttributes = new NameValueCollection();
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(config.GetApiUrl(), site.Id, fileUrl);
+                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(pathManager.GetApiUrl(config), site.Id, fileUrl);
                 innerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                 if (isLower)

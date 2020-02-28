@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Home
 {
@@ -13,11 +12,17 @@ namespace SS.CMS.Web.Controllers.Home
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerTaxisController(IAuthManager authManager, ICreateManager createManager)
+        public ContentsLayerTaxisController(IAuthManager authManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -30,10 +35,10 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
             if (channel.DefaultTaxisType == TaxisType.OrderByTaxis)
@@ -48,7 +53,7 @@ namespace SS.CMS.Web.Controllers.Home
 
             foreach (var contentId in request.ContentIds)
             {
-                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channel, contentId);
+                var contentInfo = await _contentRepository.GetAsync(site, channel, contentId);
                 if (contentInfo == null) continue;
 
                 var isTop = contentInfo.Top;
@@ -56,14 +61,14 @@ namespace SS.CMS.Web.Controllers.Home
                 {
                     if (request.IsUp)
                     {
-                        if (await DataProvider.ContentRepository.SetTaxisToUpAsync(site, channel, contentId, isTop) == false)
+                        if (await _contentRepository.SetTaxisToUpAsync(site, channel, contentId, isTop) == false)
                         {
                             break;
                         }
                     }
                     else
                     {
-                        if (await DataProvider.ContentRepository.SetTaxisToDownAsync(site, channel, contentId, isTop) == false)
+                        if (await _contentRepository.SetTaxisToDownAsync(site, channel, contentId, isTop) == false)
                         {
                             break;
                         }

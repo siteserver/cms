@@ -1,8 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
-using SS.CMS.StlParser.Parsers;
 
 namespace SS.CMS.Web.Controllers.V1
 {
@@ -12,10 +10,20 @@ namespace SS.CMS.Web.Controllers.V1
         private const string Route = "{elementName}";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly IParseManager _parseManager;
+        private readonly IConfigRepository _configRepository;
+        private readonly IAccessTokenRepository _accessTokenRepository;
+        private readonly ISiteRepository _siteRepository;
 
-        public StlController(IAuthManager authManager)
+        public StlController(IAuthManager authManager, IPathManager pathManager, IParseManager parseManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _parseManager = parseManager;
+            _configRepository = configRepository;
+            _accessTokenRepository = accessTokenRepository;
+            _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -23,10 +31,10 @@ namespace SS.CMS.Web.Controllers.V1
         {
             var auth = await _authManager.GetApiAsync();
 
-            var isApiAuthorized = auth.IsApiAuthenticated && await DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeStl);
+            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeStl);
 
             var stlRequest = new StlRequest();
-            await stlRequest.LoadAsync(auth, isApiAuthorized, request);
+            await stlRequest.LoadAsync(auth, _pathManager, _configRepository, _siteRepository, isApiAuthorized, request);
 
             if (!stlRequest.IsApiAuthorized)
             {
@@ -44,11 +52,11 @@ namespace SS.CMS.Web.Controllers.V1
 
             object value = null;
 
-            if (StlElementParser.ElementsToParseDic.ContainsKey(elementName))
+            if (_parseManager.ElementsToParseDic.ContainsKey(elementName))
             {
-                if (StlElementParser.ElementsToParseDic.TryGetValue(elementName, out var func))
+                if (_parseManager.ElementsToParseDic.TryGetValue(elementName, out var func))
                 {
-                    var obj = await func(stlRequest.PageInfo, stlRequest.ContextInfo);
+                    var obj = await func(_parseManager);
 
                     if (obj is string)
                     {

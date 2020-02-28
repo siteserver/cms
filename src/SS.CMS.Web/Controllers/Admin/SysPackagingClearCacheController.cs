@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin
 {
@@ -13,10 +12,12 @@ namespace SS.CMS.Web.Controllers.Admin
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IDbCacheRepository _dbCacheRepository;
 
-        public SysPackagesClearCacheController(IAuthManager authManager)
+        public SysPackagesClearCacheController(IAuthManager authManager, IDbCacheRepository dbCacheRepository)
         {
             _authManager = authManager;
+            _dbCacheRepository = dbCacheRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -30,7 +31,7 @@ namespace SS.CMS.Web.Controllers.Admin
             }
 
             CacheUtils.ClearAll();
-            await DataProvider.DbCacheRepository.ClearAsync();
+            await _dbCacheRepository.ClearAsync();
 
             return new BoolResult
             {

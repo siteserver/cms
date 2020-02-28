@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
+using SS.CMS.Core;
 using SS.CMS.Plugins;
 
 namespace SS.CMS.Repositories
@@ -212,7 +212,7 @@ namespace SS.CMS.Repositories
                 }
                 catch (Exception ex)
                 {
-                    await DataProvider.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
+                    await _errorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
                 }
             }
         }

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS;
-using SS.CMS.Core;
 
 namespace SS.CMS.Services
 {
@@ -18,7 +16,7 @@ namespace SS.CMS.Services
 
         public async Task DeleteContentAsync(Site site, int channelId, int contentId)
         {
-            var filePath = await PathUtility.GetContentPageFilePathAsync(site, channelId, contentId, 0);
+            var filePath = await _pathManager.GetContentPageFilePathAsync(site, channelId, contentId, 0);
             FileUtils.DeleteFileIfExists(filePath);
         }
 
@@ -26,7 +24,7 @@ namespace SS.CMS.Services
         {
             foreach (var channelId in channelIdList)
             {
-                var filePath = await PathUtility.GetChannelPageFilePathAsync(site, channelId, 0);
+                var filePath = await _pathManager.GetChannelPageFilePathAsync(site, channelId, 0);
 
                 FileUtils.DeleteFileIfExists(filePath);
 

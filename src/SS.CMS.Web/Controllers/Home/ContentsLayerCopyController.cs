@@ -5,7 +5,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Home
 {
@@ -16,12 +15,22 @@ namespace SS.CMS.Web.Controllers.Home
         private const string RouteGetChannels = "actions/getChannels";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerCopyController(IAuthManager authManager, ICreateManager createManager)
+        public ContentsLayerCopyController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _createManager = createManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -34,16 +43,16 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return NotFound();
 
             var retVal = new List<IDictionary<string, object>>();
             foreach (var contentId in request.ContentIds)
             {
-                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
+                var contentInfo = await _contentRepository.GetAsync(site, channelInfo, contentId);
                 if (contentInfo == null) continue;
 
                 var dict = contentInfo.ToDictionary();
@@ -58,7 +67,7 @@ namespace SS.CMS.Web.Controllers.Home
             var siteIdList = await auth.UserPermissions.GetSiteIdListAsync();
             foreach (var permissionSiteId in siteIdList)
             {
-                var permissionSite = await DataProvider.SiteRepository.GetAsync(permissionSiteId);
+                var permissionSite = await _siteRepository.GetAsync(permissionSiteId);
                 sites.Add(new
                 {
                     permissionSite.Id,
@@ -70,11 +79,11 @@ namespace SS.CMS.Web.Controllers.Home
                 Constants.ChannelPermissions.ContentAdd);
             foreach (var permissionChannelId in channelIdList)
             {
-                var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
+                var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
                 channels.Add(new
                 {
                     permissionChannelInfo.Id,
-                    ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
+                    ChannelName = await _channelRepository.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
                 });
             }
 
@@ -96,11 +105,11 @@ namespace SS.CMS.Web.Controllers.Home
                 Constants.ChannelPermissions.ContentAdd);
             foreach (var permissionChannelId in channelIdList)
             {
-                var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
+                var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
                 channels.Add(new
                 {
                     permissionChannelInfo.Id,
-                    ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, permissionChannelId)
+                    ChannelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, permissionChannelId)
                 });
             }
 
@@ -120,15 +129,15 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return NotFound();
 
             foreach (var contentId in request.ContentIds)
             {
-                await ContentUtility.TranslateAsync(site, request.ChannelId, contentId, request.TargetSiteId, request.TargetChannelId, request.CopyType, _createManager);
+                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, site, request.ChannelId, contentId, request.TargetSiteId, request.TargetChannelId, request.CopyType, _createManager);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, "复制内容", string.Empty);

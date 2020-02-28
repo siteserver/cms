@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 {
@@ -17,10 +16,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         private const string RouteTableActionsRemoveCache = "{tableName}/actions/removeCache";
 
         private readonly IAuthManager _authManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
 
-        public SitesTablesController(IAuthManager authManager)
+        public SitesTablesController(IAuthManager authManager, IDatabaseManager databaseManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -35,7 +38,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 
             var nameDict = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var site in await DataProvider.SiteRepository.GetSiteListAsync())
+            foreach (var site in await _siteRepository.GetSiteListAsync())
             {
                 if (nameDict.ContainsKey(site.TableName))
                 {
@@ -65,12 +68,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var columns = await TableColumnManager.GetTableColumnInfoListAsync(tableName, ContentAttribute.MetadataAttributes.Value);
+            var columns = await _databaseManager.GetTableColumnInfoListAsync(tableName, ContentAttribute.MetadataAttributes.Value);
 
             return new GetColumnsResult
             {
                 Columns = columns,
-                Count = DataProvider.DatabaseRepository.GetCount(tableName)
+                Count = _databaseManager.GetCount(tableName)
             };
         }
 
@@ -84,12 +87,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var columns = await TableColumnManager.GetTableColumnInfoListAsync(tableName, ContentAttribute.MetadataAttributes.Value);
+            var columns = await _databaseManager.GetTableColumnInfoListAsync(tableName, ContentAttribute.MetadataAttributes.Value);
 
             return new GetColumnsResult
             {
                 Columns = columns,
-                Count = DataProvider.DatabaseRepository.GetCount(tableName)
+                Count = _databaseManager.GetCount(tableName)
             };
         }
     }

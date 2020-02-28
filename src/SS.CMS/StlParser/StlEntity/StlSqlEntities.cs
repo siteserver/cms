@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 
@@ -16,8 +17,10 @@ namespace SS.CMS.StlParser.StlEntity
 	        {StlParserUtility.ItemIndex, "排序"}
 	    };
 
-        internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
+        internal static string Parse(string stlEntity, IParseManager parseManager)
         {
+            var contextInfo = parseManager.ContextInfo;
+
             var parsedContent = string.Empty;
 
             if (contextInfo.ItemContainer?.SqlItem == null) return string.Empty;

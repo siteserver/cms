@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SS.CMS.StlParser.Model;
-using SS.CMS.StlParser.Parsers;
-using SS.CMS.StlParser.Utility;
 using System.Threading.Tasks;
 using SS.CMS.Core;
-using SS.CMS.Framework;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -71,7 +68,7 @@ namespace SS.CMS.StlParser.StlElement
 	        {TypeSiteUrl, "站点的域名地址"}
 	    };
 
-        internal static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        internal static async Task<object> ParseAsync(IParseManager parseManager)
 		{
 		    var siteName = string.Empty;
 		    var siteDir = string.Empty;
@@ -90,17 +87,17 @@ namespace SS.CMS.StlParser.StlElement
 		    var isLower = false;
 		    var isUpper = false;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, SiteName))
                 {
-                    siteName = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    siteName = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, SiteDir))
                 {
-                    siteDir = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    siteDir = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -156,27 +153,31 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-		    var site = contextInfo.Site;
+		    var site = parseManager.ContextInfo.Site;
 
 		    if (!string.IsNullOrEmpty(siteName))
 		    {
-		        site = await DataProvider.SiteRepository.GetSiteBySiteNameAsync(siteName);
+		        site = await parseManager.DatabaseManager.SiteRepository.GetSiteBySiteNameAsync(siteName);
 		    }
 		    else if (!string.IsNullOrEmpty(siteDir))
 		    {
-		        site = await DataProvider.SiteRepository.GetSiteByDirectoryAsync(siteDir);
+		        site = await parseManager.DatabaseManager.SiteRepository.GetSiteByDirectoryAsync(siteDir);
 		    }
 
-		    if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
+		    if (parseManager.ContextInfo.IsStlEntity && string.IsNullOrEmpty(type))
 		    {
 		        return site;
 		    }
 
-            return await ParseImplAsync(pageInfo, contextInfo, site, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return await ParseImplAsync(parseManager, site, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
 		}
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, Site site, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, Site site, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
+            var databaseManager = parseManager.DatabaseManager;
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (site == null) return string.Empty;
 
             var parsedContent = string.Empty;
@@ -190,7 +191,7 @@ namespace SS.CMS.StlParser.StlElement
                 pageInfo.ChangeSite(site, site.Id, 0, contextInfo);
 
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+                await parseManager.ParseInnerContentAsync(innerBuilder);
                 parsedContent = innerBuilder.ToString();
 
                 pageInfo.ChangeSite(preSite, prePageChannelId, prePageContentId, contextInfo);
@@ -206,24 +207,24 @@ namespace SS.CMS.StlParser.StlElement
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = await pageInfo.Site.GetWebUrlAsync();
+                parsedContent = await parseManager.PathManager.GetWebUrlAsync(pageInfo.Site);
             }
             else if (pageInfo.Site.Get<string>(type) != null)
             {
                 parsedContent = pageInfo.Site.Get<string>(type);
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
-                    var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(DataProvider.SiteRepository.TableName, type, DataProvider.TableStyleRepository.GetRelatedIdentities(pageInfo.SiteId));
+                    var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(databaseManager.SiteRepository.TableName, type, databaseManager.TableStyleRepository.GetRelatedIdentities(pageInfo.SiteId));
 
                     if (styleInfo.Id > 0)
                     {
                         if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                         {
-                            parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                            parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                         else
                         {
-                            parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                            parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parseManager.PathManager, parsedContent, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
 
                             inputType = styleInfo.InputType;
 

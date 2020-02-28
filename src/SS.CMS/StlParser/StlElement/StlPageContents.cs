@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using SS.CMS.Api.Stl;
@@ -23,46 +24,42 @@ namespace SS.CMS.StlParser.StlElement
         public const string MaxPage = nameof(MaxPage);
 
         private string StlPageContentsElement { get; set; }
-        private PageInfo PageInfo { get; set; }
-        private ContextInfo ContextInfo { get; set; }
+        private IParseManager ParseManager { get; set; }
         public ListInfo ListInfo { get; set; }
         private List<KeyValuePair<int, Content>> DataSource { get; set; }
 
-        public static async Task<StlPageContents> GetAsync(string stlPageContentsElement, PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<StlPageContents> GetAsync(string stlPageContentsElement, IParseManager parseManager)
         {
             var stlPageContents = new StlPageContents
             {
-                StlPageContentsElement = stlPageContentsElement, 
-                PageInfo = pageInfo, 
-                ContextInfo = contextInfo
+                StlPageContentsElement = stlPageContentsElement,
+                ParseManager = parseManager
             };
 
             var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement);
 
-            stlPageContents.ContextInfo = contextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+            stlPageContents.ParseManager.ContextInfo = parseManager.ContextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
-            stlPageContents.ListInfo = await ListInfo.GetListInfoAsync(stlPageContents.PageInfo, stlPageContents.ContextInfo, ContextType.Content);
+            stlPageContents.ListInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Content);
 
             //stlPageContents.SqlString = await StlDataUtility.GetStlPageContentsSqlStringAsync(stlPageContents.PageInfo.Site, channelId, stlPageContents.ListInfo);
-            stlPageContents.DataSource = await GetContentsDataSourceAsync(stlPageContents.PageInfo,
-                stlPageContents.ContextInfo, stlPageContents.ListInfo);
+            stlPageContents.DataSource = await GetContentsDataSourceAsync(parseManager, stlPageContents.ListInfo);
 
             return stlPageContents;
         }
 
         //API StlActionsSearchController调用
-        public static async Task<StlPageContents> GetAsync(string stlPageContentsElement, PageInfo pageInfo, ContextInfo contextInfo, int pageNum, string tableName, string where)
+        public static async Task<StlPageContents> GetAsync(string stlPageContentsElement, IParseManager parseManager, int pageNum, string tableName, string where)
         {
             var stlPageContents = new StlPageContents
             {
-                PageInfo = pageInfo, 
-                ContextInfo = contextInfo
+                ParseManager = parseManager
             };
 
             var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement);
-            stlPageContents.ContextInfo = contextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+            parseManager.ContextInfo = parseManager.ContextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
-            stlPageContents.ListInfo = await ListInfo.GetListInfoAsync(stlPageContents.PageInfo, stlPageContents.ContextInfo, ContextType.Content);
+            stlPageContents.ListInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Content);
 
             stlPageContents.ListInfo.Scope = ScopeType.All;
 
@@ -71,8 +68,7 @@ namespace SS.CMS.StlParser.StlElement
                 stlPageContents.ListInfo.PageNum = pageNum;
             }
 
-            stlPageContents.DataSource = await GetContentsDataSourceAsync(stlPageContents.PageInfo,
-                stlPageContents.ContextInfo, stlPageContents.ListInfo);
+            stlPageContents.DataSource = await GetContentsDataSourceAsync(parseManager, stlPageContents.ListInfo);
 
             //stlPageContents.SqlString = StlDataUtility.GetPageContentsSqlStringBySearch(tableName, stlPageContents.ListInfo.GroupContent, stlPageContents.ListInfo.GroupContentNot, stlPageContents.ListInfo.Tags, stlPageContents.ListInfo.IsImageExists, stlPageContents.ListInfo.IsImage, stlPageContents.ListInfo.IsVideoExists, stlPageContents.ListInfo.IsVideo, stlPageContents.ListInfo.IsFileExists, stlPageContents.ListInfo.IsFile, stlPageContents.ListInfo.StartNum, stlPageContents.ListInfo.TotalNum, stlPageContents.ListInfo.Order, stlPageContents.ListInfo.IsTopExists, stlPageContents.ListInfo.IsTop, stlPageContents.ListInfo.IsRecommendExists, stlPageContents.ListInfo.IsRecommend, stlPageContents.ListInfo.IsHotExists, stlPageContents.ListInfo.IsHot, stlPageContents.ListInfo.IsColorExists, stlPageContents.ListInfo.IsColor, where);
 
@@ -100,7 +96,7 @@ namespace SS.CMS.StlParser.StlElement
                 var maxPage = ListInfo.MaxPage;
                 if (maxPage == 0)
                 {
-                    maxPage = PageInfo.Site.CreateStaticMaxPage;
+                    maxPage = ParseManager.PageInfo.Site.CreateStaticMaxPage;
                 }
                 if (maxPage > 0 && currentPageIndex + 1 > maxPage)
                 {
@@ -110,19 +106,19 @@ namespace SS.CMS.StlParser.StlElement
 
             var parsedContent = string.Empty;
 
-            ContextInfo.PageItemIndex = currentPageIndex * ListInfo.PageNum;
+            ParseManager.ContextInfo.PageItemIndex = currentPageIndex * ListInfo.PageNum;
 
             if (DataSource != null && DataSource.Count > 0)
             {
                 var pageChannelList = pageCount > 1
-                    ? DataSource.Skip(ContextInfo.PageItemIndex).Take(ListInfo.PageNum).ToList()
+                    ? DataSource.Skip(ParseManager.ContextInfo.PageItemIndex).Take(ListInfo.PageNum).ToList()
                     : DataSource;
 
-                parsedContent = await ParseElementAsync(PageInfo, ContextInfo, ListInfo, pageChannelList);
+                parsedContent = await ParseElementAsync(ParseManager, ListInfo, pageChannelList);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex
-            ContextInfo.PageItemIndex = 0;
+            ParseManager.ContextInfo.PageItemIndex = 0;
 
             return parsedContent;
         }
@@ -133,8 +129,8 @@ namespace SS.CMS.StlParser.StlElement
         //    var totalNum = 0;
         //    try
         //    {
-        //        //totalNum = DataProvider.DatabaseRepository.GetPageTotalCount(SqlString);
-        //        totalNum = DataProvider.DatabaseRepository.GetPageTotalCount(SqlString);
+        //        //totalNum = GlobalSettings.DatabaseRepository.GetPageTotalCount(SqlString);
+        //        totalNum = GlobalSettings.DatabaseRepository.GetPageTotalCount(SqlString);
         //        if (ListInfo.PageNum != 0 && ListInfo.PageNum < totalNum)//需要翻页
         //        {
         //            pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(ListInfo.PageNum)));//需要生成的总页数
@@ -170,10 +166,10 @@ namespace SS.CMS.StlParser.StlElement
         //    {
         //        if (!string.IsNullOrEmpty(SqlString))
         //        {
-        //            //var pageSqlString = DataProvider.DatabaseRepository.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
-        //            var pageSqlString = DataProvider.DatabaseRepository.GetStlPageSqlString(SqlString, ListInfo.Order, totalNum, ListInfo.PageNum, currentPageIndex);
+        //            //var pageSqlString = GlobalSettings.DatabaseRepository.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
+        //            var pageSqlString = GlobalSettings.DatabaseRepository.GetStlPageSqlString(SqlString, ListInfo.Order, totalNum, ListInfo.PageNum, currentPageIndex);
 
-        //            var datasource = DataProvider.DatabaseRepository.GetDataSource(pageSqlString);
+        //            var datasource = GlobalSettings.DatabaseRepository.GetDataSource(pageSqlString);
 
         //            if (ListInfo.Layout == Model.Layout.None)
         //            {
@@ -254,6 +250,9 @@ namespace SS.CMS.StlParser.StlElement
 
         private async Task<string> ParseDynamicAsync(int totalNum, int currentPageIndex, int pageCount)
         {
+            var pageInfo = ParseManager.PageInfo;
+            var contextInfo = ParseManager.ContextInfo;
+
             var loading = ListInfo.LoadingTemplate;
             if (string.IsNullOrEmpty(loading))
             {
@@ -267,11 +266,11 @@ namespace SS.CMS.StlParser.StlElement
 </div>";
             }
 
-            await PageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
 
-            var ajaxDivId = StlParserUtility.GetAjaxDivId(PageInfo.UniqueId);
-            var apiUrl = ApiRouteActionsPageContents.GetUrl(PageInfo.ApiUrl);
-            var apiParameters = ApiRouteActionsPageContents.GetParameters(PageInfo.SiteId, PageInfo.PageChannelId, PageInfo.Template.Id, totalNum, pageCount, currentPageIndex, StlPageContentsElement);
+            var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
+            var apiUrl = ApiRouteActionsPageContents.GetUrl(pageInfo.ApiUrl);
+            var apiParameters = ApiRouteActionsPageContents.GetParameters(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.Template.Id, totalNum, pageCount, currentPageIndex, StlPageContentsElement);
 
             var builder = new StringBuilder();
             builder.Append($@"<div id=""{ajaxDivId}"">");

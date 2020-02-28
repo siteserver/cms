@@ -28,7 +28,7 @@ namespace SS.CMS.Abstractions
 
         Task<int> GetCountAsync(string tableName, Query query);
 
-        Task<string> GetWhereStringByStlSearchAsync(bool isAllSites, string siteName, string siteDir, string siteIds,
+        Task<string> GetWhereStringByStlSearchAsync(IDatabaseManager databaseManager, bool isAllSites, string siteName, string siteDir, string siteIds,
             string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute,
             string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes,
             NameValueCollection form);

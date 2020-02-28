@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Datory;
+using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core
 {
@@ -132,78 +132,11 @@ namespace SS.CMS.Core
             if (StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.AspnetClient.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.Bin.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.Home.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.SiteFiles.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, WebConfigUtils.AdminDirectory))
+                || StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.SiteFiles.DirectoryName))
             {
                 return true;
             }
             return false;
-        }
-
-        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database, bool isOracleSid, OraclePrivilege oraclePrivilege)
-        {
-            var connectionString = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                connectionString = $"Server={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Uid={userName};Pwd={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-                connectionString += "SslMode=Preferred;CharSet=utf8;";
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                connectionString = $"Server={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString = $"Server={server},{port};";
-                }
-                connectionString += $"Uid={userName};Pwd={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                connectionString = $"Host={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Username={userName};Password={password};";
-                if (!string.IsNullOrEmpty(database))
-                {
-                    connectionString += $"Database={database};";
-                }
-            }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                var databaseName = isOracleSid ? $"SID={database}" : $"SERVICE_NAME={database}";
-                port = !isDefaultPort && port > 0 ? port : 1521;
-                var privilegeString = string.Empty;
-                if (oraclePrivilege == OraclePrivilege.SYSDBA)
-                {
-                    privilegeString = "DBA Privilege=SYSDBA;";
-                }
-                else if (oraclePrivilege == OraclePrivilege.SYSDBA)
-                {
-                    privilegeString = "DBA Privilege=SYSOPER;";
-                }
-                database = string.IsNullOrEmpty(database)
-                    ? string.Empty
-                    : $"(CONNECT_DATA=({databaseName}))";
-                connectionString = $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={server})(PORT={port})){database});User ID={userName};Password={password};{privilegeString}";
-            }
-
-            return connectionString;
         }
 
         public static string MapPath(string virtualPath)
@@ -222,18 +155,13 @@ namespace SS.CMS.Core
             {
                 virtualPath = "~/";
             }
-            var rootPath = WebConfigUtils.PhysicalApplicationPath;
+            var rootPath = GlobalSettings.SettingsManager.WebRootPath;
 
             virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
             retVal = PathUtils.Combine(rootPath, virtualPath);
 
             if (retVal == null) retVal = string.Empty;
             return retVal.Replace("/", "\\");
-        }
-
-        public static string GetMenusPath(params string[] paths)
-        {
-            return PathUtils.Combine(SiteServerAssets.GetPath("menus"), PathUtils.Combine(paths));
         }
 
         public static string GetSiteFilesPath(params string[] paths)

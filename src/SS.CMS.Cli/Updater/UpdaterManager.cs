@@ -17,15 +17,24 @@ namespace SS.CMS.Cli.Updater
 {
     public class UpdaterManager
     {
-        public UpdaterManager(TreeInfo oldTreeInfo, TreeInfo newTreeInfo)
+        private readonly ISettingsManager _settingsManager;
+        private readonly IDatabaseManager _databaseManager;
+
+        public UpdaterManager(ISettingsManager settingsManager, IDatabaseManager databaseManager)
+        {
+            _settingsManager = settingsManager;
+            _databaseManager = databaseManager;
+        }
+
+        protected TreeInfo OldTreeInfo { get; private set; }
+
+        protected TreeInfo NewTreeInfo { get; private set; }
+
+        public void Load(TreeInfo oldTreeInfo, TreeInfo newTreeInfo)
         {
             OldTreeInfo = oldTreeInfo;
             NewTreeInfo = newTreeInfo;
         }
-
-        protected TreeInfo OldTreeInfo { get; }
-
-        protected TreeInfo NewTreeInfo { get; }
 
         public async Task<Tuple<string, TableInfo>> GetNewTableInfoAsync(string oldTableName, TableInfo oldTableInfo, ConvertInfo converter)
         {
@@ -181,35 +190,43 @@ namespace SS.CMS.Cli.Updater
 
             if (StringUtils.EqualsIgnoreCase(TableAdministrator.OldTableName, oldTableName))
             {
-                converter = TableAdministrator.Converter;
+                var table = new TableAdministrator(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableAdministratorsInRoles.OldTableName, oldTableName))
             {
-                converter = TableAdministratorsInRoles.Converter;
+                var table = new TableAdministratorsInRoles(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.ContainsIgnoreCase(TableChannel.OldTableNames, oldTableName))
             {
-                converter = TableChannel.Converter;
+                var table = new TableChannel(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.ContainsIgnoreCase(TableChannelGroup.OldTableNames, oldTableName))
             {
-                converter = TableChannelGroup.Converter;
+                var table = new TableChannelGroup(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableConfig.OldTableName, oldTableName))
             {
-                converter = TableConfig.Converter;
+                var table = new TableConfig(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableContentCheck.OldTableName, oldTableName))
             {
-                converter = TableContentCheck.Converter;
+                var table = new TableContentCheck(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.ContainsIgnoreCase(TableContentGroup.OldTableNames, oldTableName))
             {
-                converter = TableContentGroup.Converter;
+                var table = new TableContentGroup(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableDbCache.OldTableName, oldTableName))
             {
-                converter = TableDbCache.Converter;
+                var table = new TableDbCache(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableErrorLog.OldTableName, oldTableName))
             {
@@ -217,63 +234,78 @@ namespace SS.CMS.Cli.Updater
             }
             else if (StringUtils.EqualsIgnoreCase(TableLog.OldTableName, oldTableName))
             {
-                converter = TableLog.Converter;
+                var table = new TableLog(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TablePermissionsInRoles.OldTableName, oldTableName))
             {
-                converter = TablePermissionsInRoles.Converter;
+                var table = new TablePermissionsInRoles(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.ContainsIgnoreCase(TableRelatedField.OldTableNames, oldTableName))
             {
-                converter = TableRelatedField.Converter;
+                var table = new TableRelatedField(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.ContainsIgnoreCase(TableRelatedFieldItem.OldTableNames, oldTableName))
             {
-                converter = TableRelatedFieldItem.Converter;
+                var table = new TableRelatedFieldItem(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableRole.OldTableName, oldTableName))
             {
-                converter = TableRole.Converter;
+                var table = new TableRole(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.ContainsIgnoreCase(TableSite.OldTableNames, oldTableName))
             {
-                converter = TableSite.Converter;
+                var table = new TableSite(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.ContainsIgnoreCase(TableSiteLog.OldTableNames, oldTableName))
             {
-                converter = TableSiteLog.Converter;
+                var table = new TableSiteLog(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.ContainsIgnoreCase(TableSitePermissions.OldTableNames, oldTableName))
             {
-                converter = TableSitePermissions.Converter;
+                var table = new TableSitePermissions(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableTableStyle.OldTableName, oldTableName))
             {
-                converter = TableTableStyle.Converter;
+                var table = new TableTableStyle(_databaseManager);
+                converter = table.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(TableTag.OldTableName, oldTableName))
+            else if (StringUtils.EqualsIgnoreCase(TableContentTag.OldTableName, oldTableName))
             {
-                converter = TableTag.Converter;
+                var table = new TableContentTag(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.ContainsIgnoreCase(TableTemplate.OldTableNames, oldTableName))
             {
-                converter = TableTemplate.Converter;
+                var table = new TableTemplate(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.ContainsIgnoreCase(TableTemplateLog.OldTableNames, oldTableName))
             {
-                converter = TableTemplateLog.Converter;
+                var table = new TableTemplateLog(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableUser.OldTableName, oldTableName))
             {
-                converter = TableUser.Converter;
+                var table = new TableUser(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableUserLog.OldTableName, oldTableName))
             {
-                converter = TableUserLog.Converter;
+                var table = new TableUserLog(_databaseManager);
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableGovInteractChannel.OldTableName, oldTableName))
             {
-                converter = TableGovInteractChannel.Converter;
+                var table = new TableGovInteractChannel();
+                converter = table.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableGovInteractLog.OldTableName, oldTableName))
             {
@@ -313,15 +345,18 @@ namespace SS.CMS.Cli.Updater
             }
             else if (StringUtils.ContainsIgnoreCase(tableNameListForGovPublic, oldTableName))
             {
-                converter = TableGovPublicContent.GetConverter(oldTableInfo.Columns);
+                var table = new TableGovPublicContent(_settingsManager);
+                converter = table.GetConverter(oldTableInfo.Columns);
             }
             else if (StringUtils.ContainsIgnoreCase(tableNameListForGovInteract, oldTableName))
             {
-                converter = TableGovInteractContent.GetConverter(oldTableInfo.Columns);
+                var table = new TableGovInteractContent(_settingsManager);
+                converter = table.GetConverter(oldTableInfo.Columns);
             }
             else if (StringUtils.ContainsIgnoreCase(tableNameListForJob, oldTableName))
             {
-                converter = TableJobsContent.GetConverter(oldTableInfo.Columns);
+                var table = new TableJobsContent(_settingsManager);
+                converter = table.GetConverter(oldTableInfo.Columns);
             }
 
             return await GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);

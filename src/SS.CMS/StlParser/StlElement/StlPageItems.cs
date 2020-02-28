@@ -2,9 +2,8 @@
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
-using SS.CMS.StlParser.Parsers;
 using SS.CMS.StlParser.Utility;
 using SS.CMS.Core;
 
@@ -20,16 +19,18 @@ namespace SS.CMS.StlParser.StlElement
         private const string Context = nameof(Context);
 
         //对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-        public static async Task<string> ParseAsync(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, ContextType contextType)
+        public static async Task<string> ParseAsync(IParseManager parseManager, string stlElement, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, ParseType contextType)
         {
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
+            var pageInfo = parseManager.PageInfo;
+
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
             string parsedContent;
             try
             {
                 var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
                 if (stlElementInfo.Attributes[Context] != null)
                 {
-                    contextType = TranslateUtils.ToEnum(stlElementInfo.Attributes[Context], ContextType.Undefined);
+                    contextType = TranslateUtils.ToEnum(stlElementInfo.Attributes[Context], ParseType.Undefined);
                 }
 
                 if (pageCount <= 1)
@@ -51,27 +52,22 @@ namespace SS.CMS.StlParser.StlElement
                     isXmlContent = false;
                 }
 
-                parsedContent = await StlPageElementParser.ParseStlPageItemsAsync(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, isXmlContent, contextType);
+                parsedContent = await parseManager.ParseStlPageItemsAsync(stlElement, channelId, contentId, currentPageIndex, pageCount, totalNum, isXmlContent, contextType);
 
-                ContextInfo contextInfo = new ContextInfo(pageInfo)
-                {
-                    ContextType = contextType
-                };
                 var innerBuilder = new StringBuilder(parsedContent);
-                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+                await parseManager.ParseInnerContentAsync(innerBuilder);
                 parsedContent = innerBuilder.ToString();
-
             }
             catch (Exception ex)
             {
                 parsedContent =
-                    await LogUtils.AddStlErrorLogAsync(pageInfo, ElementName, stlElement, ex);
+                    await parseManager.AddStlErrorLogAsync(pageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;
         }
 
-        public static async Task<string> ParseInSearchPageAsync(string stlElement, PageInfo pageInfo, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
+        public static async Task<string> ParseInSearchPageAsync(IParseManager parseManager, string stlElement, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
         {
             string parsedContent;
             try
@@ -97,17 +93,17 @@ namespace SS.CMS.StlParser.StlElement
                     //isXmlContent = false;
                 }
 
-                parsedContent = await StlPageElementParser.ParseStlPageItemsInSearchPageAsync(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
+                parsedContent = await parseManager.ParseStlPageItemsInSearchPageAsync(stlElement, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
             }
             catch (Exception ex)
             {
-                parsedContent = await LogUtils.AddStlErrorLogAsync(pageInfo, ElementName, stlElement, ex);
+                parsedContent = await parseManager.AddStlErrorLogAsync(parseManager.PageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;
         }
 
-        public static async Task<string> ParseInDynamicPageAsync(string stlElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static async Task<string> ParseInDynamicPageAsync(IParseManager parseManager, string stlElement, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             string parsedContent;
             try
@@ -130,11 +126,11 @@ namespace SS.CMS.StlParser.StlElement
                     stlElement = stlElement.Substring(index, length);
                 }
 
-                parsedContent = await StlPageElementParser.ParseStlPageItemsInDynamicPageAsync(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                parsedContent = await parseManager.ParseStlPageItemsInDynamicPageAsync(stlElement, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
             }
             catch (Exception ex)
             {
-                parsedContent = await LogUtils.AddStlErrorLogAsync(pageInfo, ElementName, stlElement, ex);
+                parsedContent = await parseManager.AddStlErrorLogAsync(parseManager.PageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;

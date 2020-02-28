@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Home
 {
@@ -12,10 +11,16 @@ namespace SS.CMS.Web.Controllers.Home
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerArrangeController(IAuthManager authManager)
+        public ContentsLayerArrangeController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -28,13 +33,13 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            await DataProvider.ContentRepository.UpdateArrangeTaxisAsync(site, channel, request.AttributeName, request.IsDesc);
+            await _contentRepository.UpdateArrangeTaxisAsync(site, channel, request.AttributeName, request.IsDesc);
 
             await auth.AddSiteLogAsync(request.SiteId, "批量整理", string.Empty);
 

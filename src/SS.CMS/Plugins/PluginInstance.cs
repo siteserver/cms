@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
+using SS.CMS.Core;
 using SS.CMS.Packaging;
 using SS.CMS.Plugins.Impl;
 
@@ -40,7 +40,7 @@ namespace SS.CMS.Plugins
                 InitTime = initTime
             };
 
-            var (isDisabled, taxis) = await DataProvider.PluginRepository.SetIsDisabledAndTaxisAsync(instance.Id);
+            var (isDisabled, taxis) = await GlobalSettings.PluginRepository.SetIsDisabledAndTaxisAsync(instance.Id);
 
             instance.IsRunnable = plugin != null;
             instance.IsDisabled = isDisabled;

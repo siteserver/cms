@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Create
 {
@@ -16,11 +15,19 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly ITemplateRepository _templateRepository;
 
-        public CreatePageController(IAuthManager authManager, ICreateManager createManager)
+        public CreatePageController(IAuthManager authManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITemplateRepository templateRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _templateRepository = templateRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -52,16 +59,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
+            var channel = await _channelRepository.GetAsync(request.SiteId);
             var allChannelIds = new List<int>();
-            var cascade = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel, async summary =>
+            var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
                 allChannelIds.Add(summary.Id);
-                var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
-                var entity = await DataProvider.ChannelRepository.GetAsync(summary.Id);
+                var count = await _contentRepository.GetCountAsync(site, summary);
+                var entity = await _channelRepository.GetAsync(summary.Id);
                 return new
                 {
                     Count = count,
@@ -70,8 +77,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
                 };
             });
 
-            var channelTemplates = await DataProvider.TemplateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var contentTemplates = await DataProvider.TemplateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
+            var channelTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var contentTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
 
             return new GetResult
             {
@@ -112,13 +119,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             var selectedChannelIdList = new List<int>();
 
             if (request.IsAllChecked)
             {
-                selectedChannelIdList = await DataProvider.ChannelRepository.GetChannelIdListAsync(request.SiteId);
+                selectedChannelIdList = await _channelRepository.GetChannelIdListAsync(request.SiteId);
             }
             else if (request.IsDescendent)
             {
@@ -126,10 +133,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
                 {
                     selectedChannelIdList.Add(channelId);
 
-                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                    var channelInfo = await _channelRepository.GetAsync(channelId);
                     if (channelInfo.ChildrenCount > 0)
                     {
-                        var descendentIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, channelId, ScopeType.Descendant);
+                        var descendentIdList = await _channelRepository.GetChannelIdsAsync(request.SiteId, channelId, ScopeType.Descendant);
                         foreach (var descendentId in descendentIdList)
                         {
                             if (selectedChannelIdList.Contains(descendentId)) continue;
@@ -150,7 +157,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
             {
                 if (request.Scope == "1month")
                 {
-                    var lastEditList = await DataProvider.ContentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 720);
+                    var lastEditList = await _contentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 720);
                     foreach (var channelId in lastEditList)
                     {
                         if (selectedChannelIdList.Contains(channelId))
@@ -161,7 +168,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
                 }
                 else if (request.Scope == "1day")
                 {
-                    var lastEditList = await DataProvider.ContentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 24);
+                    var lastEditList = await _contentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 24);
                     foreach (var channelId in lastEditList)
                     {
                         if (selectedChannelIdList.Contains(channelId))
@@ -172,7 +179,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
                 }
                 else if (request.Scope == "2hours")
                 {
-                    var lastEditList = await DataProvider.ContentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 2);
+                    var lastEditList = await _contentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 2);
                     foreach (var channelId in lastEditList)
                     {
                         if (selectedChannelIdList.Contains(channelId))

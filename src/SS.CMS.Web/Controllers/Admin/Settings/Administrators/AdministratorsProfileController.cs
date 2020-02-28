@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
@@ -18,11 +17,13 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IAdministratorRepository _administratorRepository;
 
-        public AdministratorsProfileController(IAuthManager authManager, IPathManager pathManager)
+        public AdministratorsProfileController(IAuthManager authManager, IPathManager pathManager, IAdministratorRepository administratorRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
+            _administratorRepository = administratorRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -36,7 +37,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var administrator = await DataProvider.AdministratorRepository.GetByUserIdAsync(userId);
+            var administrator = await _administratorRepository.GetByUserIdAsync(userId);
 
             return new GetResult
             {
@@ -53,7 +54,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         {
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
-            var administrator = await DataProvider.AdministratorRepository.GetByUserIdAsync(userId);
+            var administrator = await _administratorRepository.GetByUserIdAsync(userId);
             if (administrator == null) return NotFound();
             if (auth.AdminId != userId &&
                 !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
@@ -95,7 +96,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             Administrator administrator;
             if (userId > 0)
             {
-                administrator = await DataProvider.AdministratorRepository.GetByUserIdAsync(userId);
+                administrator = await _administratorRepository.GetByUserIdAsync(userId);
                 if (administrator == null) return NotFound();
             }
             else
@@ -111,12 +112,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             }
             else
             {
-                if (administrator.Mobile != request.Mobile && !string.IsNullOrEmpty(request.Mobile) && await DataProvider.AdministratorRepository.IsMobileExistsAsync(request.Mobile))
+                if (administrator.Mobile != request.Mobile && !string.IsNullOrEmpty(request.Mobile) && await _administratorRepository.IsMobileExistsAsync(request.Mobile))
                 {
                     return this.Error("资料修改失败，手机号码已存在");
                 }
 
-                if (administrator.Email != request.Email && !string.IsNullOrEmpty(request.Email) && await DataProvider.AdministratorRepository.IsEmailExistsAsync(request.Email))
+                if (administrator.Email != request.Email && !string.IsNullOrEmpty(request.Email) && await _administratorRepository.IsEmailExistsAsync(request.Email))
                 {
                     return this.Error("资料修改失败，邮箱地址已存在");
                 }
@@ -129,7 +130,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             if (administrator.Id == 0)
             {
-                var (isValid, errorMessage) = await DataProvider.AdministratorRepository.InsertAsync(administrator, request.Password);
+                var (isValid, errorMessage) = await _administratorRepository.InsertAsync(administrator, request.Password);
                 if (!isValid)
                 {
                     return this.Error($"管理员添加失败：{errorMessage}");
@@ -138,7 +139,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             }
             else
             {
-                var (isValid, errorMessage) = await DataProvider.AdministratorRepository.UpdateAsync(administrator);
+                var (isValid, errorMessage) = await _administratorRepository.UpdateAsync(administrator);
                 if (!isValid)
                 {
                     return this.Error($"管理员修改失败：{errorMessage}");

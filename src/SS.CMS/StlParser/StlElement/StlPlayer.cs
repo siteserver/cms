@@ -2,11 +2,9 @@
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
-using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -49,7 +47,7 @@ namespace SS.CMS.StlParser.StlElement
             PlayByJwPlayer
         };
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
             var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
@@ -59,9 +57,9 @@ namespace SS.CMS.StlParser.StlElement
             var height = 350;
             var isAutoPlay = true;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -93,17 +91,20 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, playUrl, imageUrl, playBy, width, height, type, isAutoPlay);
+            return await ParseImplAsync(parseManager, playUrl, imageUrl, playBy, width, height, type, isAutoPlay);
 		}
 
-        private static async Task<object> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string playUrl, string imageUrl, string playBy, int width, int height, string type, bool isAutoPlay)
+        private static async Task<object> ParseImplAsync(IParseManager parseManager, string playUrl, string imageUrl, string playBy, int width, int height, string type, bool isAutoPlay)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (string.IsNullOrEmpty(playUrl))
             {
                 var contentId = contextInfo.ContentId;
                 if (contentId != 0)//获取内容视频
                 {
-                    var contentInfo = await contextInfo.GetContentAsync();
+                    var contentInfo = await parseManager.GetContentAsync();
                     if (contentInfo != null)
                     {
                         playUrl = contentInfo.Get<string>(type);
@@ -117,8 +118,8 @@ namespace SS.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
-            playUrl = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
-            imageUrl = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
+            playUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
+            imageUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
 
             var extension = PathUtils.GetExtension(playUrl);
             var uniqueId = pageInfo.UniqueId;
@@ -127,12 +128,12 @@ namespace SS.CMS.StlParser.StlElement
 
             if (FileUtils.IsFlash(extension))
             {
-                return await StlFlash.ParseAsync(pageInfo, contextInfo);
+                return await StlFlash.ParseAsync(parseManager);
             }
 
             if (FileUtils.IsImage(extension))
             {
-                return await StlImage.ParseAsync(pageInfo, contextInfo);
+                return await StlImage.ParseAsync(parseManager);
             }
 
             if (fileType == FileType.Avi)
@@ -162,7 +163,7 @@ namespace SS.CMS.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(playBy, PlayByJwPlayer))
             {
-                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.JsAcJwPlayer6);
+                await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcJwPlayer6);
                 var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
                 return $@"
 <div id='{ajaxElementId}'></div>
@@ -181,7 +182,7 @@ namespace SS.CMS.StlParser.StlElement
             if (StringUtils.EqualsIgnoreCase(playBy, PlayByFlowPlayer))
             {
                 var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.JsAcFlowPlayer);
+                await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcFlowPlayer);
 
                 var imageHtml = string.Empty;
                 if (!string.IsNullOrEmpty(imageUrl))
@@ -202,7 +203,7 @@ namespace SS.CMS.StlParser.StlElement
 ";
             }
 
-            return await StlVideo.ParseAsync(pageInfo, contextInfo);
+            return await StlVideo.ParseAsync(parseManager);
         }
 
         private static string ParseAvi(int uniqueId, int width, int height, bool isAutoPlay, string playUrl)
@@ -263,7 +264,7 @@ namespace SS.CMS.StlParser.StlElement
 ";
         }
 
-        private static string ParseRm(ContextInfo contextInfo, int uniqueId, int width, int height, bool isAutoPlay, string playUrl)
+        private static string ParseRm(ParseContext contextInfo, int uniqueId, int width, int height, bool isAutoPlay, string playUrl)
         {
             if (string.IsNullOrEmpty(contextInfo.Attributes["ShowDisplay"]))
             {

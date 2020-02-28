@@ -4,24 +4,31 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Api.Stl;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Stl
 {
     public partial class ActionsTriggerController : ControllerBase
     {
         private readonly ICreateManager _createManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ActionsTriggerController(ICreateManager createManager)
+        public ActionsTriggerController(ICreateManager createManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _createManager = createManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpGet]
         [Route(ApiRouteActionsTrigger.Route)]
         public async Task<ActionResult<string>> Get([FromQuery] GetRequest request)
         {
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             try
             {
@@ -54,29 +61,29 @@ namespace SS.CMS.Web.Controllers.Stl
 
                 if (request.IsRedirect)
                 {
-                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                    var channelInfo = await _channelRepository.GetAsync(channelId);
 
                     var redirectUrl = string.Empty;
                     if (request.SpecialId != 0)
                     {
-                        redirectUrl = await PageUtility.GetFileUrlAsync(site, request.SpecialId, false);
+                        redirectUrl = await _pathManager.GetFileUrlAsync(site, request.SpecialId, false);
                     }
                     else if (request.FileTemplateId != 0)
                     {
-                        redirectUrl = await PageUtility.GetFileUrlAsync(site, request.FileTemplateId, false);
+                        redirectUrl = await _pathManager.GetFileUrlAsync(site, request.FileTemplateId, false);
                     }
                     else if (request.ContentId != 0)
                     {
-                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, request.ContentId);
-                        redirectUrl = await PageUtility.GetContentUrlAsync(site, contentInfo, false);
+                        var contentInfo = await _contentRepository.GetAsync(site, channelInfo, request.ContentId);
+                        redirectUrl = await _pathManager.GetContentUrlAsync(site, contentInfo, false);
                     }
                     else if (channelId != 0)
                     {
-                        redirectUrl = await PageUtility.GetChannelUrlAsync(site, channelInfo, false);
+                        redirectUrl = await _pathManager.GetChannelUrlAsync(site, channelInfo, false);
                     }
                     else if (request.SiteId != 0)
                     {
-                        redirectUrl = await PageUtility.GetIndexPageUrlAsync(site, false);
+                        redirectUrl = await _pathManager.GetIndexPageUrlAsync(site, false);
                     }
 
                     if (!string.IsNullOrEmpty(redirectUrl))
@@ -95,7 +102,7 @@ namespace SS.CMS.Web.Controllers.Stl
             }
             catch
             {
-                var redirectUrl = await PageUtility.GetIndexPageUrlAsync(site, false);
+                var redirectUrl = await _pathManager.GetIndexPageUrlAsync(site, false);
                 return Redirect(redirectUrl);
             }
 

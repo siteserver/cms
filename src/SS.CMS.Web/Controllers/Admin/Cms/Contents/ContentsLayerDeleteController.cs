@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -16,11 +15,17 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerDeleteController(IAuthManager authManager, ICreateManager createManager)
+        public ContentsLayerDeleteController(IAuthManager authManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -35,7 +40,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
@@ -43,8 +48,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             var contents = new List<Content>();
             foreach (var summary in summaries)
             {
-                var channel = await DataProvider.ChannelRepository.GetAsync(summary.ChannelId);
-                var content = await DataProvider.ContentRepository.GetAsync(site, channel, summary.Id);
+                var channel = await _channelRepository.GetAsync(summary.ChannelId);
+                var content = await _contentRepository.GetAsync(site, channel, summary.Id);
                 if (content == null) continue;
 
                 var pageContent = new Content(content.ToDictionary());
@@ -70,7 +75,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
@@ -87,25 +92,25 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             {
                 var summary = summaries[0];
 
-                var content = await DataProvider.ContentRepository.GetAsync(site, summary.ChannelId, summary.Id);
+                var content = await _contentRepository.GetAsync(site, summary.ChannelId, summary.Id);
                 if (content != null)
                 {
                     await auth.AddSiteLogAsync(request.SiteId, summary.ChannelId, summary.Id, "删除内容",
-                        $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, summary.ChannelId)},内容标题:{content.Title}");
+                        $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, summary.ChannelId)},内容标题:{content.Title}");
                 }
             }
             else
             {
                 await auth.AddSiteLogAsync(request.SiteId, "批量删除内容",
-                    $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId)},内容条数:{summaries.Count}");
+                    $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId)},内容条数:{summaries.Count}");
             }
 
             foreach (var distinctChannelId in summaries.Select(x => x.ChannelId).Distinct())
             {
-                var distinctChannel = await DataProvider.ChannelRepository.GetAsync(distinctChannelId);
+                var distinctChannel = await _channelRepository.GetAsync(distinctChannelId);
                 var contentIdList = summaries.Where(x => x.ChannelId == distinctChannelId)
                     .Select(x => x.Id).ToList();
-                await DataProvider.ContentRepository.RecycleContentsAsync(site, distinctChannel, contentIdList, auth.AdminId);
+                await _contentRepository.RecycleContentsAsync(site, distinctChannel, contentIdList, auth.AdminId);
 
                 await _createManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
             }

@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
-using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -22,13 +20,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             public int TemplateId { get; set; }
         }
 
-        private static async Task<ActionResult<GetResult>> GetResultAsync(Site site)
+        private async Task<ActionResult<GetResult>> GetResultAsync(Site site)
         {
             var channels = new List<Channel>();
-            var children = await DataProvider.ChannelRepository.GetCascadeChildrenAsync(site, site.Id,
+            var children = await _channelRepository.GetCascadeChildrenAsync(site, site.Id,
                 async summary =>
                 {
-                    var entity = await DataProvider.ChannelRepository.GetAsync(summary.Id);
+                    var entity = await _channelRepository.GetAsync(summary.Id);
                     channels.Add(entity);
                     return new
                     {
@@ -37,33 +35,33 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                     };
                 });
 
-            var summaries = await DataProvider.TemplateRepository.GetSummariesAsync(site.Id);
+            var summaries = await _templateRepository.GetSummariesAsync(site.Id);
             var templates = new List<Template>();
             foreach (var summary in summaries)
             {
-                var original = await DataProvider.TemplateRepository.GetAsync(summary.Id);
+                var original = await _templateRepository.GetAsync(summary.Id);
                 var template = original.Clone<Template>();
 
-                template.Set("useCount", DataProvider.ChannelRepository.GetTemplateUseCount(site.Id, template.Id, template.TemplateType, template.Default, channels));
+                template.Set("useCount", _channelRepository.GetTemplateUseCount(site.Id, template.Id, template.TemplateType, template.Default, channels));
 
                 if (template.TemplateType == TemplateType.IndexPageTemplate)
                 {
-                    template.Set("url", PageUtility.ParseNavigationUrlAsync(site, template.CreatedFileFullName, false));
+                    template.Set("url", _pathManager.ParseNavigationUrlAsync(site, template.CreatedFileFullName, false));
                     templates.Add(template);
                 }
                 else if (template.TemplateType == TemplateType.ChannelTemplate)
                 {
-                    template.Set("channelIds", DataProvider.ChannelRepository.GetChannelIdListByTemplateId(true, template.Id, channels));
+                    template.Set("channelIds", _channelRepository.GetChannelIdListByTemplateId(true, template.Id, channels));
                     templates.Add(template);
                 }
                 else if (template.TemplateType == TemplateType.ContentTemplate)
                 {
-                    template.Set("channelIds", DataProvider.ChannelRepository.GetChannelIdListByTemplateId(false, template.Id, channels));
+                    template.Set("channelIds", _channelRepository.GetChannelIdListByTemplateId(false, template.Id, channels));
                     templates.Add(template);
                 }
                 else if (template.TemplateType == TemplateType.FileTemplate)
                 {
-                    template.Set("url", PageUtility.ParseNavigationUrlAsync(site, template.CreatedFileFullName, false));
+                    template.Set("url", _pathManager.ParseNavigationUrlAsync(site, template.CreatedFileFullName, false));
                     templates.Add(template);
                 }
             }

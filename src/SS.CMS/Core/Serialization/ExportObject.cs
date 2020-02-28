@@ -6,28 +6,30 @@ using Datory.Utils;
 using SS.CMS.Abstractions;
 using SS.CMS.Core.Serialization.Atom.Atom.Core;
 using SS.CMS.Core.Serialization.Components;
-using SS.CMS.Framework;
+using FileUtils = SS.CMS.Abstractions.FileUtils;
 
 namespace SS.CMS.Core.Serialization
 {
     public class ExportObject
     {
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
         private readonly Site _site;
-        private readonly int _adminId;
 
-        public ExportObject(Site site, int adminId)
+        public ExportObject(IPathManager pathManager, IDatabaseManager databaseManager, Site site)
         {
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
             _site = site;
-            _adminId = adminId;
         }
 
         public async Task ExportFilesToSiteAsync(string siteTemplatePath, bool isAllFiles, IList<string> directories, IList<string> files, bool isCreateMetadataDirectory)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 
-            var siteDirList = await DataProvider.SiteRepository.GetSiteDirListAsync(0);
-            var sitePath = await PathUtility.GetSitePathAsync(_site);
-            var fileSystems = FileUtility.GetFileSystemInfoExtendCollection(await PathUtility.GetSitePathAsync(_site));
+            var siteDirList = await _databaseManager.SiteRepository.GetSiteDirListAsync(0);
+            var sitePath = await _pathManager.GetSitePathAsync(_site);
+            var fileSystems = FileUtility.GetFileSystemInfoExtendCollection(await _pathManager.GetSitePathAsync(_site));
             foreach (FileSystemInfoExtend fileSystem in fileSystems)
             {
                 var srcPath = PathUtils.Combine(sitePath, fileSystem.Name);
@@ -59,7 +61,7 @@ namespace SS.CMS.Core.Serialization
                 {
                     if (!isAllFiles && !StringUtils.ContainsIgnoreCase(files, fileSystem.Name)) continue;
 
-                    if (!PathUtility.IsSystemFile(fileSystem.Name))
+                    if (!_pathManager.IsSystemFile(fileSystem.Name))
                     {
                         FileUtils.CopyFile(srcPath, destPath);
                     }
@@ -68,7 +70,7 @@ namespace SS.CMS.Core.Serialization
 
             if (isCreateMetadataDirectory)
             {
-                var siteTemplateMetadataPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, string.Empty);
+                var siteTemplateMetadataPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, string.Empty);
                 DirectoryUtils.CreateDirectoryIfNotExists(siteTemplateMetadataPath);
             }
         }
@@ -80,7 +82,7 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(filesDirectoryPath);
             FileUtils.DeleteFileIfExists(filePath);
 
-            var sitePath = await PathUtility.GetSitePathAsync(_site);
+            var sitePath = await _pathManager.GetSitePathAsync(_site);
             DirectoryUtils.Copy(sitePath, filesDirectoryPath);
 
             ZipUtils.CreateZip(filePath, filesDirectoryPath);
@@ -90,10 +92,10 @@ namespace SS.CMS.Core.Serialization
 
         public async Task<string> ExportSingleTableStyleAsync(string tableName, int relatedIdentity)
         {
-            var filePath = PathUtility.GetTemporaryFilesPath("tableStyle.zip");
-            var styleDirectoryPath = PathUtility.GetTemporaryFilesPath("TableStyle");
+            var filePath = _pathManager.GetTemporaryFilesPath("tableStyle.zip");
+            var styleDirectoryPath = _pathManager.GetTemporaryFilesPath("TableStyle");
 
-            await TableStyleIe.SingleExportTableStylesAsync(tableName, _site.Id, relatedIdentity, styleDirectoryPath);
+            await TableStyleIe.SingleExportTableStylesAsync(_databaseManager, tableName, _site.Id, relatedIdentity, styleDirectoryPath);
             ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -101,11 +103,11 @@ namespace SS.CMS.Core.Serialization
             return PathUtils.GetFileName(filePath);
         }
 
-        public static async Task<string> ExportRootSingleTableStyleAsync(int siteId, string tableName, List<int> relatedIdentities)
+        public static async Task<string> ExportRootSingleTableStyleAsync(IPathManager pathManager, IDatabaseManager databaseManager, int siteId, string tableName, List<int> relatedIdentities)
         {
-            var filePath = PathUtility.GetTemporaryFilesPath("tableStyle.zip");
-            var styleDirectoryPath = PathUtility.GetTemporaryFilesPath("TableStyle");
-            await TableStyleIe.SingleExportTableStylesAsync(siteId, tableName, relatedIdentities, styleDirectoryPath);
+            var filePath = pathManager.GetTemporaryFilesPath("tableStyle.zip");
+            var styleDirectoryPath = pathManager.GetTemporaryFilesPath("TableStyle");
+            await TableStyleIe.SingleExportTableStylesAsync(databaseManager, siteId, tableName, relatedIdentities, styleDirectoryPath);
             ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -115,7 +117,7 @@ namespace SS.CMS.Core.Serialization
 
         public async Task ExportConfigurationAsync(string configurationFilePath)
         {
-            var configIe = new ConfigurationIe(_site, configurationFilePath);
+            var configIe = new ConfigurationIe(_databaseManager, _site, configurationFilePath);
             await configIe.ExportAsync();
         }
 
@@ -125,7 +127,7 @@ namespace SS.CMS.Core.Serialization
         /// <param name="filePath"></param>
         public async Task ExportTemplatesAsync(string filePath)
         {
-            var templateIe = new TemplateIe(_site, filePath);
+            var templateIe = new TemplateIe(_pathManager, _databaseManager, _site, filePath);
             await templateIe.ExportTemplatesAsync();
         }
 
@@ -133,26 +135,26 @@ namespace SS.CMS.Core.Serialization
         {
             DirectoryUtils.CreateDirectoryIfNotExists(relatedFieldDirectoryPath);
 
-            var relatedFieldIe = new RelatedFieldIe(_site, relatedFieldDirectoryPath);
-            var relatedFieldInfoList = await DataProvider.RelatedFieldRepository.GetRelatedFieldListAsync(_site.Id);
+            var relatedFieldIe = new RelatedFieldIe(_databaseManager, _site, relatedFieldDirectoryPath);
+            var relatedFieldInfoList = await _databaseManager.RelatedFieldRepository.GetRelatedFieldListAsync(_site.Id);
             foreach (var relatedFieldInfo in relatedFieldInfoList)
             {
                 await relatedFieldIe.ExportRelatedFieldAsync(relatedFieldInfo);
             }
         }
 
-        public static async Task<string> ExportRelatedFieldListAsync(int siteId)
+        public static async Task<string> ExportRelatedFieldListAsync(IPathManager pathManager, IDatabaseManager databaseManager, int siteId)
         {
-            var directoryPath = PathUtility.GetTemporaryFilesPath("relatedField");
-            var filePath = PathUtility.GetTemporaryFilesPath("relatedField.zip");
+            var directoryPath = pathManager.GetTemporaryFilesPath("relatedField");
+            var filePath = pathManager.GetTemporaryFilesPath("relatedField.zip");
 
             FileUtils.DeleteFileIfExists(filePath);
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var relatedFieldInfoList = await DataProvider.RelatedFieldRepository.GetRelatedFieldListAsync(siteId);
-            var relatedFieldIe = new RelatedFieldIe(site, directoryPath);
+            var site = await databaseManager.SiteRepository.GetAsync(siteId);
+            var relatedFieldInfoList = await databaseManager.RelatedFieldRepository.GetRelatedFieldListAsync(siteId);
+            var relatedFieldIe = new RelatedFieldIe(databaseManager,  site, directoryPath);
             foreach (var relatedFieldInfo in relatedFieldInfoList)
             {
                 await relatedFieldIe.ExportRelatedFieldAsync(relatedFieldInfo);
@@ -170,17 +172,17 @@ namespace SS.CMS.Core.Serialization
         public async Task ExportTablesAndStylesAsync(string tableDirectoryPath)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(tableDirectoryPath);
-            var styleIe = new TableStyleIe(tableDirectoryPath, _adminId);
+            var styleIe = new TableStyleIe(_databaseManager, tableDirectoryPath);
 
-            var tableNameList = await DataProvider.SiteRepository.GetTableNamesAsync(_site);
+            var tableNameList = await _databaseManager.SiteRepository.GetTableNamesAsync(_site);
 
             foreach (var tableName in tableNameList)
             {
                 await styleIe.ExportTableStylesAsync(_site.Id, tableName);
             }
 
-            await styleIe.ExportTableStylesAsync(_site.Id, DataProvider.ChannelRepository.TableName);
-            await styleIe.ExportTableStylesAsync(_site.Id, DataProvider.SiteRepository.TableName);
+            await styleIe.ExportTableStylesAsync(_site.Id, _databaseManager.ChannelRepository.TableName);
+            await styleIe.ExportTableStylesAsync(_site.Id, _databaseManager.SiteRepository.TableName);
         }
 
 
@@ -192,12 +194,12 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var allChannelIdList = await DataProvider.ChannelRepository.GetChannelIdListAsync(_site.Id);
+            var allChannelIdList = await _databaseManager.ChannelRepository.GetChannelIdListAsync(_site.Id);
 
             var includeChannelIdArrayList = new ArrayList();
             foreach (int channelId in channelIdArrayList)
             {
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                var nodeInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
                 var parentIdArrayList = Utilities.GetIntList(nodeInfo.ParentsPath);
                 foreach (int parentId in parentIdArrayList)
                 {
@@ -212,7 +214,7 @@ namespace SS.CMS.Core.Serialization
                 }
             }
 
-            var siteIe = new SiteIe(_site, siteContentDirectoryPath);
+            var siteIe = new SiteIe(_pathManager, _databaseManager, _site, siteContentDirectoryPath);
             foreach (var channelId in allChannelIdList)
             {
                 if (!isSaveAllChannels)
@@ -239,7 +241,7 @@ namespace SS.CMS.Core.Serialization
 
         public async Task<string> ExportChannelsAsync(List<int> channelIdList)
         {
-            var filePath = PathUtility.GetTemporaryFilesPath(BackupType.ChannelsAndContents.GetValue() + ".zip");
+            var filePath = _pathManager.GetTemporaryFilesPath(BackupType.ChannelsAndContents.GetValue() + ".zip");
             return await ExportChannelsAsync(channelIdList, filePath);
         }
 
@@ -256,14 +258,14 @@ namespace SS.CMS.Core.Serialization
                 if (!allChannelIdList.Contains(channelId))
                 {
                     allChannelIdList.Add(channelId);
-                    var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                    var childChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(nodeInfo.SiteId, nodeInfo.Id, ScopeType.Descendant);
+                    var nodeInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
+                    var childChannelIdList = await _databaseManager.ChannelRepository.GetChannelIdsAsync(nodeInfo.SiteId, nodeInfo.Id, ScopeType.Descendant);
                     allChannelIdList.AddRange(childChannelIdList);
                 }
             }
 
-            var sitePath = await PathUtility.GetSitePathAsync(_site);
-            var siteIe = new SiteIe(_site, siteContentDirectoryPath);
+            var sitePath = await _pathManager.GetSitePathAsync(_site);
+            var siteIe = new SiteIe(_pathManager, _databaseManager, _site, siteContentDirectoryPath);
             foreach (var channelId in allChannelIdList)
             {
                 await siteIe.ExportAsync(_site, channelId, true);
@@ -308,7 +310,7 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var contentIe = new ContentIe(_site, siteContentDirectoryPath);
+            var contentIe = new ContentIe(_pathManager, _databaseManager, _site, siteContentDirectoryPath);
             var isExport = await contentIe.ExportContentsAsync(_site, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
             if (isExport)
             {
@@ -326,7 +328,7 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var contentIe = new ContentIe(_site, siteContentDirectoryPath);
+            var contentIe = new ContentIe(_pathManager, _databaseManager, _site, siteContentDirectoryPath);
             var isExport = contentIe.ExportContents(_site, contentInfoList);
             if (isExport)
             {

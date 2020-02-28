@@ -390,7 +390,7 @@ namespace SS.CMS.Repositories
             return (true, string.Empty);
         }
 
-        private async Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string password, string email, string mobile)
+        public async Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string password, string email, string mobile)
         {
             var config = await _configRepository.GetAsync();
 
@@ -402,11 +402,6 @@ namespace SS.CMS.Repositories
             {
                 return (false, $"用户名长度必须大于等于{config.AdminUserNameMinLength}");
             }
-            if (await IsUserNameExistsAsync(userName))
-            {
-                return (false, "用户名已存在，请更换用户名");
-            }
-
             if (string.IsNullOrEmpty(password))
             {
                 return (false, "密码不能为空");
@@ -422,15 +417,6 @@ namespace SS.CMS.Repositories
                 return (false, $"密码不符合规则，请包含{config.AdminPasswordRestriction.GetDisplayName()}");
             }
 
-            if (!string.IsNullOrEmpty(mobile) && await IsMobileExistsAsync(mobile))
-            {
-                return (false, "手机号码已被注册，请更换手机号码");
-            }
-            if (!string.IsNullOrEmpty(email) && await IsEmailExistsAsync(email))
-            {
-                return (false, "电子邮件地址已被注册，请更换邮箱");
-            }
-
             return (true, string.Empty);
         }
 
@@ -438,6 +424,19 @@ namespace SS.CMS.Repositories
         {
             var valid = await InsertValidateAsync(administrator.UserName, password, administrator.Email, administrator.Mobile);
             if (!valid.IsValid) return valid;
+
+            if (await IsUserNameExistsAsync(administrator.UserName))
+            {
+                return (false, "用户名已存在，请更换用户名");
+            }
+            if (!string.IsNullOrEmpty(administrator.Email) && await IsEmailExistsAsync(administrator.Email))
+            {
+                return (false, "电子邮件地址已被注册，请更换邮箱");
+            }
+            if (!string.IsNullOrEmpty(administrator.Mobile) && await IsMobileExistsAsync(administrator.Mobile))
+            {
+                return (false, "手机号码已被注册，请更换手机号码");
+            }
 
             try
             {

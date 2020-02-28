@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
 {
@@ -11,10 +10,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IConfigRepository _configRepository;
 
-        public LogsConfigController(IAuthManager authManager)
+        public LogsConfigController(IAuthManager authManager, IConfigRepository configRepository)
         {
             _authManager = authManager;
+            _configRepository = configRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -27,7 +28,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             return new GetResult
             {
@@ -45,7 +46,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             config.IsTimeThreshold = request.IsTimeThreshold;
             if (config.IsTimeThreshold)
@@ -58,7 +59,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
             config.IsLogUser = request.IsLogUser;
             config.IsLogError = request.IsLogError;
 
-            await DataProvider.ConfigRepository.UpdateAsync(config);
+            await _configRepository.UpdateAsync(config);
 
             await auth.AddAdminLogAsync("修改日志设置");
 

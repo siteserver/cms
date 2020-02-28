@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 using SS.CMS.Packaging;
 
 namespace SS.CMS.Web.Controllers.Admin
@@ -11,11 +10,14 @@ namespace SS.CMS.Web.Controllers.Admin
     public partial class SysPackagingDownloadController : ControllerBase
     {
         private const string Route = "";
-        private readonly IAuthManager _authManager;
 
-        public SysPackagingDownloadController(IAuthManager authManager)
+        private readonly IAuthManager _authManager;
+        private readonly IDbCacheRepository _dbCacheRepository;
+
+        public SysPackagingDownloadController(IAuthManager authManager, IDbCacheRepository dbCacheRepository)
         {
             _authManager = authManager;
+            _dbCacheRepository = dbCacheRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -39,7 +41,7 @@ namespace SS.CMS.Web.Controllers.Admin
 
             if (StringUtils.EqualsIgnoreCase(request.PackageId, PackageUtils.PackageIdSsCms))
             {
-                await DataProvider.DbCacheRepository.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
+                await _dbCacheRepository.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
             }
 
             return new BoolResult

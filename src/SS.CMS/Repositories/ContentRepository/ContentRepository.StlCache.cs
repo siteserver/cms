@@ -58,6 +58,8 @@ namespace SS.CMS.Repositories
                 whereBuilder.Append($" AND {nameof(Content.Color)} = {isColor.ToString().ToLower()} ");
             }
 
+            var databaseType = _settingsManager.Database.DatabaseType;
+
             if (!string.IsNullOrEmpty(group))
             {
                 group = group.Trim().Trim(',');
@@ -70,7 +72,7 @@ namespace SS.CMS.Repositories
                         var trimGroup = theGroup.Trim();
 
                         whereBuilder.Append(
-                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(nameof(Content.GroupNames), trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup)}) OR ");
+                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(databaseType, nameof(Content.GroupNames), trimGroup + ",")} OR {SqlUtils.GetInStr(databaseType, nameof(Content.GroupNames), "," + trimGroup + ",")} OR {SqlUtils.GetInStr(databaseType, nameof(Content.GroupNames), "," + trimGroup)}) OR ");
                     }
                     whereBuilder.Length -= 3;
                     whereBuilder.Append(") ");
@@ -91,7 +93,7 @@ namespace SS.CMS.Repositories
                         //    $" ({ContentAttribute.GroupNameCollection} <> '{trimGroup}' AND CHARINDEX('{trimGroup},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup}',{ContentAttribute.GroupNameCollection}) = 0) AND ");
 
                         whereBuilder.Append(
-                                $" ({nameof(Content.GroupNames)} <> '{trimGroup}' AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), trimGroup + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + trimGroup + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + trimGroup)}) AND ");
+                                $" ({nameof(Content.GroupNames)} <> '{trimGroup}' AND {SqlUtils.GetNotInStr(databaseType, nameof(Content.GroupNames), trimGroup + ",")} AND {SqlUtils.GetNotInStr(databaseType, nameof(Content.GroupNames), "," + trimGroup + ",")} AND {SqlUtils.GetNotInStr(databaseType, nameof(Content.GroupNames), "," + trimGroup)}) AND ");
                     }
                     whereBuilder.Length -= 4;
                     whereBuilder.Append(") ");
@@ -108,7 +110,7 @@ namespace SS.CMS.Repositories
                     foreach (var tagName in tagNames)
                     {
                         whereBuilder.Append(
-                            $" ({nameof(Content.TagNames)} = '{AttackUtils.FilterSql(tagName)}' OR {SqlUtils.GetInStr(nameof(Content.TagNames), tagName + ",")} OR {SqlUtils.GetInStr(nameof(Content.TagNames), "," + tagName + ",")} OR {SqlUtils.GetInStr(nameof(Content.TagNames), "," + tagName)}) OR ");
+                            $" ({nameof(Content.TagNames)} = '{AttackUtils.FilterSql(tagName)}' OR {SqlUtils.GetInStr(databaseType, nameof(Content.TagNames), tagName + ",")} OR {SqlUtils.GetInStr(databaseType, nameof(Content.TagNames), "," + tagName + ",")} OR {SqlUtils.GetInStr(databaseType, nameof(Content.TagNames), "," + tagName)}) OR ");
                     }
                     whereBuilder.Length -= 3;
                     whereBuilder.Append(") ");
@@ -168,6 +170,8 @@ namespace SS.CMS.Repositories
                 whereBuilder.Append($" AND {nameof(Content.Color)} = {isColor.ToString().ToLower()} ");
             }
 
+            var databaseType = _settingsManager.Database.DatabaseType;
+
             if (!string.IsNullOrEmpty(group))
             {
                 group = group.Trim().Trim(',');
@@ -180,7 +184,7 @@ namespace SS.CMS.Repositories
                         var trimGroup = theGroup.Trim();
 
                         whereBuilder.Append(
-                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(nameof(Content.GroupNames), trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup)}) OR ");
+                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(databaseType, nameof(Content.GroupNames), trimGroup + ",")} OR {SqlUtils.GetInStr(databaseType, nameof(Content.GroupNames), "," + trimGroup + ",")} OR {SqlUtils.GetInStr(databaseType, nameof(Content.GroupNames), "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {
@@ -204,7 +208,7 @@ namespace SS.CMS.Repositories
                         //    $" ({ContentAttribute.GroupNameCollection} <> '{trimGroup}' AND CHARINDEX('{trimGroup},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup}',{ContentAttribute.GroupNameCollection}) = 0) AND ");
 
                         whereBuilder.Append(
-                                $" ({nameof(Content.GroupNames)} <> '{trimGroup}' AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), trimGroup + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + trimGroup + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + trimGroup)}) AND ");
+                                $" ({nameof(Content.GroupNames)} <> '{trimGroup}' AND {SqlUtils.GetNotInStr(databaseType, nameof(Content.GroupNames), trimGroup + ",")} AND {SqlUtils.GetNotInStr(databaseType, nameof(Content.GroupNames), "," + trimGroup + ",")} AND {SqlUtils.GetNotInStr(databaseType, nameof(Content.GroupNames), "," + trimGroup)}) AND ");
                     }
                     if (groupNotArr.Length > 0)
                     {
@@ -231,6 +235,8 @@ namespace SS.CMS.Repositories
                 whereStringBuilder.Append($" AND IsTop = '{isTop}' ");
             }
 
+            var databaseType = Database.DatabaseType;
+
             if (!string.IsNullOrEmpty(group))
             {
                 group = group.Trim().Trim(',');
@@ -243,7 +249,7 @@ namespace SS.CMS.Repositories
                         var trimGroup = theGroup.Trim();
 
                         whereStringBuilder.Append(
-                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(nameof(Content.GroupNames), trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup + ",")} OR {SqlUtils.GetInStr(nameof(Content.GroupNames), "," + trimGroup)}) OR ");
+                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(databaseType, nameof(Content.GroupNames), trimGroup + ",")} OR {SqlUtils.GetInStr(databaseType, nameof(Content.GroupNames), "," + trimGroup + ",")} OR {SqlUtils.GetInStr(databaseType, nameof(Content.GroupNames), "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {
@@ -266,7 +272,7 @@ namespace SS.CMS.Repositories
                         //    $" ({ContentAttribute.GroupNameCollection} <> '{theGroupNot.Trim()}' AND CHARINDEX('{theGroupNot.Trim()},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{theGroupNot.Trim()},',{ContentAttribute.GroupNameCollection}) = 0 AND CHARINDEX(',{theGroupNot.Trim()}',{ContentAttribute.GroupNameCollection}) = 0) AND ");
 
                         whereStringBuilder.Append(
-                                $" ({nameof(Content.GroupNames)} <> '{theGroupNot.Trim()}' AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), theGroupNot.Trim() + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + theGroupNot.Trim() + ",")} AND {SqlUtils.GetNotInStr(nameof(Content.GroupNames), "," + theGroupNot.Trim())}) AND ");
+                                $" ({nameof(Content.GroupNames)} <> '{theGroupNot.Trim()}' AND {SqlUtils.GetNotInStr(databaseType, nameof(Content.GroupNames), theGroupNot.Trim() + ",")} AND {SqlUtils.GetNotInStr(databaseType, nameof(Content.GroupNames), "," + theGroupNot.Trim() + ",")} AND {SqlUtils.GetNotInStr(databaseType, nameof(Content.GroupNames), "," + theGroupNot.Trim())}) AND ");
                     }
                     if (groupNotArr.Length > 0)
                     {
@@ -286,7 +292,7 @@ namespace SS.CMS.Repositories
                     foreach (var tagName in tagNames)
                     {
                         whereStringBuilder.Append(
-                            $" ({nameof(Content.TagNames)} = '{AttackUtils.FilterSql(tagName)}' OR {SqlUtils.GetInStr(nameof(Content.TagNames), tagName + ",")} OR {SqlUtils.GetInStr(nameof(Content.TagNames), "," + tagName + ",")} OR {SqlUtils.GetInStr(nameof(Content.TagNames), "," + tagName)}) OR ");
+                            $" ({nameof(Content.TagNames)} = '{AttackUtils.FilterSql(tagName)}' OR {SqlUtils.GetInStr(databaseType, nameof(Content.TagNames), tagName + ",")} OR {SqlUtils.GetInStr(databaseType, nameof(Content.TagNames), "," + tagName + ",")} OR {SqlUtils.GetInStr(databaseType, nameof(Content.TagNames), "," + tagName)}) OR ");
                     }
                     whereStringBuilder.Length -= 3;
                     whereStringBuilder.Append(") ");
@@ -333,7 +339,7 @@ namespace SS.CMS.Repositories
             {
                 whereString += $" AND {nameof(Content.Checked)} = {true.ToString().ToLower()}";
             }
-            var sqlString = SqlUtils.ToTopSqlString(tableName, "Id", whereString, orderByString, 1);
+            var sqlString = SqlUtils.ToTopSqlString(Database.DatabaseType, tableName, "Id", whereString, orderByString, 1);
 
             var repository = GetRepository(tableName);
             using (var connection = repository.Database.GetConnection())

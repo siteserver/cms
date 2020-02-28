@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Shared
@@ -14,10 +12,14 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         private const string RouteUpload = "actions/upload";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
 
-        public EditorLayerAudioController(IAuthManager authManager)
+        public EditorLayerAudioController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
         }
 
         [HttpPost, Route(RouteUpload)]
@@ -26,7 +28,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             if (request.File == null)
             {
@@ -40,13 +42,13 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
                 return this.Error("文件只能是音频格式，请选择有效的文件上传!");
             }
 
-            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, UploadType.Audio);
-            var filePath = PathUtils.Combine(localDirectoryPath, PathUtility.GetUploadFileName(site, fileName));
+            var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Audio);
+            var filePath = PathUtils.Combine(localDirectoryPath, _pathManager.GetUploadFileName(site, fileName));
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
-            var imageUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
 
             return new UploadResult
             {

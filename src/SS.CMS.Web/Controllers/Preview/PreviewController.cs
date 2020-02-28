@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.Api.Preview;
 using SS.CMS.Core;
-using SS.CMS.Framework;
-using SS.CMS.StlParser;
-using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.StlElement;
 using SS.CMS.StlParser.Utility;
 using SS.CMS.Web.Controllers.Admin;
@@ -21,27 +19,19 @@ namespace SS.CMS.Web.Controllers.Preview
 {
     public partial class PreviewController : ControllerBase
     {
-        private readonly IAuthManager _authManager;
-        private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
+        private readonly IParseManager _parseManager;
+        private readonly IDatabaseManager _databaseManager;
         private readonly IConfigRepository _configRepository;
-        private readonly IAdministratorRepository _administratorRepository;
-        private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
-        private readonly IContentRepository _contentRepository;
-        private readonly IDbCacheRepository _dbCacheRepository;
 
-        public PreviewController(IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public PreviewController(IPathManager pathManager, IParseManager parseManager, IDatabaseManager databaseManager, IConfigRepository configRepository, IChannelRepository channelRepository)
         {
-            _authManager = authManager;
-            _createManager = createManager;
             _pathManager = pathManager;
+            _parseManager = parseManager;
+            _databaseManager = databaseManager;
             _configRepository = configRepository;
-            _administratorRepository = administratorRepository;
-            _siteRepository = siteRepository;
             _channelRepository = channelRepository;
-            _contentRepository = contentRepository;
-            _dbCacheRepository = dbCacheRepository;
         }
 
         [HttpGet, Route(ApiRoutePreview.Route)]
@@ -49,7 +39,7 @@ namespace SS.CMS.Web.Controllers.Preview
         {
             try
             {
-                return await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(request.SiteId, 0, 0, 0, request.PageIndex, 0));
+                return await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, request.SiteId, 0, 0, 0, request.PageIndex, 0));
             }
             catch (Exception ex)
             {
@@ -64,7 +54,7 @@ namespace SS.CMS.Web.Controllers.Preview
         {
             try
             {
-                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(request.SiteId, request.ChannelId, 0, 0, request.PageIndex, 0));
+                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, request.SiteId, request.ChannelId, 0, 0, request.PageIndex, 0));
                 return response;
             }
             catch (Exception ex)
@@ -80,7 +70,7 @@ namespace SS.CMS.Web.Controllers.Preview
         {
             try
             {
-                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(request.SiteId, request.ChannelId, request.ContentId, 0, request.PageIndex, request.PreviewId));
+                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, request.SiteId, request.ChannelId, request.ContentId, 0, request.PageIndex, request.PreviewId));
                 return response;
             }
             catch (Exception ex)
@@ -96,7 +86,7 @@ namespace SS.CMS.Web.Controllers.Preview
         {
             try
             {
-                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(request.SiteId, 0, 0, request.FileTemplateId, request.PageIndex, 0));
+                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, request.SiteId, 0, 0, request.FileTemplateId, request.PageIndex, 0));
                 return response;
             }
             catch (Exception ex)
@@ -123,16 +113,17 @@ namespace SS.CMS.Web.Controllers.Preview
             var site = visualInfo.Site;
             var templateInfo = visualInfo.Template;
 
-            var pageInfo = await PageInfo.GetPageInfoAsync(visualInfo.ChannelId, visualInfo.ContentId, site, templateInfo, new Dictionary<string, object>());
+            var config = await _configRepository.GetAsync();
+            var pageInfo = ParsePage.GetPageInfo(_pathManager, config, visualInfo.ChannelId, visualInfo.ContentId, site, templateInfo, new Dictionary<string, object>());
 
             pageInfo.IsLocal = true;
 
-            var contextInfo = new ContextInfo(pageInfo)
+            var contextInfo = new ParseContext(pageInfo)
             {
                 ContextType = visualInfo.ContextType
             };
 
-            var contentBuilder = new StringBuilder(await DataProvider.TemplateRepository.GetTemplateContentAsync(site, templateInfo));
+            var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, templateInfo));
             if (templateInfo.CreatedFileExtName == ".shtml")
             {
                 //<!-- #include virtual="{Stl.SiteUrl}/include/head.html" -->
@@ -158,14 +149,14 @@ namespace SS.CMS.Web.Controllers.Preview
             return message;
         }
 
-        private async Task<HttpResponseMessage> GetContentTemplateAsync(VisualInfo visualInfo, ContextInfo contextInfo, StringBuilder contentBuilder, PageInfo pageInfo)
+        private async Task<HttpResponseMessage> GetContentTemplateAsync(VisualInfo visualInfo, ParseContext contextInfo, StringBuilder contentBuilder, ParsePage pageInfo)
         {
-            var contentInfo = await contextInfo.GetContentAsync();
-            if (contentInfo == null) return null;
+            var content = await _parseManager.GetContentAsync();
+            if (content == null) return null;
 
-            if (!string.IsNullOrEmpty(contentInfo.LinkUrl))
+            if (!string.IsNullOrEmpty(content.LinkUrl))
             {
-                HttpContext.Response.Redirect(contentInfo.LinkUrl);
+                HttpContext.Response.Redirect(content.LinkUrl);
                 return null;
             }
 
@@ -174,14 +165,14 @@ namespace SS.CMS.Web.Controllers.Preview
             if (StlParserUtility.IsStlContentElementWithTypePageContent(stlLabelList)) //内容存在
             {
                 var stlElement = StlParserUtility.GetStlContentElementWithTypePageContent(stlLabelList);
-                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
+                var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
                 contentBuilder.Replace(stlElement, stlElementTranslated);
 
                 var innerBuilder = new StringBuilder(stlElement);
-                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+                await _parseManager.ParseInnerContentAsync(innerBuilder);
                 var pageContentHtml = innerBuilder.ToString();
                 var pageCount = StringUtils.GetCount(Constants.PagePlaceHolder, pageContentHtml) + 1; //一共需要的页数
-                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
+                await _parseManager.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -190,14 +181,14 @@ namespace SS.CMS.Web.Controllers.Preview
 
                     if (currentPageIndex == visualInfo.PageIndex)
                     {
-                        var thePageInfo = await pageInfo.CloneAsync();
+                        var thePageInfo = pageInfo.Clone();
                         thePageInfo.IsLocal = true;
 
                         var pageHtml = pageContentHtml.Substring(0, length);
 
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                        await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        await _parseManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             visualInfo.ChannelId, visualInfo.ContentId, currentPageIndex, pageCount);
 
                         return GetResponse(pagedBuilder.ToString());
@@ -213,24 +204,24 @@ namespace SS.CMS.Web.Controllers.Preview
             if (StlParserUtility.IsStlElementExists(StlPageContents.ElementName, stlLabelList)) //如果标签中存在<stl:pageContents>
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlLabelList);
-                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
+                var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
-                var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, pageInfo, contextInfo);
+                var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, _parseManager);
                 var (pageCount, totalNum) = pageContentsElementParser.GetPageCount();
 
-                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
+                await _parseManager.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
                     if (currentPageIndex == visualInfo.PageIndex)
                     {
-                        var thePageInfo = await pageInfo.CloneAsync();
+                        var thePageInfo = pageInfo.Clone();
                         thePageInfo.IsLocal = true;
 
                         var pageHtml = await pageContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                        await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        await _parseManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             visualInfo.ChannelId, visualInfo.ContentId, currentPageIndex, pageCount);
 
                         return GetResponse(pagedBuilder.ToString());
@@ -240,24 +231,24 @@ namespace SS.CMS.Web.Controllers.Preview
             else if (StlParserUtility.IsStlElementExists(StlPageChannels.ElementName, stlLabelList)) //如果标签中存在<stl:pageChannels>
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlLabelList);
-                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
+                var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
-                var pageChannelsElementParser = await StlPageChannels.GetAsync(stlElement, pageInfo, contextInfo);
+                var pageChannelsElementParser = await StlPageChannels.GetAsync(stlElement, _parseManager);
                 var pageCount = pageChannelsElementParser.GetPageCount(out _);
 
-                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
+                await _parseManager.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
                     if (currentPageIndex == visualInfo.PageIndex)
                     {
-                        var thePageInfo = await pageInfo.CloneAsync();
+                        var thePageInfo = pageInfo.Clone();
                         thePageInfo.IsLocal = true;
 
                         var pageHtml = await pageChannelsElementParser.ParseAsync(currentPageIndex, pageCount);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                        await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        await _parseManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             visualInfo.ChannelId, visualInfo.ContentId, currentPageIndex, pageCount);
 
                         return GetResponse(pagedBuilder.ToString());
@@ -268,24 +259,24 @@ namespace SS.CMS.Web.Controllers.Preview
             ) //如果标签中存在<stl:pageSqlContents>
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
-                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
+                var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
-                var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlElement, pageInfo, contextInfo);
+                var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlElement, _parseManager);
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out var totalNum);
 
-                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
+                await _parseManager.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
                     if (currentPageIndex == visualInfo.PageIndex)
                     {
-                        var thePageInfo = await pageInfo.CloneAsync();
+                        var thePageInfo = pageInfo.Clone();
                         thePageInfo.IsLocal = true;
 
                         var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                        await StlParserManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        await _parseManager.ReplacePageElementsInContentPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             visualInfo.ChannelId, visualInfo.ContentId, currentPageIndex, pageCount);
 
                         return GetResponse(pagedBuilder.ToString());
@@ -293,15 +284,15 @@ namespace SS.CMS.Web.Controllers.Preview
                 }
             }
 
-            await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
-            await StlParserManager.ReplacePageElementsInContentPageAsync(contentBuilder, pageInfo, stlLabelList,
-                contentInfo.ChannelId, contentInfo.Id, 0, 1);
+            await _parseManager.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
+            await _parseManager.ReplacePageElementsInContentPageAsync(contentBuilder, pageInfo, stlLabelList,
+                content.ChannelId, content.Id, 0, 1);
             return GetResponse(contentBuilder.ToString());
         }
 
-        private async Task<HttpResponseMessage> GetChannelTemplateAsync(VisualInfo visualInfo, Site site, StringBuilder contentBuilder, PageInfo pageInfo, ContextInfo contextInfo)
+        private async Task<HttpResponseMessage> GetChannelTemplateAsync(VisualInfo visualInfo, Site site, StringBuilder contentBuilder, ParsePage pageInfo, ParseContext contextInfo)
         {
-            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(visualInfo.ChannelId);
+            var nodeInfo = await _channelRepository.GetAsync(visualInfo.ChannelId);
             if (nodeInfo == null) return null;
 
             if (nodeInfo.ParentId > 0)
@@ -330,16 +321,16 @@ namespace SS.CMS.Web.Controllers.Preview
             if (!string.IsNullOrEmpty(stlContentElement)) //内容存在
             {
                 var innerBuilder = new StringBuilder(stlContentElement);
-                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+                await _parseManager.ParseInnerContentAsync(innerBuilder);
                 var contentAttributeHtml = innerBuilder.ToString();
                 var pageCount = StringUtils.GetCount(Constants.PagePlaceHolder, contentAttributeHtml) + 1; //一共需要的页数
                 if (pageCount > 1)
                 {
-                    await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
+                    await _parseManager.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 
                     for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                     {
-                        var thePageInfo = await pageInfo.CloneAsync();
+                        var thePageInfo = pageInfo.Clone();
                         thePageInfo.IsLocal = true;
 
                         var index = contentAttributeHtml.IndexOf(Constants.PagePlaceHolder, StringComparison.Ordinal);
@@ -350,7 +341,7 @@ namespace SS.CMS.Web.Controllers.Preview
                             var pagedContentAttributeHtml = contentAttributeHtml.Substring(0, length);
                             var pagedBuilder = new StringBuilder(contentBuilder.ToString()
                                 .Replace(stlContentElement, pagedContentAttributeHtml));
-                            await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                            await _parseManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                                 thePageInfo.PageChannelId, currentPageIndex, pageCount, 0);
 
                             return GetResponse(pagedBuilder.ToString());
@@ -372,24 +363,24 @@ namespace SS.CMS.Web.Controllers.Preview
             if (StlParserUtility.IsStlElementExists(StlPageContents.ElementName, stlLabelList)) //如果标签中存在<stl:pageContents>
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlLabelList);
-                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
+                var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
-                var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, pageInfo, contextInfo);
+                var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, _parseManager);
                 var (pageCount, totalNum) = pageContentsElementParser.GetPageCount();
 
-                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
+                await _parseManager.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
                     if (currentPageIndex == visualInfo.PageIndex)
                     {
-                        var thePageInfo = await pageInfo.CloneAsync();
+                        var thePageInfo = pageInfo.Clone();
                         thePageInfo.IsLocal = true;
 
                         var pageHtml = await pageContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                        await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        await _parseManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             thePageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
                         return GetResponse(pagedBuilder.ToString());
@@ -399,24 +390,24 @@ namespace SS.CMS.Web.Controllers.Preview
             else if (StlParserUtility.IsStlElementExists(StlPageChannels.ElementName, stlLabelList)) //如果标签中存在<stl:pageChannels>
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlLabelList);
-                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
+                var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
-                var pageChannelsElementParser = await StlPageChannels.GetAsync(stlElement, pageInfo, contextInfo);
+                var pageChannelsElementParser = await StlPageChannels.GetAsync(stlElement, _parseManager);
                 var pageCount = pageChannelsElementParser.GetPageCount(out var totalNum);
 
-                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
+                await _parseManager.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
                     if (currentPageIndex == visualInfo.PageIndex)
                     {
-                        var thePageInfo = await pageInfo.CloneAsync();
+                        var thePageInfo = pageInfo.Clone();
                         thePageInfo.IsLocal = true;
 
                         var pageHtml = await pageChannelsElementParser.ParseAsync(currentPageIndex, pageCount);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                        await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        await _parseManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             thePageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
                         return GetResponse(pagedBuilder.ToString());
@@ -427,24 +418,24 @@ namespace SS.CMS.Web.Controllers.Preview
             ) //如果标签中存在<stl:pageSqlContents>
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
-                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
+                var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
-                var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlElement, pageInfo, contextInfo);
+                var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlElement, _parseManager);
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out var totalNum);
 
-                await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
+                await _parseManager.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
                     if (currentPageIndex == visualInfo.PageIndex)
                     {
-                        var thePageInfo = await pageInfo.CloneAsync();
+                        var thePageInfo = pageInfo.Clone();
                         thePageInfo.IsLocal = true;
 
                         var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                        await StlParserManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
+                        await _parseManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, thePageInfo, stlLabelList,
                             thePageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 
                         return GetResponse(pagedBuilder.ToString());
@@ -452,13 +443,13 @@ namespace SS.CMS.Web.Controllers.Preview
                 }
             }
 
-            await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
+            await _parseManager.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
             return GetResponse(contentBuilder.ToString());
         }
 
-        private async Task<HttpResponseMessage> GetFileTemplateAsync(VisualInfo visualInfo, PageInfo pageInfo, ContextInfo contextInfo, StringBuilder contentBuilder)
+        private async Task<HttpResponseMessage> GetFileTemplateAsync(VisualInfo visualInfo, ParsePage pageInfo, ParseContext contextInfo, StringBuilder contentBuilder)
         {
-            await Parser.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
+            await _parseManager.ParseAsync(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
             return GetResponse(contentBuilder.ToString());
         }
     }

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -13,10 +12,18 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly ISitePermissionsRepository _sitePermissionsRepository;
+        private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
 
-        public AdministratorsRoleController(IAuthManager authManager)
+        public AdministratorsRoleController(IAuthManager authManager, ISiteRepository siteRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
+            _roleRepository = roleRepository;
+            _sitePermissionsRepository = sitePermissionsRepository;
+            _permissionsInRolesRepository = permissionsInRolesRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -30,10 +37,10 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             }
 
             var roleInfoList = await auth.AdminPermissions.IsSuperAdminAsync()
-                ? await DataProvider.RoleRepository.GetRoleListAsync()
-                : await DataProvider.RoleRepository.GetRoleListByCreatorUserNameAsync(auth.AdminName);
+                ? await _roleRepository.GetRoleListAsync()
+                : await _roleRepository.GetRoleListByCreatorUserNameAsync(auth.AdminName);
 
-            var roles = roleInfoList.Where(x => !DataProvider.RoleRepository.IsPredefinedRole(x.RoleName)).ToList();
+            var roles = roleInfoList.Where(x => !_roleRepository.IsPredefinedRole(x.RoleName)).ToList();
 
             return new ListRequest
             {
@@ -51,17 +58,17 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var roleInfo = await DataProvider.RoleRepository.GetRoleAsync(request.Id);
+            var roleInfo = await _roleRepository.GetRoleAsync(request.Id);
 
-            await DataProvider.PermissionsInRolesRepository.DeleteAsync(roleInfo.RoleName);
-            await DataProvider.SitePermissionsRepository.DeleteAsync(roleInfo.RoleName);
-            await DataProvider.RoleRepository.DeleteRoleAsync(roleInfo.Id);
+            await _permissionsInRolesRepository.DeleteAsync(roleInfo.RoleName);
+            await _sitePermissionsRepository.DeleteAsync(roleInfo.RoleName);
+            await _roleRepository.DeleteRoleAsync(roleInfo.Id);
 
             await auth.AddAdminLogAsync("删除管理员角色", $"角色名称:{roleInfo.RoleName}");
 
             var roles = await auth.AdminPermissions.IsSuperAdminAsync()
-                ? await DataProvider.RoleRepository.GetRoleListAsync()
-                : await DataProvider.RoleRepository.GetRoleListByCreatorUserNameAsync(auth.AdminName);
+                ? await _roleRepository.GetRoleListAsync()
+                : await _roleRepository.GetRoleListByCreatorUserNameAsync(auth.AdminName);
 
             return new ListRequest
             {

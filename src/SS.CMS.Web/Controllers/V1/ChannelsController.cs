@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.V1
@@ -19,11 +17,19 @@ namespace SS.CMS.Web.Controllers.V1
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly IAccessTokenRepository _accessTokenRepository;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ChannelsController(IAuthManager authManager, ICreateManager createManager)
+        public ChannelsController(IAuthManager authManager, ICreateManager createManager, IAccessTokenRepository accessTokenRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _accessTokenRepository = accessTokenRepository;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpPost, Route(RouteSite)]
@@ -32,13 +38,13 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
                          auth.IsAdminLoggin &&
                          await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ParentId,
                              Constants.ChannelPermissions.ChannelAdd);
             if (!isAuth) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var channelInfo = new Channel
@@ -51,7 +57,7 @@ namespace SS.CMS.Web.Controllers.V1
 
             if (!string.IsNullOrEmpty(request.IndexName))
             {
-                var indexNameList = await DataProvider.ChannelRepository.GetIndexNameListAsync(request.SiteId);
+                var indexNameList = await _channelRepository.GetIndexNameListAsync(request.SiteId);
                 if (indexNameList.Contains(request.IndexName))
                 {
                     return this.Error("栏目添加失败，栏目索引已存在！");
@@ -70,7 +76,7 @@ namespace SS.CMS.Web.Controllers.V1
                     request.FilePath = PageUtils.Combine(request.FilePath, "index.html");
                 }
 
-                var filePathList = await DataProvider.ChannelRepository.GetAllFilePathBySiteIdAsync(request.SiteId);
+                var filePathList = await _channelRepository.GetAllFilePathBySiteIdAsync(request.SiteId);
                 if (filePathList.Contains(request.FilePath))
                 {
                     return this.Error("栏目添加失败，栏目页面路径已存在！");
@@ -101,7 +107,7 @@ namespace SS.CMS.Web.Controllers.V1
                 }
             }
 
-            //var parentChannel = await DataProvider.ChannelRepository.GetAsync(siteId, parentId);
+            //var parentChannel = await _channelRepository.GetAsync(siteId, parentId);
             //var styleList = TableStyleManager.GetChannelStyleList(parentChannel);
             //var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(site, styleList, Request.Form, null);
 
@@ -131,7 +137,7 @@ namespace SS.CMS.Web.Controllers.V1
             channelInfo.ContentTemplateId = request.ContentTemplateId;
 
             channelInfo.AddDate = DateTime.Now;
-            channelInfo.Id = await DataProvider.ChannelRepository.InsertAsync(channelInfo);
+            channelInfo.Id = await _channelRepository.InsertAsync(channelInfo);
             //栏目选择投票样式后，内容
 
             await _createManager.CreateChannelAsync(request.SiteId, channelInfo.Id);
@@ -147,16 +153,16 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
                          auth.IsAdminLoggin &&
                          await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
                              Constants.ChannelPermissions.ChannelEdit);
             if (!isAuth) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
             foreach (var (key, value) in request)
@@ -173,7 +179,7 @@ namespace SS.CMS.Web.Controllers.V1
             {
                 if (!channel.IndexName.Equals(request.IndexName) && !string.IsNullOrEmpty(request.IndexName))
                 {
-                    var indexNameList = await DataProvider.ChannelRepository.GetIndexNameListAsync(request.SiteId);
+                    var indexNameList = await _channelRepository.GetIndexNameListAsync(request.SiteId);
                     if (indexNameList.Contains(request.IndexName))
                     {
                         return this.Error("栏目属性修改失败，栏目索引已存在！");
@@ -210,7 +216,7 @@ namespace SS.CMS.Web.Controllers.V1
                         request.FilePath = PageUtils.Combine(request.FilePath, "index.html");
                     }
 
-                    var filePathList = await DataProvider.ChannelRepository.GetAllFilePathBySiteIdAsync(request.SiteId);
+                    var filePathList = await _channelRepository.GetAllFilePathBySiteIdAsync(request.SiteId);
                     if (filePathList.Contains(request.FilePath))
                     {
                         return this.Error("栏目修改失败，栏目页面路径已存在！");
@@ -300,7 +306,7 @@ namespace SS.CMS.Web.Controllers.V1
                 channel.ContentTemplateId = request.ContentTemplateId.Value;
             }
 
-            await DataProvider.ChannelRepository.UpdateAsync(channel);
+            await _channelRepository.UpdateAsync(channel);
 
             return channel;
         }
@@ -311,20 +317,20 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
                          auth.IsAdminLoggin &&
                          await auth.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
                              Constants.ChannelPermissions.ChannelDelete);
             if (!isAuth) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var channel = await _channelRepository.GetAsync(channelId);
             if (channel == null) return NotFound();
 
-            await DataProvider.ContentRepository.RecycleAllAsync(site, channelId, auth.AdminId);
-            await DataProvider.ChannelRepository.DeleteAsync(site, channelId, auth.AdminId);
+            await _contentRepository.RecycleAllAsync(site, channelId, auth.AdminId);
+            await _channelRepository.DeleteAsync(site, channelId, auth.AdminId);
 
             return channel;
         }
@@ -335,17 +341,17 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
                          auth.IsAdminLoggin;
             if (!isAuth) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var channel = await _channelRepository.GetAsync(channelId);
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
-            channel.Children = await DataProvider.ChannelRepository.GetChildrenAsync(siteId, channelId);
+            channel.Children = await _channelRepository.GetChildrenAsync(siteId, channelId);
 
             return channel;
         }
@@ -356,14 +362,14 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
                          auth.IsAdminLoggin;
             if (!isAuth) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();
 
-            var channelInfoList = await DataProvider.ChannelRepository.GetChannelListAsync(siteId);
+            var channelInfoList = await _channelRepository.GetChannelListAsync(siteId);
 
             var dictInfoList = new List<IDictionary<string, object>>();
             foreach (var channelInfo in channelInfoList)

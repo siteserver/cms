@@ -1,0 +1,74 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Datory;
+
+namespace SS.CMS.Abstractions
+{
+    public partial interface IDatabaseManager
+    {
+        IAccessTokenRepository AccessTokenRepository { get; }
+        IAdministratorRepository AdministratorRepository { get; }
+        IAdministratorsInRolesRepository AdministratorsInRolesRepository { get; }
+        IChannelGroupRepository ChannelGroupRepository { get; }
+        IChannelRepository ChannelRepository { get; }
+        IConfigRepository ConfigRepository { get; }
+        IContentCheckRepository ContentCheckRepository { get; }
+        IContentGroupRepository ContentGroupRepository { get; }
+        IContentRepository ContentRepository { get; }
+        IContentTagRepository ContentTagRepository { get; }
+        IDbCacheRepository DbCacheRepository { get; }
+        IErrorLogRepository ErrorLogRepository { get; }
+        ILibraryFileRepository LibraryFileRepository { get; }
+        ILibraryGroupRepository LibraryGroupRepository { get; }
+        ILibraryImageRepository LibraryImageRepository { get; }
+        ILibraryTextRepository LibraryTextRepository { get; }
+        ILibraryVideoRepository LibraryVideoRepository { get; }
+        ILogRepository LogRepository { get; }
+        IPermissionsInRolesRepository PermissionsInRolesRepository { get; }
+        IPluginConfigRepository PluginConfigRepository { get; }
+        IPluginRepository PluginRepository { get; }
+        IRelatedFieldItemRepository RelatedFieldItemRepository { get; }
+        IRelatedFieldRepository RelatedFieldRepository { get; }
+        IRoleRepository RoleRepository { get; }
+        ISiteLogRepository SiteLogRepository { get; }
+        ISitePermissionsRepository SitePermissionsRepository { get; }
+        ISiteRepository SiteRepository { get; }
+        ISpecialRepository SpecialRepository { get; }
+        ITableStyleRepository TableStyleRepository { get; }
+        ITemplateLogRepository TemplateLogRepository { get; }
+        ITemplateRepository TemplateRepository { get; }
+        IUserGroupRepository UserGroupRepository { get; }
+        IUserLogRepository UserLogRepository { get; }
+        IUserMenuRepository UserMenuRepository { get; }
+        IUserRepository UserRepository { get; }
+
+        List<IRepository> GetAllRepositories();
+
+        Database GetDatabase(string connectionString = null);
+
+        int GetIntResult(string connectionString, string sqlString);
+
+        int GetIntResult(string sqlString);
+
+        string GetString(string connectionString, string sqlString);
+
+        IEnumerable<IDictionary<string, object>> GetRows(string connectionString, string sqlString);
+
+        int GetPageTotalCount(string sqlString);
+
+        string GetStlPageSqlString(string sqlString, string orderString, int totalCount, int itemsPerPage,
+            int currentPageIndex);
+
+        string GetSelectSqlString(string tableName, int totalNum, string columns, string whereString,
+            string orderByString);
+
+        int GetCount(string tableName);
+
+        IEnumerable<dynamic> GetObjects(string tableName);
+
+        IEnumerable<dynamic> GetPageObjects(string tableName, string identityColumnName, int offset, int limit);
+
+        string GetPageSqlString(string tableName, string columnNames, string whereSqlString, string orderSqlString,
+            int offset, int limit);
+    }
+}

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Users
@@ -13,10 +12,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IConfigRepository _configRepository;
+        private readonly IAdministratorRepository _administratorRepository;
+        private readonly IUserGroupRepository _userGroupRepository;
 
-        public UsersGroupController(IAuthManager authManager)
+        public UsersGroupController(IAuthManager authManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, IUserGroupRepository userGroupRepository)
         {
             _authManager = authManager;
+            _configRepository = configRepository;
+            _administratorRepository = administratorRepository;
+            _userGroupRepository = userGroupRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -31,8 +36,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
 
             return new GetResult
             {
-                Groups = await DataProvider.UserGroupRepository.GetUserGroupListAsync(),
-                AdminNames = await DataProvider.AdministratorRepository.GetUserNameListAsync()
+                Groups = await _userGroupRepository.GetUserGroupListAsync(),
+                AdminNames = await _administratorRepository.GetUserNameListAsync()
             };
         }
 
@@ -46,11 +51,11 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            await DataProvider.UserGroupRepository.DeleteAsync(request.Id);
+            await _userGroupRepository.DeleteAsync(request.Id);
 
             return new GetResult
             {
-                Groups = await DataProvider.UserGroupRepository.GetUserGroupListAsync()
+                Groups = await _userGroupRepository.GetUserGroupListAsync()
             };
         }
 
@@ -66,7 +71,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
 
             if (request.Id == -1)
             {
-                if (await DataProvider.UserGroupRepository.IsExistsAsync(request.GroupName))
+                if (await _userGroupRepository.IsExistsAsync(request.GroupName))
                 {
                     return this.Error("保存失败，已存在相同名称的用户组！");
                 }
@@ -77,25 +82,25 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                     AdminName = request.AdminName
                 };
 
-                await DataProvider.UserGroupRepository.InsertAsync(groupInfo);
+                await _userGroupRepository.InsertAsync(groupInfo);
 
                 await auth.AddAdminLogAsync("新增用户组", $"用户组:{groupInfo.GroupName}");
             }
             else if (request.Id == 0)
             {
-                var config = await DataProvider.ConfigRepository.GetAsync();
+                var config = await _configRepository.GetAsync();
 
                 config.UserDefaultGroupAdminName = request.AdminName;
 
-                await DataProvider.ConfigRepository.UpdateAsync(config);
+                await _configRepository.UpdateAsync(config);
 
                 await auth.AddAdminLogAsync("修改用户组", "用户组:默认用户组");
             }
             else if (request.Id > 0)
             {
-                var groupInfo = await DataProvider.UserGroupRepository.GetUserGroupAsync(request.Id);
+                var groupInfo = await _userGroupRepository.GetUserGroupAsync(request.Id);
 
-                if (groupInfo.GroupName != request.GroupName && await DataProvider.UserGroupRepository.IsExistsAsync(request.GroupName))
+                if (groupInfo.GroupName != request.GroupName && await _userGroupRepository.IsExistsAsync(request.GroupName))
                 {
                     return this.Error("保存失败，已存在相同名称的用户组！");
                 }
@@ -103,14 +108,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 groupInfo.GroupName = request.GroupName;
                 groupInfo.AdminName = request.AdminName;
 
-                await DataProvider.UserGroupRepository.UpdateAsync(groupInfo);
+                await _userGroupRepository.UpdateAsync(groupInfo);
 
                 await auth.AddAdminLogAsync("修改用户组", $"用户组:{groupInfo.GroupName}");
             }
 
             return new GetResult
             {
-                Groups = await DataProvider.UserGroupRepository.GetUserGroupListAsync()
+                Groups = await _userGroupRepository.GetUserGroupListAsync()
             };
         }
     }

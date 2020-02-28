@@ -3,7 +3,6 @@ using CacheManager.Core;
 using Datory;
 using Datory.Caching;
 using Datory.Utils;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core
 {
@@ -67,11 +66,6 @@ namespace SS.CMS.Core
         //        .WithExpiration(ExpirationMode.None, TimeSpan.Zero)
         //    );
         //}
-
-        public static async Task<ICacheManager<object>> GetCacheManagerAsync()
-        {
-            return await CachingUtils.GetCacheManagerAsync(new Redis(WebConfigUtils.RedisConnectionString));
-        }
 
         public class Process
         {

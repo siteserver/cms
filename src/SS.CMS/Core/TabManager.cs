@@ -6,9 +6,15 @@ using SS.CMS.Plugins;
 
 namespace SS.CMS.Core
 {
-    public static class TabManager
-	{
-	    public static TabCollection GetTabs(string filePath)
+    public class TabManager
+    {
+        private readonly IPathManager _pathManager;
+        public TabManager(IPathManager pathManager)
+        {
+            _pathManager = pathManager;
+        }
+
+	    public TabCollection GetTabs(string filePath)
 	    {
 	        var tc = CacheUtils.Get(filePath) as TabCollection;
 	        if (tc != null) return tc;
@@ -18,11 +24,16 @@ namespace SS.CMS.Core
 	        return tc;
 	    }
 
-        public static List<Tab> GetTopMenuTabs()
+        public string GetMenusPath(params string[] paths)
+        {
+            return PathUtils.Combine(_pathManager.GetAdminPath("assets/menus"), PathUtils.Combine(paths));
+        }
+
+        public List<Tab> GetTopMenuTabs()
         {
             var list = new List<Tab>();
 
-            var menuPath = WebUtils.GetMenusPath("Top.config");
+            var menuPath = GetMenusPath("Top.config");
             if (!FileUtils.IsFileExists(menuPath)) return list;
 
             var tabs = GetTabs(menuPath);
@@ -34,11 +45,11 @@ namespace SS.CMS.Core
             return list;
         }
 
-	    public static List<Tab> GetTopMenuTabsWithChildren()
+	    public List<Tab> GetTopMenuTabsWithChildren()
 	    {
 	        var list = new List<Tab>();
 
-	        var menuPath = WebUtils.GetMenusPath("Top.config");
+	        var menuPath = GetMenusPath("Top.config");
 	        if (!FileUtils.IsFileExists(menuPath)) return list;
 
 	        var tabs = GetTabs(menuPath);
@@ -54,7 +65,7 @@ namespace SS.CMS.Core
 	        return list;
 	    }
 
-        public static bool IsValid(Tab tab, IList permissionList)
+        public bool IsValid(Tab tab, IList permissionList)
         {
             if (tab.HasPermissions)
             {
@@ -76,13 +87,13 @@ namespace SS.CMS.Core
             return true;
         }
 
-        public static async Task<List<Tab>> GetTabListAsync(string topId, int siteId)
+        public async Task<List<Tab>> GetTabListAsync(string topId, int siteId)
         {
             var tabs = new List<Tab>();
 
             if (!string.IsNullOrEmpty(topId))
             {
-                var filePath = WebUtils.GetMenusPath($"{topId}.config");
+                var filePath = GetMenusPath($"{topId}.config");
                 var tabCollection = GetTabs(filePath);
                 if (tabCollection?.Tabs != null)
                 {

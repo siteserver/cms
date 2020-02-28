@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -21,7 +20,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var tree = await DataProvider.RelatedFieldItemRepository.GetCascadesAsync(request.SiteId, request.RelatedFieldId,
+            var tree = await _relatedFieldItemRepository.GetCascadesAsync(request.SiteId, request.RelatedFieldId,
                 0);
 
             return new ItemsResult
@@ -52,12 +51,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                     Value = item.Value,
                     ParentId = request.ParentId
                 };
-                await DataProvider.RelatedFieldItemRepository.InsertAsync(itemInfo);
+                await _relatedFieldItemRepository.InsertAsync(itemInfo);
             }
 
             await auth.AddAdminLogAsync("批量添加联动字段项");
 
-            var tree = await DataProvider.RelatedFieldItemRepository.GetCascadesAsync(request.SiteId, request.RelatedFieldId,
+            var tree = await _relatedFieldItemRepository.GetCascadesAsync(request.SiteId, request.RelatedFieldId,
                 0);
 
             return new ItemsResult
@@ -77,15 +76,15 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var item = await DataProvider.RelatedFieldItemRepository.GetAsync(request.SiteId, request.Id);
+            var item = await _relatedFieldItemRepository.GetAsync(request.SiteId, request.Id);
             item.Label = request.Label;
             item.Value = request.Value;
 
-            await DataProvider.RelatedFieldItemRepository.UpdateAsync(item);
+            await _relatedFieldItemRepository.UpdateAsync(item);
 
             await auth.AddAdminLogAsync("编辑联动字段项");
 
-            var tree = await DataProvider.RelatedFieldItemRepository.GetCascadesAsync(request.SiteId, request.RelatedFieldId,
+            var tree = await _relatedFieldItemRepository.GetCascadesAsync(request.SiteId, request.RelatedFieldId,
                 0);
 
             return new ItemsResult
@@ -105,11 +104,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            await DataProvider.RelatedFieldItemRepository.DeleteAsync(request.SiteId, request.Id);
+            await _relatedFieldItemRepository.DeleteAsync(request.SiteId, request.Id);
 
             await auth.AddSiteLogAsync(request.SiteId, "删除联动字段项");
 
-            var tree = await DataProvider.RelatedFieldItemRepository.GetCascadesAsync(request.SiteId, request.RelatedFieldId,
+            var tree = await _relatedFieldItemRepository.GetCascadesAsync(request.SiteId, request.RelatedFieldId,
                 0);
 
             return new ItemsResult
@@ -129,20 +128,20 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var item = await DataProvider.RelatedFieldItemRepository.GetAsync(request.SiteId, request.Id);
+            var item = await _relatedFieldItemRepository.GetAsync(request.SiteId, request.Id);
 
             if (request.Up)
             {
-                await DataProvider.RelatedFieldItemRepository.UpdateTaxisToUpAsync(request.SiteId, request.RelatedFieldId, item.Id, item.ParentId);
+                await _relatedFieldItemRepository.UpdateTaxisToUpAsync(request.SiteId, request.RelatedFieldId, item.Id, item.ParentId);
             }
             else
             {
-                await DataProvider.RelatedFieldItemRepository.UpdateTaxisToDownAsync(request.SiteId, request.RelatedFieldId, item.Id, item.ParentId);
+                await _relatedFieldItemRepository.UpdateTaxisToDownAsync(request.SiteId, request.RelatedFieldId, item.Id, item.ParentId);
             }
 
             await auth.AddAdminLogAsync("排序联动字段项");
 
-            var tree = await DataProvider.RelatedFieldItemRepository.GetCascadesAsync(request.SiteId, request.RelatedFieldId,
+            var tree = await _relatedFieldItemRepository.GetCascadesAsync(request.SiteId, request.RelatedFieldId,
                 0);
 
             return new ItemsResult

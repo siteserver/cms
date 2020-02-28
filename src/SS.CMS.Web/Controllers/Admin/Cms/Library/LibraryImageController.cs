@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Library
@@ -19,11 +18,17 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         private const string RouteGroups = "groups";
         private const string RouteGroupId = "groups/{id}";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly ILibraryGroupRepository _libraryGroupRepository;
+        private readonly ILibraryImageRepository _libraryImageRepository;
 
-        public LibraryImageController(IAuthManager authManager)
+        public LibraryImageController(ISettingsManager settingsManager, IAuthManager authManager, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
+            _libraryGroupRepository = libraryGroupRepository;
+            _libraryImageRepository = libraryImageRepository;
         }
 
         [HttpPost, Route(RouteList)]
@@ -38,14 +43,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            var groups = await DataProvider.LibraryGroupRepository.GetAllAsync(LibraryType.Image);
+            var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Image);
             groups.Insert(0, new LibraryGroup
             {
                 Id = 0,
                 GroupName = "全部图片"
             });
-            var count = await DataProvider.LibraryImageRepository.GetCountAsync(req.GroupId, req.Keyword);
-            var items = await DataProvider.LibraryImageRepository.GetAllAsync(req.GroupId, req.Keyword, req.Page, req.PerPage);
+            var count = await _libraryImageRepository.GetCountAsync(req.GroupId, req.Keyword);
+            var items = await _libraryImageRepository.GetAllAsync(req.GroupId, req.Keyword, req.Page, req.PerPage);
 
             return new QueryResult
             {
@@ -87,7 +92,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
             var libraryFileName = PathUtils.GetLibraryFileName(fileName);
             var virtualDirectoryPath = PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image);
             
-            var directoryPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, virtualDirectoryPath);
+            var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
             var filePath = PathUtils.Combine(directoryPath, libraryFileName);
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
@@ -96,7 +101,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
             library.Title = fileName;
             library.Url = PageUtils.Combine(virtualDirectoryPath, libraryFileName);
 
-            library.Id = await DataProvider.LibraryImageRepository.InsertAsync(library);
+            library.Id = await _libraryImageRepository.InsertAsync(library);
 
             return library;
         }
@@ -113,10 +118,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            var lib = await DataProvider.LibraryImageRepository.GetAsync(request.Id);
+            var lib = await _libraryImageRepository.GetAsync(request.Id);
             lib.Title = request.Title;
             lib.GroupId = request.GroupId;
-            await DataProvider.LibraryImageRepository.UpdateAsync(lib);
+            await _libraryImageRepository.UpdateAsync(lib);
 
             return lib;
         }
@@ -133,7 +138,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            await DataProvider.LibraryImageRepository.DeleteAsync(request.Id);
+            await _libraryImageRepository.DeleteAsync(request.Id);
 
             return new BoolResult
             {
@@ -158,7 +163,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 Type = LibraryType.Image,
                 GroupName = group.Name
             };
-            libraryGroup.Id = await DataProvider.LibraryGroupRepository.InsertAsync(libraryGroup);
+            libraryGroup.Id = await _libraryGroupRepository.InsertAsync(libraryGroup);
 
             return libraryGroup;
         }
@@ -175,9 +180,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            var libraryGroup = await DataProvider.LibraryGroupRepository.GetAsync(id);
+            var libraryGroup = await _libraryGroupRepository.GetAsync(id);
             libraryGroup.GroupName = group.Name;
-            await DataProvider.LibraryGroupRepository.UpdateAsync(libraryGroup);
+            await _libraryGroupRepository.UpdateAsync(libraryGroup);
 
             return libraryGroup;
         }
@@ -194,7 +199,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            await DataProvider.LibraryGroupRepository.DeleteAsync(LibraryType.Image, request.Id);
+            await _libraryGroupRepository.DeleteAsync(LibraryType.Image, request.Id);
 
             return new BoolResult
             {

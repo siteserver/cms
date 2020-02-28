@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="StlParser\StlElement\StlATests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="ss.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -40,6 +44,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\SS.CMS\SS.CMS.csproj" />
     <ProjectReference Include="..\SS.CMS.Abstractions.Tests\SS.CMS.Abstractions.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="StlParser\StlElement\" />
   </ItemGroup>
 
 </Project>

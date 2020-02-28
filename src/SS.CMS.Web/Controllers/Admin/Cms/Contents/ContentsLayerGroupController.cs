@@ -6,7 +6,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -17,10 +16,18 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         private const string RouteAdd = "actions/add";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly IContentGroupRepository _contentGroupRepository;
 
-        public ContentsLayerGroupController(IAuthManager authManager)
+        public ContentsLayerGroupController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _contentGroupRepository = contentGroupRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -35,10 +42,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(request.SiteId);
+            var groupNames = await _contentGroupRepository.GetGroupNamesAsync(request.SiteId);
 
             return new ObjectResult<IEnumerable<string>>
             {
@@ -58,7 +65,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var channelContentIds = ContentUtility.ParseSummaries(request.ChannelContentIds);
@@ -70,28 +77,28 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 Description = request.Description
             };
 
-            if (await DataProvider.ContentGroupRepository.IsExistsAsync(request.SiteId, group.GroupName))
+            if (await _contentGroupRepository.IsExistsAsync(request.SiteId, group.GroupName))
             {
-                await DataProvider.ContentGroupRepository.UpdateAsync(group);
+                await _contentGroupRepository.UpdateAsync(group);
                 await auth.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组:{group.GroupName}");
             }
             else
             {
-                await DataProvider.ContentGroupRepository.InsertAsync(group);
+                await _contentGroupRepository.InsertAsync(group);
                 await auth.AddSiteLogAsync(request.SiteId, "添加内容组", $"内容组:{group.GroupName}");
             }
 
             foreach (var channelContentId in channelContentIds)
             {
-                var channel = await DataProvider.ChannelRepository.GetAsync(channelContentId.ChannelId);
-                var content = await DataProvider.ContentRepository.GetAsync(site, channel, channelContentId.Id);
+                var channel = await _channelRepository.GetAsync(channelContentId.ChannelId);
+                var content = await _contentRepository.GetAsync(site, channel, channelContentId.Id);
                 if (content == null) continue;
 
                 var list = Utilities.GetStringList(content.GroupNames);
                 if (!list.Contains(group.GroupName)) list.Add(group.GroupName);
                 content.GroupNames = list;
 
-                await DataProvider.ContentRepository.UpdateAsync(site, channel, content);
+                await _contentRepository.UpdateAsync(site, channel, content);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, "批量设置内容组", $"内容组:{group.GroupName}");
@@ -114,16 +121,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var allGroupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(request.SiteId);
+            var allGroupNames = await _contentGroupRepository.GetGroupNamesAsync(request.SiteId);
 
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
             foreach (var summary in summaries)
             {
-                var channel = await DataProvider.ChannelRepository.GetAsync(summary.ChannelId);
-                var content = await DataProvider.ContentRepository.GetAsync(site, channel, summary.Id);
+                var channel = await _channelRepository.GetAsync(summary.ChannelId);
+                var content = await _contentRepository.GetAsync(site, channel, summary.Id);
                 if (content == null) continue;
 
                 var list = new List<string>();
@@ -148,7 +155,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 }
                 content.GroupNames = list;
 
-                await DataProvider.ContentRepository.UpdateAsync(site, channel, content);
+                await _contentRepository.UpdateAsync(site, channel, content);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, request.IsCancel ? "批量取消内容组" : "批量设置内容组");

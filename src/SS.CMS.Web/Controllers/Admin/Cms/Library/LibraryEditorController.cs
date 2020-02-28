@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Library
@@ -17,11 +16,15 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         private const string RouteId = "{id}";
         private const string RouteUpload = "actions/upload";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly ILibraryTextRepository _libraryTextRepository;
 
-        public LibraryEditorController(IAuthManager authManager)
+        public LibraryEditorController(ISettingsManager settingsManager, IAuthManager authManager, ILibraryTextRepository libraryTextRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
+            _libraryTextRepository = libraryTextRepository;
         }
 
         [HttpGet, Route(RouteId)]
@@ -36,7 +39,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            return await DataProvider.LibraryTextRepository.GetAsync(request.Id);
+            return await _libraryTextRepository.GetAsync(request.Id);
         }
 
         [HttpPost, Route(Route)]
@@ -69,7 +72,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 Content = request.Content
             };
 
-            library.Id = await DataProvider.LibraryTextRepository.InsertAsync(library);
+            library.Id = await _libraryTextRepository.InsertAsync(library);
 
             return library;
         }
@@ -86,12 +89,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            var lib = await DataProvider.LibraryTextRepository.GetAsync(request.Id);
+            var lib = await _libraryTextRepository.GetAsync(request.Id);
             lib.Title = request.Title;
             lib.Content = request.Content;
             lib.ImageUrl = request.ImageUrl;
             lib.Summary = request.Summary;
-            await DataProvider.LibraryTextRepository.UpdateAsync(lib);
+            await _libraryTextRepository.UpdateAsync(lib);
 
             return lib;
         }
@@ -122,8 +125,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
 
             var libraryFileName = PathUtils.GetLibraryFileName(fileName);
             var virtualDirectoryPath = PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image);
-            
-            var directoryPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, virtualDirectoryPath);
+
+            var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
             var filePath = PathUtils.Combine(directoryPath, libraryFileName);
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);

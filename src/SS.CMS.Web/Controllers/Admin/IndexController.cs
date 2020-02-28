@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Api.Preview;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Packaging;
 using SS.CMS.Plugins;
+using SS.CMS.Web.Controllers.Admin.Settings.Sites;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin
@@ -21,6 +21,7 @@ namespace SS.CMS.Web.Controllers.Admin
         private const string RouteActionsCache = "index/actions/cache";
         private const string RouteActionsDownload = "index/actions/download";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
@@ -31,8 +32,9 @@ namespace SS.CMS.Web.Controllers.Admin
         private readonly IContentRepository _contentRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public IndexController(IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public IndexController(ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
             _createManager = createManager;
             _pathManager = pathManager;
@@ -50,9 +52,8 @@ namespace SS.CMS.Web.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            var redirectUrl = await auth.AdminRedirectCheckAsync(checkInstall: true, checkDatabaseVersion: true, checkLogin: true);
-            if (!string.IsNullOrEmpty(redirectUrl))
+            var (redirect, redirectUrl) = await AdminRedirectCheckAsync();
+            if (redirect)
             {
                 return new GetResult
                 {
@@ -61,12 +62,13 @@ namespace SS.CMS.Web.Controllers.Admin
                 };
             }
 
+            var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin)
             {
                 return Unauthorized();
             }
             var cacheKey = Constants.GetSessionIdCacheKey(auth.AdminId);
-            var sessionId = await DataProvider.DbCacheRepository.GetValueAsync(cacheKey);
+            var sessionId = await _dbCacheRepository.GetValueAsync(cacheKey);
             if (string.IsNullOrEmpty(request.SessionId) || sessionId != request.SessionId)
             {
                 return Unauthorized();
@@ -103,7 +105,7 @@ namespace SS.CMS.Web.Controllers.Admin
                     return new GetResult
                     {
                         Value = false,
-                        RedirectUrl = PageUtils.GetSettingsUrl("siteAdd")
+                        RedirectUrl = _pathManager.GetAdminUrl(SitesAddController.Route)
                     };
                 }
 
@@ -144,26 +146,27 @@ namespace SS.CMS.Web.Controllers.Admin
                 permissionList.AddRange(channelPermissions);
             }
 
+            var tabManager = new TabManager(_pathManager);
+
             var siteMenus =
-                await GetLeftMenusAsync(site, Constants.TopMenu.IdSite, isSuperAdmin, permissionList);
-            var pluginMenus = await GetLeftMenusAsync(site, string.Empty, isSuperAdmin, permissionList);
+                await GetLeftMenusAsync(tabManager, site, Constants.TopMenu.IdSite, isSuperAdmin, permissionList);
+            var pluginMenus = await GetLeftMenusAsync(tabManager, site, string.Empty, isSuperAdmin, permissionList);
             siteMenus.AddRange(pluginMenus);
-            var menus = await GetTopMenusAsync(site, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions, permissionList, siteMenus);
+            var menus = await GetTopMenusAsync(tabManager, site, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions, permissionList, siteMenus);
 
             var config = await _configRepository.GetAsync();
 
-            var siteUrl = await PageUtility.GetSiteUrlAsync(site, false);
+            var siteUrl = await _pathManager.GetSiteUrlAsync(site, false);
             var previewUrl = ApiRoutePreview.GetSiteUrl(site.Id);
 
             return new GetResult
             {
                 Value = true,
                 DefaultPageUrl = await PluginMenuManager.GetSystemDefaultPageUrlAsync(request.SiteId) ?? _pathManager.GetAdminUrl(DashboardController.Route),
-                IsNightly = WebConfigUtils.IsNightlyUpdate,
-                ProductVersion = SystemManager.ProductVersion,
-                PluginVersion = SystemManager.PluginVersion,
-                TargetFramework = SystemManager.TargetFramework,
-                EnvironmentVersion = SystemManager.EnvironmentVersion,
+                IsNightly = _settingsManager.IsNightlyUpdate,
+                ProductVersion = _settingsManager.ProductVersion,
+                PluginVersion = _settingsManager.PluginVersion,
+                TargetFramework = _settingsManager.TargetFramework,
                 AdminLogoUrl = config.AdminLogoUrl,
                 AdminTitle = config.AdminTitle,
                 IsSuperAdmin = isSuperAdmin,

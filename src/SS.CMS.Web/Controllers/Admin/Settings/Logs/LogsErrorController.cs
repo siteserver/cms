@@ -5,7 +5,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
@@ -16,10 +15,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IErrorLogRepository _errorLogRepository;
 
-        public LogsErrorController(IAuthManager authManager)
+        public LogsErrorController(IAuthManager authManager, IErrorLogRepository errorLogRepository)
         {
             _authManager = authManager;
+            _errorLogRepository = errorLogRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -32,8 +33,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            var count = await DataProvider.ErrorLogRepository.GetCountAsync(request.Category, request.PluginId, request.Keyword, request.DateFrom, request.DateTo);
-            var logs = await DataProvider.ErrorLogRepository.GetAllAsync(request.Category, request.PluginId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
+            var count = await _errorLogRepository.GetCountAsync(request.Category, request.PluginId, request.Keyword, request.DateFrom, request.DateTo);
+            var logs = await _errorLogRepository.GetAllAsync(request.Category, request.PluginId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
 
             var categories = new List<Select<string>>();
             foreach (var category in LogUtils.AllCategoryList.Value)
@@ -66,7 +67,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            await DataProvider.ErrorLogRepository.DeleteAllAsync();
+            await _errorLogRepository.DeleteAllAsync();
 
             await auth.AddAdminLogAsync("清空错误日志");
 

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
@@ -17,11 +16,13 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IConfigRepository _configRepository;
 
-        public ConfigsAdminController(IAuthManager authManager, IPathManager pathManager)
+        public ConfigsAdminController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
+            _configRepository = configRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -34,7 +35,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
                 return Unauthorized();
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             return new GetResult
             {
@@ -54,13 +55,13 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
                 return Unauthorized();
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             config.AdminTitle = request.AdminTitle;
             config.AdminLogoUrl = request.AdminLogoUrl;
             config.AdminWelcomeHtml = request.AdminWelcomeHtml;
 
-            await DataProvider.ConfigRepository.UpdateAsync(config);
+            await _configRepository.UpdateAsync(config);
 
             await auth.AddAdminLogAsync("修改管理后台设置");
 

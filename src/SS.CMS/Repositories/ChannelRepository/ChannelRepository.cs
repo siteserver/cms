@@ -205,7 +205,7 @@ namespace SS.CMS.Repositories
             );
         }
 
-        private static string GetGroupWhereString(string group, string groupNot)
+        private static string GetGroupWhereString(DatabaseType databaseType, string group, string groupNot)
         {
             var whereStringBuilder = new StringBuilder();
             if (!string.IsNullOrEmpty(group))
@@ -220,7 +220,7 @@ namespace SS.CMS.Repositories
                         var trimGroup = theGroup.Trim();
 
                         whereStringBuilder.Append(
-                                $" (siteserver_Channel.GroupNames = '{trimGroup}' OR {SqlUtils.GetInStr("siteserver_Channel.GroupNames", trimGroup + ",")} OR {SqlUtils.GetInStr("siteserver_Channel.GroupNames", "," + trimGroup + ",")} OR {SqlUtils.GetInStr("siteserver_Channel.GroupNames", "," + trimGroup)}) OR ");
+                                $" (siteserver_Channel.GroupNames = '{trimGroup}' OR {SqlUtils.GetInStr(databaseType, "siteserver_Channel.GroupNames", trimGroup + ",")} OR {SqlUtils.GetInStr(databaseType, "siteserver_Channel.GroupNames", "," + trimGroup + ",")} OR {SqlUtils.GetInStr(databaseType, "siteserver_Channel.GroupNames", "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {
@@ -244,7 +244,7 @@ namespace SS.CMS.Repositories
                         //    $" (siteserver_Channel.GroupNames <> '{trimGroupNot}' AND CHARINDEX('{trimGroupNot},',siteserver_Channel.GroupNames) = 0 AND CHARINDEX(',{trimGroupNot},',siteserver_Channel.GroupNames) = 0 AND CHARINDEX(',{trimGroupNot}',siteserver_Channel.GroupNames) = 0) AND ");
 
                         whereStringBuilder.Append(
-                                $" (siteserver_Channel.GroupNames <> '{trimGroupNot}' AND {SqlUtils.GetNotInStr("siteserver_Channel.GroupNames", trimGroupNot + ",")} AND {SqlUtils.GetNotInStr("siteserver_Channel.GroupNames", "," + trimGroupNot + ",")} AND {SqlUtils.GetNotInStr("siteserver_Channel.GroupNames", "," + trimGroupNot)}) AND ");
+                                $" (siteserver_Channel.GroupNames <> '{trimGroupNot}' AND {SqlUtils.GetNotInStr(databaseType, "siteserver_Channel.GroupNames", trimGroupNot + ",")} AND {SqlUtils.GetNotInStr(databaseType, "siteserver_Channel.GroupNames", "," + trimGroupNot + ",")} AND {SqlUtils.GetNotInStr(databaseType, "siteserver_Channel.GroupNames", "," + trimGroupNot)}) AND ");
                     }
                     if (groupNotArr.Length > 0)
                     {
@@ -266,7 +266,7 @@ namespace SS.CMS.Repositories
                     : " AND siteserver_Channel.ImageUrl = '' ");
             }
 
-            whereStringBuilder.Append(GetGroupWhereString(group, groupNot));
+            whereStringBuilder.Append(GetGroupWhereString(Database.DatabaseType, group, groupNot));
 
             return whereStringBuilder.ToString();
         }
@@ -283,7 +283,7 @@ namespace SS.CMS.Repositories
             {
                 var where =
                     $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString})";
-                sqlString = SqlUtils.ToTopSqlString(TableName, "Id",
+                sqlString = SqlUtils.ToTopSqlString(Database.DatabaseType, TableName, "Id",
                     where,
                     orderByString,
                     totalNum);

@@ -15,13 +15,19 @@ namespace SS.CMS.Services
         private readonly IConfigRepository _configRepository;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly IAdministratorRepository _administratorRepository;
+        private readonly IAdministratorsInRolesRepository _administratorsInRolesRepository;
+        private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
         private readonly IUserRepository _userRepository;
         private readonly IUserGroupRepository _userGroupRepository;
         private readonly ILogRepository _logRepository;
         private readonly ISiteLogRepository _siteLogRepository;
         private readonly IUserLogRepository _userLogRepository;
+        private readonly ISitePermissionsRepository _sitePermissionsRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
 
-        public AuthManager(IHttpContextAccessor context, ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IUserRepository userRepository, IUserGroupRepository userGroupRepository, ILogRepository logRepository, ISiteLogRepository siteLogRepository, IUserLogRepository userLogRepository)
+        public AuthManager(IHttpContextAccessor context, ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IUserRepository userRepository, IUserGroupRepository userGroupRepository, ILogRepository logRepository, ISiteLogRepository siteLogRepository, IUserLogRepository userLogRepository, ISitePermissionsRepository sitePermissionsRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _context = context.HttpContext;
             _settingsManager = settingsManager;
@@ -29,11 +35,17 @@ namespace SS.CMS.Services
             _configRepository = configRepository;
             _accessTokenRepository = accessTokenRepository;
             _administratorRepository = administratorRepository;
+            _administratorsInRolesRepository = administratorsInRolesRepository;
+            _permissionsInRolesRepository = permissionsInRolesRepository;
             _userRepository = userRepository;
             _userGroupRepository = userGroupRepository;
             _logRepository = logRepository;
             _siteLogRepository = siteLogRepository;
             _userLogRepository = userLogRepository;
+            _sitePermissionsRepository = sitePermissionsRepository;
+            _roleRepository = roleRepository;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
         }
 
         public async Task<IAuthManager> GetApiAsync()
@@ -238,7 +250,7 @@ namespace SS.CMS.Services
                     }
                 }
 
-                _userPermissionsImpl = new PermissionsImpl(Administrator);
+                _userPermissionsImpl = new PermissionsImpl(_pathManager, _administratorsInRolesRepository, _permissionsInRolesRepository, _sitePermissionsRepository, _roleRepository, _siteRepository, _channelRepository, Administrator);
 
                 return _userPermissionsImpl;
             }
@@ -254,7 +266,7 @@ namespace SS.CMS.Services
             {
                 if (_adminPermissionsImpl != null) return _adminPermissionsImpl;
 
-                _adminPermissionsImpl = new PermissionsImpl(Administrator);
+                _adminPermissionsImpl = new PermissionsImpl(_pathManager, _administratorsInRolesRepository, _permissionsInRolesRepository, _sitePermissionsRepository, _roleRepository, _siteRepository, _channelRepository, Administrator);
 
                 return _adminPermissionsImpl;
             }
@@ -366,33 +378,6 @@ namespace SS.CMS.Services
         {
             User = null;
             _context.Response.Cookies.Delete(Constants.AuthKeyUserCookie);
-        }
-
-        public async Task<string> AdminRedirectCheckAsync(bool checkInstall = false, bool checkDatabaseVersion = false, bool checkLogin = false)
-        {
-            var redirect = false;
-            var redirectUrl = string.Empty;
-
-            var config = await _configRepository.GetAsync();
-
-            if (checkInstall && string.IsNullOrEmpty(_settingsManager.Database.ConnectionString))
-            {
-                redirect = true;
-                redirectUrl = _pathManager.GetAdminUrl("installer");
-            }
-            else if (checkDatabaseVersion && config.Initialized &&
-                     config.DatabaseVersion != SystemManager.ProductVersion)
-            {
-                redirect = true;
-                redirectUrl = _pathManager.GetAdminUrl("syncDatabase");
-            }
-            else if (checkLogin && (!IsAdminLoggin || Administrator == null || Administrator.Locked))
-            {
-                redirect = true;
-                redirectUrl = _pathManager.GetAdminUrl("login");
-            }
-
-            return redirect ? redirectUrl : null;
         }
 
         public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)

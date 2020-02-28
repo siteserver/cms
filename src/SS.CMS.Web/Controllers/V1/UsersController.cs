@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.V1
@@ -22,10 +21,18 @@ namespace SS.CMS.Web.Controllers.V1
         private const string RouteUserResetPassword = "{id:int}/actions/resetPassword";
 
         private readonly IAuthManager _authManager;
+        private readonly IConfigRepository _configRepository;
+        private readonly IAccessTokenRepository _accessTokenRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserLogRepository _userLogRepository;
 
-        public UsersController(IAuthManager authManager)
+        public UsersController(IAuthManager authManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IUserRepository userRepository, IUserLogRepository userLogRepository)
         {
             _authManager = authManager;
+            _configRepository = configRepository;
+            _accessTokenRepository = accessTokenRepository;
+            _userRepository = userRepository;
+            _userLogRepository = userLogRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -34,7 +41,7 @@ namespace SS.CMS.Web.Controllers.V1
             var user = new User();
             user.LoadDict(request.ToDictionary());
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             if (!config.IsUserRegistrationGroup)
             {
@@ -42,13 +49,13 @@ namespace SS.CMS.Web.Controllers.V1
             }
             var password = request.Password;
 
-            var valid = await DataProvider.UserRepository.InsertAsync(user, password, string.Empty);
+            var valid = await _userRepository.InsertAsync(user, password, string.Empty);
             if (valid.UserId == 0)
             {
                 return this.Error(valid.ErrorMessage);
             }
 
-            return await DataProvider.UserRepository.GetByUserIdAsync(valid.UserId);
+            return await _userRepository.GetByUserIdAsync(valid.UserId);
         }
 
         [HttpPut, Route(RouteUser)]
@@ -57,17 +64,17 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
                          auth.IsUserLoggin &&
                          auth.UserId == id ||
                          auth.IsAdminLoggin &&
                          await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
+            var user = await _userRepository.GetByUserIdAsync(id);
             if (user == null) return NotFound();
 
-            var valid = await DataProvider.UserRepository.UpdateAsync(user, request.ToDictionary());
+            var valid = await _userRepository.UpdateAsync(user, request.ToDictionary());
             if (valid.User == null)
             {
                 return this.Error(valid.ErrorMessage);
@@ -82,7 +89,7 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
                          auth.IsUserLoggin &&
                          auth.UserId == id ||
                          auth.IsAdminLoggin &&
@@ -90,7 +97,7 @@ namespace SS.CMS.Web.Controllers.V1
             if (!isAuth) return Unauthorized();
 
             auth.UserLogout();
-            var user = await DataProvider.UserRepository.DeleteAsync(id);
+            var user = await _userRepository.DeleteAsync(id);
 
             return user;
         }
@@ -101,16 +108,16 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
                          auth.IsUserLoggin &&
                          auth.UserId == id ||
                          auth.IsAdminLoggin &&
                          await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
-            if (!await DataProvider.UserRepository.IsExistsAsync(id)) return NotFound();
+            if (!await _userRepository.IsExistsAsync(id)) return NotFound();
 
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
+            var user = await _userRepository.GetByUserIdAsync(id);
 
             return user;
         }
@@ -118,9 +125,9 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpGet, Route(RouteUserAvatar)]
         public async Task<StringResult> GetAvatar(int id)
         {
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
+            var user = await _userRepository.GetByUserIdAsync(id);
 
-            var avatarUrl = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : DataProvider.UserRepository.DefaultAvatarUrl;
+            var avatarUrl = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : _userRepository.DefaultAvatarUrl;
             avatarUrl = PageUtils.AddProtocolToUrl(avatarUrl);
 
             return new StringResult
@@ -135,14 +142,14 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
                          auth.IsUserLoggin &&
                          auth.UserId == id ||
                          auth.IsAdminLoggin &&
                          await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
+            var user = await _userRepository.GetByUserIdAsync(id);
             if (user == null) return NotFound();
 
             if (request.File == null)
@@ -152,8 +159,8 @@ namespace SS.CMS.Web.Controllers.V1
 
             var fileName = Path.GetFileName(request.File.FileName);
 
-            fileName = DataProvider.UserRepository.GetUserUploadFileName(fileName);
-            var filePath = DataProvider.UserRepository.GetUserUploadPath(user.Id, fileName);
+            fileName = _userRepository.GetUserUploadFileName(fileName);
+            var filePath = _userRepository.GetUserUploadPath(user.Id, fileName);
 
             if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
             {
@@ -163,9 +170,9 @@ namespace SS.CMS.Web.Controllers.V1
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
-            user.AvatarUrl = DataProvider.UserRepository.GetUserUploadUrl(user.Id, fileName);
+            user.AvatarUrl = _userRepository.GetUserUploadUrl(user.Id, fileName);
 
-            await DataProvider.UserRepository.UpdateAsync(user);
+            await _userRepository.UpdateAsync(user);
 
             return user;
         }
@@ -176,7 +183,7 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
                          auth.IsAdminLoggin &&
                          await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
@@ -189,8 +196,8 @@ namespace SS.CMS.Web.Controllers.V1
 
             var skip = request.Skip;
 
-            var users = await DataProvider.UserRepository.GetUsersAsync(null, 0, 0, null, null, skip, top);
-            var count = await DataProvider.UserRepository.GetCountAsync();
+            var users = await _userRepository.GetUsersAsync(null, 0, 0, null, null, skip, top);
+            var count = await _userRepository.GetCountAsync();
 
             return new ListResult
             {
@@ -204,7 +211,7 @@ namespace SS.CMS.Web.Controllers.V1
         {
             var auth = await _authManager.GetApiAsync();
 
-            var valid = await DataProvider.UserRepository.ValidateAsync(request.Account, request.Password, true);
+            var valid = await _userRepository.ValidateAsync(request.Account, request.Password, true);
             if (valid.User == null)
             {
                 return this.Error(valid.ErrorMessage);
@@ -238,17 +245,17 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
                          auth.IsUserLoggin &&
                          auth.UserId == id ||
                          auth.IsAdminLoggin &&
                          await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
+            var user = await _userRepository.GetByUserIdAsync(id);
             if (user == null) return NotFound();
 
-            var userLog = await DataProvider.UserLogRepository.InsertAsync(user.Id, log);
+            var userLog = await _userLogRepository.InsertAsync(user.Id, log);
 
             return userLog;
         }
@@ -259,14 +266,14 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
                          auth.IsUserLoggin &&
                          auth.UserId == id ||
                          auth.IsAdminLoggin &&
                          await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
+            var user = await _userRepository.GetByUserIdAsync(id);
             if (user == null) return NotFound();
 
             var top = request.Top;
@@ -276,11 +283,11 @@ namespace SS.CMS.Web.Controllers.V1
             }
             var skip = request.Skip;
 
-            var logs = await DataProvider.UserLogRepository.GetLogsAsync(user.Id, skip, top);
+            var logs = await _userLogRepository.GetLogsAsync(user.Id, skip, top);
 
             return new GetLogsResult
             {
-                Count = await DataProvider.UserRepository.GetCountAsync(),
+                Count = await _userRepository.GetCountAsync(),
                 Logs = logs
             };
         }
@@ -291,22 +298,22 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             var isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeUsers) ||
                          auth.IsUserLoggin &&
                          auth.UserId == id ||
                          auth.IsAdminLoggin &&
                          await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(id);
+            var user = await _userRepository.GetByUserIdAsync(id);
             if (user == null) return NotFound();
 
-            if (!DataProvider.UserRepository.CheckPassword(request.Password, false, user.Password, user.PasswordFormat, user.PasswordSalt))
+            if (!_userRepository.CheckPassword(request.Password, false, user.Password, user.PasswordFormat, user.PasswordSalt))
             {
                 return this.Error("原密码不正确，请重新输入");
             }
 
-            var valid = await DataProvider.UserRepository.ChangePasswordAsync(user.Id, request.NewPassword);
+            var valid = await _userRepository.ChangePasswordAsync(user.Id, request.NewPassword);
             if (!valid.IsValid)
             {
                 return this.Error(valid.ErrorMessage);

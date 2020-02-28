@@ -2,12 +2,19 @@
 using Datory;
 using Newtonsoft.Json;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
+using SS.CMS.Core;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableSite
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableSite(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public long Id { get; set; }
 
@@ -55,39 +62,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("settingsXML")]
         public string SettingsXml { get; set; }
-    }
-
-    public partial class TableSite
-    {
-        public static readonly List<string> OldTableNames = new List<string>
-        {
-            "siteserver_PublishmentSystem",
-            "wcm_PublishmentSystem"
-        };
-
-        public static ConvertInfo Converter => new ConvertInfo
-        {
-            NewTableName = NewTableName,
-            NewColumns = NewColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
-        };
-
-        private static readonly string NewTableName = DataProvider.SiteRepository.TableName;
-
-        private static readonly List<TableColumn> NewColumns = DataProvider.SiteRepository.TableColumns;
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(Site.Id), nameof(PublishmentSystemId)},
-                {nameof(Site.SiteName), nameof(PublishmentSystemName)},
-                {nameof(Site.TableName), nameof(AuxiliaryTableForContent)},
-                {nameof(Site.SiteDir), nameof(PublishmentSystemDir)},
-                {"IsRoot", nameof(IsHeadquarters)},
-                {nameof(Site.ParentId), nameof(ParentPublishmentSystemId)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

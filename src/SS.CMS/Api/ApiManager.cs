@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 using SS.CMS.Core;
-using SS.CMS.Framework;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.Api
 {
     public static class ApiManager
     {
-        public static string RootUrl => PageUtils.ApplicationPath;
+        //public static string RootUrl => PageUtils.ApplicationPath;
 
         private static string _innerApiUrl;
 
@@ -22,11 +22,11 @@ namespace SS.CMS.Api
             }
         }
 
-        public static async Task<string> GetApiUrlAsync(string route = "")
-        {
-            var config = await DataProvider.ConfigRepository.GetAsync();
-            return PageUtils.Combine(config.GetApiUrl(), route);
-        }
+        //public static async Task<string> GetApiUrlAsync(string route = "")
+        //{
+        //    var config = await GlobalSettings.ConfigRepository.GetAsync();
+        //    return PageUtils.Combine(config.GetApiUrl(), route);
+        //}
 
         public static string GetInnerApiUrl(string route)
         {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 
 namespace SS.CMS.Web.Controllers.V1
@@ -30,11 +30,11 @@ namespace SS.CMS.Web.Controllers.V1
 
             public Site Site { get; private set; }
 
-            public PageInfo PageInfo { get; private set; }
+            public ParsePage PageInfo { get; private set; }
 
-            public ContextInfo ContextInfo { get; private set; }
+            public ParseContext ContextInfo { get; private set; }
 
-            public async Task LoadAsync(IAuthManager auth, bool isApiAuthorized, GetRequest request)
+            public async Task LoadAsync(IAuthManager auth, IPathManager pathManager, IConfigRepository configRepository, ISiteRepository siteRepository, bool isApiAuthorized, GetRequest request)
             {
                 //Request = new AuthenticatedRequest();
                 //IsApiAuthorized = Request.IsApiAuthenticated && AccessTokenManager.IsScope(Request.ApiToken, AccessTokenManager.ScopeStl);
@@ -46,18 +46,18 @@ namespace SS.CMS.Web.Controllers.V1
 
                 if (request.SiteId > 0)
                 {
-                    Site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+                    Site = await siteRepository.GetAsync(request.SiteId);
                 }
                 else if (!string.IsNullOrEmpty(request.SiteDir))
                 {
-                    Site = await DataProvider.SiteRepository.GetSiteByDirectoryAsync(request.SiteDir);
+                    Site = await siteRepository.GetSiteByDirectoryAsync(request.SiteDir);
                 }
                 else
                 {
-                    Site = await DataProvider.SiteRepository.GetSiteByIsRootAsync();
+                    Site = await siteRepository.GetSiteByIsRootAsync();
                     if (Site == null)
                     {
-                        var siteList = await DataProvider.SiteRepository.GetSiteListAsync();
+                        var siteList = await siteRepository.GetSiteListAsync();
                         if (siteList != null && siteList.Count > 0)
                         {
                             Site = siteList[0];
@@ -84,7 +84,8 @@ namespace SS.CMS.Web.Controllers.V1
                     Default = true
                 };
 
-                PageInfo = await PageInfo.GetPageInfoAsync(request.ChannelId, request.ContentId, Site, templateInfo, new Dictionary<string, object>());
+                var config = await configRepository.GetAsync();
+                PageInfo = ParsePage.GetPageInfo(pathManager, config, request.ChannelId, request.ContentId, Site, templateInfo, new Dictionary<string, object>());
 
                 PageInfo.UniqueId = 1000;
                 PageInfo.User = Auth.User;
@@ -95,7 +96,7 @@ namespace SS.CMS.Web.Controllers.V1
                     attributes[key] = request[key];
                 }
 
-                ContextInfo = new ContextInfo(PageInfo)
+                ContextInfo = new ParseContext(PageInfo)
                 {
                     IsStlEntity = true,
                     Attributes = attributes,

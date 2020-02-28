@@ -5,14 +5,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 using SS.CMS.Plugins.Impl;
 
 namespace SS.CMS.Core
 {
-    public static class ColumnsManager
+    public class ColumnsManager
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public ColumnsManager(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         private const string Sequence = nameof(Sequence);                            //序号
         private const string ChannelName = nameof(ChannelName);
         private const string AdminName = nameof(AdminName);
@@ -211,7 +217,7 @@ namespace SS.CMS.Core
             return list.OrderBy(styleInfo => styleInfo.Taxis == 0 ? int.MaxValue : styleInfo.Taxis).ToList();
         }
 
-        public static async Task<Content> CalculateContentListAsync(int sequence, Site site, int currentChannelId, Content source, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
+        public async Task<Content> CalculateContentListAsync(int sequence, Site site, int currentChannelId, Content source, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
         {
             if (source == null) return null;
 
@@ -229,34 +235,34 @@ namespace SS.CMS.Core
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.ChannelId)))
                 {
-                    var channelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(source.SiteId, currentChannelId, source.ChannelId);
+                    var channelName = await _databaseManager.ChannelRepository.GetChannelNameNavigationAsync(source.SiteId, currentChannelId, source.ChannelId);
                     content.Set(ChannelName, channelName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.AdminId)))
                 {
-                    var adminName = await DataProvider.AdministratorRepository.GetDisplayAsync(source.AdminId);
+                    var adminName = await _databaseManager.AdministratorRepository.GetDisplayAsync(source.AdminId);
                     content.Set(AdminName, adminName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.LastEditAdminId)))
                 {
                     var lastEditAdminName =
-                        await DataProvider.AdministratorRepository.GetDisplayAsync(source.LastEditAdminId);
+                        await _databaseManager.AdministratorRepository.GetDisplayAsync(source.LastEditAdminId);
                     content.Set(LastEditAdminName, lastEditAdminName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.UserId)))
                 {
-                    var userName = await DataProvider.UserRepository.GetDisplayAsync(source.UserId);
+                    var userName = await _databaseManager.UserRepository.GetDisplayAsync(source.UserId);
                     content.Set(UserName, userName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.CheckAdminId)))
                 {
                     var checkAdminName =
-                        await DataProvider.AdministratorRepository.GetDisplayAsync(source.CheckAdminId);
+                        await _databaseManager.AdministratorRepository.GetDisplayAsync(source.CheckAdminId);
                     content.Set(CheckAdminName, checkAdminName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.SourceId)))
                 {
-                    var sourceName = await SourceManager.GetSourceNameAsync(source.SiteId, source.SourceId);
+                    var sourceName = await SourceManager.GetSourceNameAsync(_databaseManager, source.SiteId, source.SourceId);
                     content.Set(SourceName, sourceName);
                 }
             }
@@ -287,7 +293,7 @@ namespace SS.CMS.Core
                         }
                         catch (Exception ex)
                         {
-                            await DataProvider.ErrorLogRepository.AddErrorLogAsync(pluginId, ex);
+                            await _databaseManager.ErrorLogRepository.AddErrorLogAsync(pluginId, ex);
                         }
                     }
                 }
@@ -304,7 +310,7 @@ namespace SS.CMS.Core
             RecycleContents
         }
 
-        public static async Task<List<ContentColumn>> GetContentListColumnsAsync(Site site, Channel channel, PageType pageType)
+        public async Task<List<ContentColumn>> GetContentListColumnsAsync(Site site, Channel channel, PageType pageType)
         {
             var columns = new List<ContentColumn>();
             var listColumns = new List<string>();
@@ -350,8 +356,8 @@ namespace SS.CMS.Core
             var pluginIds = PluginContentManager.GetContentPluginIds(channel);
             var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
-            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
-            var styleList = GetContentListStyles(await DataProvider.TableStyleRepository.GetContentStyleListAsync(channel, tableName));
+            var tableName = await _databaseManager.ChannelRepository.GetTableNameAsync(site, channel);
+            var styleList = GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStyleListAsync(channel, tableName));
 
             styleList.Insert(0, new TableStyle
             {
@@ -419,82 +425,7 @@ namespace SS.CMS.Core
             return columns;
         }
 
-        //public async Task<List<InputListItem>> GetContentsColumnsAsync(Site site, Channel channel, bool includeAll)
-        //{
-        //    var items = new List<InputListItem>();
-
-        //    var attributesOfDisplay = Utilities.GetStringList(channel.ListColumns);
-        //    var pluginIds = PluginContentManager.GetContentPluginIds(channel);
-        //    var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
-
-        //    var styleList = ColumnsManager.GetContentListStyles(await DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channel));
-
-        //    styleList.Insert(0, new TableStyle
-        //    {
-        //        AttributeName = ContentAttribute.Sequence,
-        //        DisplayName = "序号"
-        //    });
-
-        //    foreach (var style in styleList)
-        //    {
-        //        if (style.InputType == InputType.TextEditor) continue;
-
-        //        var listitem = new InputListItem
-        //        {
-        //            Text = style.DisplayName,
-        //            Value = style.AttributeName
-        //        };
-        //        if (style.AttributeName == ContentAttribute.Title)
-        //        {
-        //            listitem.Selected = true;
-        //        }
-        //        else
-        //        {
-        //            if (attributesOfDisplay.Contains(style.AttributeName))
-        //            {
-        //                listitem.Selected = true;
-        //            }
-        //        }
-
-        //        if (includeAll || listitem.Selected)
-        //        {
-        //            items.Add(listitem);
-        //        }
-        //    }
-
-        //    if (pluginColumns != null)
-        //    {
-        //        foreach (var pluginId in pluginColumns.Keys)
-        //        {
-        //            var contentColumns = pluginColumns[pluginId];
-        //            if (contentColumns == null || contentColumns.Count == 0) continue;
-
-        //            foreach (var columnName in contentColumns.Keys)
-        //            {
-        //                var attributeName = $"{pluginId}:{columnName}";
-        //                var listitem = new InputListItem
-        //                {
-        //                    Text = $"{columnName}({pluginId})",
-        //                    Value = attributeName
-        //                };
-
-        //                if (attributesOfDisplay.Contains(attributeName))
-        //                {
-        //                    listitem.Selected = true;
-        //                }
-
-        //                if (includeAll || listitem.Selected)
-        //                {
-        //                    items.Add(listitem);
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    return items;
-        //}
-
-        public static async Task<Dictionary<string, object>> SaveAttributesAsync(Site site, List<TableStyle> styleList, NameValueCollection formCollection, List<string> dontAddAttributes)
+        public static async Task<Dictionary<string, object>> SaveAttributesAsync(IPathManager pathManager, Site site, List<TableStyle> styleList, NameValueCollection formCollection, List<string> dontAddAttributes)
         {
             var dict = new Dictionary<string, object>();
 
@@ -512,7 +443,7 @@ namespace SS.CMS.Core
                 var inputType = style.InputType;
                 if (inputType == InputType.TextEditor)
                 {
-                    theValue = await ContentUtility.TextEditorContentEncodeAsync(site, theValue);
+                    theValue = await ContentUtility.TextEditorContentEncodeAsync(pathManager, site, theValue);
                     theValue = UEditorUtils.TranslateToStlElement(theValue);
                 }
 

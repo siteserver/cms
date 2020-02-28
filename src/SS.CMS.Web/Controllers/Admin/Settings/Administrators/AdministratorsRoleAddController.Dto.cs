@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -54,16 +53,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             SitePermissions sitePermissionsInfo = null;
             if (roleId > 0)
             {
-                var roleInfo = await DataProvider.RoleRepository.GetRoleAsync(roleId);
-                sitePermissionsInfo = await DataProvider.SitePermissionsRepository.GetSystemPermissionsAsync(roleInfo.RoleName, siteId);
+                var roleInfo = await _roleRepository.GetRoleAsync(roleId);
+                sitePermissionsInfo = await _sitePermissionsRepository.GetSystemPermissionsAsync(roleInfo.RoleName, siteId);
             }
             if (sitePermissionsInfo == null) sitePermissionsInfo = new SitePermissions();
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var site = await _siteRepository.GetAsync(siteId);
             var sitePermissions = new List<Permission>();
             var pluginPermissions = new List<Permission>();
             var channelPermissions = new List<Permission>();
-            var instance = await PermissionConfigManager.GetInstanceAsync();
+            var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager);
 
             if (await _authManager.AdminPermissions.IsSuperAdminAsync())
             {
@@ -208,8 +207,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 }
             }
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(siteId);
-            channelInfo.Children = await DataProvider.ChannelRepository.GetChildrenAsync(siteId, siteId);
+            var channelInfo = await _channelRepository.GetAsync(siteId);
+            channelInfo.Children = await _channelRepository.GetChildrenAsync(siteId, siteId);
             var checkedChannelIdList = new List<int>();
             if (sitePermissionsInfo.ChannelIds != null)
             {

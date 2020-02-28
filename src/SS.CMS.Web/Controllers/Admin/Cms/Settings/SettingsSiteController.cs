@@ -7,7 +7,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -17,10 +16,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public SettingsSiteController(IAuthManager authManager)
+        public SettingsSiteController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -33,9 +38,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             var styles = new List<Style>();
-            foreach (var style in await DataProvider.TableStyleRepository.GetSiteStyleListAsync(request.SiteId))
+            foreach (var style in await _tableStyleRepository.GetSiteStyleListAsync(request.SiteId))
             {
                 styles.Add(new Style
                 {
@@ -79,8 +84,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-            var styles = await DataProvider.TableStyleRepository.GetSiteStyleListAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var styles = await _tableStyleRepository.GetSiteStyleListAsync(request.SiteId);
 
             foreach (var style in styles)
             {
@@ -88,7 +93,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 var inputType = style.InputType;
                 if (inputType == InputType.TextEditor)
                 {
-                    value = await ContentUtility.TextEditorContentEncodeAsync(site, value);
+                    value = await ContentUtility.TextEditorContentEncodeAsync(_pathManager, site, value);
                     value = UEditorUtils.TranslateToStlElement(value);
                 }
                 else if (inputType == InputType.Image || 
@@ -135,7 +140,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             site.SiteName = request.SiteName;
             site.PageSize = request.PageSize;
             site.IsCreateDoubleClick = request.IsCreateDoubleClick;
-            await DataProvider.SiteRepository.UpdateAsync(site);
+            await _siteRepository.UpdateAsync(site);
 
             await auth.AddSiteLogAsync(request.SiteId, "修改站点设置");
 

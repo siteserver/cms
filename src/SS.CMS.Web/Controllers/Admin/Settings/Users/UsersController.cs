@@ -5,9 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Core;
 using SS.CMS.Core.Office;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Users
@@ -24,11 +22,17 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserGroupRepository _userGroupRepository;
 
-        public UsersController(IAuthManager authManager, IPathManager pathManager)
+        public UsersController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IUserRepository userRepository, IUserGroupRepository userGroupRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
+            _databaseManager = databaseManager;
+            _userRepository = userRepository;
+            _userGroupRepository = userGroupRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -41,10 +45,10 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            var groups = await DataProvider.UserGroupRepository.GetUserGroupListAsync();
+            var groups = await _userGroupRepository.GetUserGroupListAsync();
 
-            var count = await DataProvider.UserRepository.GetCountAsync(request.State, request.GroupId, request.LastActivityDate, request.Keyword);
-            var users = await DataProvider.UserRepository.GetUsersAsync(request.State, request.GroupId, request.LastActivityDate, request.Keyword, request.Order, request.Offset, request.Limit);
+            var count = await _userRepository.GetCountAsync(request.State, request.GroupId, request.LastActivityDate, request.Keyword);
+            var users = await _userRepository.GetUsersAsync(request.State, request.GroupId, request.LastActivityDate, request.Keyword, request.Order, request.Offset, request.Limit);
 
             return new GetResults
             {
@@ -64,7 +68,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            var user = await DataProvider.UserRepository.DeleteAsync(request.Id);
+            var user = await _userRepository.DeleteAsync(request.Id);
 
             await auth.AddAdminLogAsync("删除用户", $"用户:{user.UserName}");
 
@@ -97,7 +101,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return this.Error("导入文件为Excel格式，请选择有效的文件上传");
             }
 
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
@@ -122,7 +126,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
 
                     if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password))
                     {
-                        var (userId, message) = await DataProvider.UserRepository.InsertAsync(new User
+                        var (userId, message) = await _userRepository.InsertAsync(new User
                         {
                             UserName = userName,
                             DisplayName = displayName,
@@ -168,7 +172,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
             const string fileName = "users.csv";
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-            await ExcelObject.CreateExcelFileForUsersAsync(filePath, null);
+            var excelObject = new ExcelObject(_databaseManager);
+            await excelObject.CreateExcelFileForUsersAsync(filePath, null);
 
             return this.Download(filePath);
         }
@@ -183,7 +188,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            await DataProvider.UserRepository.CheckAsync(new List<int>
+            await _userRepository.CheckAsync(new List<int>
             {
                 request.Id
             });
@@ -206,9 +211,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(request.Id);
+            var user = await _userRepository.GetByUserIdAsync(request.Id);
 
-            await DataProvider.UserRepository.LockAsync(new List<int>
+            await _userRepository.LockAsync(new List<int>
             {
                 request.Id
             });
@@ -231,9 +236,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(request.Id);
+            var user = await _userRepository.GetByUserIdAsync(request.Id);
 
-            await DataProvider.UserRepository.UnLockAsync(new List<int>
+            await _userRepository.UnLockAsync(new List<int>
             {
                 request.Id
             });

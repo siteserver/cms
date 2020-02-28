@@ -66,7 +66,16 @@ namespace SS.CMS.Repositories
             }
             else
             {
-                var columnNames = await TableColumnManager.GetTableColumnNameListAsync(tableName, ContentAttribute.MetadataAttributes.Value);
+                var excludeAttributeNameList = ContentAttribute.MetadataAttributes.Value;
+
+                var  list = await _repository.Database.GetTableColumnsAsync(tableName);
+                if (excludeAttributeNameList != null && excludeAttributeNameList.Count > 0)
+                {
+                    list = list.Where(tableColumnInfo =>
+                        !StringUtils.ContainsIgnoreCase(excludeAttributeNameList, tableColumnInfo.AttributeName)).ToList();
+                }
+
+                var columnNames = list.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
 
                 foreach (var columnName in columnNames)
                 {

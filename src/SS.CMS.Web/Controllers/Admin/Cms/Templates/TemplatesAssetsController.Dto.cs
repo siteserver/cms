@@ -35,7 +35,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
         private async Task GetDirectoriesAndFilesAsync(List<Cascade<string>> directories, List<KeyValuePair<string, string>> files, Site site, string virtualPath, string extName)
         {
-            var directoryPath = await PathUtility.GetSitePathAsync(site, virtualPath);
+            var directoryPath = await _pathManager.GetSitePathAsync(site, virtualPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
             var fileNames = DirectoryUtils.GetFileNames(directoryPath);
             foreach (var fileName in fileNames)

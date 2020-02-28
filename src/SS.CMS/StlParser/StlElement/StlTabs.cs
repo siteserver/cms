@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 
@@ -45,7 +46,7 @@ namespace SS.CMS.StlParser.StlElement
             {ActionMouseOver, "鼠标移动"}
         };
 
-        internal static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        internal static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var tabName = string.Empty;
             var type = string.Empty;
@@ -54,9 +55,9 @@ namespace SS.CMS.StlParser.StlElement
             var classNormal = string.Empty;
             var current = 0;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, TabName))
                 {
@@ -84,12 +85,15 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, tabName, type, action, classActive, classNormal, current);
+            return await ParseImplAsync(parseManager, tabName, type, action, classActive, classNormal, current);
         }
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string tabName, string type, string action, string classActive, string classNormal, int current)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string tabName, string type, string action, string classActive, string classNormal, int current)
         {
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
 
             var builder = new StringBuilder();
             var uniqueId = pageInfo.UniqueId;
@@ -188,7 +192,7 @@ function stl_tab_{uniqueId}(tabName, no){{
                     if (!string.IsNullOrEmpty(htmlNode.InnerHtml))
                     {
                         var innerBuilder = new StringBuilder(htmlNode.InnerHtml);
-                        await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+                        await parseManager.ParseInnerContentAsync(innerBuilder);
                         innerHtml = innerBuilder.ToString();
                     }
 

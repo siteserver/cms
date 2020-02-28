@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Utilities
 {
@@ -15,11 +14,13 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Utilities
 
         private readonly ICacheManager<object> _cacheManager;
         private readonly IAuthManager _authManager;
+        private readonly IDbCacheRepository _dbCacheRepository;
 
-        public UtilitiesCacheController(ICacheManager<object> cacheManager, IAuthManager authManager)
+        public UtilitiesCacheController(ICacheManager<object> cacheManager, IAuthManager authManager, IDbCacheRepository dbCacheRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
+            _dbCacheRepository = dbCacheRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -32,11 +33,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Utilities
                 return Unauthorized();
             }
 
-            var configuration = await DataProvider.ConfigRepository.GetCacheConfigurationAsync();
-
             return new GetResult
             {
-                Configuration = configuration
+                Configuration = _cacheManager.Configuration
             };
         }
 
@@ -50,9 +49,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Utilities
                 return Unauthorized();
             }
 
-            await DataProvider.ConfigRepository.ClearAllCache();
+            _cacheManager.Clear();
             CacheUtils.ClearAll();
-            await DataProvider.DbCacheRepository.ClearAsync();
+            await _dbCacheRepository.ClearAsync();
             _cacheManager.Clear();
 
             return new BoolResult

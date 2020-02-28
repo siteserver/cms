@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -13,10 +12,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public SettingsContentController(IAuthManager authManager)
+        public SettingsContentController(IAuthManager authManager, ISiteRepository siteRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -29,7 +32,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             return new ObjectResult<Site>
             {
@@ -47,7 +50,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             site.IsSaveImageInTextEditor = request.IsSaveImageInTextEditor;
 
@@ -73,11 +76,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             site.CheckContentLevel = request.CheckContentLevel;
             site.CheckContentDefaultLevel = request.CheckContentDefaultLevel;
 
-            await DataProvider.SiteRepository.UpdateAsync(site);
+            await _siteRepository.UpdateAsync(site);
 
             if (isReCalculate)
             {
-                await DataProvider.ContentRepository.SetAutoPageContentToSiteAsync(site);
+                await _contentRepository.SetAutoPageContentToSiteAsync(site);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, "修改内容设置");

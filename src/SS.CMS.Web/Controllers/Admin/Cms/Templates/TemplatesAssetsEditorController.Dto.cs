@@ -43,15 +43,15 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             var filePath = string.Empty;
             if (StringUtils.EqualsIgnoreCase(request.ExtName, ".html"))
             {
-                filePath = await PathUtility.GetSitePathAsync(site, site.TemplatesAssetsIncludeDir, request.Path + ".html");
+                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsIncludeDir, request.Path + ".html");
             }
             else if (StringUtils.EqualsIgnoreCase(request.ExtName, ".css"))
             {
-                filePath = await PathUtility.GetSitePathAsync(site, site.TemplatesAssetsCssDir, request.Path + ".css");
+                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsCssDir, request.Path + ".css");
             }
             else if (StringUtils.EqualsIgnoreCase(request.ExtName, ".js"))
             {
-                filePath = await PathUtility.GetSitePathAsync(site, site.TemplatesAssetsJsDir, request.Path + ".js");
+                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsJsDir, request.Path + ".js");
             }
 
             var filePathToDelete = string.Empty;
@@ -64,7 +64,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             }
             else
             {
-                var originalFilePath = await PathUtility.GetSitePathAsync(site, request.DirectoryPath, request.FileName);
+                var originalFilePath = await _pathManager.GetSitePathAsync(site, request.DirectoryPath, request.FileName);
                 if (!StringUtils.EqualsIgnoreCase(originalFilePath, filePath))
                 {
                     filePathToDelete = originalFilePath;
@@ -83,7 +83,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             }
 
             var fileName = PathUtils.GetFileName(filePath);
-            var sitePath = await PathUtility.GetSitePathAsync(site);
+            var sitePath = await _pathManager.GetSitePathAsync(site);
             var directoryPath = StringUtils.ReplaceStartsWithIgnoreCase(filePath, sitePath, string.Empty);
             directoryPath = StringUtils.ReplaceEndsWithIgnoreCase(directoryPath, fileName, string.Empty);
             directoryPath = StringUtils.TrimSlash(directoryPath);

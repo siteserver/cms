@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Shared
 {
@@ -60,12 +58,12 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
                 return (false, "操作失败，字段名不能为空！");
             }
 
-            if (await DataProvider.TableStyleRepository.IsExistsAsync(relatedIdentity, request.TableName, request.AttributeName))
+            if (await _tableStyleRepository.IsExistsAsync(relatedIdentity, request.TableName, request.AttributeName))
             {
                 return (false, $@"显示样式添加失败：字段名""{request.AttributeName}""已存在");
             }
 
-            var style = await TableColumnManager.IsAttributeNameExistsAsync(request.TableName, request.AttributeName) ? await DataProvider.TableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities) : new TableStyle();
+            var style = await _databaseManager.IsAttributeNameExistsAsync(request.TableName, request.AttributeName) ? await _tableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities) : new TableStyle();
 
             style.RelatedIdentity = relatedIdentity;
             style.TableName = request.TableName;
@@ -124,7 +122,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
                 style.CustomizeRight = request.CustomizeRight;
             }
 
-            await DataProvider.TableStyleRepository.InsertAsync(request.RelatedIdentities, style);
+            await _tableStyleRepository.InsertAsync(request.RelatedIdentities, style);
 
             return (true, string.Empty);
         }
@@ -186,7 +184,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
                 style.CustomizeRight = request.CustomizeRight;
             }
 
-            await DataProvider.TableStyleRepository.UpdateAsync(style);
+            await _tableStyleRepository.UpdateAsync(style);
 
             return (true, string.Empty);
         }

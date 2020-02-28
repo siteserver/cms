@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Users
@@ -18,11 +17,13 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IUserRepository _userRepository;
 
-        public UsersProfileController(IAuthManager authManager, IPathManager pathManager)
+        public UsersProfileController(IAuthManager authManager, IPathManager pathManager, IUserRepository userRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
+            _userRepository = userRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -35,7 +36,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(userId);
+            var user = await _userRepository.GetByUserIdAsync(userId);
 
             return new GetResult
             {
@@ -89,7 +90,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
             User user;
             if (request.UserId > 0)
             {
-                user = await DataProvider.UserRepository.GetByUserIdAsync(request.UserId);
+                user = await _userRepository.GetByUserIdAsync(request.UserId);
                 if (user == null) return NotFound();
             }
             else
@@ -104,12 +105,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
             }
             else
             {
-                if (user.Mobile != request.Mobile && !string.IsNullOrEmpty(request.Mobile) && await DataProvider.UserRepository.IsMobileExistsAsync(request.Mobile))
+                if (user.Mobile != request.Mobile && !string.IsNullOrEmpty(request.Mobile) && await _userRepository.IsMobileExistsAsync(request.Mobile))
                 {
                     return this.Error("资料修改失败，手机号码已存在");
                 }
 
-                if (user.Email != request.Email && !string.IsNullOrEmpty(request.Email) && await DataProvider.UserRepository.IsEmailExistsAsync(request.Email))
+                if (user.Email != request.Email && !string.IsNullOrEmpty(request.Email) && await _userRepository.IsEmailExistsAsync(request.Email))
                 {
                     return this.Error("资料修改失败，邮箱地址已存在");
                 }
@@ -122,7 +123,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
 
             if (user.Id == 0)
             {
-                var valid = await DataProvider.UserRepository.InsertAsync(user, request.Password, string.Empty);
+                var valid = await _userRepository.InsertAsync(user, request.Password, string.Empty);
                 if (valid.UserId == 0)
                 {
                     return this.Error($"用户添加失败：{valid.ErrorMessage}");
@@ -131,7 +132,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
             }
             else
             {
-                await DataProvider.UserRepository.UpdateAsync(user);
+                await _userRepository.UpdateAsync(user);
                 await auth.AddAdminLogAsync("修改用户属性", $"用户:{user.UserName}");
             }
 

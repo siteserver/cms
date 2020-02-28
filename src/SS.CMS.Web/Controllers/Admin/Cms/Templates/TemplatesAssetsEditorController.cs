@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -12,10 +11,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
 
-        public TemplatesAssetsEditorController(IAuthManager authManager)
+        public TemplatesAssetsEditorController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -28,10 +31,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var filePath = await PathUtility.GetSitePathAsync(site, request.DirectoryPath, request.FileName);
+            var filePath = await _pathManager.GetSitePathAsync(site, request.DirectoryPath, request.FileName);
             var content = string.Empty;
             if (FileUtils.IsFileExists(filePath))
             {
@@ -74,7 +77,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             return await SaveFile(request, site, false);
@@ -90,7 +93,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             return await SaveFile(request, site, false);

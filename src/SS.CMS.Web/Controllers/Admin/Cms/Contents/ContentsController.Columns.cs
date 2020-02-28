@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -22,13 +21,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             channel.ListColumns = Utilities.ToString(request.AttributeNames);
 
-            await DataProvider.ChannelRepository.UpdateAsync(channel);
+            await _channelRepository.UpdateAsync(channel);
 
             return new BoolResult
             {

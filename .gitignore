@@ -2,6 +2,8 @@
 *.sql
 *.exe
 *.exe.config
+ss.Development.json
+ss.sqlite
 package-lock.json
 Web.Backup.config
 Web.Restore.config

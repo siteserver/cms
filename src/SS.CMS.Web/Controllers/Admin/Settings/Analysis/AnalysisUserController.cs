@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Analysis
 {
@@ -14,10 +13,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Analysis
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IUserRepository _userRepository;
 
-        public AnalysisUserController(IAuthManager authManager)
+        public AnalysisUserController(IAuthManager authManager, IUserRepository userRepository)
         {
             _authManager = authManager;
+            _userRepository = userRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -34,7 +35,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Analysis
             var dateTo = TranslateUtils.ToDateTime(request.DateTo, DateTime.Now);
             var xType = TranslateUtils.ToEnum(request.XType, AnalysisType.Day);
 
-            var trackingDayDictionary = DataProvider.UserRepository.GetTrackingDictionary(dateFrom, dateTo, request.XType);
+            var trackingDayDictionary = _userRepository.GetTrackingDictionary(dateFrom, dateTo, request.XType);
 
             var count = 0;
             var userNumDict = new Dictionary<int, int>();

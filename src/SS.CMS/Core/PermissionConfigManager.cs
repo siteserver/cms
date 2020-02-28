@@ -39,14 +39,15 @@ namespace SS.CMS.Core
 		{
 		}
 
-        public static async Task<PermissionConfigManager> GetInstanceAsync()
+        public static async Task<PermissionConfigManager> GetInstanceAsync(IPathManager pathManager)
 		{
             var permissionManager = CacheUtils.Get<PermissionConfigManager>(CacheKey);
             if (permissionManager != null) return permissionManager;
 
             permissionManager = new PermissionConfigManager();
 
-            var path = WebUtils.GetMenusPath("Permissions.config");
+			var tabManager = new TabManager(pathManager);
+            var path = tabManager.GetMenusPath("Permissions.config");
             if (FileUtils.IsFileExists(path))
             {
                 var doc = new XmlDocument();

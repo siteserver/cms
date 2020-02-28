@@ -90,7 +90,7 @@ var methods = {
       }
     }).catch(function (error) {
       if (error.response && error.response.status === 400) {
-        utils.error($this, error, true);
+        utils.error($this, error, {redirect: true});
       } else if (error.response && error.response.status === 401) {
         location.href = utils.getRootUrl('login');
       } else if (error.response && error.response.status === 500) {

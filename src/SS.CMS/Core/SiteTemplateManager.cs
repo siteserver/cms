@@ -8,15 +8,17 @@ namespace SS.CMS.Core
 {
     public class SiteTemplateManager
     {
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
         private readonly string _rootPath;
-        private SiteTemplateManager(string rootPath)
+
+        public SiteTemplateManager(IPathManager pathManager, IDatabaseManager databaseManager)
         {
-            _rootPath = rootPath;
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
+            _rootPath = _pathManager.GetSiteTemplatesPath(string.Empty);
             DirectoryUtils.CreateDirectoryIfNotExists(_rootPath);
         }
-
-        public static SiteTemplateManager Instance => new SiteTemplateManager(PathUtility.GetSiteTemplatesPath(string.Empty));
-
 
         public void DeleteSiteTemplate(string siteTemplateDir)
         {
@@ -47,7 +49,7 @@ namespace SS.CMS.Core
             {
                 var directoryName = PathUtils.GetDirectoryName(siteTemplatePath, false);
                 SiteTemplateInfo siteTemplateInfo = null;
-                var metadataXmlFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMetadata);
+                var metadataXmlFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMetadata);
                 if (FileUtils.IsFileExists(metadataXmlFilePath))
                 {
                     siteTemplateInfo = Serializer.ConvertFileToObject<SiteTemplateInfo>(metadataXmlFilePath);
@@ -83,15 +85,15 @@ namespace SS.CMS.Core
 
         public async Task ImportSiteTemplateToEmptySiteAsync(Site site, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, int adminId, string guid)
         {
-            var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
+            var siteTemplatePath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
             if (!DirectoryUtils.IsDirectoryExists(siteTemplatePath)) return;
 
-            var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
-            var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
-            var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
-            var siteContentDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
+            var templateFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
+            var tableDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
+            var configurationFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
+            var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
 
-            var importObject = new ImportObject(site, adminId);
+            var importObject = new ImportObject(_pathManager, _databaseManager, site, adminId);
 
             Caching.SetProcess(guid, $"导入站点文件: {siteTemplatePath}");
             await importObject.ImportFilesAsync(siteTemplatePath, true, guid);
@@ -116,23 +118,23 @@ namespace SS.CMS.Core
             }
         }
 
-        public static async Task ExportSiteToSiteTemplateAsync(Site site, string siteTemplateDir, int adminId)
+        public static async Task ExportSiteToSiteTemplateAsync(IPathManager pathManager, IDatabaseManager databaseManager, Site site, string siteTemplateDir)
         {
-            var exportObject = new ExportObject(site, adminId);
+            var exportObject = new ExportObject(pathManager, databaseManager, site);
 
-            var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
+            var siteTemplatePath = pathManager.GetSiteTemplatesPath(siteTemplateDir);
 
             //导出模板
-            var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
+            var templateFilePath = pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
             await exportObject.ExportTemplatesAsync(templateFilePath);
             //导出辅助表及样式
-            var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
+            var tableDirectoryPath = pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
             await exportObject.ExportTablesAndStylesAsync(tableDirectoryPath);
             //导出站点属性以及站点属性表单
-            var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
+            var configurationFilePath = pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
             await exportObject.ExportConfigurationAsync(configurationFilePath);
             //导出关联字段
-            var relatedFieldDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.RelatedField);
+            var relatedFieldDirectoryPath = pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.RelatedField);
             await exportObject.ExportRelatedFieldAsync(relatedFieldDirectoryPath);
         }
     }

@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.Core;
-using SS.CMS.Framework;
+using SS.CMS.Extensions;
 
 
 namespace SS.CMS.StlParser.StlElement
@@ -67,7 +68,7 @@ namespace SS.CMS.StlParser.StlElement
             {TypeDateOfTraditional, "带农历的当前日期"}
         };
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
 		    var type = string.Empty;
             var formatString = string.Empty;
@@ -83,9 +84,9 @@ namespace SS.CMS.StlParser.StlElement
             var isLower = false;
             var isUpper = false;
 
-		    foreach (var name in contextInfo.Attributes.AllKeys)
+		    foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
 		    {
-		        var value = contextInfo.Attributes[name];
+		        var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -141,16 +142,20 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return await ParseImplAsync(parseManager, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
 		}
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
+            var databaseManager = parseManager.DatabaseManager;
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (string.IsNullOrEmpty(type)) return string.Empty;
 
             var parsedContent = string.Empty;
 
-            if (contextInfo.ContextType == ContextType.Each)
+            if (contextInfo.ContextType == ParseType.Each)
             {
                 parsedContent = contextInfo.ItemContainer.EachItem.Value as string;
                 return parsedContent;
@@ -162,7 +167,7 @@ namespace SS.CMS.StlParser.StlElement
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = await pageInfo.Site.GetWebUrlAsync();
+                parsedContent = await parseManager.PathManager.GetWebUrlAsync(pageInfo.Site);
             }
             else if (type.ToLower().Equals(TypeDate.ToLower()))
             {
@@ -196,18 +201,18 @@ namespace SS.CMS.StlParser.StlElement
                     parsedContent = pageInfo.Site.Get<string>(type);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(DataProvider.SiteRepository.TableName, type, DataProvider.TableStyleRepository.GetRelatedIdentities(pageInfo.SiteId));
+                        var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(databaseManager.SiteRepository.TableName, type, databaseManager.TableStyleRepository.GetRelatedIdentities(pageInfo.SiteId));
 
                         // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                         if (styleInfo.Id > 0)
                         {
                             if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                             {
-                                parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                                parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                             }
                             else
                             {
-                                parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                                parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parseManager.PathManager, parsedContent, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
                                 parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                             }
                         }

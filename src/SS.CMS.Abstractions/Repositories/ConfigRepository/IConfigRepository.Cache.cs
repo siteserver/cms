@@ -5,10 +5,6 @@ namespace SS.CMS.Abstractions
 {
     public partial interface IConfigRepository
     {
-        Task ClearAllCache();
-
-        Task<IReadOnlyCacheManagerConfiguration> GetCacheConfigurationAsync();
-
         Task<Config> GetAsync();
     }
 }

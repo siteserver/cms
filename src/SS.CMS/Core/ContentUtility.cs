@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 using Content = SS.CMS.Abstractions.Content;
 
@@ -13,20 +12,18 @@ namespace SS.CMS.Core
 {
     public static class ContentUtility
     {
-        
-
-        public static async Task<string> TextEditorContentEncodeAsync(Site site, string content)
+        public static async Task<string> TextEditorContentEncodeAsync(IPathManager pathManager, Site site, string content)
         {
             if (site == null) return content;
             
             if (site.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
             {
-                content = await PathUtility.SaveImageAsync(site, content);
+                content = await pathManager.SaveImageAsync(site, content);
             }
 
             var builder = new StringBuilder(content);
 
-            var url = await site.GetWebUrlAsync();
+            var url = await pathManager.GetWebUrlAsync(site);
             if (!string.IsNullOrEmpty(url) && url != "/")
             {
                 StringUtils.ReplaceHrefOrSrc(builder, url, "@");
@@ -45,7 +42,7 @@ namespace SS.CMS.Core
             return builder.ToString();
         }
 
-        public static async Task<string> TextEditorContentDecodeAsync(Site site, string content, bool isLocal)
+        public static async Task<string> TextEditorContentDecodeAsync(IPathManager pathManager, Site site, string content, bool isLocal)
         {
             if (site == null) return content;
             
@@ -55,21 +52,70 @@ namespace SS.CMS.Core
             string assetsUrl;
             if (isLocal)
             {
-                assetsUrl = await PageUtility.GetSiteUrlAsync(site,
+                assetsUrl = await pathManager.GetSiteUrlAsync(site,
                     site.AssetsDir, true);
             }
             else
             {
-                assetsUrl = await site.GetAssetsUrlAsync();
+                assetsUrl = await pathManager.GetAssetsUrlAsync(site);
             }
             StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@/", site.GetWebUrlAsync()+ "/");
-            StringUtils.ReplaceHrefOrSrc(builder, "@", site.GetWebUrlAsync() + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@/", pathManager.GetWebUrlAsync(site) + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@", pathManager.GetWebUrlAsync(site) + "/");
             StringUtils.ReplaceHrefOrSrc(builder, "//", "/");
 
             builder.Replace("&#xa0;", "&nbsp;");
 
             return builder.ToString();
+        }
+
+        public static void PutImagePaths(IPathManager pathManager, Site site, Content content, NameValueCollection collection)
+        {
+            if (content == null) return;
+
+            var imageUrl = content.Get<string>(ContentAttribute.ImageUrl);
+            var videoUrl = content.Get<string>(ContentAttribute.VideoUrl);
+            var fileUrl = content.Get<string>(ContentAttribute.FileUrl);
+            var body = content.Get<string>(ContentAttribute.Content);
+
+            if (!string.IsNullOrEmpty(imageUrl) && pathManager.IsVirtualUrl(imageUrl))
+            {
+                collection[imageUrl] = pathManager.MapPathAsync(site, imageUrl).GetAwaiter().GetResult();
+            }
+            if (!string.IsNullOrEmpty(videoUrl) && pathManager.IsVirtualUrl(videoUrl))
+            {
+                collection[videoUrl] = pathManager.MapPathAsync(site, videoUrl).GetAwaiter().GetResult();
+            }
+            if (!string.IsNullOrEmpty(fileUrl) && pathManager.IsVirtualUrl(fileUrl))
+            {
+                collection[fileUrl] = pathManager.MapPathAsync(site, fileUrl).GetAwaiter().GetResult();
+            }
+
+            var srcList = RegexUtils.GetOriginalImageSrcs(body);
+            foreach (var src in srcList)
+            {
+                if (pathManager.IsVirtualUrl(src))
+                {
+                    collection[src] = pathManager.MapPathAsync(site, src).GetAwaiter().GetResult();
+                }
+                else if (pathManager.IsRelativeUrl(src))
+                {
+                    collection[src] = WebUtils.MapPath(src);
+                }
+            }
+
+            var hrefList = RegexUtils.GetOriginalLinkHrefs(body);
+            foreach (var href in hrefList)
+            {
+                if (pathManager.IsVirtualUrl(href))
+                {
+                    collection[href] = pathManager.MapPathAsync(site, href).GetAwaiter().GetResult();
+                }
+                else if (pathManager.IsRelativeUrl(href))
+                {
+                    collection[href] = WebUtils.MapPath(href);
+                }
+            }
         }
 
         public static string GetTitleFormatString(bool isStrong, bool isEm, bool isU, string color)
@@ -115,55 +161,6 @@ namespace SS.CMS.Core
             return formattedTitle;
         }
 
-        public static void PutImagePaths(Site site, Content content, NameValueCollection collection)
-        {
-            if (content == null) return;
-
-            var imageUrl = content.Get<string>(ContentAttribute.ImageUrl);
-            var videoUrl = content.Get<string>(ContentAttribute.VideoUrl);
-            var fileUrl = content.Get<string>(ContentAttribute.FileUrl);
-            var body = content.Get<string>(ContentAttribute.Content);
-
-            if (!string.IsNullOrEmpty(imageUrl) && PageUtility.IsVirtualUrl(imageUrl))
-            {
-                collection[imageUrl] = PathUtility.MapPathAsync(site, imageUrl).GetAwaiter().GetResult();
-            }
-            if (!string.IsNullOrEmpty(videoUrl) && PageUtility.IsVirtualUrl(videoUrl))
-            {
-                collection[videoUrl] = PathUtility.MapPathAsync(site, videoUrl).GetAwaiter().GetResult();
-            }
-            if (!string.IsNullOrEmpty(fileUrl) && PageUtility.IsVirtualUrl(fileUrl))
-            {
-                collection[fileUrl] = PathUtility.MapPathAsync(site, fileUrl).GetAwaiter().GetResult();
-            }
-
-            var srcList = RegexUtils.GetOriginalImageSrcs(body);
-            foreach (var src in srcList)
-            {
-                if (PageUtility.IsVirtualUrl(src))
-                {
-                    collection[src] = PathUtility.MapPathAsync(site, src).GetAwaiter().GetResult();
-                }
-                else if (PageUtility.IsRelativeUrl(src))
-                {
-                    collection[src] = WebUtils.MapPath(src);
-                }
-            }
-
-            var hrefList = RegexUtils.GetOriginalLinkHrefs(body);
-            foreach (var href in hrefList)
-            {
-                if (PageUtility.IsVirtualUrl(href))
-                {
-                    collection[href] = PathUtility.MapPathAsync(site, href).GetAwaiter().GetResult();
-                }
-                else if (PageUtility.IsRelativeUrl(href))
-                {
-                    collection[href] = WebUtils.MapPath(href);
-                }
-            }
-        }
-
         public static string GetAutoPageContent(string content, int pageWordNum)
         {
             var builder = new StringBuilder();
@@ -207,28 +204,28 @@ namespace SS.CMS.Core
             }
         }
 
-        public static async Task TranslateAsync(Site site, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType, ICreateManager createManager)
+        public static async Task TranslateAsync(IPathManager pathManager, IDatabaseManager databaseManager, Site site, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType, ICreateManager createManager)
         {
             if (site == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
-            var targetSite = await DataProvider.SiteRepository.GetAsync(targetSiteId);
-            var targetChannelInfo = await DataProvider.ChannelRepository.GetAsync(targetChannelId);
+            var targetSite = await databaseManager.SiteRepository.GetAsync(targetSiteId);
+            var targetChannelInfo = await databaseManager.ChannelRepository.GetAsync(targetChannelId);
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var channel = await databaseManager.ChannelRepository.GetAsync(channelId);
 
-            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channel, contentId);
+            var contentInfo = await databaseManager.ContentRepository.GetAsync(site, channel, contentId);
 
             if (contentInfo == null) return;
 
             if (translateType == TranslateContentType.Copy)
             {
-                await FileUtility.MoveFileByContentAsync(site, targetSite, contentInfo);
+                await FileUtility.MoveFileByContentAsync(pathManager, site, targetSite, contentInfo);
 
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.TranslateContentType = TranslateContentType.Copy;
-                var theContentId = await DataProvider.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
+                var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var service in await PluginManager.GetServicesAsync())
                 {
@@ -238,7 +235,7 @@ namespace SS.CMS.Core
                     }
                     catch (Exception ex)
                     {
-                        await DataProvider.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
                 }
 
@@ -247,14 +244,14 @@ namespace SS.CMS.Core
             }
             else if (translateType == TranslateContentType.Cut)
             {
-                await FileUtility.MoveFileByContentAsync(site, targetSite, contentInfo);
+                await FileUtility.MoveFileByContentAsync(pathManager, site, targetSite, contentInfo);
 
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.TranslateContentType = TranslateContentType.Cut;
 
-                var newContentId = await DataProvider.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
+                var newContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var service in await PluginManager.GetServicesAsync())
                 {
@@ -264,13 +261,13 @@ namespace SS.CMS.Core
                     }
                     catch (Exception ex)
                     {
-                        await DataProvider.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
                 }
 
-                await DataProvider.ContentRepository.DeleteAsync(site, channel, contentId);
+                await databaseManager.ContentRepository.DeleteAsync(site, channel, contentId);
 
-                //DataProvider.ContentRepository.DeleteContents(site.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
+                //GlobalSettings.ContentRepository.DeleteContents(site.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
 
                 await createManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, newContentId);
                 await createManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
@@ -285,7 +282,7 @@ namespace SS.CMS.Core
                 contentInfo.ReferenceId = contentId;
                 contentInfo.TranslateContentType = TranslateContentType.Reference;
                 //content.Attributes.Add(ContentAttribute.TranslateContentType, TranslateContentType.Reference.ToString());
-                int theContentId = await DataProvider.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
+                int theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 await createManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, theContentId);
                 await createManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
@@ -294,14 +291,14 @@ namespace SS.CMS.Core
             {
                 if (contentInfo.ReferenceId != 0) return;
 
-                await FileUtility.MoveFileByContentAsync(site, targetSite, contentInfo);
+                await FileUtility.MoveFileByContentAsync(pathManager, site, targetSite, contentInfo);
 
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
                 contentInfo.TranslateContentType = TranslateContentType.ReferenceContent;
-                var theContentId = await DataProvider.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
+                var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var service in await PluginManager.GetServicesAsync())
                 {
@@ -311,7 +308,7 @@ namespace SS.CMS.Core
                     }
                     catch (Exception ex)
                     {
-                        await DataProvider.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
                 }
 

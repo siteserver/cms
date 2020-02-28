@@ -6,7 +6,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -16,10 +15,18 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly IContentTagRepository _contentTagRepository;
 
-        public ContentsLayerTagController(IAuthManager authManager)
+        public ContentsLayerTagController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _contentTagRepository = contentTagRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -34,10 +41,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var tagNames = await DataProvider.ContentTagRepository.GetTagNamesAsync(request.SiteId);
+            var tagNames = await _contentTagRepository.GetTagNamesAsync(request.SiteId);
 
             return new ObjectResult<IEnumerable<string>>
             {
@@ -57,24 +64,24 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var allTagNames = await DataProvider.ContentTagRepository.GetTagNamesAsync(request.SiteId);
+            var allTagNames = await _contentTagRepository.GetTagNamesAsync(request.SiteId);
 
             foreach (var tagName in request.TagNames)
             {
                 if (!allTagNames.Contains(tagName))
                 {
-                    await DataProvider.ContentTagRepository.InsertAsync(request.SiteId, tagName);
+                    await _contentTagRepository.InsertAsync(request.SiteId, tagName);
                 }
             }
 
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
             foreach (var summary in summaries)
             {
-                var channel = await DataProvider.ChannelRepository.GetAsync(summary.ChannelId);
-                var content = await DataProvider.ContentRepository.GetAsync(site, channel, summary.Id);
+                var channel = await _channelRepository.GetAsync(summary.ChannelId);
+                var content = await _contentRepository.GetAsync(site, channel, summary.Id);
                 if (content == null) continue;
 
                 var list = new List<string>();
@@ -99,7 +106,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 }
                 content.TagNames = list;
 
-                await DataProvider.ContentRepository.UpdateAsync(site, channel, content);
+                await _contentRepository.UpdateAsync(site, channel, content);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, request.IsCancel ? "批量取消内容标签" : "批量设置内容标签");

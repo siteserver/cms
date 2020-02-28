@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -15,10 +14,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
         private const string RouteOptions = "actions/options";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public EditorLayerTranslateController(IAuthManager authManager)
+        public EditorLayerTranslateController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -31,11 +36,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var siteIdList = await auth.AdminPermissions.GetSiteIdListAsync();
-            var transSites = await DataProvider.SiteRepository.GetSelectsAsync(siteIdList);
+            var transSites = await _siteRepository.GetSelectsAsync(siteIdList);
 
             return new GetResult
             {
@@ -53,16 +58,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var channelIdList = await auth.AdminPermissions.GetChannelIdListAsync(request.TransSiteId, Constants.ChannelPermissions.ContentAdd);
 
-            var transChannels = await DataProvider.ChannelRepository.GetAsync(request.TransSiteId);
-            var transSite = await DataProvider.SiteRepository.GetAsync(request.TransSiteId);
-            var cascade = await DataProvider.ChannelRepository.GetCascadeAsync(transSite, transChannels, async summary =>
+            var transChannels = await _channelRepository.GetAsync(request.TransSiteId);
+            var transSite = await _siteRepository.GetAsync(request.TransSiteId);
+            var cascade = await _channelRepository.GetCascadeAsync(transSite, transChannels, async summary =>
             {
-                var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
+                var count = await _contentRepository.GetCountAsync(site, summary);
 
                 return new
                 {
@@ -88,13 +93,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var transSite = await DataProvider.SiteRepository.GetAsync(request.TransSiteId);
+            var transSite = await _siteRepository.GetAsync(request.TransSiteId);
             var siteName = transSite.SiteName;
 
-            var name = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.TransSiteId, request.TransChannelId);
+            var name = await _channelRepository.GetChannelNameNavigationAsync(request.TransSiteId, request.TransChannelId);
             if (request.TransSiteId != request.SiteId)
             {
                 name = siteName + " : " + name;

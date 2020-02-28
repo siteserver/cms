@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core
 {
@@ -16,7 +15,7 @@ namespace SS.CMS.Core
 
         public FileWatcherClass(string cacheName)
         {
-            _cacheFilePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, "Cache", $"{cacheName}.txt");
+            _cacheFilePath = PathUtils.Combine(GlobalSettings.SettingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, "Cache", $"{cacheName}.txt");
 
             FileDependency();
         }

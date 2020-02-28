@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
-using SS.CMS.Core;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -37,7 +36,7 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "是否循环播放")]
         private const string IsLoop = nameof(IsLoop);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
             var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
@@ -48,9 +47,9 @@ namespace SS.CMS.StlParser.StlElement
             var isControls = true;
             var isLoop = false;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -86,11 +85,14 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
+            return await ParseImplAsync(parseManager, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
 		}
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, string imageUrl, string width, string height, bool isAutoPlay, bool isControls, bool isLoop)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string playUrl, string imageUrl, string width, string height, bool isAutoPlay, bool isControls, bool isLoop)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             var videoUrl = string.Empty;
             if (!string.IsNullOrEmpty(playUrl))
             {
@@ -99,11 +101,11 @@ namespace SS.CMS.StlParser.StlElement
             else
             {
                 var contentId = contextInfo.ContentId;
-                if (contextInfo.ContextType == ContextType.Content)
+                if (contextInfo.ContextType == ParseType.Content)
                 {
                     if (contentId != 0)//获取内容视频
                     {
-                        var contentInfo = await contextInfo.GetContentAsync();
+                        var contentInfo = await parseManager.GetContentAsync();
                         if (contentInfo != null)
                         {
                             videoUrl = contentInfo.Get<string>(type);
@@ -114,7 +116,7 @@ namespace SS.CMS.StlParser.StlElement
                         }
                     }
                 }
-                else if (contextInfo.ContextType == ContextType.Each)
+                else if (contextInfo.ContextType == ParseType.Each)
                 {
                     videoUrl = contextInfo.ItemContainer.EachItem.Value as string;
                 }
@@ -122,10 +124,10 @@ namespace SS.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(videoUrl)) return string.Empty;
 
-            videoUrl = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, videoUrl, pageInfo.IsLocal);
-            imageUrl = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
+            videoUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, videoUrl, pageInfo.IsLocal);
+            imageUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
 
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.JsAcVideoJs);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcVideoJs);
 
             var dict = new Dictionary<string, string>
             {

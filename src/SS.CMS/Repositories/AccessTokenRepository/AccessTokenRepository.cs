@@ -3,16 +3,17 @@ using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Repositories
 {
     public partial class AccessTokenRepository : IAccessTokenRepository
     {
+        private readonly ISettingsManager _settingsManager;
         private readonly Repository<AccessToken> _repository;
 
         public AccessTokenRepository(ISettingsManager settingsManager)
         {
+            _settingsManager = settingsManager;
             _repository = new Repository<AccessToken>(settingsManager.Database, settingsManager.Redis);
         }
 
@@ -24,7 +25,7 @@ namespace SS.CMS.Repositories
 
         public async Task<int> InsertAsync(AccessToken accessToken)
         {
-            var token = TranslateUtils.EncryptStringBySecretKey(StringUtils.Guid(), WebConfigUtils.SecretKey);
+            var token = _settingsManager.Encrypt(StringUtils.Guid());
             accessToken.Token = token;
 
             return await _repository.InsertAsync(accessToken);
@@ -52,7 +53,7 @@ namespace SS.CMS.Repositories
         {
             var cacheKey = GetCacheKeyByToken(accessToken.Token);
 
-            accessToken.Token = TranslateUtils.EncryptStringBySecretKey(StringUtils.Guid(), WebConfigUtils.SecretKey);
+            accessToken.Token = _settingsManager.Encrypt(StringUtils.Guid());
 
             await _repository.UpdateAsync(accessToken, Q.CachingRemove(cacheKey));
 

@@ -16,7 +16,7 @@ namespace SS.CMS.Plugins
 
             foreach (var service in await PluginManager.GetServicesAsync())
             {
-                if (PluginContentTableManager.IsContentTable(service))
+                if (PluginManager.IsContentTable(service))
                 {
                     list.Add(service.Metadata);
                 }
@@ -31,7 +31,7 @@ namespace SS.CMS.Plugins
 
             foreach (var service in await PluginManager.GetServicesAsync())
             {
-                if (PluginContentTableManager.IsContentTable(service))
+                if (PluginManager.IsContentTable(service))
                 {
                     if (!StringUtils.ContainsIgnoreCase(list, service.ContentTableName))
                     {
@@ -49,7 +49,7 @@ namespace SS.CMS.Plugins
 
             foreach (var service in await PluginManager.GetServicesAsync())
             {
-                var isContentModel = PluginContentTableManager.IsContentTable(service);
+                var isContentModel = PluginManager.IsContentTable(service);
 
                 if (!includeContentTable && isContentModel) continue;
 
@@ -83,7 +83,7 @@ namespace SS.CMS.Plugins
             {
                 if (!pluginIds.Contains(service.PluginId)) continue;
 
-                if (!includeContentTable && PluginContentTableManager.IsContentTable(service)) continue;
+                if (!includeContentTable && PluginManager.IsContentTable(service)) continue;
 
                 list.Add(service);
             }

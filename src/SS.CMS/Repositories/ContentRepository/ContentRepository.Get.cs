@@ -7,10 +7,8 @@ using Dapper;
 using Datory;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SqlKata;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Repositories
 {
@@ -75,17 +73,19 @@ namespace SS.CMS.Repositories
 
         public List<(int AdminId, int AddCount, int UpdateCount)> GetDataSetOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
         {
+            var databaseType = _settingsManager.Database.DatabaseType;
+
             var sqlString = $@"select adminId,SUM(addCount) as addCount, SUM(updateCount) as updateCount from( 
 SELECT AdminId as adminId, Count(AdminId) as addCount, 0 as updateCount FROM {tableName} 
 INNER JOIN {_administratorRepository.TableName} ON AdminId = {_administratorRepository.TableName}.Id 
 WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastEditDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}
+AND LastEditDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
 GROUP BY AdminId
 Union
 SELECT LastEditAdminId as lastEditAdminId,0 as addCount, Count(LastEditAdminId) as updateCount FROM {tableName} 
 INNER JOIN {_administratorRepository.TableName} ON LastEditAdminId = {_administratorRepository.TableName}.Id 
 WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastEditDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}
+AND LastEditDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
 AND LastEditDate != AddDate
 GROUP BY LastEditAdminId
 ) as tmp
@@ -181,7 +181,7 @@ group by tmp.adminId";
             return await repository.CountAsync(query);
         }
 
-        public async Task<string> GetWhereStringByStlSearchAsync(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)
+        public async Task<string> GetWhereStringByStlSearchAsync(IDatabaseManager databaseManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)
         {
             var whereBuilder = new StringBuilder();
 
@@ -269,17 +269,17 @@ group by tmp.adminId";
             if (!string.IsNullOrEmpty(dateFrom))
             {
                 whereBuilder.Append(" AND ");
-                whereBuilder.Append($" {dateAttribute} >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ");
+                whereBuilder.Append($" {dateAttribute} >= {SqlUtils.GetComparableDate(_settingsManager.Database.DatabaseType, TranslateUtils.ToDateTime(dateFrom))} ");
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
                 whereBuilder.Append(" AND ");
-                whereBuilder.Append($" {dateAttribute} <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo))} ");
+                whereBuilder.Append($" {dateAttribute} <= {SqlUtils.GetComparableDate(_settingsManager.Database.DatabaseType, TranslateUtils.ToDateTime(dateTo))} ");
             }
             if (!string.IsNullOrEmpty(since))
             {
                 var sinceDate = DateTime.Now.AddHours(-DateUtils.GetSinceHours(since));
-                whereBuilder.Append($" AND {dateAttribute} BETWEEN {SqlUtils.GetComparableDateTime(sinceDate)} AND {SqlUtils.GetComparableNow()} ");
+                whereBuilder.Append($" AND {dateAttribute} BETWEEN {SqlUtils.GetComparableDateTime(_settingsManager.Database.DatabaseType, sinceDate)} AND {SqlUtils.GetComparableNow(_settingsManager.Database.DatabaseType)} ");
             }
 
             var tableName = await _channelRepository.GetTableNameAsync(site, channelInfo);
@@ -293,7 +293,7 @@ group by tmp.adminId";
                 var value = StringUtils.Trim(form[key]);
                 if (string.IsNullOrEmpty(value)) continue;
 
-                var columnInfo = await TableColumnManager.GetTableColumnInfoAsync(tableName, key);
+                var columnInfo = await databaseManager.GetTableColumnInfoAsync(tableName, key);
 
                 if (columnInfo != null && (columnInfo.DataType == DataType.VarChar || columnInfo.DataType == DataType.Text))
                 {
@@ -319,13 +319,13 @@ group by tmp.adminId";
 
         public async Task CreateContentTableAsync(string tableName, List<TableColumn> columnInfoList)
         {
-            var isDbExists = await WebConfigUtils.Database.IsTableExistsAsync(tableName);
+            var isDbExists = await _settingsManager.Database.IsTableExistsAsync(tableName);
             if (isDbExists) return;
 
-            await WebConfigUtils.Database.CreateTableAsync(tableName, columnInfoList);
-            await WebConfigUtils.Database.CreateIndexAsync(tableName, $"IX_{tableName}",
+            await _settingsManager.Database.CreateTableAsync(tableName, columnInfoList);
+            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}",
                 $"{nameof(Content.Top)} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
-            await WebConfigUtils.Database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis",
+            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis",
                 $"{ContentAttribute.Taxis} DESC");
         }
 

@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 
@@ -10,12 +11,14 @@ namespace SS.CMS.StlParser.StlEntity
     [StlElement(Title = "请求实体", Description = "通过 {request.} 实体在模板中显示地址栏请求参数")]
     public static class StlRequestEntities
 	{
-        internal static async Task<string> ParseAsync(string stlEntity, PageInfo pageInfo)
+        internal static async Task<string> ParseAsync(string stlEntity, IParseManager parseManager)
         {
+            var pageInfo = parseManager.PageInfo;
+
             var parsedContent = string.Empty;
             try
             {
-                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
+                await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
 
                 var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
                 var entityValue = StlParserUtility.GetValueFromEntity(stlEntity);

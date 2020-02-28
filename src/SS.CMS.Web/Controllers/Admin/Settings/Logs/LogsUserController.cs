@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
 {
@@ -12,10 +11,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserLogRepository _userLogRepository;
 
-        public LogsUserController(IAuthManager authManager)
+        public LogsUserController(IAuthManager authManager, IUserRepository userRepository, IUserLogRepository userLogRepository)
         {
             _authManager = authManager;
+            _userRepository = userRepository;
+            _userLogRepository = userLogRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -28,15 +31,15 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            var user = await DataProvider.UserRepository.GetByUserNameAsync(request.UserName);
+            var user = await _userRepository.GetByUserNameAsync(request.UserName);
             var userId = user?.Id ?? 0;
 
-            var count = await DataProvider.UserLogRepository.GetCountAsync(userId, request.Keyword, request.DateFrom, request.DateTo);
-            var logs = await DataProvider.UserLogRepository.GetAllAsync(userId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
+            var count = await _userLogRepository.GetCountAsync(userId, request.Keyword, request.DateFrom, request.DateTo);
+            var logs = await _userLogRepository.GetAllAsync(userId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
 
             foreach (var log in logs)
             {
-                var userName = await DataProvider.UserRepository.GetDisplayAsync(log.UserId);
+                var userName = await _userRepository.GetDisplayAsync(log.UserId);
                 log.Set("userName", userName);
             }
 
@@ -57,7 +60,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            await DataProvider.UserLogRepository.DeleteAllAsync();
+            await _userLogRepository.DeleteAllAsync();
 
             await auth.AddAdminLogAsync("清空用户日志");
 

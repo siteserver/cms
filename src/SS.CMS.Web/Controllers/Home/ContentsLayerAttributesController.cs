@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Home
 {
@@ -12,10 +11,16 @@ namespace SS.CMS.Web.Controllers.Home
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerAttributesController(IAuthManager authManager)
+        public ContentsLayerAttributesController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -28,10 +33,10 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return NotFound();
 
             if (request.PageType == "setAttributes")
@@ -40,7 +45,7 @@ namespace SS.CMS.Web.Controllers.Home
                 {
                     foreach (var contentId in request.ContentIds)
                     {
-                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
+                        var contentInfo = await _contentRepository.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         if (request.IsRecommend)
@@ -59,7 +64,7 @@ namespace SS.CMS.Web.Controllers.Home
                         {
                             contentInfo.Top = true;
                         }
-                        await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
+                        await _contentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
                     await auth.AddSiteLogAsync(request.SiteId, "设置内容属性");
@@ -71,7 +76,7 @@ namespace SS.CMS.Web.Controllers.Home
                 {
                     foreach (var contentId in request.ContentIds)
                     {
-                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
+                        var contentInfo = await _contentRepository.GetAsync(site, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         if (request.IsRecommend)
@@ -90,7 +95,7 @@ namespace SS.CMS.Web.Controllers.Home
                         {
                             contentInfo.Top = false;
                         }
-                        await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
+                        await _contentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
                     await auth.AddSiteLogAsync(request.SiteId, "取消内容属性");
@@ -100,11 +105,11 @@ namespace SS.CMS.Web.Controllers.Home
             {
                 foreach (var contentId in request.ContentIds)
                 {
-                    var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
+                    var contentInfo = await _contentRepository.GetAsync(site, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
                     contentInfo.Hits = request.Hits;
-                    await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
+                    await _contentRepository.UpdateAsync(site, channelInfo, contentInfo);
                 }
 
                 await auth.AddSiteLogAsync(request.SiteId, "设置内容点击量");

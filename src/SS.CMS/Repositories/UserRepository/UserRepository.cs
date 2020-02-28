@@ -539,14 +539,14 @@ namespace SS.CMS.Repositories
             var dict = new Dictionary<DateTime, int>();
 
             var builder = new StringBuilder();
-            builder.Append($" AND CreateDate >= {SqlUtils.GetComparableDate(dateFrom)}");
-            builder.Append($" AND CreateDate < {SqlUtils.GetComparableDate(dateTo)}");
+            builder.Append($" AND CreateDate >= {SqlUtils.GetComparableDate(Database.DatabaseType, dateFrom)}");
+            builder.Append($" AND CreateDate < {SqlUtils.GetComparableDate(Database.DatabaseType, dateTo)}");
 
             string sqlString = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth, AddDay FROM (
-    SELECT {SqlUtils.GetDatePartYear("CreateDate")} AS AddYear, {SqlUtils.GetDatePartMonth("CreateDate")} AS AddMonth, {SqlUtils.GetDatePartDay("CreateDate")} AS AddDay 
+    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "CreateDate")} AS AddYear, {SqlUtils.GetDatePartMonth(Database.DatabaseType, "CreateDate")} AS AddMonth, {SqlUtils.GetDatePartDay(Database.DatabaseType, "CreateDate")} AS AddDay 
     FROM {TableName} 
-    WHERE {SqlUtils.GetDateDiffLessThanDays("CreateDate", 30.ToString())} {builder}
+    WHERE {SqlUtils.GetDateDiffLessThanDays(Database.DatabaseType, "CreateDate", 30.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth, AddDay ORDER BY AddYear, AddMonth, AddDay
 ";//添加日统计
 
@@ -554,9 +554,9 @@ SELECT COUNT(*) AS AddNum, AddYear, AddMonth, AddDay FROM (
             {
                 sqlString = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth FROM (
-    SELECT {SqlUtils.GetDatePartYear("CreateDate")} AS AddYear, {SqlUtils.GetDatePartMonth("CreateDate")} AS AddMonth 
+    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "CreateDate")} AS AddYear, {SqlUtils.GetDatePartMonth(Database.DatabaseType, "CreateDate")} AS AddMonth 
     FROM {TableName} 
-    WHERE {SqlUtils.GetDateDiffLessThanMonths("CreateDate", 12.ToString())} {builder}
+    WHERE {SqlUtils.GetDateDiffLessThanMonths(Database.DatabaseType, "CreateDate", 12.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth ORDER BY AddYear, AddMonth
 ";//添加月统计
             }
@@ -564,9 +564,9 @@ SELECT COUNT(*) AS AddNum, AddYear, AddMonth FROM (
             {
                 sqlString = $@"
 SELECT COUNT(*) AS AddNum, AddYear FROM (
-    SELECT {SqlUtils.GetDatePartYear("CreateDate")} AS AddYear
+    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "CreateDate")} AS AddYear
     FROM {TableName} 
-    WHERE {SqlUtils.GetDateDiffLessThanYears("CreateDate", 10.ToString())} {builder}
+    WHERE {SqlUtils.GetDateDiffLessThanYears(Database.DatabaseType, "CreateDate", 10.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear ORDER BY AddYear
 ";//添加年统计
             }

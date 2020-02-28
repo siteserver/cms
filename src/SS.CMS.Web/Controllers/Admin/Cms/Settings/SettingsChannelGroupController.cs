@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -13,10 +12,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string RouteOrder = "actions/order";
 
         private readonly IAuthManager _authManager;
+        private readonly IChannelGroupRepository _channelGroupRepository;
 
-        public SettingsChannelGroupController(IAuthManager authManager)
+        public SettingsChannelGroupController(IAuthManager authManager, IChannelGroupRepository channelGroupRepository)
         {
             _authManager = authManager;
+            _channelGroupRepository = channelGroupRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -30,7 +31,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var groups = await DataProvider.ChannelGroupRepository.GetChannelGroupsAsync(request.SiteId);
+            var groups = await _channelGroupRepository.GetChannelGroupsAsync(request.SiteId);
 
             return new GetResult
             {
@@ -49,9 +50,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            await DataProvider.ChannelGroupRepository.DeleteAsync(request.SiteId, request.GroupName);
+            await _channelGroupRepository.DeleteAsync(request.SiteId, request.GroupName);
 
-            var groups = await DataProvider.ChannelGroupRepository.GetChannelGroupsAsync(request.SiteId);
+            var groups = await _channelGroupRepository.GetChannelGroupsAsync(request.SiteId);
 
             return new GetResult
             {
@@ -72,14 +73,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 
             if (request.IsUp)
             {
-                await DataProvider.ChannelGroupRepository.UpdateTaxisUpAsync(request.SiteId, request.GroupId, request.Taxis);
+                await _channelGroupRepository.UpdateTaxisUpAsync(request.SiteId, request.GroupId, request.Taxis);
             }
             else
             {
-                await DataProvider.ChannelGroupRepository.UpdateTaxisDownAsync(request.SiteId, request.GroupId, request.Taxis);
+                await _channelGroupRepository.UpdateTaxisDownAsync(request.SiteId, request.GroupId, request.Taxis);
             }
 
-            var groups = await DataProvider.ChannelGroupRepository.GetChannelGroupsAsync(request.SiteId);
+            var groups = await _channelGroupRepository.GetChannelGroupsAsync(request.SiteId);
 
             return new GetResult
             {

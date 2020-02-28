@@ -6,7 +6,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 using SS.CMS.Web.Extensions;
 
@@ -37,16 +36,17 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
             var pluginIds = PluginContentManager.GetContentPluginIds(channel);
             var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
-            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var columnsManager = new ColumnsManager(_databaseManager);
+            var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             var pageContents = new List<Content>();
             List<ContentSummary> summaries;
@@ -54,11 +54,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 !string.IsNullOrEmpty(request.SearchText) ||
                 request.IsAdvanced)
             {
-                summaries = await DataProvider.ContentRepository.Search(site, channel, channel.IsAllContents, request.SearchType, request.SearchText, request.IsAdvanced, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames);
+                summaries = await _contentRepository.Search(site, channel, channel.IsAllContents, request.SearchType, request.SearchText, request.IsAdvanced, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames);
             }
             else
             {
-                summaries = await DataProvider.ContentRepository.GetSummariesAsync(site, channel, channel.IsAllContents);
+                summaries = await _contentRepository.GetSummariesAsync(site, channel, channel.IsAllContents);
             }
             var total = summaries.Count;
 
@@ -70,11 +70,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 var sequence = offset + 1;
                 foreach (var summary in pageSummaries)
                 {
-                    var content = await DataProvider.ContentRepository.GetAsync(site, summary.ChannelId, summary.Id);
+                    var content = await _contentRepository.GetAsync(site, summary.ChannelId, summary.Id);
                     if (content == null) continue;
 
                     var pageContent =
-                        await ColumnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, content, columns, pluginColumns);
+                        await columnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, content, columns, pluginColumns);
 
                     var menus = await PluginMenuManager.GetContentMenusAsync(pluginIds, pageContent);
                     pageContent.Set("PluginMenus", menus);

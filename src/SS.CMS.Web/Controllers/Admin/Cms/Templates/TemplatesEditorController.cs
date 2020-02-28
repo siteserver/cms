@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -13,12 +12,18 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         private const string RouteCreate = "actions/create";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly ITemplateRepository _templateRepository;
 
-        public TemplatesEditorController(IAuthManager authManager, ICreateManager createManager)
+        public TemplatesEditorController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, ITemplateRepository templateRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _templateRepository = templateRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -31,13 +36,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             Template template;
             if (request.TemplateId > 0)
             {
-                template = await DataProvider.TemplateRepository.GetAsync(request.TemplateId);
+                template = await _templateRepository.GetAsync(request.TemplateId);
             }
             else
             {
@@ -63,7 +68,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             return await SaveAsync(site, request);
@@ -79,7 +84,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             return await SaveAsync(site, request);
@@ -95,7 +100,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             await _createManager.CreateByTemplateAsync(request.SiteId, request.TemplateId);

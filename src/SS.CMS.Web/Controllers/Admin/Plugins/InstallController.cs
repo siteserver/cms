@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Packaging;
 using SS.CMS.Plugins;
 using SS.CMS.Web.Extensions;
@@ -18,11 +17,17 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         private const string RouteUpdate = "update";
         private const string RouteCache = "cache";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly IDbCacheRepository _dbCacheRepository;
 
-        public InstallController(IAuthManager authManager)
+        public InstallController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IDbCacheRepository dbCacheRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
+            _pathManager = pathManager;
+            _dbCacheRepository = dbCacheRepository;
         }
 
         [HttpGet, Route(RouteConfig)]
@@ -37,8 +42,8 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
 
             return new GetResult
             {
-                IsNightly = WebConfigUtils.IsNightlyUpdate,
-                PluginVersion = SystemManager.PluginVersion,
+                IsNightly = _settingsManager.IsNightlyUpdate,
+                PluginVersion = _settingsManager.PluginVersion,
                 DownloadPlugins = PluginManager.PackagesIdAndVersionList
             };
         }
@@ -84,7 +89,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
             if (!StringUtils.EqualsIgnoreCase(request.PackageId, PackageUtils.PackageIdSiteServerPlugin))
             {
                 var idWithVersion = $"{request.PackageId}.{request.Version}";
-                if (!PackageUtils.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))
+                if (!PackageUtils.UpdatePackage(_pathManager, idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))
                 {
                     return this.Error(errorMessage);
                 }
@@ -108,7 +113,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
             }
 
             CacheUtils.ClearAll();
-            await DataProvider.DbCacheRepository.ClearAsync();
+            await _dbCacheRepository.ClearAsync();
 
             return new BoolResult
             {

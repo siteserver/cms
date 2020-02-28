@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -13,10 +12,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
 
-        public SettingsCreateController(IAuthManager authManager)
+        public SettingsCreateController(IAuthManager authManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -29,7 +30,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             return new ObjectResult<Site>
             {
@@ -47,7 +48,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             site.IsCreateContentIfContentChanged = request.IsCreateContentIfContentChanged;
             site.IsCreateChannelIfChannelChanged = request.IsCreateChannelIfChannelChanged;
@@ -63,7 +64,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             site.IsCreateStaticContentByAddDate = request.IsCreateStaticContentByAddDate;
             site.CreateStaticContentAddDate = request.CreateStaticContentAddDate;
 
-            await DataProvider.SiteRepository.UpdateAsync(site);
+            await _siteRepository.UpdateAsync(site);
 
             await auth.AddSiteLogAsync(request.SiteId, "修改页面生成设置");
 

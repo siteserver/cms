@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
@@ -15,13 +14,19 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
         private const string Route = "";
         private const string RouteUpload = "actions/upload";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IConfigRepository _configRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ConfigsHomeController(IAuthManager authManager, IPathManager pathManager)
+        public ConfigsHomeController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, ITableStyleRepository tableStyleRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
+            _configRepository = configRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -34,14 +39,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
                 return Unauthorized();
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             return new GetResult
             {
                 Config = config,
-                HomeDirectory = WebConfigUtils.HomeDirectory,
+                HomeDirectory = _settingsManager.HomeDirectory,
                 AdminToken = auth.AdminToken,
-                Styles = await DataProvider.TableStyleRepository.GetUserStyleListAsync()
+                Styles = await _tableStyleRepository.GetUserStyleListAsync()
             };
         }
 
@@ -55,7 +60,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
                 return Unauthorized();
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             config.IsHomeClosed = request.IsHomeClosed;
             config.HomeTitle = request.HomeTitle;
@@ -67,7 +72,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
             config.IsHomeAgreement = request.IsHomeAgreement;
             config.HomeAgreementHtml = request.HomeAgreementHtml;
 
-            await DataProvider.ConfigRepository.UpdateAsync(config);
+            await _configRepository.UpdateAsync(config);
 
             await auth.AddAdminLogAsync("修改用户中心设置");
 

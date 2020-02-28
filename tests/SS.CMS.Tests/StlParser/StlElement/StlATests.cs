@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using Xunit;
@@ -27,9 +28,9 @@ namespace SS.CMS.Tests.StlParser.StlElement
             var siteInfo = new Site();
             var templateInfo = new Template();
             var pluginItems = new Dictionary<string, object>();
-            var pageInfo = await PageInfo.GetPageInfoAsync(0, 0, siteInfo, templateInfo, pluginItems);
+            var pageInfo = await ParsePage.GetPageInfoAsync(0, 0, siteInfo, templateInfo, pluginItems);
 
-            var contextInfo = new ContextInfo(pageInfo);
+            var contextInfo = new ParseContext(pageInfo);
 
             var template = $@"<stl:a href=""https://www.siteserver.cn"">test</stl:a>";
             var builder = new StringBuilder(template);

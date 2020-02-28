@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
@@ -18,12 +17,20 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         private const string RouteDefault = "actions/default";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly ITemplateRepository _templateRepository;
 
-        public TemplatesController(IAuthManager authManager, ICreateManager createManager)
+        public TemplatesController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _templateRepository = templateRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -36,7 +43,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             return await GetResultAsync(site);
@@ -52,13 +59,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var templateInfo = await DataProvider.TemplateRepository.GetAsync(request.TemplateId);
+            var templateInfo = await _templateRepository.GetAsync(request.TemplateId);
             if (templateInfo != null && !templateInfo.Default)
             {
-                await DataProvider.TemplateRepository.SetDefaultAsync(request.TemplateId);
+                await _templateRepository.SetDefaultAsync(request.TemplateId);
                 await auth.AddSiteLogAsync(site.Id,
                     $"设置默认{templateInfo.TemplateType.GetDisplayName()}",
                     $"模板名称:{templateInfo.TemplateName}");
@@ -77,7 +84,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             await _createManager.CreateByTemplateAsync(request.SiteId, request.TemplateId);
@@ -98,21 +105,21 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var template = await DataProvider.TemplateRepository.GetAsync(request.TemplateId);
+            var template = await _templateRepository.GetAsync(request.TemplateId);
 
             var templateName = template.TemplateName + "_复件";
             var relatedFileName = PathUtils.RemoveExtension(template.RelatedFileName) + "_复件";
             var createdFileFullName = PathUtils.RemoveExtension(template.CreatedFileFullName) + "_复件";
 
-            var templateNameList = await DataProvider.TemplateRepository.GetTemplateNameListAsync(request.SiteId, template.TemplateType);
+            var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, template.TemplateType);
             if (templateNameList.Contains(templateName))
             {
                 return this.Error("模板复制失败，模板名称已存在！");
             }
-            var fileNameList = await DataProvider.TemplateRepository.GetRelatedFileNameListAsync(request.SiteId, template.TemplateType);
+            var fileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, template.TemplateType);
             if (StringUtils.ContainsIgnoreCase(fileNameList, relatedFileName))
             {
                 return this.Error("模板复制失败，模板文件已存在！");
@@ -129,9 +136,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 Default = false
             };
 
-            var content = await DataProvider.TemplateRepository.GetTemplateContentAsync(site, template);
+            var content = await _pathManager.GetTemplateContentAsync(site, template);
 
-            templateInfo.Id = await DataProvider.TemplateRepository.InsertAsync(site, templateInfo, content, auth.AdminId);
+            templateInfo.Id = await _templateRepository.InsertAsync(_pathManager, site, templateInfo, content, auth.AdminId);
 
             return await GetResultAsync(site);
         }
@@ -146,13 +153,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var templateInfo = await DataProvider.TemplateRepository.GetAsync(request.TemplateId);
+            var templateInfo = await _templateRepository.GetAsync(request.TemplateId);
             if (templateInfo != null && !templateInfo.Default)
             {
-                await DataProvider.TemplateRepository.DeleteAsync(site, request.TemplateId);
+                await _templateRepository.DeleteAsync(_pathManager, site, request.TemplateId);
                 await auth.AddSiteLogAsync(site.Id,
                     $"删除{templateInfo.TemplateType.GetDisplayName()}",
                     $"模板名称:{templateInfo.TemplateName}");

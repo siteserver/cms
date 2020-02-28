@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.V1
@@ -18,10 +17,16 @@ namespace SS.CMS.Web.Controllers.V1
         private const string RouteAdministrator = "{id:int}";
 
         private readonly IAuthManager _authManager;
+        private readonly IConfigRepository _configRepository;
+        private readonly IAccessTokenRepository _accessTokenRepository;
+        private readonly IAdministratorRepository _administratorRepository;
 
-        public AdministratorsController(IAuthManager authManager)
+        public AdministratorsController(IAuthManager authManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository)
         {
             _authManager = authManager;
+            _configRepository = configRepository;
+            _accessTokenRepository = accessTokenRepository;
+            _administratorRepository = administratorRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -29,10 +34,10 @@ namespace SS.CMS.Web.Controllers.V1
         {
             var auth = await _authManager.GetApiAsync();
 
-            var isApiAuthorized = auth.IsApiAuthenticated && await DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
-            var (isValid, errorMessage) = await DataProvider.AdministratorRepository.InsertAsync(request, request.Password);
+            var (isValid, errorMessage) = await _administratorRepository.InsertAsync(request, request.Password);
             if (!isValid)
             {
                 return this.Error(errorMessage);
@@ -46,16 +51,16 @@ namespace SS.CMS.Web.Controllers.V1
         {
             var auth = await _authManager.GetApiAsync();
 
-            var isApiAuthorized = auth.IsApiAuthenticated && await DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             if (administrator == null) return this.Error("Could not read administrator from body");
 
-            if (!await DataProvider.AdministratorRepository.IsExistsAsync(id)) return NotFound();
+            if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
 
             administrator.Id = id;
 
-            var (isValid, errorMessage) = await DataProvider.AdministratorRepository.UpdateAsync(administrator);
+            var (isValid, errorMessage) = await _administratorRepository.UpdateAsync(administrator);
             if (!isValid)
             {
                 return this.Error(errorMessage);
@@ -69,12 +74,12 @@ namespace SS.CMS.Web.Controllers.V1
         {
             var auth = await _authManager.GetApiAsync();
 
-            var isApiAuthorized = auth.IsApiAuthenticated && await DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
-            if (!await DataProvider.AdministratorRepository.IsExistsAsync(id)) return NotFound();
+            if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
 
-            var administrator = await DataProvider.AdministratorRepository.DeleteAsync(id);
+            var administrator = await _administratorRepository.DeleteAsync(id);
 
             return administrator;
         }
@@ -84,12 +89,12 @@ namespace SS.CMS.Web.Controllers.V1
         {
             var auth = await _authManager.GetApiAsync();
 
-            var isApiAuthorized = auth.IsApiAuthenticated && await DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
-            if (!await DataProvider.AdministratorRepository.IsExistsAsync(id)) return NotFound();
+            if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
 
-            var administrator = await DataProvider.AdministratorRepository.GetByUserIdAsync(id);
+            var administrator = await _administratorRepository.GetByUserIdAsync(id);
 
             return administrator;
         }
@@ -99,15 +104,15 @@ namespace SS.CMS.Web.Controllers.V1
         {
             var auth = await _authManager.GetApiAsync();
 
-            var isApiAuthorized = auth.IsApiAuthenticated && await DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             var top = request.Top;
             if (top <= 0) top = 20;
             var skip = request.Skip;
 
-            var administrators = await DataProvider.AdministratorRepository.GetAdministratorsAsync(skip, top);
-            var count = await DataProvider.AdministratorRepository.GetCountAsync();
+            var administrators = await _administratorRepository.GetAdministratorsAsync(skip, top);
+            var count = await _administratorRepository.GetCountAsync();
 
             return new ListResult
             {
@@ -123,21 +128,21 @@ namespace SS.CMS.Web.Controllers.V1
 
             Administrator administrator;
 
-            var (isValid, userName, errorMessage) = await DataProvider.AdministratorRepository.ValidateAsync(request.Account, request.Password, true);
+            var (isValid, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
 
             if (!isValid)
             {
-                administrator = await DataProvider.AdministratorRepository.GetByUserNameAsync(userName);
+                administrator = await _administratorRepository.GetByUserNameAsync(userName);
                 if (administrator != null)
                 {
-                    await DataProvider.AdministratorRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(administrator); // 记录最后登录时间、失败次数+1
+                    await _administratorRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(administrator); // 记录最后登录时间、失败次数+1
                 }
 
                 return this.Error(errorMessage);
             }
 
-            administrator = await DataProvider.AdministratorRepository.GetByUserNameAsync(userName);
-            await DataProvider.AdministratorRepository.UpdateLastActivityDateAndCountOfLoginAsync(administrator); // 记录最后登录时间、失败次数清零
+            administrator = await _administratorRepository.GetByUserNameAsync(userName);
+            await _administratorRepository.UpdateLastActivityDateAndCountOfLoginAsync(administrator); // 记录最后登录时间、失败次数清零
             var accessToken = await auth.AdminLoginAsync(administrator.UserName, request.IsAutoLogin);
             var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
@@ -145,7 +150,7 @@ namespace SS.CMS.Web.Controllers.V1
             var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);
             CacheUtils.Insert(cacheKey, sessionId);
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             var isEnforcePasswordChange = false;
             if (config.IsAdminEnforcePasswordChange)
@@ -190,18 +195,18 @@ namespace SS.CMS.Web.Controllers.V1
         {
             var auth = await _authManager.GetApiAsync();
 
-            var isApiAuthorized = auth.IsApiAuthenticated && await DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
-            var (isValid, userName, errorMessage) = await DataProvider.AdministratorRepository.ValidateAsync(request.Account, request.Password, true);
+            var (isValid, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
             if (!isValid)
             {
                 return this.Error(errorMessage);
             }
 
-            var administrator = await DataProvider.AdministratorRepository.GetByUserNameAsync(userName);
+            var administrator = await _administratorRepository.GetByUserNameAsync(userName);
 
-            (isValid, errorMessage) = await DataProvider.AdministratorRepository.ChangePasswordAsync(administrator, request.NewPassword);
+            (isValid, errorMessage) = await _administratorRepository.ChangePasswordAsync(administrator, request.NewPassword);
             if (!isValid)
             {
                 return this.Error(errorMessage);

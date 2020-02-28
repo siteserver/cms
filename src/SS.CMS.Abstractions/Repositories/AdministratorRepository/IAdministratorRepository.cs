@@ -35,6 +35,9 @@ namespace SS.CMS.Abstractions
 
         Task<List<int>> GetUserIdListAsync();
 
+        Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string password, string email,
+            string mobile);
+
         Task<(bool IsValid, string ErrorMessage)> InsertAsync(Administrator administrator, string password);
 
         Task<(bool IsValid, string ErrorMessage)> UpdateAsync(Administrator administrator);

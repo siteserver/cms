@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
@@ -14,10 +13,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string RouteOrder = "actions/order";
 
         private readonly IAuthManager _authManager;
+        private readonly IContentGroupRepository _contentGroupRepository;
 
-        public SettingsContentGroupController(IAuthManager authManager)
+        public SettingsContentGroupController(IAuthManager authManager, IContentGroupRepository contentGroupRepository)
         {
             _authManager = authManager;
+            _contentGroupRepository = contentGroupRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -31,7 +32,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var groups = await DataProvider.ContentGroupRepository.GetContentGroupsAsync(request.SiteId);
+            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
 
             return new GetResult
             {
@@ -50,9 +51,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            await DataProvider.ContentGroupRepository.DeleteAsync(request.SiteId, request.GroupName);
+            await _contentGroupRepository.DeleteAsync(request.SiteId, request.GroupName);
 
-            var groups = await DataProvider.ContentGroupRepository.GetContentGroupsAsync(request.SiteId);
+            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
 
             return new GetResult
             {
@@ -71,7 +72,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            if (await DataProvider.ContentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
+            if (await _contentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
             {
                 return this.Error("保存失败，已存在相同名称的内容组！");
             }
@@ -83,11 +84,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 Description = request.Description
             };
 
-            await DataProvider.ContentGroupRepository.InsertAsync(groupInfo);
+            await _contentGroupRepository.InsertAsync(groupInfo);
 
             await auth.AddSiteLogAsync(request.SiteId, "新增内容组", $"内容组:{groupInfo.GroupName}");
 
-            var groups = await DataProvider.ContentGroupRepository.GetContentGroupsAsync(request.SiteId);
+            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
 
             return new GetResult
             {
@@ -106,9 +107,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var groupInfo = await DataProvider.ContentGroupRepository.GetAsync(request.SiteId, request.Id);
+            var groupInfo = await _contentGroupRepository.GetAsync(request.SiteId, request.Id);
 
-            if (groupInfo.GroupName != request.GroupName && await DataProvider.ContentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
+            if (groupInfo.GroupName != request.GroupName && await _contentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
             {
                 return this.Error("保存失败，已存在相同名称的内容组！");
             }
@@ -116,11 +117,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             groupInfo.GroupName = request.GroupName;
             groupInfo.Description = request.Description;
 
-            await DataProvider.ContentGroupRepository.UpdateAsync(groupInfo);
+            await _contentGroupRepository.UpdateAsync(groupInfo);
 
             await auth.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
 
-            var groups = await DataProvider.ContentGroupRepository.GetContentGroupsAsync(request.SiteId);
+            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
 
             return new GetResult
             {
@@ -141,14 +142,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 
             if (request.IsUp)
             {
-                await DataProvider.ContentGroupRepository.UpdateTaxisUpAsync(request.SiteId, request.GroupId, request.Taxis);
+                await _contentGroupRepository.UpdateTaxisUpAsync(request.SiteId, request.GroupId, request.Taxis);
             }
             else
             {
-                await DataProvider.ContentGroupRepository.UpdateTaxisDownAsync(request.SiteId, request.GroupId, request.Taxis);
+                await _contentGroupRepository.UpdateTaxisDownAsync(request.SiteId, request.GroupId, request.Taxis);
             }
 
-            var groups = await DataProvider.ContentGroupRepository.GetContentGroupsAsync(request.SiteId);
+            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
 
             return new GetResult
             {

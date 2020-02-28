@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Shared
 {
@@ -12,10 +11,14 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         private const string RouteList = "list";
 
         private readonly IAuthManager _authManager;
+        private readonly ILibraryGroupRepository _libraryGroupRepository;
+        private readonly ILibraryTextRepository _libraryTextRepository;
 
-        public EditorLayerTextController(IAuthManager authManager)
+        public EditorLayerTextController(IAuthManager authManager, ILibraryGroupRepository libraryGroupRepository, ILibraryTextRepository libraryTextRepository)
         {
             _authManager = authManager;
+            _libraryGroupRepository = libraryGroupRepository;
+            _libraryTextRepository = libraryTextRepository;
         }
 
         [HttpPost, Route(RouteList)]
@@ -24,14 +27,14 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
-            var groups = await DataProvider.LibraryGroupRepository.GetAllAsync(LibraryType.Text);
+            var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Text);
             groups.Insert(0, new LibraryGroup
             {
                 Id = 0,
                 GroupName = "全部图文"
             });
-            var count = await DataProvider.LibraryTextRepository.GetCountAsync(req.GroupId, req.Keyword);
-            var items = await DataProvider.LibraryTextRepository.GetAllAsync(req.GroupId, req.Keyword, req.Page, req.PerPage);
+            var count = await _libraryTextRepository.GetCountAsync(req.GroupId, req.Keyword);
+            var items = await _libraryTextRepository.GetAllAsync(req.GroupId, req.Keyword, req.Page, req.PerPage);
 
             return new QueryResult
             {
@@ -47,7 +50,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
-            return await DataProvider.LibraryTextRepository.GetAsync(id);
+            return await _libraryTextRepository.GetAsync(id);
         }
     }
 }

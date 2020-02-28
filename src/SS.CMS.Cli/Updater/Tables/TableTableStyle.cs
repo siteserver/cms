@@ -2,12 +2,19 @@
 using Datory;
 using Newtonsoft.Json;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
+using SS.CMS.Core;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableTableStyle
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableTableStyle(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("tableStyleID")]
         public long TableStyleId { get; set; }
 
@@ -52,49 +59,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("extendValues")]
         public string ExtendValues { get; set; }
-    }
-
-    public partial class TableTableStyle
-    {
-        public const string OldTableName = "bairong_TableStyle";
-
-        public static ConvertInfo Converter => new ConvertInfo
-        {
-            NewTableName = NewTableName,
-            NewColumns = NewColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict,
-            Process = Process
-        };
-
-        private static readonly string NewTableName = DataProvider.TableStyleRepository.TableName;
-
-        private static readonly List<TableColumn> NewColumns = DataProvider.TableStyleRepository.TableColumns;
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(TableStyle.Id), nameof(TableStyleId)},
-                {nameof(TableStyle.TableName), nameof(TableName)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
-        {
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_PublishmentSystem"), DataProvider.SiteRepository.TableName},
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_Node"), DataProvider.ChannelRepository.TableName}
-        };
-
-        private static Dictionary<string, object> Process(Dictionary<string, object> row)
-        {
-            if (row.TryGetValue("IsVisible", out var isVisible))
-            {
-                if (isVisible != null && StringUtils.EqualsIgnoreCase(isVisible.ToString(), "False"))
-                {
-                    row[nameof(TableStyle.InputType)] = SS.CMS.Abstractions.InputType.Hidden.GetValue();
-                }
-            }
-
-            return row;
-        }
     }
 }

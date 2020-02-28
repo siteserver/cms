@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Shared
@@ -16,10 +15,14 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public TableStyleLayerEditorController(IAuthManager authManager)
+        public TableStyleLayerEditorController(IAuthManager authManager, IDatabaseManager databaseManager, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
+            _databaseManager = databaseManager;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -28,7 +31,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
-            var style = await DataProvider.TableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities) ?? new TableStyle
+            var style = await _tableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities) ?? new TableStyle
             {
                 InputType = InputType.Text
             };
@@ -103,7 +106,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             if (!auth.IsAdminLoggin) return Unauthorized();
 
             var styleDatabase =
-                await DataProvider.TableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities) ??
+                await _tableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities) ??
                 new TableStyle();
 
             bool isSuccess;

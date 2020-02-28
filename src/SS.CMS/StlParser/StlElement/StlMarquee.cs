@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 
@@ -34,12 +35,15 @@ namespace SS.CMS.StlParser.StlElement
             {DirectionHorizontal, "水平"}
         };
 
-        internal static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        internal static async Task<object> ParseAsync(IParseManager parseManager)
 		{
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (string.IsNullOrEmpty(contextInfo.InnerHtml)) return string.Empty;
 
             var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-            await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+            await parseManager.ParseInnerContentAsync(innerBuilder);
             var scrollHtml = innerBuilder.ToString();
 
             var scrollDelay = 40;
@@ -97,7 +101,7 @@ namespace SS.CMS.StlParser.StlElement
             return ParseImpl(pageInfo, scrollHtml, scrollDelay, direction, width, height);
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, string scrollHtml, int scrollDelay, string direction, string width, string height)
+        private static string ParseImpl(ParsePage pageInfo, string scrollHtml, int scrollDelay, string direction, string width, string height)
         {
             string topHtml;
             string bottomHtml;

@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
-using SS.CMS.StlParser.Parsers;
 using SS.CMS.StlParser.Utility;
 using SS.CMS.Api.Stl;
-using SS.CMS.Framework;
+using SS.CMS.Core;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -61,8 +61,11 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "是否关键字高亮")]
         public const string IsHighlight = nameof(IsHighlight);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             var isAllSites = false;
             var siteName = string.Empty;
             var siteDir = string.Empty;
@@ -89,51 +92,51 @@ namespace SS.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, SiteName))
                 {
-                    siteName = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    siteName = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, SiteDir))
                 {
-                    siteDir = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    siteDir = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, SiteIds))
                 {
-                    siteIds = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    siteIds = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
-                    channelIndex = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    channelIndex = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
-                    channelName = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    channelName = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelIds))
                 {
-                    channelIds = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    channelIds = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
-                    type = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    type = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Word))
                 {
-                    word = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    word = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, DateAttribute))
                 {
-                    dateAttribute = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    dateAttribute = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, DateFrom))
                 {
-                    dateFrom = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    dateFrom = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, DateTo))
                 {
-                    dateTo = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    dateTo = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Since))
                 {
-                    since = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    since = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, PageNum))
                 {
@@ -149,19 +152,19 @@ namespace SS.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(loading))
             {
-                loading = await DataProvider.TemplateRepository.GetContentByFilePathAsync(SiteFilesAssets.Search.LoadingTemplatePath);
+                loading = await parseManager.PathManager.GetContentByFilePathAsync(SiteFilesAssets.Search.LoadingTemplatePath);
             }
             if (string.IsNullOrEmpty(yes))
             {
-                yes = await DataProvider.TemplateRepository.GetContentByFilePathAsync(SiteFilesAssets.Search.YesTemplatePath);
+                yes = await parseManager.PathManager.GetContentByFilePathAsync(SiteFilesAssets.Search.YesTemplatePath);
             }
             if (string.IsNullOrEmpty(no))
             {
-                no = await DataProvider.TemplateRepository.GetContentByFilePathAsync(SiteFilesAssets.Search.NoTemplatePath);
+                no = await parseManager.PathManager.GetContentByFilePathAsync(SiteFilesAssets.Search.NoTemplatePath);
             }
 
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.StlClient);
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.StlClient);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
 
             var apiUrl = ApiRouteActionsSearch.GetUrl(pageInfo.ApiUrl);

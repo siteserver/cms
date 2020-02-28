@@ -1,5 +1,5 @@
 ﻿using Datory;
-using SS.CMS.Framework;
+using SS.CMS.Core;
 using SS.CMS.Plugins.Impl;
 
 namespace SS.CMS.Plugins
@@ -10,20 +10,18 @@ namespace SS.CMS.Plugins
         {
             if (service.DatabaseTables == null || service.DatabaseTables.Count <= 0) return;
 
-            var db = new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
-
             foreach (var tableName in service.DatabaseTables.Keys)
             {
                 var tableColumns = service.DatabaseTables[tableName];
                 if (tableColumns == null || tableColumns.Count == 0) continue;
 
-                if (!await db.IsTableExistsAsync(tableName))
+                if (!await GlobalSettings.Database.IsTableExistsAsync(tableName))
                 {
-                    await db.CreateTableAsync(tableName, tableColumns);
+                    await GlobalSettings.Database.CreateTableAsync(tableName, tableColumns);
                 }
                 else
                 {
-                    await db.AlterTableAsync(tableName, tableColumns);
+                    await GlobalSettings.Database.AlterTableAsync(tableName, tableColumns);
                 }
             }
         }

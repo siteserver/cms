@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
 {
@@ -13,10 +12,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
         private const string RouteReset = "actions/reset";
 
         private readonly IAuthManager _authManager;
+        private readonly IUserMenuRepository _userMenuRepository;
+        private readonly IUserGroupRepository _userGroupRepository;
 
-        public ConfigsHomeMenuController(IAuthManager authManager)
+        public ConfigsHomeMenuController(IAuthManager authManager, IUserMenuRepository userMenuRepository, IUserGroupRepository userGroupRepository)
         {
             _authManager = authManager;
+            _userMenuRepository = userMenuRepository;
+            _userGroupRepository = userGroupRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -31,8 +34,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
 
             return new GetResult
             {
-                UserMenus = await DataProvider.UserMenuRepository.GetUserMenuListAsync(),
-                Groups = await DataProvider.UserGroupRepository.GetUserGroupListAsync()
+                UserMenus = await _userMenuRepository.GetUserMenuListAsync(),
+                Groups = await _userGroupRepository.GetUserGroupListAsync()
             };
         }
 
@@ -46,11 +49,11 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
                 return Unauthorized();
             }
 
-            await DataProvider.UserMenuRepository.DeleteAsync(request.Id);
+            await _userMenuRepository.DeleteAsync(request.Id);
 
             return new UserMenusResult
             {
-                UserMenus = await DataProvider.UserMenuRepository.GetUserMenuListAsync()
+                UserMenus = await _userMenuRepository.GetUserMenuListAsync()
             };
         }
 
@@ -66,7 +69,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
 
             if (request.Id == 0)
             {
-                await DataProvider.UserMenuRepository.InsertAsync(new UserMenu
+                await _userMenuRepository.InsertAsync(new UserMenu
                 {
                     IsGroup = request.IsGroup,
                     GroupIds = request.GroupIds,
@@ -83,7 +86,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
             }
             else if (request.Id > 0)
             {
-                var userMenu = await DataProvider.UserMenuRepository.GetAsync(request.Id);
+                var userMenu = await _userMenuRepository.GetAsync(request.Id);
                 userMenu.IsGroup = request.IsGroup;
                 userMenu.GroupIds = request.GroupIds;
                 userMenu.Disabled = request.Disabled;
@@ -93,14 +96,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
                 userMenu.IconClass = request.IconClass;
                 userMenu.Href = request.Href;
                 userMenu.Target = request.Target;
-                await DataProvider.UserMenuRepository.UpdateAsync(userMenu);
+                await _userMenuRepository.UpdateAsync(userMenu);
 
                 await auth.AddAdminLogAsync("修改用户菜单", $"用户菜单:{request.Text}");
             }
 
             return new UserMenusResult
             {
-                UserMenus = await DataProvider.UserMenuRepository.GetUserMenuListAsync()
+                UserMenus = await _userMenuRepository.GetUserMenuListAsync()
             };
         }
 
@@ -114,16 +117,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
                 return Unauthorized();
             }
 
-            foreach (var userMenuInfo in await DataProvider.UserMenuRepository.GetUserMenuListAsync())
+            foreach (var userMenuInfo in await _userMenuRepository.GetUserMenuListAsync())
             {
-                await DataProvider.UserMenuRepository.DeleteAsync(userMenuInfo.Id);
+                await _userMenuRepository.DeleteAsync(userMenuInfo.Id);
             }
 
             await auth.AddAdminLogAsync("重置用户菜单");
 
             return new UserMenusResult
             {
-                UserMenus = await DataProvider.UserMenuRepository.GetUserMenuListAsync()
+                UserMenus = await _userMenuRepository.GetUserMenuListAsync()
             };
         }
     }

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
 {
@@ -12,10 +11,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IAdministratorRepository _administratorRepository;
+        private readonly ILogRepository _logRepository;
 
-        public LogsAdminController(IAuthManager authManager)
+        public LogsAdminController(IAuthManager authManager, IAdministratorRepository administratorRepository, ILogRepository logRepository)
         {
             _authManager = authManager;
+            _administratorRepository = administratorRepository;
+            _logRepository = logRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -28,15 +31,15 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            var admin = await DataProvider.AdministratorRepository.GetByUserNameAsync(request.UserName);
+            var admin = await _administratorRepository.GetByUserNameAsync(request.UserName);
             var adminId = admin?.Id ?? 0;
 
-            var count = await DataProvider.LogRepository.GetCountAsync(adminId, request.Keyword, request.DateFrom, request.DateTo);
-            var logs = await DataProvider.LogRepository.GetAllAsync(adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
+            var count = await _logRepository.GetCountAsync(adminId, request.Keyword, request.DateFrom, request.DateTo);
+            var logs = await _logRepository.GetAllAsync(adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
 
             foreach (var log in logs)
             {
-                var adminName = await DataProvider.AdministratorRepository.GetDisplayAsync(log.AdminId);
+                var adminName = await _administratorRepository.GetDisplayAsync(log.AdminId);
                 log.Set("adminName", adminName);
             }
 
@@ -57,7 +60,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            await DataProvider.LogRepository.DeleteAllAsync();
+            await _logRepository.DeleteAllAsync();
 
             await auth.AddAdminLogAsync("清空管理员日志");
 

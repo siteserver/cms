@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Shared
 {
@@ -14,10 +13,14 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public TableStyleLayerAddMultipleController(IAuthManager authManager)
+        public TableStyleLayerAddMultipleController(IAuthManager authManager, IDatabaseManager databaseManager, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
+            _databaseManager = databaseManager;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -49,7 +52,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             foreach (var style in request.Styles)
             {
                 var styleDatabase =
-                    await DataProvider.TableStyleRepository.GetTableStyleAsync(request.TableName, style.AttributeName, request.RelatedIdentities) ??
+                    await _tableStyleRepository.GetTableStyleAsync(request.TableName, style.AttributeName, request.RelatedIdentities) ??
                     new TableStyle();
 
                 //数据库中没有此项及父项的表样式 or 数据库中没有此项的表样式，但是有父项的表样式
@@ -59,10 +62,10 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
 
                 if (string.IsNullOrEmpty(style.AttributeName)) continue;
 
-                if (await DataProvider.TableStyleRepository.IsExistsAsync(relatedIdentity, request.TableName, style.AttributeName))
+                if (await _tableStyleRepository.IsExistsAsync(relatedIdentity, request.TableName, style.AttributeName))
                     continue;
 
-                var tableStyle = await TableColumnManager.IsAttributeNameExistsAsync(request.TableName, style.AttributeName) ? await DataProvider.TableStyleRepository.GetTableStyleAsync(request.TableName, style.AttributeName, request.RelatedIdentities) : new TableStyle();
+                var tableStyle = await _databaseManager.IsAttributeNameExistsAsync(request.TableName, style.AttributeName) ? await _tableStyleRepository.GetTableStyleAsync(request.TableName, style.AttributeName, request.RelatedIdentities) : new TableStyle();
 
                 tableStyle.RelatedIdentity = relatedIdentity;
                 tableStyle.TableName = request.TableName;
@@ -70,7 +73,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
                 tableStyle.DisplayName = style.DisplayName;
                 tableStyle.InputType = style.InputType;
 
-                await DataProvider.TableStyleRepository.InsertAsync(request.RelatedIdentities, tableStyle);
+                await _tableStyleRepository.InsertAsync(request.RelatedIdentities, tableStyle);
             }
 
             await auth.AddAdminLogAsync("批量添加表单显示样式");

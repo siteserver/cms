@@ -5,7 +5,6 @@ using System.Linq;
 using NuGet.Packaging;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 
 namespace SS.CMS.Packaging
@@ -137,7 +136,7 @@ namespace SS.CMS.Packaging
 
             if (StringUtils.EqualsIgnoreCase(packageId, PackageIdSsCms))
             {
-                var packageWebConfigPath = PathUtils.Combine(directoryPath, WebConfigUtils.WebConfigFileName);
+                var packageWebConfigPath = PathUtils.Combine(directoryPath, Constants.ConfigFileName);
                 if (!FileUtils.IsFileExists(packageWebConfigPath))
                 {
                     return false;
@@ -166,7 +165,7 @@ namespace SS.CMS.Packaging
             return dict;
         }
 
-        public static bool UpdatePackage(string idWithVersion, PackageType packageType, out string errorMessage)
+        public static bool UpdatePackage(IPathManager pathManager, string idWithVersion, PackageType packageType, out string errorMessage)
         {
             try
             {
@@ -182,16 +181,12 @@ namespace SS.CMS.Packaging
 
                 if (packageType == PackageType.SsCms)
                 {
-                    var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
+                    var packageWebConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
                     if (!FileUtils.IsFileExists(packageWebConfigPath))
                     {
-                        errorMessage = $"升级包 {WebConfigUtils.WebConfigFileName} 文件不存在";
+                        errorMessage = $"升级包 {Constants.ConfigFileName} 文件不存在";
                         return false;
                     }
-
-                    WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
-                        WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.RedisConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
-                        WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
                     //DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName),
                     //    PathUtils.GetSiteFilesPath(string.Empty), true);
@@ -234,7 +229,7 @@ namespace SS.CMS.Packaging
                         if (StringUtils.EndsWithIgnoreCase(fileName, ".dll"))
                         {
                             var sourceDllPath = PathUtils.Combine(dllDirectoryPath, fileName);
-                            var destDllPath = PathUtility.GetBinDirectoryPath(fileName);
+                            var destDllPath = pathManager.GetBinDirectoryPath(fileName);
                             if (!FileUtils.IsFileExists(destDllPath))
                             {
                                 FileUtils.CopyFile(sourceDllPath, destDllPath, false);
@@ -476,42 +471,42 @@ namespace SS.CMS.Packaging
     //{
     //    public void LogDebug(string data)
     //    {
-    //        DataProvider.RecordDao.RecordLog(data, nameof(LogDebug));
+    //        GlobalSettings.RecordDao.RecordLog(data, nameof(LogDebug));
     //    }
 
     //    public void LogVerbose(string data)
     //    {
-    //        DataProvider.RecordDao.RecordLog(data, nameof(LogVerbose));
+    //        GlobalSettings.RecordDao.RecordLog(data, nameof(LogVerbose));
     //    }
 
     //    public void LogInformation(string data)
     //    {
-    //        DataProvider.RecordDao.RecordLog(data, nameof(LogInformation));
+    //        GlobalSettings.RecordDao.RecordLog(data, nameof(LogInformation));
     //    }
 
     //    public void LogMinimal(string data)
     //    {
-    //        DataProvider.RecordDao.RecordLog(data, nameof(LogMinimal));
+    //        GlobalSettings.RecordDao.RecordLog(data, nameof(LogMinimal));
     //    }
 
     //    public void LogWarning(string data)
     //    {
-    //        DataProvider.RecordDao.RecordLog(data, nameof(LogWarning));
+    //        GlobalSettings.RecordDao.RecordLog(data, nameof(LogWarning));
     //    }
 
     //    public void LogError(string data)
     //    {
-    //        DataProvider.RecordDao.RecordLog(data, nameof(LogError));
+    //        GlobalSettings.RecordDao.RecordLog(data, nameof(LogError));
     //    }
 
     //    public void LogInformationSummary(string data)
     //    {
-    //        DataProvider.RecordDao.RecordLog(data, nameof(LogInformationSummary));
+    //        GlobalSettings.RecordDao.RecordLog(data, nameof(LogInformationSummary));
     //    }
 
     //    public void Log(LogLevel level, string data)
     //    {
-    //        DataProvider.RecordDao.RecordLog(data, nameof(Log));
+    //        GlobalSettings.RecordDao.RecordLog(data, nameof(Log));
     //    }
 
     //    public Task LogAsync(LogLevel level, string data)
@@ -521,7 +516,7 @@ namespace SS.CMS.Packaging
 
     //    public void Log(ILogMessage message)
     //    {
-    //        DataProvider.RecordDao.RecordLog(message.Message, nameof(Log));
+    //        GlobalSettings.RecordDao.RecordLog(message.Message, nameof(Log));
     //    }
 
     //    public Task LogAsync(ILogMessage message)

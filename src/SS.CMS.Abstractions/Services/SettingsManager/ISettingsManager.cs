@@ -17,7 +17,10 @@ namespace SS.CMS.Abstractions
         string AdminDirectory { get; }
         string HomeDirectory { get; }
         string SecurityKey { get; }
+        DatabaseType DatabaseType { get; }
+        string DatabaseConnectionString { get; }
         IDatabase Database { get; }
+        string RedisConnectionString { get; }
         IRedis Redis { get; }
         IList<Menu> Menus { get; }
         PermissionsSettings Permissions { get; }

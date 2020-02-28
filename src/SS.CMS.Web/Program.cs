@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using SS.CMS.Abstractions;
 
 namespace SS.CMS.Web
@@ -30,8 +26,10 @@ namespace SS.CMS.Web
         static void ConfigConfiguration(IConfigurationBuilder config)
         {
             config.SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile(Constants.ConfigFileName, optional: true, reloadOnChange: true)
+                .AddJsonFile("ss.Development.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
         }
     }

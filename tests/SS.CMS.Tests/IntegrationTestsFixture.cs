@@ -25,7 +25,6 @@ namespace SS.CMS.Tests
 
             var services = new ServiceCollection();
             SettingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
-            GlobalSettings.Load(SettingsManager);
             services.AddCache(SettingsManager.Redis.ConnectionString);
             services.AddRepositories();
             services.AddServices();

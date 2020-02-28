@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Home
 {
@@ -16,11 +15,19 @@ namespace SS.CMS.Web.Controllers.Home
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly IContentCheckRepository _contentCheckRepository;
 
-        public ContentsLayerCheckController(IAuthManager authManager, ICreateManager createManager)
+        public ContentsLayerCheckController(IAuthManager authManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentCheckRepository contentCheckRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _contentCheckRepository = contentCheckRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -33,16 +40,16 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return NotFound();
 
             var retVal = new List<IDictionary<string, object>>();
             foreach (var contentId in request.ContentIds)
             {
-                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
+                var contentInfo = await _contentRepository.GetAsync(site, channelInfo, contentId);
                 if (contentInfo == null) continue;
 
                 var dict = contentInfo.ToDictionary();
@@ -55,7 +62,7 @@ namespace SS.CMS.Web.Controllers.Home
             var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
             var allChannels =
-                await DataProvider.ChannelRepository.GetChannelsAsync(request.SiteId, auth.AdminPermissions, Constants.ChannelPermissions.ContentAdd);
+                await _channelRepository.GetChannelsAsync(request.SiteId, auth.AdminPermissions, Constants.ChannelPermissions.ContentAdd);
 
             return new GetResult
             {
@@ -77,10 +84,10 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return NotFound();
 
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
@@ -92,7 +99,7 @@ namespace SS.CMS.Web.Controllers.Home
             var contentInfoList = new List<Content>();
             foreach (var contentId in request.ContentIds)
             {
-                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
+                var contentInfo = await _contentRepository.GetAsync(site, channelInfo, contentId);
                 if (contentInfo == null) continue;
 
                 contentInfo.CheckAdminId = auth.AdminId;
@@ -104,18 +111,18 @@ namespace SS.CMS.Web.Controllers.Home
 
                 if (request.IsTranslate && request.TranslateChannelId > 0)
                 {
-                    var translateChannelInfo = await DataProvider.ChannelRepository.GetAsync(request.TranslateChannelId);
+                    var translateChannelInfo = await _channelRepository.GetAsync(request.TranslateChannelId);
                     contentInfo.ChannelId = translateChannelInfo.Id;
-                    await DataProvider.ContentRepository.UpdateAsync(site, translateChannelInfo, contentInfo);
+                    await _contentRepository.UpdateAsync(site, translateChannelInfo, contentInfo);
                 }
                 else
                 {
-                    await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
+                    await _contentRepository.UpdateAsync(site, channelInfo, contentInfo);
                 }
 
                 contentInfoList.Add(contentInfo);
 
-                await DataProvider.ContentCheckRepository.InsertAsync(new ContentCheck
+                await _contentCheckRepository.InsertAsync(new ContentCheck
                 {
                     SiteId = request.SiteId,
                     ChannelId = contentInfo.ChannelId,

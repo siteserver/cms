@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.Core.Serialization
 {
@@ -11,37 +11,37 @@ namespace SS.CMS.Core.Serialization
         public const string UploadFolderName = "upload"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件夹目录
         public const string UploadFileName = "upload.xml"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件名
 
-        public static async Task BackupTemplatesAsync(Site site, string filePath, int adminId)
+        public static async Task BackupTemplatesAsync(IPathManager pathManager, IDatabaseManager databaseManager, Site site, string filePath)
         {
-            var exportObject = new ExportObject(site, adminId);
+            var exportObject = new ExportObject(pathManager, databaseManager, site);
             await exportObject.ExportTemplatesAsync(filePath);
         }
 
-        public static async Task BackupChannelsAndContentsAsync(Site site, string filePath, int adminId)
+        public static async Task BackupChannelsAndContentsAsync(IPathManager pathManager, IDatabaseManager databaseManager, Site site, string filePath)
         {
-            var exportObject = new ExportObject(site, adminId);
+            var exportObject = new ExportObject(pathManager, databaseManager, site);
 
-            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, site.Id, ScopeType.Children);
+            var channelIdList = await databaseManager.ChannelRepository.GetChannelIdsAsync(site.Id, site.Id, ScopeType.Children);
 
             await exportObject.ExportChannelsAsync(channelIdList, filePath);  
         }
 
-        public static async Task BackupFilesAsync(Site site, string filePath, int adminId)
+        public static async Task BackupFilesAsync(IPathManager pathManager, IDatabaseManager databaseManager, Site site, string filePath)
         {
-            var exportObject = new ExportObject(site, adminId);
+            var exportObject = new ExportObject(pathManager, databaseManager, site);
 
             await exportObject.ExportFilesAsync(filePath);
         }
 
-        public static async Task BackupSiteAsync(Site site, string filePath, int adminId)
+        public static async Task BackupSiteAsync(IPathManager pathManager, IDatabaseManager databaseManager, Site site, string filePath)
         {
-            var exportObject = new ExportObject(site, adminId);
+            var exportObject = new ExportObject(pathManager, databaseManager, site);
 
             var siteTemplateDir = PathUtils.GetFileNameWithoutExtension(filePath);
             var siteTemplatePath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), siteTemplateDir);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
             FileUtils.DeleteFileIfExists(filePath);
-            var metadataPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, string.Empty);
+            var metadataPath = pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, string.Empty);
 
             await exportObject.ExportFilesToSiteAsync(siteTemplatePath, true, null, null, true);
 
@@ -54,21 +54,21 @@ namespace SS.CMS.Core.Serialization
             await exportObject.ExportTablesAndStylesAsync(tableDirectoryPath);
             var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
             await exportObject.ExportConfigurationAsync(configurationFilePath);
-            exportObject.ExportMetadata(site.SiteName, await site.GetWebUrlAsync(), string.Empty, string.Empty, metadataPath);
+            exportObject.ExportMetadata(site.SiteName, await pathManager.GetWebUrlAsync(site), string.Empty, string.Empty, metadataPath);
 
             ZipUtils.CreateZip(filePath, siteTemplatePath);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
         }
 
-        public static async Task RecoverySiteAsync(Site site, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, int adminId, string guid)
+        public static async Task RecoverySiteAsync(IPathManager pathManager, IDatabaseManager databaseManager, Site site, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, int adminId, string guid)
         {
-            var importObject = new ImportObject(site, adminId);
+            var importObject = new ImportObject(pathManager, databaseManager, site, adminId);
 
             var siteTemplatePath = path;
             if (isZip)
             {
                 //解压文件
-                siteTemplatePath = PathUtility.GetTemporaryFilesPath(BackupType.Site.GetValue());
+                siteTemplatePath = pathManager.GetTemporaryFilesPath(BackupType.Site.GetValue());
                 DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
                 DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 
@@ -78,27 +78,27 @@ namespace SS.CMS.Core.Serialization
 
             if (isDeleteChannels)
             {
-                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, site.Id, ScopeType.Children);
+                var channelIdList = await databaseManager.ChannelRepository.GetChannelIdsAsync(site.Id, site.Id, ScopeType.Children);
                 foreach (var channelId in channelIdList)
                 {
-                    await DataProvider.ContentRepository.RecycleAllAsync(site, channelId, adminId);
-                    await DataProvider.ChannelRepository.DeleteAsync(site, channelId, adminId);
+                    await databaseManager.ContentRepository.RecycleAllAsync(site, channelId, adminId);
+                    await databaseManager.ChannelRepository.DeleteAsync(site, channelId, adminId);
                 }
             }
             if (isDeleteTemplates)
             {
-                var summaries = await DataProvider.TemplateRepository.GetSummariesAsync(site.Id);
+                var summaries = await databaseManager.TemplateRepository.GetSummariesAsync(site.Id);
                 foreach (var summary in summaries)
                 {
                     if (summary.Default == false)
                     {
-                        await DataProvider.TemplateRepository.DeleteAsync(site, summary.Id);
+                        await databaseManager.TemplateRepository.DeleteAsync(pathManager, site, summary.Id);
                     }
                 }
             }
             if (isDeleteFiles)
             {
-                await DirectoryUtility.DeleteSiteFilesAsync(site);
+                await pathManager.DeleteSiteFilesAsync(site);
             }
 
             //导入文件

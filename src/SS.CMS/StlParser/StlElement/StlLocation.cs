@@ -3,10 +3,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SS.CMS.StlParser.Model;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -32,7 +30,7 @@ namespace SS.CMS.StlParser.StlElement
         private const string IsContainSelf = nameof(IsContainSelf);
 
         //对“当前位置”（stl:location）元素进行解析
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var separator = " - ";
             var target = string.Empty;
@@ -40,9 +38,9 @@ namespace SS.CMS.StlParser.StlElement
             var wordNum = 0;
             var isContainSelf = true;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Separator))
                 {
@@ -66,17 +64,21 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, separator, target, linkClass, wordNum,isContainSelf);
+            return await ParseImplAsync(parseManager, separator, target, linkClass, wordNum,isContainSelf);
         }
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
         {
+            var databaseManager = parseManager.DatabaseManager;
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
                 separator = contextInfo.InnerHtml;
             }
 
-            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId);
+            var nodeInfo = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
 
             var builder = new StringBuilder();
 
@@ -93,7 +95,7 @@ namespace SS.CMS.StlParser.StlElement
                 foreach (var channelIdStr in channelIdArrayList)
                 {
                     var currentId = TranslateUtils.ToInt(channelIdStr);
-                    var currentNodeInfo = await DataProvider.ChannelRepository.GetAsync(currentId);
+                    var currentNodeInfo = await databaseManager.ChannelRepository.GetAsync(currentId);
                     if (currentId == pageInfo.SiteId)
                     {
                         var attributes = new NameValueCollection();
@@ -105,7 +107,7 @@ namespace SS.CMS.StlParser.StlElement
                         {
                             attributes["class"] = linkClass;
                         }
-                        var url = await PageUtility.GetIndexPageUrlAsync(pageInfo.Site, pageInfo.IsLocal);
+                        var url = await parseManager.PathManager.GetIndexPageUrlAsync(pageInfo.Site, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnClickableUrl))
                         {
                             attributes["target"] = string.Empty;
@@ -133,7 +135,7 @@ namespace SS.CMS.StlParser.StlElement
                         {
                             attributes["class"] = linkClass;
                         }
-                        var url = await PageUtility.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
+                        var url = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnClickableUrl))
                         {
                             attributes["target"] = string.Empty;
@@ -156,7 +158,7 @@ namespace SS.CMS.StlParser.StlElement
                         {
                             attributes["class"] = linkClass;
                         }
-                        var url = await PageUtility.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
+                        var url = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnClickableUrl))
                         {
                             attributes["target"] = string.Empty;

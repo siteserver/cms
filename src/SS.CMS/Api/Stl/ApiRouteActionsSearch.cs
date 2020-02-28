@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SS.CMS.StlParser.StlElement;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Api.Stl
 {
@@ -36,7 +35,7 @@ namespace SS.CMS.Api.Stl
     {StlSearch.IsHighlight.ToLower()}: {isHighlight.ToString().ToLower()},
     siteid: '{siteId}',
     ajaxdivid: '{ajaxDivId}',
-    template: '{TranslateUtils.EncryptStringBySecretKey(template, WebConfigUtils.SecretKey)}',
+    template: '{GlobalSettings.SettingsManager.Encrypt(template)}',
 }}";
         }
 

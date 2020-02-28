@@ -7,7 +7,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Core.Serialization;
 using SS.CMS.Web.Extensions;
 
@@ -21,10 +20,18 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string RouteExport = "actions/export";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public SettingsStyleSiteController(IAuthManager authManager)
+        public SettingsStyleSiteController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -39,7 +46,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             }
 
             var styles = new List<Style>();
-            foreach (var style in await DataProvider.TableStyleRepository.GetSiteStyleListAsync(request.SiteId))
+            foreach (var style in await _tableStyleRepository.GetSiteStyleListAsync(request.SiteId))
             {
                 styles.Add(new Style
                 {
@@ -56,8 +63,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             return new GetResult
             {
                 Styles = styles,
-                TableName = DataProvider.SiteRepository.TableName,
-                RelatedIdentities = DataProvider.TableStyleRepository.GetRelatedIdentities(request.SiteId)
+                TableName = _siteRepository.TableName,
+                RelatedIdentities = _tableStyleRepository.GetRelatedIdentities(request.SiteId)
             };
         }
 
@@ -72,10 +79,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            await DataProvider.TableStyleRepository.DeleteAsync(request.SiteId, DataProvider.SiteRepository.TableName, request.AttributeName);
+            await _tableStyleRepository.DeleteAsync(request.SiteId, _siteRepository.TableName, request.AttributeName);
 
             var styles = new List<Style>();
-            foreach (var style in await DataProvider.TableStyleRepository.GetSiteStyleListAsync(request.SiteId))
+            foreach (var style in await _tableStyleRepository.GetSiteStyleListAsync(request.SiteId))
             {
                 styles.Add(new Style
                 {
@@ -119,11 +126,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return this.Error("导入文件为 Zip 格式，请选择有效的文件上传");
             }
 
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
-            var directoryPath = await ImportObject.ImportTableStyleByZipFileAsync(DataProvider.SiteRepository.TableName, DataProvider.TableStyleRepository.GetRelatedIdentities(request.SiteId), filePath);
+            var directoryPath = await ImportObject.ImportTableStyleByZipFileAsync(_pathManager, _databaseManager, _siteRepository.TableName, _tableStyleRepository.GetRelatedIdentities(request.SiteId), filePath);
 
             FileUtils.DeleteFileIfExists(filePath);
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
@@ -147,9 +154,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var fileName = await ExportObject.ExportRootSingleTableStyleAsync(request.SiteId, DataProvider.SiteRepository.TableName, DataProvider.TableStyleRepository.GetRelatedIdentities(request.SiteId));
+            var fileName = await ExportObject.ExportRootSingleTableStyleAsync(_pathManager, _databaseManager, request.SiteId, _siteRepository.TableName, _tableStyleRepository.GetRelatedIdentities(request.SiteId));
 
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             var downloadUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
 
             return new StringResult

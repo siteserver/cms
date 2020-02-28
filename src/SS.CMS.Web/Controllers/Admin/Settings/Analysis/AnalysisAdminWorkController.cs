@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Analysis
 {
@@ -17,10 +16,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Analysis
         private const string YTypeUpdate = "YType_Update";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly IAdministratorRepository _administratorRepository;
 
-        public AnalysisAdminWorkController(IAuthManager authManager)
+        public AnalysisAdminWorkController(IAuthManager authManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
+            _contentRepository = contentRepository;
+            _administratorRepository = administratorRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -44,16 +49,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Analysis
                 Items = new List<QueryResultItem>()
             };
 
-            var siteIdList = await DataProvider.SiteRepository.GetSiteIdListOrderByLevelAsync();
+            var siteIdList = await _siteRepository.GetSiteIdListOrderByLevelAsync();
             if (siteId == 0 && siteIdList.Count > 0)
             {
                 siteId = siteIdList[0];
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site != null)
             {
-                var list = DataProvider.ContentRepository.GetDataSetOfAdminExcludeRecycle(site.TableName, siteId, dateFrom, dateTo);
+                var list = _contentRepository.GetDataSetOfAdminExcludeRecycle(site.TableName, siteId, dateFrom, dateTo);
                 if (list != null)
                 {
                     var userNameList = new List<string>();
@@ -67,7 +72,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Analysis
                     {
                         var item = new QueryResultItem
                         {
-                            UserName = await DataProvider.AdministratorRepository.GetDisplayAsync(adminId),
+                            UserName = await _administratorRepository.GetDisplayAsync(adminId),
                             AddCount = addCount,
                             UpdateCount = updateCount
                         };
@@ -100,7 +105,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Analysis
                 }
             }
 
-            result.SiteOptions = await DataProvider.SiteRepository.GetSiteOptionsAsync(0);
+            result.SiteOptions = await _siteRepository.GetSiteOptionsAsync(0);
             result.SiteId = siteId;
 
             return result;

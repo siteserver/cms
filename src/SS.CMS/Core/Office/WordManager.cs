@@ -10,7 +10,6 @@ using DocumentFormat.OpenXml.Packaging;
 using HtmlAgilityPack;
 using OpenXmlPowerTools;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 using FileUtils = SS.CMS.Abstractions.FileUtils;
 
 namespace SS.CMS.Core.Office
@@ -31,19 +30,19 @@ namespace SS.CMS.Core.Office
             public string ImageDirectoryUrl { get; set; }
         }
 
-        public static async Task<(string title, string content)> GetWordAsync(Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath)
+        public static async Task<(string title, string content)> GetWordAsync(IPathManager pathManager, Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath)
         {
             string imageDirectoryPath;
             string imageDirectoryUrl;
             if (siteInfo != null)
             {
-                imageDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(siteInfo, UploadType.Image);
-                imageDirectoryUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(siteInfo, imageDirectoryPath, true);
+                imageDirectoryPath = await pathManager.GetUploadDirectoryPathAsync(siteInfo, UploadType.Image);
+                imageDirectoryUrl = await pathManager.GetSiteUrlByPhysicalPathAsync(siteInfo, imageDirectoryPath, true);
             }
             else
             {
                 var fileName = PathUtils.GetFileName(docsFilePath);
-                imageDirectoryPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image));
+                imageDirectoryPath = PathUtils.Combine(GlobalSettings.SettingsManager.WebRootPath, PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image));
                 imageDirectoryUrl = PathUtils.GetLibraryVirtualFilePath(UploadType.Image, fileName);
             }
 
@@ -66,7 +65,7 @@ namespace SS.CMS.Core.Office
 
             if (siteInfo != null)
             {
-                content = await ContentUtility.TextEditorContentDecodeAsync(siteInfo, content, true);
+                content = await ContentUtility.TextEditorContentDecodeAsync(pathManager, siteInfo, content, true);
             }
 
             return (title, content);

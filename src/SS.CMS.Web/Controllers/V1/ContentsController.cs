@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.V1
@@ -21,11 +20,23 @@ namespace SS.CMS.Web.Controllers.V1
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly IAccessTokenRepository _accessTokenRepository;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly IErrorLogRepository _errorLogRepository;
+        private readonly IContentCheckRepository _contentCheckRepository;
 
-        public ContentsController(IAuthManager authManager, ICreateManager createManager)
+        public ContentsController(IAuthManager authManager, ICreateManager createManager, IAccessTokenRepository accessTokenRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IErrorLogRepository errorLogRepository, IContentCheckRepository contentCheckRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _accessTokenRepository = accessTokenRepository;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _errorLogRepository = errorLogRepository;
+            _contentCheckRepository = contentCheckRepository;
         }
 
         [OpenApiOperation("添加内容API", "")]
@@ -42,7 +53,7 @@ namespace SS.CMS.Web.Controllers.V1
             else
             {
                 isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents) ||
                          auth.IsUserLoggin &&
                          await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
                              Constants.ChannelPermissions.ContentAdd) ||
@@ -52,10 +63,10 @@ namespace SS.CMS.Web.Controllers.V1
             }
             if (!isAuth) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
             var checkedLevel = request.CheckedLevel;
@@ -88,7 +99,7 @@ namespace SS.CMS.Web.Controllers.V1
                 CheckedLevel = checkedLevel
             };
 
-            contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channel, contentInfo);
+            contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);
 
             foreach (var service in await PluginManager.GetServicesAsync())
             {
@@ -98,7 +109,7 @@ namespace SS.CMS.Web.Controllers.V1
                 }
                 catch (Exception ex)
                 {
-                    await DataProvider.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(IPluginService.ContentFormSubmit));
+                    await _errorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(IPluginService.ContentFormSubmit));
                 }
             }
 
@@ -109,7 +120,7 @@ namespace SS.CMS.Web.Controllers.V1
             }
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, contentInfo.Id, "添加内容",
-                $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
+                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
             return contentInfo;
         }
@@ -128,7 +139,7 @@ namespace SS.CMS.Web.Controllers.V1
             else
             {
                 isAuth = auth.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents) ||
+                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents) ||
                          auth.IsUserLoggin &&
                          await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
                              Constants.ChannelPermissions.ContentEdit) ||
@@ -138,13 +149,13 @@ namespace SS.CMS.Web.Controllers.V1
             }
             if (!isAuth) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return NotFound();
 
-            var content = await DataProvider.ContentRepository.GetAsync(site, channelInfo, request.Id);
+            var content = await _contentRepository.GetAsync(site, channelInfo, request.Id);
             if (content == null) return NotFound();
 
             content.LoadDict(request.ToDictionary());
@@ -162,7 +173,7 @@ namespace SS.CMS.Web.Controllers.V1
             content.Checked = isChecked;
             content.CheckedLevel = checkedLevel;
 
-            await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, content);
+            await _contentRepository.UpdateAsync(site, channelInfo, content);
 
             foreach (var service in await PluginManager.GetServicesAsync())
             {
@@ -172,7 +183,7 @@ namespace SS.CMS.Web.Controllers.V1
                 }
                 catch (Exception ex)
                 {
-                    await DataProvider.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(IPluginService.ContentFormSubmit));
+                    await _errorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(IPluginService.ContentFormSubmit));
                 }
             }
 
@@ -183,7 +194,7 @@ namespace SS.CMS.Web.Controllers.V1
             }
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, content.Id, "修改内容",
-                $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, content.ChannelId)},内容标题:{content.Title}");
+                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, content.ChannelId)},内容标题:{content.Title}");
 
             return content;
         }
@@ -196,7 +207,7 @@ namespace SS.CMS.Web.Controllers.V1
 
             var isUserAuth = auth.IsUserLoggin && await auth.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentDelete);
             var isApiAuth = auth.IsApiAuthenticated && await
-                                DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents) ||
+                                _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents) ||
                             auth.IsUserLoggin &&
                             await auth.UserPermissions.HasChannelPermissionsAsync(siteId, channelId,
                                 Constants.ChannelPermissions.ContentDelete) ||
@@ -205,19 +216,19 @@ namespace SS.CMS.Web.Controllers.V1
                                 Constants.ChannelPermissions.ContentDelete);
             if (!isUserAuth && !isApiAuth) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var channel = await _channelRepository.GetAsync(channelId);
             if (channel == null) return NotFound();
 
             if (!await auth.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
                 Constants.ChannelPermissions.ContentDelete)) return Unauthorized();
 
-            var content = await DataProvider.ContentRepository.GetAsync(site, channel, id);
+            var content = await _contentRepository.GetAsync(site, channel, id);
             if (content == null) return NotFound();
 
-            await DataProvider.ContentRepository.DeleteAsync(site, channel, id);
+            await _contentRepository.DeleteAsync(site, channel, id);
 
             return content;
         }
@@ -230,7 +241,7 @@ namespace SS.CMS.Web.Controllers.V1
 
             var isUserAuth = auth.IsUserLoggin && await auth.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentView);
             var isApiAuth = auth.IsApiAuthenticated && await
-                                DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents) ||
+                                _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents) ||
                             auth.IsUserLoggin &&
                             await auth.UserPermissions.HasChannelPermissionsAsync(siteId, channelId,
                                 Constants.ChannelPermissions.ContentView) ||
@@ -239,16 +250,16 @@ namespace SS.CMS.Web.Controllers.V1
                                 Constants.ChannelPermissions.ContentView);
             if (!isUserAuth && !isApiAuth) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var channelInfo = await _channelRepository.GetAsync(channelId);
             if (channelInfo == null) return NotFound();
 
             if (!await auth.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
                 Constants.ChannelPermissions.ContentView)) return Unauthorized();
 
-            var content = await DataProvider.ContentRepository.GetAsync(site, channelInfo, id);
+            var content = await _contentRepository.GetAsync(site, channelInfo, id);
             if (content == null) return NotFound();
 
             return content;
@@ -264,7 +275,7 @@ namespace SS.CMS.Web.Controllers.V1
 
             var isUserAuth = auth.IsUserLoggin && await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, channelId, Constants.ChannelPermissions.ContentView);
             var isApiAuth = auth.IsApiAuthenticated && await
-                                DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents) ||
+                                _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents) ||
                             auth.IsUserLoggin &&
                             await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, channelId,
                                 Constants.ChannelPermissions.ContentView) ||
@@ -273,18 +284,18 @@ namespace SS.CMS.Web.Controllers.V1
                                 Constants.ChannelPermissions.ContentView);
             if (!isUserAuth && !isApiAuth) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var tableName = site.TableName;
             var query = await GetQueryAsync(request.SiteId, request.ChannelId, request);
-            var totalCount = await DataProvider.ContentRepository.GetCountAsync(tableName, query);
-            var summaries = await DataProvider.ContentRepository.GetSummariesAsync(tableName, query.ForPage(request.Page, request.PerPage));
+            var totalCount = await _contentRepository.GetCountAsync(tableName, query);
+            var summaries = await _contentRepository.GetSummariesAsync(tableName, query.ForPage(request.Page, request.PerPage));
 
             var contents = new List<Content>();
             foreach (var summary in summaries)
             {
-                var content = await DataProvider.ContentRepository.GetAsync(site, summary.ChannelId, summary.Id);
+                var content = await _contentRepository.GetAsync(site, summary.ChannelId, summary.Id);
                 contents.Add(content);
             }
 
@@ -302,19 +313,19 @@ namespace SS.CMS.Web.Controllers.V1
             var auth = await _authManager.GetApiAsync();
 
             if (!auth.IsApiAuthenticated ||
-                !await DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents))
+                !await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents))
             {
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var contents = new List<Content>();
             foreach (var channelContentId in request.Contents)
             {
-                var channel = await DataProvider.ChannelRepository.GetAsync(channelContentId.ChannelId);
-                var content = await DataProvider.ContentRepository.GetAsync(site, channel, channelContentId.Id);
+                var channel = await _channelRepository.GetAsync(channelContentId.ChannelId);
+                var content = await _contentRepository.GetAsync(site, channel, channelContentId.Id);
                 if (content == null) continue;
 
                 content.CheckAdminId = auth.AdminId;
@@ -324,11 +335,11 @@ namespace SS.CMS.Web.Controllers.V1
                 content.Checked = true;
                 content.CheckedLevel = 0;
 
-                await DataProvider.ContentRepository.UpdateAsync(site, channel, content);
+                await _contentRepository.UpdateAsync(site, channel, content);
 
                 contents.Add(content);
 
-                await DataProvider.ContentCheckRepository.InsertAsync(new ContentCheck
+                await _contentCheckRepository.InsertAsync(new ContentCheck
                 {
                     SiteId = request.SiteId,
                     ChannelId = content.ChannelId,
@@ -387,7 +398,7 @@ namespace SS.CMS.Web.Controllers.V1
         //        }
         //        if (!isAuth) return Unauthorized();
 
-        //        var site = await DataProvider.SiteRepository.GetAsync(siteId);
+        //        var site = await _siteRepository.GetAsync(siteId);
         //        if (site == null) return this.Error("无法确定内容对应的站点");
 
         //        if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, siteId,
@@ -397,11 +408,11 @@ namespace SS.CMS.Web.Controllers.V1
 
         //        var parameters = new ApiContentsParameters(request);
 
-        //        var (channelContentIds, count) = await DataProvider.ContentRepository.GetChannelContentIdListBySiteIdAsync(tableName, siteId, parameters);
+        //        var (channelContentIds, count) = await _contentRepository.GetChannelContentIdListBySiteIdAsync(tableName, siteId, parameters);
         //        var value = new List<IDictionary<string, object>>();
         //        foreach (var channelContentId in channelContentIds)
         //        {
-        //            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
+        //            var contentInfo = await _contentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
         //            if (contentInfo != null)
         //            {
         //                value.Add(contentInfo.ToDictionary());
@@ -443,27 +454,27 @@ namespace SS.CMS.Web.Controllers.V1
         //        }
         //        if (!isAuth) return Unauthorized();
 
-        //        var site = await DataProvider.SiteRepository.GetAsync(siteId);
+        //        var site = await _siteRepository.GetAsync(siteId);
         //        if (site == null) return this.Error("无法确定内容对应的站点");
 
-        //        var channelInfo = await DataProvider.ChannelRepository.GetAsync(siteId, channelId);
+        //        var channelInfo = await _channelRepository.GetAsync(siteId, channelId);
         //        if (channelInfo == null) return this.Error("无法确定内容对应的栏目");
 
         //        if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
         //            Constants.ChannelPermissions.ContentView)) return Unauthorized();
 
-        //        var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
+        //        var tableName = await _channelRepository.GetTableNameAsync(site, channelInfo);
 
         //        var top = request.GetQueryInt("top", 20);
         //        var skip = request.GetQueryInt("skip");
         //        var like = request.GetQueryString("like");
         //        var orderBy = request.GetQueryString("orderBy");
 
-        //        var (list, count) = await DataProvider.ContentRepository.ApiGetContentIdListByChannelIdAsync(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString);
+        //        var (list, count) = await _contentRepository.ApiGetContentIdListByChannelIdAsync(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString);
         //        var value = new List<IDictionary<string, object>>();
         //        foreach(var (contentChannelId, contentId) in list)
         //        {
-        //            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, contentChannelId, contentId);
+        //            var contentInfo = await _contentRepository.GetAsync(site, contentChannelId, contentId);
         //            if (contentInfo != null)
         //            {
         //                value.Add(contentInfo.ToDictionary());
@@ -503,7 +514,7 @@ namespace SS.CMS.Web.Controllers.V1
         //    }
         //    if (!isAuth) return Request.Unauthorized<QueryResult>();
 
-        //    var site = await DataProvider.SiteRepository.GetAsync(siteId);
+        //    var site = await _siteRepository.GetAsync(siteId);
         //    if (site == null) return Request.BadRequest<QueryResult>("无法确定内容对应的站点");
 
         //    if (!await req.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, siteId,
@@ -511,13 +522,13 @@ namespace SS.CMS.Web.Controllers.V1
 
         //    var tableName = site.TableName;
         //    var query = GetQuery(siteId, null, request);
-        //    var totalCount = await DataProvider.ContentRepository.GetTotalCountAsync(tableName, query);
-        //    var channelContentIds = await DataProvider.ContentRepository.GetChannelContentIdListAsync(tableName, query);
+        //    var totalCount = await _contentRepository.GetTotalCountAsync(tableName, query);
+        //    var channelContentIds = await _contentRepository.GetChannelContentIdListAsync(tableName, query);
 
         //    var contents = new List<Content>();
         //    foreach (var channelContentId in channelContentIds)
         //    {
-        //        var content = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
+        //        var content = await _contentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
         //        contents.Add(content);
         //    }
 

@@ -2,22 +2,29 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using SS.CMS.Framework;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Core
 {
     /// <summary>
     /// 分词类
     /// </summary>
-    public static class WordSpliter
+    public class WordSpliter
     {
         private const string SplitChar = " "; //分隔符
 
-        private static async Task<SortedList> ReadContentAsync(int siteId)
+        private readonly IContentTagRepository _contentTagRepository;
+
+        public WordSpliter(IContentTagRepository contentTagRepository)
+        {
+            _contentTagRepository = contentTagRepository;
+        }
+
+        private async Task<SortedList> ReadContentAsync(int siteId)
         {
             var arrText = new SortedList();
 
-            var tagList = await DataProvider.ContentTagRepository.GetTagNamesAsync(siteId);
+            var tagList = await _contentTagRepository.GetTagNamesAsync(siteId);
             if (tagList.Any())
             {
                 foreach (var line in tagList)
@@ -32,13 +39,13 @@ namespace SS.CMS.Core
             return arrText;
         }
 
-        private static bool IsMatch(string str, string reg)
+        private bool IsMatch(string str, string reg)
         {
             return new Regex(reg).IsMatch(str);
         }
         // 首先格式化字符串(粗分)
 
-        private static string FormatStr(string val)
+        private string FormatStr(string val)
         {
             var result = "";
             if (string.IsNullOrEmpty(val))
@@ -127,7 +134,7 @@ namespace SS.CMS.Core
         /// 分词
         /// </summary>
         /// <returns></returns>
-        private static async Task<ArrayList> StringSpliterAsync(string[] key, int siteId)
+        private async Task<ArrayList> StringSpliterAsync(string[] key, int siteId)
         {
             var list = new ArrayList();
             var dict = await ReadContentAsync(siteId);//载入词典
@@ -171,7 +178,7 @@ namespace SS.CMS.Core
         /// <summary>
         /// 得到分词结果
         /// </summary>
-        public static async Task<string[]> DoSplitAsync(string content, int siteId)
+        public async Task<string[]> DoSplitAsync(string content, int siteId)
         {
             var keyList = await StringSpliterAsync(FormatStr(content).Split(SplitChar.ToCharArray()), siteId);
             keyList.Insert(0, content);
@@ -194,7 +201,7 @@ namespace SS.CMS.Core
         /// <summary>
         /// 得到分词关键字，以逗号隔开
         /// </summary>
-        public static async Task<string> GetKeywordsAsync(string content, int siteId, int totalNum)
+        public async Task<string> GetKeywordsAsync(string content, int siteId, int totalNum)
         {
             var value = "";
             var _key = await DoSplitAsync(content, siteId);

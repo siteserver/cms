@@ -7,17 +7,20 @@ using Datory.Utils;
 using SS.CMS.Abstractions;
 using SS.CMS.Core.Serialization.Atom.Atom.Core;
 using SS.CMS.Core.Serialization.Atom.Atom.Core.Collections;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core.Serialization.Components
 {
     internal class ContentIe
     {
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
         private readonly Site _site;
         private readonly string _siteContentDirectoryPath;
 
-        public ContentIe(Site site, string siteContentDirectoryPath)
+        public ContentIe(IPathManager pathManager, IDatabaseManager databaseManager, Site site, string siteContentDirectoryPath)
         {
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
             _siteContentDirectoryPath = siteContentDirectoryPath;
             _site = site;
         }
@@ -116,7 +119,7 @@ namespace SS.CMS.Core.Serialization.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = await DataProvider.ContentRepository.GetMaxTaxisAsync(_site, channel, true) + 1;
+                        taxis = await _databaseManager.ContentRepository.GetMaxTaxisAsync(_site, channel, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.TagNames), "Tags" }));
 
@@ -158,7 +161,7 @@ namespace SS.CMS.Core.Serialization.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = await DataProvider.ContentRepository.GetIdListBySameTitleAsync(_site, channel, contentInfo.Title);
+                        var existsIDs = await _databaseManager.ContentRepository.GetIdListBySameTitleAsync(_site, channel, contentInfo.Title);
                         if (existsIDs.Count > 0)
                         {
                             foreach (var id in existsIDs)
@@ -186,7 +189,7 @@ namespace SS.CMS.Core.Serialization.Components
                         {
                             foreach (var tagName in Utilities.GetStringList(tags))
                             {
-                                await DataProvider.ContentTagRepository.InsertAsync(_site.Id, tagName);
+                                await _databaseManager.ContentTagRepository.InsertAsync(_site.Id, tagName);
                             }
                         }
                     }
@@ -207,11 +210,11 @@ namespace SS.CMS.Core.Serialization.Components
                 Caching.SetProcess(guid, $"导入内容: {content.Title}");
                 if (content.Id > 0)
                 {
-                    await DataProvider.ContentRepository.UpdateAsync(_site, channel, content);
+                    await _databaseManager.ContentRepository.UpdateAsync(_site, channel, content);
                 }
                 else
                 {
-                    await DataProvider.ContentRepository.InsertWithTaxisAsync(_site, channel, content, content.Taxis);
+                    await _databaseManager.ContentRepository.InsertWithTaxisAsync(_site, channel, content, content.Taxis);
                 }
             }
         }
@@ -250,7 +253,7 @@ namespace SS.CMS.Core.Serialization.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = await DataProvider.ContentRepository.GetMaxTaxisAsync(_site, channel, true) + 1;
+                        taxis = await _databaseManager.ContentRepository.GetMaxTaxisAsync(_site, channel, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.TagNames), "Tags" }));
 
@@ -294,7 +297,7 @@ namespace SS.CMS.Core.Serialization.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = await DataProvider.ContentRepository.GetIdListBySameTitleAsync(_site, channel, contentInfo.Title);
+                        var existsIDs = await _databaseManager.ContentRepository.GetIdListBySameTitleAsync(_site, channel, contentInfo.Title);
                         if (existsIDs.Count > 0)
                         {
                             foreach (var id in existsIDs)
@@ -322,7 +325,7 @@ namespace SS.CMS.Core.Serialization.Components
                         {
                             foreach (var tagName in Utilities.GetStringList(tags))
                             {
-                                await DataProvider.ContentTagRepository.InsertAsync(_site.Id, tagName);
+                                await _databaseManager.ContentTagRepository.InsertAsync(_site.Id, tagName);
                             }
                         }
                     }
@@ -343,11 +346,11 @@ namespace SS.CMS.Core.Serialization.Components
             {
                 if (content.Id > 0)
                 {
-                    await DataProvider.ContentRepository.UpdateAsync(_site, channel, content);
+                    await _databaseManager.ContentRepository.UpdateAsync(_site, channel, content);
                 }
                 else
                 {
-                    contentIdList.Add(await DataProvider.ContentRepository.InsertWithTaxisAsync(_site, channel, content, content.Taxis));
+                    contentIdList.Add(await _databaseManager.ContentRepository.InsertWithTaxisAsync(_site, channel, content, content.Taxis));
                 }
                 
             }
@@ -358,12 +361,12 @@ namespace SS.CMS.Core.Serialization.Components
         public async Task<bool> ExportContentsAsync(Site site, int channelId, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var channelInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
             var feed = AtomUtility.GetEmptyFeed();
 
             if (contentIdList == null)
             {
-                contentIdList = await DataProvider.ContentRepository.GetContentIdsAsync(site, channelInfo, isPeriods, dateFrom, dateTo, checkedState);
+                contentIdList = await _databaseManager.ContentRepository.GetContentIdsAsync(site, channelInfo, isPeriods, dateFrom, dateTo, checkedState);
             }
             if (!contentIdList.Any()) return false;
 
@@ -371,10 +374,10 @@ namespace SS.CMS.Core.Serialization.Components
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
+                var contentInfo = await _databaseManager.ContentRepository.GetAsync(site, channelInfo, contentId);
                 try
                 {
-                    ContentUtility.PutImagePaths(site, contentInfo, collection);
+                    ContentUtility.PutImagePaths(_pathManager, site, contentInfo, collection);
                 }
                 catch
                 {
@@ -388,7 +391,7 @@ namespace SS.CMS.Core.Serialization.Components
             foreach (string imageUrl in collection.Keys)
             {
                 var sourceFilePath = collection[imageUrl];
-                var destFilePath = PathUtility.MapPath(_siteContentDirectoryPath, imageUrl);
+                var destFilePath = _pathManager.MapPath(_siteContentDirectoryPath, imageUrl);
                 DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
                 FileUtils.MoveFile(sourceFilePath, destFilePath, true);
             }
@@ -407,7 +410,7 @@ namespace SS.CMS.Core.Serialization.Components
             {
                 try
                 {
-                    ContentUtility.PutImagePaths(site, contentInfo, collection);
+                    ContentUtility.PutImagePaths(_pathManager, site, contentInfo, collection);
                 }
                 catch
                 {
@@ -422,7 +425,7 @@ namespace SS.CMS.Core.Serialization.Components
             foreach (string imageUrl in collection.Keys)
             {
                 var sourceFilePath = collection[imageUrl];
-                var destFilePath = PathUtility.MapPath(_siteContentDirectoryPath, imageUrl);
+                var destFilePath = _pathManager.MapPath(_siteContentDirectoryPath, imageUrl);
                 DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
                 FileUtils.MoveFile(sourceFilePath, destFilePath, true);
             }

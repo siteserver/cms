@@ -9,7 +9,6 @@ using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
 using SS.CMS.Core.Office;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Home
@@ -21,12 +20,22 @@ namespace SS.CMS.Web.Controllers.Home
         private const string RouteUpload = "actions/upload";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ContentsLayerWordController(IAuthManager authManager, ICreateManager createManager)
+        public ContentsLayerWordController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -39,10 +48,10 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
             var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(auth.AdminPermissions, site, request.SiteId);
@@ -78,7 +87,7 @@ namespace SS.CMS.Web.Controllers.Home
                 return this.Error("文件只能是 Image 格式，请选择有效的文件上传!");
             }
 
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
@@ -114,14 +123,14 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
-            var styleList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(channel, tableName);
+            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+            var styleList = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
 
             var contentIdList = new List<int>();
@@ -130,12 +139,12 @@ namespace SS.CMS.Web.Controllers.Home
             {
                 if (string.IsNullOrEmpty(fileName)) continue;
 
-                var filePath = PathUtility.GetTemporaryFilesPath(fileName);
-                var (title, content) = await WordManager.GetWordAsync(site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
+                var filePath = _pathManager.GetTemporaryFilesPath(fileName);
+                var (title, content) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
 
                 if (string.IsNullOrEmpty(title)) continue;
 
-                var dict = await ColumnsManager.SaveAttributesAsync(site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value);
+                var dict = await ColumnsManager.SaveAttributesAsync(_pathManager, site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value);
 
                 var contentInfo = new Content(dict)
                 {
@@ -155,7 +164,7 @@ namespace SS.CMS.Web.Controllers.Home
                 contentInfo.Title = title;
                 contentInfo.Set(ContentAttribute.Content, content);
 
-                contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channel, contentInfo);
+                contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);
 
                 contentIdList.Add(contentInfo.Id);
             }

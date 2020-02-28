@@ -213,7 +213,11 @@ var utils = {
     return false;
   },
 
-  error: function (app, error, redirect) {
+  getErrorMessage: function(error) {
+    if (error.response && error.response.status === 500) {
+      return JSON.stringify(error.response.data);
+    }
+
     var message = error.message;
     if (error.response && error.response.data) {
       if (error.response.data.exceptionMessage) {
@@ -223,7 +227,13 @@ var utils = {
       }
     }
 
-    if (redirect) {
+    return message;
+  },
+
+  error: function (app, error, options) {
+    var message = utils.getErrorMessage(error);
+
+    if (options && options.redirect) {
       location.href = './error/?message=' + encodeURIComponent(message);
       return;
     }
@@ -233,17 +243,18 @@ var utils = {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
-      sessionStorage.setItem(uuid, JSON.stringify(error.response.data));
+      sessionStorage.setItem(uuid, message);
       top.utils.openLayer({
         url: utils.getRootUrl('error', {uuid: uuid})
       })
       return;
     }
 
-    app.$message({
+    app.$message(_.assign({
       type: 'error',
-      message: message
-    });
+      message: message,
+      showIcon: true
+    }, options || {}));
   },
 
   loading: function (app, isLoading) {

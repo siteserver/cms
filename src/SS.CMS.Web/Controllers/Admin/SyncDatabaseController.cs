@@ -6,16 +6,16 @@ using SS.CMS.Web.Extensions;
 namespace SS.CMS.Web.Controllers.Admin
 {
     [ApiController]
-    [Route("admin/syncDatabase")]
+    [Route(Constants.ApiRoute)]
     public partial class SyncDatabaseController : ControllerBase
     {
-        private const string Route = "";
+        public const string Route = "syncDatabase";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
-        private readonly IDatabaseRepository _databaseRepository;
+        private readonly IDatabaseManager _databaseRepository;
 
-        public SyncDatabaseController(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseRepository databaseRepository)
+        public SyncDatabaseController(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseManager databaseRepository)
         {
             _settingsManager = settingsManager;
             _configRepository = configRepository;

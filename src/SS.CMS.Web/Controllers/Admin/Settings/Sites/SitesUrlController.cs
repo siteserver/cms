@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 {
@@ -15,10 +14,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         private const string RouteApi = "actions/api";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IConfigRepository _configRepository;
 
-        public SitesUrlController(IAuthManager authManager)
+        public SitesUrlController(IAuthManager authManager, ISiteRepository siteRepository, IConfigRepository configRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
+            _configRepository = configRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -31,15 +34,15 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var rootSiteId = await DataProvider.SiteRepository.GetIdByIsRootAsync();
-            var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync(0);
+            var rootSiteId = await _siteRepository.GetIdByIsRootAsync();
+            var siteIdList = await _siteRepository.GetSiteIdListAsync(0);
             var sites = new List<Site>();
             foreach (var siteId in siteIdList)
             {
-                sites.Add(await DataProvider.SiteRepository.GetAsync(siteId));
+                sites.Add(await _siteRepository.GetAsync(siteId));
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             return new GetResult
             {
@@ -65,7 +68,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 request.SeparatedWebUrl = request.SeparatedWebUrl + "/";
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             site.IsSeparatedWeb = request.IsSeparatedWeb;
             site.SeparatedWebUrl = request.SeparatedWebUrl;
@@ -74,14 +77,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
             site.SeparatedAssetsUrl = request.SeparatedAssetsUrl;
             site.AssetsDir = request.AssetsDir;
 
-            await DataProvider.SiteRepository.UpdateAsync(site);
+            await _siteRepository.UpdateAsync(site);
             await auth.AddSiteLogAsync(request.SiteId, "修改站点访问地址");
 
-            var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync(0);
+            var siteIdList = await _siteRepository.GetSiteIdListAsync(0);
             var sites = new List<Site>();
             foreach (var id in siteIdList)
             {
-                sites.Add(await DataProvider.SiteRepository.GetAsync(id));
+                sites.Add(await _siteRepository.GetAsync(id));
             }
 
             return new EditWebResult
@@ -100,12 +103,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             config.IsSeparatedApi = request.IsSeparatedApi;
             config.SeparatedApiUrl = request.SeparatedApiUrl;
 
-            await DataProvider.ConfigRepository.UpdateAsync(config);
+            await _configRepository.UpdateAsync(config);
 
             await auth.AddAdminLogAsync("修改API访问地址");
 

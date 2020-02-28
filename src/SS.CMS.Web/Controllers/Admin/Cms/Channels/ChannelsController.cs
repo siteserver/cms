@@ -9,8 +9,6 @@ using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Api;
 using SS.CMS.Api.Stl;
-using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 using SS.CMS.Core.Serialization;
 using SS.CMS.Web.Extensions;
@@ -29,12 +27,28 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         private const string RouteOrder = "actions/order";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly IChannelGroupRepository _channelGroupRepository;
+        private readonly ITemplateRepository _templateRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ChannelsController(IAuthManager authManager, ICreateManager createManager)
+        public ChannelsController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _createManager = createManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _channelGroupRepository = channelGroupRepository;
+            _templateRepository = templateRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -48,14 +62,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
-            var cascade = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel, async summary =>
+            var channel = await _channelRepository.GetAsync(request.SiteId);
+            var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
-                var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
-                var groupNames = await DataProvider.ChannelRepository.GetGroupNamesAsync(summary.Id);
+                var count = await _contentRepository.GetCountAsync(site, summary);
+                var groupNames = await _channelRepository.GetGroupNamesAsync(summary.Id);
                 return new
                 {
                     Count = count,
@@ -66,11 +80,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 };
             });
 
-            var indexNames = await DataProvider.ChannelRepository.GetChannelIndexNameListAsync(request.SiteId);
-            var groupNameList = await DataProvider.ChannelGroupRepository.GetGroupNamesAsync(request.SiteId);
+            var indexNames = await _channelRepository.GetChannelIndexNameListAsync(request.SiteId);
+            var groupNameList = await _channelGroupRepository.GetGroupNamesAsync(request.SiteId);
 
-            var channelTemplates = await DataProvider.TemplateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var contentTemplates = await DataProvider.TemplateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
+            var channelTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var contentTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
             var contentPlugins = await PluginContentManager.GetContentModelPluginsAsync();
             var relatedPlugins = await PluginContentManager.GetAllContentRelatedPluginsAsync(false);
 
@@ -96,10 +110,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var parent = await DataProvider.ChannelRepository.GetAsync(request.ParentId);
+            var parent = await _channelRepository.GetAsync(request.ParentId);
             if (parent == null) return this.Error("无法确定父栏目");
 
             var insertedChannelIdHashtable = new Hashtable { [1] = request.ParentId }; //key为栏目的级别，1为第一级栏目
@@ -150,7 +164,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                     {
                         if (nodeIndexNameList == null)
                         {
-                            nodeIndexNameList = (await DataProvider.ChannelRepository.GetIndexNameListAsync(request.SiteId)).ToList();
+                            nodeIndexNameList = (await _channelRepository.GetIndexNameListAsync(request.SiteId)).ToList();
                         }
                         if (nodeIndexNameList.Contains(indexName))
                         {
@@ -164,7 +178,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
                     var parentId = (int)insertedChannelIdHashtable[count];
 
-                    var insertedChannelId = await DataProvider.ChannelRepository.InsertAsync(request.SiteId, parentId, channelName, indexName, parent.ContentModelPluginId, parent.ContentRelatedPluginIds, channelTemplateId, contentTemplateId);
+                    var insertedChannelId = await _channelRepository.InsertAsync(request.SiteId, parentId, channelName, indexName, parent.ContentModelPluginId, parent.ContentRelatedPluginIds, channelTemplateId, contentTemplateId);
                     insertedChannelIdHashtable[count + 1] = insertedChannelId;
                     expandedChannelIds.Add(insertedChannelId);
 
@@ -185,10 +199,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定父栏目");
 
             if (channel.ChannelName != request.ChannelName)
@@ -196,7 +210,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 return this.Error("请检查您输入的栏目名称是否正确");
             }
 
-            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, request.ChannelId, ScopeType.All);
+            var channelIdList = await _channelRepository.GetChannelIdsAsync(request.SiteId, request.ChannelId, ScopeType.All);
 
             if (request.DeleteFiles)
             {
@@ -205,8 +219,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
             foreach (var channelId in channelIdList)
             {
-                await DataProvider.ContentRepository.RecycleAllAsync(site, channelId, auth.AdminId);
-                await DataProvider.ChannelRepository.DeleteAsync(site, channelId, auth.AdminId);
+                await _contentRepository.RecycleAllAsync(site, channelId, auth.AdminId);
+                await _channelRepository.DeleteAsync(site, channelId, auth.AdminId);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, "删除栏目", $"栏目:{channel.ChannelName}");
@@ -242,7 +256,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
             }
 
             fileName = $"{StringUtils.GetShortGuid(false)}.zip";
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
@@ -264,10 +278,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
             try
             {
-                var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-                var filePath = PathUtility.GetTemporaryFilesPath(request.FileName);
+                var site = await _siteRepository.GetAsync(request.SiteId);
+                var filePath = _pathManager.GetTemporaryFilesPath(request.FileName);
 
-                var importObject = new ImportObject(site, auth.AdminId);
+                var importObject = new ImportObject(_pathManager, _databaseManager, site, auth.AdminId);
                 await importObject.ImportChannelsAndContentsByZipFileAsync(request.ChannelId, filePath,
                     request.IsOverride, null);
 
@@ -295,12 +309,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var exportObject = new ExportObject(site, auth.AdminId);
+            var exportObject = new ExportObject(_pathManager, _databaseManager, site);
             var fileName = await exportObject.ExportChannelsAsync(request.ChannelIds);
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             var url = ApiRouteActionsDownload.GetUrl(ApiManager.InnerApiUrl, filePath);
 
             return new StringResult
@@ -322,11 +336,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
             if (request.IsUp)
             {
-                await DataProvider.ChannelRepository.UpdateTaxisUpAsync(request.SiteId, request.ChannelId, request.ParentId, request.Taxis);
+                await _channelRepository.UpdateTaxisUpAsync(request.SiteId, request.ChannelId, request.ParentId, request.Taxis);
             }
             else
             {
-                await DataProvider.ChannelRepository.UpdateTaxisDownAsync(request.SiteId, request.ChannelId, request.ParentId, request.Taxis);
+                await _channelRepository.UpdateTaxisDownAsync(request.SiteId, request.ChannelId, request.ParentId, request.Taxis);
             }
 
             return new List<int>

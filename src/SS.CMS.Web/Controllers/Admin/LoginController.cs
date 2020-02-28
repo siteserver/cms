@@ -4,37 +4,40 @@ using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin
 {
-    [Route("admin/login")]
+    [Route(Constants.ApiRoute)]
     public partial class LoginController : ControllerBase
     {
-        private const string Route = "";
+        public const string Route = "login";
+        private const string RouteCaptcha = "login/actions/captcha";
 
         private readonly ICacheManager<bool> _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
+        private readonly IDbCacheRepository _dbCacheRepository;
 
-        public LoginController(ICacheManager<bool> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
+        public LoginController(ICacheManager<bool> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, IDbCacheRepository dbCacheRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _authManager = authManager;
+            _pathManager = pathManager;
             _configRepository = configRepository;
             _administratorRepository = administratorRepository;
+            _dbCacheRepository = dbCacheRepository;
         }
 
         [HttpGet, Route(Route)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            var redirectUrl = await auth.AdminRedirectCheckAsync(checkInstall: true, checkDatabaseVersion: true);
+            var redirectUrl = await AdminRedirectCheckAsync();
             if (!string.IsNullOrEmpty(redirectUrl))
             {
                 return new GetResult
@@ -83,7 +86,7 @@ namespace SS.CMS.Web.Controllers.Admin
 
             var sessionId = StringUtils.Guid();
             var cacheKey = Constants.GetSessionIdCacheKey(adminInfo.Id);
-            await DataProvider.DbCacheRepository.RemoveAndInsertAsync(cacheKey, sessionId);
+            await _dbCacheRepository.RemoveAndInsertAsync(cacheKey, sessionId);
 
             var config = await _configRepository.GetAsync();
 

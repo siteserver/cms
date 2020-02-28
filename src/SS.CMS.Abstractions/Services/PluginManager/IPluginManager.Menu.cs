@@ -1,18 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
+using Datory.Utils;
 
 namespace SS.CMS.Abstractions
 {
     public partial interface IPluginManager
     {
-        Task<List<Menu>> GetTopMenusAsync(IPathManager pathManager);
+        Task<string> GetSystemDefaultPageUrlAsync(int siteId);
 
-        Task<List<Menu>> GetSiteMenusAsync(IPathManager pathManager, int siteId);
+        Task<string> GetHomeDefaultPageUrlAsync();
 
-        Task<List<Menu>> GetContentMenusAsync(IPathManager pathManager, List<string> pluginIds, Content contentInfo);
+        Task<List<Menu>> GetTopMenusAsync();
 
-        Task<List<MenuPermission>> GetTopPermissionsAsync();
+        Task<List<Menu>> GetSiteMenusAsync(int siteId);
 
-        Task<List<MenuPermission>> GetSitePermissionsAsync(int siteId);
+        Task<List<Menu>> GetContentMenusAsync(List<string> pluginIds, Content content);
+
+        Tab GetPluginTab(string pluginId, string prefix, Menu menu);
+
+        Task<List<IPermissions>> GetTopPermissionsAsync();
+
+        Task<List<IPermissions>> GetSitePermissionsAsync(int siteId);
     }
 }

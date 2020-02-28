@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -57,7 +57,7 @@ namespace SS.CMS.StlParser.StlElement
         public const string TypeText = nameof(LibraryType.Text);
         public const string TypeImage = nameof(LibraryType.Image);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var type = string.Empty;
             var name = string.Empty;
@@ -73,9 +73,9 @@ namespace SS.CMS.StlParser.StlElement
             var isLower = false;
             var isUpper = false;
 
-            foreach (var attrName in contextInfo.Attributes.AllKeys)
+            foreach (var attrName in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[attrName];
+                var value = parseManager.ContextInfo.Attributes[attrName];
 
                 if (StringUtils.EqualsIgnoreCase(attrName, Type))
                 {
@@ -131,10 +131,10 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(type, name, id, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return await ParseImplAsync(parseManager, type, name, id, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
         }
 
-        private static async Task<string> ParseImplAsync(string type, string title, int id, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string title, int id, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
             if (string.IsNullOrEmpty(type)) return string.Empty;
 
@@ -144,22 +144,22 @@ namespace SS.CMS.StlParser.StlElement
             {
                 if (id > 0)
                 {
-                    parsedContent = await DataProvider.LibraryTextRepository.GetContentByIdAsync(id);
+                    parsedContent = await parseManager.DatabaseManager.LibraryTextRepository.GetContentByIdAsync(id);
                 }
                 else if (!string.IsNullOrEmpty(title))
                 {
-                    parsedContent = await DataProvider.LibraryTextRepository.GetContentByTitleAsync(title);
+                    parsedContent = await parseManager.DatabaseManager.LibraryTextRepository.GetContentByTitleAsync(title);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeImage))
             {
                 if (id > 0)
                 {
-                    parsedContent = await DataProvider.LibraryImageRepository.GetUrlByIdAsync(id);
+                    parsedContent = await parseManager.DatabaseManager.LibraryImageRepository.GetUrlByIdAsync(id);
                 }
                 else if (!string.IsNullOrEmpty(title))
                 {
-                    parsedContent = await DataProvider.LibraryImageRepository.GetUrlByTitleAsync(title);
+                    parsedContent = await parseManager.DatabaseManager.LibraryImageRepository.GetUrlByTitleAsync(title);
                 }
             }
 

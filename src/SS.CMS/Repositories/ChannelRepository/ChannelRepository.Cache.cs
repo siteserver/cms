@@ -64,12 +64,12 @@ namespace SS.CMS.Repositories
                     .FirstOrDefault();
         }
 
-        public async Task<IEnumerable<string>> GetIndexNameListAsync(int siteId)
+        public async Task<List<string>> GetIndexNameListAsync(int siteId)
         {
             var summaries = await GetSummaryAsync(siteId);
             return summaries
                 .Where(x => !string.IsNullOrEmpty(x.IndexName))
-                .Select(x => x.IndexName);
+                .Select(x => x.IndexName).ToList();
         }
 
         public async Task<bool> IsIndexNameExistsAsync(int siteId, string indexName)
@@ -415,7 +415,7 @@ namespace SS.CMS.Repositories
 
             if (string.IsNullOrEmpty(pluginId)) return tableName;
 
-            var contentTable = await PluginContentTableManager.GetTableNameAsync(pluginId);
+            var contentTable = await PluginManager.GetTableNameAsync(pluginId);
             if (!string.IsNullOrEmpty(contentTable))
             {
                 tableName = contentTable;
@@ -428,7 +428,7 @@ namespace SS.CMS.Repositories
         {
             if (string.IsNullOrEmpty(node.ContentModelPluginId)) return false;
 
-            var contentTable = await PluginContentTableManager.GetTableNameAsync(node.ContentModelPluginId);
+            var contentTable = await PluginManager.GetTableNameAsync(node.ContentModelPluginId);
             return !string.IsNullOrEmpty(contentTable);
         }
 

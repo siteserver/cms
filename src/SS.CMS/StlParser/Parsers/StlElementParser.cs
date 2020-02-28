@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SS.CMS;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.StlElement;
 using SS.CMS.StlParser.Utility;
@@ -21,7 +22,7 @@ namespace SS.CMS.StlParser.Parsers
         /// <summary>
         /// 将原始内容中的STL元素替换为实际内容
         /// </summary>
-        public static async Task ReplaceStlElementsAsync(StringBuilder parsedBuilder, PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task ReplaceStlElementsAsync(StringBuilder parsedBuilder, ParsePage pageInfo, ParseContext contextInfo)
         {
             var stlElements = StlParserUtility.GetStlElementList(parsedBuilder.ToString());
             foreach (var stlElement in stlElements)
@@ -41,7 +42,7 @@ namespace SS.CMS.StlParser.Parsers
             }
         }
 
-        public static readonly Dictionary<string, Func<PageInfo, ContextInfo, Task<object>>> ElementsToParseDic = new Dictionary<string, Func<PageInfo, ContextInfo, Task<object>>>
+        public static readonly Dictionary<string, Func<ParsePage, ParseContext, Task<object>>> ElementsToParseDic = new Dictionary<string, Func<ParsePage, ParseContext, Task<object>>>
         {
             {StlA.ElementName.ToLower(), StlA.ParseAsync},
             {StlAction.ElementName.ToLower(), StlAction.ParseAsync},
@@ -88,7 +89,7 @@ namespace SS.CMS.StlParser.Parsers
             {StlPageItems.ElementName.ToLower(), StlParserManager.StlEncrypt}
         };
 
-        private static async Task<string> ParseStlElementAsync(string stlElement, PageInfo pageInfo, ContextInfo contextInfo)
+        private static async Task<string> ParseStlElementAsync(string stlElement, ParsePage pageInfo, ParseContext contextInfo)
         {
             string parsedContent = null;
 

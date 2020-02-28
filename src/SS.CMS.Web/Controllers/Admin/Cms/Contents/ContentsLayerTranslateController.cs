@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -16,12 +15,22 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         private const string RouteOptions = "actions/options";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerTranslateController(IAuthManager authManager, ICreateManager createManager)
+        public ContentsLayerTranslateController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _createManager = createManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -36,7 +45,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
@@ -44,8 +53,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             var contents = new List<Content>();
             foreach (var summary in summaries)
             {
-                var channel = await DataProvider.ChannelRepository.GetAsync(summary.ChannelId);
-                var content = await DataProvider.ContentRepository.GetAsync(site, channel, summary.Id);
+                var channel = await _channelRepository.GetAsync(summary.ChannelId);
+                var content = await _contentRepository.GetAsync(site, channel, summary.Id);
                 if (content == null) continue;
 
                 var pageContent = new Content(content.ToDictionary());
@@ -54,7 +63,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             }
 
             var siteIdList = await auth.AdminPermissions.GetSiteIdListAsync();
-            var transSites = await DataProvider.SiteRepository.GetSelectsAsync(siteIdList);
+            var transSites = await _siteRepository.GetSelectsAsync(siteIdList);
 
             return new GetResult
             {
@@ -75,16 +84,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var channelIdList = await auth.AdminPermissions.GetChannelIdListAsync(request.TransSiteId, Constants.ChannelPermissions.ContentAdd);
 
-            var transChannels = await DataProvider.ChannelRepository.GetAsync(request.TransSiteId);
-            var transSite = await DataProvider.SiteRepository.GetAsync(request.TransSiteId);
-            var cascade = await DataProvider.ChannelRepository.GetCascadeAsync(transSite, transChannels, async summary =>
+            var transChannels = await _channelRepository.GetAsync(request.TransSiteId);
+            var transSite = await _siteRepository.GetAsync(request.TransSiteId);
+            var cascade = await _channelRepository.GetCascadeAsync(transSite, transChannels, async summary =>
             {
-                var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
+                var count = await _contentRepository.GetCountAsync(site, summary);
 
                 return new
                 {
@@ -112,7 +121,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
@@ -120,7 +129,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
             foreach (var summary in summaries)
             {
-                await ContentUtility.TranslateAsync(site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, TranslateContentType.Cut, _createManager);
+                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, TranslateContentType.Cut, _createManager);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, "转移内容", string.Empty);

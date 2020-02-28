@@ -3,11 +3,10 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -45,7 +44,7 @@ namespace SS.CMS.StlParser.StlElement
             {TypeNextContent, "下一内容链接"}
         };
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var type = TypeNextContent;
             var emptyText = string.Empty;
@@ -54,9 +53,9 @@ namespace SS.CMS.StlParser.StlElement
             var isKeyboard = false;
             var attributes = new NameValueCollection();
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -84,32 +83,36 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, attributes, type, emptyText, tipText, wordNum, isKeyboard);
+            return await ParseImplAsync(parseManager, attributes, type, emptyText, tipText, wordNum, isKeyboard);
         }
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string type, string emptyText, string tipText, int wordNum, bool isKeyboard)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, NameValueCollection attributes, string type, string emptyText, string tipText, int wordNum, bool isKeyboard)
         {
+            var databaseManager = parseManager.DatabaseManager;
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             string parsedContent;
 
             var innerHtml = string.Empty;
             StlParserUtility.GetYesNo(contextInfo.InnerHtml, out var successTemplateString, out var failureTemplateString);
 
-            var contentInfo = await contextInfo.GetContentAsync();
+            var contentInfo = await parseManager.GetContentAsync();
 
             if (string.IsNullOrEmpty(successTemplateString))
             {
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId);
+                var nodeInfo = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
 
                 if (type.ToLower().Equals(TypePreviousChannel.ToLower()) || type.ToLower().Equals(TypeNextChannel.ToLower()))
                 {
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
-                    //var siblingChannelId = DataProvider.ChannelRepository.GetIdByParentIdAndTaxis(node.ParentId, taxis, isNextChannel);
-                    var siblingChannelId = await DataProvider.ChannelRepository.GetIdByParentIdAndTaxisAsync(pageInfo.SiteId, nodeInfo.ParentId, taxis, isNextChannel);
+                    //var siblingChannelId = databaseManager.ChannelRepository.GetIdByParentIdAndTaxis(node.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = await databaseManager.ChannelRepository.GetIdByParentIdAndTaxisAsync(pageInfo.SiteId, nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingChannelId != 0)
                     {
-                        var siblingNodeInfo = await DataProvider.ChannelRepository.GetAsync(siblingChannelId);
-                        var url = await PageUtility.GetChannelUrlAsync(pageInfo.Site, siblingNodeInfo, pageInfo.IsLocal);
+                        var siblingNodeInfo = await databaseManager.ChannelRepository.GetAsync(siblingChannelId);
+                        var url = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, siblingNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnClickableUrl))
                         {
                             attributes["target"] = string.Empty;
@@ -118,7 +121,7 @@ namespace SS.CMS.StlParser.StlElement
 
                         if (string.IsNullOrEmpty(contextInfo.InnerHtml))
                         {
-                            innerHtml = await DataProvider.ChannelRepository.GetChannelNameAsync(pageInfo.SiteId, siblingChannelId);
+                            innerHtml = await databaseManager.ChannelRepository.GetChannelNameAsync(pageInfo.SiteId, siblingChannelId);
                             if (wordNum > 0)
                             {
                                 innerHtml = WebUtils.MaxLengthText(innerHtml, wordNum);
@@ -128,7 +131,7 @@ namespace SS.CMS.StlParser.StlElement
                         {
                             contextInfo.ChannelId = siblingChannelId;
                             var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-                            await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+                            await parseManager.ParseInnerContentAsync(innerBuilder);
                             innerHtml = innerBuilder.ToString();
                         }
                     }
@@ -139,12 +142,12 @@ namespace SS.CMS.StlParser.StlElement
                     {
                         var taxis = contentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
-                        var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
-                        var siblingContentId = await DataProvider.ContentRepository.GetContentIdAsync(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var tableName = await databaseManager.ChannelRepository.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
+                        var siblingContentId = await databaseManager.ContentRepository.GetContentIdAsync(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
-                            var siblingContentInfo = await DataProvider.ContentRepository.GetAsync(pageInfo.Site, contextInfo.ChannelId, siblingContentId);
-                            var url = await PageUtility.GetContentUrlAsync(pageInfo.Site, siblingContentInfo, pageInfo.IsLocal);
+                            var siblingContentInfo = await databaseManager.ContentRepository.GetAsync(pageInfo.Site, contextInfo.ChannelId, siblingContentId);
+                            var url = await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, siblingContentInfo, pageInfo.IsLocal);
                             if (url.Equals(PageUtils.UnClickableUrl))
                             {
                                 attributes["target"] = string.Empty;
@@ -155,7 +158,7 @@ namespace SS.CMS.StlParser.StlElement
                             {
                                 var keyCode = isNextContent ? 39 : 37;
                                 var scriptContent = new StringBuilder();
-                                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
+                                await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
                                 scriptContent.Append($@"<script language=""javascript"" type=""text/javascript""> 
       $(document).keydown(function(event){{
         if(event.keyCode=={keyCode}){{location = '{url}';}}
@@ -179,7 +182,7 @@ namespace SS.CMS.StlParser.StlElement
                             {
                                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                                 contextInfo.ContentId = siblingContentId;
-                                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+                                await parseManager.ParseInnerContentAsync(innerBuilder);
                                 innerHtml = innerBuilder.ToString();
                             }
                         }
@@ -190,7 +193,7 @@ namespace SS.CMS.StlParser.StlElement
             }
             else
             {
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId);
+                var nodeInfo = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
 
                 var isSuccess = false;
                 var theContextInfo = contextInfo.Clone();
@@ -199,12 +202,12 @@ namespace SS.CMS.StlParser.StlElement
                 {
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
-                    //var siblingChannelId = DataProvider.ChannelRepository.GetIdByParentIdAndTaxis(node.ParentId, taxis, isNextChannel);
-                    var siblingChannelId = await DataProvider.ChannelRepository.GetIdByParentIdAndTaxisAsync(pageInfo.SiteId, nodeInfo.ParentId, taxis, isNextChannel);
+                    //var siblingChannelId = databaseManager.ChannelRepository.GetIdByParentIdAndTaxis(node.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = await databaseManager.ChannelRepository.GetIdByParentIdAndTaxisAsync(pageInfo.SiteId, nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingChannelId != 0)
                     {
                         isSuccess = true;
-                        theContextInfo.ContextType = ContextType.Channel;
+                        theContextInfo.ContextType = ParseType.Channel;
                         theContextInfo.ChannelId = siblingChannelId;
                     }
                 }
@@ -214,14 +217,14 @@ namespace SS.CMS.StlParser.StlElement
                     {
                         var taxis = contentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
-                        var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
-                        var siblingContentId = await DataProvider.ContentRepository.GetContentIdAsync(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var tableName = await databaseManager.ChannelRepository.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
+                        var siblingContentId = await databaseManager.ContentRepository.GetContentIdAsync(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             isSuccess = true;
-                            theContextInfo.ContextType = ContextType.Content;
+                            theContextInfo.ContextType = ParseType.Content;
                             theContextInfo.ContentId = siblingContentId;
-                            theContextInfo.SetContentInfo(null);
+                            theContextInfo.SetContent(null);
                         }
                     }
                 }
@@ -231,7 +234,7 @@ namespace SS.CMS.StlParser.StlElement
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
                     var innerBuilder = new StringBuilder(parsedContent);
-                    await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, theContextInfo);
+                    await parseManager.ParseInnerContentAsync(innerBuilder);
 
                     parsedContent = innerBuilder.ToString();
                 }

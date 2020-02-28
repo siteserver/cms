@@ -27,8 +27,6 @@ namespace SS.CMS.Abstractions
 
         Task<string> GetTemplateNameAsync(int templateId);
 
-        Task<string> GetTemplateFilePathAsync(Site site, Template template);
-
         Task<Template> GetIndexPageTemplateAsync(int siteId);
 
         Task<Template> GetChannelTemplateAsync(int siteId, Channel channel);
@@ -38,12 +36,6 @@ namespace SS.CMS.Abstractions
         Task<Template> GetFileTemplateAsync(int siteId, int fileTemplateId);
 
         Task<int> GetIndexTemplateIdAsync(int siteId);
-
-        Task<string> GetTemplateContentAsync(Site site, Template template);
-
-        Task<string> GetIncludeContentAsync(Site site, string file);
-
-        Task<string> GetContentByFilePathAsync(string filePath);
 
         Task<string> GetImportTemplateNameAsync(int siteId, TemplateType templateType, string templateName);
     }

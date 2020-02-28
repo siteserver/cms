@@ -4,7 +4,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Home
 {
@@ -14,10 +13,16 @@ namespace SS.CMS.Web.Controllers.Home
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
 
-        public ContentsLayerColumnsController(IAuthManager authManager)
+        public ContentsLayerColumnsController(IAuthManager authManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _authManager = authManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -30,13 +35,14 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var attributes = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var columnsManager = new ColumnsManager(_databaseManager);
+            var attributes = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             return new GetResult
             {
@@ -54,15 +60,15 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return NotFound();
 
             channelInfo.ListColumns = request.AttributeNames;
 
-            await DataProvider.ChannelRepository.UpdateAsync(channelInfo);
+            await _channelRepository.UpdateAsync(channelInfo);
 
             await auth.AddSiteLogAsync(request.SiteId, "设置内容显示项", $"显示项:{request.AttributeNames}");
 

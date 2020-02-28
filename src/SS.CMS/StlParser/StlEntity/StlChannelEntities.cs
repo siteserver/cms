@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
-
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlEntity
 {
@@ -44,8 +41,12 @@ namespace SS.CMS.StlParser.StlEntity
 	        {ItemIndex, "栏目排序"}
 	    };
 
-        internal static async Task<string> ParseAsync(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
+        internal static async Task<string> ParseAsync(string stlEntity, IParseManager parseManager)
         {
+            var databaseManager = parseManager.DatabaseManager;
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             var parsedContent = string.Empty;
 
             try
@@ -59,8 +60,8 @@ namespace SS.CMS.StlParser.StlEntity
                 var channelId = contextInfo.ChannelId;
                 if (!string.IsNullOrEmpty(channelIndex))
                 {
-                    //channelId = DataProvider.ChannelRepository.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    channelId = await DataProvider.ChannelRepository.GetChannelIdByIndexNameAsync(pageInfo.SiteId, channelIndex);
+                    //channelId = databaseManager.ChannelRepository.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                    channelId = await databaseManager.ChannelRepository.GetChannelIdByIndexNameAsync(pageInfo.SiteId, channelIndex);
                     if (channelId == 0)
                     {
                         channelId = contextInfo.ChannelId;
@@ -96,7 +97,8 @@ namespace SS.CMS.StlParser.StlEntity
                     attributeName = attributeName.Substring(attributeName.IndexOf(".", StringComparison.Ordinal) + 1);
                 }
 
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, channelId, upLevel, topLevel));
+                var dataManager = new StlDataManager(parseManager.DatabaseManager);
+                var nodeInfo = await databaseManager.ChannelRepository.GetAsync(await dataManager.GetChannelIdByLevelAsync(pageInfo.SiteId, channelId, upLevel, topLevel));
 
                 if (StringUtils.EqualsIgnoreCase(ChannelId, attributeName))//栏目ID
                 {
@@ -112,11 +114,11 @@ namespace SS.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(Content, attributeName))//栏目正文
                 {
-                    parsedContent = await ContentUtility.TextEditorContentDecodeAsync(pageInfo.Site, nodeInfo.Content, pageInfo.IsLocal);
+                    parsedContent = await ContentUtility.TextEditorContentDecodeAsync(parseManager.PathManager, pageInfo.Site, nodeInfo.Content, pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(NavigationUrl, attributeName))//栏目链接地址
                 {
-                    parsedContent = await PageUtility.GetChannelUrlAsync(pageInfo.Site, nodeInfo, pageInfo.IsLocal);
+                    parsedContent = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, nodeInfo, pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(ImageUrl, attributeName))//栏目图片地址
                 {
@@ -124,7 +126,7 @@ namespace SS.CMS.StlParser.StlEntity
 
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                        parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(AddDate, attributeName))//栏目添加日期
@@ -153,10 +155,10 @@ namespace SS.CMS.StlParser.StlEntity
                 }
                 else
                 {
-                    //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.ChannelRepository.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, node.ChannelId));
+                    //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, databaseManager.ChannelRepository.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, node.ChannelId));
                     //parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.Site, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
 
-                    var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(DataProvider.ChannelRepository.TableName, attributeName, DataProvider.TableStyleRepository.GetRelatedIdentities(nodeInfo));
+                    var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(databaseManager.ChannelRepository.TableName, attributeName, databaseManager.TableStyleRepository.GetRelatedIdentities(nodeInfo));
                     if (styleInfo.Id > 0)
                     {
                         parsedContent = GetValue(attributeName, nodeInfo, false, styleInfo.DefaultValue);
@@ -164,11 +166,11 @@ namespace SS.CMS.StlParser.StlEntity
                         {
                             if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                             {
-                                parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                                parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                             }
                             else
                             {
-                                parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parsedContent, null, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
+                                parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parseManager.PathManager, parsedContent, null, pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
                             }
                         }
                     }

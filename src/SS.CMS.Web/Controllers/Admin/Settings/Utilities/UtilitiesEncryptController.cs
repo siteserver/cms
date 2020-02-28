@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Utilities
@@ -12,10 +11,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Utilities
     {
         private const string Route = "";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
 
-        public UtilitiesEncryptController(IAuthManager authManager)
+        public UtilitiesEncryptController(ISettingsManager settingsManager, IAuthManager authManager)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
         }
 
@@ -30,8 +31,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Utilities
             }
 
             var encoded = request.IsEncrypt
-                ? TranslateUtils.EncryptStringBySecretKey(request.Value, WebConfigUtils.SecretKey)
-                : TranslateUtils.DecryptStringBySecretKey(request.Value, WebConfigUtils.SecretKey);
+                ? _settingsManager.Encrypt(request.Value)
+                : _settingsManager.Decrypt(request.Value);
 
             if (!request.IsEncrypt && string.IsNullOrEmpty(encoded))
             {

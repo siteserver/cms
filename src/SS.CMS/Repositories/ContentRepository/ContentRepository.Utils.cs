@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SqlKata;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Repositories
 {
@@ -94,7 +92,7 @@ namespace SS.CMS.Repositories
                 return repository;
             }
 
-            repository = new Repository<Content>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString), tableName, new Redis(WebConfigUtils.RedisConnectionString));
+            repository = new Repository<Content>(_settingsManager.Database, tableName, _settingsManager.Redis);
 
             TableNameRepositories[tableName] = repository;
             return repository;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.StlEntity;
 using SS.CMS.StlParser.Utility;
@@ -17,7 +18,7 @@ namespace SS.CMS.StlParser.Parsers
         /// <summary>
         /// 将原始内容中的STL实体替换为实际内容
         /// </summary>
-        public static async Task ReplaceStlEntitiesAsync(StringBuilder parsedBuilder, PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task ReplaceStlEntitiesAsync(StringBuilder parsedBuilder, ParsePage pageInfo, ParseContext contextInfo)
         {
             var stlEntityList = StlParserUtility.GetStlEntityList(parsedBuilder.ToString());
 
@@ -50,7 +51,7 @@ namespace SS.CMS.StlParser.Parsers
         //    return parsedBuilder.ToString();
         //}
 
-        internal static async Task<string> ParseStlEntityAsync(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
+        internal static async Task<string> ParseStlEntityAsync(string stlEntity, ParsePage pageInfo, ParseContext contextInfo)
         {
             var parsedContent = string.Empty;
 
@@ -92,7 +93,7 @@ namespace SS.CMS.StlParser.Parsers
             return parsedContent;
         }
 
-        internal static async Task<string> ReplaceStlEntitiesForAttributeValueAsync(string attrValue, PageInfo pageInfo, ContextInfo contextInfo)
+        internal static async Task<string> ReplaceStlEntitiesForAttributeValueAsync(string attrValue, ParsePage pageInfo, ParseContext contextInfo)
         {
             if (!StlParserUtility.IsStlEntityInclude(attrValue)) return attrValue;
 

@@ -4,13 +4,19 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core.Office
 {
-    public static class ExcelObject
+    public class ExcelObject
     {
-        public static async Task CreateExcelFileForContentsAsync(string filePath, Site site,
+        private readonly IDatabaseManager _databaseManager;
+
+        public ExcelObject(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
+        public async Task CreateExcelFileForContentsAsync(string filePath, Site site,
             Channel channel, IEnumerable<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, bool? checkedState)
         {
@@ -20,8 +26,8 @@ namespace SS.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
-            var styleList = ColumnsManager.GetContentListStyles(await DataProvider.TableStyleRepository.GetContentStyleListAsync(channel, tableName));
+            var tableName = await _databaseManager.ChannelRepository.GetTableNameAsync(site, channel);
+            var styleList = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStyleListAsync(channel, tableName));
 
             foreach (var style in styleList)
             {
@@ -33,13 +39,13 @@ namespace SS.CMS.Core.Office
 
             if (contentIdList == null)
             {
-                contentIdList = await DataProvider.ContentRepository.GetContentIdsAsync(site, channel, isPeriods,
+                contentIdList = await _databaseManager.ContentRepository.GetContentIdsAsync(site, channel, isPeriods,
                     startDate, endDate, checkedState);
             }
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channel, contentId);
+                var contentInfo = await _databaseManager.ContentRepository.GetAsync(site, channel, contentId);
                 if (contentInfo != null)
                 {
                     var row = new List<string>();
@@ -60,7 +66,7 @@ namespace SS.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static async Task CreateExcelFileForContentsAsync(string filePath, Site site,
+        public async Task CreateExcelFileForContentsAsync(string filePath, Site site,
             Channel channel, List<Content> contentInfoList, List<string> columnNames)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -69,7 +75,8 @@ namespace SS.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var columnsManager = new ColumnsManager(_databaseManager);
+            var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             foreach (var column in columns)
             {
@@ -98,7 +105,7 @@ namespace SS.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static async Task CreateExcelFileForUsersAsync(string filePath, bool? checkedState)
+        public async Task CreateExcelFileForUsersAsync(string filePath, bool? checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
             FileUtils.DeleteFileIfExists(filePath);
@@ -119,17 +126,17 @@ namespace SS.CMS.Core.Office
             List<int> userIdList;
             if (checkedState.HasValue)
             {
-                userIdList = (await DataProvider.UserRepository.GetIdListAsync(checkedState.Value)).ToList();
+                userIdList = (await _databaseManager.UserRepository.GetIdListAsync(checkedState.Value)).ToList();
             }
             else
             {
-                userIdList = (await DataProvider.UserRepository.GetIdListAsync(true)).ToList();
-                userIdList.AddRange(await DataProvider.UserRepository.GetIdListAsync(false));
+                userIdList = (await _databaseManager.UserRepository.GetIdListAsync(true)).ToList();
+                userIdList.AddRange(await _databaseManager.UserRepository.GetIdListAsync(false));
             }
 
             foreach (var userId in userIdList)
             {
-                var userInfo = await DataProvider.UserRepository.GetByUserIdAsync(userId);
+                var userInfo = await _databaseManager.UserRepository.GetByUserIdAsync(userId);
 
                 rows.Add(new List<string>
                 {
@@ -145,7 +152,7 @@ namespace SS.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static async Task CreateExcelFileForAdministratorsAsync(string filePath)
+        public async Task CreateExcelFileForAdministratorsAsync(string filePath)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
             FileUtils.DeleteFileIfExists(filePath);
@@ -161,11 +168,11 @@ namespace SS.CMS.Core.Office
             };
             var rows = new List<List<string>>();
 
-            var userIdList = await DataProvider.AdministratorRepository.GetUserIdListAsync();
+            var userIdList = await _databaseManager.AdministratorRepository.GetUserIdListAsync();
 
             foreach (var userId in userIdList)
             {
-                var administrator = await DataProvider.AdministratorRepository.GetByUserIdAsync(userId);
+                var administrator = await _databaseManager.AdministratorRepository.GetByUserIdAsync(userId);
 
                 rows.Add(new List<string>
                 {
@@ -181,7 +188,7 @@ namespace SS.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static async Task<List<Content>> GetContentsByCsvFileAsync(string filePath, Site site,
+        public async Task<List<Content>> GetContentsByCsvFileAsync(string filePath, Site site,
             Channel node)
         {
             var contentInfoList = new List<Content>();
@@ -190,8 +197,8 @@ namespace SS.CMS.Core.Office
 
             if (rows.Count <= 0) return contentInfoList;
 
-            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, node);
-            var styleList = ColumnsManager.GetContentListStyles(await DataProvider.TableStyleRepository.GetContentStyleListAsync(node, tableName));
+            var tableName = await _databaseManager.ChannelRepository.GetTableNameAsync(site, node);
+            var styleList = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStyleListAsync(node, tableName));
             var nameValueCollection = new NameValueCollection();
             foreach (var style in styleList)
             {

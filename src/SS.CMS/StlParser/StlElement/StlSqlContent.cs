@@ -1,12 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using SS.CMS;
 using SS.CMS.Abstractions;
 using SS.CMS.StlParser.Model;
-using SS.CMS.StlParser.Parsers;
 using SS.CMS.StlParser.Utility;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -67,7 +64,7 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "是否转换为大写")]
         private const string IsUpper = nameof(IsUpper);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
 		    var connectionString = string.Empty;
             var queryString = string.Empty;
@@ -87,9 +84,9 @@ namespace SS.CMS.StlParser.StlElement
             var isUpper = false;
             var type = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, ConnectionString))
                 {
@@ -99,12 +96,12 @@ namespace SS.CMS.StlParser.StlElement
                 {
                     if (string.IsNullOrEmpty(connectionString))
                     {
-                        connectionString = WebConfigUtils.ConnectionString;
+                        connectionString = parseManager.SettingsManager.Database.ConnectionString;
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, QueryString))
                 {
-                    queryString = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    queryString = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -164,16 +161,16 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-		    if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
+		    if (parseManager.ContextInfo.IsStlEntity && string.IsNullOrEmpty(type))
 		    {
 		        object dataItem = null;
-		        if (contextInfo.ItemContainer?.SqlItem != null)
+		        if (parseManager.ContextInfo.ItemContainer?.SqlItem != null)
 		        {
-		            dataItem = contextInfo.ItemContainer?.SqlItem.Value;
+		            dataItem = parseManager.ContextInfo.ItemContainer?.SqlItem.Value;
 		        }
 		        else if (!string.IsNullOrEmpty(queryString))
 		        {
-		            var rows = DataProvider.DatabaseRepository.GetRows(connectionString, queryString);
+		            var rows = parseManager.DatabaseManager.GetRows(connectionString, queryString);
                     if (rows != null && rows.Any())
 		            {
 		                dataItem = rows.First();
@@ -183,11 +180,13 @@ namespace SS.CMS.StlParser.StlElement
 		        return dataItem;
 		    }
 
-            return ParseImpl(contextInfo, connectionString, queryString, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
+            return ParseImpl(parseManager, connectionString, queryString, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
 		}
 
-        private static string ParseImpl(ContextInfo contextInfo, string connectionString, string queryString, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
+        private static string ParseImpl(IParseManager parseManager, string connectionString, string queryString, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
         {
+            var contextInfo = parseManager.ContextInfo;
+
             var parsedContent = string.Empty;
 
             if (!string.IsNullOrEmpty(type) && contextInfo.ItemContainer?.SqlItem != null)
@@ -227,11 +226,11 @@ namespace SS.CMS.StlParser.StlElement
             {
                 if (string.IsNullOrEmpty(connectionString))
                 {
-                    connectionString = WebConfigUtils.ConnectionString;
+                    connectionString = parseManager.SettingsManager.Database.ConnectionString;
                 }
 
-                //parsedContent = DataProvider.DatabaseRepository.GetString(connectionString, queryString);
-                parsedContent = DataProvider.DatabaseRepository.GetString(connectionString, queryString);
+                //parsedContent = GlobalSettings.DatabaseRepository.GetString(connectionString, queryString);
+                parsedContent = parseManager.DatabaseManager.GetString(connectionString, queryString);
             }
 
             if (!string.IsNullOrEmpty(parsedContent))

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Analysis
 {
@@ -14,10 +13,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Analysis
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly ILogRepository _logRepository;
 
-        public AnalysisAdminLoginController(IAuthManager authManager)
+        public AnalysisAdminLoginController(IAuthManager authManager, ILogRepository logRepository)
         {
             _authManager = authManager;
+            _logRepository = logRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -34,10 +35,10 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Analysis
             var dateTo = TranslateUtils.ToDateTime(request.DateTo, DateTime.Now);
             var xType = TranslateUtils.ToEnum(request.XType, AnalysisType.Day);
 
-            var trackingDayDictionary = DataProvider.LogRepository.GetAdminLoginDictionaryByDate(dateFrom, dateTo,
+            var trackingDayDictionary = _logRepository.GetAdminLoginDictionaryByDate(dateFrom, dateTo,
                 request.XType, Constants.AdminLogin);
             var adminNumDictionaryName =
-                await DataProvider.LogRepository.GetAdminLoginDictionaryByNameAsync(dateFrom, dateTo, Constants.AdminLogin);
+                await _logRepository.GetAdminLoginDictionaryByNameAsync(dateFrom, dateTo, Constants.AdminLogin);
 
             var count = 0;
             var dictionaryDay = new Dictionary<int, int>();

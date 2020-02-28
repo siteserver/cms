@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
@@ -14,10 +12,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly ISpecialRepository _specialRepository;
 
-        public TemplatesSpecialEditorController(IAuthManager authManager)
+        public TemplatesSpecialEditorController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, ISpecialRepository specialRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
+            _specialRepository = specialRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -31,16 +35,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-            var specialInfo = await DataProvider.SpecialRepository.GetSpecialAsync(request.SiteId, request.SpecialId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var specialInfo = await _specialRepository.GetSpecialAsync(request.SiteId, request.SpecialId);
 
             if (specialInfo == null)
             {
                 return this.Error("专题不存在！");
             }
 
-            var specialUrl = await PageUtility.ParseNavigationUrlAsync(site, $"@/{StringUtils.TrimSlash(specialInfo.Url)}/", true);
-            var filePath = PathUtils.Combine(await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, specialInfo.Url), "index.html");
+            var specialUrl = await _pathManager.ParseNavigationUrlAsync(site, $"@/{StringUtils.TrimSlash(specialInfo.Url)}/", true);
+            var filePath = PathUtils.Combine(await _pathManager.GetSpecialDirectoryPathAsync(site, specialInfo.Url), "index.html");
             var html = FileUtils.ReadText(filePath, Encoding.UTF8);
 
             return new GetResult

@@ -1,12 +1,20 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SS.CMS.Framework;
+using SS.CMS.Abstractions;
+using SS.CMS.Core;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableRelatedFieldItem
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableRelatedFieldItem(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public long Id { get; set; }
 
@@ -24,30 +32,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("taxis")]
         public long Taxis { get; set; }
-    }
-
-    public partial class TableRelatedFieldItem
-    {
-        public static readonly List<string> OldTableNames = new List<string>
-        {
-            "siteserver_RelatedFieldItem",
-            "wcm_RelatedFieldItem"
-        };
-
-        public static ConvertInfo Converter => new ConvertInfo
-        {
-            NewTableName = NewTableName,
-            NewColumns = NewColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
-        };
-
-        private static readonly string NewTableName = DataProvider.RelatedFieldItemRepository.TableName;
-
-        private static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldItemRepository.TableColumns;
-
-        private static readonly Dictionary<string, string> ConvertKeyDict = null;
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

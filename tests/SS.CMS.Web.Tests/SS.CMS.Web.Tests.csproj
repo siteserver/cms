@@ -28,10 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
-    <PackageReference Include="Moq" Version="4.13.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="xunit.runner.console" Version="2.4.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

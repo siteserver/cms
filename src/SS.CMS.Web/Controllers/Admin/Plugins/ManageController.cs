@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Admin.Plugins
@@ -18,11 +17,15 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         private const string RouteActionsReload = "actions/reload";
         private const string RoutePluginIdEnable = "{pluginId}/actions/enable";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly IPluginRepository _pluginRepository;
 
-        public ManageController(IAuthManager authManager)
+        public ManageController(ISettingsManager settingsManager, IAuthManager authManager, IPluginRepository pluginRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
+            _pluginRepository = pluginRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -41,8 +44,8 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
 
             return new GetResult
             {
-                IsNightly = WebConfigUtils.IsNightlyUpdate,
-                PluginVersion = SystemManager.PluginVersion,
+                IsNightly = _settingsManager.IsNightlyUpdate,
+                PluginVersion = _settingsManager.PluginVersion,
                 AllPackages = await PluginManager.GetAllPluginInfoListAsync(),
                 PackageIds = packageIds
             };
@@ -101,7 +104,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
             if (pluginInfo != null)
             {
                 pluginInfo.IsDisabled = !pluginInfo.IsDisabled;
-                await DataProvider.PluginRepository.UpdateIsDisabledAsync(pluginId, pluginInfo.IsDisabled);
+                await _pluginRepository.UpdateIsDisabledAsync(pluginId, pluginInfo.IsDisabled);
                 PluginManager.ClearCache();
 
                 await auth.AddAdminLogAsync(!pluginInfo.IsDisabled ? "禁用插件" : "启用插件", $"插件:{pluginId}");

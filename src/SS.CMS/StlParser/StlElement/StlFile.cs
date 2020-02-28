@@ -3,9 +3,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
-using SS.CMS.StlParser.Utility;
 using SS.CMS.Core;
 
 namespace SS.CMS.StlParser.StlElement
@@ -50,7 +49,7 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "显示在信息后的文字")]
         private const string RightText = nameof(RightText);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var type = ContentAttribute.FileUrl;
             var no = 0;
@@ -65,9 +64,9 @@ namespace SS.CMS.StlParser.StlElement
             var rightText = string.Empty;
             var attributes = new NameValueCollection();
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -119,19 +118,22 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, type, no, src, isFileName, isFileType, isFileSize, isCount, isLower, isUpper, leftText, rightText, attributes);
+            return await ParseImplAsync(parseManager, type, no, src, isFileName, isFileType, isFileSize, isCount, isLower, isUpper, leftText, rightText, attributes);
         }
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string type, int no, string src, bool isFileName, bool isFileType, bool isFileSize, bool isCount, bool isLower, bool isUpper, string leftText, string rightText, NameValueCollection attributes)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, int no, string src, bool isFileName, bool isFileType, bool isFileSize, bool isCount, bool isLower, bool isUpper, string leftText, string rightText, NameValueCollection attributes)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+                await parseManager.ParseInnerContentAsync(innerBuilder);
                 contextInfo.InnerHtml = innerBuilder.ToString();
             }
 
-            var contentInfo = await contextInfo.GetContentAsync();
+            var contentInfo = await parseManager.GetContentAsync();
 
             var fileUrl = string.Empty;
             if (!string.IsNullOrEmpty(src))
@@ -140,11 +142,11 @@ namespace SS.CMS.StlParser.StlElement
             }
             else
             {
-                if (contextInfo.ContextType == ContextType.Undefined)
+                if (contextInfo.ContextType == ParseType.Undefined)
                 {
-                    contextInfo.ContextType = ContextType.Content;
+                    contextInfo.ContextType = ParseType.Content;
                 }
-                if (contextInfo.ContextType == ContextType.Content)
+                if (contextInfo.ContextType == ParseType.Content)
                 {
                     if (contextInfo.ContentId != 0)
                     {
@@ -176,7 +178,7 @@ namespace SS.CMS.StlParser.StlElement
                         }
                     }
                 }
-                else if (contextInfo.ContextType == ContextType.Each)
+                else if (contextInfo.ContextType == ParseType.Each)
                 {
                     fileUrl = contextInfo.ItemContainer.EachItem.Value as string;
                 }
@@ -198,7 +200,7 @@ namespace SS.CMS.StlParser.StlElement
             }
             else if (isFileType)
             {
-                var filePath = await PathUtility.MapPathAsync(pageInfo.Site, fileUrl);
+                var filePath = await parseManager.PathManager.MapPathAsync(pageInfo.Site, fileUrl);
                 parsedContent = PathUtils.GetExtension(filePath).Trim('.');
                 if (isLower)
                 {
@@ -211,7 +213,7 @@ namespace SS.CMS.StlParser.StlElement
             }
             else if (isFileSize)
             {
-                var filePath = await PathUtility.MapPathAsync(pageInfo.Site, fileUrl);
+                var filePath = await parseManager.PathManager.MapPathAsync(pageInfo.Site, fileUrl);
                 parsedContent = FileUtils.GetFileSizeByFilePath(filePath);
             }
             else if (isCount)
@@ -221,10 +223,10 @@ namespace SS.CMS.StlParser.StlElement
             else
             {
                 parsedContent = contentInfo != null
-                    ? await InputParserUtility.GetFileHtmlWithCountAsync(pageInfo.Site, contentInfo.ChannelId,
+                    ? await InputParserUtility.GetFileHtmlWithCountAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, contentInfo.ChannelId,
                         contentInfo.Id, fileUrl, attributes, contextInfo.InnerHtml,
                         contextInfo.IsStlEntity, isLower, isUpper)
-                    : await InputParserUtility.GetFileHtmlWithoutCountAsync(pageInfo.Site, fileUrl, attributes,
+                    : await InputParserUtility.GetFileHtmlWithoutCountAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, fileUrl, attributes,
                         contextInfo.InnerHtml, contextInfo.IsStlEntity, isLower, isUpper);
             }
 

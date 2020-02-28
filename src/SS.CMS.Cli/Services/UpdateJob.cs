@@ -8,29 +8,28 @@ using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
 using SS.CMS.Cli.Updater;
 using SS.CMS.Repositories;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Services
 {
-    public class UpdateJob
+    public class UpdateJob : IJobService
     {
-        public const string CommandName = "update";
+        public string CommandName => "update";
         private const string Folder = "update";
-
-        public static async Task Execute(IJobContext context)
-        {
-            var application = CliUtils.Provider.GetService<UpdateJob>();
-            await application.RunAsync(context);
-        }
 
         private string _directory;
         private bool _contentSplit;
         private bool _isHelp;
 
+        private readonly ISettingsManager _settingsManager;
+        private readonly UpdaterManager _updaterManager;
+        private readonly IDatabaseManager _databaseManager;
         private readonly OptionSet _options;
 
-        public UpdateJob()
+        public UpdateJob(ISettingsManager settingsManager, UpdaterManager updaterManager, IDatabaseManager databaseManager)
         {
+            _settingsManager = settingsManager;
+            _updaterManager = updaterManager;
+            _databaseManager = databaseManager;
             _options = new OptionSet {
                 { "d|directory=", "指定需要升级至最新版本的备份数据文件夹",
                     v => _directory = v },
@@ -41,15 +40,14 @@ namespace SS.CMS.Cli.Services
             };
         }
 
-        public static void PrintUsage()
+        public void PrintUsage()
         {
             Console.WriteLine("系统升级: siteserver update");
-            var job = new UpdateJob();
-            job._options.WriteOptionDescriptions(Console.Out);
+            _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
 
-        public async Task RunAsync(IJobContext context)
+        public async Task ExecuteAsync(IJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
@@ -65,8 +63,8 @@ namespace SS.CMS.Cli.Services
                 return;
             }
 
-            var oldTreeInfo = new TreeInfo(_directory);
-            var newTreeInfo = new TreeInfo(Folder);
+            var oldTreeInfo = new TreeInfo(_settingsManager, _directory);
+            var newTreeInfo = new TreeInfo(_settingsManager, Folder);
 
             if (!DirectoryUtils.IsDirectoryExists(oldTreeInfo.DirectoryPath))
             {
@@ -75,7 +73,7 @@ namespace SS.CMS.Cli.Services
             }
             DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
 
-            var updater = new UpdaterManager(oldTreeInfo, newTreeInfo);
+            _updaterManager.Load(oldTreeInfo, newTreeInfo);
 
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             await Console.Out.WriteLineAsync($"备份数据文件夹: {oldTreeInfo.DirectoryPath}，升级数据文件夹: {newTreeInfo.DirectoryPath}，升级版本: {version.Substring(0, version.Length - 2)}");
@@ -96,10 +94,12 @@ namespace SS.CMS.Cli.Services
             UpdateUtils.LoadSites(oldTreeInfo, siteIdList,
                 tableNameListForContent, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
 
+            var table = new TableContentConverter(_settingsManager);
+
             var splitSiteTableDict = new Dictionary<int, TableInfo>();
             if (_contentSplit)
             {
-                var converter = ContentConverter.GetSplitConverter();
+                var converter = table.GetSplitConverter();
                 foreach (var siteId in siteIdList)
                 {
                     splitSiteTableDict.Add(siteId, new TableInfo
@@ -123,15 +123,15 @@ namespace SS.CMS.Cli.Services
                 {
                     if (_contentSplit)
                     {
-                        var converter = ContentConverter.GetConverter(oldTableName, oldTableInfo.Columns);
+                        var converter = table.GetConverter(oldTableName, oldTableInfo.Columns);
 
-                        await updater.UpdateSplitContentsTableInfoAsync(splitSiteTableDict, siteIdList, oldTableName,
+                        await _updaterManager.UpdateSplitContentsTableInfoAsync(splitSiteTableDict, siteIdList, oldTableName,
                             oldTableInfo, converter);
                     }
                     else
                     {
-                        var converter = ContentConverter.GetConverter(oldTableName, oldTableInfo.Columns);
-                        var tuple = await updater.GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
+                        var converter = table.GetConverter(oldTableName, oldTableInfo.Columns);
+                        var tuple = await _updaterManager.GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
                         if (tuple != null)
                         {
                             newTableNames.Add(tuple.Item1);
@@ -142,7 +142,7 @@ namespace SS.CMS.Cli.Services
                 }
                 else
                 {
-                    var tuple = await updater.UpdateTableInfoAsync(oldTableName, oldTableInfo, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
+                    var tuple = await _updaterManager.UpdateTableInfoAsync(oldTableName, oldTableInfo, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
                     if (tuple != null)
                     {
                         newTableNames.Add(tuple.Item1);
@@ -163,7 +163,7 @@ namespace SS.CMS.Cli.Services
                     await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), TranslateUtils.JsonSerialize(siteTableInfo));
                 }
 
-                await UpdateUtils.UpdateSitesSplitTableNameAsync(newTreeInfo, splitSiteTableDict);
+                await UpdateUtils.UpdateSitesSplitTableNameAsync(_databaseManager, newTreeInfo, splitSiteTableDict);
             }
 
             await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, TranslateUtils.JsonSerialize(newTableNames));

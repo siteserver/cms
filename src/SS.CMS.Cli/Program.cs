@@ -43,24 +43,25 @@ namespace SS.CMS.Cli
 
                 var services = new ServiceCollection();
                 var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
-                GlobalSettings.Load(settingsManager);
+                
+                var application = new Application(settingsManager);
+                services.AddSingleton(application);
                 services.AddCache(settingsManager.Redis.ConnectionString);
                 services.AddRepositories();
                 services.AddServices();
+                services.AddScoped<UpdaterManager>();
 
-                services.AddTransient<Application>();
-                services.AddTransient<BackupJob>();
-                services.AddTransient<InstallJob>();
-                services.AddTransient<RestoreJob>();
-                services.AddTransient<TestJob>();
-                services.AddTransient<UpdateJob>();
-                services.AddTransient<VersionJob>();
-                services.AddTransient<UpdaterManager>();
+                services.AddScoped<IJobService, BackupJob>();
+                services.AddScoped<IJobService, InstallJob>();
+                services.AddScoped<IJobService, RestoreJob>();
+                services.AddScoped<IJobService, SyncJob>();
+                services.AddScoped<IJobService, TestJob>();
+                services.AddScoped<IJobService, UpdateJob>();
+                services.AddScoped<IJobService, VersionJob>();
 
                 var provider = services.BuildServiceProvider();
-                CliUtils.Provider = provider;
+                CliUtils.SetProvider(provider);
 
-                var application = provider.GetService<Application>();
                 await application.RunAsync(args);
             }
             finally

@@ -6,8 +6,6 @@ using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Core.Serialization;
 using SS.CMS.Web.Extensions;
 
@@ -22,10 +20,18 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         private const string RouteReset = "actions/reset";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly IUserRepository _userRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public UsersStyleController(IAuthManager authManager)
+        public UsersStyleController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IUserRepository userRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
+            _userRepository = userRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -38,10 +44,10 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            var allAttributes = DataProvider.UserRepository.TableColumns.Select(x => x.AttributeName).ToList();
+            var allAttributes = _userRepository.TableColumns.Select(x => x.AttributeName).ToList();
 
             var styles = new List<Style>();
-            foreach (var style in await DataProvider.TableStyleRepository.GetUserStyleListAsync())
+            foreach (var style in await _tableStyleRepository.GetUserStyleListAsync())
             {
                 styles.Add(new Style
                 {
@@ -58,8 +64,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
             return new GetResult
             {
                 Styles = styles,
-                TableName = DataProvider.UserRepository.TableName,
-                RelatedIdentities = DataProvider.TableStyleRepository.EmptyRelatedIdentities
+                TableName = _userRepository.TableName,
+                RelatedIdentities = _tableStyleRepository.EmptyRelatedIdentities
             };
         }
 
@@ -73,12 +79,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            await DataProvider.TableStyleRepository.DeleteAsync(0, DataProvider.UserRepository.TableName, request.AttributeName);
+            await _tableStyleRepository.DeleteAsync(0, _userRepository.TableName, request.AttributeName);
 
-            var allAttributes = DataProvider.UserRepository.TableColumns.Select(x => x.AttributeName).ToList();
+            var allAttributes = _userRepository.TableColumns.Select(x => x.AttributeName).ToList();
 
             var styles = new List<Style>();
-            foreach (var style in await DataProvider.TableStyleRepository.GetUserStyleListAsync())
+            foreach (var style in await _tableStyleRepository.GetUserStyleListAsync())
             {
                 styles.Add(new Style
                 {
@@ -121,11 +127,11 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return this.Error("导入文件为 Zip 格式，请选择有效的文件上传");
             }
 
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
-            var directoryPath = await ImportObject.ImportTableStyleByZipFileAsync(DataProvider.UserRepository.TableName, DataProvider.TableStyleRepository.EmptyRelatedIdentities, filePath);
+            var directoryPath = await ImportObject.ImportTableStyleByZipFileAsync(_pathManager, _databaseManager, _userRepository.TableName, _tableStyleRepository.EmptyRelatedIdentities, filePath);
 
             FileUtils.DeleteFileIfExists(filePath);
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
@@ -148,9 +154,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            var fileName = await ExportObject.ExportRootSingleTableStyleAsync(0, DataProvider.UserRepository.TableName, DataProvider.TableStyleRepository.EmptyRelatedIdentities);
+            var fileName = await ExportObject.ExportRootSingleTableStyleAsync(_pathManager, _databaseManager, 0, _userRepository.TableName, _tableStyleRepository.EmptyRelatedIdentities);
 
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             return this.Download(filePath);
         }
 
@@ -164,12 +170,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            await DataProvider.TableStyleRepository.DeleteAllAsync(DataProvider.UserRepository.TableName);
+            await _tableStyleRepository.DeleteAllAsync(_userRepository.TableName);
 
-            var allAttributes = DataProvider.UserRepository.TableColumns.Select(x => x.AttributeName).ToList();
+            var allAttributes = _userRepository.TableColumns.Select(x => x.AttributeName).ToList();
 
             var styles = new List<Style>();
-            foreach (var style in await DataProvider.TableStyleRepository.GetUserStyleListAsync())
+            foreach (var style in await _tableStyleRepository.GetUserStyleListAsync())
             {
                 styles.Add(new Style
                 {

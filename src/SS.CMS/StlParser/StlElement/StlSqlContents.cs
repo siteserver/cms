@@ -2,10 +2,13 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
+using SS.CMS.Core;
+using SS.CMS.Services;
 using SS.CMS.StlParser.Mock;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -23,29 +26,32 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "数据库查询语句")]
         public const string QueryString = nameof(QueryString);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
-            var listInfo = await ListInfo.GetListInfoAsync(pageInfo, contextInfo, ContextType.SqlContent);
+            var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.SqlContent);
             //var dataSource = StlDataUtility.GetSqlContentsDataSource(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.Order);
-            var dataSource = GetDataSource(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum,
+            var dataSource = GetDataSource(parseManager, listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum,
                 listInfo.TotalNum, listInfo.Order);
 
-            if (contextInfo.IsStlEntity)
+            if (parseManager.ContextInfo.IsStlEntity)
             {
                 return ParseEntity(dataSource);
             }
 
-            return await ParseElementAsync(pageInfo, contextInfo, listInfo, dataSource);
+            return await ParseElementAsync(parseManager, listInfo, dataSource);
         }
 
-        public static List<KeyValuePair<int, Dictionary<string, object>>> GetDataSource(string connectionString, string queryString, int startNum, int totalNum, string order)
+        public static List<KeyValuePair<int, Dictionary<string, object>>> GetDataSource(IParseManager parseManager, string connectionString, string queryString, int startNum, int totalNum, string order)
         {
             //var sqlString = CacheManager.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, order);
-            return DataProvider.DatabaseRepository.ParserGetSqlDataSource(connectionString, queryString);
+            return parseManager.DatabaseManager.ParserGetSqlDataSource(connectionString, queryString);
         }
 
-        protected static async Task<string> ParseElementAsync(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, List<KeyValuePair<int, Dictionary<string, object>>> dataSource)
+        protected static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Dictionary<string, object>>> dataSource)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (dataSource == null || dataSource.Count == 0) return string.Empty;
 
             var builder = new StringBuilder();
@@ -78,7 +84,7 @@ namespace SS.CMS.StlParser.StlElement
 
                     pageInfo.SqlItems.Push(dict);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(await TemplateUtility.GetSqlContentsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, ContextType.SqlContent, contextInfo));
+                    builder.Append(await TemplateUtility.GetSqlContentsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.SqlContent));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -123,7 +129,7 @@ namespace SS.CMS.StlParser.StlElement
 
                                     pageInfo.SqlItems.Push(dict);
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = await TemplateUtility.GetSqlContentsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, ContextType.SqlContent, contextInfo);
+                                    cellHtml = await TemplateUtility.GetSqlContentsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.SqlContent);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;

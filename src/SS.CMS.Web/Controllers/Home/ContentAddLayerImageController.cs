@@ -6,7 +6,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
 using SS.CMS.Core.Images;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Home
@@ -18,10 +17,16 @@ namespace SS.CMS.Web.Controllers.Home
         private const string RouteUpload = "actions/upload";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
 
-        public ContentAddLayerImageController(IAuthManager authManager)
+        public ContentAddLayerImageController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -34,10 +39,10 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return NotFound();
 
             return new GetResult
@@ -57,7 +62,7 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             if (request.File == null)
@@ -74,24 +79,24 @@ namespace SS.CMS.Web.Controllers.Home
 
             var filePath = request.File.FileName;
             var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-            var localDirectoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, fileExtName);
-            var localFileName = PathUtility.GetUploadFileName(site, filePath);
+            var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
+            var localFileName = _pathManager.GetUploadFileName(site, filePath);
             var path = PathUtils.Combine(localDirectoryPath, localFileName);
             var contentLength = request.File.Length;
 
-            if (!PathUtility.IsImageExtensionAllowed(site, fileExtName))
+            if (!_pathManager.IsImageExtensionAllowed(site, fileExtName))
             {
                 return this.Error("上传失败，上传图片格式不正确！");
             }
-            if (!PathUtility.IsImageSizeAllowed(site, contentLength))
+            if (!_pathManager.IsImageSizeAllowed(site, contentLength))
             {
                 return this.Error("上传失败，上传图片超出规定文件大小！");
             }
 
             request.File.CopyTo(new FileStream(path, FileMode.Create));
-            await FileUtility.AddWaterMarkAsync(site, path);
+            await FileUtility.AddWaterMarkAsync(_pathManager, site, path);
 
-            var url = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, path, true);
+            var url = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, path, true);
 
             return new UploadResult
             {
@@ -111,10 +116,10 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
             if (channelInfo == null) return this.Error("无法确定内容对应的栏目");
 
             var retVal = new List<string>();
@@ -125,9 +130,9 @@ namespace SS.CMS.Web.Controllers.Home
                 if (string.IsNullOrEmpty(filePath)) continue;
 
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var fileName = PathUtility.GetUploadFileName(site, filePath);
+                var fileName = _pathManager.GetUploadFileName(site, filePath);
 
-                var directoryPath = await PathUtility.GetUploadDirectoryPathAsync(site, fileExtName);
+                var directoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
                 var fixFilePath = PathUtils.Combine(directoryPath, Constants.TitleImageAppendix + fileName);
                 var editorFixFilePath = PathUtils.Combine(directoryPath, Constants.SmallImageAppendix + fileName);
 
@@ -153,9 +158,9 @@ namespace SS.CMS.Web.Controllers.Home
                     }
                 }
 
-                var imageUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
-                var fixImageUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, fixFilePath, true);
-                var editorFixImageUrl = await PageUtility.GetSiteUrlByPhysicalPathAsync(site, editorFixFilePath, true);
+                var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+                var fixImageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, fixFilePath, true);
+                var editorFixImageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, editorFixFilePath, true);
 
                 retVal.Add(request.IsFix ? fixImageUrl : imageUrl);
 
@@ -210,7 +215,7 @@ namespace SS.CMS.Web.Controllers.Home
 
             if (changed)
             {
-                await DataProvider.SiteRepository.UpdateAsync(site);
+                await _siteRepository.UpdateAsync(site);
             }
 
             return new SubmitResult

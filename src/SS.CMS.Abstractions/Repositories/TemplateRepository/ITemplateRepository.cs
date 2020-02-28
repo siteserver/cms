@@ -5,14 +5,14 @@ namespace SS.CMS.Abstractions
 {
     public partial interface ITemplateRepository : IRepository
     {
-        Task<int> InsertAsync(Site site, Template template, string templateContent, int adminId);
+        Task<int> InsertAsync(IPathManager pathManager, Site site, Template template, string templateContent, int adminId);
 
-        Task UpdateAsync(Site site, Template template, string templateContent, int adminId);
+        Task UpdateAsync(IPathManager pathManager, Site site, Template template, string templateContent, int adminId);
 
         Task SetDefaultAsync(int templateId);
 
-        Task DeleteAsync(Site site, int templateId);
+        Task DeleteAsync(IPathManager pathManager, Site site, int templateId);
 
-        Task CreateDefaultTemplateAsync(Site site, int adminId);
+        Task CreateDefaultTemplateAsync(IPathManager pathManager, Site site, int adminId);
     }
 }

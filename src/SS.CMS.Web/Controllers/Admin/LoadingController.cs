@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin
 {
@@ -11,10 +10,12 @@ namespace SS.CMS.Web.Controllers.Admin
     {
         private const string Route = "";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
 
-        public LoadingController(IAuthManager authManager)
+        public LoadingController(ISettingsManager settingsManager, IAuthManager authManager)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
         }
 
@@ -26,7 +27,7 @@ namespace SS.CMS.Web.Controllers.Admin
 
             return new StringResult
             {
-                Value = TranslateUtils.DecryptStringBySecretKey(request.RedirectUrl, WebConfigUtils.SecretKey)
+                Value = _settingsManager.Decrypt(request.RedirectUrl)
             };
         }
     }

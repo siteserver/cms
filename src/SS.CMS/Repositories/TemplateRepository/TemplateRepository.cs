@@ -22,7 +22,7 @@ namespace SS.CMS.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        public async Task<int> InsertAsync(Site site, Template template, string templateContent, int adminId)
+        public async Task<int> InsertAsync(IPathManager pathManager, Site site, Template template, string templateContent, int adminId)
         {
             if (template.Default)
             {
@@ -41,12 +41,12 @@ namespace SS.CMS.Repositories
                 .CachingRemove(GetListKey(site.Id))
             );
 
-            await WriteContentToTemplateFileAsync(site, template, templateContent, adminId);
+            await pathManager.WriteContentToTemplateFileAsync(site, template, templateContent, adminId);
 
             return template.Id;
         }
 
-        public async Task UpdateAsync(Site site, Template template, string templateContent, int adminId)
+        public async Task UpdateAsync(IPathManager pathManager, Site site, Template template, string templateContent, int adminId)
         {
             var original = await GetAsync(template.Id);
             if (original.Default != template.Default && template.Default)
@@ -67,7 +67,7 @@ namespace SS.CMS.Repositories
                 .CachingRemove(GetEntityKey(template.Id))
             );
 
-            await WriteContentToTemplateFileAsync(site, template, templateContent, adminId);
+            await pathManager.WriteContentToTemplateFileAsync(site, template, templateContent, adminId);
         }
 
         public async Task SetDefaultAsync(int templateId)
@@ -92,10 +92,10 @@ namespace SS.CMS.Repositories
             );
         }
 
-        public async Task DeleteAsync(Site site, int templateId)
+        public async Task DeleteAsync(IPathManager pathManager, Site site, int templateId)
         {
             var template = await GetAsync(templateId);
-            var filePath = await GetTemplateFilePathAsync(site, template);
+            var filePath = await pathManager.GetTemplateFilePathAsync(site, template);
 
             await _repository.DeleteAsync(templateId, Q
                 .CachingRemove(GetListKey(template.SiteId))
@@ -104,9 +104,9 @@ namespace SS.CMS.Repositories
             FileUtils.DeleteFileIfExists(filePath);
         }
 
-        public async Task CreateDefaultTemplateAsync(Site site, int adminId)
+        public async Task CreateDefaultTemplateAsync(IPathManager pathManager, Site site, int adminId)
         {
-            await InsertAsync(site, new Template
+            await InsertAsync(pathManager, site, new Template
             {
                 Id = 0,
                 SiteId = site.Id,
@@ -118,7 +118,7 @@ namespace SS.CMS.Repositories
                 Default = true
             }, string.Empty, adminId);
 
-            await InsertAsync(site, new Template
+            await InsertAsync(pathManager, site, new Template
             {
                 Id = 0,
                 SiteId = site.Id,
@@ -130,7 +130,7 @@ namespace SS.CMS.Repositories
                 Default = true
             }, string.Empty, adminId);
 
-            await InsertAsync(site, new Template
+            await InsertAsync(pathManager, site, new Template
             {
                 Id = 0,
                 SiteId = site.Id,

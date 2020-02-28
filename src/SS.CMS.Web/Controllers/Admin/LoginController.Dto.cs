@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 
 namespace SS.CMS.Web.Controllers.Admin
@@ -27,6 +28,28 @@ namespace SS.CMS.Web.Controllers.Admin
             public DateTime ExpiresAt { get; set; }
             public string SessionId { get; set; }
             public bool IsEnforcePasswordChange { get; set; }
+        }
+
+        public async Task<string> AdminRedirectCheckAsync()
+        {
+            var redirect = false;
+            var redirectUrl = string.Empty;
+
+            var config = await _configRepository.GetAsync();
+
+            if (string.IsNullOrEmpty(_settingsManager.Database.ConnectionString))
+            {
+                redirect = true;
+                redirectUrl = _pathManager.GetAdminUrl(InstallController.Route);
+            }
+            else if (config.Initialized &&
+                     config.DatabaseVersion != _settingsManager.ProductVersion)
+            {
+                redirect = true;
+                redirectUrl = _pathManager.GetAdminUrl(SyncDatabaseController.Route);
+            }
+
+            return redirect ? redirectUrl : null;
         }
     }
 }

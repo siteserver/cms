@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using SS.CMS.Framework;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Core
 {
@@ -9,7 +9,7 @@ namespace SS.CMS.Core
         public const int Preview = -99;     //预览
         public const int Default = 0;       //正常录入
 
-        public static async Task<string> GetSourceNameAsync(int siteId, int sourceId)
+        public static async Task<string> GetSourceNameAsync(IDatabaseManager databaseManager, int siteId, int sourceId)
         {
             if (sourceId == User)
             {
@@ -21,10 +21,10 @@ namespace SS.CMS.Core
             }
             if (sourceId <= 0) return string.Empty;
 
-            var sourceSiteId = await DataProvider.ChannelRepository.GetSiteIdAsync(sourceId);
+            var sourceSiteId = await databaseManager.ChannelRepository.GetSiteIdAsync(sourceId);
             if (sourceSiteId == siteId)
             {
-                var nodeNames = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(sourceSiteId, sourceId);
+                var nodeNames = await databaseManager.ChannelRepository.GetChannelNameNavigationAsync(sourceSiteId, sourceId);
                 if (!string.IsNullOrEmpty(nodeNames))
                 {
                     return "从栏目转移：" + nodeNames;
@@ -32,7 +32,7 @@ namespace SS.CMS.Core
             }
             else
             {
-                var siteInfo = await DataProvider.SiteRepository.GetAsync(sourceSiteId);
+                var siteInfo = await databaseManager.SiteRepository.GetAsync(sourceSiteId);
                 if (siteInfo != null)
                 {
                     return "从站点转移：" + siteInfo.SiteName;

@@ -2,17 +2,18 @@
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS.Core.Serialization.Atom.Atom.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core.Serialization.Components
 {
 	internal class RelatedFieldIe
-	{
+    {
+        private readonly IDatabaseManager _databaseManager;
 		private readonly Site _site;
 		private readonly string _directoryPath;
 
-        public RelatedFieldIe(Site site, string directoryPath)
-		{
+        public RelatedFieldIe(IDatabaseManager databaseManager, Site site, string directoryPath)
+        {
+            _databaseManager = databaseManager;
             _site = site;
 			_directoryPath = directoryPath;
 		}
@@ -23,11 +24,11 @@ namespace SS.CMS.Core.Serialization.Components
 
             var feed = ExportRelatedFieldInfo(relatedField);
 
-            var relatedFieldItemInfoList = await DataProvider.RelatedFieldItemRepository.GetListAsync(_site.Id, relatedField.Id, 0);
+            var relatedFieldItemInfoList = await _databaseManager.RelatedFieldItemRepository.GetListAsync(_site.Id, relatedField.Id, 0);
 
             foreach (var relatedFieldItemInfo in relatedFieldItemInfoList)
 			{
-                await AddAtomEntryAsync(feed, _site.Id, relatedFieldItemInfo, 1);
+                await AddAtomEntryAsync(_databaseManager, feed, _site.Id, relatedFieldItemInfo, 1);
 			}
 			feed.Save(filePath);
 		}
@@ -43,7 +44,7 @@ namespace SS.CMS.Core.Serialization.Components
             return feed;
 		}
 
-        private static async Task AddAtomEntryAsync(AtomFeed feed, int siteId, RelatedFieldItem relatedFieldItem, int level)
+        private static async Task AddAtomEntryAsync(IDatabaseManager databaseManager, AtomFeed feed, int siteId, RelatedFieldItem relatedFieldItem, int level)
 		{
 			var entry = AtomUtility.GetEmptyEntry();
 
@@ -57,11 +58,11 @@ namespace SS.CMS.Core.Serialization.Components
 
             feed.Entries.Add(entry);
 
-            var relatedFieldItemInfoList = await DataProvider.RelatedFieldItemRepository.GetListAsync(siteId, relatedFieldItem.RelatedFieldId, relatedFieldItem.Id);
+            var relatedFieldItemInfoList = await databaseManager.RelatedFieldItemRepository.GetListAsync(siteId, relatedFieldItem.RelatedFieldId, relatedFieldItem.Id);
 
             foreach (var itemInfo in relatedFieldItemInfoList)
             {
-                await AddAtomEntryAsync(feed, siteId, itemInfo, level + 1);
+                await AddAtomEntryAsync(databaseManager, feed, siteId, itemInfo, level + 1);
             }
 		}
 
@@ -83,20 +84,20 @@ namespace SS.CMS.Core.Serialization.Components
                     SiteId = _site.Id
                 };
 
-                var srcRelatedFieldInfo = await DataProvider.RelatedFieldRepository.GetRelatedFieldAsync(_site.Id, title);
+                var srcRelatedFieldInfo = await _databaseManager.RelatedFieldRepository.GetRelatedFieldAsync(_site.Id, title);
                 if (srcRelatedFieldInfo != null)
                 {
                     if (overwrite)
                     {
-                        await DataProvider.RelatedFieldRepository.DeleteAsync(srcRelatedFieldInfo.Id);
+                        await _databaseManager.RelatedFieldRepository.DeleteAsync(srcRelatedFieldInfo.Id);
                     }
                     else
                     {
-                        relatedFieldInfo.Title = await DataProvider.RelatedFieldRepository.GetImportTitleAsync(_site.Id, relatedFieldInfo.Title);
+                        relatedFieldInfo.Title = await _databaseManager.RelatedFieldRepository.GetImportTitleAsync(_site.Id, relatedFieldInfo.Title);
                     }
                 }
 
-                var relatedFieldId = await DataProvider.RelatedFieldRepository.InsertAsync(relatedFieldInfo);
+                var relatedFieldId = await _databaseManager.RelatedFieldRepository.InsertAsync(relatedFieldInfo);
 
                 var lastInertedLevel = 1;
                 var lastInsertedParentId = 0;
@@ -121,7 +122,7 @@ namespace SS.CMS.Core.Serialization.Components
                         ParentId = parentId,
                         Taxis = 0
                     };
-                    lastInsertedId = await DataProvider.RelatedFieldItemRepository.InsertAsync(relatedFieldItemInfo);
+                    lastInsertedId = await _databaseManager.RelatedFieldItemRepository.InsertAsync(relatedFieldItemInfo);
                     lastInsertedParentId = parentId;
                     lastInertedLevel = level;
 				}

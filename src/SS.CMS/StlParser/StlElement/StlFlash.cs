@@ -1,11 +1,8 @@
 ﻿using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SS.CMS.StlParser.Model;
-using SS.CMS.StlParser.Parsers;
 using SS.CMS.StlParser.Utility;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -45,7 +42,7 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "高度")]
         private const string Height = nameof(Height);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var isGetPicUrlFromAttribute = false;
             var channelIndex = string.Empty;
@@ -58,13 +55,13 @@ namespace SS.CMS.StlParser.StlElement
             var width = "100%";
             var height = "180";
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
-                    channelIndex = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    channelIndex = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (!string.IsNullOrEmpty(channelIndex))
                     {
                         isGetPicUrlFromAttribute = true;
@@ -72,7 +69,7 @@ namespace SS.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
-                    channelName = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    channelName = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (!string.IsNullOrEmpty(channelName))
                     {
                         isGetPicUrlFromAttribute = true;
@@ -124,11 +121,14 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, src, altSrc, width, height);
+            return await ParseImplAsync(parseManager, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, src, altSrc, width, height);
         }
 
-        private static async Task<object> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, string src, string altSrc, string width, string height)
+        private static async Task<object> ParseImplAsync(IParseManager parseManager, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, string src, string altSrc, string width, string height)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             object parsedContent = null;
 
             var contentId = 0;
@@ -137,7 +137,7 @@ namespace SS.CMS.StlParser.StlElement
             {
                 contentId = contextInfo.ContentId;
             }
-            var contentInfo = await contextInfo.GetContentAsync();
+            var contentInfo = await parseManager.GetContentAsync();
 
             var flashUrl = string.Empty;
             if (!string.IsNullOrEmpty(src))
@@ -155,10 +155,11 @@ namespace SS.CMS.StlParser.StlElement
                 }
                 else//获取栏目Flash
                 {
-                    var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                    var dataManager = new StlDataManager(parseManager.DatabaseManager);
+                    var channelId = await dataManager.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
-                    channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
-                    var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+                    channelId = await dataManager.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
+                    var channel = await parseManager.DatabaseManager.ChannelRepository.GetAsync(channelId);
 
                     flashUrl = channel.ImageUrl;
                 }
@@ -180,15 +181,15 @@ namespace SS.CMS.StlParser.StlElement
                 var extension = PathUtils.GetExtension(flashUrl);
                 if (FileUtils.IsImage(extension))
                 {
-                    parsedContent = await StlImage.ParseAsync(pageInfo, contextInfo);
+                    parsedContent = await StlImage.ParseAsync(parseManager);
                 }
                 else if (FileUtils.IsPlayer(extension))
                 {
-                    parsedContent = await StlPlayer.ParseAsync(pageInfo, contextInfo);
+                    parsedContent = await StlPlayer.ParseAsync(parseManager);
                 }
                 else
                 {                    
-                    flashUrl = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, flashUrl, pageInfo.IsLocal);
+                    flashUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, flashUrl, pageInfo.IsLocal);
 
                     parsedContent = $@"
 <embed src=""{flashUrl}"" allowfullscreen=""true"" width=""{width}"" height=""{height}"" align=""middle"" allowscriptaccess=""always"" type=""application/x-shockwave-flash"" />
@@ -336,10 +337,10 @@ namespace SS.CMS.StlParser.StlElement
 //                {
 //                    if (contentInfo == null)
 //                    {
-//                        var node = await DataProvider.ChannelRepository.GetAsync(contextInfo.Site.Id, contextInfo.ChannelId);
-//                        var tableName = DataProvider.ChannelRepository.GetTableName(contextInfo.Site, node);
+//                        var node = await GlobalSettings.ChannelRepository.GetAsync(contextInfo.Site.Id, contextInfo.ChannelId);
+//                        var tableName = GlobalSettings.ChannelRepository.GetTableName(contextInfo.Site, node);
 
-//                        //picUrl = DataProvider.ContentRepository.GetValue(tableName, contentId, type);
+//                        //picUrl = GlobalSettings.ContentRepository.GetValue(tableName, contentId, type);
 //                        picUrl = Body.GetValue(tableName, contentId, type);
 //                    }
 //                    else
@@ -352,7 +353,7 @@ namespace SS.CMS.StlParser.StlElement
 //                    var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
 //                    channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
-//                    var channel = await DataProvider.ChannelRepository.GetAsync(pageInfo.SiteId, channelId);
+//                    var channel = await GlobalSettings.ChannelRepository.GetAsync(pageInfo.SiteId, channelId);
 
 //                    picUrl = channel.ImageUrl;
 //                }

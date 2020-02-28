@@ -5,17 +5,17 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using SS.CMS.Abstractions;
-using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
-using SS.CMS.StlParser.Parsers;
 using SS.CMS.StlParser.StlElement;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.Utility
 {
     public static class StlParserUtility
     {
+        public const string RegexStringAll = @"{stl\.[^{}]*}|{stl:[^{}]*}|{content\.[^{}]*}|{channel\.[^{}]*}|{comment\.[^{}]*}|{request\.[^{}]*}|{sql\.[^{}]*}|{user\.[^{}]*}|{navigation\.[^{}]*}|{photo\.[^{}]*}";
+
         public const string PageContent = nameof(PageContent);
         public const string CountOfChannels = nameof(CountOfChannels);
         public const string CountOfContents = nameof(CountOfContents);
@@ -225,7 +225,7 @@ namespace SS.CMS.StlParser.Utility
 
             //Regex regex = new Regex(@"{[^{}]*}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
             //Regex regex = new Regex(@"{stl\.[^{}]*}|{content\.[^{}]*}|{channel\.[^{}]*}|{comment\.[^{}]*}|{request\.[^{}]*}|{sql\.[^{}]*}|{navigation\.[^{}]*}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-            var regex = new Regex(StlEntityParser.RegexStringAll, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+            var regex = new Regex(RegexStringAll, RegexOptions.Singleline | RegexOptions.IgnoreCase);
             var mc = regex.Matches(content);
             for (var i = 0; i < mc.Count; i++)
             {
@@ -344,7 +344,7 @@ namespace SS.CMS.StlParser.Utility
             return retVal;
         }
 
-        public static int ParseItemIndex(int dbItemIndex, string attributeName, ContextInfo contextInfo)
+        public static int ParseItemIndex(int dbItemIndex, string attributeName, ParseContext contextInfo)
         {
             var itemIndex = contextInfo.PageItemIndex + dbItemIndex + 1;
             if (attributeName.IndexOf('+') == -1 && attributeName.IndexOf('-') == -1) return itemIndex;
@@ -363,26 +363,26 @@ namespace SS.CMS.StlParser.Utility
             return itemIndex - substractNum;
         }
 
-        public static int GetItemIndex(ContextInfo contextInfo)
+        public static int GetItemIndex(ParseContext contextInfo)
         {
             var dbItemIndex = 0;
-            if (contextInfo.ContextType == ContextType.Channel)
+            if (contextInfo.ContextType == ParseType.Channel)
             {
                 dbItemIndex = contextInfo.ItemContainer.ChannelItem.Key;
             }
-            else if (contextInfo.ContextType == ContextType.Content)
+            else if (contextInfo.ContextType == ParseType.Content)
             {
                 dbItemIndex = contextInfo.ItemContainer.ContentItem.Key;
             }
-            else if (contextInfo.ContextType == ContextType.SqlContent)
+            else if (contextInfo.ContextType == ParseType.SqlContent)
             {
                 dbItemIndex = contextInfo.ItemContainer.SqlItem.Key;
             }
-            else if (contextInfo.ContextType == ContextType.Site)
+            else if (contextInfo.ContextType == ParseType.Site)
             {
                 dbItemIndex = contextInfo.ItemContainer.SiteItem.Key;
             }
-            else if (contextInfo.ContextType == ContextType.Each)
+            else if (contextInfo.ContextType == ParseType.Each)
             {
                 dbItemIndex = contextInfo.ItemContainer.EachItem.Key;
             }
@@ -395,32 +395,32 @@ namespace SS.CMS.StlParser.Utility
             return "ajaxElement_" + updaterId + "_" + StringUtils.GetRandomInt(100, 1000);
         }
 
-        public static async Task<string> GetStlCurrentUrlAsync(Site site, int channelId, int contentId, Content content, TemplateType templateType, int templateId, bool isLocal)
+        public static async Task<string> GetStlCurrentUrlAsync(IParseManager parseManager, Site site, int channelId, int contentId, Content content, TemplateType templateType, int templateId, bool isLocal)
         {
             var currentUrl = string.Empty;
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                currentUrl = await site.GetWebUrlAsync();
+                currentUrl = await parseManager.PathManager.GetWebUrlAsync(site);
             }
             else if (templateType == TemplateType.ContentTemplate)
             {
                 if (content == null)
                 {
-                    var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                    currentUrl = await PageUtility.GetContentUrlAsync(site, nodeInfo, contentId, isLocal);
+                    var nodeInfo = await parseManager.DatabaseManager.ChannelRepository.GetAsync(channelId);
+                    currentUrl = await parseManager.PathManager.GetContentUrlAsync(site, nodeInfo, contentId, isLocal);
                 }
                 else
                 {
-                    currentUrl = await PageUtility.GetContentUrlAsync(site, content, isLocal);
+                    currentUrl = await parseManager.PathManager.GetContentUrlAsync(site, content, isLocal);
                 }
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
-                currentUrl = await PageUtility.GetChannelUrlAsync(site, await DataProvider.ChannelRepository.GetAsync(channelId), isLocal);
+                currentUrl = await parseManager.PathManager.GetChannelUrlAsync(site, await parseManager.DatabaseManager.ChannelRepository.GetAsync(channelId), isLocal);
             }
             else if (templateType == TemplateType.FileTemplate)
             {
-                currentUrl = await PageUtility.GetFileUrlAsync(site, templateId, isLocal);
+                currentUrl = await parseManager.PathManager.GetFileUrlAsync(site, templateId, isLocal);
             }
             //currentUrl是当前页面的地址，前后台分离的时候，不允许带上protocol
             //return PageUtils.AddProtocolToUrl(currentUrl);

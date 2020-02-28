@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
@@ -24,15 +23,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
+            var channel = await _channelRepository.GetAsync(request.SiteId);
 
             var pluginIds = PluginContentManager.GetContentPluginIds(channel);
             var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
-            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
+            var columnsManager = new ColumnsManager(_databaseManager);
+            var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
 
             var offset = site.PageSize * (request.Page - 1);
             int total;
@@ -51,13 +51,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     isUser = true;
                 }
 
-                (total, pageSummaries) = await DataProvider.ContentRepository.AdvancedSearch(site, request.Page, request.ChannelIds, request.IsAllContents, request.StartDate, request.EndDate, request.Items, request.IsCheckedLevels, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames, isAdmin, adminId, isUser);
+                (total, pageSummaries) = await _contentRepository.AdvancedSearch(site, request.Page, request.ChannelIds, request.IsAllContents, request.StartDate, request.EndDate, request.Items, request.IsCheckedLevels, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames, isAdmin, adminId, isUser);
             }
             else
             {
                 var channelId = request.ChannelIds.FirstOrDefault();
-                var first = await DataProvider.ChannelRepository.GetAsync(channelId);
-                var summaries = await DataProvider.ContentRepository.GetSummariesAsync(site, first, request.IsAllContents);
+                var first = await _channelRepository.GetAsync(channelId);
+                var summaries = await _contentRepository.GetSummariesAsync(site, first, request.IsAllContents);
 
                 total = summaries.Count;
                 pageSummaries = summaries.Skip(offset).Take(site.PageSize).ToList();
@@ -69,11 +69,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 var sequence = offset + 1;
                 foreach (var summary in pageSummaries)
                 {
-                    var content = await DataProvider.ContentRepository.GetAsync(site, summary.ChannelId, summary.Id);
+                    var content = await _contentRepository.GetAsync(site, summary.ChannelId, summary.Id);
                     if (content == null) continue;
 
                     var pageContent =
-                        await ColumnsManager.CalculateContentListAsync(sequence++, site, request.SiteId, content, columns, pluginColumns);
+                        await columnsManager.CalculateContentListAsync(sequence++, site, request.SiteId, content, columns, pluginColumns);
 
                     var menus = await PluginMenuManager.GetContentMenusAsync(pluginIds, pageContent);
                     pageContent.Set("PluginMenus", menus);

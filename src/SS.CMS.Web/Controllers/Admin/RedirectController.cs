@@ -4,7 +4,7 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Api.Preview;
 using SS.CMS.Core;
-using SS.CMS.Framework;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin
 {
@@ -14,10 +14,16 @@ namespace SS.CMS.Web.Controllers.Admin
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
 
-        public RedirectController(IAuthManager authManager)
+        public RedirectController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -26,31 +32,31 @@ namespace SS.CMS.Web.Controllers.Admin
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             var url = string.Empty;
 
             if (request.SiteId > 0 && request.ChannelId > 0 && request.ContentId > 0)
             {
-                var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
-                url = await PageUtility.GetContentUrlAsync(site, channelInfo, request.ContentId, request.IsLocal);
+                var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
+                url = await _pathManager.GetContentUrlAsync(site, channelInfo, request.ContentId, request.IsLocal);
             }
             else if (request.SiteId > 0 && request.ChannelId > 0)
             {
-                var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
-                url = await PageUtility.GetChannelUrlAsync(site, channelInfo, request.IsLocal);
+                var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
+                url = await _pathManager.GetChannelUrlAsync(site, channelInfo, request.IsLocal);
             }
             else if (request.SiteId > 0 && request.FileTemplateId > 0)
             {
-                url = await PageUtility.GetFileUrlAsync(site, request.FileTemplateId, request.IsLocal);
+                url = await _pathManager.GetFileUrlAsync(site, request.FileTemplateId, request.IsLocal);
             }
             else if (request.SiteId > 0 && request.SpecialId > 0)
             {
-                url = await PageUtility.GetSpecialUrlAsync(site, request.SpecialId, request.IsLocal);
+                url = await _pathManager.GetSpecialUrlAsync(site, request.SpecialId, request.IsLocal);
             }
             else if (request.SiteId > 0)
             {
-                var channelInfo = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
-                url = await PageUtility.GetChannelUrlAsync(site, channelInfo, request.IsLocal);
+                var channelInfo = await _channelRepository.GetAsync(request.SiteId);
+                url = await _pathManager.GetChannelUrlAsync(site, channelInfo, request.IsLocal);
             }
 
             //if (site.IsSeparatedWeb)
@@ -81,14 +87,14 @@ namespace SS.CMS.Web.Controllers.Admin
             {
                 if (request.SiteId == 0)
                 {
-                    request.SiteId = await DataProvider.SiteRepository.GetIdByIsRootAsync();
+                    request.SiteId = await _siteRepository.GetIdByIsRootAsync();
                 }
                 if (request.SiteId != 0)
                 {
-                    site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+                    site = await _siteRepository.GetAsync(request.SiteId);
                     url = site.IsSeparatedWeb
                         ? ApiRoutePreview.GetSiteUrl(request.SiteId)
-                        : await site.GetWebUrlAsync();
+                        : await _pathManager.GetWebUrlAsync(site);
                 }
                 else
                 {

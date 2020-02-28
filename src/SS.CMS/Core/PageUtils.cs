@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core
 {
@@ -344,12 +343,12 @@ namespace SS.CMS.Core
 
         public static string GetAdminUrl(string relatedUrl)
         {
-            return Combine(ApplicationPath, WebConfigUtils.AdminDirectory, relatedUrl);
+            return Combine(ApplicationPath, GlobalSettings.SettingsManager.AdminDirectory, relatedUrl);
         }
 
         public static string GetHomeUrl(string relatedUrl)
         {
-            return Combine(ApplicationPath, WebConfigUtils.HomeDirectory, relatedUrl);
+            return Combine(ApplicationPath, GlobalSettings.SettingsManager.HomeDirectory, relatedUrl);
         }
 
         public static string GetSiteFilesUrl(string relatedUrl)
@@ -387,22 +386,9 @@ namespace SS.CMS.Core
             return GetSiteFilesUrl(Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
         }
 
-
-        public static string GetSettingsUrl(string className)
-        {
-            return GetAdminUrl(Combine("settings", className.ToCamelCase() + ".cshtml"));
-        }
-
-        
-
-        public static string GetLoginUrl()
-        {
-            return GetAdminUrl("login.cshtml");
-        }
-
         public static string GetRootUrlByPhysicalPath(string physicalPath)
         {
-            var requestPath = PathUtils.GetPathDifference(WebConfigUtils.PhysicalApplicationPath, physicalPath);
+            var requestPath = PathUtils.GetPathDifference(GlobalSettings.SettingsManager.WebRootPath, physicalPath);
             requestPath = requestPath.Replace(PathUtils.SeparatorChar, Constants.PageSeparatorChar);
             return GetRootUrl(requestPath);
         }

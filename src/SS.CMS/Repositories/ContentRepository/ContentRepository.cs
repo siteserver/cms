@@ -6,17 +6,21 @@ namespace SS.CMS.Repositories
 {
     public partial class ContentRepository : IContentRepository
     {
+        private readonly ISettingsManager _settingsManager;
         private readonly Repository<Content> _repository;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly ISiteRepository _siteRepository;
+        private readonly IErrorLogRepository _errorLogRepository;
 
-        public ContentRepository(ISettingsManager settingsManager, IAdministratorRepository administratorRepository, IChannelRepository channelRepository, ISiteRepository siteRepository)
+        public ContentRepository(ISettingsManager settingsManager, IAdministratorRepository administratorRepository, IChannelRepository channelRepository, ISiteRepository siteRepository, IErrorLogRepository errorLogRepository)
         {
+            _settingsManager = settingsManager;
             _repository = new Repository<Content>(settingsManager.Database, settingsManager.Redis);
             _administratorRepository = administratorRepository;
             _channelRepository = channelRepository;
             _siteRepository = siteRepository;
+            _errorLogRepository = errorLogRepository;
         }
 
         public IDatabase Database => _repository.Database;

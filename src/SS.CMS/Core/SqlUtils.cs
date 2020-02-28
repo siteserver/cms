@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Datory;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core
 {
@@ -35,24 +34,24 @@ namespace SS.CMS.Core
             return $"({sql})";
         }
 
-        public static string GetInStr(string columnName, string inStr)
+        public static string GetInStr(DatabaseType databaseType, string columnName, string inStr)
         {
             var retVal = string.Empty;
             inStr = AttackUtils.FilterSql(inStr);
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql)
             {
                 retVal = $"INSTR({columnName}, '{inStr}') > 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (databaseType == DatabaseType.SqlServer)
             {
                 retVal = $"CHARINDEX('{inStr}', {columnName}) > 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"POSITION('{inStr}' IN {columnName}) > 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (databaseType == DatabaseType.Oracle)
             {
                 retVal = $"INSTR({columnName}, '{inStr}') > 0";
             }
@@ -60,23 +59,23 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static string GetNotInStr(string columnName, string inStr)
+        public static string GetNotInStr(DatabaseType databaseType, string columnName, string inStr)
         {
             var retVal = string.Empty;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql)
             {
                 retVal = $"INSTR({columnName}, '{inStr}') = 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (databaseType == DatabaseType.SqlServer)
             {
                 retVal = $"CHARINDEX('{inStr}', {columnName}) = 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"POSITION('{inStr}' IN {columnName}) = 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (databaseType == DatabaseType.Oracle)
             {
                 retVal = $"INSTR({columnName}, '{inStr}') = 0";
             }
@@ -84,24 +83,24 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static string ToTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
+        public static string ToTopSqlString(DatabaseType databaseType, string tableName, string columns, string whereString, string orderString, int topN)
         {
             string retVal = $"SELECT {columns} FROM {tableName} {whereString} {orderString}";
             if (topN <= 0) return retVal;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql)
             {
                 retVal = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (databaseType == DatabaseType.SqlServer)
             {
                 retVal = $"SELECT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (databaseType == DatabaseType.Oracle)
             {
                 retVal = $@"SELECT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
             }
@@ -109,29 +108,29 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static string GetQuotedIdentifier(string identifier)
+        public static string GetQuotedIdentifier(DatabaseType databaseType, string identifier)
         {
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql)
             {
                 return $"`{identifier}`";
             }
 
-            return WebConfigUtils.DatabaseType == DatabaseType.SqlServer ? $"[{identifier}]" : identifier;
+            return databaseType == DatabaseType.SqlServer ? $"[{identifier}]" : identifier;
         }
 
-        public static string GetDateDiffLessThanYears(string fieldName, string years)
+        public static string GetDateDiffLessThanYears(DatabaseType databaseType, string fieldName, string years)
         {
-            return GetDateDiffLessThan(fieldName, years, "YEAR");
+            return GetDateDiffLessThan(databaseType, fieldName, years, "YEAR");
         }
 
-        public static string GetDateDiffLessThanMonths(string fieldName, string months)
+        public static string GetDateDiffLessThanMonths(DatabaseType databaseType, string fieldName, string months)
         {
-            return GetDateDiffLessThan(fieldName, months, "MONTH");
+            return GetDateDiffLessThan(databaseType, fieldName, months, "MONTH");
         }
 
-        public static string GetDateDiffLessThanDays(string fieldName, string days)
+        public static string GetDateDiffLessThanDays(DatabaseType databaseType, string fieldName, string days)
         {
-            return GetDateDiffLessThan(fieldName, days, "DAY");
+            return GetDateDiffLessThan(databaseType, fieldName, days, "DAY");
         }
 
         private static int GetSecondsByUnit(string unit)
@@ -160,23 +159,23 @@ namespace SS.CMS.Core
             return seconds;
         }
 
-        private static string GetDateDiffLessThan(string fieldName, string fieldValue, string unit)
+        private static string GetDateDiffLessThan(DatabaseType databaseType, string fieldName, string fieldValue, string unit)
         {
             var retVal = string.Empty;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql)
             {
                 retVal = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) < {fieldValue}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (databaseType == DatabaseType.SqlServer)
             {
                 retVal = $"DATEDIFF({unit}, {fieldName}, getdate()) < {fieldValue}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} < {fieldValue}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (databaseType == DatabaseType.Oracle)
             {
                 retVal = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) < {fieldValue}";
             }
@@ -184,23 +183,23 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static string GetDatePartYear(string fieldName)
+        public static string GetDatePartYear(DatabaseType databaseType, string fieldName)
         {
             var retVal = string.Empty;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql)
             {
                 retVal = $"DATE_FORMAT({fieldName}, '%Y')";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (databaseType == DatabaseType.SqlServer)
             {
                 retVal = $"DATEPART([YEAR], {fieldName})";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"date_part('year', {fieldName})";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (databaseType == DatabaseType.Oracle)
             {
                 retVal = $"EXTRACT(year from {fieldName})";
             }
@@ -208,23 +207,23 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static string GetDatePartMonth(string fieldName)
+        public static string GetDatePartMonth(DatabaseType databaseType, string fieldName)
         {
             var retVal = string.Empty;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql)
             {
                 retVal = $"DATE_FORMAT({fieldName}, '%c')";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (databaseType == DatabaseType.SqlServer)
             {
                 retVal = $"DATEPART([MONTH], {fieldName})";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"date_part('month', {fieldName})";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (databaseType == DatabaseType.Oracle)
             {
                 retVal = $"EXTRACT(month from {fieldName})";
             }            
@@ -232,23 +231,23 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static string GetDatePartDay(string fieldName)
+        public static string GetDatePartDay(DatabaseType databaseType, string fieldName)
         {
             var retVal = string.Empty;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql)
             {
                 retVal = $"DATE_FORMAT({fieldName}, '%e')";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (databaseType == DatabaseType.SqlServer)
             {
                 retVal = $"DATEPART([DAY], {fieldName})";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"date_part('day', {fieldName})";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (databaseType == DatabaseType.Oracle)
             {
                 retVal = $"EXTRACT(day from {fieldName})";
             }
@@ -256,23 +255,23 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static string GetComparableNow()
+        public static string GetComparableNow(DatabaseType databaseType)
         {
             var retVal = string.Empty;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql)
             {
                 retVal = "now()";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (databaseType == DatabaseType.SqlServer)
             {
                 retVal = "getdate()";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = "current_timestamp";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (databaseType == DatabaseType.Oracle)
             {
                 retVal = "sysdate";
             }
@@ -280,23 +279,23 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static string GetComparableDate(DateTime dateTime)
+        public static string GetComparableDate(DatabaseType databaseType, DateTime dateTime)
         {
             var retVal = string.Empty;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql)
             {
                 retVal = $"'{dateTime:yyyy-MM-dd}'";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (databaseType == DatabaseType.SqlServer)
             {
                 retVal = $"'{dateTime:yyyy-MM-dd}'";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"'{dateTime:yyyy-MM-dd}'";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (databaseType == DatabaseType.Oracle)
             {
                 retVal = $"to_date('{dateTime:yyyy-MM-dd}', 'yyyy-mm-dd')";
             }
@@ -304,23 +303,23 @@ namespace SS.CMS.Core
             return retVal;
         }
 
-        public static string GetComparableDateTime(DateTime dateTime)
+        public static string GetComparableDateTime(DatabaseType databaseType, DateTime dateTime)
         {
             var retVal = string.Empty;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql)
             {
                 retVal = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (databaseType == DatabaseType.SqlServer)
             {
                 retVal = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (databaseType == DatabaseType.Oracle)
             {
                 retVal = $"to_date('{dateTime:yyyy-MM-dd HH:mm:ss}', 'yyyy-mm-dd hh24:mi:ss')";
             }

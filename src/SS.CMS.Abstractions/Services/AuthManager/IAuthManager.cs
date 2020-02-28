@@ -57,9 +57,6 @@ namespace SS.CMS.Abstractions
 
         void UserLogout();
 
-        Task<string> AdminRedirectCheckAsync(bool checkInstall = false, bool checkDatabaseVersion = false,
-            bool checkLogin = false);
-
         string GetAccessToken(int userId, string userName, TimeSpan expiresAt);
 
         string GetAccessToken(int userId, string userName, DateTime expiresAt);

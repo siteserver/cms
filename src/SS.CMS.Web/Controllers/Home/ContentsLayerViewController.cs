@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Home
 {
@@ -12,10 +11,18 @@ namespace SS.CMS.Web.Controllers.Home
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerViewController(IAuthManager authManager)
+        public ContentsLayerViewController(IAuthManager authManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -28,20 +35,21 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var content = await DataProvider.ContentRepository.GetAsync(site, channel, request.ContentId);
+            var content = await _contentRepository.GetAsync(site, channel, request.ContentId);
             if (content == null) return NotFound();
 
             content.Set(ContentAttribute.CheckState, CheckManager.GetCheckState(site, content));
 
-            var channelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
+            var channelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
 
-            var attributes = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var columnsManager = new ColumnsManager(_databaseManager);
+            var attributes = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             return new GetResult
             {

@@ -3,29 +3,30 @@ using System.Linq;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS.Core.Serialization.Atom.Atom.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core.Serialization.Components
 {
     internal class SiteIe
     {
+        private readonly IDatabaseManager _databaseManager;
         private readonly Site _site;
         private readonly string _siteContentDirectoryPath;
         private readonly ChannelIe _channelIe;
         private readonly ContentIe _contentIe;
 
-        public SiteIe(Site site, string siteContentDirectoryPath)
+        public SiteIe(IPathManager pathManager, IDatabaseManager databaseManager, Site site, string siteContentDirectoryPath)
         {
+            _databaseManager = databaseManager;
             _siteContentDirectoryPath = siteContentDirectoryPath;
             _site = site;
-            _channelIe = new ChannelIe(site);
-            _contentIe = new ContentIe(site, siteContentDirectoryPath);
+            _channelIe = new ChannelIe(_databaseManager, site);
+            _contentIe = new ContentIe(pathManager, databaseManager, site, siteContentDirectoryPath);
         }
 
         public async Task<int> ImportChannelsAndContentsAsync(string filePath, bool isImportContents, bool isOverride, int theParentId, int adminId, string guid)
         {
-            var count = await DataProvider.ChannelRepository.ImportGetCountAsync(_site.Id, _site.Id);
-            var indexNameList = await DataProvider.ChannelRepository.ImportGetIndexNameListAsync(_site.Id);
+            var count = await _databaseManager.ChannelRepository.ImportGetCountAsync(_site.Id, _site.Id);
+            var indexNameList = await _databaseManager.ChannelRepository.ImportGetIndexNameListAsync(_site.Id);
 
             if (!FileUtils.IsFileExists(filePath)) return 0;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
@@ -54,7 +55,7 @@ namespace SS.CMS.Core.Serialization.Components
                 orderString = orderString.Substring(0, orderString.LastIndexOf("_", StringComparison.Ordinal));
             }
 
-            var parentId = await DataProvider.ChannelRepository.ImportGetIdAsync(_site.Id, orderString);
+            var parentId = await _databaseManager.ChannelRepository.ImportGetIdAsync(_site.Id, orderString);
             if (theParentId != 0)
             {
                 parentId = theParentId;
@@ -65,11 +66,11 @@ namespace SS.CMS.Core.Serialization.Components
             if (parentIdOriginal == 0)
             {
                 channelId = _site.Id;
-                var channel = await DataProvider.ChannelRepository.ImportGetAsync(_site.Id);
+                var channel = await _databaseManager.ChannelRepository.ImportGetAsync(_site.Id);
                 await _channelIe.ImportChannelAsync(channel, feed.AdditionalElements, parentId, indexNameList);
 
                 Caching.SetProcess(guid, $"导入栏目: {channel.ChannelName}");
-                await DataProvider.ChannelRepository.UpdateAsync(channel);
+                await _databaseManager.ChannelRepository.UpdateAsync(channel);
 
                 if (isImportContents)
                 {
@@ -86,7 +87,7 @@ namespace SS.CMS.Core.Serialization.Components
                 var theSameNameChannelId = 0;
                 if (isOverride)
                 {
-                    theSameNameChannelId = await DataProvider.ChannelRepository.ImportGetChannelIdByParentIdAndChannelNameAsync(_site.Id, parentId, channel.ChannelName, false);
+                    theSameNameChannelId = await _databaseManager.ChannelRepository.ImportGetChannelIdByParentIdAndChannelNameAsync(_site.Id, parentId, channel.ChannelName, false);
                     if (theSameNameChannelId != 0)
                     {
                         isUpdate = true;
@@ -95,19 +96,19 @@ namespace SS.CMS.Core.Serialization.Components
                 if (!isUpdate)
                 {
                     Caching.SetProcess(guid, $"导入栏目: {channel.ChannelName}");
-                    channelId = await DataProvider.ChannelRepository.InsertAsync(channel);
+                    channelId = await _databaseManager.ChannelRepository.InsertAsync(channel);
                 }
                 else
                 {
                     channelId = theSameNameChannelId;
-                    channel = await DataProvider.ChannelRepository.ImportGetAsync(theSameNameChannelId);
-                    //var tableName = DataProvider.ChannelRepository.GetTableName(_site, node);
+                    channel = await _databaseManager.ChannelRepository.ImportGetAsync(theSameNameChannelId);
+                    //var tableName = _databaseManager.ChannelRepository.GetTableName(_site, node);
                     await _channelIe.ImportChannelAsync(channel, feed.AdditionalElements, parentId, indexNameList);
 
                     Caching.SetProcess(guid, $"导入栏目: {channel.ChannelName}");
-                    await DataProvider.ChannelRepository.UpdateAsync(channel);
+                    await _databaseManager.ChannelRepository.UpdateAsync(channel);
 
-                    //DataProvider.ContentRepository.DeleteContentsByChannelId(_site.Id, tableName, theSameNameChannelId);
+                    //_databaseManager.ContentRepository.DeleteContentsByChannelId(_site.Id, tableName, theSameNameChannelId);
                 }
 
                 if (isImportContents)
@@ -121,10 +122,10 @@ namespace SS.CMS.Core.Serialization.Components
 
         public async Task ExportAsync(Site site, int channelId, bool isSaveContents)
         {
-            var channelInfo = await DataProvider.ChannelRepository.ImportGetAsync(channelId);
+            var channelInfo = await _databaseManager.ChannelRepository.ImportGetAsync(channelId);
             if (channelInfo == null) return;
 
-            var fileName = await DataProvider.ChannelRepository.ImportGetOrderStringInSiteAsync(site.Id, channelId);
+            var fileName = await _databaseManager.ChannelRepository.ImportGetOrderStringInSiteAsync(site.Id, channelId);
 
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + fileName + ".xml";
 
@@ -132,13 +133,13 @@ namespace SS.CMS.Core.Serialization.Components
 
             if (isSaveContents)
             {
-                var summaries = await DataProvider.ContentRepository.GetSummariesAsync(site, channelInfo, false);
+                var summaries = await _databaseManager.ContentRepository.GetSummariesAsync(site, channelInfo, false);
                 var contentIds = summaries.Select(x => x.Id).ToList();
                 contentIds.Reverse();
                 
                 foreach (var contentId in contentIds)
                 {
-                    var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
+                    var contentInfo = await _databaseManager.ContentRepository.GetAsync(site, channelInfo, contentId);
                     //ContentUtility.PutImagePaths(site, contentInfo as BackgroundContentInfo, collection);
                     var entry = _contentIe.ExportContentInfo(contentInfo);
                     feed.Entries.Add(entry);

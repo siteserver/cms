@@ -1,8 +1,5 @@
 ﻿using SS.CMS.Abstractions;
-using SS.CMS;
 using SS.CMS.Core;
-using SS.CMS.Framework;
-
 
 namespace SS.CMS.StlParser.Model
 {
@@ -10,7 +7,7 @@ namespace SS.CMS.StlParser.Model
     {
         public static DynamicInfo GetDynamicInfo(string value, int page, User user, string pathAndQuery)
         {
-            var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(TranslateUtils.DecryptStringBySecretKey(value, WebConfigUtils.SecretKey));
+            var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(GlobalSettings.SettingsManager.Decrypt(value));
             if (dynamicInfo.ChannelId == 0)
             {
                 dynamicInfo.ChannelId = dynamicInfo.SiteId;
@@ -34,7 +31,7 @@ namespace SS.CMS.StlParser.Model
                 return string.Empty;
             }
 
-            var values = TranslateUtils.EncryptStringBySecretKey(TranslateUtils.JsonSerialize(this), WebConfigUtils.SecretKey);
+            var values = GlobalSettings.SettingsManager.Encrypt(TranslateUtils.JsonSerialize(this));
             var display = inline ? "inline-block" : "block";
 
             return $@"

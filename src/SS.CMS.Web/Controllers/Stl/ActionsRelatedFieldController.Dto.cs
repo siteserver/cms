@@ -3,7 +3,6 @@ using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Stl
 {
@@ -22,7 +21,7 @@ namespace SS.CMS.Web.Controllers.Stl
 
             jsonString.Append("[");
 
-            var list = await DataProvider.RelatedFieldItemRepository.GetListAsync(siteId, relatedFieldId, parentId);
+            var list = await _relatedFieldItemRepository.GetListAsync(siteId, relatedFieldId, parentId);
             if (list.Any())
             {
                 foreach (var itemInfo in list)

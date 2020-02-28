@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Quartz;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Core
 {
@@ -8,7 +9,8 @@ namespace SS.CMS.Cli.Core
     {
         public async Task Execute(IJobExecutionContext context)
         {
-            await Application.RunExecuteAsync(Application.CommandName, Application.CommandArgs, context);
+            var application = CliUtils.GetApplication();
+            await application.RunExecuteAsync(Application.CommandName, Application.CommandArgs, context);
 
             if (context.NextFireTimeUtc != null)
             {

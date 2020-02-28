@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 
@@ -16,25 +17,24 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "每页显示的栏目数目")]
         private const string PageNum = nameof(PageNum);
 
-        private PageInfo _pageInfo;
-        private ContextInfo _contextInfo;
+        private IParseManager _parseManager;
         private ListInfo _listInfo;
         private List<KeyValuePair<int, Channel>> _channelList;
 
-        public static async Task<StlPageChannels> GetAsync(string stlPageChannelsElement, PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<StlPageChannels> GetAsync(string stlPageChannelsElement, IParseManager parseManager)
         {
             var stlPageChannels = new StlPageChannels
             {
-                _pageInfo = pageInfo
+                _parseManager = parseManager
             };
 
             var stlElementInfo = StlParserUtility.ParseStlElement(stlPageChannelsElement);
 
-            stlPageChannels._contextInfo = contextInfo.Clone(stlPageChannelsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+            stlPageChannels._parseManager.ContextInfo = parseManager.ContextInfo.Clone(stlPageChannelsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
-            stlPageChannels._listInfo = await ListInfo.GetListInfoAsync(pageInfo, stlPageChannels._contextInfo, ContextType.Channel);
+            stlPageChannels._listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Channel);
 
-            stlPageChannels._channelList = await GetChannelsDataSourceAsync(stlPageChannels._pageInfo, stlPageChannels._contextInfo, stlPageChannels._listInfo);
+            stlPageChannels._channelList = await GetChannelsDataSourceAsync(parseManager, stlPageChannels._listInfo);
 
             //stlPageChannels.DataSet = await StlDataUtility.GetPageChannelsDataSetAsync(pageInfo.SiteId, channelId, stlPageChannels._listInfo.GroupChannel, stlPageChannels._listInfo.GroupChannelNot, stlPageChannels._listInfo.IsImageExists, stlPageChannels._listInfo.IsImage, stlPageChannels._listInfo.StartNum, stlPageChannels._listInfo.TotalNum, stlPageChannels._listInfo.Order, stlPageChannels._listInfo.Scope, isTotal);
 
@@ -59,19 +59,19 @@ namespace SS.CMS.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            _contextInfo.PageItemIndex = currentPageIndex * _listInfo.PageNum;
+            _parseManager.ContextInfo.PageItemIndex = currentPageIndex * _listInfo.PageNum;
 
             if (_channelList != null && _channelList.Count > 0)
             {
                 var pageChannelList = pageCount > 1
-                    ? _channelList.Skip(_contextInfo.PageItemIndex).Take(_listInfo.PageNum).ToList()
+                    ? _channelList.Skip(_parseManager.ContextInfo.PageItemIndex).Take(_listInfo.PageNum).ToList()
                     : _channelList;
 
-                parsedContent = await ParseElementAsync(_pageInfo, _contextInfo, _listInfo, pageChannelList);
+                parsedContent = await ParseElementAsync(_parseManager, _listInfo, pageChannelList);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex
-            _contextInfo.PageItemIndex = 0;
+            _parseManager.ContextInfo.PageItemIndex = 0;
 
             return parsedContent;
         }

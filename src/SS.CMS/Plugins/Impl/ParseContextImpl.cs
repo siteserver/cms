@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using SS.CMS.StlParser.Model;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 
 namespace SS.CMS.Plugins.Impl
 {
@@ -13,12 +14,12 @@ namespace SS.CMS.Plugins.Impl
 
         }
 
-        public async Task LoadAsync(string stlOuterHtml, string stlInnerHtml, NameValueCollection stlAttributes, PageInfo pageInfo, ContextInfo contextInfo)
+        public async Task LoadAsync(IContentRepository contentRepository, string stlOuterHtml, string stlInnerHtml, NameValueCollection stlAttributes, ParsePage pageInfo, ParseContext contextInfo)
         {
             SiteId = contextInfo.Site.Id;
             ChannelId = contextInfo.ChannelId;
             ContentId = contextInfo.ContentId;
-            ContentInfo = await contextInfo.GetContentAsync();
+            //ContentInfo = await contextInfo.GetContentAsync(contentRepository);
             TemplateType = pageInfo.Template.TemplateType;
             TemplateId = pageInfo.Template.Id;
 

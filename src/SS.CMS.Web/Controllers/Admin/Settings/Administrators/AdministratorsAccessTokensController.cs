@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 using SS.CMS.Web.Extensions;
 
@@ -16,10 +14,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IAccessTokenRepository _accessTokenRepository;
+        private readonly IAdministratorRepository _administratorRepository;
 
-        public AdministratorsAccessTokensController(IAuthManager authManager)
+        public AdministratorsAccessTokensController(IAuthManager authManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository)
         {
             _authManager = authManager;
+            _accessTokenRepository = accessTokenRepository;
+            _administratorRepository = administratorRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -36,7 +38,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             if (await auth.AdminPermissions.IsSuperAdminAsync())
             {
-                adminNames = (await DataProvider.AdministratorRepository.GetUserNameListAsync()).ToList();
+                adminNames = await _administratorRepository.GetUserNameListAsync();
             }
             else
             {
@@ -53,7 +55,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 }
             }
 
-            var tokens = await DataProvider.AccessTokenRepository.GetAccessTokenListAsync();
+            var tokens = await _accessTokenRepository.GetAccessTokenListAsync();
 
             return new ListResult
             {
@@ -74,8 +76,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            await DataProvider.AccessTokenRepository.DeleteAsync(request.Id);
-            var list = await DataProvider.AccessTokenRepository.GetAccessTokenListAsync();
+            await _accessTokenRepository.DeleteAsync(request.Id);
+            var list = await _accessTokenRepository.GetAccessTokenListAsync();
 
             return new TokensResult
             {
@@ -95,9 +97,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             if (itemObj.Id > 0)
             {
-                var tokenInfo = await DataProvider.AccessTokenRepository.GetAsync(itemObj.Id);
+                var tokenInfo = await _accessTokenRepository.GetAsync(itemObj.Id);
 
-                if (tokenInfo.Title != itemObj.Title && await DataProvider.AccessTokenRepository.IsTitleExistsAsync(itemObj.Title))
+                if (tokenInfo.Title != itemObj.Title && await _accessTokenRepository.IsTitleExistsAsync(itemObj.Title))
                 {
                     return this.Error("保存失败，已存在相同标题的API密钥！");
                 }
@@ -106,13 +108,13 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 tokenInfo.AdminName = itemObj.AdminName;
                 tokenInfo.Scopes = itemObj.Scopes;
 
-                await DataProvider.AccessTokenRepository.UpdateAsync(tokenInfo);
+                await _accessTokenRepository.UpdateAsync(tokenInfo);
 
                 await auth.AddAdminLogAsync("修改API密钥", $"Access Token:{tokenInfo.Title}");
             }
             else
             {
-                if (await DataProvider.AccessTokenRepository.IsTitleExistsAsync(itemObj.Title))
+                if (await _accessTokenRepository.IsTitleExistsAsync(itemObj.Title))
                 {
                     return this.Error("保存失败，已存在相同标题的API密钥！");
                 }
@@ -124,12 +126,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                     Scopes = itemObj.Scopes
                 };
 
-                await DataProvider.AccessTokenRepository.InsertAsync(tokenInfo);
+                await _accessTokenRepository.InsertAsync(tokenInfo);
 
                 await auth.AddAdminLogAsync("新增API密钥", $"Access Token:{tokenInfo.Title}");
             }
 
-            var list = await DataProvider.AccessTokenRepository.GetAccessTokenListAsync();
+            var list = await _accessTokenRepository.GetAccessTokenListAsync();
 
             return new TokensResult
             {

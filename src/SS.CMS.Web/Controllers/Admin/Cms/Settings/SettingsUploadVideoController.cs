@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -13,10 +12,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
 
-        public SettingsUploadVideoController(IAuthManager authManager)
+        public SettingsUploadVideoController(IAuthManager authManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -29,7 +30,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             return new ObjectResult<Site>
             {
@@ -47,7 +48,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             site.VideoUploadDirectoryName = request.VideoUploadDirectoryName;
             site.VideoUploadDateFormatString = request.VideoUploadDateFormatString;
@@ -55,7 +56,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             site.VideoUploadTypeCollection = request.VideoUploadTypeCollection.Replace("|", ",");
             site.VideoUploadTypeMaxSize = request.VideoUploadTypeMaxSize;
 
-            await DataProvider.SiteRepository.UpdateAsync(site);
+            await _siteRepository.UpdateAsync(site);
 
             await auth.AddSiteLogAsync(request.SiteId, "修改视频上传设置");
 

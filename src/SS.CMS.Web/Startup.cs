@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -20,7 +21,6 @@ namespace SS.CMS.Web
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _config;
-        private ISettingsManager _settingsManager;
 
         public Startup(IWebHostEnvironment env, IConfiguration config)
         {
@@ -30,9 +30,7 @@ namespace SS.CMS.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            _settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath);
-
-            GlobalSettings.Load(_settingsManager);
+            var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath);
 
             services.AddRazorPages(config => { config.RootDirectory = $"/{Constants.AdminRootDirectory}"; });
 
@@ -43,7 +41,7 @@ namespace SS.CMS.Web
                 options.MultipartBodyLengthLimit = 60000000;//60MB
             });
 
-            services.AddCache(_settingsManager.Redis.ConnectionString);
+            services.AddCache(settingsManager.Redis.ConnectionString);
 
             services.AddRepositories();
             services.AddServices();
@@ -57,12 +55,23 @@ namespace SS.CMS.Web
                 });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider provider)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            var settingsManager = provider.GetRequiredService<ISettingsManager>();
+            var errorLogRepository = provider.GetRequiredService<IErrorLogRepository>();
+            var contentRepository = provider.GetRequiredService<IContentRepository>();
+            var pluginRepository = provider.GetRequiredService<IPluginRepository>();
+            var tableStyleRepository = provider.GetRequiredService<ITableStyleRepository>();
+            GlobalSettings.Load(settingsManager,
+                errorLogRepository,
+                contentRepository,
+                pluginRepository,
+                tableStyleRepository);
 
             app.UseExceptionHandler(a => a.Run(async context =>
             {
@@ -81,17 +90,23 @@ namespace SS.CMS.Web
 
             app.UseHttpsRedirection();
 
+            app.UseDefaultFiles(new DefaultFilesOptions
+            {
+                DefaultFileNames = new List<string>
+                {
+                    "index.html"
+                }
+            });
             app.UseStaticFiles();
-            app.UseDefaultFiles();
 
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
                     Path.Combine(Directory.GetCurrentDirectory(), $"{Constants.AdminRootDirectory}/assets")),
-                RequestPath = "/" + _settingsManager.AdminDirectory + "/assets"
+                RequestPath = "/" + settingsManager.AdminDirectory + "/assets"
             });
 
-            app.Map("/" + _settingsManager.AdminDirectory, admin =>
+            app.Map("/" + settingsManager.AdminDirectory, admin =>
             {
                 admin.UseRouting();
                 admin.UseEndpoints(endpoints => { endpoints.MapRazorPages(); });

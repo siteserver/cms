@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
-using SS.CMS;
+using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using SS.CMS.Api.Stl;
-using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -22,27 +21,26 @@ namespace SS.CMS.StlParser.StlElement
         public const string MaxPage = nameof(MaxPage);
 
         private string StlPageSqlContentsElement { get; set; }
-        private PageInfo PageInfo { get; set; }
-        private ContextInfo ContextInfo { get; set; }
+        private IParseManager ParseManager { get; set; }
         private ListInfo ListInfo { get; set; }
         private string SqlString { get; set; }
         //private readonly DataSet _dataSet;
 
-        public static async Task<StlPageSqlContents> GetAsync(string stlPageSqlContentsElement, PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<StlPageSqlContents> GetAsync(string stlPageSqlContentsElement, IParseManager parseManager)
         {
             var stlPageSqlContents = new StlPageSqlContents
             {
-                StlPageSqlContentsElement = stlPageSqlContentsElement, 
-                PageInfo = pageInfo
+                StlPageSqlContentsElement = stlPageSqlContentsElement,
+                ParseManager = parseManager
             };
 
             try
             {
                 var stlElementInfo = StlParserUtility.ParseStlElement(stlPageSqlContentsElement);
 
-                stlPageSqlContents.ContextInfo = contextInfo.Clone(stlPageSqlContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+                parseManager.ContextInfo = parseManager.ContextInfo.Clone(stlPageSqlContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
-                stlPageSqlContents.ListInfo = await ListInfo.GetListInfoAsync(stlPageSqlContents.PageInfo, stlPageSqlContents.ContextInfo, ContextType.SqlContent);
+                stlPageSqlContents.ListInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.SqlContent);
 
                 stlPageSqlContents.SqlString = stlPageSqlContents.ListInfo.QueryString;
                 if (string.IsNullOrWhiteSpace(stlPageSqlContents.ListInfo.Order))
@@ -66,7 +64,7 @@ namespace SS.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                await LogUtils.AddStlErrorLogAsync(pageInfo, ElementName, stlPageSqlContentsElement, ex);
+                await parseManager.AddStlErrorLogAsync(parseManager.PageInfo, ElementName, stlPageSqlContentsElement, ex);
                 stlPageSqlContents.ListInfo = new ListInfo();
             }
 
@@ -80,7 +78,7 @@ namespace SS.CMS.StlParser.StlElement
             try
             {
                 //totalNum = DatabaseApi.Instance.GetPageTotalCount(SqlString);
-                totalNum = DataProvider.DatabaseRepository.GetPageTotalCount(SqlString);
+                totalNum = ParseManager.DatabaseManager.GetPageTotalCount(SqlString);
                 if (ListInfo.PageNum != 0 && ListInfo.PageNum < totalNum)//需要翻页
                 {
                     pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(ListInfo.PageNum)));//需要生成的总页数
@@ -109,12 +107,14 @@ namespace SS.CMS.StlParser.StlElement
 
         public async Task<string> ParseAsync(int totalNum, int currentPageIndex, int pageCount, bool isStatic)
         {
+            var pageInfo = ParseManager.PageInfo;
+
             if (isStatic)
             {
                 var maxPage = ListInfo.MaxPage;
                 if (maxPage == 0)
                 {
-                    maxPage = PageInfo.Site.CreateStaticMaxPage;
+                    maxPage = pageInfo.Site.CreateStaticMaxPage;
                 }
                 if (maxPage > 0 && currentPageIndex + 1 > maxPage)
                 {
@@ -124,18 +124,18 @@ namespace SS.CMS.StlParser.StlElement
 
             var parsedContent = string.Empty;
 
-            ContextInfo.PageItemIndex = currentPageIndex * ListInfo.PageNum;
+            ParseManager.ContextInfo.PageItemIndex = currentPageIndex * ListInfo.PageNum;
 
             try
             {
                 if (!string.IsNullOrEmpty(SqlString))
                 {
                     //var pageSqlString = DatabaseApi.Instance.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
-                    var pageSqlString = DataProvider.DatabaseRepository.GetStlPageSqlString(SqlString, ListInfo.Order, totalNum, ListInfo.PageNum, currentPageIndex);
+                    var pageSqlString = ParseManager.DatabaseManager.GetStlPageSqlString(SqlString, ListInfo.Order, totalNum, ListInfo.PageNum, currentPageIndex);
 
-                    var dataSource = DataProvider.DatabaseRepository.ParserGetSqlDataSource(ConnectionString, pageSqlString);
+                    var dataSource = ParseManager.DatabaseManager.ParserGetSqlDataSource(ConnectionString, pageSqlString);
 
-                    parsedContent = await ParseElementAsync(PageInfo, ContextInfo, ListInfo, dataSource);
+                    parsedContent = await ParseElementAsync(ParseManager, ListInfo, dataSource);
                 }
 
                 //if (_dataSet != null)
@@ -226,17 +226,19 @@ namespace SS.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = await LogUtils.AddStlErrorLogAsync(PageInfo, ElementName, StlPageSqlContentsElement, ex);
+                parsedContent = await ParseManager.AddStlErrorLogAsync(ParseManager.PageInfo, ElementName, StlPageSqlContentsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex
-            ContextInfo.PageItemIndex = 0;
+            ParseManager.ContextInfo.PageItemIndex = 0;
 
             return parsedContent;
         }
 
         private async Task<string> ParseDynamicAsync(int totalNum, int currentPageIndex, int pageCount)
         {
+            var pageInfo = ParseManager.PageInfo;
+
             var loading = ListInfo.LoadingTemplate;
             if (string.IsNullOrEmpty(loading))
             {
@@ -250,11 +252,11 @@ namespace SS.CMS.StlParser.StlElement
 </div>";
             }
 
-            await PageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
 
-            var ajaxDivId = StlParserUtility.GetAjaxDivId(PageInfo.UniqueId);
-            var apiUrl = ApiRouteActionsPageContents.GetUrl(PageInfo.ApiUrl);
-            var apiParameters = ApiRouteActionsPageContents.GetParameters(PageInfo.SiteId, PageInfo.PageChannelId, PageInfo.Template.Id, totalNum, pageCount, currentPageIndex, StlPageSqlContentsElement);
+            var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
+            var apiUrl = ApiRouteActionsPageContents.GetUrl(pageInfo.ApiUrl);
+            var apiParameters = ApiRouteActionsPageContents.GetParameters(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.Template.Id, totalNum, pageCount, currentPageIndex, StlPageSqlContentsElement);
 
             var builder = new StringBuilder();
             builder.Append($@"<div id=""{ajaxDivId}"">");

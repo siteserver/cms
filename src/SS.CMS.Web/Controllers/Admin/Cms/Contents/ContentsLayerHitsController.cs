@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -13,10 +12,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerHitsController(IAuthManager authManager)
+        public ContentsLayerHitsController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -31,15 +36,15 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
 
             foreach (var summary in summaries)
             {
-                var channel = await DataProvider.ChannelRepository.GetAsync(summary.ChannelId);
-                var content = await DataProvider.ContentRepository.GetAsync(site, channel, summary.Id);
+                var channel = await _channelRepository.GetAsync(summary.ChannelId);
+                var content = await _contentRepository.GetAsync(site, channel, summary.Id);
                 if (content == null) continue;
 
                 if (request.IsAdd)
@@ -52,7 +57,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 }
 
                 if (content.Hits < 0) content.Hits = 0;
-                await DataProvider.ContentRepository.UpdateAsync(site, channel, content);
+                await _contentRepository.UpdateAsync(site, channel, content);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, "设置内容点击量");

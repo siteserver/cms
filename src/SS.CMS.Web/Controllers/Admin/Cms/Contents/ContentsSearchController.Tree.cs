@@ -5,7 +5,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -22,13 +21,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
-            var root = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel, async summary =>
+            var channel = await _channelRepository.GetAsync(request.SiteId);
+            var root = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
-                var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
+                var count = await _contentRepository.GetCountAsync(site, summary);
                 return new
                 {
                     Count = count
@@ -37,12 +36,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
             if (!request.Reload)
             {
-                var siteUrl = await PageUtility.GetSiteUrlAsync(site, true);
-                var groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(request.SiteId);
-                var tagNames = await DataProvider.ContentTagRepository.GetTagNamesAsync(request.SiteId);
+                var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
+                var groupNames = await _contentGroupRepository.GetGroupNamesAsync(request.SiteId);
+                var tagNames = await _contentTagRepository.GetTagNamesAsync(request.SiteId);
                 var checkedLevels = ElementUtils.GetCheckBoxes(CheckManager.GetCheckedLevels(site, true, site.CheckContentLevel, true));
 
-                var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
+                var columnsManager = new ColumnsManager(_databaseManager);
+                var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
                 var permissions = new Permissions
                 {
                     IsAdd = await auth.AdminPermissions.HasChannelPermissionsAsync(site.Id, channel.Id, Constants.ChannelPermissions.ContentAdd),

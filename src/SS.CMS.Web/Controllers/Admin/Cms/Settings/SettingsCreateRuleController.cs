@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
@@ -15,12 +14,20 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string RouteGet = "{siteId:int}/{channelId:int}";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public SettingsCreateRuleController(IAuthManager authManager, ICreateManager createManager)
+        public SettingsCreateRuleController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -34,17 +41,17 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.SiteId);
-            var cascade = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel, async summary =>
+            var channel = await _channelRepository.GetAsync(request.SiteId);
+            var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
-                var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
-                var entity = await DataProvider.ChannelRepository.GetAsync(summary.Id);
-                var filePath = await PageUtility.GetInputChannelUrlAsync(site, entity, false);
+                var count = await _contentRepository.GetCountAsync(site, summary);
+                var entity = await _channelRepository.GetAsync(summary.Id);
+                var filePath = await _pathManager.GetInputChannelUrlAsync(site, entity, false);
                 var contentFilePathRule = string.IsNullOrEmpty(entity.ContentFilePathRule)
-                    ? await PathUtility.GetContentFilePathRuleAsync(site, summary.Id)
+                    ? await _pathManager.GetContentFilePathRuleAsync(site, summary.Id)
                     : entity.ContentFilePathRule;
                 return new
                 {
@@ -73,15 +80,15 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var channel = await _channelRepository.GetAsync(channelId);
 
-            var linkTypes = PageUtility.GetLinkTypeSelects();
-            var filePath = string.IsNullOrEmpty(channel.FilePath) ? await PageUtility.GetInputChannelUrlAsync(site, channel, false) : channel.FilePath;
-            var channelFilePathRule = string.IsNullOrEmpty(channel.ChannelFilePathRule) ? await PathUtility.GetChannelFilePathRuleAsync(site, channelId) : channel.ChannelFilePathRule;
-            var contentFilePathRule = string.IsNullOrEmpty(channel.ContentFilePathRule) ? await PathUtility.GetContentFilePathRuleAsync(site, channelId) : channel.ContentFilePathRule;
+            var linkTypes = _pathManager.GetLinkTypeSelects();
+            var filePath = string.IsNullOrEmpty(channel.FilePath) ? await _pathManager.GetInputChannelUrlAsync(site, channel, false) : channel.FilePath;
+            var channelFilePathRule = string.IsNullOrEmpty(channel.ChannelFilePathRule) ? await _pathManager.GetChannelFilePathRuleAsync(site, channelId) : channel.ChannelFilePathRule;
+            var contentFilePathRule = string.IsNullOrEmpty(channel.ContentFilePathRule) ? await _pathManager.GetContentFilePathRuleAsync(site, channelId) : channel.ContentFilePathRule;
 
             return new ChannelResult
             {
@@ -104,10 +111,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
 
             if (request.ChannelId != request.SiteId)
             {
@@ -127,14 +134,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                         request.FilePath = PageUtils.Combine(request.FilePath, "index.html");
                     }
 
-                    var filePathArrayList = await DataProvider.ChannelRepository.GetAllFilePathBySiteIdAsync(request.SiteId);
+                    var filePathArrayList = await _channelRepository.GetAllFilePathBySiteIdAsync(request.SiteId);
                     if (filePathArrayList.Contains(request.FilePath))
                     {
                         return this.Error("栏目修改失败，栏目页面路径已存在！");
                     }
                 }
 
-                if (request.FilePath != await PageUtility.GetInputChannelUrlAsync(site, channel, false))
+                if (request.FilePath != await _pathManager.GetInputChannelUrlAsync(site, channel, false))
                 {
                     channel.FilePath = request.FilePath;
                 }
@@ -166,28 +173,28 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 }
             }
 
-            if (request.ChannelFilePathRule != await PathUtility.GetChannelFilePathRuleAsync(site, request.ChannelId))
+            if (request.ChannelFilePathRule != await _pathManager.GetChannelFilePathRuleAsync(site, request.ChannelId))
             {
                 channel.ChannelFilePathRule = request.ChannelFilePathRule;
             }
-            if (request.ContentFilePathRule != await PathUtility.GetContentFilePathRuleAsync(site, request.ChannelId))
+            if (request.ContentFilePathRule != await _pathManager.GetContentFilePathRuleAsync(site, request.ChannelId))
             {
                 channel.ContentFilePathRule = request.ContentFilePathRule;
             }
 
-            await DataProvider.ChannelRepository.UpdateAsync(channel);
+            await _channelRepository.UpdateAsync(channel);
 
             await _createManager.CreateChannelAsync(request.SiteId, request.ChannelId);
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "设置页面生成规则", $"栏目:{channel.ChannelName}");
 
-            var cascade = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel, async (summary) =>
+            var cascade = await _channelRepository.GetCascadeAsync(site, channel, async (summary) =>
             {
-                var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
-                var entity = await DataProvider.ChannelRepository.GetAsync(summary.Id);
-                var filePath = await PageUtility.GetInputChannelUrlAsync(site, entity, false);
+                var count = await _contentRepository.GetCountAsync(site, summary);
+                var entity = await _channelRepository.GetAsync(summary.Id);
+                var filePath = await _pathManager.GetInputChannelUrlAsync(site, entity, false);
                 var contentFilePathRule = string.IsNullOrEmpty(entity.ContentFilePathRule)
-                    ? await PathUtility.GetContentFilePathRuleAsync(site, summary.Id)
+                    ? await _pathManager.GetContentFilePathRuleAsync(site, summary.Id)
                     : entity.ContentFilePathRule;
                 return new
                 {

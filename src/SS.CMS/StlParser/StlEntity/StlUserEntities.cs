@@ -1,9 +1,9 @@
 ﻿using SS.CMS.Abstractions;
 using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlEntity
 {
@@ -12,9 +12,11 @@ namespace SS.CMS.StlParser.StlEntity
 	{
         public const string EntityName = "user";
 
-	    internal static string Parse(string stlEntity, PageInfo pageInfo)
+	    internal static string Parse(string stlEntity, IParseManager parseManager)
         {
-	        var parsedContent = string.Empty;
+            var pageInfo = parseManager.PageInfo;
+
+            var parsedContent = string.Empty;
 	        if (pageInfo?.User == null) return string.Empty;
 
 	        try
@@ -56,7 +58,7 @@ namespace SS.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.AvatarUrl), attributeName))
                 {
-                    parsedContent = DataProvider.UserRepository.GetUserAvatarUrl(pageInfo.User);
+                    parsedContent = parseManager.DatabaseManager.UserRepository.GetUserAvatarUrl(pageInfo.User);
                 }
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.Gender), attributeName))
                 {

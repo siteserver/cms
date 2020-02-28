@@ -8,7 +8,6 @@ using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Core.Serialization;
 using SS.CMS.Web.Extensions;
 
@@ -22,10 +21,22 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string RouteExport = "actions/export";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public SettingsStyleChannelController(IAuthManager authManager)
+        public SettingsStyleChannelController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -39,13 +50,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
 
             var styles = new List<Style>();
-            foreach (var style in await DataProvider.TableStyleRepository.GetChannelStyleListAsync(channel))
+            foreach (var style in await _tableStyleRepository.GetChannelStyleListAsync(channel))
             {
                 styles.Add(new Style
                 {
@@ -62,9 +73,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             Cascade<int> cascade = null;
             if (request.ChannelId == request.SiteId)
             {
-                cascade = await DataProvider.ChannelRepository.GetCascadeAsync(site, channel, async summary =>
+                cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
                 {
-                    var count = await DataProvider.ContentRepository.GetCountAsync(site, summary);
+                    var count = await _contentRepository.GetCountAsync(site, summary);
                     return new
                     {
                         Count = count
@@ -75,8 +86,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             return new GetResult
             {
                 Styles = styles,
-                TableName = DataProvider.ChannelRepository.TableName,
-                RelatedIdentities = DataProvider.TableStyleRepository.GetRelatedIdentities(channel),
+                TableName = _channelRepository.TableName,
+                RelatedIdentities = _tableStyleRepository.GetRelatedIdentities(channel),
                 Channels = cascade
             };
         }
@@ -92,12 +103,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
 
-            await DataProvider.TableStyleRepository.DeleteAsync(request.ChannelId, DataProvider.ChannelRepository.TableName, request.AttributeName);
+            await _tableStyleRepository.DeleteAsync(request.ChannelId, _channelRepository.TableName, request.AttributeName);
 
             var styles = new List<Style>();
-            foreach (var style in await DataProvider.TableStyleRepository.GetChannelStyleListAsync(channel))
+            foreach (var style in await _tableStyleRepository.GetChannelStyleListAsync(channel))
             {
                 styles.Add(new Style
                 {
@@ -128,7 +139,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
 
             if (request.File == null)
             {
@@ -143,11 +154,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return this.Error("导入文件为 Zip 格式，请选择有效的文件上传");
             }
 
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
-            var directoryPath = await ImportObject.ImportTableStyleByZipFileAsync(DataProvider.ChannelRepository.TableName, DataProvider.TableStyleRepository.GetRelatedIdentities(channel), filePath);
+            var directoryPath = await ImportObject.ImportTableStyleByZipFileAsync(_pathManager, _databaseManager, _channelRepository.TableName, _tableStyleRepository.GetRelatedIdentities(channel), filePath);
 
             FileUtils.DeleteFileIfExists(filePath);
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
@@ -171,13 +182,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
 
             var fileName =
-                await ExportObject.ExportRootSingleTableStyleAsync(request.SiteId, DataProvider.ChannelRepository.TableName,
-                    DataProvider.TableStyleRepository.GetRelatedIdentities(channel));
+                await ExportObject.ExportRootSingleTableStyleAsync(_pathManager, _databaseManager, request.SiteId, _channelRepository.TableName,
+                    _tableStyleRepository.GetRelatedIdentities(channel));
 
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             var downloadUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
 
             return new StringResult

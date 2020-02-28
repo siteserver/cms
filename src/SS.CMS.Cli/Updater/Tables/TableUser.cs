@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
+using SS.CMS.Core;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableUser
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableUser(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public long Id { get; set; }
 
@@ -83,30 +90,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("settingsXML")]
         public string SettingsXml { get; set; }
-    }
-
-    public partial class TableUser
-    {
-        public const string OldTableName = "bairong_Users";
-
-        public static ConvertInfo Converter => new ConvertInfo
-        {
-            NewTableName = NewTableName,
-            NewColumns = NewColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
-        };
-
-        private static readonly string NewTableName = DataProvider.UserRepository.TableName;
-
-        private static readonly List<TableColumn> NewColumns = DataProvider.UserRepository.TableColumns;
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(User.AvatarUrl), nameof(AvatarLarge)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

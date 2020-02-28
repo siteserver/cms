@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
 {
@@ -14,10 +12,18 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly IAdministratorRepository _administratorRepository;
+        private readonly ISiteRepository _siteRepository;
+        private readonly ISiteLogRepository _siteLogRepository;
 
-        public LogsSiteController(IAuthManager authManager)
+        public LogsSiteController(IAuthManager authManager, IPathManager pathManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, ISiteLogRepository siteLogRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _administratorRepository = administratorRepository;
+            _siteRepository = siteRepository;
+            _siteLogRepository = siteLogRepository;
         }
 
         //[HttpGet, Route(Route)]
@@ -26,14 +32,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         //    var auth = await _authManager.GetAdminAsync();
         //    await auth.CheckPermissionAsync(Request, Constants.AppPermissions.SettingsLog);
 
-        //    var count = await DataProvider.SiteLogRepository.GetCountAsync(null, null, null, null, null, null);
-        //    var siteLogs = await DataProvider.SiteLogRepository.GetAllAsync(null, null, null, null, null, null, request.Offset, request.Limit);
-        //    var siteOptions = await DataProvider.SiteRepository.GetSiteOptionsAsync(0);
+        //    var count = await _siteLogRepository.GetCountAsync(null, null, null, null, null, null);
+        //    var siteLogs = await _siteLogRepository.GetAllAsync(null, null, null, null, null, null, request.Offset, request.Limit);
+        //    var siteOptions = await _siteRepository.GetSiteOptionsAsync(0);
 
-        //    var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
+        //    var siteIdList = await _siteRepository.GetSiteIdListAsync();
         //    var logTasks = siteLogs.Where(x => siteIdList.Contains(x.SiteId)).Select(async x =>
         //    {
-        //        var site = await DataProvider.SiteRepository.GetAsync(x.SiteId);
+        //        var site = await _siteRepository.GetAsync(x.SiteId);
         //        var log = new SiteLogResult
         //        {
         //            Id = x.Id,
@@ -70,16 +76,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            var admin = await DataProvider.AdministratorRepository.GetByUserNameAsync(request.UserName);
+            var admin = await _administratorRepository.GetByUserNameAsync(request.UserName);
             var adminId = admin?.Id ?? 0;
 
-            var count = await DataProvider.SiteLogRepository.GetCountAsync(request.SiteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo);
-            var siteLogs = await DataProvider.SiteLogRepository.GetAllAsync(request.SiteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
+            var count = await _siteLogRepository.GetCountAsync(request.SiteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo);
+            var siteLogs = await _siteLogRepository.GetAllAsync(request.SiteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
 
-            var siteIdList = await DataProvider.SiteRepository.GetSiteIdListAsync();
+            var siteIdList = await _siteRepository.GetSiteIdListAsync();
             var logTasks = siteLogs.Where(x => siteIdList.Contains(x.SiteId)).Select(async x =>
             {
-                var site = await DataProvider.SiteRepository.GetAsync(x.SiteId);
+                var site = await _siteRepository.GetAsync(x.SiteId);
                 var log = new SiteLogResult
                 {
                     Id = x.Id,
@@ -92,13 +98,13 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                     Action = x.Action,
                     Summary = x.Summary,
                     SiteName = site.SiteName,
-                    WebUrl = await site.GetWebUrlAsync()
+                    WebUrl = await _pathManager.GetWebUrlAsync(site)
                 };
                 return log;
             });
             var logs = await Task.WhenAll(logTasks);
 
-            var siteOptions = await DataProvider.SiteRepository.GetSiteOptionsAsync(0);
+            var siteOptions = await _siteRepository.GetSiteOptionsAsync(0);
 
             return new SiteLogPageResult
             {
@@ -118,7 +124,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            await DataProvider.SiteLogRepository.DeleteAllAsync();
+            await _siteLogRepository.DeleteAllAsync();
 
             await auth.AddAdminLogAsync("清空站点日志");
 

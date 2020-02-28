@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Shared
@@ -13,10 +12,12 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IChannelGroupRepository _channelGroupRepository;
 
-        public GroupChannelLayerAddController(IAuthManager authManager)
+        public GroupChannelLayerAddController(IAuthManager authManager, IChannelGroupRepository channelGroupRepository)
         {
             _authManager = authManager;
+            _channelGroupRepository = channelGroupRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -25,7 +26,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
-            var group = await DataProvider.ChannelGroupRepository.GetAsync(request.SiteId, request.GroupId);
+            var group = await _channelGroupRepository.GetAsync(request.SiteId, request.GroupId);
 
             return new GetResult
             {
@@ -40,7 +41,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
-            if (await DataProvider.ChannelGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
+            if (await _channelGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
             {
                 return this.Error("保存失败，已存在相同名称的栏目组！");
             }
@@ -52,11 +53,11 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
                 Description = request.Description
             };
 
-            await DataProvider.ChannelGroupRepository.InsertAsync(groupInfo);
+            await _channelGroupRepository.InsertAsync(groupInfo);
 
             await auth.AddSiteLogAsync(request.SiteId, "新增栏目组", $"栏目组:{groupInfo.GroupName}");
 
-            var groups = await DataProvider.ChannelGroupRepository.GetChannelGroupsAsync(request.SiteId);
+            var groups = await _channelGroupRepository.GetChannelGroupsAsync(request.SiteId);
             var groupNames = groups.Select(x => x.GroupName);
 
             return new ListResult
@@ -72,9 +73,9 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
-            var groupInfo = await DataProvider.ChannelGroupRepository.GetAsync(request.SiteId, request.GroupId);
+            var groupInfo = await _channelGroupRepository.GetAsync(request.SiteId, request.GroupId);
 
-            if (groupInfo.GroupName != request.GroupName && await DataProvider.ChannelGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
+            if (groupInfo.GroupName != request.GroupName && await _channelGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
             {
                 return this.Error("保存失败，已存在相同名称的栏目组！");
             }
@@ -82,11 +83,11 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             groupInfo.GroupName = request.GroupName;
             groupInfo.Description = request.Description;
 
-            await DataProvider.ChannelGroupRepository.UpdateAsync(groupInfo);
+            await _channelGroupRepository.UpdateAsync(groupInfo);
 
             await auth.AddSiteLogAsync(request.SiteId, "修改栏目组", $"栏目组:{groupInfo.GroupName}");
 
-            var groups = await DataProvider.ChannelGroupRepository.GetChannelGroupsAsync(request.SiteId);
+            var groups = await _channelGroupRepository.GetChannelGroupsAsync(request.SiteId);
             var groupNames = groups.Select(x => x.GroupName);
 
             return new ListResult

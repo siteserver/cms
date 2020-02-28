@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
+using SS.CMS.Core;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableContentCheck
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableContentCheck(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("checkID")]
         public long CheckId { get; set; }
 
@@ -41,32 +48,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("reasons")]
         public string Reasons { get; set; }
-    }
-
-    public partial class TableContentCheck
-    {
-        public const string OldTableName = "bairong_ContentCheck";
-
-        public static ConvertInfo Converter => new ConvertInfo
-        {
-            NewTableName = NewTableName,
-            NewColumns = NewColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
-        };
-
-        private static readonly string NewTableName = DataProvider.ContentCheckRepository.TableName;
-
-        private static readonly List<TableColumn> NewColumns = DataProvider.ContentCheckRepository.TableColumns;
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(ContentCheck.Id), nameof(CheckId)},
-                {nameof(ContentCheck.SiteId), nameof(PublishmentSystemId)},
-                {nameof(ContentCheck.ChannelId), nameof(NodeId)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

@@ -7,7 +7,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
@@ -21,12 +20,18 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         private const string RouteUpload = "actions/upload";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly ISpecialRepository _specialRepository;
 
-        public TemplatesSpecialController(IAuthManager authManager, ICreateManager createManager)
+        public TemplatesSpecialController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, ISpecialRepository specialRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _specialRepository = specialRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -41,13 +46,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-            var specialInfoList = await DataProvider.SpecialRepository.GetSpecialListAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var specialInfoList = await _specialRepository.GetSpecialListAsync(request.SiteId);
 
             return new ListResult
             {
                 Specials = specialInfoList,
-                SiteUrl = await PageUtility.GetSiteUrlAsync(site, true)
+                SiteUrl = await _pathManager.GetSiteUrlAsync(site, true)
             };
         }
 
@@ -63,14 +68,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-            var specialInfo = await DataProvider.SpecialRepository.DeleteSpecialAsync(site, request.SpecialId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var specialInfo = await _pathManager.DeleteSpecialAsync(site, request.SpecialId);
 
             await auth.AddSiteLogAsync(request.SiteId,
                 "删除专题",
                 $"专题名称:{specialInfo.Title}");
 
-            var specialInfoList = await DataProvider.SpecialRepository.GetSpecialListAsync(request.SiteId);
+            var specialInfoList = await _specialRepository.GetSpecialListAsync(request.SiteId);
 
             return new DeleteResult
             {
@@ -89,16 +94,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-            var specialInfo = await DataProvider.SpecialRepository.GetSpecialAsync(request.SiteId, request.SpecialId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var specialInfo = await _specialRepository.GetSpecialAsync(request.SiteId, request.SpecialId);
 
-            var directoryPath = await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, specialInfo.Url);
-            var srcDirectoryPath = DataProvider.SpecialRepository.GetSpecialSrcDirectoryPath(directoryPath);
-            var zipFilePath = DataProvider.SpecialRepository.GetSpecialZipFilePath(specialInfo.Title, directoryPath);
+            var directoryPath = await _pathManager.GetSpecialDirectoryPathAsync(site, specialInfo.Url);
+            var srcDirectoryPath = _pathManager.GetSpecialSrcDirectoryPath(directoryPath);
+            var zipFilePath = _pathManager.GetSpecialZipFilePath(specialInfo.Title, directoryPath);
 
             FileUtils.DeleteFileIfExists(zipFilePath);
             ZipUtils.CreateZip(zipFilePath, srcDirectoryPath);
-            var url = await DataProvider.SpecialRepository.GetSpecialZipFileUrlAsync(site, specialInfo);
+            var url = await _pathManager.GetSpecialZipFileUrlAsync(site, specialInfo);
 
             return new StringResult
             {
@@ -120,7 +125,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             Special special = null;
             if (specialId > 0)
             {
-                special = await DataProvider.SpecialRepository.GetSpecialAsync(siteId, specialId);
+                special = await _specialRepository.GetSpecialAsync(siteId, specialId);
             }
 
             return new GetSpecialResult
@@ -148,7 +153,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
             var fileName = Path.GetFileName(request.File.FileName);
 
-            var filePath = PathUtility.GetTemporaryFilesPath($"{request.Guid}/{fileName}");
+            var filePath = _pathManager.GetTemporaryFilesPath($"{request.Guid}/{fileName}");
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
@@ -169,33 +174,33 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             var specialId = request.Id;
 
             if (specialId > 0 && request.IsEditOnly)
             {
-                var specialInfo = await DataProvider.SpecialRepository.GetSpecialAsync(request.SiteId, specialId);
+                var specialInfo = await _specialRepository.GetSpecialAsync(request.SiteId, specialId);
                 var oldDirectoryPath = string.Empty;
                 var newDirectoryPath = string.Empty;
 
-                if (specialInfo.Title != request.Title && await DataProvider.SpecialRepository.IsTitleExistsAsync(request.SiteId, request.Title))
+                if (specialInfo.Title != request.Title && await _specialRepository.IsTitleExistsAsync(request.SiteId, request.Title))
                 {
                     return this.Error("专题修改失败，专题名称已存在！");
                 }
                 if (specialInfo.Url != request.Url)
                 {
-                    if (await DataProvider.SpecialRepository.IsUrlExistsAsync(request.SiteId, request.Url))
+                    if (await _specialRepository.IsUrlExistsAsync(request.SiteId, request.Url))
                     {
                         return this.Error("专题修改失败，专题访问地址已存在！");
                     }
 
-                    oldDirectoryPath = await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, specialInfo.Url);
-                    newDirectoryPath = await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, request.Url);
+                    oldDirectoryPath = await _pathManager.GetSpecialDirectoryPathAsync(site, specialInfo.Url);
+                    newDirectoryPath = await _pathManager.GetSpecialDirectoryPathAsync(site, request.Url);
                 }
 
                 specialInfo.Title = request.Title;
                 specialInfo.Url = request.Url;
-                await DataProvider.SpecialRepository.UpdateAsync(specialInfo);
+                await _specialRepository.UpdateAsync(specialInfo);
 
                 if (oldDirectoryPath != newDirectoryPath)
                 {
@@ -204,13 +209,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             }
             else if (specialId > 0 && request.IsUploadOnly)
             {
-                var specialInfo = await DataProvider.SpecialRepository.GetSpecialAsync(request.SiteId, specialId);
+                var specialInfo = await _specialRepository.GetSpecialAsync(request.SiteId, specialId);
 
-                var directoryPath = await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, specialInfo.Url);
-                var srcDirectoryPath = DataProvider.SpecialRepository.GetSpecialSrcDirectoryPath(directoryPath);
+                var directoryPath = await _pathManager.GetSpecialDirectoryPathAsync(site, specialInfo.Url);
+                var srcDirectoryPath = _pathManager.GetSpecialSrcDirectoryPath(directoryPath);
                 DirectoryUtils.CreateDirectoryIfNotExists(srcDirectoryPath);
 
-                var uploadDirectoryPath = PathUtility.GetTemporaryFilesPath(request.Guid);
+                var uploadDirectoryPath = _pathManager.GetTemporaryFilesPath(request.Guid);
                 foreach (var filePath in DirectoryUtils.GetFilePaths(uploadDirectoryPath))
                 {
                     var fileName = PathUtils.GetFileName(filePath);
@@ -230,20 +235,20 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             }
             else if (specialId == 0)
             {
-                if (await DataProvider.SpecialRepository.IsTitleExistsAsync(request.SiteId, request.Title))
+                if (await _specialRepository.IsTitleExistsAsync(request.SiteId, request.Title))
                 {
                     return this.Error("专题添加失败，专题名称已存在！");
                 }
-                if (await DataProvider.SpecialRepository.IsUrlExistsAsync(request.SiteId, request.Url))
+                if (await _specialRepository.IsUrlExistsAsync(request.SiteId, request.Url))
                 {
                     return this.Error("专题添加失败，专题访问地址已存在！");
                 }
 
-                var directoryPath = await DataProvider.SpecialRepository.GetSpecialDirectoryPathAsync(site, request.Url);
-                var srcDirectoryPath = DataProvider.SpecialRepository.GetSpecialSrcDirectoryPath(directoryPath);
+                var directoryPath = await _pathManager.GetSpecialDirectoryPathAsync(site, request.Url);
+                var srcDirectoryPath = _pathManager.GetSpecialSrcDirectoryPath(directoryPath);
                 DirectoryUtils.CreateDirectoryIfNotExists(srcDirectoryPath);
 
-                var uploadDirectoryPath = PathUtility.GetTemporaryFilesPath(request.Guid);
+                var uploadDirectoryPath = _pathManager.GetTemporaryFilesPath(request.Guid);
                 foreach (var filePath in DirectoryUtils.GetFilePaths(uploadDirectoryPath))
                 {
                     var fileName = PathUtils.GetFileName(filePath);
@@ -261,7 +266,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
                 DirectoryUtils.Copy(srcDirectoryPath, directoryPath);
 
-                specialId = await DataProvider.SpecialRepository.InsertAsync(new Special
+                specialId = await _specialRepository.InsertAsync(new Special
                 {
                     Id = 0,
                     SiteId = request.SiteId,
@@ -275,7 +280,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
             await _createManager.CreateSpecialAsync(request.SiteId, specialId);
 
-            var specialInfoList = await DataProvider.SpecialRepository.GetSpecialListAsync(request.SiteId);
+            var specialInfoList = await _specialRepository.GetSpecialListAsync(request.SiteId);
 
             return new ObjectResult<IEnumerable<Special>>
             {

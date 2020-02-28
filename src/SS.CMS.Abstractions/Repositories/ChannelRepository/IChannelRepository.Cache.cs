@@ -15,7 +15,7 @@ namespace SS.CMS.Abstractions
 
         Task<int> GetIdByParentIdAndTaxisAsync(int siteId, int parentId, int taxis, bool isNextChannel);
 
-        Task<IEnumerable<string>> GetIndexNameListAsync(int siteId);
+        Task<List<string>> GetIndexNameListAsync(int siteId);
 
         Task<bool> IsIndexNameExistsAsync(int siteId, string indexName);
 

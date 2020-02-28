@@ -5,7 +5,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
 using SS.CMS.Core.Office;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Library
@@ -19,11 +18,19 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         private const string RouteGroups = "groups";
         private const string RouteGroupId = "groups/{id}";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ILibraryGroupRepository _libraryGroupRepository;
+        private readonly ILibraryTextRepository _libraryTextRepository;
 
-        public LibraryTextController(IAuthManager authManager)
+        public LibraryTextController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ILibraryGroupRepository libraryGroupRepository, ILibraryTextRepository libraryTextRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
+            _pathManager = pathManager;
+            _libraryGroupRepository = libraryGroupRepository;
+            _libraryTextRepository = libraryTextRepository;
         }
 
         [HttpPost, Route(RouteList)]
@@ -38,14 +45,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            var groups = await DataProvider.LibraryGroupRepository.GetAllAsync(LibraryType.Text);
+            var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Text);
             groups.Insert(0, new LibraryGroup
             {
                 Id = 0,
                 GroupName = "全部图文"
             });
-            var count = await DataProvider.LibraryTextRepository.GetCountAsync(req.GroupId, req.Keyword);
-            var items = await DataProvider.LibraryTextRepository.GetAllAsync(req.GroupId, req.Keyword, req.Page, req.PerPage);
+            var count = await _libraryTextRepository.GetCountAsync(req.GroupId, req.Keyword);
+            var items = await _libraryTextRepository.GetAllAsync(req.GroupId, req.Keyword, req.Page, req.PerPage);
 
             return new QueryResult
             {
@@ -88,19 +95,19 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
             var libraryFileName = PathUtils.GetLibraryFileName(fileName);
             var virtualDirectoryPath = PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image);
             
-            var directoryPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, virtualDirectoryPath);
+            var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
             var filePath = PathUtils.Combine(directoryPath, libraryFileName);
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
-            var (_, wordContent) = await WordManager.GetWordAsync(null, false, true, true, true, true, false, filePath);
+            var (_, wordContent) = await WordManager.GetWordAsync(_pathManager, null, false, true, true, true, true, false, filePath);
             FileUtils.DeleteFileIfExists(filePath);
 
             library.Title = fileName;
             library.ImageUrl = PageUtils.Combine(virtualDirectoryPath, libraryFileName);
             library.Content = wordContent;
-            library.Id = await DataProvider.LibraryTextRepository.InsertAsync(library);
+            library.Id = await _libraryTextRepository.InsertAsync(library);
 
             return library;
         }
@@ -117,7 +124,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            await DataProvider.LibraryTextRepository.DeleteAsync(request.Id);
+            await _libraryTextRepository.DeleteAsync(request.Id);
 
             return new BoolResult
             {
@@ -142,7 +149,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 Type = LibraryType.Text,
                 GroupName = group.Name
             };
-            libraryGroup.Id = await DataProvider.LibraryGroupRepository.InsertAsync(libraryGroup);
+            libraryGroup.Id = await _libraryGroupRepository.InsertAsync(libraryGroup);
 
             return libraryGroup;
         }
@@ -159,9 +166,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            var libraryGroup = await DataProvider.LibraryGroupRepository.GetAsync(id);
+            var libraryGroup = await _libraryGroupRepository.GetAsync(id);
             libraryGroup.GroupName = group.Name;
-            await DataProvider.LibraryGroupRepository.UpdateAsync(libraryGroup);
+            await _libraryGroupRepository.UpdateAsync(libraryGroup);
 
             return libraryGroup;
         }
@@ -178,7 +185,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            await DataProvider.LibraryGroupRepository.DeleteAsync(LibraryType.Text, request.Id);
+            await _libraryGroupRepository.DeleteAsync(LibraryType.Text, request.Id);
 
             return new BoolResult
             {

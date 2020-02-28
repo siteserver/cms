@@ -120,36 +120,36 @@ namespace SS.CMS.Repositories
             var builder = new StringBuilder();
             if (dateFrom > Constants.SqlMinValue)
             {
-                builder.Append($" AND AddDate >= {SqlUtils.GetComparableDate(dateFrom)}");
+                builder.Append($" AND AddDate >= {SqlUtils.GetComparableDate(Database.DatabaseType, dateFrom)}");
             }
             if (dateTo != Constants.SqlMinValue)
             {
-                builder.Append($" AND AddDate < {SqlUtils.GetComparableDate(dateTo)}");
+                builder.Append($" AND AddDate < {SqlUtils.GetComparableDate(Database.DatabaseType, dateTo)}");
             }
 
             string sqlSelectTrackingDay = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth, AddDay FROM (
-    SELECT {SqlUtils.GetDatePartYear("AddDate")} AS AddYear, {SqlUtils.GetDatePartMonth("AddDate")} AS AddMonth, {SqlUtils.GetDatePartDay("AddDate")} AS AddDay 
+    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "AddDate")} AS AddYear, {SqlUtils.GetDatePartMonth(Database.DatabaseType, "AddDate")} AS AddMonth, {SqlUtils.GetDatePartDay(Database.DatabaseType, "AddDate")} AS AddDay 
     FROM siteserver_Log 
-    WHERE {SqlUtils.GetDateDiffLessThanDays("AddDate", 30.ToString())} {builder}
+    WHERE {SqlUtils.GetDateDiffLessThanDays(Database.DatabaseType, "AddDate", 30.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth, AddDay ORDER BY AddNum DESC";//添加日统计
 
             if (analysisType == AnalysisType.Month)
             {
                 sqlSelectTrackingDay = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth FROM (
-    SELECT {SqlUtils.GetDatePartYear("AddDate")} AS AddYear, {SqlUtils.GetDatePartMonth("AddDate")} AS AddMonth 
+    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "AddDate")} AS AddYear, {SqlUtils.GetDatePartMonth(Database.DatabaseType, "AddDate")} AS AddMonth 
     FROM siteserver_Log 
-    WHERE {SqlUtils.GetDateDiffLessThanMonths("AddDate", 12.ToString())} {builder}
+    WHERE {SqlUtils.GetDateDiffLessThanMonths(Database.DatabaseType, "AddDate", 12.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth ORDER BY AddNum DESC";//添加月统计
             }
             else if (analysisType == AnalysisType.Year)
             {
                 sqlSelectTrackingDay = $@"
 SELECT COUNT(*) AS AddNum, AddYear FROM (
-    SELECT {SqlUtils.GetDatePartYear("AddDate")} AS AddYear
+    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "AddDate")} AS AddYear
     FROM siteserver_Log
-    WHERE {SqlUtils.GetDateDiffLessThanYears("AddDate", 10.ToString())} {builder}
+    WHERE {SqlUtils.GetDateDiffLessThanYears(Database.DatabaseType, "AddDate", 10.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear ORDER BY AddNum DESC
 ";//添加年统计
             }

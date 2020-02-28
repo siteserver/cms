@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin
 {
@@ -19,7 +18,7 @@ namespace SS.CMS.Web.Controllers.Admin
                 return Unauthorized();
             }
             var cacheKey = Constants.GetSessionIdCacheKey(auth.AdminId);
-            var sessionId = await DataProvider.DbCacheRepository.GetValueAsync(cacheKey);
+            var sessionId = await _dbCacheRepository.GetValueAsync(cacheKey);
             if (string.IsNullOrEmpty(request.SessionId) || sessionId != request.SessionId)
             {
                 return Unauthorized();

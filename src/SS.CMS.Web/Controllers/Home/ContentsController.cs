@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Home
@@ -16,10 +15,18 @@ namespace SS.CMS.Web.Controllers.Home
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public ContentsController(IAuthManager authManager)
+        public ContentsController(IAuthManager authManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -32,18 +39,19 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var columnsManager = new ColumnsManager(_databaseManager);
+            var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
             var pluginIds = PluginContentManager.GetContentPluginIds(channel);
             var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
 
             var pageContentInfoList = new List<Content>();
-            var ccIds = await DataProvider.ContentRepository.GetSummariesAsync(site, channel, true);
+            var ccIds = await _contentRepository.GetSummariesAsync(site, channel, true);
             var count = ccIds.Count;
 
             var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
@@ -58,10 +66,10 @@ namespace SS.CMS.Web.Controllers.Home
                 var sequence = offset + 1;
                 foreach (var channelContentId in pageCcIds)
                 {
-                    var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
+                    var contentInfo = await _contentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
                     if (contentInfo == null) continue;
 
-                    pageContentInfoList.Add(await ColumnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, contentInfo, columns, pluginColumns));
+                    pageContentInfoList.Add(await columnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, contentInfo, columns, pluginColumns));
                 }
             }
 

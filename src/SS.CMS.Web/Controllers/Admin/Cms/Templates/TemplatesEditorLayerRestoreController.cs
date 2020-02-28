@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -12,10 +11,18 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly ITemplateRepository _templateRepository;
+        private readonly ITemplateLogRepository _templateLogRepository;
 
-        public TemplatesEditorLayerRestoreController(IAuthManager authManager)
+        public TemplatesEditorLayerRestoreController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, ITemplateRepository templateRepository, ITemplateLogRepository templateLogRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
+            _templateRepository = templateRepository;
+            _templateLogRepository = templateLogRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -28,20 +35,20 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var logs = await DataProvider.TemplateLogRepository.GetLogIdWithNameListAsync(request.SiteId, request.TemplateId);
+            var logs = await _templateLogRepository.GetLogIdWithNameListAsync(request.SiteId, request.TemplateId);
             var logId = request.LogId;
             if (logId == 0 && logs.Any())
             {
                 logId = logs.First().Key;
             }
 
-            var original = logId == 0 ? string.Empty : await DataProvider.TemplateLogRepository.GetTemplateContentAsync(logId);
+            var original = logId == 0 ? string.Empty : await _templateLogRepository.GetTemplateContentAsync(logId);
 
-            var template = await DataProvider.TemplateRepository.GetAsync(request.TemplateId);
-            var modified = await DataProvider.TemplateRepository.GetTemplateContentAsync(site, template);
+            var template = await _templateRepository.GetAsync(request.TemplateId);
+            var modified = await _pathManager.GetTemplateContentAsync(site, template);
 
             return new GetResult
             {
@@ -62,22 +69,22 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            await DataProvider.TemplateLogRepository.DeleteAsync(request.LogId);
+            await _templateLogRepository.DeleteAsync(request.LogId);
 
-            var logs = await DataProvider.TemplateLogRepository.GetLogIdWithNameListAsync(request.SiteId, request.TemplateId);
+            var logs = await _templateLogRepository.GetLogIdWithNameListAsync(request.SiteId, request.TemplateId);
             var logId = 0;
             if (logs.Any())
             {
                 logId = logs.First().Key;
             }
 
-            var original = logId == 0 ? string.Empty : await DataProvider.TemplateLogRepository.GetTemplateContentAsync(logId);
+            var original = logId == 0 ? string.Empty : await _templateLogRepository.GetTemplateContentAsync(logId);
 
-            var template = await DataProvider.TemplateRepository.GetAsync(request.TemplateId);
-            var modified = await DataProvider.TemplateRepository.GetTemplateContentAsync(site, template);
+            var template = await _templateRepository.GetAsync(request.TemplateId);
+            var modified = await _pathManager.GetTemplateContentAsync(site, template);
 
             return new GetResult
             {

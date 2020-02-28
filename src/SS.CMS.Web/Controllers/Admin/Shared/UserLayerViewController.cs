@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Shared
 {
@@ -11,10 +10,14 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserGroupRepository _userGroupRepository;
 
-        public UserLayerViewController(IAuthManager authManager)
+        public UserLayerViewController(IAuthManager authManager, IUserRepository userRepository, IUserGroupRepository userGroupRepository)
         {
             _authManager = authManager;
+            _userRepository = userRepository;
+            _userGroupRepository = userGroupRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -26,16 +29,16 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             User user = null;
             if (request.UserId > 0)
             {
-                user = await DataProvider.UserRepository.GetByUserIdAsync(request.UserId);
+                user = await _userRepository.GetByUserIdAsync(request.UserId);
             }
             else if (!string.IsNullOrEmpty(request.UserName))
             {
-                user = await DataProvider.UserRepository.GetByUserNameAsync(request.UserName);
+                user = await _userRepository.GetByUserNameAsync(request.UserName);
             }
 
             if (user == null) return NotFound();
 
-            var groupName = await DataProvider.UserGroupRepository.GetUserGroupNameAsync(user.GroupId);
+            var groupName = await _userGroupRepository.GetUserGroupNameAsync(user.GroupId);
 
             return new GetResult
             {

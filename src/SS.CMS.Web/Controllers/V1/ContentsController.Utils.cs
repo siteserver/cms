@@ -2,7 +2,6 @@
 using Datory;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 using SqlKata;
 
 namespace SS.CMS.Web.Controllers.V1
@@ -16,7 +15,7 @@ namespace SS.CMS.Web.Controllers.V1
             if (channelId.HasValue)
             {
                 //query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
-                var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, channelId.Value, ScopeType.All);
+                var channelIds = await _channelRepository.GetChannelIdsAsync(siteId, channelId.Value, ScopeType.All);
 
                 query.WhereIn(nameof(Abstractions.Content.ChannelId), channelIds);
             }

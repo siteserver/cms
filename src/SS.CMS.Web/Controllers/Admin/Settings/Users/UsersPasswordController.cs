@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Users
@@ -13,10 +12,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IUserRepository _userRepository;
 
-        public UsersPasswordController(IAuthManager authManager)
+        public UsersPasswordController(IAuthManager authManager, IUserRepository userRepository)
         {
             _authManager = authManager;
+            _userRepository = userRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -29,7 +30,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(request.UserId);
+            var user = await _userRepository.GetByUserIdAsync(request.UserId);
             if (user == null) return NotFound();
 
             return new GetResult
@@ -48,10 +49,10 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            var user = await DataProvider.UserRepository.GetByUserIdAsync(request.UserId);
+            var user = await _userRepository.GetByUserIdAsync(request.UserId);
             if (user == null) return NotFound();
 
-            var valid = await DataProvider.UserRepository.ChangePasswordAsync(user.Id, request.Password);
+            var valid = await _userRepository.ChangePasswordAsync(user.Id, request.Password);
             if (!valid.IsValid)
             {
                 return this.Error($"更改密码失败：{valid.ErrorMessage}");

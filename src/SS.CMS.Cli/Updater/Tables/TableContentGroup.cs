@@ -2,12 +2,19 @@
 using Datory;
 using Newtonsoft.Json;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
+using SS.CMS.Core;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableContentGroup
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableContentGroup(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public long Id { get; set; }
 
@@ -22,35 +29,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("description")]
         public string Description { get; set; }
-    }
-
-    public partial class TableContentGroup
-    {
-        public static readonly List<string> OldTableNames = new List<string>
-        {
-            "siteserver_ContentGroup",
-            "wcm_ContentGroup"
-        };
-
-        public static ConvertInfo Converter => new ConvertInfo
-        {
-            NewTableName = NewTableName,
-            NewColumns = NewColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
-        };
-
-        private static readonly string NewTableName = DataProvider.ContentGroupRepository.TableName;
-
-        private static readonly List<TableColumn> NewColumns = DataProvider.ContentGroupRepository.TableColumns;
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(ContentGroup.GroupName), nameof(ContentGroupName)},
-                {nameof(ContentGroup.SiteId), nameof(PublishmentSystemId)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

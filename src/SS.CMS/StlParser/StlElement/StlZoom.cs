@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 
@@ -19,15 +20,15 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "缩放字体大小")]
         private const string FontSize = nameof(FontSize);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
 		    var zoomId = string.Empty;
             var fontSize = 16;
             var attributes = new NameValueCollection();
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, ZoomId))
                 {
@@ -43,19 +44,22 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, attributes, zoomId, fontSize);
+            return await ParseImplAsync(parseManager, attributes, zoomId, fontSize);
 		}
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string zoomId, int fontSize)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, NameValueCollection attributes, string zoomId, int fontSize)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (string.IsNullOrEmpty(zoomId))
             {
                 zoomId = "content";
             }
 
-            if (!pageInfo.BodyCodes.ContainsKey(PageInfo.Const.JsAeStlZoom))
+            if (!pageInfo.BodyCodes.ContainsKey(ParsePage.Const.JsAeStlZoom))
             {
-                pageInfo.BodyCodes.Add(PageInfo.Const.JsAeStlZoom, @"
+                pageInfo.BodyCodes.Add(ParsePage.Const.JsAeStlZoom, @"
 <script language=""JavaScript"" type=""text/javascript"">
 function stlDoZoom(zoomId, size){
     var artibody = document.getElementById(zoomId);
@@ -82,7 +86,7 @@ function stlDoZoom(zoomId, size){
             else
             {
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-                await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+                await parseManager.ParseInnerContentAsync(innerBuilder);
                 innerHtml = innerBuilder.ToString();
             }
 

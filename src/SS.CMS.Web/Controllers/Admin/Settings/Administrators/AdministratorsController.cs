@@ -9,7 +9,6 @@ using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
 using SS.CMS.Core.Office;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
@@ -25,10 +24,22 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         private const string RouteExport = "actions/export";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly IAdministratorRepository _administratorRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IAdministratorsInRolesRepository _administratorsInRolesRepository;
 
-        public AdministratorsController(IAuthManager authManager)
+        public AdministratorsController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IAdministratorsInRolesRepository administratorsInRolesRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
+            _administratorRepository = administratorRepository;
+            _roleRepository = roleRepository;
+            _siteRepository = siteRepository;
+            _administratorsInRolesRepository = administratorsInRolesRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -43,7 +54,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             var roles = new List<KeyValuePair<string, string>>();
 
-            var roleNameList = await auth.AdminPermissions.IsSuperAdminAsync() ? await DataProvider.RoleRepository.GetRoleNameListAsync() : await DataProvider.RoleRepository.GetRoleNameListByCreatorUserNameAsync(auth.AdminName);
+            var roleNameList = await auth.AdminPermissions.IsSuperAdminAsync() ? await _roleRepository.GetRoleNameListAsync() : await _roleRepository.GetRoleNameListByCreatorUserNameAsync(auth.AdminName);
 
             var predefinedRoles = TranslateUtils.GetEnums<PredefinedRole>();
             foreach (var predefinedRole in predefinedRoles)
@@ -60,8 +71,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             var isSuperAdmin = await auth.AdminPermissions.IsSuperAdminAsync();
             var creatorUserName = isSuperAdmin ? string.Empty : auth.AdminName;
-            var count = await DataProvider.AdministratorRepository.GetCountAsync(creatorUserName, request.Role, request.LastActivityDate, request.Keyword);
-            var administrators = await DataProvider.AdministratorRepository.GetAdministratorsAsync(creatorUserName, request.Role, request.Order, request.LastActivityDate, request.Keyword, request.Offset, request.Limit);
+            var count = await _administratorRepository.GetCountAsync(creatorUserName, request.Role, request.LastActivityDate, request.Keyword);
+            var administrators = await _administratorRepository.GetAdministratorsAsync(creatorUserName, request.Role, request.Order, request.LastActivityDate, request.Keyword, request.Offset, request.Limit);
             var admins = new List<Admin>();
             foreach (var administratorInfo in administrators)
             {
@@ -77,7 +88,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                     LastActivityDate = administratorInfo.LastActivityDate,
                     CountOfLogin = administratorInfo.CountOfLogin,
                     Locked = administratorInfo.Locked,
-                    Roles = await DataProvider.AdministratorRepository.GetRolesAsync(administratorInfo.UserName)
+                    Roles = await _administratorRepository.GetRolesAsync(administratorInfo.UserName)
                 });
             }
 
@@ -106,20 +117,20 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var roles = await DataProvider.RoleRepository.GetRoleNameListAsync();
-            roles = roles.Where(x => !DataProvider.RoleRepository.IsPredefinedRole(x)).ToList();
-            var allSites = await DataProvider.SiteRepository.GetSiteListAsync();
+            var roles = await _roleRepository.GetRoleNameListAsync();
+            roles = roles.Where(x => !_roleRepository.IsPredefinedRole(x)).ToList();
+            var allSites = await _siteRepository.GetSiteListAsync();
 
-            var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(adminId);
-            var adminRoles = await DataProvider.AdministratorsInRolesRepository.GetRolesForUserAsync(adminInfo.UserName);
+            var adminInfo = await _administratorRepository.GetByUserIdAsync(adminId);
+            var adminRoles = await _administratorsInRolesRepository.GetRolesForUserAsync(adminInfo.UserName);
             string adminLevel;
             var checkedSites = new List<int>();
             var checkedRoles = new List<string>();
-            if (DataProvider.RoleRepository.IsConsoleAdministrator(adminRoles))
+            if (_roleRepository.IsConsoleAdministrator(adminRoles))
             {
                 adminLevel = "SuperAdmin";
             }
-            else if (DataProvider.RoleRepository.IsSystemAdministrator(adminRoles))
+            else if (_roleRepository.IsSystemAdministrator(adminRoles))
             {
                 adminLevel = "SiteAdmin";
                 checkedSites = adminInfo.SiteIds;
@@ -129,7 +140,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 adminLevel = "Admin";
                 foreach (var role in roles)
                 {
-                    if (!checkedRoles.Contains(role) && !DataProvider.RoleRepository.IsPredefinedRole(role) && adminRoles.Contains(role))
+                    if (!checkedRoles.Contains(role) && !_roleRepository.IsPredefinedRole(role) && adminRoles.Contains(role))
                     {
                         checkedRoles.Add(role);
                     }
@@ -161,24 +172,24 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(adminId);
+            var adminInfo = await _administratorRepository.GetByUserIdAsync(adminId);
 
-            await DataProvider.AdministratorsInRolesRepository.RemoveUserAsync(adminInfo.UserName);
+            await _administratorsInRolesRepository.RemoveUserAsync(adminInfo.UserName);
             if (request.AdminLevel == "SuperAdmin")
             {
-                await DataProvider.AdministratorRepository.AddUserToRoleAsync(adminInfo.UserName, PredefinedRole.ConsoleAdministrator.GetValue());
+                await _administratorRepository.AddUserToRoleAsync(adminInfo.UserName, PredefinedRole.ConsoleAdministrator.GetValue());
             }
             else if (request.AdminLevel == "SiteAdmin")
             {
-                await DataProvider.AdministratorRepository.AddUserToRoleAsync(adminInfo.UserName, PredefinedRole.SystemAdministrator.GetValue());
+                await _administratorRepository.AddUserToRoleAsync(adminInfo.UserName, PredefinedRole.SystemAdministrator.GetValue());
             }
             else
             {
-                await DataProvider.AdministratorRepository.AddUserToRoleAsync(adminInfo.UserName, PredefinedRole.Administrator.GetValue());
-                await DataProvider.AdministratorRepository.AddUserToRolesAsync(adminInfo.UserName,  request.CheckedRoles.ToArray());
+                await _administratorRepository.AddUserToRoleAsync(adminInfo.UserName, PredefinedRole.Administrator.GetValue());
+                await _administratorRepository.AddUserToRolesAsync(adminInfo.UserName,  request.CheckedRoles.ToArray());
             }
 
-            await DataProvider.AdministratorRepository.UpdateSiteIdsAsync(adminInfo,
+            await _administratorRepository.UpdateSiteIdsAsync(adminInfo,
                 request.AdminLevel == "SiteAdmin"
                     ? request.CheckedSites
                     : new List<int>());
@@ -189,7 +200,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             return new SavePermissionsResult
             {
-                Roles = await DataProvider.AdministratorRepository.GetRolesAsync(adminInfo.UserName)
+                Roles = await _administratorRepository.GetRolesAsync(adminInfo.UserName)
             };
         }
 
@@ -203,9 +214,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(request.Id);
-            await DataProvider.AdministratorsInRolesRepository.RemoveUserAsync(adminInfo.UserName);
-            await DataProvider.AdministratorRepository.DeleteAsync(adminInfo.Id);
+            var adminInfo = await _administratorRepository.GetByUserIdAsync(request.Id);
+            await _administratorsInRolesRepository.RemoveUserAsync(adminInfo.UserName);
+            await _administratorRepository.DeleteAsync(adminInfo.Id);
 
             await auth.AddAdminLogAsync("删除管理员", $"管理员:{adminInfo.UserName}");
 
@@ -225,9 +236,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(request.Id);
+            var adminInfo = await _administratorRepository.GetByUserIdAsync(request.Id);
 
-            await DataProvider.AdministratorRepository.LockAsync(new List<string>
+            await _administratorRepository.LockAsync(new List<string>
             {
                 adminInfo.UserName
             });
@@ -250,9 +261,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var adminInfo = await DataProvider.AdministratorRepository.GetByUserIdAsync(request.Id);
+            var adminInfo = await _administratorRepository.GetByUserIdAsync(request.Id);
 
-            await DataProvider.AdministratorRepository.UnLockAsync(new List<string>
+            await _administratorRepository.UnLockAsync(new List<string>
             {
                 adminInfo.UserName
             });
@@ -288,7 +299,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return this.Error("导入文件为Excel格式，请选择有效的文件上传");
             }
 
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
@@ -313,7 +324,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
                     if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password))
                     {
-                        var (isValid, message) = await DataProvider.AdministratorRepository.InsertAsync(new Administrator
+                        var (isValid, message) = await _administratorRepository.InsertAsync(new Administrator
                         {
                             UserName = userName,
                             DisplayName = displayName,
@@ -357,9 +368,10 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             }
 
             const string fileName = "administrators.csv";
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-            await ExcelObject.CreateExcelFileForAdministratorsAsync(filePath);
+            var excelObject = new ExcelObject(_databaseManager);
+            await excelObject.CreateExcelFileForAdministratorsAsync(filePath);
             var downloadUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
 
             return new StringResult

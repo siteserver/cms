@@ -2,13 +2,18 @@
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS.Core.Serialization.Atom.Atom.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core.Serialization.Components
 {
-    public static class ContentGroupIe
+    public class ContentGroupIe
     {
-        public static AtomEntry Export(ContentGroup @group)
+        private readonly IDatabaseManager _databaseManager;
+        public ContentGroupIe(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
+        public AtomEntry Export(ContentGroup @group)
         {
             var entry = AtomUtility.GetEmptyEntry();
 
@@ -20,7 +25,7 @@ namespace SS.CMS.Core.Serialization.Components
             return entry;
         }
 
-        public static async Task ImportAsync(AtomFeed feed, int siteId, string guid)
+        public async Task ImportAsync(AtomFeed feed, int siteId, string guid)
         {
             var groups = new List<ContentGroup>();
 
@@ -32,7 +37,7 @@ namespace SS.CMS.Core.Serialization.Components
                 var groupName = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(ContentGroup.GroupName), "ContentGroupName" });
                 if (string.IsNullOrEmpty(groupName)) continue;
 
-                if (await DataProvider.ContentGroupRepository.IsExistsAsync(siteId, groupName)) continue;
+                if (await _databaseManager.ContentGroupRepository.IsExistsAsync(siteId, groupName)) continue;
 
                 var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Taxis)));
                 var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Description));
@@ -48,7 +53,7 @@ namespace SS.CMS.Core.Serialization.Components
             foreach (var group in groups)
             {
                 Caching.SetProcess(guid, $"导入内容组: {group.GroupName}");
-                await DataProvider.ContentGroupRepository.InsertAsync(group);
+                await _databaseManager.ContentGroupRepository.InsertAsync(group);
             }
         }
     }

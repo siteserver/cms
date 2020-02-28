@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.Core;
-using SS.CMS.Framework;
+using SS.CMS.Services;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -29,7 +30,7 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "是否循环播放")]
         private const string IsLoop = nameof(IsLoop);
 
-	    public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+	    public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
             var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
@@ -37,9 +38,9 @@ namespace SS.CMS.StlParser.StlElement
             var isPreLoad = true;
             var isLoop = false;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -63,18 +64,21 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, type, playUrl, isAutoPlay, isPreLoad, isLoop);
+            return await ParseImplAsync(parseManager, type, playUrl, isAutoPlay, isPreLoad, isLoop);
 		}
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, bool isAutoPlay, bool isPreLoad, bool isLoop)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string playUrl, bool isAutoPlay, bool isPreLoad, bool isLoop)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             var contentId = contextInfo.ContentId;
 
             if (string.IsNullOrEmpty(playUrl))
             {
                 if (contentId != 0)//获取内容视频
                 {
-                    var contentInfo = await contextInfo.GetContentAsync();
+                    var contentInfo = await parseManager.GetContentAsync();
                     if (contentInfo != null)
                     {
                         playUrl = contentInfo.Get<string>(type);
@@ -92,7 +96,7 @@ namespace SS.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
-            playUrl = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
+            playUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
 
             // 如果是实体标签，则只返回数字
             if (contextInfo.IsStlEntity)
@@ -101,8 +105,8 @@ namespace SS.CMS.StlParser.StlElement
             }
             else
             {
-                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.Jquery);
-                await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.JsAcMediaElement);
+                await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+                await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcMediaElement);
 
                 return $@"
 <audio class=""mejs__player"" src=""{playUrl}"" {(isAutoPlay ? "autoplay" : string.Empty)} {(isPreLoad ? string.Empty : @"preload=""none""")} {(isLoop ? "loop" : string.Empty)}>

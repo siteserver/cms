@@ -4,9 +4,11 @@ using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using SS.CMS.Core;
+using SS.CMS.Services;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -24,24 +26,27 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "动作类型")]
         private const string Type = nameof(Type);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var type = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value;
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, type);
+            return await ParseImplAsync(parseManager, type);
         }
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string type)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             var attributes = new NameValueCollection();
 
             foreach (var attributeName in contextInfo.Attributes.AllKeys)
@@ -54,7 +59,7 @@ namespace SS.CMS.StlParser.StlElement
             var onclick = string.Empty;
 
             var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-            await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
+            await parseManager.ParseInnerContentAsync(innerBuilder);
             var innerHtml = innerBuilder.ToString();
 
             //计算动作开始
@@ -62,7 +67,7 @@ namespace SS.CMS.StlParser.StlElement
             {
                 if (StringUtils.EqualsIgnoreCase(type, TypeTranslate))
                 {
-                    await pageInfo.AddPageBodyCodeIfNotExistsAsync(PageInfo.Const.JsAhTranslate);
+                    await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAhTranslate);
 
                     var msgToTraditionalChinese = "繁體";
                     var msgToSimplifiedChinese = "简体";

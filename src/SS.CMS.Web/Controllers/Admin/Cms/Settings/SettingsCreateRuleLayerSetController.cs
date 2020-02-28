@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
+using SS.CMS.Core.PathRules;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
@@ -15,10 +15,16 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
 
-        public SettingsCreateRuleLayerSetController(IAuthManager authManager)
+        public SettingsCreateRuleLayerSetController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -32,12 +38,20 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var dict = request.IsChannel
-                ? await PathUtility.ChannelFilePathRules.GetDictionaryAsync(site, request.ChannelId)
-                : await PathUtility.ContentFilePathRules.GetDictionaryAsync(site, request.ChannelId);
+            Dictionary<string, string> dict;
+            if (request.IsChannel)
+            {
+                var rules = new ChannelFilePathRules(_pathManager, _databaseManager);
+                dict = await rules.GetDictionaryAsync(request.ChannelId);
+            }
+            else
+            {
+                var rules = new ContentFilePathRules(_pathManager, _databaseManager);
+                dict = await rules.GetDictionaryAsync(site, request.ChannelId);
+            }
             var list = new List<KeyValuePair<string, string>>();
 
             foreach (var rule in dict)

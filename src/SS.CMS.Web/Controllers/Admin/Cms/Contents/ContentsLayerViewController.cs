@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -13,10 +12,26 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly IContentGroupRepository _contentGroupRepository;
+        private readonly IContentTagRepository _contentTagRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ContentsLayerViewController(IAuthManager authManager)
+        public ContentsLayerViewController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _contentGroupRepository = contentGroupRepository;
+            _contentTagRepository = contentTagRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -32,29 +47,31 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
-            var content = await DataProvider.ContentRepository.GetAsync(site, channel, request.ContentId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
+            var content = await _contentRepository.GetAsync(site, channel, request.ContentId);
             if (content == null) return NotFound();
 
-            var channelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
+            var channelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
 
-            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var columnsManager = new ColumnsManager(_databaseManager);
+
+            var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             var calculatedContent =
-                await ColumnsManager.CalculateContentListAsync(1, site, request.ChannelId, content, columns, null);
+                await columnsManager.CalculateContentListAsync(1, site, request.ChannelId, content, columns, null);
             calculatedContent.Set(ContentAttribute.Content, content.Get(ContentAttribute.Content));
 
-            var siteUrl = await PageUtility.GetSiteUrlAsync(site, true);
-            var groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(request.SiteId);
-            var tagNames = await DataProvider.ContentTagRepository.GetTagNamesAsync(request.SiteId);
+            var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
+            var groupNames = await _contentGroupRepository.GetGroupNamesAsync(request.SiteId);
+            var tagNames = await _contentTagRepository.GetTagNamesAsync(request.SiteId);
 
             var editorColumns = new List<ContentColumn>();
 
-            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
-            var styleList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(channel, tableName);
+            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+            var styleList = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
             foreach (var tableStyle in styleList)
             {
                 if (tableStyle.InputType == InputType.TextEditor)

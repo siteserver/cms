@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 {
@@ -46,7 +44,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
             {
                 if (translateType != TranslateType.Content)//需要转移栏目
                 {
-                    if (!await DataProvider.ChannelRepository.IsAncestorOrSelfAsync(site.Id, channelId, targetChannelId))
+                    if (!await _channelRepository.IsAncestorOrSelfAsync(site.Id, channelId, targetChannelId))
                     {
                         channelIdList.Add(channelId);
                     }
@@ -63,7 +61,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 var channelIdListToTranslate = new List<int>(channelIdList);
                 foreach (var channelId in channelIdList)
                 {
-                    var subChannelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, channelId, ScopeType.Descendant);
+                    var subChannelIdList = await _channelRepository.GetChannelIdsAsync(site.Id, channelId, ScopeType.Descendant);
 
                     if (subChannelIdList != null && subChannelIdList.Count > 0)
                     {
@@ -80,7 +78,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 var nodeInfoList = new List<Channel>();
                 foreach (var channelId in channelIdListToTranslate)
                 {
-                    var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                    var nodeInfo = await _channelRepository.GetAsync(channelId);
                     nodeInfoList.Add(nodeInfo);
                 }
 
@@ -90,8 +88,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 {
                     foreach (var channelId in channelIdListToTranslate)
                     {
-                        await DataProvider.ContentRepository.RecycleAllAsync(site, channelId, adminId);
-                        await DataProvider.ChannelRepository.DeleteAsync(site, channelId, adminId);
+                        await _contentRepository.RecycleAllAsync(site, channelId, adminId);
+                        await _channelRepository.DeleteAsync(site, channelId, adminId);
                     }
                 }
             }
@@ -108,12 +106,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
             if (nodeIndexNameList == null)
             {
-                nodeIndexNameList = (await DataProvider.ChannelRepository.GetIndexNameListAsync(targetSiteId)).ToList();
+                nodeIndexNameList = await _channelRepository.GetIndexNameListAsync(targetSiteId);
             }
 
             if (filePathList == null)
             {
-                filePathList = (await DataProvider.ChannelRepository.GetAllFilePathBySiteIdAsync(targetSiteId)).ToList();
+                filePathList = await _channelRepository.GetAllFilePathBySiteIdAsync(targetSiteId);
             }
 
             foreach (var oldNodeInfo in nodeInfoList)
@@ -148,7 +146,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                     nodeInfo.FilePath = string.Empty;
                 }
 
-                var targetChannelId = await DataProvider.ChannelRepository.InsertAsync(nodeInfo);
+                var targetChannelId = await _channelRepository.InsertAsync(nodeInfo);
 
                 if (translateType == TranslateType.All)
                 {
@@ -158,13 +156,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 if (targetChannelId != 0)
                 {
                     //var orderByString = ETaxisTypeUtils.GetChannelOrderByString(ETaxisType.OrderByTaxis);
-                    //var childrenNodeInfoList = DataProvider.ChannelRepository.GetChannelInfoList(oldNodeInfo, 0, "", EScopeType.Children, orderByString);
+                    //var childrenNodeInfoList = _channelRepository.GetChannelInfoList(oldNodeInfo, 0, "", EScopeType.Children, orderByString);
 
-                    var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(site.Id, oldNodeInfo.Id, ScopeType.Children);
+                    var channelIdList = await _channelRepository.GetChannelIdsAsync(site.Id, oldNodeInfo.Id, ScopeType.Children);
                     var childrenNodeInfoList = new List<Channel>();
                     foreach (var channelId in channelIdList)
                     {
-                        childrenNodeInfoList.Add(await DataProvider.ChannelRepository.GetAsync(channelId));
+                        childrenNodeInfoList.Add(await _channelRepository.GetAsync(channelId));
                     }
 
                     if (channelIdList.Count > 0)
@@ -179,8 +177,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
         private async Task TranslateContentAsync(Site site, int channelId, int targetSiteId, int targetChannelId, bool isDeleteAfterTranslate)
         {
-            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
-            var contentIdList = await DataProvider.ContentRepository.GetContentIdsAsync(site, channel);
+            var channel = await _channelRepository.GetAsync(channelId);
+            var contentIdList = await _contentRepository.GetContentIdsAsync(site, channel);
 
             var translateType = isDeleteAfterTranslate
                 ? TranslateContentType.Cut
@@ -188,7 +186,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
             foreach (var contentId in contentIdList)
             {
-                await ContentUtility.TranslateAsync(site, channelId, contentId, targetSiteId, targetChannelId, translateType, _createManager);
+                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, site, channelId, contentId, targetSiteId, targetChannelId, translateType, _createManager);
             }
         }
     }

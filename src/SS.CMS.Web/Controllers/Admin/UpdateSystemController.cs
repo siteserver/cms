@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Packaging;
 using SS.CMS.Web.Extensions;
 
@@ -16,12 +15,14 @@ namespace SS.CMS.Web.Controllers.Admin
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly IConfigRepository _configRepository;
 
-        public UpdateSystemController(ISettingsManager settingsManager, IAuthManager authManager, IConfigRepository configRepository)
+        public UpdateSystemController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
+            _pathManager = pathManager;
             _configRepository = configRepository;
         }
 
@@ -54,22 +55,22 @@ namespace SS.CMS.Web.Controllers.Admin
         {
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{request.Version}";
             var packagePath = WebUtils.GetPackagesPath(idWithVersion);
-            var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
+            var packageWebConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
 
             if (!PackageUtils.IsPackageDownload(PackageUtils.PackageIdSsCms, request.Version))
             {
                 return this.Error($"升级包 {idWithVersion} 不存在");
             }
 
-            WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
-                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.RedisConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
-                WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
+            //WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
+            //    WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.RedisConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
+            //    WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), WebUtils.GetSiteFilesPath(string.Empty), true);
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtility.GetAdminDirectoryPath(string.Empty), true);
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), PathUtility.GetHomeDirectoryPath(string.Empty), true);
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtility.GetBinDirectoryPath(string.Empty), true);
-            FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), _pathManager.GetAdminDirectoryPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), _pathManager.GetHomeDirectoryPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), _pathManager.GetBinDirectoryPath(string.Empty), true);
+            FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(_settingsManager.ContentRootPath, Constants.ConfigFileName), true);
 
             //SystemManager.SyncDatabase();
 

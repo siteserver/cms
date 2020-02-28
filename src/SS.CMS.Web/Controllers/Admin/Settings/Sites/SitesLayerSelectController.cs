@@ -1,8 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 {
@@ -12,10 +10,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         public const string Route = "settings/sitesLayerSelect";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
 
-        public SitesLayerSelectController(IAuthManager authManager)
+        public SitesLayerSelectController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -28,14 +30,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var rootSiteId = await DataProvider.SiteRepository.GetIdByIsRootAsync();
+            var rootSiteId = await _siteRepository.GetIdByIsRootAsync();
 
-            var sites = await DataProvider.SiteRepository.GetSitesWithChildrenAsync(0, async x => new
+            var sites = await _siteRepository.GetSitesWithChildrenAsync(0, async x => new
             {
-                SiteUrl = await PageUtility.GetSiteUrlAsync(x, false)
+                SiteUrl = await _pathManager.GetSiteUrlAsync(x, false)
             });
 
-            var tableNames = await DataProvider.SiteRepository.GetSiteTableNamesAsync();
+            var tableNames = await _siteRepository.GetSiteTableNamesAsync();
 
             return new GetResult
             {

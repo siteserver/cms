@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Shared
@@ -13,10 +12,12 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IContentGroupRepository _contentGroupRepository;
 
-        public GroupContentLayerAddController(IAuthManager authManager)
+        public GroupContentLayerAddController(IAuthManager authManager, IContentGroupRepository contentGroupRepository)
         {
             _authManager = authManager;
+            _contentGroupRepository = contentGroupRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -25,7 +26,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
-            var group = await DataProvider.ContentGroupRepository.GetAsync(request.SiteId, request.GroupId);
+            var group = await _contentGroupRepository.GetAsync(request.SiteId, request.GroupId);
 
             return new GetResult
             {
@@ -40,7 +41,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
-            if (await DataProvider.ContentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
+            if (await _contentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
             {
                 return this.Error("保存失败，已存在相同名称的内容组！");
             }
@@ -52,11 +53,11 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
                 Description = request.Description
             };
 
-            await DataProvider.ContentGroupRepository.InsertAsync(groupInfo);
+            await _contentGroupRepository.InsertAsync(groupInfo);
 
             await auth.AddSiteLogAsync(request.SiteId, "新增内容组", $"内容组:{groupInfo.GroupName}");
 
-            var groups = await DataProvider.ContentGroupRepository.GetContentGroupsAsync(request.SiteId);
+            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
             var groupNames = groups.Select(x => x.GroupName);
 
             return new ListResult
@@ -72,9 +73,9 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
-            var groupInfo = await DataProvider.ContentGroupRepository.GetAsync(request.SiteId, request.GroupId);
+            var groupInfo = await _contentGroupRepository.GetAsync(request.SiteId, request.GroupId);
 
-            if (groupInfo.GroupName != request.GroupName && await DataProvider.ContentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
+            if (groupInfo.GroupName != request.GroupName && await _contentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
             {
                 return this.Error("保存失败，已存在相同名称的内容组！");
             }
@@ -82,11 +83,11 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             groupInfo.GroupName = request.GroupName;
             groupInfo.Description = request.Description;
 
-            await DataProvider.ContentGroupRepository.UpdateAsync(groupInfo);
+            await _contentGroupRepository.UpdateAsync(groupInfo);
 
             await auth.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
 
-            var groups = await DataProvider.ContentGroupRepository.GetContentGroupsAsync(request.SiteId);
+            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
             var groupNames = groups.Select(x => x.GroupName);
 
             return new ListResult

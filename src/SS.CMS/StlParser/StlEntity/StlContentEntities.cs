@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Api.Stl;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlEntity
 {
@@ -49,24 +47,28 @@ namespace SS.CMS.StlParser.StlEntity
             {ItemIndex, "内容排序"}
         };
 
-        internal static async Task<string> ParseAsync(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
+        internal static async Task<string> ParseAsync(string stlEntity, IParseManager parseManager)
         {
+            var databaseManager = parseManager.DatabaseManager;
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             var parsedContent = string.Empty;
 
-            if (contextInfo.ContentId != 0)
+            if (parseManager.ContextInfo.ContentId != 0)
             {
                 try
                 {
-                    var contentInfo = await contextInfo.GetContentAsync();
+                    var contentInfo = await parseManager.GetContentAsync();
 
                     if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && TranslateContentType.ReferenceContent == contentInfo.TranslateContentType)
                     {
                         var targetChannelId = contentInfo.SourceId;
-                        var targetSiteId = await DataProvider.ChannelRepository.GetSiteIdAsync(targetChannelId);
-                        var targetSite = await DataProvider.SiteRepository.GetAsync(targetSiteId);
-                        var targetNodeInfo = await DataProvider.ChannelRepository.GetAsync(targetChannelId);
+                        var targetSiteId = await databaseManager.ChannelRepository.GetSiteIdAsync(targetChannelId);
+                        var targetSite = await databaseManager.SiteRepository.GetAsync(targetSiteId);
+                        var targetNodeInfo = await databaseManager.ChannelRepository.GetAsync(targetChannelId);
 
-                        var targetContentInfo = await DataProvider.ContentRepository.GetAsync(targetSite, targetNodeInfo, contentInfo.ReferenceId);
+                        var targetContentInfo = await databaseManager.ContentRepository.GetAsync(targetSite, targetNodeInfo, contentInfo.ReferenceId);
                         if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                         {
                             //标题可以使用自己的
@@ -104,12 +106,12 @@ namespace SS.CMS.StlParser.StlEntity
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = await PageUtility.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal);
+                            parsedContent = await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal);
                         }
                         else
                         {
-                            var nodeInfo = await DataProvider.ChannelRepository.GetAsync(contextInfo.ChannelId);
-                            parsedContent = await PageUtility.GetContentUrlAsync(pageInfo.Site, nodeInfo, contextInfo.ContentId, pageInfo.IsLocal);
+                            var nodeInfo = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
+                            parsedContent = await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, nodeInfo, contextInfo.ContentId, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(ImageUrl, attributeName))//内容图片地址
@@ -121,7 +123,7 @@ namespace SS.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                            parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(VideoUrl, attributeName))//内容视频地址
@@ -133,7 +135,7 @@ namespace SS.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                            parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(FileUrl, attributeName))//内容附件地址
@@ -145,7 +147,7 @@ namespace SS.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = await PageUtility.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                            parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(DownloadUrl, attributeName))//内容附件地址(可统计下载量)
@@ -181,7 +183,7 @@ namespace SS.CMS.StlParser.StlEntity
                             parsedContent = contentInfo.Get<string>(ContentAttribute.Content);
                         }
 
-                        parsedContent = await ContentUtility.TextEditorContentDecodeAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                        parsedContent = await ContentUtility.TextEditorContentDecodeAsync(parseManager.PathManager, pageInfo.Site, parsedContent, pageInfo.IsLocal);
                     }
                     else if (StringUtils.EqualsIgnoreCase(Group, attributeName))//内容组别
                     {
@@ -207,7 +209,7 @@ namespace SS.CMS.StlParser.StlEntity
 
                         if (contentInfo == null)
                         {
-                            contentInfo = await DataProvider.ContentRepository.GetAsync(pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId);
+                            contentInfo = await databaseManager.ContentRepository.GetAsync(pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId);
                         }
 
                         if (contentInfo != null)
@@ -221,13 +223,13 @@ namespace SS.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var channelInfo = await DataProvider.ChannelRepository.GetAsync(contentChannelId);
-                            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, channelInfo);
-                            var relatedIdentities = DataProvider.TableStyleRepository.GetRelatedIdentities(channelInfo);
-                            var styleInfo = await DataProvider.TableStyleRepository.GetTableStyleAsync(tableName, attributeName, relatedIdentities);
+                            var channelInfo = await databaseManager.ChannelRepository.GetAsync(contentChannelId);
+                            var tableName = await databaseManager.ChannelRepository.GetTableNameAsync(pageInfo.Site, channelInfo);
+                            var relatedIdentities = databaseManager.TableStyleRepository.GetRelatedIdentities(channelInfo);
+                            var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(tableName, attributeName, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
-                            parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parsedContent, ",", pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
+                            parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parseManager.PathManager, parsedContent, ",", pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
                         }
 
                     }

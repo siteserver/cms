@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Api.Preview;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
@@ -22,8 +21,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
 
             if (site == null)
             {
@@ -52,7 +51,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
             content.AdminId = auth.AdminId;
             content.Checked = true;
 
-            content.Id = await DataProvider.ContentRepository.InsertPreviewAsync(site, channel, content);
+            content.Id = await _contentRepository.InsertPreviewAsync(site, channel, content);
 
             return new PreviewResult()
             {
@@ -92,7 +91,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
             //    }
             //}
 
-            //contentInfo.Id = DataProvider.ContentRepository.InsertPreviewAsync(site, channelInfo, contentInfo);
+            //contentInfo.Id = _contentRepository.InsertPreviewAsync(site, channelInfo, contentInfo);
 
             //return new
             //{

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -24,11 +23,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
-            var source = await DataProvider.ContentRepository.GetAsync(site, channel,  request.ContentId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
+            var source = await _contentRepository.GetAsync(site, channel,  request.ContentId);
 
             var content = request.Content;
             content.SiteId = site.Id;
@@ -48,7 +47,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
                     content.CheckedLevel = 0;
                 }
 
-                await DataProvider.ContentCheckRepository.InsertAsync(new ContentCheck
+                await _contentCheckRepository.InsertAsync(new ContentCheck
                 {
                     SiteId = request.SiteId,
                     ChannelId = content.ChannelId,
@@ -61,13 +60,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
                 });
             }
 
-            await DataProvider.ContentRepository.UpdateAsync(site, channel, content);
+            await _contentRepository.UpdateAsync(site, channel, content);
 
             if (request.Translations != null && request.Translations.Count > 0)
             {
                 foreach (var translation in request.Translations)
                 {
-                    await ContentUtility.TranslateAsync(site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager);
+                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager);
                 }
             }
 

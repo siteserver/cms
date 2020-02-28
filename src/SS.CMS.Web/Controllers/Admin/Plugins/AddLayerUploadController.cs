@@ -16,10 +16,12 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         private const string RouteUpload = "actions/upload";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
 
-        public AddLayerUploadController(IAuthManager authManager)
+        public AddLayerUploadController(IAuthManager authManager, IPathManager pathManager)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
         }
 
         [HttpGet, Route(Route)]
@@ -60,7 +62,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
             var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
             if (extendName == ".nupkg")
             {
-                filePath = PathUtility.GetTemporaryFilesPath(fileName);
+                filePath = _pathManager.GetTemporaryFilesPath(fileName);
                 DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                 request.File.CopyTo(new FileStream(filePath, FileMode.Create));
             }
@@ -98,7 +100,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
 
             foreach (var fileName in request.FileNames)
             {
-                var localFilePath = PathUtility.GetTemporaryFilesPath(fileName);
+                var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
 
                 //var importObject = new ImportObject(siteId, request.AdminName);
                 //importObject.ImportContentsByZipFile(channel, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);

@@ -2,12 +2,8 @@
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SS.CMS.StlParser.Model;
-using SS.CMS.StlParser.Parsers;
-using SS.CMS.StlParser.Utility;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -20,40 +16,43 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "文件路径")]
         private const string File = nameof(File);
         
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
 		    var file = string.Empty;
             var parameters = new Dictionary<string, string>();
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, File))
                 {
                     file = StringUtils.ReplaceIgnoreCase(value, "{Stl.SiteUrl}", "@");
-                    file = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(file, pageInfo, contextInfo);
-                    file = PageUtility.AddVirtualToUrl(file);
+                    file = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(file);
+                    file = parseManager.PathManager.AddVirtualToUrl(file);
                 }
                 else
                 {
-                    parameters[name] = await StlEntityParser.ReplaceStlEntitiesForAttributeValueAsync(value, pageInfo, contextInfo);
+                    parameters[name] = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, file, parameters);
+            return await ParseImplAsync(parseManager, file, parameters);
 		}
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string file, Dictionary<string, string> parameters)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string file, Dictionary<string, string> parameters)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (string.IsNullOrEmpty(file)) return string.Empty;
 
             var pageParameters = pageInfo.Parameters;
             pageInfo.Parameters = parameters;
 
-            var content = await DataProvider.TemplateRepository.GetIncludeContentAsync(pageInfo.Site, file);
+            var content = await parseManager.PathManager.GetIncludeContentAsync(pageInfo.Site, file);
             var contentBuilder = new StringBuilder(content);
-            await StlParserManager.ParseTemplateContentAsync(contentBuilder, pageInfo, contextInfo);
+            await parseManager.ParseTemplateContentAsync(contentBuilder, pageInfo, contextInfo);
             var parsedContent = contentBuilder.ToString();
 
             pageInfo.Parameters = pageParameters;

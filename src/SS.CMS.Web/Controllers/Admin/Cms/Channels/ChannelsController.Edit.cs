@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
@@ -24,12 +23,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var channel = await _channelRepository.GetAsync(channelId);
 
-            var linkTypes = PageUtility.GetLinkTypeSelects();
+            var linkTypes = _pathManager.GetLinkTypeSelects();
             var taxisTypes = new List<Select<string>>
             {
                 new Select<string>(TaxisType.OrderByTaxisDesc),
@@ -39,7 +38,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
             };
 
             var styles = new List<Style>();
-            foreach (var style in await DataProvider.TableStyleRepository.GetChannelStyleListAsync(channel))
+            foreach (var style in await _tableStyleRepository.GetChannelStyleListAsync( channel))
             {
                 styles.Add(new Style
                 {
@@ -85,7 +84,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             if (string.IsNullOrEmpty(request.ChannelName))
@@ -93,10 +92,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 return this.Error("栏目修改失败，必须填写栏目名称！");
             }
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.Id);
+            var channel = await _channelRepository.GetAsync(request.Id);
             if (!channel.IndexName.Equals(request.IndexName) && !string.IsNullOrEmpty(request.IndexName))
             {
-                if (await DataProvider.ChannelRepository.IsIndexNameExistsAsync(request.SiteId, request.IndexName))
+                if (await _channelRepository.IsIndexNameExistsAsync(request.SiteId, request.IndexName))
                 {
                     return this.Error("栏目修改失败，栏目索引已存在！");
                 }
@@ -114,7 +113,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                     request.FilePath = PageUtils.Combine(request.FilePath, "index.html");
                 }
 
-                if (await DataProvider.ChannelRepository.IsFilePathExistsAsync(request.SiteId, request.FilePath))
+                if (await _channelRepository.IsFilePathExistsAsync(request.SiteId, request.FilePath))
                 {
                     return this.Error("栏目修改失败，栏目页面路径已存在！");
                 }
@@ -146,14 +145,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 }
             }
 
-            var styles = await DataProvider.TableStyleRepository.GetChannelStyleListAsync(channel);
+            var styles = await _tableStyleRepository.GetChannelStyleListAsync(channel);
             foreach (var style in styles)
             {
                 var value = request.Get(style.AttributeName, string.Empty);
                 var inputType = style.InputType;
                 if (inputType == InputType.TextEditor)
                 {
-                    value = await ContentUtility.TextEditorContentEncodeAsync(site, value);
+                    value = await ContentUtility.TextEditorContentEncodeAsync(_pathManager, site, value);
                     value = UEditorUtils.TranslateToStlElement(value);
                 }
                 else if (inputType == InputType.Image ||
@@ -204,7 +203,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
             channel.Keywords = request.Keywords;
             channel.Description = request.Description;
 
-            await DataProvider.ChannelRepository.UpdateAsync(channel);
+            await _channelRepository.UpdateAsync(channel);
 
             var expendedChannelIds = new List<int>
             {

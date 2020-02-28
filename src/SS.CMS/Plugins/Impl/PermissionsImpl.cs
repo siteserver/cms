@@ -5,12 +5,18 @@ using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Plugins.Impl
 {
     public class PermissionsImpl : IPermissions
     {
+        private readonly IPathManager _pathManager;
+        private readonly IAdministratorsInRolesRepository _administratorsInRolesRepository;
+        private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
+        private readonly ISitePermissionsRepository _sitePermissionsRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
         private readonly Administrator _adminInfo;
         private readonly string _rolesKey;
         private readonly string _permissionListKey;
@@ -22,10 +28,17 @@ namespace SS.CMS.Plugins.Impl
         private Dictionary<int, List<string>> _websitePermissionDict;
         private Dictionary<string, List<string>> _channelPermissionDict;
 
-        public PermissionsImpl(Administrator adminInfo)
+        public PermissionsImpl(IPathManager pathManager, IAdministratorsInRolesRepository administratorsInRolesRepository, IPermissionsInRolesRepository permissionsInRolesRepository, ISitePermissionsRepository sitePermissionsRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, Administrator adminInfo)
         {
             if (adminInfo == null || adminInfo.Locked) return;
 
+            _pathManager = pathManager;
+            _administratorsInRolesRepository = administratorsInRolesRepository;
+            _permissionsInRolesRepository = permissionsInRolesRepository;
+            _sitePermissionsRepository = sitePermissionsRepository;
+            _roleRepository = roleRepository;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
             _adminInfo = adminInfo;
 
             _rolesKey = GetRolesCacheKey(adminInfo.UserName);
@@ -36,12 +49,12 @@ namespace SS.CMS.Plugins.Impl
 
         public async Task<bool> IsSuperAdminAsync()
         {
-            return DataProvider.RoleRepository.IsConsoleAdministrator(await GetRolesAsync());
+            return _roleRepository.IsConsoleAdministrator(await GetRolesAsync());
         }
 
         public async Task<bool> IsSiteAdminAsync()
         {
-            return DataProvider.RoleRepository.IsSystemAdministrator(await GetRolesAsync());
+            return _roleRepository.IsSystemAdministrator(await GetRolesAsync());
         }
 
         private async Task<bool> IsSiteAdminAsync(int siteId)
@@ -66,7 +79,7 @@ namespace SS.CMS.Plugins.Impl
 
             if (await IsSuperAdminAsync())
             {
-                siteIdList = (await DataProvider.SiteRepository.GetSiteIdListAsync()).ToList();
+                siteIdList = (await _siteRepository.GetSiteIdListAsync()).ToList();
             }
             else if (await IsSiteAdminAsync())
             {
@@ -101,7 +114,7 @@ namespace SS.CMS.Plugins.Impl
         {
             if (await IsSiteAdminAsync(siteId))
             {
-                return await DataProvider.ChannelRepository.GetChannelIdListAsync(siteId);
+                return await _channelRepository.GetChannelIdListAsync(siteId);
             }
 
             var siteChannelIdList = new List<int>();
@@ -112,9 +125,9 @@ namespace SS.CMS.Plugins.Impl
                 var dictPermissions = dict[dictKey];
                 if (kvp.Key == siteId && dictPermissions.Any(permissions.Contains))
                 {
-                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(kvp.Value);
+                    var channelInfo = await _channelRepository.GetAsync(kvp.Value);
 
-                    var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channelInfo.SiteId, channelInfo.Id, ScopeType.All);
+                    var channelIdList = await _channelRepository.GetChannelIdsAsync(channelInfo.SiteId, channelInfo.Id, ScopeType.All);
 
                     foreach (var channelId in channelIdList)
                     {
@@ -162,7 +175,7 @@ namespace SS.CMS.Plugins.Impl
                 var dict = await GetChannelPermissionDictAsync();
                 if (dict.ContainsKey(dictKey) && await HasChannelPermissionsAsync(dict[dictKey], permissions)) return true;
 
-                var parentChannelId = await DataProvider.ChannelRepository.GetParentIdAsync(siteId, channelId);
+                var parentChannelId = await _channelRepository.GetParentIdAsync(siteId, channelId);
                 channelId = parentChannelId;
             }
         }
@@ -177,16 +190,16 @@ namespace SS.CMS.Plugins.Impl
             if (_permissionList == null)
             {
                 var roles = await GetRolesAsync();
-                if (DataProvider.RoleRepository.IsConsoleAdministrator(roles))
+                if (_roleRepository.IsConsoleAdministrator(roles))
                 {
                     _permissionList = new List<string>();
-                    var instance = await PermissionConfigManager.GetInstanceAsync();
+                    var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager);
                     foreach (var permission in instance.GeneralPermissions)
                     {
                         _permissionList.Add(permission.Name);
                     }
                 }
-                else if (DataProvider.RoleRepository.IsSystemAdministrator(roles))
+                else if (_roleRepository.IsSystemAdministrator(roles))
                 {
                     _permissionList = new List<string>
                     {
@@ -195,7 +208,7 @@ namespace SS.CMS.Plugins.Impl
                 }
                 else
                 {
-                    _permissionList = await DataProvider.PermissionsInRolesRepository.GetGeneralPermissionListAsync(roles);
+                    _permissionList = await _permissionsInRolesRepository.GetGeneralPermissionListAsync(roles);
                 }
 
                 CacheUtils.InsertMinutes(_permissionListKey, _permissionList, 30);
@@ -212,7 +225,7 @@ namespace SS.CMS.Plugins.Impl
             _roles = CacheUtils.Get<List<string>>(_rolesKey);
             if (_roles == null)
             {
-                _roles = await DataProvider.AdministratorsInRolesRepository.GetRolesForUserAsync(_adminInfo.UserName);
+                _roles = await _administratorsInRolesRepository.GetRolesForUserAsync(_adminInfo.UserName);
                 CacheUtils.InsertMinutes(_rolesKey, _roles, 30);
             }
 
@@ -231,7 +244,7 @@ namespace SS.CMS.Plugins.Impl
                 if (await IsSiteAdminAsync())
                 {
                     var allWebsitePermissionList = new List<string>();
-                    var instance = await PermissionConfigManager.GetInstanceAsync();
+                    var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager);
 
                     foreach (var permission in instance.WebsitePermissions)
                     {
@@ -249,7 +262,7 @@ namespace SS.CMS.Plugins.Impl
                 else
                 {
                     var roles = await GetRolesAsync();
-                    _websitePermissionDict = await DataProvider.SitePermissionsRepository.GetWebsitePermissionSortedListAsync(roles);
+                    _websitePermissionDict = await _sitePermissionsRepository.GetWebsitePermissionSortedListAsync(roles);
                 }
                 CacheUtils.InsertMinutes(_websitePermissionDictKey, _websitePermissionDict, 30);
             }
@@ -266,10 +279,10 @@ namespace SS.CMS.Plugins.Impl
             if (_channelPermissionDict == null)
             {
                 var roles = await GetRolesAsync();
-                if (DataProvider.RoleRepository.IsSystemAdministrator(roles))
+                if (_roleRepository.IsSystemAdministrator(roles))
                 {
                     var allChannelPermissionList = new List<string>();
-                    var instance = await PermissionConfigManager.GetInstanceAsync();
+                    var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager);
 
                     foreach (var permission in instance.ChannelPermissions)
                     {
@@ -287,7 +300,7 @@ namespace SS.CMS.Plugins.Impl
                 }
                 else
                 {
-                    _channelPermissionDict = await DataProvider.SitePermissionsRepository.GetChannelPermissionSortedListAsync(roles);
+                    _channelPermissionDict = await _sitePermissionsRepository.GetChannelPermissionSortedListAsync(roles);
                 }
                 CacheUtils.InsertMinutes(_channelPermissionDictKey, _channelPermissionDict, 30);
             }
@@ -337,7 +350,7 @@ namespace SS.CMS.Plugins.Impl
                 return true;
             }
 
-            var parentChannelId = await DataProvider.ChannelRepository.GetParentIdAsync(siteId, channelId);
+            var parentChannelId = await _channelRepository.GetParentIdAsync(siteId, channelId);
             return await HasChannelPermissionsAsync(siteId, parentChannelId);
         }
 

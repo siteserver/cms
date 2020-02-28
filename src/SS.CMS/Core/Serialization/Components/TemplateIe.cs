@@ -3,17 +3,20 @@ using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
 using SS.CMS.Core.Serialization.Atom.Atom.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core.Serialization.Components
 {
 	internal class TemplateIe
-	{
+    {
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
 		private readonly Site _site;
 		private readonly string _filePath;
 
-		public TemplateIe(Site site, string filePath)
-		{
+		public TemplateIe(IPathManager pathManager, IDatabaseManager databaseManager, Site site, string filePath)
+        {
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
             _site = site;
 			_filePath = filePath;
 		}
@@ -22,10 +25,10 @@ namespace SS.CMS.Core.Serialization.Components
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-            var summaries = await DataProvider.TemplateRepository.GetSummariesAsync(_site.Id);
+            var summaries = await _databaseManager.TemplateRepository.GetSummariesAsync(_site.Id);
             foreach (var summary in summaries)
             {
-                var template = await DataProvider.TemplateRepository.GetAsync(summary.Id);
+                var template = await _databaseManager.TemplateRepository.GetAsync(summary.Id);
                 var entry = await ExportTemplateInfoAsync(template);
                 feed.Entries.Add(entry);
 			}
@@ -39,7 +42,7 @@ namespace SS.CMS.Core.Serialization.Components
 
             foreach (var templateId in templateIdList)
             {
-				var template = await DataProvider.TemplateRepository.GetAsync(templateId);
+				var template = await _databaseManager.TemplateRepository.GetAsync(templateId);
                 var entry = await ExportTemplateInfoAsync(template);
                 feed.Entries.Add(entry);
 			}
@@ -59,7 +62,7 @@ namespace SS.CMS.Core.Serialization.Components
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileExtName), template.CreatedFileExtName);
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.Default), template.Default.ToString());
 
-            var templateContent = await DataProvider.TemplateRepository.GetTemplateContentAsync(_site, template);
+            var templateContent = await _pathManager.GetTemplateContentAsync(_site, template);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.Content), AtomUtility.Encrypt(templateContent));
 
 			return entry;
@@ -96,14 +99,14 @@ namespace SS.CMS.Core.Serialization.Components
                 };
 
                 var exists =
-                    await DataProvider.TemplateRepository.ExistsAsync(_site.Id, template.TemplateType,
+                    await _databaseManager.TemplateRepository.ExistsAsync(_site.Id, template.TemplateType,
                         templateName);
 
 			    if (exists)
 			    {
 			        if (overwrite)
 			        {
-                        var info = await DataProvider.TemplateRepository.GetTemplateByTemplateNameAsync(_site.Id, template.TemplateType, template.TemplateName);
+                        var info = await _databaseManager.TemplateRepository.GetTemplateByTemplateNameAsync(_site.Id, template.TemplateType, template.TemplateName);
 
 						info.RelatedFileName = template.RelatedFileName;
 			            info.TemplateType = template.TemplateType;
@@ -115,7 +118,7 @@ namespace SS.CMS.Core.Serialization.Components
                     }
 			        else
 			        {
-			            template.TemplateName = await DataProvider.TemplateRepository.GetImportTemplateNameAsync(_site.Id, template.TemplateType, template.TemplateName);
+			            template.TemplateName = await _databaseManager.TemplateRepository.GetImportTemplateNameAsync(_site.Id, template.TemplateType, template.TemplateName);
                         templates.Add(template);
                     }
 			    }
@@ -131,11 +134,11 @@ namespace SS.CMS.Core.Serialization.Components
 
                 if (template.Id > 0)
                 {
-                    await DataProvider.TemplateRepository.UpdateAsync(_site, template, template.Content, adminId);
+                    await _databaseManager.TemplateRepository.UpdateAsync(_pathManager, _site, template, template.Content, adminId);
 				}
                 else
                 {
-                    await DataProvider.TemplateRepository.InsertAsync(_site, template, template.Content, adminId);
+                    await _databaseManager.TemplateRepository.InsertAsync(_pathManager, _site, template, template.Content, adminId);
                 }
             }
 		}

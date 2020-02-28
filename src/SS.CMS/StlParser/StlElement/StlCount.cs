@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS;
+using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -47,7 +47,7 @@ namespace SS.CMS.StlParser.StlElement
             {TypeContents, "内容数"}
         };
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
 		    var type = string.Empty;
             var channelIndex = string.Empty;
@@ -57,9 +57,9 @@ namespace SS.CMS.StlParser.StlElement
             var scope = ScopeType.Self;
             var since = string.Empty;
 
-		    foreach (var name in contextInfo.Attributes.AllKeys)
+		    foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
 		    {
-		        var value = contextInfo.Attributes[name];
+		        var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -91,11 +91,15 @@ namespace SS.CMS.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(pageInfo, contextInfo, type, channelIndex, channelName, upLevel, topLevel, scope, since);
+            return await ParseImplAsync(parseManager, type, channelIndex, channelName, upLevel, topLevel, scope, since);
 		}
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, string type, string channelIndex, string channelName, int upLevel, int topLevel, ScopeType scope, string since)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string channelIndex, string channelName, int upLevel, int topLevel, ScopeType scope, string since)
         {
+            var databaseManager = parseManager.DatabaseManager;
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             var count = 0;
 
             var sinceDate = Constants.SqlMinValue;
@@ -106,22 +110,24 @@ namespace SS.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(type) || StringUtils.EqualsIgnoreCase(type, TypeContents))
             {
-                var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
-                channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
+                var dataManager = new StlDataManager(parseManager.DatabaseManager);
+                var channelId = await dataManager.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                channelId = await dataManager.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-                var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(pageInfo.SiteId, channelId, scope);
+                var channelIdList = await databaseManager.ChannelRepository.GetChannelIdsAsync(pageInfo.SiteId, channelId, scope);
                 foreach (var theChannelId in channelIdList)
                 {
-                    var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(pageInfo.Site, theChannelId);
-                    count += await DataProvider.ContentRepository.GetCountOfContentAddAsync(tableName, pageInfo.SiteId, theChannelId, ScopeType.Self, sinceDate, DateTime.Now.AddDays(1), 0, true);
+                    var tableName = await databaseManager.ChannelRepository.GetTableNameAsync(pageInfo.Site, theChannelId);
+                    count += await databaseManager.ContentRepository.GetCountOfContentAddAsync(tableName, pageInfo.SiteId, theChannelId, ScopeType.Self, sinceDate, DateTime.Now.AddDays(1), 0, true);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))
             {
-                var channelId = await StlDataUtility.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
-                channelId = await StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
+                var dataManager = new StlDataManager(parseManager.DatabaseManager);
+                var channelId = await dataManager.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                channelId = await dataManager.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, channelId, channelIndex, channelName);
 
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                var nodeInfo = await databaseManager.ChannelRepository.GetAsync(channelId);
                 count = nodeInfo.ChildrenCount;
             }
 

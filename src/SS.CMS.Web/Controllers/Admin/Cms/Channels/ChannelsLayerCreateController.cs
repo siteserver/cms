@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 {
@@ -13,11 +12,15 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
 
-        public ChannelsLayerCreateController(IAuthManager authManager, ICreateManager createManager)
+        public ChannelsLayerCreateController(IAuthManager authManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -30,7 +33,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var expendedChannelIds = new List<int>
@@ -40,7 +43,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
             foreach (var channelId in request.ChannelIds)
             {
-                var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+                var channel = await _channelRepository.GetAsync(channelId);
                 if (!expendedChannelIds.Contains(channel.ParentId))
                 {
                     expendedChannelIds.Add(channel.ParentId);
@@ -53,7 +56,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 }
                 if (request.IsIncludeChildren)
                 {
-                    var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(request.SiteId, channelId, ScopeType.Descendant);
+                    var channelIds = await _channelRepository.GetChannelIdsAsync(request.SiteId, channelId, ScopeType.Descendant);
 
                     foreach (var childChannelId in channelIds)
                     {

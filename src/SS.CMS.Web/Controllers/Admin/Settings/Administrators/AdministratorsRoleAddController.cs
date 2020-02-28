@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
@@ -17,10 +16,22 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         private const string RouteRoleId = "{roleId:int}";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly ISitePermissionsRepository _sitePermissionsRepository;
+        private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
 
-        public AdministratorsRoleAddController(IAuthManager authManager)
+        public AdministratorsRoleAddController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _roleRepository = roleRepository;
+            _sitePermissionsRepository = sitePermissionsRepository;
+            _permissionsInRolesRepository = permissionsInRolesRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -39,16 +50,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             if (request.RoleId > 0)
             {
-                role = await DataProvider.RoleRepository.GetRoleAsync(request.RoleId);
+                role = await _roleRepository.GetRoleAsync(request.RoleId);
                 systemPermissionsInfoList =
-                    await DataProvider.SitePermissionsRepository.GetSystemPermissionsListAsync(role.RoleName);
+                    await _sitePermissionsRepository.GetSystemPermissionsListAsync(role.RoleName);
                 permissionList =
-                    await DataProvider.PermissionsInRolesRepository.GetGeneralPermissionListAsync(new[] { role.RoleName });
+                    await _permissionsInRolesRepository.GetGeneralPermissionListAsync(new[] { role.RoleName });
             }
 
             var permissions = new List<Permission>();
             var generalPermissionList = await auth.AdminPermissions.GetPermissionListAsync();
-            var instance = await PermissionConfigManager.GetInstanceAsync();
+            var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager);
             var generalPermissions = instance.GeneralPermissions;
 
             if (generalPermissions.Count > 0)
@@ -79,7 +90,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                     var listTwo = await auth.AdminPermissions.GetSitePermissionsAsync(permissionSiteId);
                     if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                     {
-                        siteList.Add(await DataProvider.SiteRepository.GetAsync(permissionSiteId));
+                        siteList.Add(await _siteRepository.GetAsync(permissionSiteId));
                     }
                 }
             }
@@ -128,16 +139,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            if (DataProvider.RoleRepository.IsPredefinedRole(request.RoleName))
+            if (_roleRepository.IsPredefinedRole(request.RoleName))
             {
                 return this.Error($"角色添加失败，{request.RoleName}为系统角色！");
             }
-            if (await DataProvider.RoleRepository.IsRoleExistsAsync(request.RoleName))
+            if (await _roleRepository.IsRoleExistsAsync(request.RoleName))
             {
                 return this.Error("角色名称已存在，请更换角色名称！");
             }
 
-            await DataProvider.RoleRepository.InsertRoleAsync(new Role
+            await _roleRepository.InsertRoleAsync(new Role
             {
                 RoleName = request.RoleName,
                 CreatorUserName = auth.AdminName,
@@ -152,7 +163,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                     RoleName = request.RoleName,
                     GeneralPermissions = request.GeneralPermissions
                 };
-                await DataProvider.PermissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
+                await _permissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
             }
 
             if (request.SitePermissions != null && request.SitePermissions.Count > 0)
@@ -160,7 +171,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 foreach (var sitePermissionsInfo in request.SitePermissions)
                 {
                     sitePermissionsInfo.RoleName = request.RoleName;
-                    await DataProvider.SitePermissionsRepository.InsertAsync(sitePermissionsInfo);
+                    await _sitePermissionsRepository.InsertAsync(sitePermissionsInfo);
                 }
             }
 
@@ -184,21 +195,21 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var roleInfo = await DataProvider.RoleRepository.GetRoleAsync(roleId);
+            var roleInfo = await _roleRepository.GetRoleAsync(roleId);
             if (roleInfo.RoleName != request.RoleName)
             {
-                if (DataProvider.RoleRepository.IsPredefinedRole(request.RoleName))
+                if (_roleRepository.IsPredefinedRole(request.RoleName))
                 {
                     return this.Error($"角色添加失败，{request.RoleName}为系统角色！");
                 }
-                if (await DataProvider.RoleRepository.IsRoleExistsAsync(request.RoleName))
+                if (await _roleRepository.IsRoleExistsAsync(request.RoleName))
                 {
                     return this.Error("角色名称已存在，请更换角色名称！");
                 }
             }
 
-            await DataProvider.PermissionsInRolesRepository.DeleteAsync(roleInfo.RoleName);
-            await DataProvider.SitePermissionsRepository.DeleteAsync(roleInfo.RoleName);
+            await _permissionsInRolesRepository.DeleteAsync(roleInfo.RoleName);
+            await _sitePermissionsRepository.DeleteAsync(roleInfo.RoleName);
 
             if (request.GeneralPermissions != null && request.GeneralPermissions.Count > 0)
             {
@@ -208,7 +219,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                     RoleName = request.RoleName,
                     GeneralPermissions = request.GeneralPermissions
                 };
-                await DataProvider.PermissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
+                await _permissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
             }
 
             if (request.SitePermissions != null && request.SitePermissions.Count > 0)
@@ -216,14 +227,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 foreach (var sitePermissionsInfo in request.SitePermissions)
                 {
                     sitePermissionsInfo.RoleName = request.RoleName;
-                    await DataProvider.SitePermissionsRepository.InsertAsync(sitePermissionsInfo);
+                    await _sitePermissionsRepository.InsertAsync(sitePermissionsInfo);
                 }
             }
 
             roleInfo.RoleName = request.RoleName;
             roleInfo.Description = request.Description;
 
-            await DataProvider.RoleRepository.UpdateRoleAsync(roleInfo);
+            await _roleRepository.UpdateRoleAsync(roleInfo);
 
             CacheUtils.ClearAll();
 

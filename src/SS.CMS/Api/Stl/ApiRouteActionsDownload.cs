@@ -1,7 +1,6 @@
 ﻿using System.Collections.Specialized;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Api.Stl
 {
@@ -16,7 +15,7 @@ namespace SS.CMS.Api.Stl
                 {"siteId", siteId.ToString()},
                 {"channelId", channelId.ToString()},
                 {"contentId", contentId.ToString()},
-                {"fileUrl", TranslateUtils.EncryptStringBySecretKey(fileUrl, WebConfigUtils.SecretKey)}
+                {"fileUrl", GlobalSettings.SettingsManager.Encrypt(fileUrl)}
             });
         }
 
@@ -25,7 +24,7 @@ namespace SS.CMS.Api.Stl
             return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Route), new NameValueCollection
             {
                 {"siteId", siteId.ToString()},
-                {"fileUrl", TranslateUtils.EncryptStringBySecretKey(fileUrl, WebConfigUtils.SecretKey)}
+                {"fileUrl", GlobalSettings.SettingsManager.Encrypt(fileUrl)}
             });
         }
 
@@ -33,7 +32,7 @@ namespace SS.CMS.Api.Stl
         {
             return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Route), new NameValueCollection
             {
-                {"filePath", TranslateUtils.EncryptStringBySecretKey(filePath, WebConfigUtils.SecretKey)}
+                {"filePath", GlobalSettings.SettingsManager.Encrypt(filePath)}
             });
         }
     }

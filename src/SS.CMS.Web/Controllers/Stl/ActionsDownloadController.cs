@@ -3,13 +3,27 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Api.Stl;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Stl
 {
     public partial class ActionsDownloadController : ControllerBase
     {
+        private readonly ISettingsManager _settingsManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+
+        public ActionsDownloadController(ISettingsManager settingsManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        {
+            _settingsManager = settingsManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+        }
+
         [HttpGet]
         [Route(ApiRouteActionsDownload.Route)]
         public async Task<ActionResult> Get([FromQuery]GetRequest request)
@@ -18,15 +32,15 @@ namespace SS.CMS.Web.Controllers.Stl
             {
                 if (request.SiteId.HasValue && !string.IsNullOrEmpty(request.FileUrl) && !request.ContentId.HasValue)
                 {
-                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.FileUrl, WebConfigUtils.SecretKey);
+                    var fileUrl = _settingsManager.Decrypt(request.FileUrl);
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
                         return Redirect(fileUrl);
                     }
 
-                    var site = await DataProvider.SiteRepository.GetAsync(request.SiteId.Value);
-                    var filePath = await PathUtility.MapPathAsync(site, fileUrl);
+                    var site = await _siteRepository.GetAsync(request.SiteId.Value);
+                    var filePath = await _pathManager.MapPathAsync(site, fileUrl);
                     var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
                     if (FileUtils.IsDownload(fileType))
                     {
@@ -37,13 +51,13 @@ namespace SS.CMS.Web.Controllers.Stl
                     }
                     else
                     {
-                        var redirectUrl = await PageUtility.ParseNavigationUrlAsync(site, fileUrl, false);
+                        var redirectUrl = await _pathManager.ParseNavigationUrlAsync(site, fileUrl, false);
                         return Redirect(redirectUrl);
                     }
                 }
                 else if (!string.IsNullOrEmpty(request.FilePath))
                 {
-                    var filePath = TranslateUtils.DecryptStringBySecretKey(request.FilePath, WebConfigUtils.SecretKey);
+                    var filePath = _settingsManager.Decrypt(request.FilePath);
                     var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
                     if (FileUtils.IsDownload(fileType))
                     {
@@ -60,12 +74,12 @@ namespace SS.CMS.Web.Controllers.Stl
                 }
                 else if (request.SiteId.HasValue && request.ChannelId.HasValue && request.ContentId.HasValue && !string.IsNullOrEmpty(request.FileUrl))
                 {
-                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.FileUrl, WebConfigUtils.SecretKey);
-                    var site = await DataProvider.SiteRepository.GetAsync(request.SiteId.Value);
-                    var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId.Value);
-                    var content = await DataProvider.ContentRepository.GetAsync(site, channel, request.ContentId.Value);
+                    var fileUrl = _settingsManager.Decrypt(request.FileUrl);
+                    var site = await _siteRepository.GetAsync(request.SiteId.Value);
+                    var channel = await _channelRepository.GetAsync(request.ChannelId.Value);
+                    var content = await _contentRepository.GetAsync(site, channel, request.ContentId.Value);
 
-                    await DataProvider.ContentRepository.AddDownloadsAsync(await DataProvider.ChannelRepository.GetTableNameAsync(site, channel), request.ChannelId.Value, request.ContentId.Value);
+                    await _contentRepository.AddDownloadsAsync(await _channelRepository.GetTableNameAsync(site, channel), request.ChannelId.Value, request.ContentId.Value);
 
                     if (!string.IsNullOrEmpty(content?.Get<string>(ContentAttribute.FileUrl)))
                     {
@@ -74,7 +88,7 @@ namespace SS.CMS.Web.Controllers.Stl
                             return Redirect(fileUrl);
                         }
 
-                        var filePath = await PathUtility.MapPathAsync(site, fileUrl, true);
+                        var filePath = await _pathManager.MapPathAsync(site, fileUrl, true);
                         var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
                         if (FileUtils.IsDownload(fileType))
                         {
@@ -85,7 +99,7 @@ namespace SS.CMS.Web.Controllers.Stl
                         }
                         else
                         {
-                            var redirectUrl = await PageUtility.ParseNavigationUrlAsync(site, fileUrl, false);
+                            var redirectUrl = await _pathManager.ParseNavigationUrlAsync(site, fileUrl, false);
                             return Redirect(redirectUrl);
                         }
                     }

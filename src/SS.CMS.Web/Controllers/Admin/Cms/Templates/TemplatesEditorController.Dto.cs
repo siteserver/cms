@@ -3,7 +3,6 @@ using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
@@ -71,10 +70,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 			if (request.Id > 0)
 			{
 				var templateId = request.Id;
-				template = await DataProvider.TemplateRepository.GetAsync(templateId);
+				template = await _templateRepository.GetAsync(templateId);
 				if (template.TemplateName != request.TemplateName)
 				{
-					var templateNameList = await DataProvider.TemplateRepository.GetTemplateNameListAsync(request.SiteId, template.TemplateType);
+					var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, template.TemplateType);
 					if (templateNameList.Contains(request.TemplateName))
 					{
 						return this.Error("模板修改失败，模板名称已存在！");
@@ -84,7 +83,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 				var isChanged = false;
 				if (PathUtils.RemoveExtension(template.RelatedFileName) != PathUtils.RemoveExtension(request.RelatedFileName))//文件名改变
 				{
-					var fileNameList = await DataProvider.TemplateRepository.GetRelatedFileNameListAsync(request.SiteId, template.TemplateType);
+					var fileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, template.TemplateType);
 					foreach (var fileName in fileNameList)
 					{
 						var fileNameWithoutExtension = PathUtils.RemoveExtension(fileName);
@@ -122,10 +121,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 				template.CreatedFileExtName = request.CreatedFileExtName;
 				template.CreatedFileFullName = request.CreatedFileFullName + request.CreatedFileExtName;
 
-                await DataProvider.TemplateRepository.UpdateAsync(site, template, request.Content, _authManager.AdminId);
+                await _templateRepository.UpdateAsync(_pathManager, site, template, request.Content, _authManager.AdminId);
 				if (previousTemplate != null)
 				{
-					FileUtils.DeleteFileIfExists(await DataProvider.TemplateRepository.GetTemplateFilePathAsync(site, previousTemplate));
+					FileUtils.DeleteFileIfExists(await _pathManager.GetTemplateFilePathAsync(site, previousTemplate));
 				}
 				await CreatePagesAsync(template);
 
@@ -135,12 +134,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 			}
 			else
 			{
-				var templateNameList = await DataProvider.TemplateRepository.GetTemplateNameListAsync(request.SiteId, request.TemplateType);
+				var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, request.TemplateType);
 				if (templateNameList.Contains(request.TemplateName))
 				{
 					return this.Error("模板添加失败，模板名称已存在！");
 				}
-				var fileNameList = await DataProvider.TemplateRepository.GetRelatedFileNameListAsync(request.SiteId, request.TemplateType);
+				var fileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, request.TemplateType);
 				if (StringUtils.ContainsIgnoreCase(fileNameList, request.RelatedFileName))
 				{
 					return this.Error("模板添加失败，模板文件已存在！");
@@ -157,7 +156,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                     Default = false
 				};
 
-				template.Id = await DataProvider.TemplateRepository.InsertAsync(site, template, request.Content, _authManager.AdminId);
+				template.Id = await _templateRepository.InsertAsync(_pathManager, site, template, request.Content, _authManager.AdminId);
 				await CreatePagesAsync(template);
 				await _authManager.AddSiteLogAsync(request.SiteId,
 					$"添加{template.TemplateType.GetDisplayName()}",
@@ -185,7 +184,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 template.CreatedFileExtName = GetTemplateFileExtension(templateInfo);
                 template.RelatedFileName = PathUtils.RemoveExtension(templateInfo.RelatedFileName);
                 template.CreatedFileFullName = PathUtils.RemoveExtension(templateInfo.CreatedFileFullName);
-                template.Content = await DataProvider.TemplateRepository.GetTemplateContentAsync(site, templateInfo);
+                template.Content = await _pathManager.GetTemplateContentAsync(site, templateInfo);
             }
             else
             {

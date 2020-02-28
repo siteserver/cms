@@ -4,26 +4,25 @@ using Datory;
 using Datory.Utils;
 using SS.CMS.Abstractions;
 using SS.CMS.Core.Serialization.Atom.Atom.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core.Serialization.Components
 {
 	internal class TableStyleIe
-	{
+    {
+        private readonly IDatabaseManager _databaseManager;
 		private readonly string _directoryPath;
-	    private readonly int _adminId;
 
-        public TableStyleIe(string directoryPath, int adminId)
-		{
+        public TableStyleIe(IDatabaseManager databaseManager, string directoryPath)
+        {
+            _databaseManager = databaseManager;
 			_directoryPath = directoryPath;
-            _adminId = adminId;
-		}
+        }
 
 		public async Task ExportTableStylesAsync(int siteId, string tableName)
 		{
-            var allRelatedIdentities = await DataProvider.ChannelRepository.GetChannelIdListAsync(siteId);
+            var allRelatedIdentities = await _databaseManager.ChannelRepository.GetChannelIdListAsync(siteId);
             allRelatedIdentities.Insert(0, 0);
-            var tableStyleWithItemsDict = await DataProvider.TableStyleRepository.GetTableStyleWithItemsDictionaryAsync(tableName, allRelatedIdentities);
+            var tableStyleWithItemsDict = await _databaseManager.TableStyleRepository.GetTableStyleWithItemsDictionaryAsync(tableName, allRelatedIdentities);
 		    if (tableStyleWithItemsDict == null || tableStyleWithItemsDict.Count <= 0) return;
 
 		    var styleDirectoryPath = PathUtils.Combine(_directoryPath, tableName);
@@ -42,19 +41,19 @@ namespace SS.CMS.Core.Serialization.Components
 		            //仅导出当前系统内的表样式
 		            if (tableStyle.RelatedIdentity != 0)
 		            {
-		                if (!await DataProvider.ChannelRepository.IsAncestorOrSelfAsync(siteId, siteId, tableStyle.RelatedIdentity))
+		                if (!await _databaseManager.ChannelRepository.IsAncestorOrSelfAsync(siteId, siteId, tableStyle.RelatedIdentity))
 		                {
 		                    continue;
 		                }
 		            }
 		            var filePath = attributeNameDirectoryPath + PathUtils.SeparatorChar + tableStyle.Id + ".xml";
-		            var feed = await ExportTableStyleAsync(siteId, tableStyle);
+		            var feed = await ExportTableStyleAsync(_databaseManager, siteId, tableStyle);
                     feed.Save(filePath);
 		        }
 		    }
 		}
 
-        private static async Task<AtomFeed> ExportTableStyleAsync(int siteId, TableStyle tableStyle)
+        private static async Task<AtomFeed> ExportTableStyleAsync(IDatabaseManager databaseManager, int siteId, TableStyle tableStyle)
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
@@ -85,7 +84,7 @@ namespace SS.CMS.Core.Serialization.Components
             var orderString = string.Empty;
             if (siteId > 0 && tableStyle.RelatedIdentity != 0)
             {
-                orderString = await DataProvider.ChannelRepository.ImportGetOrderStringInSiteAsync(siteId, tableStyle.RelatedIdentity);
+                orderString = await databaseManager.ChannelRepository.ImportGetOrderStringInSiteAsync(siteId, tableStyle.RelatedIdentity);
             }
 
             AtomUtility.AddDcElement(feed.AdditionalElements, "OrderString", orderString);
@@ -93,38 +92,38 @@ namespace SS.CMS.Core.Serialization.Components
 			return feed;
 		}
 
-        public static async Task SingleExportTableStylesAsync(string tableName, int siteId, int relatedIdentity, string styleDirectoryPath)
+        public static async Task SingleExportTableStylesAsync(IDatabaseManager databaseManager, string tableName, int siteId, int relatedIdentity, string styleDirectoryPath)
         {
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(relatedIdentity);
-            var relatedIdentities = DataProvider.TableStyleRepository.GetRelatedIdentities(channelInfo);
+            var channelInfo = await databaseManager.ChannelRepository.GetAsync(relatedIdentity);
+            var relatedIdentities = databaseManager.TableStyleRepository.GetRelatedIdentities(channelInfo);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = await DataProvider.TableStyleRepository.GetStyleListAsync(tableName, relatedIdentities);
+            var styleInfoList = await databaseManager.TableStyleRepository.GetStyleListAsync(tableName, relatedIdentities);
             foreach (var tableStyle in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyle.AttributeName + ".xml");
-                var feed = await ExportTableStyleAsync(siteId, tableStyle);
+                var feed = await ExportTableStyleAsync(databaseManager, siteId, tableStyle);
                 feed.Save(filePath);
             }
         }
 
-        public static async Task SingleExportTableStylesAsync(int siteId, string tableName, List<int> relatedIdentities, string styleDirectoryPath)
+        public static async Task SingleExportTableStylesAsync(IDatabaseManager databaseManager, int siteId, string tableName, List<int> relatedIdentities, string styleDirectoryPath)
         {
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = await DataProvider.TableStyleRepository.GetStyleListAsync(tableName, relatedIdentities);
+            var styleInfoList = await databaseManager.TableStyleRepository.GetStyleListAsync(tableName, relatedIdentities);
             foreach (var tableStyle in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyle.AttributeName + ".xml");
-                var feed = await ExportTableStyleAsync(siteId, tableStyle);
+                var feed = await ExportTableStyleAsync(databaseManager, siteId, tableStyle);
                 feed.Save(filePath);
             }
         }
 
-        public static async Task SingleImportTableStyleAsync(string tableName, string styleDirectoryPath, List<int> relatedIdentities)
+        public static async Task SingleImportTableStyleAsync(IDatabaseManager databaseManager, string tableName, string styleDirectoryPath, List<int> relatedIdentities)
         {
             if (!DirectoryUtils.IsDirectoryExists(styleDirectoryPath)) return;
 
@@ -174,11 +173,11 @@ namespace SS.CMS.Core.Serialization.Components
                     }
                 }
 
-                if (await DataProvider.TableStyleRepository.IsExistsAsync(relatedIdentity, tableName, attributeName))
+                if (await databaseManager.TableStyleRepository.IsExistsAsync(relatedIdentity, tableName, attributeName))
                 {
-                    await DataProvider.TableStyleRepository.DeleteAsync(relatedIdentity, tableName, attributeName);
+                    await databaseManager.TableStyleRepository.DeleteAsync(relatedIdentity, tableName, attributeName);
                 }
-                await DataProvider.TableStyleRepository.InsertAsync(relatedIdentities, styleInfo);
+                await databaseManager.TableStyleRepository.InsertAsync(relatedIdentities, styleInfo);
             }
         }
 
@@ -194,7 +193,7 @@ namespace SS.CMS.Core.Serialization.Components
                 var tableName = PathUtils.GetDirectoryName(styleDirectoryPath, false);
                 if (tableName == "siteserver_PublishmentSystem")
                 {
-                    tableName = DataProvider.SiteRepository.TableName;
+                    tableName = _databaseManager.SiteRepository.TableName;
                 }
 
                 var attributeNamePaths = DirectoryUtils.GetDirectoryPaths(styleDirectoryPath);
@@ -220,9 +219,9 @@ namespace SS.CMS.Core.Serialization.Components
 
                         var orderString = AtomUtility.GetDcElementContent(feed.AdditionalElements, "OrderString");
 
-                        var relatedIdentity = !string.IsNullOrEmpty(orderString) ? await DataProvider.ChannelRepository.ImportGetIdAsync(site.Id, orderString) : site.Id;
+                        var relatedIdentity = !string.IsNullOrEmpty(orderString) ? await _databaseManager.ChannelRepository.ImportGetIdAsync(site.Id, orderString) : site.Id;
 
-                        if (relatedIdentity <= 0 || await DataProvider.TableStyleRepository.IsExistsAsync(relatedIdentity, tableName, attributeName)) continue;
+                        if (relatedIdentity <= 0 || await _databaseManager.TableStyleRepository.IsExistsAsync(relatedIdentity, tableName, attributeName)) continue;
 
                         var styleInfo = new TableStyle
                         {
@@ -258,7 +257,7 @@ namespace SS.CMS.Core.Serialization.Components
             foreach (var styleInfo in styles)
             {
                 Caching.SetProcess(guid, $"导入表字段: {styleInfo.AttributeName}");
-                await DataProvider.TableStyleRepository.InsertAsync(DataProvider.TableStyleRepository.GetRelatedIdentities(styleInfo.RelatedIdentity), styleInfo);
+                await _databaseManager.TableStyleRepository.InsertAsync(_databaseManager.TableStyleRepository.GetRelatedIdentities(styleInfo.RelatedIdentity), styleInfo);
             }
         }
 

@@ -28,12 +28,9 @@ namespace SS.CMS.Abstractions
 
         public bool IsLogError { get; set; } = true;
 
-        // �Ƿ���ʱ����ֵ
         public bool IsTimeThreshold { get; set; }
 
         public int TimeThreshold { get; set; } = 60;
-
-        /****************����Ա����********************/
 
         public int AdminUserNameMinLength { get; set; }
 
@@ -56,8 +53,6 @@ namespace SS.CMS.Abstractions
         public bool IsAdminEnforceLogout { get; set; }
 
         public int AdminEnforceLogoutMinutes { get; set; } = 960;
-
-        /****************�û�����********************/
 
         public bool IsUserRegistrationAllowed { get; set; } = true;
 
@@ -85,19 +80,15 @@ namespace SS.CMS.Abstractions
 
         public string UserDefaultGroupAdminName { get; set; }
 
-        /****************������̨����********************/
-
         public string AdminTitle { get; set; } = "SiteServer CMS";
 
         public string AdminLogoUrl { get; set; }
 
-        public string AdminWelcomeHtml { get; set; } = @"��ӭʹ�� SiteServer CMS ������̨";
-
-        /****************�û���������********************/
+        public string AdminWelcomeHtml { get; set; } = @"欢迎使用 SiteServer CMS 管理后台";
 
         public bool IsHomeClosed { get; set; }
 
-        public string HomeTitle { get; set; } = "�û�����";
+        public string HomeTitle { get; set; } = "用户中心";
 
         public bool IsHomeLogo { get; set; }
 
@@ -107,8 +98,6 @@ namespace SS.CMS.Abstractions
 
         public bool IsHomeAgreement { get; set; }
 
-        public string HomeAgreementHtml { get; set; } =
-            @"�Ķ�������<a href=""/agreement.html"" target=""_blank"">���û�Э�顷</a>";
-
+        public string HomeAgreementHtml { get; set; } = @"阅读并接受<a href=""/agreement.html"" target=""_blank"">《用户协议》</a>";
     }
 }

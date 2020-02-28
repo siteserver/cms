@@ -13,10 +13,12 @@ namespace SS.CMS.Web.Controllers.Admin
     {
         private const string Route = "";
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
 
-        public SysPackagingUpdateController(IAuthManager authManager)
+        public SysPackagingUpdateController(IAuthManager authManager, IPathManager pathManager)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
         }
 
         [HttpPost, Route(Route)]
@@ -35,7 +37,7 @@ namespace SS.CMS.Web.Controllers.Admin
             }
 
             var idWithVersion = $"{request.PackageId}.{request.Version}";
-            if (!PackageUtils.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))
+            if (!PackageUtils.UpdatePackage(_pathManager, idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))
             {
                 return this.Error(errorMessage);
             }

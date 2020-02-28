@@ -9,21 +9,12 @@ using Mono.Options;
 using Newtonsoft.Json.Linq;
 using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
-using SS.CMS.Core;
-using SS.CMS.Framework;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Services
 {
-    public class RestoreJob
+    public class RestoreJob : IJobService
     {
-        public const string CommandName = "restore";
-
-        public static async Task Execute(IJobContext context)
-        {
-            var application = CliUtils.Provider.GetService<RestoreJob>();
-            await application.RunAsync(context);
-        }
+        public string CommandName => "restore";
 
         private string _directory;
         private string _configFile;
@@ -32,10 +23,17 @@ namespace SS.CMS.Cli.Services
         private bool _dataOnly;
         private bool _isHelp;
 
+        private readonly ISettingsManager _settingsManager;
+        private readonly IConfigRepository _configRepository;
+        private readonly IDatabaseManager _databaseManager;
         private readonly OptionSet _options;
 
-        public RestoreJob()
+        public RestoreJob(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseManager databaseManager)
         {
+            _settingsManager = settingsManager;
+            _configRepository = configRepository;
+            _databaseManager = databaseManager;
+
             _options = new OptionSet {
                 { "d|directory=", "从指定的文件夹中恢复数据",
                     v => _directory = v },
@@ -52,15 +50,14 @@ namespace SS.CMS.Cli.Services
             };
         }
 
-        public static void PrintUsage()
+        public void PrintUsage()
         {
             Console.WriteLine("数据库恢复: siteserver restore");
-            var job = new RestoreJob();
-            job._options.WriteOptionDescriptions(Console.Out);
+            _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
 
-        public async Task RunAsync(IJobContext context)
+        public async Task ExecuteAsync(IJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
@@ -76,7 +73,7 @@ namespace SS.CMS.Cli.Services
                 return;
             }
 
-            var treeInfo = new TreeInfo(_directory);
+            var treeInfo = new TreeInfo(_settingsManager, _directory);
 
             if (!DirectoryUtils.IsDirectoryExists(treeInfo.DirectoryPath))
             {
@@ -91,26 +88,26 @@ namespace SS.CMS.Cli.Services
                 return;
             }
 
-            var webConfigPath = CliUtils.GetWebConfigPath(_configFile);
+            var webConfigPath = CliUtils.GetWebConfigPath(_configFile, _settingsManager);
             if (!FileUtils.IsFileExists(webConfigPath))
             {
                 await CliUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
                 return;
             }
 
-            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigPath);
+            //WebConfigUtils.Load(_settingsManager.ContentRootPath, webConfigPath);
 
-            if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
-            {
-                await CliUtils.PrintErrorAsync($"{webConfigPath} 中数据库连接字符串 connectionString 未设置");
-                return;
-            }
+            //if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+            //{
+            //    await CliUtils.PrintErrorAsync($"{webConfigPath} 中数据库连接字符串 connectionString 未设置");
+            //    return;
+            //}
 
-            await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.GetValue()}");
-            await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
-            await Console.Out.WriteLineAsync($"恢复文件夹: {treeInfo.DirectoryPath}");
+            //await Console.Out.WriteLineAsync($"数据库类型: {_settingsManager.Database.DatabaseType.GetValue()}");
+            //await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
+            //await Console.Out.WriteLineAsync($"恢复文件夹: {treeInfo.DirectoryPath}");
 
-            var (isConnectionWorks, errorMessage) = await WebConfigUtils.Database.IsConnectionWorksAsync();
+            var (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
                 await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
@@ -119,28 +116,28 @@ namespace SS.CMS.Cli.Services
 
             if (!_dataOnly)
             {
-                if (!await DataProvider.ConfigRepository.IsNeedInstallAsync())
+                if (!await _configRepository.IsNeedInstallAsync())
                 {
                     await CliUtils.PrintErrorAsync("数据无法在已安装系统的数据库中恢复，命令执行失败");
                     return;
                 }
 
                 // 恢复前先创建表，确保系统在恢复的数据库中能够使用
-                await DataProvider.DatabaseRepository.CreateSiteServerTablesAsync();
+                await _databaseManager.CreateSiteServerTablesAsync();
             }
 
             await CliUtils.PrintRowLineAsync();
             await CliUtils.PrintRowAsync("恢复表名称", "总条数");
             await CliUtils.PrintRowLineAsync();
 
-            var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName);
+            var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName, _settingsManager);
 
             await RestoreAsync(_includes, _excludes, _dataOnly, tablesFilePath, treeInfo, errorLogFilePath);
 
             await Console.Out.WriteLineAsync($"恭喜，成功从文件夹：{treeInfo.DirectoryPath} 恢复数据！");
         }
 
-        public static async Task RestoreAsync(List<string> includes, List<string> excludes, bool dataOnly, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
+        public async Task RestoreAsync(List<string> includes, List<string> excludes, bool dataOnly, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
         {
             var tableNames =
                 TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
@@ -169,12 +166,12 @@ namespace SS.CMS.Cli.Services
 
                     await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                    if (await WebConfigUtils.Database.IsTableExistsAsync(tableName))
+                    if (await _settingsManager.Database.IsTableExistsAsync(tableName))
                     {
-                        await WebConfigUtils.Database.DropTableAsync(tableName);
+                        await _settingsManager.Database.DropTableAsync(tableName);
                     }
 
-                    await WebConfigUtils.Database.CreateTableAsync(tableName, tableInfo.Columns);
+                    await _settingsManager.Database.CreateTableAsync(tableName, tableInfo.Columns);
 
                     if (tableInfo.RowFiles.Count > 0)
                     {
@@ -190,7 +187,7 @@ namespace SS.CMS.Cli.Services
 
                             try
                             {
-                                var repository = new Repository(WebConfigUtils.Database, tableName,
+                                var repository = new Repository(_settingsManager.Database, tableName,
                                     tableInfo.Columns);
                                 await repository.BulkInsertAsync(objects);
                             }
@@ -219,9 +216,9 @@ namespace SS.CMS.Cli.Services
 
             await CliUtils.PrintRowLineAsync();
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            if (_settingsManager.Database.DatabaseType == DatabaseType.Oracle)
             {
-                var database = DataProvider.DatabaseRepository.GetDatabase();
+                var database = _databaseManager.GetDatabase();
                 var allTableNames = await database.GetTableNamesAsync();
                 foreach (var tableName in allTableNames)
                 {
@@ -230,7 +227,7 @@ namespace SS.CMS.Cli.Services
                         var sqlString =
                             $"ALTER TABLE {tableName} MODIFY Id GENERATED ALWAYS AS IDENTITY(START WITH LIMIT VALUE)";
 
-                        using (var connection = WebConfigUtils.Database.GetConnection())
+                        using (var connection = _settingsManager.Database.GetConnection())
                         {
                             await connection.ExecuteAsync(sqlString);
                         }
@@ -249,8 +246,8 @@ namespace SS.CMS.Cli.Services
             if (!dataOnly)
             {
                 // 恢复后同步表，确保内容辅助表字段与系统一致
-                await DataProvider.DatabaseRepository.SyncContentTablesAsync();
-                await DataProvider.ConfigRepository.UpdateConfigVersionAsync(SystemManager.ProductVersion);
+                await _databaseManager.SyncContentTablesAsync();
+                await _configRepository.UpdateConfigVersionAsync(_settingsManager.ProductVersion);
             }
         }
     }

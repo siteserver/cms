@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
 using SS.CMS.Cli.Updater.Tables;
-using SS.CMS.Framework;
+using SS.CMS.Core;
 using SS.CMS.Repositories;
 using TableInfo = SS.CMS.Cli.Core.TableInfo;
 
@@ -123,15 +123,15 @@ namespace SS.CMS.Cli.Updater
             }
         }
 
-        public static async Task UpdateSitesSplitTableNameAsync(TreeInfo newTreeInfo, Dictionary<int, TableInfo> splitSiteTableDict)
+        public static async Task UpdateSitesSplitTableNameAsync(IDatabaseManager databaseManager, TreeInfo newTreeInfo, Dictionary<int, TableInfo> splitSiteTableDict)
         {
-            var siteMetadataFilePath = newTreeInfo.GetTableMetadataFilePath(DataProvider.SiteRepository.TableName);
+            var siteMetadataFilePath = newTreeInfo.GetTableMetadataFilePath(databaseManager.SiteRepository.TableName);
             if (FileUtils.IsFileExists(siteMetadataFilePath))
             {
                 var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(siteMetadataFilePath, Encoding.UTF8));
                 foreach (var fileName in siteTableInfo.RowFiles)
                 {
-                    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteRepository.TableName, fileName);
+                    var filePath = newTreeInfo.GetTableContentFilePath(databaseManager.SiteRepository.TableName, fileName);
                     var oldRows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
                     var newRows = new List<Dictionary<string, object>>();
                     foreach (var row in oldRows)

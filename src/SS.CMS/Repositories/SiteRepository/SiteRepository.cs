@@ -37,7 +37,7 @@ namespace SS.CMS.Repositories
         /// <summary>
         /// 添加后台发布节点
         /// </summary>
-        public async Task<int> InsertSiteAsync(Channel channel, Site site, int adminId)
+        public async Task<int> InsertSiteAsync(IPathManager pathManager, Channel channel, Site site, int adminId)
         {
             await _channelRepository.InsertChannelAsync(null, channel);
 
@@ -48,12 +48,10 @@ namespace SS.CMS.Repositories
             var adminEntity = await _administratorRepository.GetByUserIdAsync(adminId);
             await _administratorRepository.UpdateSiteIdAsync(adminEntity, channel.Id);
 
-            await _repository.UpdateAsync(Q
-                .Set(nameof(Channel.SiteId), channel.Id)
-                .Where(nameof(Channel.Id), channel.Id)
-            );
+            channel.SiteId = site.Id;
+            await _channelRepository.UpdateAsync(channel);
 
-            await _templateRepository.CreateDefaultTemplateAsync(site, adminId);
+            await _templateRepository.CreateDefaultTemplateAsync(pathManager, site, adminId);
 
             return channel.Id;
         }

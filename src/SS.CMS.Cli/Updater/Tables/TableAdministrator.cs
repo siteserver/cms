@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
 using SS.CMS.Abstractions;
-using SS.CMS.Framework;
+using SS.CMS.Core;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableAdministrator
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableAdministrator(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public int Id { get; set; }
 
@@ -74,30 +81,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("language")]
         public string Language { get; set; }
-    }
-
-    public partial class TableAdministrator
-    {
-        public const string OldTableName = "bairong_Administrator";
-
-        public static ConvertInfo Converter => new ConvertInfo
-        {
-            NewTableName = NewTableName,
-            NewColumns = NewColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
-        };
-
-        private static readonly string NewTableName = DataProvider.AdministratorRepository.TableName;
-
-        private static readonly List<TableColumn> NewColumns = DataProvider.AdministratorRepository.TableColumns;
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(Administrator.SiteId), nameof(PublishmentSystemId)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

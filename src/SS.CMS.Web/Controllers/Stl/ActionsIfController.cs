@@ -10,10 +10,12 @@ namespace SS.CMS.Web.Controllers.Stl
     public partial class ActionsIfController : ControllerBase
     {
         private readonly IAuthManager _authManager;
+        private readonly IParseManager _parseManager;
 
-        public ActionsIfController(IAuthManager authManager)
+        public ActionsIfController(IAuthManager authManager, IParseManager parseManager)
         {
             _authManager = authManager;
+            _parseManager = parseManager;
         }
 
         [HttpPost, Route(ApiRouteActionsIf.Route)]
@@ -43,7 +45,7 @@ namespace SS.CMS.Web.Controllers.Stl
                 }
 
                 var template = isSuccess ? dynamicInfo.SuccessTemplate : dynamicInfo.FailureTemplate;
-                html = await StlDynamic.ParseDynamicContentAsync(dynamicInfo, template);
+                html = await StlDynamic.ParseDynamicContentAsync(_parseManager, dynamicInfo, template);
             }
 
             return new SubmitResult

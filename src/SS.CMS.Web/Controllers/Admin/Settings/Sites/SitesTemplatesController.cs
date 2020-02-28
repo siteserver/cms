@@ -20,35 +20,38 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
 
-        public SitesTemplatesController(IAuthManager authManager, IPathManager pathManager)
+        public SitesTemplatesController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager)
         {
             _authManager = authManager;
             _pathManager = pathManager;
+            _databaseManager = databaseManager;
         }
 
         private async Task<ListResult> GetListResultAsync()
         {
-            var siteTemplates = SiteTemplateManager.Instance.GetSiteTemplateInfoList();
+            var manager = new SiteTemplateManager(_pathManager, _databaseManager);
+            var siteTemplates = manager.GetSiteTemplateInfoList();
             var siteTemplateInfoList = new List<SiteTemplateInfo>();
             foreach (var siteTemplate in siteTemplates)
             {
-                var directoryPath = PathUtility.GetSiteTemplatesPath(siteTemplate.DirectoryName);
+                var directoryPath = _pathManager.GetSiteTemplatesPath(siteTemplate.DirectoryName);
                 var dirInfo = new DirectoryInfo(directoryPath);
                 if (string.IsNullOrEmpty(siteTemplate.SiteTemplateName)) continue;
 
-                var filePath = PathUtility.GetSiteTemplatesPath(dirInfo.Name + ".zip");
+                var filePath = _pathManager.GetSiteTemplatesPath(dirInfo.Name + ".zip");
                 siteTemplate.FileExists = FileUtils.IsFileExists(filePath);
                 siteTemplateInfoList.Add(siteTemplate);
             }
 
-            var fileNames = SiteTemplateManager.Instance.GetZipSiteTemplateList();
+            var fileNames = manager.GetZipSiteTemplateList();
             var fileNameList = new List<string>();
             foreach (var fileName in fileNames)
             {
                 if (DirectoryUtils.IsDirectoryExists(
-                    PathUtility.GetSiteTemplatesPath(PathUtils.GetFileNameWithoutExtension(fileName)))) continue;
-                var filePath = PathUtility.GetSiteTemplatesPath(fileName);
+                    _pathManager.GetSiteTemplatesPath(PathUtils.GetFileNameWithoutExtension(fileName)))) continue;
+                var filePath = _pathManager.GetSiteTemplatesPath(fileName);
                 var fileInfo = new FileInfo(filePath);
                 fileNameList.Add(fileInfo.Name);
             }
@@ -91,8 +94,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 
             var directoryName = PathUtils.RemoveParentPath(request.DirectoryName);
             var fileName = directoryName + ".zip";
-            var filePath = PathUtility.GetSiteTemplatesPath(fileName);
-            var directoryPath = PathUtility.GetSiteTemplatesPath(directoryName);
+            var filePath = _pathManager.GetSiteTemplatesPath(fileName);
+            var directoryPath = _pathManager.GetSiteTemplatesPath(directoryName);
 
             FileUtils.DeleteFileIfExists(filePath);
 
@@ -116,8 +119,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 
             var fileNameToUnZip = request.FileName;
 
-            var directoryPathToUnZip = PathUtility.GetSiteTemplatesPath(PathUtils.GetFileNameWithoutExtension(fileNameToUnZip));
-            var zipFilePath = PathUtility.GetSiteTemplatesPath(fileNameToUnZip);
+            var directoryPathToUnZip = _pathManager.GetSiteTemplatesPath(PathUtils.GetFileNameWithoutExtension(fileNameToUnZip));
+            var zipFilePath = _pathManager.GetSiteTemplatesPath(fileNameToUnZip);
 
             ZipUtils.ExtractZip(zipFilePath, directoryPathToUnZip);
 
@@ -134,14 +137,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
+            var manager = new SiteTemplateManager(_pathManager, _databaseManager);
+
             if (!string.IsNullOrEmpty(request.DirectoryName))
             {
-                SiteTemplateManager.Instance.DeleteSiteTemplate(request.DirectoryName);
+                manager.DeleteSiteTemplate(request.DirectoryName);
                 await auth.AddAdminLogAsync("删除站点模板", $"站点模板:{request.DirectoryName}");
             }
             if (!string.IsNullOrEmpty(request.FileName))
             {
-                SiteTemplateManager.Instance.DeleteZipSiteTemplate(request.FileName);
+                manager.DeleteZipSiteTemplate(request.FileName);
                 await auth.AddAdminLogAsync("删除未解压站点模板", $"站点模板:{request.FileName}");
             }
 

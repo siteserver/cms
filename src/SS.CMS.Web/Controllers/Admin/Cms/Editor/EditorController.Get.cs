@@ -7,7 +7,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -26,17 +25,17 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(site.Id);
-            var tagNames = await DataProvider.ContentTagRepository.GetTagNamesAsync(site.Id);
+            var groupNames = await _contentGroupRepository.GetGroupNamesAsync(site.Id);
+            var tagNames = await _contentTagRepository.GetTagNamesAsync(site.Id);
 
-            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channel);
-            var allStyles = await DataProvider.TableStyleRepository.GetContentStyleListAsync(channel, tableName);
+            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+            var allStyles = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
             var styles = allStyles.Where(style =>
                     !string.IsNullOrEmpty(style.DisplayName) && !StringUtils.ContainsIgnoreCase(ContentAttribute.MetadataAttributes.Value, style.AttributeName)).Select(
                 x =>
@@ -59,7 +58,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
             };
             if (request.ContentId != 0)
             {
-                content = await DataProvider.ContentRepository.GetAsync(site, channel, request.ContentId);
+                content = await _contentRepository.GetAsync(site, channel, request.ContentId);
             }
 
             return new GetResult

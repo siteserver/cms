@@ -7,20 +7,20 @@ using Datory.Utils;
 using SS.CMS.Abstractions;
 using SS.CMS.Core.Serialization.Atom.Atom.AdditionalElements;
 using SS.CMS.Core.Serialization.Atom.Atom.Core;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Core.Serialization.Components
 {
     internal class ChannelIe
     {
-        private readonly Site _site;
-
-        //保存除内容表本身字段外的属性
         private const string ChannelTemplateName = "ChannelTemplateName";
         private const string ContentTemplateName = "ContentTemplateName";
 
-        public ChannelIe(Site site)
+        private readonly IDatabaseManager _databaseManager;
+        private readonly Site _site;
+
+        public ChannelIe(IDatabaseManager databaseManager, Site site)
         {
+            _databaseManager = databaseManager;
             _site = site;
         }
 
@@ -56,12 +56,12 @@ namespace SS.CMS.Core.Serialization.Components
             var channelTemplateName = AtomUtility.GetDcElementContent(additionalElements, ChannelTemplateName);
             if (!string.IsNullOrEmpty(channelTemplateName))
             {
-                channel.ChannelTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ChannelTemplate, channelTemplateName);
+                channel.ChannelTemplateId = await _databaseManager.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ChannelTemplate, channelTemplateName);
             }
             var contentTemplateName = AtomUtility.GetDcElementContent(additionalElements, ContentTemplateName);
             if (!string.IsNullOrEmpty(contentTemplateName))
             {
-                channel.ContentTemplateId = await DataProvider.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ContentTemplate, contentTemplateName);
+                channel.ContentTemplateId = await _databaseManager.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ContentTemplate, contentTemplateName);
             }
 
             channel.Keywords = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.Keywords));
@@ -114,13 +114,13 @@ namespace SS.CMS.Core.Serialization.Components
 
             if (channel.ChannelTemplateId != 0)
             {
-                var channelTemplateName = await DataProvider.TemplateRepository.GetTemplateNameAsync(channel.ChannelTemplateId);
+                var channelTemplateName = await _databaseManager.TemplateRepository.GetTemplateNameAsync(channel.ChannelTemplateId);
                 AtomUtility.AddDcElement(feed.AdditionalElements, ChannelTemplateName, channelTemplateName);
             }
 
             if (channel.ContentTemplateId != 0)
             {
-                var contentTemplateName = await DataProvider.TemplateRepository.GetTemplateNameAsync(channel.ContentTemplateId);
+                var contentTemplateName = await _databaseManager.TemplateRepository.GetTemplateNameAsync(channel.ContentTemplateId);
                 AtomUtility.AddDcElement(feed.AdditionalElements, ContentTemplateName, contentTemplateName);
             }
 

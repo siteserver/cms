@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Library
@@ -19,11 +18,21 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         private const string RouteGroups = "groups";
         private const string RouteGroupId = "groups/{id}";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly ILibraryGroupRepository _libraryGroupRepository;
+        private readonly ILibraryVideoRepository _libraryVideoRepository;
 
-        public LibraryVideoController(IAuthManager authManager)
+        public LibraryVideoController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, ILibraryGroupRepository libraryGroupRepository, ILibraryVideoRepository libraryVideoRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
+            _pathManager = pathManager;
+            _siteRepository = siteRepository;
+            _libraryGroupRepository = libraryGroupRepository;
+            _libraryVideoRepository = libraryVideoRepository;
         }
 
         [HttpPost, Route(RouteList)]
@@ -38,15 +47,15 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            var groups = await DataProvider.LibraryGroupRepository.GetAllAsync(LibraryType.Video);
+            var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Video);
             groups.Insert(0, new LibraryGroup
             {
                 Id = 0,
                 Type = LibraryType.Video,
                 GroupName = "全部文件"
             });
-            var count = await DataProvider.LibraryVideoRepository.GetCountAsync(req.GroupId, req.Keyword);
-            var items = await DataProvider.LibraryVideoRepository.GetAllAsync(req.GroupId, req.Keyword, req.Page, req.PerPage);
+            var count = await _libraryVideoRepository.GetCountAsync(req.GroupId, req.Keyword);
+            var items = await _libraryVideoRepository.GetAllAsync(req.GroupId, req.Keyword, req.Page, req.PerPage);
 
             return new QueryResult
             {
@@ -68,7 +77,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             if (request.File == null)
             {
@@ -78,7 +87,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
             var fileName = Path.GetFileName(request.File.FileName);
 
             var fileType = PathUtils.GetExtension(fileName);
-            if (!PathUtility.IsUploadExtensionAllowed(UploadType.Video, site, fileType))
+            if (!_pathManager.IsUploadExtensionAllowed(UploadType.Video, site, fileType))
             {
                 return this.Error("文件只能是图片格式，请选择有效的文件上传!");
             }
@@ -86,7 +95,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
             var libraryVideoName = PathUtils.GetLibraryFileName(fileName);
             var virtualDirectoryPath = PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Video);
 
-            var directoryPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, virtualDirectoryPath);
+            var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
             var filePath = PathUtils.Combine(directoryPath, libraryVideoName);
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
@@ -100,7 +109,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 Url = PageUtils.Combine(virtualDirectoryPath, libraryVideoName)
             };
 
-            await DataProvider.LibraryVideoRepository.InsertAsync(library);
+            await _libraryVideoRepository.InsertAsync(library);
 
             return library;
         }
@@ -117,10 +126,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            var lib = await DataProvider.LibraryVideoRepository.GetAsync(request.Id);
+            var lib = await _libraryVideoRepository.GetAsync(request.Id);
             lib.Title = request.Title;
             lib.GroupId = request.GroupId;
-            await DataProvider.LibraryVideoRepository.UpdateAsync(lib);
+            await _libraryVideoRepository.UpdateAsync(lib);
 
             return lib;
         }
@@ -137,7 +146,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            await DataProvider.LibraryVideoRepository.DeleteAsync(request.Id);
+            await _libraryVideoRepository.DeleteAsync(request.Id);
 
             return new BoolResult
             {
@@ -156,8 +165,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            var library = await DataProvider.LibraryVideoRepository.GetAsync(request.LibraryId);
-            var filePath = PathUtility.GetLibraryFilePath(library.Url);
+            var library = await _libraryVideoRepository.GetAsync(request.LibraryId);
+            var filePath = _pathManager.GetLibraryFilePath(library.Url);
             return this.Download(filePath);
         }
 
@@ -178,7 +187,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 Type = LibraryType.Video,
                 GroupName = group.Name
             };
-            libraryGroup.Id = await DataProvider.LibraryGroupRepository.InsertAsync(libraryGroup);
+            libraryGroup.Id = await _libraryGroupRepository.InsertAsync(libraryGroup);
 
             return libraryGroup;
         }
@@ -195,9 +204,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            var libraryGroup = await DataProvider.LibraryGroupRepository.GetAsync(id);
+            var libraryGroup = await _libraryGroupRepository.GetAsync(id);
             libraryGroup.GroupName = group.Name;
-            await DataProvider.LibraryGroupRepository.UpdateAsync(libraryGroup);
+            await _libraryGroupRepository.UpdateAsync(libraryGroup);
 
             return libraryGroup;
         }
@@ -214,7 +223,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 return Unauthorized();
             }
 
-            await DataProvider.LibraryGroupRepository.DeleteAsync(LibraryType.Video, request.Id);
+            await _libraryGroupRepository.DeleteAsync(LibraryType.Video, request.Id);
 
             return new BoolResult
             {

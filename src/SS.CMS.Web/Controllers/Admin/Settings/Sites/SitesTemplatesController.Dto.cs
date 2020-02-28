@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
 using SS.CMS.Core;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Sites

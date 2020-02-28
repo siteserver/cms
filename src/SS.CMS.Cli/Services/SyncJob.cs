@@ -6,20 +6,12 @@ using Datory.Utils;
 using Mono.Options;
 using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
-using SS.CMS.Framework;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Services
 {
-    public class SyncJob
+    public class SyncJob : IJobService
     {
-        public const string CommandName = "sync";
-
-        public static async Task Execute(IJobContext context)
-        {
-            var application = CliUtils.Provider.GetService<SyncJob>();
-            await application.RunAsync(context);
-        }
+        public string CommandName => "sync";
 
         private string _directory;
         private string _from;
@@ -29,11 +21,19 @@ namespace SS.CMS.Cli.Services
         private int _maxRows;
         private bool _isHelp;
 
+        private readonly ISettingsManager _settingsManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly RestoreJob _restoreJob;
         private readonly OptionSet _options;
 
-        public SyncJob()
+        public SyncJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, RestoreJob restoreJob)
         {
-            _options = new OptionSet() {
+            _settingsManager = settingsManager;
+            _databaseManager = databaseManager;
+            _restoreJob = restoreJob;
+
+            _options = new OptionSet
+            {
                 { "d|directory=", "指定保存备份文件的文件夹名称",
                     v => _directory = v },
                 { "from=", "指定需要备份的配置文件Web.config路径或文件名",
@@ -51,15 +51,14 @@ namespace SS.CMS.Cli.Services
             };
         }
 
-        public static void PrintUsage()
+        public void PrintUsage()
         {
             Console.WriteLine("数据库同步: siteserver sync");
-            var job = new SyncJob();
-            job._options.WriteOptionDescriptions(Console.Out);
+            _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
 
-        public async Task RunAsync(IJobContext context)
+        public async Task ExecuteAsync(IJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
@@ -75,27 +74,27 @@ namespace SS.CMS.Cli.Services
                 directory = $"backup/{DateTime.Now:yyyy-MM-dd}";
             }
 
-            var treeInfo = new TreeInfo(directory);
+            var treeInfo = new TreeInfo(_settingsManager, directory);
             DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
 
-            var backupWebConfigPath = CliUtils.GetWebConfigPath(_from);
+            var backupWebConfigPath = CliUtils.GetWebConfigPath(_from, _settingsManager);
             if (!FileUtils.IsFileExists(backupWebConfigPath))
             {
                 await CliUtils.PrintErrorAsync($"系统配置文件不存在：{backupWebConfigPath}！");
                 return;
             }
-            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, backupWebConfigPath);
-            if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
-            {
-                await CliUtils.PrintErrorAsync($"{backupWebConfigPath} 中数据库连接字符串 connectionString 未设置");
-                return;
-            }
+            //WebConfigUtils.Load(_settingsManager.ContentRootPath, backupWebConfigPath);
+            //if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+            //{
+            //    await CliUtils.PrintErrorAsync($"{backupWebConfigPath} 中数据库连接字符串 connectionString 未设置");
+            //    return;
+            //}
 
-            await Console.Out.WriteLineAsync($"备份数据库类型: {WebConfigUtils.DatabaseType.GetValue()}");
-            await Console.Out.WriteLineAsync($"备份连接字符串: {WebConfigUtils.ConnectionString}");
-            await Console.Out.WriteLineAsync($"备份文件夹: {treeInfo.DirectoryPath}");
+            //await Console.Out.WriteLineAsync($"备份数据库类型: {_settingsManager.Database.DatabaseType.GetValue()}");
+            //await Console.Out.WriteLineAsync($"备份连接字符串: {WebConfigUtils.ConnectionString}");
+            //await Console.Out.WriteLineAsync($"备份文件夹: {treeInfo.DirectoryPath}");
 
-            var (isConnectionWorks, errorMessage) = await WebConfigUtils.Database.IsConnectionWorksAsync();
+            var (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
                 await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
@@ -112,32 +111,32 @@ namespace SS.CMS.Cli.Services
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName);
+            var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName, _settingsManager);
 
-            await BackupJob.Backup(_includes, _excludes, _maxRows, treeInfo);
+            await BackupJob.Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
 
-            var restoreWebConfigPath = CliUtils.GetWebConfigPath(_to);
+            var restoreWebConfigPath = CliUtils.GetWebConfigPath(_to, _settingsManager);
             if (!FileUtils.IsFileExists(restoreWebConfigPath))
             {
                 await CliUtils.PrintErrorAsync($"系统配置文件不存在：{restoreWebConfigPath}！");
                 return;
             }
-            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, restoreWebConfigPath);
-            if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
-            {
-                await CliUtils.PrintErrorAsync($"{restoreWebConfigPath} 中数据库连接字符串 connectionString 未设置");
-                return;
-            }
-            await Console.Out.WriteLineAsync($"恢复数据库类型: {WebConfigUtils.DatabaseType.GetValue()}");
-            await Console.Out.WriteLineAsync($"恢复连接字符串: {WebConfigUtils.ConnectionString}");
-            (isConnectionWorks, errorMessage) = await WebConfigUtils.Database.IsConnectionWorksAsync();
+            //WebConfigUtils.Load(_settingsManager.ContentRootPath, restoreWebConfigPath);
+            //if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+            //{
+            //    await CliUtils.PrintErrorAsync($"{restoreWebConfigPath} 中数据库连接字符串 connectionString 未设置");
+            //    return;
+            //}
+            //await Console.Out.WriteLineAsync($"恢复数据库类型: {_settingsManager.Database.DatabaseType.GetValue()}");
+            //await Console.Out.WriteLineAsync($"恢复连接字符串: {WebConfigUtils.ConnectionString}");
+            (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
                 await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
                 return;
             }
 
-            await RestoreJob.RestoreAsync(_includes, _excludes, true, treeInfo.DirectoryPath, treeInfo, errorLogFilePath);
+            await _restoreJob.RestoreAsync(_includes, _excludes, true, treeInfo.DirectoryPath, treeInfo, errorLogFilePath);
 
             await CliUtils.PrintRowLineAsync();
             await Console.Out.WriteLineAsync("恭喜，成功同步数据！");

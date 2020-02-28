@@ -5,8 +5,10 @@ using SS.CMS.Abstractions;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using System.Threading.Tasks;
+using SS.CMS.Abstractions.Parse;
+using SS.CMS.Core;
+using SS.CMS.Services;
 using SS.CMS.StlParser.Mock;
-using SS.CMS.Framework;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -21,21 +23,21 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "站点文件夹")]
         private const string SiteDir = nameof(SiteDir);
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
-            var listInfo = await ListInfo.GetListInfoAsync(pageInfo, contextInfo, ContextType.Site);
+            var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Site);
             var siteName = listInfo.Others.Get(SiteName);
             var siteDir = listInfo.Others.Get(SiteDir);
 
             var taxisType = GetTaxisTypeByOrder(listInfo.Order);
-            var dataSource = await DataProvider.SiteRepository.ParserGetSitesAsync(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Scope, taxisType);
+            var dataSource = await parseManager.DatabaseManager.SiteRepository.ParserGetSitesAsync(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Scope, taxisType);
 
-            if (contextInfo.IsStlEntity)
+            if (parseManager.ContextInfo.IsStlEntity)
             {
                 return ParseEntity(dataSource);
             }
 
-            return await ParseElementAsync(pageInfo, contextInfo, listInfo, dataSource);
+            return await ParseElementAsync(parseManager, listInfo, dataSource);
         }
 
         private static TaxisType GetTaxisTypeByOrder(string orderValue)
@@ -68,8 +70,11 @@ namespace SS.CMS.StlParser.StlElement
             return taxisType;
         }
 
-        private static async Task<string> ParseElementAsync(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, List<KeyValuePair<int, Site>> sites)
+        private static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Site>> sites)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             if (sites == null || sites.Count == 0) return string.Empty;
 
             var builder = new StringBuilder();
@@ -102,7 +107,7 @@ namespace SS.CMS.StlParser.StlElement
 
                     pageInfo.SiteItems.Push(site);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    var parsedString = await TemplateUtility.GetSitesTemplateStringAsync(templateString, string.Empty, pageInfo, ContextType.Site, contextInfo);
+                    var parsedString = await TemplateUtility.GetSitesTemplateStringAsync(templateString, string.Empty, parseManager, ParseType.Site);
                     builder.Append(parsedString);
                 }
 
@@ -146,7 +151,7 @@ namespace SS.CMS.StlParser.StlElement
 
                             pageInfo.SiteItems.Push(site);
                             var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                            cellHtml = await TemplateUtility.GetSitesTemplateStringAsync(templateString, string.Empty, pageInfo, ContextType.Site, contextInfo);
+                            cellHtml = await TemplateUtility.GetSitesTemplateStringAsync(templateString, string.Empty, parseManager, ParseType.Site);
                         }
                         tr.AddCell(cellHtml, cellAttributes);
                         itemIndex++;

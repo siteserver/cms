@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Home
@@ -21,10 +20,28 @@ namespace SS.CMS.Web.Controllers.Home
         private const string PageNameContentAdd = "contentAdd";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly IConfigRepository _configRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
+        private readonly IUserGroupRepository _userGroupRepository;
+        private readonly IUserMenuRepository _userMenuRepository;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
+        private readonly IContentGroupRepository _contentGroupRepository;
 
-        public IndexController(IAuthManager authManager)
+        public IndexController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, ITableStyleRepository tableStyleRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _configRepository = configRepository;
+            _tableStyleRepository = tableStyleRepository;
+            _userGroupRepository = userGroupRepository;
+            _userMenuRepository = userMenuRepository;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
+            _contentGroupRepository = contentGroupRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -53,7 +70,7 @@ namespace SS.CMS.Web.Controllers.Home
                 return await GetContentAddAsync(request.SiteId, request.ContentId, request.ContentId);
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             return new
             {
@@ -64,14 +81,14 @@ namespace SS.CMS.Web.Controllers.Home
 
         private async Task<object> GetRegisterAsync()
         {
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             return new
             {
                 Value = _authManager.User,
                 Config = config,
-                Styles = await DataProvider.TableStyleRepository.GetUserStyleListAsync(),
-                Groups = await DataProvider.UserGroupRepository.GetUserGroupListAsync()
+                Styles = await _tableStyleRepository.GetUserStyleListAsync(),
+                Groups = await _userGroupRepository.GetUserGroupListAsync()
             };
         }
 
@@ -82,7 +99,7 @@ namespace SS.CMS.Web.Controllers.Home
 
             if (_authManager.IsUserLoggin)
             {
-                var userMenus = await DataProvider.UserMenuRepository.GetUserMenuListAsync();
+                var userMenus = await _userMenuRepository.GetUserMenuListAsync();
                 foreach (var menuInfo1 in userMenus)
                 {
                     if (menuInfo1.Disabled || menuInfo1.ParentId != 0 ||
@@ -115,7 +132,7 @@ namespace SS.CMS.Web.Controllers.Home
                 defaultPageUrl = await PluginMenuManager.GetHomeDefaultPageUrlAsync();
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             return new
             {
@@ -128,13 +145,13 @@ namespace SS.CMS.Web.Controllers.Home
 
         private async Task<object> GetProfileAsync()
         {
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             return new
             {
                 Value = _authManager.User,
                 Config = config,
-                Styles = await DataProvider.TableStyleRepository.GetUserStyleListAsync()
+                Styles = await _tableStyleRepository.GetUserStyleListAsync()
             };
         }
 
@@ -152,7 +169,7 @@ namespace SS.CMS.Web.Controllers.Home
                 var siteIdList = await _authManager.UserPermissions.GetSiteIdListAsync();
                 foreach (var siteId in siteIdList)
                 {
-                    var permissionSite = await DataProvider.SiteRepository.GetAsync(siteId);
+                    var permissionSite = await _siteRepository.GetAsync(siteId);
                     if (requestSiteId == siteId)
                     {
                         site = permissionSite;
@@ -166,7 +183,7 @@ namespace SS.CMS.Web.Controllers.Home
 
                 if (site == null && siteIdList.Count > 0)
                 {
-                    site = await DataProvider.SiteRepository.GetAsync(siteIdList[0]);
+                    site = await _siteRepository.GetAsync(siteIdList[0]);
                 }
 
                 if (site != null)
@@ -175,7 +192,7 @@ namespace SS.CMS.Web.Controllers.Home
                         Constants.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
-                        var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
+                        var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
                         if (channelInfo == null || requestChannelId == permissionChannelId)
                         {
                             channelInfo = permissionChannelInfo;
@@ -183,7 +200,7 @@ namespace SS.CMS.Web.Controllers.Home
                         channels.Add(new
                         {
                             permissionChannelInfo.Id,
-                            ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
+                            ChannelName = await _channelRepository.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
                         });
                     }
 
@@ -191,7 +208,7 @@ namespace SS.CMS.Web.Controllers.Home
                     {
                         site.Id,
                         site.SiteName,
-                        SiteUrl = PageUtility.GetSiteUrlAsync(site, false)
+                        SiteUrl = _pathManager.GetSiteUrlAsync(site, false)
                     };
                 }
 
@@ -200,12 +217,12 @@ namespace SS.CMS.Web.Controllers.Home
                     channel = new
                     {
                         channelInfo.Id,
-                        ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(site.Id, channelInfo.Id)
+                        ChannelName = await _channelRepository.GetChannelNameNavigationAsync(site.Id, channelInfo.Id)
                     };
                 }
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             return new
             {
@@ -238,7 +255,7 @@ namespace SS.CMS.Web.Controllers.Home
                 var siteIdList = await _authManager.UserPermissions.GetSiteIdListAsync();
                 foreach (var siteId in siteIdList)
                 {
-                    var permissionSiteInfo = await DataProvider.SiteRepository.GetAsync(siteId);
+                    var permissionSiteInfo = await _siteRepository.GetAsync(siteId);
                     if (requestSiteId == siteId)
                     {
                         siteInfo = permissionSiteInfo;
@@ -252,7 +269,7 @@ namespace SS.CMS.Web.Controllers.Home
 
                 if (siteInfo == null && siteIdList.Count > 0)
                 {
-                    siteInfo = await DataProvider.SiteRepository.GetAsync(siteIdList[0]);
+                    siteInfo = await _siteRepository.GetAsync(siteIdList[0]);
                 }
 
                 if (siteInfo != null)
@@ -261,7 +278,7 @@ namespace SS.CMS.Web.Controllers.Home
                         Constants.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
-                        var permissionChannelInfo = await DataProvider.ChannelRepository.GetAsync(permissionChannelId);
+                        var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
                         if (channelInfo == null || permissionChannelInfo.Id == requestChannelId)
                         {
                             channelInfo = permissionChannelInfo;
@@ -269,7 +286,7 @@ namespace SS.CMS.Web.Controllers.Home
                         channels.Add(new
                         {
                             permissionChannelInfo.Id,
-                            ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteInfo.Id, permissionChannelId)
+                            ChannelName = await _channelRepository.GetChannelNameNavigationAsync(siteInfo.Id, permissionChannelId)
                         });
                     }
 
@@ -277,10 +294,10 @@ namespace SS.CMS.Web.Controllers.Home
                     {
                         siteInfo.Id,
                         siteInfo.SiteName,
-                        SiteUrl = PageUtility.GetSiteUrlAsync(siteInfo, false)
+                        SiteUrl = _pathManager.GetSiteUrlAsync(siteInfo, false)
                     };
 
-                    groupNames = await DataProvider.ContentGroupRepository.GetGroupNamesAsync(siteInfo.Id);
+                    groupNames = await _contentGroupRepository.GetGroupNamesAsync(siteInfo.Id);
                     tagNames = new List<string>();
                 }
 
@@ -289,11 +306,11 @@ namespace SS.CMS.Web.Controllers.Home
                     channel = new
                     {
                         channelInfo.Id,
-                        ChannelName = await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteInfo.Id, channelInfo.Id)
+                        ChannelName = await _channelRepository.GetChannelNameNavigationAsync(siteInfo.Id, channelInfo.Id)
                     };
 
-                    var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(siteInfo, channelInfo);
-                    styles = await DataProvider.TableStyleRepository.GetContentStyleListAsync(channelInfo, tableName);
+                    var tableName = await _channelRepository.GetTableNameAsync(siteInfo, channelInfo);
+                    styles = await _tableStyleRepository.GetContentStyleListAsync(channelInfo, tableName);
 
                     var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager.AdminPermissions, siteInfo, siteInfo.Id);
                     checkedLevels = CheckManager.GetCheckedLevels(siteInfo, userIsChecked, userCheckedLevel, true);
@@ -303,7 +320,7 @@ namespace SS.CMS.Web.Controllers.Home
                         //checkedLevels.Insert(0, new KeyValuePair<int, string>(CheckManager.LevelInt.NotChange, CheckManager.Level.NotChange));
                         //checkedLevel = CheckManager.LevelInt.NotChange;
 
-                        content = await DataProvider.ContentRepository.GetAsync(siteInfo, channelInfo, requestContentId);
+                        content = await _contentRepository.GetAsync(siteInfo, channelInfo, requestContentId);
                         if (content != null &&
                             (content.SiteId != siteInfo.Id || content.ChannelId != channelInfo.Id))
                         {
@@ -323,7 +340,7 @@ namespace SS.CMS.Web.Controllers.Home
                 }
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             return new
             {

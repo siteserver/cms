@@ -3,6 +3,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Parse;
+using SS.CMS.Services;
 using SS.CMS.StlParser.Mock;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
@@ -24,15 +26,18 @@ namespace SS.CMS.StlParser.StlElement
             {ContentAttribute.FileUrl, "遍历内容的附件字段"}
         };
 
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
-            var listInfo = await ListInfo.GetListInfoAsync(pageInfo, contextInfo, ContextType.Content);
+            var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Content);
 
-            return await ParseImplAsync(pageInfo, contextInfo, listInfo);
+            return await ParseImplAsync(parseManager, listInfo);
         }
 
-        private static async Task<string> ParseImplAsync(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, ListInfo listInfo)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
+
             var type = listInfo.Others.Get(Type);
             if (string.IsNullOrEmpty(type))
             {
@@ -40,7 +45,7 @@ namespace SS.CMS.StlParser.StlElement
             }
 
             var valueList = new List<string>();
-            var content = await contextInfo.GetContentAsync();
+            var content = await parseManager.GetContentAsync();
 
             if (content != null)
             {
@@ -120,7 +125,7 @@ namespace SS.CMS.StlParser.StlElement
 
                     pageInfo.EachItems.Push(each);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(await TemplateUtility.GetEachsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, ContextType.Each, contextInfo));
+                    builder.Append(await TemplateUtility.GetEachsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.Each));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -163,7 +168,7 @@ namespace SS.CMS.StlParser.StlElement
 
                             pageInfo.EachItems.Push(each);
                             var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                            cellHtml = await TemplateUtility.GetEachsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, ContextType.Each, contextInfo);
+                            cellHtml = await TemplateUtility.GetEachsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.Each);
                         }
                         tr.AddCell(cellHtml, cellAttributes);
                         itemIndex++;

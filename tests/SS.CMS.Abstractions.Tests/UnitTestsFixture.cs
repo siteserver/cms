@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Microsoft.Extensions.Configuration;
+using SS.CMS.Services;
 
 namespace SS.CMS.Abstractions.Tests
 {

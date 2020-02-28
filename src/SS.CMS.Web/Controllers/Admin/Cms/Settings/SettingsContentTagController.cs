@@ -5,7 +5,6 @@ using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -15,10 +14,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IContentTagRepository _contentTagRepository;
 
-        public SettingsContentTagController(IAuthManager authManager)
+        public SettingsContentTagController(IAuthManager authManager, ISiteRepository siteRepository, IContentTagRepository contentTagRepository)
         {
             _authManager = authManager;
+            _siteRepository = siteRepository;
+            _contentTagRepository = contentTagRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -32,7 +35,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var tagNames = await DataProvider.ContentTagRepository.GetTagNamesAsync(request.SiteId);
+            var tagNames = await _contentTagRepository.GetTagNamesAsync(request.SiteId);
             var pageTagNames = new List<string>();
             var total = tagNames.Count;
             if (total > 0)
@@ -60,10 +63,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            await DataProvider.ContentTagRepository.DeleteAsync(request.SiteId, request.TagName);
+            await _contentTagRepository.DeleteAsync(request.SiteId, request.TagName);
 
             await auth.AddSiteLogAsync(request.SiteId, "删除内容标签", $"内容标签:{request.TagName}");
 
@@ -86,7 +89,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 
             foreach (var tagName in request.TagNames)
             {
-                await DataProvider.ContentTagRepository.InsertAsync(request.SiteId, tagName);
+                await _contentTagRepository.InsertAsync(request.SiteId, tagName);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, "新增内容标签", $"内容标签:{Utilities.ToString(request.TagNames)}");

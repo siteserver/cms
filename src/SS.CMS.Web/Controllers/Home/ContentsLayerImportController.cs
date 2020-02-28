@@ -5,7 +5,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Framework;
 using SS.CMS.Core.Serialization;
 using SS.CMS.Web.Extensions;
 
@@ -18,10 +17,18 @@ namespace SS.CMS.Web.Controllers.Home
         private const string RouteUpload = "actions/upload";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
 
-        public ContentsLayerImportController(IAuthManager authManager)
+        public ContentsLayerImportController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
+            _databaseManager = databaseManager;
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -34,10 +41,10 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
             var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(auth.AdminPermissions, site, request.SiteId);
@@ -71,7 +78,7 @@ namespace SS.CMS.Web.Controllers.Home
                 return this.Error("请选择有效的文件上传!");
             }
 
-            var filePath = PathUtility.GetTemporaryFilesPath(fileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
@@ -106,10 +113,10 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
@@ -118,12 +125,12 @@ namespace SS.CMS.Web.Controllers.Home
             {
                 foreach (var fileName in request.FileNames)
                 {
-                    var localFilePath = PathUtility.GetTemporaryFilesPath(fileName);
+                    var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
 
                     if (!FileUtils.IsType(FileType.Zip, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(site, auth.AdminId);
+                    var importObject = new ImportObject(_pathManager, _databaseManager, site, auth.AdminId);
                     await importObject.ImportContentsByZipFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, auth.AdminId, auth.UserId, SourceManager.User);
                 }
             }
@@ -132,12 +139,12 @@ namespace SS.CMS.Web.Controllers.Home
             {
                 foreach (var fileName in request.FileNames)
                 {
-                    var localFilePath = PathUtility.GetTemporaryFilesPath(fileName);
+                    var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
 
                     if (!FileUtils.IsType(FileType.Csv, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(site, auth.AdminId);
+                    var importObject = new ImportObject(_pathManager, _databaseManager, site, auth.AdminId);
                     await importObject.ImportContentsByCsvFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, auth.AdminId, auth.UserId, SourceManager.User);
                 }
             }
@@ -145,11 +152,11 @@ namespace SS.CMS.Web.Controllers.Home
             {
                 foreach (var fileName in request.FileNames)
                 {
-                    var localFilePath = PathUtility.GetTemporaryFilesPath(fileName);
+                    var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
                     if (!FileUtils.IsType(FileType.Txt, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(site, auth.AdminId);
+                    var importObject = new ImportObject(_pathManager, _databaseManager, site, auth.AdminId);
                     await importObject.ImportContentsByTxtFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, auth.AdminId, auth.UserId, SourceManager.User);
                 }
             }

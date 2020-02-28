@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Framework;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -12,10 +11,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IConfigRepository _configRepository;
 
-        public AdministratorsConfigController(IAuthManager authManager)
+        public AdministratorsConfigController(IAuthManager authManager, IConfigRepository configRepository)
         {
             _authManager = authManager;
+            _configRepository = configRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -28,7 +29,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             return new GetResult
             {
@@ -46,7 +47,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var config = await DataProvider.ConfigRepository.GetAsync();
+            var config = await _configRepository.GetAsync();
 
             config.AdminUserNameMinLength = request.AdminUserNameMinLength;
             config.AdminPasswordMinLength = request.AdminPasswordMinLength;
@@ -63,7 +64,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             config.IsAdminEnforceLogout = request.IsAdminEnforceLogout;
             config.AdminEnforceLogoutMinutes = request.AdminEnforceLogoutMinutes;
 
-            await DataProvider.ConfigRepository.UpdateAsync(config);
+            await _configRepository.UpdateAsync(config);
 
             await auth.AddAdminLogAsync("修改管理员设置");
 
