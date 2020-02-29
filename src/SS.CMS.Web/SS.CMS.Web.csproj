@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Datory\src\Datory\Datory.csproj" />
     <ProjectReference Include="..\SS.CMS.Abstractions\SS.CMS.Abstractions.csproj" />
     <ProjectReference Include="..\SS.CMS\SS.CMS.csproj" />
   </ItemGroup>

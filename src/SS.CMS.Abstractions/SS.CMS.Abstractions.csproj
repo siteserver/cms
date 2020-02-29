@@ -27,17 +27,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlSanitizer" Version="4.0.217" />
+    <PackageReference Include="Datory" Version="1.0.14" />
+    <PackageReference Include="HtmlSanitizer" Version="5.0.298" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.2" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="SqlKata" Version="1.1.7" />
     <PackageReference Include="YamlDotNet" Version="8.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Datory\src\Datory\Datory.csproj" />
   </ItemGroup>
 
 </Project>

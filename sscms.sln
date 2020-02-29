@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Datory", "..\Datory\src\Datory\Datory.csproj", "{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7087E39F-5DDF-4108-831C-2EBD8DEC3804}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{273FDE01-B4F1-4A5F-8E08-23D071ED7206}"
@@ -31,10 +29,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{74ED34B5-FCBA-4EF9-9176-E68032D6AC57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{74ED34B5-FCBA-4EF9-9176-E68032D6AC57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74ED34B5-FCBA-4EF9-9176-E68032D6AC57}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -72,7 +66,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{C6DF816E-0EB3-4E71-B446-0B24BBB2F6F0} = {273FDE01-B4F1-4A5F-8E08-23D071ED7206}
 		{74ED34B5-FCBA-4EF9-9176-E68032D6AC57} = {273FDE01-B4F1-4A5F-8E08-23D071ED7206}
 		{B45F8494-E2A0-44B5-AAF5-FBA0FFFB21AB} = {273FDE01-B4F1-4A5F-8E08-23D071ED7206}
 		{8C5A6F3B-0AC9-43E7-9FA3-69C440B996B1} = {273FDE01-B4F1-4A5F-8E08-23D071ED7206}
