@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Repositories
 {
@@ -15,7 +13,7 @@ namespace SS.CMS.Repositories
         {
             if (contentIdList == null || !contentIdList.Any()) return;
 
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
 
             var cacheKeys = new List<string>
             {
@@ -91,10 +89,10 @@ namespace SS.CMS.Repositories
         /// </summary>
         /// <param name="site"></param>
         /// <returns></returns>
-        public async Task RecycleDeleteAllAsync(Site site)
+        public async Task RecycleDeleteAllAsync(IPluginManager pluginManager, Site site)
         {
             var cacheKeys = new List<string>();
-            var tableNames = await _siteRepository.GetTableNamesAsync(site);
+            var tableNames = await _siteRepository.GetTableNamesAsync(pluginManager, site);
             foreach (var tableName in tableNames)
             {
                 var repository = GetRepository(tableName);
@@ -125,9 +123,9 @@ namespace SS.CMS.Repositories
         /// </summary>
         /// <param name="site"></param>
         /// <returns></returns>
-        public async Task RecycleRestoreAllAsync(Site site, int restoreChannelId)
+        public async Task RecycleRestoreAllAsync(IPluginManager pluginManager, Site site, int restoreChannelId)
         {
-            var tableNames = await _siteRepository.GetTableNamesAsync(site);
+            var tableNames = await _siteRepository.GetTableNamesAsync(pluginManager, site);
             foreach (var tableName in tableNames)
             {
                 var repository = GetRepository(tableName);
@@ -192,11 +190,11 @@ namespace SS.CMS.Repositories
             );
         }
 
-        public async Task DeleteAsync(Site site, Channel channel, int contentId)
+        public async Task DeleteAsync(IPluginManager pluginManager, Site site, Channel channel, int contentId)
         {
             if (site == null || channel == null || contentId <= 0) return;
 
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
 
             await repository.DeleteAsync(contentId, Q
                 .CachingRemove(GetCountKey(repository.TableName, site.Id, channel.Id))
@@ -204,7 +202,7 @@ namespace SS.CMS.Repositories
                 .CachingRemove(GetListKey(repository.TableName, site.Id, channel.Id))
             );
 
-            foreach (var service in await PluginManager.GetServicesAsync())
+            foreach (var service in await pluginManager.GetServicesAsync())
             {
                 try
                 {
@@ -220,7 +218,7 @@ namespace SS.CMS.Repositories
         private async Task DeleteReferenceContentsAsync(Site site, ContentSummary summary)
         {
             var channel = await _channelRepository.GetAsync(summary.ChannelId);
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
 
             await repository.DeleteAsync(
                 GetQuery(site.Id, channel.Id)

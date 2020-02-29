@@ -99,7 +99,7 @@ namespace SS.CMS.Core
                 }
                 foreach (var url in RegexUtils.GetOriginalLinkHrefs(content.Get<string>(ContentAttribute.Content)))
                 {
-                    if (!fileUrls.Contains(url) && PageUtils.IsVirtualUrl(url))
+                    if (!fileUrls.Contains(url) && pathManager.IsVirtualUrl(url))
                     {
                         fileUrls.Add(url);
                     }

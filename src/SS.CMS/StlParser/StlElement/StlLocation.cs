@@ -113,7 +113,7 @@ namespace SS.CMS.StlParser.StlElement
                             attributes["target"] = string.Empty;
                         }
                         attributes["href"] = url;
-                        var innerHtml = WebUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
+                        var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
                         TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
 
@@ -141,7 +141,7 @@ namespace SS.CMS.StlParser.StlElement
                             attributes["target"] = string.Empty;
                         }
                         attributes["href"] = url;
-                        var innerHtml = WebUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
+                        var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
                         TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
 
@@ -164,7 +164,7 @@ namespace SS.CMS.StlParser.StlElement
                             attributes["target"] = string.Empty;
                         }
                         attributes["href"] = url;
-                        var innerHtml = WebUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
+                        var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
                         TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
 

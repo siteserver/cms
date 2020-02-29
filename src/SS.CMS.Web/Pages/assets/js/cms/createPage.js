@@ -70,7 +70,7 @@ var methods = {
       isContentPage: this.isContentPage,
       scope: this.scope
     }).then(function (response) {
-      location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
+      location.href = utils.getCmsUrl('createStatus', {siteId: $this.siteId});
     }).catch(function (error) {
       utils.error($this, error);
     });
@@ -87,7 +87,7 @@ var methods = {
       isChannelPage: true,
       isContentPage: false,
     }).then(function (response) {
-      location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
+      location.href = utils.getCmsUrl('createStatus', {siteId: $this.siteId});
     }).catch(function (error) {
       utils.error($this, error);
     });
@@ -99,7 +99,7 @@ var methods = {
     $api.post($url + '/all', {
       siteId: this.siteId
     }).then(function (response) {
-      location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
+      location.href = utils.getCmsUrl('createStatus', {siteId: $this.siteId});
     }).catch(function (error) {
       utils.error($this, error);
     });
@@ -152,7 +152,10 @@ var methods = {
   },
 
   getChannelUrl: function(data) {
-    return '../redirect.cshtml?siteId=' + this.siteId + '&channelId=' + data.value;
+    return utils.getRootUrl('redirect', {
+      siteId: this.siteId,
+      channelId: data.value
+    });
   },
 };
 

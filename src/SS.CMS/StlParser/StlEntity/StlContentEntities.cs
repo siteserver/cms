@@ -4,7 +4,6 @@ using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using System.Threading.Tasks;
 using Datory.Utils;
-using SS.CMS.Api.Stl;
 using SS.CMS.Core;
 
 namespace SS.CMS.StlParser.StlEntity
@@ -159,7 +158,7 @@ namespace SS.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = ApiRouteActionsDownload.GetUrl(pageInfo.ApiUrl, pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, parsedContent);
+                            parsedContent = parseManager.PathManager.GetDownloadApiUrl(pageInfo.ApiUrl, pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, parsedContent);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(AddDate, attributeName))//内容添加日期
@@ -223,13 +222,15 @@ namespace SS.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var channelInfo = await databaseManager.ChannelRepository.GetAsync(contentChannelId);
-                            var tableName = await databaseManager.ChannelRepository.GetTableNameAsync(pageInfo.Site, channelInfo);
-                            var relatedIdentities = databaseManager.TableStyleRepository.GetRelatedIdentities(channelInfo);
+                            var channel = await databaseManager.ChannelRepository.GetAsync(contentChannelId);
+                            var tableName = databaseManager.ChannelRepository.GetTableName(pageInfo.Site, channel);
+                            var relatedIdentities = databaseManager.TableStyleRepository.GetRelatedIdentities(channel);
                             var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(tableName, attributeName, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
-                            parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parseManager.PathManager, parsedContent, ",", pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
+                            var inputParser = new InputParserManager(parseManager.PathManager);
+
+                            parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, ",", pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
                         }
 
                     }

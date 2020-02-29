@@ -160,7 +160,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             var fileName = await ExportObject.ExportRelatedFieldListAsync(_pathManager, _databaseManager, request.SiteId);
 
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            var downloadUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
+            var downloadUrl = _pathManager.GetRootUrlByPhysicalPath(filePath);
 
             return new StringResult
             {

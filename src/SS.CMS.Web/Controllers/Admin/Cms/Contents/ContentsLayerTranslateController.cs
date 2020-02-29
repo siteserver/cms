@@ -18,16 +18,18 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerTranslateController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerTranslateController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _createManager = createManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -129,7 +131,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
             foreach (var summary in summaries)
             {
-                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, TranslateContentType.Cut, _createManager);
+                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, TranslateContentType.Cut, _createManager);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, "转移内容", string.Empty);

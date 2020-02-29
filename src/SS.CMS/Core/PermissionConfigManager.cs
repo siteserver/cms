@@ -2,28 +2,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
 using SS.CMS.Abstractions;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Core
 {
     public class PermissionConfigManager
 	{
         private static readonly string CacheKey = CacheUtils.GetCacheKey(nameof(PermissionConfigManager));
-
-        public class PermissionConfig
-        {
-            public PermissionConfig(string name, string text)
-            {
-                Name = name;
-                Text = text;
-            }
-
-            public string Name { get; set; }
-
-            public string Text { get; set; }
-        }
-
-        
 
 	    public List<PermissionConfig> GeneralPermissions { get; } = new List<PermissionConfig>();
 
@@ -35,18 +19,22 @@ namespace SS.CMS.Core
 
         public List<PermissionConfig> ChannelPermissions { get; } = new List<PermissionConfig>();
 
-	    private PermissionConfigManager()
-		{
-		}
+        private readonly IPluginManager _pluginManager;
 
-        public static async Task<PermissionConfigManager> GetInstanceAsync(IPathManager pathManager)
+
+		private PermissionConfigManager(IPluginManager pluginManager)
+        {
+            _pluginManager = pluginManager;
+        }
+
+        public static async Task<PermissionConfigManager> GetInstanceAsync(IPathManager pathManager, IPluginManager pluginManager)
 		{
             var permissionManager = CacheUtils.Get<PermissionConfigManager>(CacheKey);
             if (permissionManager != null) return permissionManager;
 
-            permissionManager = new PermissionConfigManager();
+            permissionManager = new PermissionConfigManager(pluginManager);
 
-			var tabManager = new TabManager(pathManager);
+			var tabManager = new TabManager(pathManager, pluginManager);
             var path = tabManager.GetMenusPath("Permissions.config");
             if (FileUtils.IsFileExists(path))
             {
@@ -93,8 +81,8 @@ namespace SS.CMS.Core
 		        }
 		    }
 
-            GeneralPermissions.AddRange(await PluginMenuManager.GetTopPermissionsAsync());
-		    var pluginPermissions = await PluginMenuManager.GetSitePermissionsAsync(0);
+            GeneralPermissions.AddRange(await _pluginManager.GetTopPermissionsAsync());
+		    var pluginPermissions = await _pluginManager.GetSitePermissionsAsync(0);
             WebsitePluginPermissions.AddRange(pluginPermissions);
 		    WebsitePermissions.AddRange(pluginPermissions);
         }

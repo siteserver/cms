@@ -81,14 +81,15 @@ namespace SS.CMS.Web.Controllers.V1
                     RelatedFileName = string.Empty,
                     CreatedFileFullName = string.Empty,
                     CreatedFileExtName = string.Empty,
-                    Default = true
+                    DefaultTemplate = true
                 };
 
                 var config = await configRepository.GetAsync();
-                PageInfo = ParsePage.GetPageInfo(pathManager, config, request.ChannelId, request.ContentId, Site, templateInfo, new Dictionary<string, object>());
-
-                PageInfo.UniqueId = 1000;
-                PageInfo.User = Auth.User;
+                PageInfo = new ParsePage(pathManager, config, request.ChannelId, request.ContentId, Site, templateInfo,
+                    new Dictionary<string, object>())
+                {
+                    UniqueId = 1000, User = Auth.User
+                };
 
                 var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
                 foreach (var key in request.Keys)

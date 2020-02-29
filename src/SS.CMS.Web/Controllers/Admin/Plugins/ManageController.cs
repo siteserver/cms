@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Admin.Plugins
 {
@@ -19,12 +18,14 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IPluginRepository _pluginRepository;
 
-        public ManageController(ISettingsManager settingsManager, IAuthManager authManager, IPluginRepository pluginRepository)
+        public ManageController(ISettingsManager settingsManager, IAuthManager authManager, IPluginManager pluginManager, IPluginRepository pluginRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
+            _pluginManager = pluginManager;
             _pluginRepository = pluginRepository;
         }
 
@@ -38,7 +39,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            var dict = await PluginManager.GetPluginIdAndVersionDictAsync();
+            var dict = await _pluginManager.GetPluginIdAndVersionDictAsync();
             var list = dict.Keys.ToList();
             var packageIds = Utilities.ToString(list);
 
@@ -46,7 +47,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
             {
                 IsNightly = _settingsManager.IsNightlyUpdate,
                 PluginVersion = _settingsManager.PluginVersion,
-                AllPackages = await PluginManager.GetAllPluginInfoListAsync(),
+                AllPackages = await _pluginManager.GetAllPluginInfoListAsync(),
                 PackageIds = packageIds
             };
         }
@@ -61,7 +62,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            PluginManager.Delete(pluginId);
+            _pluginManager.Delete(pluginId);
             await auth.AddAdminLogAsync("删除插件", $"插件:{pluginId}");
 
             CacheUtils.ClearAll();
@@ -100,12 +101,12 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            var pluginInfo = await PluginManager.GetPluginInfoAsync(pluginId);
+            var pluginInfo = await _pluginManager.GetPluginInfoAsync(pluginId);
             if (pluginInfo != null)
             {
                 pluginInfo.IsDisabled = !pluginInfo.IsDisabled;
                 await _pluginRepository.UpdateIsDisabledAsync(pluginId, pluginInfo.IsDisabled);
-                PluginManager.ClearCache();
+                _pluginManager.ClearCache();
 
                 await auth.AddAdminLogAsync(!pluginInfo.IsDisabled ? "禁用插件" : "启用插件", $"插件:{pluginId}");
             }

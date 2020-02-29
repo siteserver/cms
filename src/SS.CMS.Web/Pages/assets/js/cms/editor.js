@@ -83,6 +83,30 @@ var methods = {
     });
   },
 
+  apiInsert: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      contentId: this.contentId,
+      content: this.form,
+      translations: this.translations
+    }).then(function(response) {
+      var res = response.data;
+
+      parent.$vue.apiList($this.channelId, $this.page, '内容保存成功！', true);
+      utils.closeLayer();
+    })
+    .catch(function(error) {
+      utils.error($this, error);
+    })
+    .then(function() {
+      utils.loading($this, false);
+    });
+  },
+
   apiUpdate: function() {
     var $this = this;
 
@@ -166,7 +190,8 @@ var methods = {
           editor.styleIndex = i;
           editor.ready(function () {
             editor.addListener("contentChange", function () {
-              $this.styles[this.styleIndex].value = this.getContent();
+              var style = $this.styles[this.styleIndex];
+              $this.form[style.attributeName] = this.getContent();
             });
           });
         }
@@ -179,18 +204,21 @@ var methods = {
   },
 
   btnLayerClick: function(options) {
-    var url = "../shared/" + options.name + ".cshtml?siteId=" + this.siteId + "&channelId=" + this.channelId;
+    var query = {
+      siteId: this.siteId,
+      channelId: this.channelId
+    };
 
     if (options.attributeName) {
-      url += "&attributeName=" + options.attributeName;
+      query.attributeName = options.attributeName;
     }
     if (options.contentId) {
-      url += "&contentId=" + options.contentId;
+      query.contentId = options.contentId;
     }
 
     utils.openLayer({
       title: options.title,
-      url: url,
+      url: utils.getSharedUrl(options.name, query),
       full: options.full,
       width: options.width ? options.width : 700,
       height: options.height ? options.height : 500
@@ -214,13 +242,17 @@ var methods = {
       });
     }
 
-    this.apiUpdate();
+    if (this.contentId === 0) {
+      this.apiInsert();
+    } else {
+      this.apiUpdate();
+    }
   },
 
   btnGroupAddClick: function() {
     utils.openLayer({
       title: '新增内容组',
-      url: '../shared/groupContentLayerAdd.cshtml?siteId=' + this.siteId,
+      url: utils.getSharedUrl('groupContentLayerAdd', {siteId: this.siteId}),
       width: 500,
       height: 300
     });
@@ -229,7 +261,10 @@ var methods = {
   btnTranslateAddClick: function() {
     utils.openLayer({
       title: "选择转移栏目",
-      url: "editorLayerTranslate.cshtml?siteId=" + this.siteId + '&channelId=' + this.channelId,
+      url: utils.getCmsUrl('editorLayerTranslate', {
+        siteId: this.siteId,
+        channelId: this.channelId
+      }),
       width: 550,
       height: 400
     });

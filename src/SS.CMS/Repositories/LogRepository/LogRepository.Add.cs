@@ -19,11 +19,11 @@ namespace SS.CMS.Repositories
 
                 if (!string.IsNullOrEmpty(action))
                 {
-                    action = WebUtils.MaxLengthText(action, 250);
+                    action = StringUtils.MaxLengthText(action, 250);
                 }
                 if (!string.IsNullOrEmpty(summary))
                 {
-                    summary = WebUtils.MaxLengthText(summary, 250);
+                    summary = StringUtils.MaxLengthText(summary, 250);
                 }
 
                 var logInfo = new Log

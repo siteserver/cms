@@ -12,7 +12,7 @@ namespace SS.CMS.Web.Controllers.Admin
         {
             if (request.SecurityKey != _settingsManager.SecurityKey) return Unauthorized();
 
-            var (success, errorMessage) = await _databaseManager.InstallAsync(request.UserName, request.AdminPassword, request.Email, request.Mobile);
+            var (success, errorMessage) = await _databaseManager.InstallAsync(_pluginManager, request.UserName, request.AdminPassword, request.Email, request.Mobile);
             if (!success)
             {
                 return this.Error(errorMessage);

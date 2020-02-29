@@ -17,16 +17,18 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ISitePermissionsRepository _sitePermissionsRepository;
         private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
 
-        public AdministratorsRoleAddController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
+        public AdministratorsRoleAddController(IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _roleRepository = roleRepository;
@@ -59,7 +61,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             var permissions = new List<Permission>();
             var generalPermissionList = await auth.AdminPermissions.GetPermissionListAsync();
-            var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager);
+            var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager, _pluginManager);
             var generalPermissions = instance.GeneralPermissions;
 
             if (generalPermissions.Count > 0)

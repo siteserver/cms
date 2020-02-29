@@ -129,7 +129,7 @@ namespace SS.CMS.Web.Controllers.Home
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+            var tableName = _channelRepository.GetTableName(site, channel);
             var styleList = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
 

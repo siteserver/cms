@@ -60,7 +60,7 @@ namespace SS.CMS.Core.Serialization.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.RelatedFileName), template.RelatedFileName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileFullName), template.CreatedFileFullName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileExtName), template.CreatedFileExtName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.Default), template.Default.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.DefaultTemplate), template.DefaultTemplate.ToString());
 
             var templateContent = await _pathManager.GetTemplateContentAsync(_site, template);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.Content), AtomUtility.Encrypt(templateContent));
@@ -94,7 +94,7 @@ namespace SS.CMS.Core.Serialization.Components
                         nameof(Template.CreatedFileFullName)),
                     CreatedFileExtName =
                         AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.CreatedFileExtName)),
-                    Default = false,
+                    DefaultTemplate = false,
                     Content = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.Content)))
                 };
 

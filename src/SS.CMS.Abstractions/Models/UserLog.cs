@@ -1,4 +1,3 @@
-using System;
 using Datory;
 using Datory.Annotations;
 
@@ -12,9 +11,6 @@ namespace SS.CMS.Abstractions
 
         [DataColumn]
         public string IpAddress { get; set; }
-
-        [DataColumn]
-        public DateTime? AddDate { get; set; }
 
         [DataColumn]
         public string Action { get; set; }

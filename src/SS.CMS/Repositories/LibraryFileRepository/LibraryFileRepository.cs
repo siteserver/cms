@@ -48,7 +48,7 @@ namespace SS.CMS.Repositories
             {
                 query.Where(q => q
                     .WhereLike(nameof(LibraryFile.Title), $"%{keyword}%")
-                    .OrWhere(nameof(LibraryFile.Type), keyword.ToUpper())
+                    .OrWhere(nameof(LibraryFile.FileType), keyword.ToUpper())
                 );
             }
 
@@ -69,7 +69,7 @@ namespace SS.CMS.Repositories
             {
                 query.Where(q => q
                     .WhereLike(nameof(LibraryFile.Title), $"%{keyword}%")
-                    .OrWhere(nameof(LibraryFile.Type), keyword.ToUpper())
+                    .OrWhere(nameof(LibraryFile.FileType), keyword.ToUpper())
                 );
             }
 

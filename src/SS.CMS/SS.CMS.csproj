@@ -20,19 +20,6 @@
     <PackageReleaseNotes>Add netstandard2.0 support</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Plugins\Apis\**" />
-    <Compile Remove="StlParser\Parsers\**" />
-    <EmbeddedResource Remove="Plugins\Apis\**" />
-    <EmbeddedResource Remove="StlParser\Parsers\**" />
-    <None Remove="Plugins\Apis\**" />
-    <None Remove="StlParser\Parsers\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Core\ContentColumn.cs" />
-    <Compile Remove="Core\RoleManager.cs" />
-    <Compile Remove="Packaging\PackageType.cs" />
-    <Compile Remove="Plugins\Impl\ApiCollectionImpl.cs" />
-    <Compile Remove="StlParser\Parser.cs" />
     <Compile Remove="StlParser\StlElement\StlTags.cs" />
   </ItemGroup>
 

@@ -18,7 +18,7 @@ namespace SS.CMS.Web.Controllers.Admin
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             await _channelRepository.CacheAllAsync(site);
-            var channelSummaries = await _channelRepository.GetSummaryAsync(site.Id);
+            var channelSummaries = await _channelRepository.GetSummariesAsync(site.Id);
             await _contentRepository.CacheAllListAndCountAsync(site, channelSummaries);
             await _contentRepository.CacheAllEntityAsync(site, channelSummaries);
 

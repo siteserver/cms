@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SS.CMS.Abstractions
 {
     public partial interface IPluginManager : IService
     {
-        void ClearCache();
+        Task<IPluginInstance> GetInstanceAsync(IPackageMetadata metadata, IPluginService pluginService,
+            PluginBase plugin, long initTime);
 
-        Task<SortedList<string, IPluginInstance>> GetPluginSortedListAsync();
+        void ClearCache();
 
         Task LoadPluginsAsync(string applicationPhysicalPath);
 
@@ -31,7 +26,7 @@ namespace SS.CMS.Abstractions
 
         Task<IPluginInstance> GetPluginInfoAsync(string pluginId);
 
-        Task<IPluginInstance> GetPluginInfoAsync<T>();
+        Task<IPluginInstance> GetPluginInfoAsync<T>() where T : PluginBase;
 
         Task<Dictionary<string, string>> GetPluginIdAndVersionDictAsync();
 
@@ -39,17 +34,17 @@ namespace SS.CMS.Abstractions
 
         Task<PluginBase> GetPluginAsync(string pluginId);
 
-        Task<IPluginInstance> GetEnabledPluginInfoAsync<T>(string pluginId);
+        Task<IPluginInstance> GetEnabledPluginInfoAsync<T>(string pluginId) where T : PluginBase;
 
         Task<List<IPluginInstance>> GetEnabledPluginInfoListAsync<T1, T2>();
 
-        Task<List<PluginBase>> GetEnabledPluginMetadatasAsync<T>();
+        Task<List<PluginBase>> GetEnabledPluginMetadatasAsync<T>() where T : PluginBase;
 
-        Task<IPackageMetadata> GetEnabledPluginMetadataAsync<T>(string pluginId);
+        Task<IPackageMetadata> GetEnabledPluginMetadataAsync<T>(string pluginId) where T : PluginBase;
 
-        Task<T> GetEnabledFeatureAsync<T>(string pluginId);
+        Task<T> GetEnabledFeatureAsync<T>(string pluginId) where T : PluginBase;
 
-        Task<List<T>> GetEnabledFeaturesAsync<T>();
+        Task<List<T>> GetEnabledFeaturesAsync<T>() where T : PluginBase;
 
         Task<IPluginService> GetServiceAsync(string pluginId);
 
@@ -61,6 +56,6 @@ namespace SS.CMS.Abstractions
 
         Task<string> GetPluginIconUrlAsync(string pluginId);
 
-        string GetPluginIconUrl(IPluginService service);
+        string GetPluginIconUrl(IPluginService pluginService);
     }
 }

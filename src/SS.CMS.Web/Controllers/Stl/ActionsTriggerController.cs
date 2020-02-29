@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Api.Stl;
 using SS.CMS.Core;
 
 namespace SS.CMS.Web.Controllers.Stl
@@ -25,7 +24,7 @@ namespace SS.CMS.Web.Controllers.Stl
         }
 
         [HttpGet]
-        [Route(ApiRouteActionsTrigger.Route)]
+        [Route(Constants.RouteActionsTrigger)]
         public async Task<ActionResult<string>> Get([FromQuery] GetRequest request)
         {
             var site = await _siteRepository.GetAsync(request.SiteId);

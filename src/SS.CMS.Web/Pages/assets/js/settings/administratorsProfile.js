@@ -96,7 +96,7 @@ var methods = {
   },
 
   btnReturnClick: function () {
-    location.href = 'admin.cshtml';
+    location.href = utils.getSettingsUrl('administrators');
   },
 
   uploadBefore(file) {

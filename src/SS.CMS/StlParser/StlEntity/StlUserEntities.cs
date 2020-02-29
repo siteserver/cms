@@ -58,7 +58,7 @@ namespace SS.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.AvatarUrl), attributeName))
                 {
-                    parsedContent = parseManager.DatabaseManager.UserRepository.GetUserAvatarUrl(pageInfo.User);
+                    parsedContent = parseManager.PathManager.GetUserAvatarUrl(pageInfo.User);
                 }
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.Gender), attributeName))
                 {

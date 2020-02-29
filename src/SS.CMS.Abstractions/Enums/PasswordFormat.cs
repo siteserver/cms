@@ -7,11 +7,11 @@ namespace SS.CMS.Abstractions
     [JsonConverter(typeof(StringEnumConverter))]
     public enum PasswordFormat
     {
-        [DataEnum(DisplayName = "������")]
+        [DataEnum(DisplayName = "不加密")]
         Clear,
-        [DataEnum(DisplayName = "�����淽ʽ����")]
+        [DataEnum(DisplayName = "不可逆方式加密")]
         Hashed,
-        [DataEnum(DisplayName = "���淽ʽ����")]
+        [DataEnum(DisplayName = "可逆方式加密")]
         Encrypted,
     }
 }

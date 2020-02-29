@@ -41,20 +41,24 @@ var methods = {
   },
 
   btnRedirectClick: function (task) {
-    var url = '../redirect.cshtml?siteId=' + task.siteId;
+    var query = {
+      siteId: task.siteId
+    };
+
     if (task.channelId) {
-      url += '&channelId=' + task.channelId;
+      query.channelId = task.channelId;
     }
     if (task.contentId) {
-      url += '&contentId=' + task.contentId;
+      query.contentId = task.contentId;
     }
     if (task.fileTemplateId) {
-      url += '&fileTemplateId=' + task.fileTemplateId;
+      query.fileTemplateId = task.fileTemplateId;
     }
     if (task.specialId) {
-      url += '&specialId=' + task.specialId;
+      query.specialId = task.specialId;
     }
-    window.open(url);
+    
+    window.open(utils.getRootUrl('redirect', query));
   },
 
   btnCancelClick: function () {

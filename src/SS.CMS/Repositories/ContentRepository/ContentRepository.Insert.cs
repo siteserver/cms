@@ -50,7 +50,7 @@ namespace SS.CMS.Repositories
 
             content.Taxis = taxis;
 
-            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+            var tableName = _channelRepository.GetTableName(site, channel);
             if (string.IsNullOrEmpty(tableName)) return 0;
 
             content.LastEditDate = DateTime.Now;

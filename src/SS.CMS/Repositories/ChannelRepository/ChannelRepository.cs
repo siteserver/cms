@@ -402,7 +402,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 
             if (template.TemplateType == TemplateType.ChannelTemplate)
             {
-                if (template.Default)
+                if (template.DefaultTemplate)
                 {
                     return await _repository.GetAllAsync<int>(Q
                         .Select(nameof(Channel.Id))
@@ -421,7 +421,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
                 );
             }
             
-            if (template.Default)
+            if (template.DefaultTemplate)
             {
                 return await _repository.GetAllAsync<int>(Q
                     .Select(nameof(Channel.Id))

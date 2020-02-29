@@ -145,7 +145,7 @@ var methods = {
         lang = 'javascript';
       }
       setTimeout(function () {
-        require.config({ paths: { 'vs': '../assets/lib/monaco-editor/min/vs' }});
+        require.config({ paths: { 'vs': utils.getAssetsUrl('lib/monaco-editor/min/vs') }});
         require(['vs/editor/editor.main'], function() {
             $this.contentEditor = monaco.editor.create(document.getElementById('content'), {
                 value: val,
@@ -177,7 +177,10 @@ var methods = {
   },
 
   btnCancelClick: function() {
-    location.href = 'templateAssets.cshtml?siteId=' + this.siteId + '&fileType=' + this.extName;
+    location.href = utils.getCmsUrl('templateAssets', {
+      siteId: this.siteId,
+      fileType: this.extName
+    });
   }
 };
 

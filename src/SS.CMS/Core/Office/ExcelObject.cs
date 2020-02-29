@@ -10,10 +10,12 @@ namespace SS.CMS.Core.Office
     public class ExcelObject
     {
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
 
-        public ExcelObject(IDatabaseManager databaseManager)
+        public ExcelObject(IDatabaseManager databaseManager, IPluginManager pluginManager)
         {
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
         }
 
         public async Task CreateExcelFileForContentsAsync(string filePath, Site site,
@@ -26,7 +28,7 @@ namespace SS.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var tableName = await _databaseManager.ChannelRepository.GetTableNameAsync(site, channel);
+            var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
             var styleList = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStyleListAsync(channel, tableName));
 
             foreach (var style in styleList)
@@ -75,7 +77,7 @@ namespace SS.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             foreach (var column in columns)
@@ -188,8 +190,7 @@ namespace SS.CMS.Core.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public async Task<List<Content>> GetContentsByCsvFileAsync(string filePath, Site site,
-            Channel node)
+        public async Task<List<Content>> GetContentsByCsvFileAsync(string filePath, Site site, Channel channel)
         {
             var contentInfoList = new List<Content>();
 
@@ -197,8 +198,8 @@ namespace SS.CMS.Core.Office
 
             if (rows.Count <= 0) return contentInfoList;
 
-            var tableName = await _databaseManager.ChannelRepository.GetTableNameAsync(site, node);
-            var styleList = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStyleListAsync(node, tableName));
+            var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
+            var styleList = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStyleListAsync(channel, tableName));
             var nameValueCollection = new NameValueCollection();
             foreach (var style in styleList)
             {
@@ -233,7 +234,7 @@ namespace SS.CMS.Core.Office
                 if (!string.IsNullOrEmpty(contentInfo.Title))
                 {
                     contentInfo.SiteId = site.Id;
-                    contentInfo.ChannelId = node.Id;
+                    contentInfo.ChannelId = channel.Id;
                     contentInfo.LastEditDate = DateTime.Now;
 
                     contentInfoList.Add(contentInfo);

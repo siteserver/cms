@@ -62,7 +62,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             var sitePermissions = new List<Permission>();
             var pluginPermissions = new List<Permission>();
             var channelPermissions = new List<Permission>();
-            var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager);
+            var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager, _pluginManager);
 
             if (await _authManager.AdminPermissions.IsSuperAdminAsync())
             {

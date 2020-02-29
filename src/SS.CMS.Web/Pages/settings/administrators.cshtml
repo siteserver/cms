@@ -209,7 +209,7 @@
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">
-          <el-link :underline="false" type="primary" href="../../assets/upload-templates/管理员导入模版.xlsx" target="_blank">
+          <el-link :underline="false" type="primary" :href="utils.getAssetsUrl('upload-templates/管理员导入模版.xlsx')" target="_blank">
             <i class="el-icon-download"></i>
             下载导入模版
           </el-link>

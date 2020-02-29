@@ -63,7 +63,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             if (site == null) return NotFound();
 
             var templateInfo = await _templateRepository.GetAsync(request.TemplateId);
-            if (templateInfo != null && !templateInfo.Default)
+            if (templateInfo != null && !templateInfo.DefaultTemplate)
             {
                 await _templateRepository.SetDefaultAsync(request.TemplateId);
                 await auth.AddSiteLogAsync(site.Id,
@@ -133,7 +133,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 RelatedFileName = relatedFileName + template.CreatedFileExtName,
                 CreatedFileExtName = template.CreatedFileExtName,
                 CreatedFileFullName = createdFileFullName + template.CreatedFileExtName,
-                Default = false
+                DefaultTemplate = false
             };
 
             var content = await _pathManager.GetTemplateContentAsync(site, template);
@@ -157,7 +157,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             if (site == null) return NotFound();
 
             var templateInfo = await _templateRepository.GetAsync(request.TemplateId);
-            if (templateInfo != null && !templateInfo.Default)
+            if (templateInfo != null && !templateInfo.DefaultTemplate)
             {
                 await _templateRepository.DeleteAsync(_pathManager, site, request.TemplateId);
                 await auth.AddSiteLogAsync(site.Id,

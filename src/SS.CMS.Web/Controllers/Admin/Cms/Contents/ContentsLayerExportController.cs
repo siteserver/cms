@@ -7,7 +7,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
 using SS.CMS.Core.Office;
-using SS.CMS.Plugins;
 using SS.CMS.Core.Serialization;
 using SS.CMS.Web.Extensions;
 
@@ -21,15 +20,17 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerExportController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerExportController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -51,7 +52,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(auth.AdminPermissions, site, request.SiteId);
@@ -83,10 +84,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
-            var pluginIds = PluginContentManager.GetContentPluginIds(channel);
-            var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
+            var pluginIds = _pluginManager.GetContentPluginIds(channel);
+            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
 
             var contentInfoList = new List<Content>();
             var calculatedContentInfoList = new List<Content>();
@@ -182,11 +183,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 {
                     var fileName = $"{channel.ChannelName}.zip";
                     var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-                    var exportObject = new ExportObject(_pathManager, _databaseManager, site);
+                    var exportObject = new ExportObject(_pathManager, _databaseManager, _pluginManager, site);
                     contentInfoList.Reverse();
                     if (exportObject.ExportContents(filePath, contentInfoList))
                     {
-                        downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
+                        downloadUrl = _pathManager.GetTemporaryFilesUrl(fileName);
                     }
                 }
                 else if (request.ExportType == "excel")
@@ -196,9 +197,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     var fileName = $"{channel.ChannelName}.csv";
                     var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-                    var excelObject = new ExcelObject(_databaseManager);
+                    var excelObject = new ExcelObject(_databaseManager, _pluginManager);
                     await excelObject.CreateExcelFileForContentsAsync(filePath, site, channel, calculatedContentInfoList, exportColumnNames);
-                    downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
+                    downloadUrl = _pathManager.GetTemporaryFilesUrl(fileName);
                 }
             }
 

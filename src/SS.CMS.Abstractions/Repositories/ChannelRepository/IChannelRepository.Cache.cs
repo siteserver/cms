@@ -53,9 +53,9 @@ namespace SS.CMS.Abstractions
 
         Task<string> GetTableNameAsync(Site site, int channelId);
 
-        Task<string> GetTableNameAsync(Site site, IChannelSummary channel);
+        string GetTableName(Site site, IChannelSummary channel);
 
-        Task<bool> IsContentModelPluginAsync(Site site, Channel node);
+        bool IsContentModelPlugin(Site site, Channel node);
 
         Task<List<string>> GetGroupNamesAsync(int channelId);
 

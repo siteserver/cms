@@ -17,7 +17,7 @@ namespace SS.CMS.Core.Office
 
                 try
                 {
-                    var content = FileUtils.ReadText(filePath, Constants.Gb2312);
+                    var content = FileUtils.ReadText(filePath);
                     if (!string.IsNullOrEmpty(content))
                     {
                         content = content.Trim();

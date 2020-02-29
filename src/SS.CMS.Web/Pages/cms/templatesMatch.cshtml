@@ -64,8 +64,7 @@
           highlight-current
           class="tree"
           :filter-node-method="filterNode"
-          v-on:check-change="handleCheckChange"
-        >
+          v-on:check-change="handleCheckChange">
           <div slot-scope="{ node, data }">
             <el-link :underline="false" :href="getChannelUrl(data)" v-on:click.stop.native target="_blank"><i class="el-icon-link"></i></el-link>
             {{ data.label }} 
@@ -86,7 +85,7 @@
         </div>
 
         <el-radio-group v-model="channelTemplateId">
-          <el-radio v-for="channelTemplate in channelTemplates" :key="channelTemplate.id" :label="channelTemplate.id">{{ channelTemplate.templateName + (channelTemplate.default ? '（默认）' : '') }}</el-radio>
+          <el-radio v-for="channelTemplate in channelTemplates" :key="channelTemplate.id" :label="channelTemplate.id">{{ channelTemplate.templateName + (channelTemplate.defaultTemplate ? '（默认）' : '') }}</el-radio>
         </el-radio-group>
 
         <div style="margin: 10px 0"></div>
@@ -107,7 +106,7 @@
         </div>
         
         <el-radio-group v-model="contentTemplateId">
-          <el-radio v-for="contentTemplate in contentTemplates" :key="contentTemplate.id" :label="contentTemplate.id">{{ contentTemplate.templateName + (contentTemplate.default ? '（默认）' : '') }}</el-radio>
+          <el-radio v-for="contentTemplate in contentTemplates" :key="contentTemplate.id" :label="contentTemplate.id">{{ contentTemplate.templateName + (contentTemplate.defaultTemplate ? '（默认）' : '') }}</el-radio>
         </el-radio-group>
 
         <div style="margin: 10px 0"></div>

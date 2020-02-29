@@ -21,5 +21,15 @@
         string GetTemporaryFilesPath(params string[] paths);
 
         string GetTemporaryFilesUrl(params string[] paths);
+
+        string DefaultAvatarUrl { get; }
+
+        string GetUserUploadPath(int userId, string relatedPath);
+
+        string GetUserUploadFileName(string filePath);
+
+        string GetUserUploadUrl(int userId, string relatedUrl);
+
+        string GetUserAvatarUrl(User user);
     }
 }

@@ -46,7 +46,10 @@ var methods = {
   },
 
   btnSiteStylesClick: function() {
-    location.href = 'settingsStyleSite.cshtml?siteId=' + this.siteId + '&returnUrl=' + encodeURIComponent(location.href);
+    location.href = utils.getCmsUrl('settingsStyleSite', {
+      siteId: this.siteId,
+      returnUrl: location.href
+    });
   },
 
   loadEditor: function(res) {
@@ -102,14 +105,17 @@ var methods = {
   },
 
   btnLayerClick: function(options) {
-    var url = '../shared/' + options.name + '.cshtml?siteId=' + this.siteId + '&attributeName=' + options.attributeName;
+    var query = {
+      siteId: this.siteId,
+      attributeName: options.attributeName
+    };
     if (options.no) {
-      url += '&no=' + options.no;
+      query.no = options.no;
     }
 
     utils.openLayer({
       title: options.title,
-      url: url,
+      url: utils.getSharedUrl(options.name, query),
       width: options.full ? 0 : 700,
       height: options.full ? 0 : 500
     });

@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Admin.Plugins
 {
@@ -12,11 +11,13 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly IPluginManager _pluginManager;
 
-        public ViewController(ISettingsManager settingsManager, IAuthManager authManager)
+        public ViewController(ISettingsManager settingsManager, IAuthManager authManager, IPluginManager pluginManager)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
+            _pluginManager = pluginManager;
         }
 
         [HttpGet, Route(Route)]
@@ -29,7 +30,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            var plugin = await PluginManager.GetPluginAsync(pluginId);
+            var plugin = await _pluginManager.GetPluginAsync(pluginId);
 
             return new GetResult
             {

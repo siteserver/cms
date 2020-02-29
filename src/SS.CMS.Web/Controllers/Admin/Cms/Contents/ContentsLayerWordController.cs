@@ -124,11 +124,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
-            if (channelInfo == null) return this.Error("无法确定内容对应的栏目");
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
+            if (channel == null) return this.Error("无法确定内容对应的栏目");
 
-            var tableName = await _channelRepository.GetTableNameAsync(site, channelInfo);
-            var styleList = await _tableStyleRepository.GetContentStyleListAsync(channelInfo, tableName);
+            var tableName = _channelRepository.GetTableName(site, channel);
+            var styleList = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
 
             var contentIdList = new List<int>();
@@ -145,7 +145,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
                 var contentInfo = new Content(dict)
                 {
-                    ChannelId = channelInfo.Id,
+                    ChannelId = channel.Id,
                     SiteId = request.SiteId,
                     AdminId = auth.AdminId,
                     LastEditAdminId = auth.AdminId,
@@ -157,7 +157,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 };
 
                 contentInfo.Set(ContentAttribute.Content, content);
-                await _contentRepository.InsertAsync(site, channelInfo, contentInfo);
+                await _contentRepository.InsertAsync(site, channel, contentInfo);
                 contentIdList.Add(contentInfo.Id);
             }
 
@@ -165,9 +165,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             {
                 foreach (var contentId in contentIdList)
                 {
-                    await _createManager.CreateContentAsync(request.SiteId, channelInfo.Id, contentId);
+                    await _createManager.CreateContentAsync(request.SiteId, channel.Id, contentId);
                 }
-                await _createManager.TriggerContentChangedEventAsync(request.SiteId, channelInfo.Id);
+                await _createManager.TriggerContentChangedEventAsync(request.SiteId, channel.Id);
             }
 
             return new ObjectResult<List<int>>

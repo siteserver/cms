@@ -21,14 +21,16 @@ namespace SS.CMS.Web.Controllers.V1
         private const string RouteUserResetPassword = "{id:int}/actions/resetPassword";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly IUserRepository _userRepository;
         private readonly IUserLogRepository _userLogRepository;
 
-        public UsersController(IAuthManager authManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IUserRepository userRepository, IUserLogRepository userLogRepository)
+        public UsersController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IUserRepository userRepository, IUserLogRepository userLogRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _configRepository = configRepository;
             _accessTokenRepository = accessTokenRepository;
             _userRepository = userRepository;
@@ -127,7 +129,7 @@ namespace SS.CMS.Web.Controllers.V1
         {
             var user = await _userRepository.GetByUserIdAsync(id);
 
-            var avatarUrl = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : _userRepository.DefaultAvatarUrl;
+            var avatarUrl = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : _pathManager.DefaultAvatarUrl;
             avatarUrl = PageUtils.AddProtocolToUrl(avatarUrl);
 
             return new StringResult
@@ -159,8 +161,8 @@ namespace SS.CMS.Web.Controllers.V1
 
             var fileName = Path.GetFileName(request.File.FileName);
 
-            fileName = _userRepository.GetUserUploadFileName(fileName);
-            var filePath = _userRepository.GetUserUploadPath(user.Id, fileName);
+            fileName = _pathManager.GetUserUploadFileName(fileName);
+            var filePath = _pathManager.GetUserUploadPath(user.Id, fileName);
 
             if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
             {
@@ -170,7 +172,7 @@ namespace SS.CMS.Web.Controllers.V1
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             request.File.CopyTo(new FileStream(filePath, FileMode.Create));
 
-            user.AvatarUrl = _userRepository.GetUserUploadUrl(user.Id, fileName);
+            user.AvatarUrl = _pathManager.GetUserUploadUrl(user.Id, fileName);
 
             await _userRepository.UpdateAsync(user);
 

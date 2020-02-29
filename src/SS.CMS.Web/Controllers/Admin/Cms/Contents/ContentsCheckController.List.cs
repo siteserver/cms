@@ -26,7 +26,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
 
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.CheckContents);
 
             var pageContents = new List<Content>();

@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.StlParser.Utility;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
@@ -97,11 +97,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             var contentId = 0;
             if (request.TemplateType == TemplateType.ContentTemplate)
             {
-                var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
-                var count = await _contentRepository.GetCountAsync(site, channelInfo);
+                var channel = await _channelRepository.GetAsync(request.ChannelId);
+                var count = await _contentRepository.GetCountAsync(site, channel);
                 if (count > 0)
                 {
-                    var tableName = await _channelRepository.GetTableNameAsync(site, channelInfo);
+                    var tableName = _channelRepository.GetTableName(site, channel);
                     contentId = await _contentRepository.GetFirstContentIdAsync(tableName, request.ChannelId);
                 }
 
@@ -113,7 +113,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
             CacheUtils.InsertHours(CacheKey, request.Content, 1);
 
-            var parsedContent = await _parseManager.ParseTemplatePreviewAsync(site, request.TemplateType, request.ChannelId, contentId, request.Content);
+            var templateInfo = new Template
+            {
+                TemplateType = request.TemplateType
+            };
+
+            await _parseManager.InitAsync(site, request.ChannelId, contentId, templateInfo);
+
+            var parsedContent = await _parseManager.ParseTemplatePreviewAsync(request.Content);
 
             return new StringResult
             {

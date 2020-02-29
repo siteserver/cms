@@ -52,7 +52,10 @@ var methods = {
   },
 
   getChannelUrl: function(data) {
-    return '../redirect.cshtml?siteId=' + this.siteId + '&channelId=' + data.value;
+    return utils.getRootUrl('redirect', {
+      siteId: this.siteId,
+      channelId: data.value
+    });
   },
 
   filterNode: function(value, data) {

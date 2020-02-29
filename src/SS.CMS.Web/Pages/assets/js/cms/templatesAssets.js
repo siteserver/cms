@@ -150,7 +150,12 @@ var methods = {
   },
 
   getEditorUrl: function(directoryPath, fileName, extName) {
-    return 'templateAssetsEditor.cshtml?siteId=' + this.siteId + '&directoryPath=' + encodeURIComponent(directoryPath) + '&fileName=' + encodeURIComponent(fileName) + '&extName=' + encodeURIComponent(extName);
+    return utils.getCmsUrl('templatesAssetsEditor', {
+      siteId: this.siteId,
+      directoryPath: directoryPath,
+      fileName: fileName,
+      extName: extName
+    });
   },
 
   getPageUrl: function(virtualPath) {

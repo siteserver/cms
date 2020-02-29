@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -28,10 +27,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
 
-            var pluginIds = PluginContentManager.GetContentPluginIds(channel);
-            var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
+            var pluginIds = _pluginManager.GetContentPluginIds(channel);
+            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
 
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
 
             var offset = site.PageSize * (request.Page - 1);
@@ -75,7 +74,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     var pageContent =
                         await columnsManager.CalculateContentListAsync(sequence++, site, request.SiteId, content, columns, pluginColumns);
 
-                    var menus = await PluginMenuManager.GetContentMenusAsync(pluginIds, pageContent);
+                    var menus = await _pluginManager.GetContentMenusAsync(pluginIds, pageContent);
                     pageContent.Set("PluginMenus", menus);
 
                     pageContents.Add(pageContent);

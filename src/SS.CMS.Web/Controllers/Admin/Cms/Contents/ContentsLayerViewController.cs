@@ -14,6 +14,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
@@ -21,11 +22,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         private readonly IContentTagRepository _contentTagRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ContentsLayerViewController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository)
+        public ContentsLayerViewController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -56,7 +58,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
             var channelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
 
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
 
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
@@ -70,7 +72,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
             var editorColumns = new List<ContentColumn>();
 
-            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+            var tableName = _channelRepository.GetTableName(site, channel);
             var styleList = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
             foreach (var tableStyle in styleList)
             {

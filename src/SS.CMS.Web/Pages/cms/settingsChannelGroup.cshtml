@@ -6,9 +6,9 @@
   text-color="#fff"
   active-text-color="#ffd04b"
 >
-  <el-menu-item index="1"><el-link :underline="false" :href="'settingsChannelGroup.cshtml?siteId=' + siteId">栏目组管理</el-link></el-menu-item>
-  <el-menu-item index="2"><el-link :underline="false" :href="'settingsContentGroup.cshtml?siteId=' + siteId">内容组管理</el-link></el-menu-item>
-  <el-menu-item index="3"><el-link :underline="false" :href="'settingsContentTag.cshtml?siteId=' + siteId">内容标签管理</el-link></el-menu-item>
+  <el-menu-item index="1"><el-link :underline="false" :href="utils.getCmsUrl('settingsChannelGroup', {siteId: siteId})">栏目组管理</el-link></el-menu-item>
+  <el-menu-item index="2"><el-link :underline="false" :href="utils.getCmsUrl('settingsContentGroup', {siteId: siteId})">内容组管理</el-link></el-menu-item>
+  <el-menu-item index="3"><el-link :underline="false" :href="utils.getCmsUrl('settingsContentTag', {siteId: siteId})">内容标签管理</el-link></el-menu-item>
 </el-menu>
 
 <el-card>

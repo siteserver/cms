@@ -18,20 +18,6 @@ namespace SS.CMS.Abstractions
 
         Task CacheIpAddressAsync(string ipAddress);
 
-        string GetHomeUploadPath(params string[] paths);
-
-        string GetUserUploadPath(int userId, string relatedPath);
-
-        string GetUserUploadFileName(string filePath);
-
-        string GetHomeUploadUrl(params string[] paths);
-
-        string DefaultAvatarUrl { get; }
-
-        string GetUserUploadUrl(int userId, string relatedUrl);
-
-        string GetUserAvatarUrl(User user);
-
         Task<string> GetDisplayAsync(int userId);
     }
 }

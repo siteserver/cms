@@ -21,8 +21,9 @@ var methods = {
     }
 
     var isAutoPlay = ' isAutoPlay="' + this.form.isAutoPlay + '"';
+    var clipUrl = utils.getAssetsUrl('images/audio-clip.png');
 
-    parent.$vue.insertEditor($this.attributeName, '<img ' + isAutoPlay + ' playUrl="' + this.form.audioUrl + '" style="width: 400px; height: 40px;" class="siteserver-stl-audio" src="../assets/ueditor/audio-clip.png" /><br/>');
+    parent.$vue.insertEditor($this.attributeName, '<img ' + isAutoPlay + ' playUrl="' + this.form.audioUrl + '" style="width: 400px; height: 40px;" class="siteserver-stl-audio" src="' + clipUrl + '" /><br/>');
     utils.closeLayer();
   },
 

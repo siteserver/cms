@@ -22,17 +22,19 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public SitesAddController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
+        public SitesAddController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _createManager = createManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _contentRepository = contentRepository;
             _administratorRepository = administratorRepository;
@@ -48,10 +50,10 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var manager = new SiteTemplateManager(_pathManager, _databaseManager);
+            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
             var siteTemplates = manager.GetSiteTemplateInfoList();
 
-            var tableNameList = await _siteRepository.GetSiteTableNamesAsync();
+            var tableNameList = await _siteRepository.GetSiteTableNamesAsync(_pluginManager);
 
             var rootExists = await _siteRepository.GetSiteByIsRootAsync() != null;
 
@@ -84,7 +86,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 
             if (!request.Root)
             {
-                if (WebUtils.IsSystemDirectory(request.SiteDir))
+                if (_pathManager.IsSystemDirectory(request.SiteDir))
                 {
                     return this.Error("文件夹名称不能为系统文件夹名称，请更改文件夹名称！");
                 }
@@ -154,7 +156,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 
             if (request.CreateType == "local")
             {
-                var manager = new SiteTemplateManager(_pathManager, _databaseManager);
+                var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
                 await manager.ImportSiteTemplateToEmptySiteAsync(site, request.CreateTemplateId, request.IsImportContents, request.IsImportTableStyles, auth.AdminId, request.Guid);
 
                 Caching.SetProcess(request.Guid, "生成站点页面...");
@@ -181,7 +183,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 
                 Caching.SetProcess(request.Guid, "模板压缩包解压成功，正在导入数据...");
 
-                var manager = new SiteTemplateManager(_pathManager, _databaseManager);
+                var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
                 await manager.ImportSiteTemplateToEmptySiteAsync(site, siteTemplateDir, request.IsImportContents, request.IsImportTableStyles, auth.AdminId, request.Guid);
 
                 Caching.SetProcess(request.Guid, "生成站点页面...");

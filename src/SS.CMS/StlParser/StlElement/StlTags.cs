@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SiteServer.CMS.Context;
 using SS.CMS.Abstractions;
-using SS.CMS;
-using SiteServer.CMS.Repositories;
-using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Utility;
+using SS.CMS.Abstractions.Parse;
+using SS.CMS.Core;
+using SS.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {

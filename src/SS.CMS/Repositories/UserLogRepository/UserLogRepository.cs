@@ -73,11 +73,11 @@ namespace SS.CMS.Repositories
 
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                query.WhereDate(nameof(UserLog.AddDate), ">=", TranslateUtils.ToDateTime(dateFrom));
+                query.WhereDate(nameof(UserLog.CreatedDate), ">=", TranslateUtils.ToDateTime(dateFrom));
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                query.WhereDate(nameof(UserLog.AddDate), "<=", TranslateUtils.ToDateTime(dateTo));
+                query.WhereDate(nameof(UserLog.CreatedDate), "<=", TranslateUtils.ToDateTime(dateTo));
             }
 
             return query;
@@ -108,7 +108,6 @@ namespace SS.CMS.Repositories
         public async Task<UserLog> InsertAsync(int userId, UserLog log)
         {
             log.UserId = userId;
-            log.AddDate = DateTime.Now;
 
             log.Id = await _repository.InsertAsync(log);
 

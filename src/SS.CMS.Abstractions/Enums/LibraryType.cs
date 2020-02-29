@@ -7,17 +7,17 @@ namespace SS.CMS.Abstractions
     [JsonConverter(typeof(StringEnumConverter))]
     public enum LibraryType
     {
-        [DataEnum(DisplayName = "ͼ��")]
+        [DataEnum(DisplayName = "图文")]
         Text,
-        [DataEnum(DisplayName = "ͼƬ")]
+        [DataEnum(DisplayName = "图片")]
         Image,
-        [DataEnum(DisplayName = "�ĵ�")]
+        [DataEnum(DisplayName = "文档")]
         Document,
-        [DataEnum(DisplayName = "��Ƶ")]
+        [DataEnum(DisplayName = "音频")]
         Audio,
-        [DataEnum(DisplayName = "��Ƶ")]
+        [DataEnum(DisplayName = "视频")]
         Video,
-        [DataEnum(DisplayName = "�ļ�")]
+        [DataEnum(DisplayName = "文件")]
         File
     }
 }

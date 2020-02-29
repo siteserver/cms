@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SS.CMS.Abstractions;
-using SS.CMS.Plugins;
 using SS.CMS.Services;
 
 namespace SS.CMS.Extensions
@@ -103,6 +102,7 @@ namespace SS.CMS.Extensions
             services.AddScoped<ICreateManager, CreateManager>();
             services.AddScoped<IDatabaseManager, DatabaseManager>();
             services.AddScoped<IParseManager, ParseManager>();
+            services.AddScoped<IPluginManager, PluginManager>();
 
             return services;
         }

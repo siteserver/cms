@@ -16,15 +16,17 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
 
-        public SitesController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository,
+        public SitesController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, ISiteRepository siteRepository,
             IContentRepository contentRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _contentRepository = contentRepository;
         }
@@ -67,7 +69,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 SiteUrl = await _pathManager.GetSiteUrlAsync(x, false)
             });
 
-            var tableNames = await _siteRepository.GetSiteTableNamesAsync();
+            var tableNames = await _siteRepository.GetSiteTableNamesAsync(_pluginManager);
 
             return new GetResult
             {

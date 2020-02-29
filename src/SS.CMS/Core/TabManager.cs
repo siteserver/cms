@@ -2,21 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Core
 {
     public class TabManager
     {
         private readonly IPathManager _pathManager;
-        public TabManager(IPathManager pathManager)
+        private readonly IPluginManager _pluginManager;
+
+        public TabManager(IPathManager pathManager, IPluginManager pluginManager)
         {
             _pathManager = pathManager;
+            _pluginManager = pluginManager;
         }
 
 	    public TabCollection GetTabs(string filePath)
 	    {
-	        var tc = CacheUtils.Get(filePath) as TabCollection;
+	        var tc = CacheUtils.Get<TabCollection>(filePath);
 	        if (tc != null) return tc;
 
 	        tc = Serializer.ConvertFileToObject<TabCollection>(filePath);
@@ -107,7 +109,7 @@ namespace SS.CMS.Core
             var menus = new List<Menu>();
             if (siteId > 0 && topId == string.Empty)
             {
-                var siteMenus = await PluginMenuManager.GetSiteMenusAsync(siteId);
+                var siteMenus = await _pluginManager.GetSiteMenusAsync(siteId);
                 if (siteMenus != null)
                 {
                     menus.AddRange(siteMenus);
@@ -115,7 +117,7 @@ namespace SS.CMS.Core
             }
             else if (topId == "Plugins")
             {
-                var topMenus = await PluginMenuManager.GetTopMenusAsync();
+                var topMenus = await _pluginManager.GetTopMenusAsync();
                 if (topMenus != null)
                 {
                     menus.AddRange(topMenus);
@@ -135,7 +137,7 @@ namespace SS.CMS.Core
 
                 if (isExists) continue;
 
-                tabs.Add(PluginMenuManager.GetPluginTab(menu.PluginId, string.Empty, menu));
+                tabs.Add(_pluginManager.GetPluginTab(menu.PluginId, string.Empty, menu));
 
                 //if (string.IsNullOrEmpty(menu.ParentId))
                 //{

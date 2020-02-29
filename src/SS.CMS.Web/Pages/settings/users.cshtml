@@ -64,12 +64,12 @@
       label="头像" width="100">
       <template slot-scope="scope">
         <el-badge v-if="!scope.row.checked" style="margin-top: 10px;" value="待审核">
-          <img :src="scope.row.avatarUrl || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
+          <img :src="scope.row.avatarUrl || utils.getAssetsUrl('images/default_avatar.png')" class="rounded-circle" style="height: 36px; width: 36px;"/>
         </el-badge>
         <el-badge v-else-if="scope.row.locked" style="margin-top: 10px;" value="锁定">
-          <img :src="scope.row.avatarUrl || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
+          <img :src="scope.row.avatarUrl || utils.getAssetsUrl('images/default_avatar.png')" class="rounded-circle" style="height: 36px; width: 36px;"/>
         </el-badge>
-        <img v-else :src="scope.row.avatarUrl || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
+        <img v-else :src="scope.row.avatarUrl || utils.getAssetsUrl('images/default_avatar.png')" class="rounded-circle" style="height: 36px; width: 36px;"/>
       </template>
     </el-table-column>
     <el-table-column
@@ -186,7 +186,7 @@
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或 <em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">
-          <el-link :underline="false" href="../assets/upload-templates/用户导入模版.xlsx" target="_blank">
+          <el-link :underline="false" type="primary" :href="utils.getAssetsUrl('upload-templates/用户导入模版.xlsx')" target="_blank">
             <i class="el-icon-download"></i>
             下载导入模版
           </el-link>

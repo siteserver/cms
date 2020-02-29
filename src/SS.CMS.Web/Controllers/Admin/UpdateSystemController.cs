@@ -54,10 +54,10 @@ namespace SS.CMS.Web.Controllers.Admin
         public ActionResult<BoolResult> UpdateSsCms([FromBody] UpdateRequest request)
         {
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{request.Version}";
-            var packagePath = WebUtils.GetPackagesPath(idWithVersion);
+            var packagePath = _pathManager.GetPackagesPath(idWithVersion);
             var packageWebConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
 
-            if (!PackageUtils.IsPackageDownload(PackageUtils.PackageIdSsCms, request.Version))
+            if (!PackageUtils.IsPackageDownload(_pathManager, PackageUtils.PackageIdSsCms, request.Version))
             {
                 return this.Error($"升级包 {idWithVersion} 不存在");
             }
@@ -66,7 +66,7 @@ namespace SS.CMS.Web.Controllers.Admin
             //    WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.RedisConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
             //    WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), WebUtils.GetSiteFilesPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), _pathManager.GetSiteFilesPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), _pathManager.GetAdminDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), _pathManager.GetHomeDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), _pathManager.GetBinDirectoryPath(string.Empty), true);

@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
+using SS.CMS.Core.Plugins;
 using SS.CMS.StlParser.StlElement;
 using SS.CMS.StlParser.Utility;
-using SS.CMS.Plugins;
-using SS.CMS.Plugins.Impl;
 
 namespace SS.CMS.Services
 {
@@ -134,7 +133,7 @@ namespace SS.CMS.Services
                         }
                         catch (Exception ex)
                         {
-                            parsedContent = await AddStlErrorLogAsync(PageInfo, elementName, stlElement, ex);
+                            parsedContent = await AddStlErrorLogAsync(elementName, stlElement, ex);
                         }
                     }
                 }
@@ -154,14 +153,14 @@ namespace SS.CMS.Services
                                 if (parsers.TryGetValue(elementName, out var func))
                                 {
                                     var context = new ParseContextImpl();
-                                    await context.LoadAsync(DatabaseManager.ContentRepository, stlElementInfo.OuterHtml, stlElementInfo.InnerHtml,
+                                    context.Load(DatabaseManager.ContentRepository, stlElementInfo.OuterHtml, stlElementInfo.InnerHtml,
                                         stlElementInfo.Attributes, PageInfo, ContextInfo);
                                     parsedContent = func(context);
                                 }
                             }
                             catch (Exception ex)
                             {
-                                parsedContent = await AddStlErrorLogAsync(PageInfo, elementName, stlElement, ex);
+                                parsedContent = await AddStlErrorLogAsync(elementName, stlElement, ex);
                             }
                         }
                     }

@@ -124,7 +124,7 @@ namespace SS.CMS.StlParser.StlElement
                             innerHtml = await databaseManager.ChannelRepository.GetChannelNameAsync(pageInfo.SiteId, siblingChannelId);
                             if (wordNum > 0)
                             {
-                                innerHtml = WebUtils.MaxLengthText(innerHtml, wordNum);
+                                innerHtml = StringUtils.MaxLengthText(innerHtml, wordNum);
                             }
                         }
                         else
@@ -175,7 +175,7 @@ namespace SS.CMS.StlParser.StlElement
                                 innerHtml = siblingContentInfo.Title;
                                 if (wordNum > 0)
                                 {
-                                    innerHtml = WebUtils.MaxLengthText(innerHtml, wordNum);
+                                    innerHtml = StringUtils.MaxLengthText(innerHtml, wordNum);
                                 }
                             }
                             else
@@ -193,10 +193,12 @@ namespace SS.CMS.StlParser.StlElement
             }
             else
             {
+                var context = parseManager.ContextInfo;
+
                 var nodeInfo = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
 
                 var isSuccess = false;
-                var theContextInfo = contextInfo.Clone();
+                parseManager.ContextInfo = contextInfo.Clone();
 
                 if (type.ToLower().Equals(TypePreviousChannel.ToLower()) || type.ToLower().Equals(TypeNextChannel.ToLower()))
                 {
@@ -207,8 +209,8 @@ namespace SS.CMS.StlParser.StlElement
                     if (siblingChannelId != 0)
                     {
                         isSuccess = true;
-                        theContextInfo.ContextType = ParseType.Channel;
-                        theContextInfo.ChannelId = siblingChannelId;
+                        parseManager.ContextInfo.ContextType = ParseType.Channel;
+                        parseManager.ContextInfo.ChannelId = siblingChannelId;
                     }
                 }
                 else if (type.ToLower().Equals(TypePreviousContent.ToLower()) || type.ToLower().Equals(TypeNextContent.ToLower()))
@@ -222,9 +224,9 @@ namespace SS.CMS.StlParser.StlElement
                         if (siblingContentId != 0)
                         {
                             isSuccess = true;
-                            theContextInfo.ContextType = ParseType.Content;
-                            theContextInfo.ContentId = siblingContentId;
-                            theContextInfo.SetContent(null);
+                            parseManager.ContextInfo.ContextType = ParseType.Content;
+                            parseManager.ContextInfo.ContentId = siblingContentId;
+                            parseManager.ContextInfo.SetContent(null);
                         }
                     }
                 }
@@ -238,6 +240,8 @@ namespace SS.CMS.StlParser.StlElement
 
                     parsedContent = innerBuilder.ToString();
                 }
+
+                parseManager.ContextInfo = context;
             }
 
             parsedContent = tipText + parsedContent;

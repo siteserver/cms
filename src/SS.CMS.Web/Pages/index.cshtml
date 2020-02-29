@@ -41,7 +41,7 @@
               <li v-if="newVersion" class="has-submenu dropdown">
                 <a href="javascript:;">
                   <i class="ion-email-unread text-warning"></i>
-                  <a v-if="updatePackages > 0" href="plugins/manage.cshtml?pageType=4" class="badge badge-warning" target="right">{{updatePackages}}</a>
+                  <a v-if="updatePackages > 0" :href="utils.getPluginsUrl('manage', {pageType: 4})" class="badge badge-warning" target="right">{{updatePackages}}</a>
                 </a>
                 <div class="submenu card bg-light text-dark" style="width: 19rem; z-index: 11; position: absolute;">
                   <div class="card-body" style="padding-bottom: 0;">
@@ -52,7 +52,7 @@
                       <a class="text-primary" :href="newVersion.updatesUrl" target="_blank">查看发行说明</a>
                       <hr />
                       <div class="text-center">
-                        <button href="javascript:;" onclick="location.href = 'updateSystem.cshtml'" class="btn btn-warning btn-block">立即升级</button>
+                        <button href="javascript:;" onclick="location.href = utils.getRootUrl('updateSystem');" class="btn btn-warning btn-block">立即升级</button>
                       </div>
                     </p>
                   </div>
@@ -77,7 +77,7 @@
                 </ul>
               </li>
               <li>
-                <form v-if="siteId > 0" id="search" class="navbar-left app-search float-left" action="cms/contentsSearch.cshtml"
+                <form v-if="siteId > 0" id="search" class="navbar-left app-search float-left" :action="utils.getCmsUrl('contentsSearch')"
                   target="right" method="get">
                   <input name="siteId" type="hidden" :value="siteId">
                   <input name="keyword" type="text" placeholder="内容搜索..." class="form-control">

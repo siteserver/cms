@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
@@ -199,9 +200,9 @@ namespace SS.CMS.Core.Serialization.Components
                         taxis = topTaxis;
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
-                    // ignored
+                    await _databaseManager.ErrorLogRepository.AddErrorLogAsync(ex, "导入内容");
                 }
             }
 

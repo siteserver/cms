@@ -44,7 +44,7 @@ namespace SS.CMS.Repositories
             if (days <= 0) return;
 
             await _repository.DeleteAsync(Q
-                .Where(nameof(SiteLog.AddDate), "<", DateTime.Now.AddDays(-days))
+                .Where(nameof(SiteLog.CreatedDate), "<", DateTime.Now.AddDays(-days))
             );
         }
 
@@ -101,11 +101,11 @@ namespace SS.CMS.Repositories
 
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                query.WhereDate(nameof(SiteLog.AddDate), ">=", TranslateUtils.ToDateTime(dateFrom));
+                query.WhereDate(nameof(SiteLog.CreatedDate), ">=", TranslateUtils.ToDateTime(dateFrom));
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                query.WhereDate(nameof(SiteLog.AddDate), "<=", TranslateUtils.ToDateTime(dateTo));
+                query.WhereDate(nameof(SiteLog.CreatedDate), "<=", TranslateUtils.ToDateTime(dateTo));
             }
 
             return query;

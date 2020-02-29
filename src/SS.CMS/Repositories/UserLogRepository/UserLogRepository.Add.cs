@@ -24,7 +24,7 @@ namespace SS.CMS.Repositories
 
                 if (!string.IsNullOrEmpty(summary))
                 {
-                    summary = WebUtils.MaxLengthText(summary, 250);
+                    summary = StringUtils.MaxLengthText(summary, 250);
                 }
 
                 var userLogInfo = new UserLog
@@ -32,7 +32,6 @@ namespace SS.CMS.Repositories
                     Id = 0,
                     UserId = userId,
                     IpAddress = string.Empty,
-                    AddDate = DateTime.Now,
                     Action = actionType,
                     Summary = summary
                 };

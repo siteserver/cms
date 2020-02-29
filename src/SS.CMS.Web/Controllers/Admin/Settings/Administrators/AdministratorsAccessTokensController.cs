@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
-using SS.CMS.Plugins;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
@@ -14,12 +13,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public AdministratorsAccessTokensController(IAuthManager authManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository)
+        public AdministratorsAccessTokensController(IAuthManager authManager, IPluginManager pluginManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository)
         {
             _authManager = authManager;
+            _pluginManager = pluginManager;
             _accessTokenRepository = accessTokenRepository;
             _administratorRepository = administratorRepository;
         }
@@ -47,7 +48,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             var scopes = new List<string>(Constants.ScopeList);
 
-            foreach (var service in await PluginManager.GetServicesAsync())
+            foreach (var service in await _pluginManager.GetServicesAsync())
             {
                 if (service.IsApiAuthorization)
                 {

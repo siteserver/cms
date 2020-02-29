@@ -12,18 +12,20 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
 
-        public SettingsContentController(IAuthManager authManager, ISiteRepository siteRepository, IContentRepository contentRepository)
+        public SettingsContentController(IAuthManager authManager, IPluginManager pluginManager, ISiteRepository siteRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _contentRepository = contentRepository;
         }
 
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<ObjectResult<Site>>> GetConfig([FromQuery] SiteRequest request)
+        public async Task<ActionResult<Site>> Get([FromQuery] SiteRequest request)
         {
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin ||
@@ -34,14 +36,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 
             var site = await _siteRepository.GetAsync(request.SiteId);
 
-            return new ObjectResult<Site>
-            {
-                Value = site
-            };
+            return site;
         }
 
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<ObjectResult<Site>>> Submit([FromBody] SubmitRequest request)
+        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin ||
@@ -80,14 +79,14 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 
             if (isReCalculate)
             {
-                await _contentRepository.SetAutoPageContentToSiteAsync(site);
+                await _contentRepository.SetAutoPageContentToSiteAsync(_pluginManager, site);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, "修改内容设置");
 
-            return new ObjectResult<Site>
+            return new BoolResult
             {
-                Value = site
+                Value = true
             };
         }
     }

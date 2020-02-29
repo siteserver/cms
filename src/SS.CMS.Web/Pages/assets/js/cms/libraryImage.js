@@ -127,7 +127,7 @@ var methods = {
   },
 
   getLinkUrl: function(libraryType) {
-    return 'library' + libraryType + '.cshtml?siteId=' + this.siteId;
+    return utils.getCmsUrl('library' + libraryType, {siteId: this.siteId})
   },
 
   getGroupName: function() {

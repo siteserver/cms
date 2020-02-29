@@ -19,7 +19,7 @@ var methods = {
   },
 
   redirect: function () {
-    window.top.location.href = 'login.cshtml';
+    window.top.location.href = utils.getRootUrl('login');
   }
 };
 

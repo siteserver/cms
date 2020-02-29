@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions.Parse;
@@ -12,13 +13,15 @@ namespace SS.CMS.Abstractions
         ISettingsManager SettingsManager { get; }
         IPathManager PathManager { get; }
         IDatabaseManager DatabaseManager { get; }
-        ParsePage PageInfo { get; }
+        IPluginManager PluginManager { get; }
+        ParsePage PageInfo { get; set; }
         ParseContext ContextInfo { get; set; }
 
-        Task ParseAsync(ParsePage pageInfo, ParseContext contextInfo, StringBuilder contentBuilder,
-            string filePath, bool isDynamic);
+        Task InitAsync(Site site, int pageChannelId, int pageContentId, Template template);
 
-        Task<string> AddStlErrorLogAsync(ParsePage pageInfo, string elementName, string stlContent, Exception ex);
+        Task ParseAsync(StringBuilder contentBuilder, string filePath, bool isDynamic);
+
+        Task<string> AddStlErrorLogAsync(string elementName, string stlContent, Exception ex);
 
         Task<Channel> GetChannelAsync();
 

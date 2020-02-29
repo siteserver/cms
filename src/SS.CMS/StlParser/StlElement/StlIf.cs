@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
 using SS.CMS.Abstractions.Parse;
-using SS.CMS.Api.Stl;
 using SS.CMS.Core;
 
 namespace SS.CMS.StlParser.StlElement
@@ -170,11 +169,7 @@ namespace SS.CMS.StlParser.StlElement
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            string loading;
-            string yes;
-            string no;
-
-            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out loading, out yes, out no);
+            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out var loading, out var yes, out var no);
 
             if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin) ||
                 StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) ||
@@ -465,7 +460,7 @@ namespace SS.CMS.StlParser.StlElement
             };
             dynamicInfo.ElementValues = TranslateUtils.JsonSerialize(ifInfo);
 
-            return dynamicInfo.GetScript(ApiRouteActionsIf.GetUrl(pageInfo.ApiUrl), true);
+            return dynamicInfo.GetScript(parseManager.PathManager.GetIfApiUrl(pageInfo.ApiUrl), true);
         }
 
         private static bool TestTypeValues(string testOperate, string testValue, List<string> actualValues)

@@ -282,7 +282,7 @@ namespace SS.CMS.StlParser.StlElement
 
                 if (!string.IsNullOrEmpty(parsedContent) && wordNum > 0)
                 {
-                    parsedContent = WebUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
+                    parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                 }
             }
             else if (type.Equals(nameof(Channel.GroupNames).ToLower()))
@@ -301,7 +301,8 @@ namespace SS.CMS.StlParser.StlElement
             else if (type.Equals(nameof(Channel.ImageUrl).ToLower()))
             {
                 inputType = InputType.Image;
-                parsedContent = await InputParserUtility.GetImageOrFlashHtmlAsync(parseManager.PathManager, pageInfo.Site, channel.ImageUrl, contextInfo.Attributes, contextInfo.IsStlEntity); // contextInfo.IsStlEntity = true 表示实体标签
+                var inputParser = new InputParserManager(parseManager.PathManager);
+                parsedContent = await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, channel.ImageUrl, contextInfo.Attributes, contextInfo.IsStlEntity); // contextInfo.IsStlEntity = true 表示实体标签
             }
             else if (type.Equals(nameof(Channel.Content).ToLower()))
             {
@@ -319,7 +320,7 @@ namespace SS.CMS.StlParser.StlElement
 
                 if (!string.IsNullOrEmpty(parsedContent) && wordNum > 0)
                 {
-                    parsedContent = WebUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
+                    parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                 }
             }
             else if (type.Equals(nameof(Channel.FilePath).ToLower()))
@@ -374,7 +375,7 @@ namespace SS.CMS.StlParser.StlElement
 
                 if (!string.IsNullOrEmpty(parsedContent) && wordNum > 0)
                 {
-                    parsedContent = WebUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
+                    parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                 }
             }
             else if (type.Equals(StlParserUtility.PageContent.ToLower()))
@@ -395,7 +396,7 @@ namespace SS.CMS.StlParser.StlElement
 
                     if (!string.IsNullOrEmpty(parsedContent) && wordNum > 0)
                     {
-                        parsedContent = WebUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
+                        parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                     }
                 }
                 else
@@ -432,7 +433,8 @@ namespace SS.CMS.StlParser.StlElement
                     parsedContent = GetValue(attributeName, channel, false, styleInfo.DefaultValue);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parseManager.PathManager, parsedContent, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                        var inputParser = new InputParserManager(parseManager.PathManager);
+                        parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
                         inputType = styleInfo.InputType;
                     }
                 }

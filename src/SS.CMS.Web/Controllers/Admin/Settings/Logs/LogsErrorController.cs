@@ -5,7 +5,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
 {
@@ -15,11 +14,13 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public LogsErrorController(IAuthManager authManager, IErrorLogRepository errorLogRepository)
+        public LogsErrorController(IAuthManager authManager, IPluginManager pluginManager, IErrorLogRepository errorLogRepository)
         {
             _authManager = authManager;
+            _pluginManager = pluginManager;
             _errorLogRepository = errorLogRepository;
         }
 
@@ -43,7 +44,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
             }
 
             var pluginIds = new List<Select<string>>();
-            foreach (var pluginInfo in await PluginManager.GetAllPluginInfoListAsync())
+            foreach (var pluginInfo in await _pluginManager.GetAllPluginInfoListAsync())
             {
                 pluginIds.Add(new Select<string>(pluginInfo.Id, pluginInfo.Metadata.Title));
             }

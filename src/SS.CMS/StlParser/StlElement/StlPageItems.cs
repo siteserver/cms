@@ -61,7 +61,7 @@ namespace SS.CMS.StlParser.StlElement
             catch (Exception ex)
             {
                 parsedContent =
-                    await parseManager.AddStlErrorLogAsync(pageInfo, ElementName, stlElement, ex);
+                    await parseManager.AddStlErrorLogAsync(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -97,7 +97,7 @@ namespace SS.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = await parseManager.AddStlErrorLogAsync(parseManager.PageInfo, ElementName, stlElement, ex);
+                parsedContent = await parseManager.AddStlErrorLogAsync(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -130,7 +130,7 @@ namespace SS.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = await parseManager.AddStlErrorLogAsync(parseManager.PageInfo, ElementName, stlElement, ex);
+                parsedContent = await parseManager.AddStlErrorLogAsync(ElementName, stlElement, ex);
             }
 
             return parsedContent;

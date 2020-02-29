@@ -12,11 +12,13 @@ namespace SS.CMS.Web.Controllers.Admin
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public SysPackagingDownloadController(IAuthManager authManager, IDbCacheRepository dbCacheRepository)
+        public SysPackagingDownloadController(IAuthManager authManager, IPathManager pathManager, IDbCacheRepository dbCacheRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _dbCacheRepository = dbCacheRepository;
         }
 
@@ -32,11 +34,11 @@ namespace SS.CMS.Web.Controllers.Admin
 
             try
             {
-                PackageUtils.DownloadPackage(request.PackageId, request.Version);
+                PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
             }
             catch
             {
-                PackageUtils.DownloadPackage(request.PackageId, request.Version);
+                PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
             }
 
             if (StringUtils.EqualsIgnoreCase(request.PackageId, PackageUtils.PackageIdSsCms))

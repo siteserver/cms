@@ -189,7 +189,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                     _tableStyleRepository.GetRelatedIdentities(channel));
 
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            var downloadUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
+            var downloadUrl = _pathManager.GetRootUrlByPhysicalPath(filePath);
 
             return new StringResult
             {

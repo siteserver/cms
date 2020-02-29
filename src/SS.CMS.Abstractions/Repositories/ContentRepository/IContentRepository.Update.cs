@@ -6,7 +6,7 @@ namespace SS.CMS.Abstractions
     {
         Task UpdateAsync(Site site, Channel channel, Content content);
 
-        Task SetAutoPageContentToSiteAsync(Site site);
+        Task SetAutoPageContentToSiteAsync(IPluginManager pluginManager, Site site);
 
         Task UpdateArrangeTaxisAsync(Site site, Channel channel, string attributeName, bool isDesc);
 

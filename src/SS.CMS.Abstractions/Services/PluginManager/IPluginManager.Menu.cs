@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 
 namespace SS.CMS.Abstractions
 {
@@ -20,8 +17,8 @@ namespace SS.CMS.Abstractions
 
         Tab GetPluginTab(string pluginId, string prefix, Menu menu);
 
-        Task<List<IPermissions>> GetTopPermissionsAsync();
+        Task<List<PermissionConfig>> GetTopPermissionsAsync();
 
-        Task<List<IPermissions>> GetSitePermissionsAsync(int siteId);
+        Task<List<PermissionConfig>> GetSitePermissionsAsync(int siteId);
     }
 }

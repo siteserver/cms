@@ -14,12 +14,14 @@ namespace SS.CMS.Core.Serialization
     {
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly Site _site;
 
-        public ExportObject(IPathManager pathManager, IDatabaseManager databaseManager, Site site)
+        public ExportObject(IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, Site site)
         {
             _pathManager = pathManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _site = site;
         }
 
@@ -51,7 +53,7 @@ namespace SS.CMS.Core.Serialization
                             }
                         }
                     }
-                    if (!isSiteDirectory && !WebUtils.IsSystemDirectory(fileSystem.Name))
+                    if (!isSiteDirectory && !_pathManager.IsSystemDirectory(fileSystem.Name))
                     {
                         DirectoryUtils.CreateDirectoryIfNotExists(destPath);
                         DirectoryUtils.MoveDirectory(srcPath, destPath, false);
@@ -174,7 +176,7 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.CreateDirectoryIfNotExists(tableDirectoryPath);
             var styleIe = new TableStyleIe(_databaseManager, tableDirectoryPath);
 
-            var tableNameList = await _databaseManager.SiteRepository.GetTableNamesAsync(_site);
+            var tableNameList = await _databaseManager.SiteRepository.GetTableNamesAsync(_pluginManager, _site);
 
             foreach (var tableName in tableNameList)
             {

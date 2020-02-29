@@ -219,7 +219,12 @@ var methods = {
   },
 
   btnSetClick: function(channelId, isChannel, rule) {
-    var url = 'settingsCreateRuleLayerSet.cshtml?siteId=' + this.siteId + '&isChannel=' + isChannel + '&channelId=' + channelId + '&rule=' + encodeURIComponent(rule);
+    var url = utils.getCmsUrl('settingsCreateRuleLayerSet', {
+      siteId: this.siteId,
+      isChannel: isChannel,
+      channelId: channelId,
+      rule: rule
+    });
 
     utils.openLayer({
       title: '构造',
@@ -232,7 +237,7 @@ var methods = {
   btnEditAddGroupClick: function() {
     utils.openLayer({
       title: '新增栏目组',
-      url: '../shared/groupChannelLayerAdd.cshtml?siteId=' + this.siteId,
+      url: utils.getSharedUrl('groupChannelLayerAdd', {siteId: this.siteId}),
       width: 500,
       height: 300
     });
@@ -279,7 +284,7 @@ var methods = {
   },
 
   getChannelUrl: function(data) {
-    return '../redirect.cshtml?siteId=' + this.siteId + '&channelId=' + data.value;
+    return utils.getRootUrl('redirect', {siteId: this.siteId, channelId: data.value});
   },
 
   handleCheckChange() {
@@ -399,7 +404,11 @@ var methods = {
   },
 
   btnTranslateClick: function() {
-    location.href = 'channelsTranslate.cshtml?siteId=' + this.siteId + '&channelIds=' + this.channelIds.join(',') + '&returnUrl=' + encodeURIComponent(location.href);
+    location.href = utils.getCmsUrl('channelsTranslate', {
+      siteId: this.siteId,
+      channelIds: this.channelIds.join(','),
+      returnUrl: location.href
+    });
   },
 
   btnImportSubmitClick: function() {
@@ -432,7 +441,10 @@ var methods = {
   btnSetGroupClick: function() {
     utils.openLayer({
       title: '设置栏目组',
-      url: 'channelsLayerGroup.cshtml?siteId=' + this.siteId + '&channelIds=' + this.channelIds.join(','),
+      url: utils.getCmsUrl('channelsLayerGroup', {
+        siteId: this.siteId,
+        channelIds: this.channelIds.join(',')
+      }),
       width: 700,
       height: 400
     });
@@ -441,7 +453,10 @@ var methods = {
   btnSetTaxisClick: function() {
     utils.openLayer({
       title: '栏目排序',
-      url: 'channelsLayerTaxis.cshtml?siteId=' + this.siteId + '&channelIds=' + this.channelIds.join(','),
+      url: utils.getCmsUrl('channelsLayerTaxis', {
+        siteId: this.siteId,
+        channelIds: this.channelIds.join(',')
+      }),
       width: 500,
       height: 260
     });
@@ -450,7 +465,10 @@ var methods = {
   btnCreateClick: function() {
     utils.openLayer({
       title: '生成页面',
-      url: 'channelsLayerCreate.cshtml?siteId=' + this.siteId + '&channelIds=' + this.channelIds.join(','),
+      url: utils.getCmsUrl('channelsLayerCreate', {
+        siteId: this.siteId,
+        channelIds: this.channelIds.join(',')
+      }),
       width: 500,
       height: 260
     });
@@ -480,18 +498,20 @@ var methods = {
   },
 
   btnLayerClick: function(options) {
-    var url = "../shared/editorLayer" + options.name + ".cshtml?siteId=" + this.siteId;
+    var query = {
+      siteId: this.siteId
+    };
 
     if (options.attributeName) {
-      url += "&attributeName=" + options.attributeName;
+      query.attributeName = options.attributeName;
     }
     if (options.contentId) {
-      url += "&contentId=" + options.contentId;
+      query.contentId = options.contentId;
     }
 
     utils.openLayer({
       title: options.title,
-      url: url,
+      url: utils.getSharedUrl('editorLayer' + options.name, query),
       full: options.full,
       width: options.width ? options.width : 700,
       height: options.height ? options.height : 500

@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Api.Stl;
 using SS.CMS.Core;
 using SS.CMS.Web.Extensions;
 
@@ -25,7 +24,7 @@ namespace SS.CMS.Web.Controllers.Stl
         }
 
         [HttpGet]
-        [Route(ApiRouteActionsDownload.Route)]
+        [Route(Constants.RouteActionsDownload)]
         public async Task<ActionResult> Get([FromQuery]GetRequest request)
         {
             try
@@ -68,8 +67,8 @@ namespace SS.CMS.Web.Controllers.Stl
                     }
                     else
                     {
-                        var fileUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
-                        return Redirect(PageUtils.ParseNavigationUrl(fileUrl));
+                        var fileUrl = _pathManager.GetRootUrlByPhysicalPath(filePath);
+                        return Redirect(_pathManager.ParseNavigationUrl(fileUrl));
                     }
                 }
                 else if (request.SiteId.HasValue && request.ChannelId.HasValue && request.ContentId.HasValue && !string.IsNullOrEmpty(request.FileUrl))
@@ -79,7 +78,7 @@ namespace SS.CMS.Web.Controllers.Stl
                     var channel = await _channelRepository.GetAsync(request.ChannelId.Value);
                     var content = await _contentRepository.GetAsync(site, channel, request.ContentId.Value);
 
-                    await _contentRepository.AddDownloadsAsync(await _channelRepository.GetTableNameAsync(site, channel), request.ChannelId.Value, request.ContentId.Value);
+                    await _contentRepository.AddDownloadsAsync(_channelRepository.GetTableName(site, channel), request.ChannelId.Value, request.ContentId.Value);
 
                     if (!string.IsNullOrEmpty(content?.Get<string>(ContentAttribute.FileUrl)))
                     {

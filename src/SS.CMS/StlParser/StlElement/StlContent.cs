@@ -249,12 +249,14 @@ namespace SS.CMS.StlParser.StlElement
             {
                 if (ContentAttribute.Title.ToLower().Equals(type))
                 {
-                    var nodeInfo = await databaseManager.ChannelRepository.GetAsync(content.ChannelId);
-                    var relatedIdentities = databaseManager.TableStyleRepository.GetRelatedIdentities(nodeInfo);
-                    var tableName = await databaseManager.ChannelRepository.GetTableNameAsync(pageInfo.Site, nodeInfo);
+                    var channel = await databaseManager.ChannelRepository.GetAsync(content.ChannelId);
+                    var relatedIdentities = databaseManager.TableStyleRepository.GetRelatedIdentities(channel);
+                    var tableName = databaseManager.ChannelRepository.GetTableName(pageInfo.Site, channel);
 
                     var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(tableName, type, relatedIdentities);
-                    parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parseManager.PathManager, content.Title, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+
+                    var inputParser = new InputParserManager(parseManager.PathManager);
+                    parsedContent = await inputParser.GetContentByTableStyleAsync(content.Title, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
                     parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(content.Get<string>(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title))))
@@ -295,7 +297,7 @@ namespace SS.CMS.StlParser.StlElement
 
                     if (wordNum > 0 && !string.IsNullOrEmpty(parsedContent))
                     {
-                        parsedContent = WebUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
+                        parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                     }
 
                     if (!string.IsNullOrEmpty(formatString))
@@ -323,7 +325,7 @@ namespace SS.CMS.StlParser.StlElement
 
                     if (wordNum > 0 && !string.IsNullOrEmpty(parsedContent))
                     {
-                        parsedContent = WebUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
+                        parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                     }
 
                     if (!string.IsNullOrEmpty(formatString))
@@ -347,6 +349,8 @@ namespace SS.CMS.StlParser.StlElement
                 }
                 else if (ContentAttribute.ImageUrl.ToLower().Equals(type))
                 {
+                    var inputParser = new InputParserManager(parseManager.PathManager);
+
                     if (no == "all")
                     {
                         var sbParsedContent = new StringBuilder();
@@ -354,7 +358,7 @@ namespace SS.CMS.StlParser.StlElement
                         sbParsedContent.Append(contextInfo.IsStlEntity
                             ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site,
                                 content.Get<string>(ContentAttribute.ImageUrl), pageInfo.IsLocal)
-                            : await InputParserUtility.GetImageOrFlashHtmlAsync(parseManager.PathManager, pageInfo.Site,
+                            : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site,
                                 content.Get<string>(ContentAttribute.ImageUrl),
                                 contextInfo.Attributes, false));
                         //第n条
@@ -367,8 +371,7 @@ namespace SS.CMS.StlParser.StlElement
                                 var newExtendValue = extendValue;
                                 sbParsedContent.Append(contextInfo.IsStlEntity
                                     ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, newExtendValue, pageInfo.IsLocal)
-                                    : await InputParserUtility.GetImageOrFlashHtmlAsync(parseManager.PathManager, pageInfo.Site,
-                                        newExtendValue, contextInfo.Attributes, false));
+                                    : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, newExtendValue, contextInfo.Attributes, false));
                             }
                         }
 
@@ -379,7 +382,7 @@ namespace SS.CMS.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no);
                         if (num <= 1)
                         {
-                            parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, content.Get<string>(ContentAttribute.ImageUrl), pageInfo.IsLocal) : await InputParserUtility.GetImageOrFlashHtmlAsync(parseManager.PathManager, pageInfo.Site, content.Get<string>(ContentAttribute.ImageUrl), contextInfo.Attributes, false);
+                            parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, content.Get<string>(ContentAttribute.ImageUrl), pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, content.Get<string>(ContentAttribute.ImageUrl), contextInfo.Attributes, false);
                         }
                         else
                         {
@@ -393,7 +396,7 @@ namespace SS.CMS.StlParser.StlElement
                                     var newExtendValue = extendValue;
                                     if (index == num)
                                     {
-                                        parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, newExtendValue, pageInfo.IsLocal) : await InputParserUtility.GetImageOrFlashHtmlAsync(parseManager.PathManager, pageInfo.Site, newExtendValue, contextInfo.Attributes, false);
+                                        parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, newExtendValue, pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, newExtendValue, contextInfo.Attributes, false);
                                         break;
                                     }
                                     index++;
@@ -404,11 +407,13 @@ namespace SS.CMS.StlParser.StlElement
                 }
                 else if (ContentAttribute.VideoUrl.ToLower().Equals(type))
                 {
+                    var inputParser = new InputParserManager(parseManager.PathManager);
+
                     if (no == "all")
                     {
                         var sbParsedContent = new StringBuilder();
                         //第一条
-                        sbParsedContent.Append(await InputParserUtility.GetVideoHtmlAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, content.Get<string>(ContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsStlEntity));
+                        sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, content.Get<string>(ContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsStlEntity));
 
                         //第n条
                         var extendAttributeName = ContentAttribute.GetExtendAttributeName(ContentAttribute.VideoUrl);
@@ -418,7 +423,7 @@ namespace SS.CMS.StlParser.StlElement
                             foreach (string extendValue in Utilities.GetStringList(extendValues))
                             {
 
-                                sbParsedContent.Append(await InputParserUtility.GetVideoHtmlAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity));
+                                sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity));
 
                             }
                         }
@@ -430,7 +435,7 @@ namespace SS.CMS.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no);
                         if (num <= 1)
                         {
-                            parsedContent = await InputParserUtility.GetVideoHtmlAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, content.Get<string>(ContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsStlEntity);
+                            parsedContent = await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, content.Get<string>(ContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsStlEntity);
                         }
                         else
                         {
@@ -443,7 +448,7 @@ namespace SS.CMS.StlParser.StlElement
                                 {
                                     if (index == num)
                                     {
-                                        parsedContent = await InputParserUtility.GetVideoHtmlAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity);
+                                        parsedContent = await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity);
                                         break;
                                     }
                                     index++;
@@ -476,8 +481,10 @@ namespace SS.CMS.StlParser.StlElement
                         }
                         else
                         {
+                            var inputParser = new InputParserManager(parseManager.PathManager);
+
                             //第一条
-                            sbParsedContent.Append(await InputParserUtility.GetFileHtmlWithCountAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, content.Get<string>(ContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
+                            sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, content.Get<string>(ContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
                             //第n条
                             var extendAttributeName = ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl);
                             var extendValues = content.Get<string>(extendAttributeName);
@@ -485,7 +492,7 @@ namespace SS.CMS.StlParser.StlElement
                             {
                                 foreach (string extendValue in Utilities.GetStringList(extendValues))
                                 {
-                                    sbParsedContent.Append(await InputParserUtility.GetFileHtmlWithCountAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
+                                    sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
                                 }
                             }
 
@@ -529,9 +536,11 @@ namespace SS.CMS.StlParser.StlElement
                         }
                         else
                         {
+                            var inputParser = new InputParserManager(parseManager.PathManager);
+
                             if (num <= 1)
                             {
-                                parsedContent = await InputParserUtility.GetFileHtmlWithCountAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, content.Get<string>(ContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
+                                parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, content.Get<string>(ContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                             }
                             else
                             {
@@ -544,7 +553,7 @@ namespace SS.CMS.StlParser.StlElement
                                     {
                                         if (index == num)
                                         {
-                                            parsedContent = await InputParserUtility.GetFileHtmlWithCountAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
+                                            parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                                             break;
                                         }
                                         index++;
@@ -571,19 +580,21 @@ namespace SS.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    var nodeInfo = await databaseManager.ChannelRepository.GetAsync(content.ChannelId);
+                    var channel = await databaseManager.ChannelRepository.GetAsync(content.ChannelId);
 
                     if (content.ContainsKey(type))
                     {
                         if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes.Value, type))
                         {
-                            var relatedIdentities = databaseManager.TableStyleRepository.GetRelatedIdentities(nodeInfo);
-                            var tableName = await databaseManager.ChannelRepository.GetTableNameAsync(pageInfo.Site, nodeInfo);
+                            var relatedIdentities = databaseManager.TableStyleRepository.GetRelatedIdentities(channel);
+                            var tableName = databaseManager.ChannelRepository.GetTableName(pageInfo.Site, channel);
                             var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(tableName, type, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var num = TranslateUtils.ToInt(no);
-                            parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parseManager.PathManager, content, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
+
+                            var inputParser = new InputParserManager(parseManager.PathManager);
+                            parsedContent = await inputParser.GetContentByTableStyleAsync(content, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
                             parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else

@@ -222,11 +222,13 @@ namespace SS.CMS.StlParser.StlElement
             }
             else
             {
+                var inputParser = new InputParserManager(parseManager.PathManager);
+
                 parsedContent = contentInfo != null
-                    ? await InputParserUtility.GetFileHtmlWithCountAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, contentInfo.ChannelId,
+                    ? inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site, contentInfo.ChannelId,
                         contentInfo.Id, fileUrl, attributes, contextInfo.InnerHtml,
                         contextInfo.IsStlEntity, isLower, isUpper)
-                    : await InputParserUtility.GetFileHtmlWithoutCountAsync(parseManager.PathManager, pageInfo.Config, pageInfo.Site, fileUrl, attributes,
+                    : inputParser.GetFileHtmlWithoutCount(pageInfo.Config, pageInfo.Site, fileUrl, attributes,
                         contextInfo.InnerHtml, contextInfo.IsStlEntity, isLower, isUpper);
             }
 

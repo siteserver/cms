@@ -18,16 +18,18 @@ namespace SS.CMS.Web.Controllers.Home
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerCopyController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerCopyController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _createManager = createManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -137,7 +139,7 @@ namespace SS.CMS.Web.Controllers.Home
 
             foreach (var contentId in request.ContentIds)
             {
-                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, site, request.ChannelId, contentId, request.TargetSiteId, request.TargetChannelId, request.CopyType, _createManager);
+                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, request.ChannelId, contentId, request.TargetSiteId, request.TargetChannelId, request.CopyType, _createManager);
             }
 
             await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, "复制内容", string.Empty);

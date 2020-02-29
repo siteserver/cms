@@ -146,7 +146,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
 
             var libraryGroup = new LibraryGroup
             {
-                Type = LibraryType.Text,
+                LibraryType = LibraryType.Text,
                 GroupName = group.Name
             };
             libraryGroup.Id = await _libraryGroupRepository.InsertAsync(libraryGroup);

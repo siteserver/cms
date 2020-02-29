@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Parse;
-using SS.CMS.Api.Stl;
 using SS.CMS.Core;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Services
 {
@@ -15,66 +14,71 @@ namespace SS.CMS.Services
         public ISettingsManager SettingsManager { get; }
         public IPathManager PathManager { get; }
         public IDatabaseManager DatabaseManager { get; }
+        public IPluginManager PluginManager { get; }
 
-        public ParseManager(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager)
+        public ParseManager(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager)
         {
             SettingsManager = settingsManager;
             PathManager = pathManager;
             DatabaseManager = databaseManager;
+            PluginManager = pluginManager;
         }
 
-        public ParsePage PageInfo { get; private set; }
+        public ParsePage PageInfo { get; set; }
         public ParseContext ContextInfo { get; set; }
 
-        public async Task ParseAsync(ParsePage pageInfo, ParseContext contextInfo, StringBuilder contentBuilder,
-            string filePath, bool isDynamic)
+        public async Task InitAsync(Site site, int pageChannelId, int pageContentId, Template template)
         {
-            PageInfo = pageInfo;
-            ContextInfo = contextInfo;
+            var config = await DatabaseManager.ConfigRepository.GetAsync();
+            PageInfo = new ParsePage(PathManager, config, pageChannelId, pageContentId, site, template, new Dictionary<string, object>());
+            ContextInfo = new ParseContext(PageInfo);
+        }
 
+        public async Task ParseAsync(StringBuilder contentBuilder, string filePath, bool isDynamic)
+        {
             foreach (var service in await PluginManager.GetServicesAsync())
             {
                 try
                 {
                     service.OnBeforeStlParse(new ParseEventArgs
                     (
-                        pageInfo.SiteId,
-                        pageInfo.PageChannelId,
-                        pageInfo.PageContentId,
+                        PageInfo.SiteId,
+                        PageInfo.PageChannelId,
+                        PageInfo.PageContentId,
                         await GetContentAsync(),
-                        pageInfo.Template.TemplateType,
-                        pageInfo.Template.Id,
+                        PageInfo.Template.TemplateType,
+                        PageInfo.Template.Id,
                         filePath,
-                        pageInfo.HeadCodes,
-                        pageInfo.BodyCodes,
-                        pageInfo.FootCodes,
+                        PageInfo.HeadCodes,
+                        PageInfo.BodyCodes,
+                        PageInfo.FootCodes,
                         contentBuilder
                     ));
                 }
                 catch (Exception ex)
                 {
-                    await AddStlErrorLogAsync(pageInfo, service.PluginId, nameof(service.OnBeforeStlParse),
+                    await AddStlErrorLogAsync(service.PluginId, nameof(service.OnBeforeStlParse),
                         ex);
                 }
             }
 
             if (contentBuilder.Length > 0)
             {
-                await ParseTemplateContentAsync(contentBuilder, pageInfo, contextInfo);
+                await ParseTemplateContentAsync(contentBuilder);
             }
 
             foreach (var service in await PluginManager.GetServicesAsync())
             {
                 try
                 {
-                    service.OnAfterStlParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId,
-                        pageInfo.PageContentId, await GetContentAsync(),
-                        pageInfo.Template.TemplateType, pageInfo.Template.Id, filePath, pageInfo.HeadCodes,
-                        pageInfo.BodyCodes, pageInfo.FootCodes, contentBuilder));
+                    service.OnAfterStlParse(new ParseEventArgs(PageInfo.SiteId, PageInfo.PageChannelId,
+                        PageInfo.PageContentId, await GetContentAsync(),
+                        PageInfo.Template.TemplateType, PageInfo.Template.Id, filePath, PageInfo.HeadCodes,
+                        PageInfo.BodyCodes, PageInfo.FootCodes, contentBuilder));
                 }
                 catch (Exception ex)
                 {
-                    await AddStlErrorLogAsync(pageInfo, service.PluginId, nameof(service.OnAfterStlParse), ex);
+                    await AddStlErrorLogAsync(service.PluginId, nameof(service.OnAfterStlParse), ex);
                 }
             }
 
@@ -83,14 +87,14 @@ namespace SS.CMS.Services
                 if (isDynamic)
                 {
                     var pageUrl = PageUtils.AddProtocolToUrl(
-                        PageUtils.ParseNavigationUrl(
-                            $"~/{PathUtils.GetPathDifference(GlobalSettings.WebRootPath, filePath)}"));
+                        PathManager.ParseNavigationUrl(
+                            $"~/{PathUtils.GetPathDifference(SettingsManager.WebRootPath, filePath)}"));
                     string templateString = $@"
 <base href=""{pageUrl}"" />";
                     StringUtils.InsertAfter(new[] {"<head>", "<HEAD>"}, contentBuilder, templateString);
                 }
 
-                if (pageInfo.Site.IsCreateBrowserNoCache)
+                if (PageInfo.Site.IsCreateBrowserNoCache)
                 {
                     const string templateString = @"
 <META HTTP-EQUIV=""Pragma"" CONTENT=""no-cache"">
@@ -98,38 +102,38 @@ namespace SS.CMS.Services
                     StringUtils.InsertAfter(new[] {"<head>", "<HEAD>"}, contentBuilder, templateString);
                 }
 
-                if (pageInfo.Site.IsCreateIe8Compatible)
+                if (PageInfo.Site.IsCreateIe8Compatible)
                 {
                     const string templateString = @"
 <META HTTP-EQUIV=""x-ua-compatible"" CONTENT=""ie=7"" />";
                     StringUtils.InsertAfter(new[] {"<head>", "<HEAD>"}, contentBuilder, templateString);
                 }
 
-                if (pageInfo.Site.IsCreateJsIgnoreError)
+                if (PageInfo.Site.IsCreateJsIgnoreError)
                 {
                     const string templateString = @"
 <script type=""text/javascript"">window.onerror=function(){return true;}</script>";
                     StringUtils.InsertAfter(new[] {"<head>", "<HEAD>"}, contentBuilder, templateString);
                 }
 
-                var isShowPageInfo = pageInfo.Site.IsCreateShowPageInfo;
+                var isShowPageInfo = PageInfo.Site.IsCreateShowPageInfo;
 
-                if (!pageInfo.IsLocal)
+                if (!PageInfo.IsLocal)
                 {
-                    if (pageInfo.Site.IsCreateDoubleClick)
+                    if (PageInfo.Site.IsCreateDoubleClick)
                     {
                         var fileTemplateId = 0;
-                        if (pageInfo.Template.TemplateType == TemplateType.FileTemplate)
+                        if (PageInfo.Template.TemplateType == TemplateType.FileTemplate)
                         {
-                            fileTemplateId = pageInfo.Template.Id;
+                            fileTemplateId = PageInfo.Template.Id;
                         }
 
-                        var apiUrl = pageInfo.ApiUrl;
-                        var ajaxUrl = ApiRouteActionsTrigger.GetUrl(apiUrl, pageInfo.SiteId, contextInfo.ChannelId,
-                            contextInfo.ContentId, fileTemplateId, true);
-                        if (!pageInfo.FootCodes.ContainsKey("CreateDoubleClick"))
+                        var apiUrl = PageInfo.ApiUrl;
+                        var ajaxUrl = PathManager.GetTriggerApiUrl(apiUrl, PageInfo.SiteId, ContextInfo.ChannelId,
+                            ContextInfo.ContentId, fileTemplateId, true);
+                        if (!PageInfo.FootCodes.ContainsKey("CreateDoubleClick"))
                         {
-                            pageInfo.FootCodes.Add("CreateDoubleClick", $@"
+                            PageInfo.FootCodes.Add("CreateDoubleClick", $@"
 <script type=""text/javascript"" language=""javascript"">document.ondblclick=function(x){{location.href = '{ajaxUrl}&returnUrl=' + encodeURIComponent(location.search);}}</script>");
                         }
                     }
@@ -142,10 +146,10 @@ namespace SS.CMS.Services
                 if (isShowPageInfo)
                 {
                     contentBuilder.Append($@"
-<!-- {pageInfo.Template.RelatedFileName}({pageInfo.Template.TemplateType.GetDisplayName()}) -->");
+<!-- {PageInfo.Template.RelatedFileName}({PageInfo.Template.TemplateType.GetDisplayName()}) -->");
                 }
 
-                var headCodesHtml = pageInfo.HeadCodesHtml;
+                var headCodesHtml = PageInfo.HeadCodesHtml;
                 if (!string.IsNullOrEmpty(headCodesHtml))
                 {
                     if (contentBuilder.ToString().IndexOf("</head>", StringComparison.Ordinal) != -1 ||
@@ -159,7 +163,7 @@ namespace SS.CMS.Services
                     }
                 }
 
-                var bodyCodesHtml = pageInfo.BodyCodesHtml;
+                var bodyCodesHtml = PageInfo.BodyCodesHtml;
                 if (!string.IsNullOrEmpty(bodyCodesHtml))
                 {
                     if (contentBuilder.ToString().IndexOf("<body", StringComparison.Ordinal) != -1 ||
@@ -181,7 +185,7 @@ namespace SS.CMS.Services
                     }
                 }
 
-                var footCodesHtml = pageInfo.FootCodesHtml;
+                var footCodesHtml = PageInfo.FootCodesHtml;
                 if (!string.IsNullOrEmpty(footCodesHtml))
                 {
                     contentBuilder.Append(footCodesHtml + Constants.ReturnAndNewline);
@@ -189,18 +193,14 @@ namespace SS.CMS.Services
             }
         }
 
-        public async Task<string> AddStlErrorLogAsync(ParsePage pageInfo, string elementName, string stlContent, Exception ex)
+        public async Task<string> AddStlErrorLogAsync(string elementName, string stlContent, Exception ex)
         {
-            var summary = string.Empty;
-            if (pageInfo != null)
-            {
-                summary = $@"站点名称：{pageInfo.Site.SiteName}，
-模板类型：{pageInfo.Template.TemplateType.GetDisplayName()}，
-模板名称：{pageInfo.Template.TemplateName}
+            var summary = $@"站点名称：{PageInfo.Site.SiteName}，
+模板类型：{PageInfo.Template.TemplateType.GetDisplayName()}，
+模板名称：{PageInfo.Template.TemplateName}
 <br />";
-            }
 
-            summary += $@"STL标签：{WebUtils.HtmlEncode(stlContent)}";
+            summary += $@"STL标签：{StringUtils.HtmlEncode(stlContent)}";
             await DatabaseManager.ErrorLogRepository.AddErrorLogAsync(new ErrorLog
             {
                 Id = 0,
@@ -209,7 +209,6 @@ namespace SS.CMS.Services
                 Message = ex.Message,
                 StackTrace = ex.StackTrace,
                 Summary = summary,
-                AddDate = DateTime.Now
             });
 
             return $@"

@@ -9,11 +9,11 @@ namespace SS.CMS.Services
 {
     public partial class DatabaseManager
     {
-        public async Task<(bool success, string errorMessage)> InstallAsync(string userName, string password, string email, string mobile)
+        public async Task<(bool success, string errorMessage)> InstallAsync(IPluginManager pluginManager, string userName, string password, string email, string mobile)
         {
             try
             {
-                await SyncDatabaseAsync();
+                await SyncDatabaseAsync(pluginManager);
 
                 var administrator = new Administrator
                 {
@@ -51,7 +51,7 @@ namespace SS.CMS.Services
             }
         }
 
-        public async Task SyncDatabaseAsync()
+        public async Task SyncDatabaseAsync(IPluginManager pluginManager)
         {
             //CacheUtils.ClearAll();
 
@@ -65,7 +65,7 @@ namespace SS.CMS.Services
 
             await SyncSystemTablesAsync(GetAllRepositories());
 
-            await SyncContentTablesAsync();
+            await SyncContentTablesAsync(pluginManager);
 
             await UpdateConfigVersionAsync();
         }
@@ -104,9 +104,9 @@ namespace SS.CMS.Services
             }
         }
 
-        public async Task SyncContentTablesAsync()
+        public async Task SyncContentTablesAsync(IPluginManager pluginManager)
         {
-            var tableNameList = await SiteRepository.GetAllTableNamesAsync();
+            var tableNameList = await SiteRepository.GetAllTableNamesAsync(pluginManager);
 
             foreach (var tableName in tableNameList)
             {

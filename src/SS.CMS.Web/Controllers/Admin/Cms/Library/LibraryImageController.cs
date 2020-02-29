@@ -160,7 +160,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
 
             var libraryGroup = new LibraryGroup
             {
-                Type = LibraryType.Image,
+                LibraryType = LibraryType.Image,
                 GroupName = group.Name
             };
             libraryGroup.Id = await _libraryGroupRepository.InsertAsync(libraryGroup);

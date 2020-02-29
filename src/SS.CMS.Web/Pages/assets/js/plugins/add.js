@@ -62,7 +62,7 @@ var methods = {
   btnUploadClick: function () {
     utils.openLayer({
       title: '离线安装插件',
-      url: 'addLayerUpload.cshtml',
+      url: utils.getPluginsUrl('addLayerUpload'),
       full: true
     });
   }

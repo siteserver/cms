@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SqlKata;
-using SS.CMS.Core;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Repositories
 {
@@ -147,12 +144,12 @@ namespace SS.CMS.Repositories
             return startNum <= 1 ? GetStlDataSourceByContentNumAndWhereString(tableName, totalNum, sqlWhereString, orderByString) : GetStlDataSourceByStartNum(tableName, startNum, totalNum, sqlWhereString, orderByString);
         }
 
-        private async Task<List<ContentSummary>> GetContentsDataSourceAsync(IDatabaseManager databaseManager, Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        private async Task<List<ContentSummary>> GetContentsDataSourceAsync(IDatabaseManager databaseManager, IPluginManager pluginManager, Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
             if (!await _channelRepository.IsExistsAsync(channelId)) return null;
 
-            var nodeInfo = await _channelRepository.GetAsync(channelId);
-            var tableName = await _channelRepository.GetTableNameAsync(site, nodeInfo);
+            var channel = await _channelRepository.GetAsync(channelId);
+            var tableName = _channelRepository.GetTableName(site, channel);
 
             var where = string.Empty;
             if (isRelatedContents && contentId > 0)
@@ -160,7 +157,7 @@ namespace SS.CMS.Repositories
                 where = $"ID <> {contentId}";
             }
 
-            var sqlWhereString = await PluginManager.IsExistsAsync(nodeInfo.ContentModelPluginId)
+            var sqlWhereString = await pluginManager.IsExistsAsync(channel.ContentModelPluginId)
                 ? GetStlWhereString(site.Id, groupContent, groupContentNot,
                     tags, isTopExists, isTop, where)
                 : GetStlWhereString(site.Id, groupContent,
@@ -168,13 +165,13 @@ namespace SS.CMS.Repositories
                     isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
                     where);
 
-            var channelIdList = await _channelRepository.GetChannelIdsAsync(nodeInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
+            var channelIdList = await _channelRepository.GetChannelIdsAsync(channel, scopeType, groupChannel, groupChannelNot, string.Empty);
             return await GetStlDataSourceCheckedAsync(databaseManager, channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
         }
 
-        public async Task<List<ContentSummary>> GetMinContentInfoListAsync(IDatabaseManager databaseManager, Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        public async Task<List<ContentSummary>> GetMinContentInfoListAsync(IDatabaseManager databaseManager, IPluginManager pluginManager, Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
-            var dataSource = await GetContentsDataSourceAsync(databaseManager, site, channelId, contentId, groupContent, groupContentNot, tags,
+            var dataSource = await GetContentsDataSourceAsync(databaseManager, pluginManager, site, channelId, contentId, groupContent, groupContentNot, tags,
                 isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isRelatedContents, startNum,
                 totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot,
                 isColorExists, isColor, scopeType, groupChannel, groupChannelNot, others);
@@ -201,7 +198,7 @@ namespace SS.CMS.Repositories
             if (!await _channelRepository.IsExistsAsync(channelId)) return null;
 
             var channel = await _channelRepository.GetAsync(channelId);
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
 
             var query = GetQuery(site.Id)
                 .Select(nameof(ContentSummary.Id), nameof(ContentSummary.ChannelId), nameof(ContentSummary.Checked))

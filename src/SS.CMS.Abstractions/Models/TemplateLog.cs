@@ -14,9 +14,6 @@ namespace SS.CMS.Abstractions
         public int SiteId { get; set; }
 
         [DataColumn]
-        public DateTime AddDate { get; set; }
-
-        [DataColumn]
         public int AdminId { get; set; }
 
         [DataColumn]

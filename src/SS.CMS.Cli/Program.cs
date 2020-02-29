@@ -8,7 +8,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
 using SS.CMS.Cli.Services;
 using SS.CMS.Cli.Updater;
-using SS.CMS.Core;
 using SS.CMS.Extensions;
 
 namespace SS.CMS.Cli

@@ -81,7 +81,7 @@ namespace SS.CMS.Web.Controllers.Admin
 
                         allSiteMenus.Add(new Tab
                         {
-                            Href = PageUtils.GetMainUrl(site.Id),
+                            Href = $"{_pathManager.GetAdminUrl()}?siteId={site.Id}",
                             Target = "_top",
                             Text = site.SiteName
                         });

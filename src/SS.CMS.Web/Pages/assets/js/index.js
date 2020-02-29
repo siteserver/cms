@@ -47,7 +47,7 @@ var methods = {
   openPageCreateStatus() {
     utils.openLayer({
       title: '生成进度查看',
-      url: utils.pageCmsUrl('createStatus', {siteId: this.siteId}),
+      url: utils.getCmsUrl('createStatus', {siteId: this.siteId}),
       full: true
     });
     return false;

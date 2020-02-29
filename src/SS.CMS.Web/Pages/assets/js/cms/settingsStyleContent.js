@@ -82,14 +82,22 @@ var methods = {
   btnEditClick: function (attributeName) {
     utils.openLayer({
       title: '编辑字段',
-      url: '../shared/tableStyleLayerEditor.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
+      url: utils.getSharedUrl('tableStyleLayerEditor', {
+        tableName: this.tableName,
+        relatedIdentities: this.relatedIdentities,
+        attributeName: attributeName
+      })
     });
   },
 
   btnValidateClick: function (attributeName) {
     utils.openLayer({
       title: '设置验证规则',
-      url: '../shared/tableStyleLayerValidate.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
+      url: utils.getSharedUrl('tableStyleLayerValidate', {
+        tableName: this.tableName,
+        relatedIdentities: this.relatedIdentities,
+        attributeName: attributeName
+      })
     });
   },
 
@@ -120,14 +128,20 @@ var methods = {
   btnAddClick: function () {
     utils.openLayer({
       title: '新增字段',
-      url: '../shared/tableStyleLayerEditor.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities
+      url: utils.getSharedUrl('tableStyleLayerEditor', {
+        tableName: this.tableName,
+        relatedIdentities: this.relatedIdentities,
+      })
     });
   },
 
   btnAddMultipleClick: function () {
     utils.openLayer({
       title: '批量新增字段',
-      url: '../shared/tableStyleLayerAddMultiple.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities
+      url: utils.getSharedUrl('tableStyleLayerAddMultiple', {
+        tableName: this.tableName,
+        relatedIdentities: this.relatedIdentities,
+      })
     });
   },
 

@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Api.Preview;
 using SS.CMS.Core;
-using SS.CMS.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin
 {
@@ -92,13 +90,14 @@ namespace SS.CMS.Web.Controllers.Admin
                 if (request.SiteId != 0)
                 {
                     site = await _siteRepository.GetAsync(request.SiteId);
+
                     url = site.IsSeparatedWeb
-                        ? ApiRoutePreview.GetSiteUrl(request.SiteId)
+                        ? _pathManager.GetLocalSiteUrl(request.SiteId)
                         : await _pathManager.GetWebUrlAsync(site);
                 }
                 else
                 {
-                    url = PageUtils.ApplicationPath;
+                    url = _pathManager.WebUrl;
                 }
             }
 

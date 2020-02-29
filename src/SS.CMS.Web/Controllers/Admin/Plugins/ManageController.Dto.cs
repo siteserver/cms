@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Plugins;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Web.Controllers.Admin.Plugins
 {
@@ -9,7 +9,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         {
             public bool IsNightly { get; set; }
             public string PluginVersion { get; set; }
-            public List<PluginInstance> AllPackages { get; set; }
+            public List<IPluginInstance> AllPackages { get; set; }
             public string PackageIds { get; set; }
         }
     }

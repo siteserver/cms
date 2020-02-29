@@ -19,13 +19,15 @@ namespace SS.CMS.Cli.Services
 
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly OptionSet _options;
 
-        public InstallJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IConfigRepository configRepository)
+        public InstallJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IConfigRepository configRepository)
         {
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _configRepository = configRepository;
             _options = new OptionSet {
                 { "c|config-file=", "指定配置文件Web.config路径或文件名",
@@ -114,7 +116,7 @@ namespace SS.CMS.Cli.Services
 
             //WebConfigUtils.UpdateWebConfig(WebConfigUtils.IsProtectData, _settingsManager.Database.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.RedisConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory, StringUtils.GetShortGuid(), false);
 
-            await _databaseManager.InstallAsync(_userName, _password, string.Empty, string.Empty);
+            await _databaseManager.InstallAsync(_pluginManager, _userName, _password, string.Empty, string.Empty);
 
             await Console.Out.WriteLineAsync("恭喜，系统安装成功！");
         }

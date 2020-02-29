@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Quartz;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Core
 {

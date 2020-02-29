@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SS.CMS.Core;
 
 namespace SS.CMS.Repositories
@@ -33,18 +32,18 @@ namespace SS.CMS.Repositories
 
             content.LastEditDate = DateTime.Now;
 
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
             await repository.UpdateAsync(content, Q
                 .CachingRemove(GetListKey(repository.TableName, content.SiteId, content.ChannelId))
                 .CachingRemove(GetEntityKey(repository.TableName, content.Id))
             );
         }
 
-        public async Task SetAutoPageContentToSiteAsync(Site site)
+        public async Task SetAutoPageContentToSiteAsync(IPluginManager pluginManager,  Site site)
         {
             if (!site.IsAutoPageInTextEditor) return;
 
-            var tableNames = await _siteRepository.GetAllTableNamesAsync();
+            var tableNames = await _siteRepository.GetAllTableNamesAsync(pluginManager);
             foreach (var tableName in tableNames)
             {
                 var repository = GetRepository(tableName);
@@ -81,7 +80,7 @@ namespace SS.CMS.Repositories
                 query.OrderByDesc(attributeName);
             }
 
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
             var list = await repository.GetAllAsync<(int id, bool top)>(query);
             var taxis = 0;
             var topTaxis = TaxisIsTopStartValue;
@@ -110,7 +109,7 @@ namespace SS.CMS.Repositories
 
         public async Task<bool> SetTaxisToUpAsync(Site site, Channel channel, int contentId, bool isTop)
         {
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
 
             var taxis = await repository.GetAsync<int>(
                 GetQuery(site.Id, channel.Id)
@@ -158,7 +157,7 @@ namespace SS.CMS.Repositories
 
         public async Task<bool> SetTaxisToDownAsync(Site site, Channel channel, int contentId, bool isTop)
         {
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
 
             var taxis = await repository.GetAsync<int>(
                 GetQuery(site.Id, channel.Id)

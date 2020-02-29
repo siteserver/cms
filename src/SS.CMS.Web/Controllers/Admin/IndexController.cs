@@ -3,10 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Api.Preview;
 using SS.CMS.Core;
 using SS.CMS.Packaging;
-using SS.CMS.Plugins;
 using SS.CMS.Web.Controllers.Admin.Settings.Sites;
 using SS.CMS.Web.Extensions;
 
@@ -25,6 +23,7 @@ namespace SS.CMS.Web.Controllers.Admin
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
@@ -32,12 +31,13 @@ namespace SS.CMS.Web.Controllers.Admin
         private readonly IContentRepository _contentRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public IndexController(ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public IndexController(ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _createManager = createManager;
             _pathManager = pathManager;
+            _pluginManager = pluginManager;
             _configRepository = configRepository;
             _administratorRepository = administratorRepository;
             _siteRepository = siteRepository;
@@ -87,7 +87,7 @@ namespace SS.CMS.Web.Controllers.Admin
                     return new GetResult
                     {
                         Value = false,
-                        RedirectUrl = PageUtils.GetMainUrl(adminInfo.SiteId)
+                        RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={adminInfo.SiteId}"
                     };
                 }
 
@@ -96,7 +96,7 @@ namespace SS.CMS.Web.Controllers.Admin
                     return new GetResult
                     {
                         Value = false,
-                        RedirectUrl = PageUtils.GetMainUrl(siteIdListWithPermissions[0])
+                        RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={siteIdListWithPermissions[0]}"
                     };
                 }
 
@@ -117,7 +117,7 @@ namespace SS.CMS.Web.Controllers.Admin
                 PackageUtils.PackageIdSsCms
             };
             var packageList = new List<object>();
-            var dict = await PluginManager.GetPluginIdAndVersionDictAsync();
+            var dict = await _pluginManager.GetPluginIdAndVersionDictAsync();
             foreach (var id in dict.Keys)
             {
                 packageIds.Add(id);
@@ -146,7 +146,7 @@ namespace SS.CMS.Web.Controllers.Admin
                 permissionList.AddRange(channelPermissions);
             }
 
-            var tabManager = new TabManager(_pathManager);
+            var tabManager = new TabManager(_pathManager, _pluginManager);
 
             var siteMenus =
                 await GetLeftMenusAsync(tabManager, site, Constants.TopMenu.IdSite, isSuperAdmin, permissionList);
@@ -157,12 +157,13 @@ namespace SS.CMS.Web.Controllers.Admin
             var config = await _configRepository.GetAsync();
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, false);
-            var previewUrl = ApiRoutePreview.GetSiteUrl(site.Id);
+
+            var previewUrl = _pathManager.GetLocalSiteUrl(site.Id);
 
             return new GetResult
             {
                 Value = true,
-                DefaultPageUrl = await PluginMenuManager.GetSystemDefaultPageUrlAsync(request.SiteId) ?? _pathManager.GetAdminUrl(DashboardController.Route),
+                DefaultPageUrl = await _pluginManager.GetSystemDefaultPageUrlAsync(request.SiteId) ?? _pathManager.GetAdminUrl(DashboardController.Route),
                 IsNightly = _settingsManager.IsNightlyUpdate,
                 ProductVersion = _settingsManager.ProductVersion,
                 PluginVersion = _settingsManager.PluginVersion,

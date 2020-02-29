@@ -7,7 +7,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
-using SS.CMS.Api.Stl;
 using Content = SS.CMS.Abstractions.Content;
 
 namespace SS.CMS.StlParser.StlElement
@@ -269,8 +268,8 @@ namespace SS.CMS.StlParser.StlElement
             await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-            var apiUrl = ApiRouteActionsPageContents.GetUrl(pageInfo.ApiUrl);
-            var apiParameters = ApiRouteActionsPageContents.GetParameters(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.Template.Id, totalNum, pageCount, currentPageIndex, StlPageContentsElement);
+            var apiUrl = ParseManager.PathManager.GetPageContentsApiUrl(pageInfo.ApiUrl);
+            var apiParameters = ParseManager.PathManager.GetPageContentsApiParameters(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.Template.Id, totalNum, pageCount, currentPageIndex, StlPageContentsElement);
 
             var builder = new StringBuilder();
             builder.Append($@"<div id=""{ajaxDivId}"">");

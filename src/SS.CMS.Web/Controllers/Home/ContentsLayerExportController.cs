@@ -7,7 +7,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
 using SS.CMS.Core.Office;
-using SS.CMS.Plugins;
 using SS.CMS.Core.Serialization;
 
 namespace SS.CMS.Web.Controllers.Home
@@ -19,15 +18,17 @@ namespace SS.CMS.Web.Controllers.Home
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerExportController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerExportController(IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
+            _pluginManager = pluginManager;
             _databaseManager = databaseManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
@@ -50,7 +51,7 @@ namespace SS.CMS.Web.Controllers.Home
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(auth.AdminPermissions, site, request.SiteId);
@@ -83,10 +84,10 @@ namespace SS.CMS.Web.Controllers.Home
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
-            var pluginIds = PluginContentManager.GetContentPluginIds(channel);
-            var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
+            var pluginIds = _pluginManager.GetContentPluginIds(channel);
+            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
 
             var contentInfoList = new List<Content>();
             var ccIds = await _contentRepository.GetSummariesAsync(site, channel, true);
@@ -141,11 +142,11 @@ namespace SS.CMS.Web.Controllers.Home
                     {
                         var fileName = $"{channel.ChannelName}.zip";
                         var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-                        var exportObject = new ExportObject(_pathManager, _databaseManager, site);
+                        var exportObject = new ExportObject(_pathManager, _databaseManager, _pluginManager, site);
                         contentInfoList.Reverse();
                         if (exportObject.ExportContents(filePath, contentInfoList))
                         {
-                            downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
+                            downloadUrl = _pathManager.GetTemporaryFilesUrl(fileName);
                         }
                     }
                     else if (request.ExportType == "excel")
@@ -153,10 +154,10 @@ namespace SS.CMS.Web.Controllers.Home
                         var fileName = $"{channel.ChannelName}.csv";
                         var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-                        var excelObject = new ExcelObject(_databaseManager);
+                        var excelObject = new ExcelObject(_databaseManager, _pluginManager);
 
                         await excelObject.CreateExcelFileForContentsAsync(filePath, site, channel, contentInfoList, request.ColumnNames);
-                        downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
+                        downloadUrl = _pathManager.GetTemporaryFilesUrl(fileName);
                     }
                 }
             }

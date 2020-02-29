@@ -86,14 +86,14 @@
     
         <!-- Others -->
         <template v-else>
-          <span v-html="content.getValue(column.attributeName)"></span>
+          <span v-html="content.getEntityValue(column.attributeName)"></span>
         </template>
     
       </el-form-item>
     </el-form>
   </el-tab-pane>
   <el-tab-pane v-for="editorColumn in editorColumns" :key="editorColumn.attributeName" :label="editorColumn.displayName" :name="editorColumn.attributeName">
-    <div v-html="content.getValue(editorColumn.attributeName)"></div>
+    <div v-html="content.getEntityValue(editorColumn.attributeName)"></div>
   </el-tab-pane>
 </el-tabs>
 

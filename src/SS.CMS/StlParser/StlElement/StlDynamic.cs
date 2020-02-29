@@ -6,9 +6,6 @@ using SS.CMS.StlParser.StlEntity;
 using SS.CMS.StlParser.Utility;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions.Parse;
-using SS.CMS.Api.Stl;
-using SS.CMS.Core;
-using SS.CMS.Services;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -120,7 +117,7 @@ namespace SS.CMS.StlParser.StlElement
                 OnError = onError
             };
 
-            return dynamicInfo.GetScript(ApiRouteActionsDynamic.GetUrl(parseManager.PageInfo.ApiUrl), inline);
+            return dynamicInfo.GetScript(parseManager.PathManager.GetDynamicApiUrl(parseManager.PageInfo.ApiUrl), inline);
         }
 
         internal static async Task<string> ParseDynamicElementAsync(string stlElement, IParseManager parseManager)
@@ -136,13 +133,11 @@ namespace SS.CMS.StlParser.StlElement
 
             var templateInfo = await databaseManager.TemplateRepository.GetAsync(dynamicInfo.TemplateId);
             var siteInfo = await databaseManager.SiteRepository.GetAsync(dynamicInfo.SiteId);
-            var pageInfo = ParsePage.GetPageInfo(parseManager.PathManager, parseManager.PageInfo.Config, dynamicInfo.ChannelId, dynamicInfo.ContentId, siteInfo,
-                templateInfo, new Dictionary<string, object>());
 
-            pageInfo.UniqueId = 1000;
-            pageInfo.User = dynamicInfo.User;
+            await parseManager.InitAsync(siteInfo, dynamicInfo.ChannelId, dynamicInfo.ContentId, templateInfo);
 
-            var contextInfo = new ParseContext(pageInfo);
+            parseManager.PageInfo.UniqueId = 1000;
+            parseManager.PageInfo.User = dynamicInfo.User;
 
             var templateContent = StlRequestEntities.ParseRequestEntities(dynamicInfo.QueryString, template);
             var contentBuilder = new StringBuilder(templateContent);
@@ -167,7 +162,7 @@ namespace SS.CMS.StlParser.StlElement
                         var pageHtml = await pageContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                         contentBuilder.Replace(stlPageContentsElementReplaceString, pageHtml);
 
-                        await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
+                        await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
 
                         break;
                     }
@@ -190,7 +185,7 @@ namespace SS.CMS.StlParser.StlElement
                     var pageHtml = await pageChannelsElementParser.ParseAsync(currentPageIndex, pageCount);
                     contentBuilder.Replace(stlPageChannelsElementReplaceString, pageHtml);
 
-                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
+                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
 
                     break;
                 }
@@ -212,7 +207,7 @@ namespace SS.CMS.StlParser.StlElement
                     var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                     contentBuilder.Replace(stlPageSqlContentsElementReplaceString, pageHtml);
 
-                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
+                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
 
                     break;
                 }
@@ -228,7 +223,7 @@ namespace SS.CMS.StlParser.StlElement
                 {
                     if (currentPageIndex != pageIndex) continue;
 
-                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, pageInfo, stlElementList, currentPageIndex, pageCount, totalNum, false, pageContentsAjaxDivId);
+                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, stlElementList, currentPageIndex, pageCount, totalNum, false, pageContentsAjaxDivId);
 
                     break;
                 }

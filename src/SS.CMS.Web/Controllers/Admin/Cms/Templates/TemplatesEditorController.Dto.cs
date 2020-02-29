@@ -43,7 +43,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 			}
 			else if (template.TemplateType == TemplateType.IndexPageTemplate)
 			{
-				if (template.Default)
+				if (template.DefaultTemplate)
 				{
 					await _createManager.CreateChannelAsync(template.SiteId, template.SiteId);
 				}
@@ -112,7 +112,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 						RelatedFileName = template.RelatedFileName,
 						CreatedFileFullName = template.CreatedFileFullName,
 						CreatedFileExtName = template.CreatedFileExtName,
-                        Default = template.Default
+                        DefaultTemplate = template.DefaultTemplate
 					};
 				}
 
@@ -153,7 +153,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 					RelatedFileName = request.RelatedFileName + request.CreatedFileExtName,
 					CreatedFileExtName = request.CreatedFileExtName,
 					CreatedFileFullName = request.CreatedFileFullName + request.CreatedFileExtName,
-                    Default = false
+                    DefaultTemplate = false
 				};
 
 				template.Id = await _templateRepository.InsertAsync(_pathManager, site, template, request.Content, _authManager.AdminId);
@@ -175,7 +175,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             {
                 Id = templateInfo.Id,
                 SiteId = site.Id,
-                Default = templateInfo.Default,
+                DefaultTemplate = templateInfo.DefaultTemplate,
                 TemplateType = templateInfo.TemplateType,
                 TemplateName = templateInfo.TemplateName
             };

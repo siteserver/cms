@@ -12,15 +12,6 @@ namespace SS.CMS.Core
     {
         public const string UnClickableUrl = "javascript:;";
 
-        public static string ParseNavigationUrl(string url)
-        {
-            if (string.IsNullOrEmpty(url)) return string.Empty;
-
-            url = url.StartsWith("~") ? Combine(ApplicationPath, url.Substring(1)) : url;
-            url = url.Replace(PathUtils.SeparatorChar, Constants.PageSeparatorChar);
-            return url;
-        }
-
         public static string AddProtocolToUrl(string url)
         {
             return AddProtocolToUrl(url, string.Empty);
@@ -90,13 +81,7 @@ namespace SS.CMS.Core
             return url.StartsWith("/") || url.IndexOf("://", StringComparison.Ordinal) != -1 || url.StartsWith("javascript:");
         }
 
-        public const string ApplicationPath = "/";
-
-        // 系统根目录访问地址
-        public static string GetRootUrl(string relatedUrl)
-        {
-            return Combine(ApplicationPath, relatedUrl);
-        }
+        
 
         //public static string HttpContextRootDomain
         //{
@@ -329,85 +314,6 @@ namespace SS.CMS.Core
             newValue = HttpUtility.UrlEncode(newValue);
             newValue = newValue.Replace("%2f", "/");
             return newValue;
-        }
-
-        public static string UrlDecode(string urlString)
-        {
-            return HttpUtility.UrlDecode(urlString);
-        }
-
-        public static string GetMainUrl(int siteId)
-        {
-            return GetAdminUrl($"?siteId={siteId}");
-        }
-
-        public static string GetAdminUrl(string relatedUrl)
-        {
-            return Combine(ApplicationPath, GlobalSettings.SettingsManager.AdminDirectory, relatedUrl);
-        }
-
-        public static string GetHomeUrl(string relatedUrl)
-        {
-            return Combine(ApplicationPath, GlobalSettings.SettingsManager.HomeDirectory, relatedUrl);
-        }
-
-        public static string GetSiteFilesUrl(string relatedUrl)
-        {
-            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
-        }
-
-        public static string GetTemporaryFilesUrl(string relatedUrl)
-        {
-            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
-        }
-
-        public static string GetSiteTemplatesUrl(string relatedUrl)
-        {
-            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
-        }
-
-
-        public static string ParsePluginUrl(string pluginId, string url)
-        {
-            if (string.IsNullOrEmpty(url)) return string.Empty;
-
-            if (IsProtocolUrl(url)) return url;
-
-            if (StringUtils.StartsWith(url, "~/"))
-            {
-                return GetRootUrl(url.Substring(1));
-            }
-
-            if (StringUtils.StartsWith(url, "@/"))
-            {
-                return GetAdminUrl(url.Substring(1));
-            }
-
-            return GetSiteFilesUrl(Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
-        }
-
-        public static string GetRootUrlByPhysicalPath(string physicalPath)
-        {
-            var requestPath = PathUtils.GetPathDifference(GlobalSettings.SettingsManager.WebRootPath, physicalPath);
-            requestPath = requestPath.Replace(PathUtils.SeparatorChar, Constants.PageSeparatorChar);
-            return GetRootUrl(requestPath);
-        }
-
-        public static string ParseConfigRootUrl(string url)
-        {
-            return ParseNavigationUrl(url);
-        }
-
-        public static bool IsVirtualUrl(string url)
-        {
-            if (!string.IsNullOrEmpty(url))
-            {
-                if (url.StartsWith("~") || url.StartsWith("@"))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }

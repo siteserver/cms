@@ -13,9 +13,9 @@ namespace SS.CMS.Core
         private FileSystemWatcher _fileSystemWatcher;
         private readonly string _cacheFilePath;
 
-        public FileWatcherClass(string cacheName)
+        public FileWatcherClass(ISettingsManager settingsManager, string cacheName)
         {
-            _cacheFilePath = PathUtils.Combine(GlobalSettings.SettingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, "Cache", $"{cacheName}.txt");
+            _cacheFilePath = PathUtils.Combine(settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, "Cache", $"{cacheName}.txt");
 
             FileDependency();
         }

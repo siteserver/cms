@@ -5,13 +5,14 @@ namespace SS.CMS.Abstractions
 {
     public partial interface IPathManager : IService
     {
-        string ApplicationPath { get; }
+        string ContentRootPath { get; }
+        string WebRootPath { get; }
+
+        string WebUrl { get; }
 
         string GetWebUrl(params string[] paths);
 
         string GetWebPath(params string[] paths);
-
-        string GetApiUrl(string route);
 
         string GetAdminPath(params string[] paths);
 
@@ -23,6 +24,6 @@ namespace SS.CMS.Abstractions
 
         Task<string> GetAssetsUrlAsync(Site site);
 
-        string GetApiUrl(Config config);
+        string MapPath(string virtualPath);
     }
 }

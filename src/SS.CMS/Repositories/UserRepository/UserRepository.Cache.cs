@@ -109,8 +109,7 @@ namespace SS.CMS.Repositories
             {
                 return true;
             }
-            var obj = CacheUtils.Get($"SS.CMS.Provider.UserRepository.Insert.IpAddress.{ipAddress}");
-            return obj == null;
+            return CacheUtils.Exists($"SS.CMS.Provider.UserRepository.Insert.IpAddress.{ipAddress}");
         }
 
         public async Task CacheIpAddressAsync(string ipAddress)
@@ -122,47 +121,7 @@ namespace SS.CMS.Repositories
             }
         }
 
-        public string GetHomeUploadPath(params string[] paths)
-        {
-            var path = WebUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Home, PathUtils.Combine(paths));
-            DirectoryUtils.CreateDirectoryIfNotExists(path);
-            return path;
-        }
-
-        public string GetUserUploadPath(int userId, string relatedPath)
-        {
-            return GetHomeUploadPath(userId.ToString(), relatedPath);
-        }
-
-        public string GetUserUploadFileName(string filePath)
-        {
-            var dt = DateTime.Now;
-            return $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}{PathUtils.GetExtension(filePath)}";
-        }
-
-        public string GetHomeUploadUrl(params string[] paths)
-        {
-            return PageUtils.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Home, PageUtils.Combine(paths)));
-        }
-
-        public string DefaultAvatarUrl => GetHomeUploadUrl("default_avatar.png");
-
-        public string GetUserUploadUrl(int userId, string relatedUrl)
-        {
-            return GetHomeUploadUrl(userId.ToString(), relatedUrl);
-        }
-
-        public string GetUserAvatarUrl(User user)
-        {
-            var imageUrl = user?.AvatarUrl;
-
-            if (!string.IsNullOrEmpty(imageUrl))
-            {
-                return PageUtils.IsProtocolUrl(imageUrl) ? imageUrl : GetUserUploadUrl(user.Id, imageUrl);
-            }
-
-            return DefaultAvatarUrl;
-        }
+        
 
         public async Task<string> GetDisplayAsync(int userId)
         {

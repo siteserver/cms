@@ -42,7 +42,7 @@ namespace SS.CMS.Repositories
         {
             var summaries = await GetSummariesAsync(siteId);
             var summary = summaries
-                .FirstOrDefault(x => x.TemplateType == templateType && x.Default);
+                .FirstOrDefault(x => x.TemplateType == templateType && x.DefaultTemplate);
             return summary != null ? await GetAsync(summary.Id) : new Template
             {
                 SiteId = siteId,
@@ -54,7 +54,7 @@ namespace SS.CMS.Repositories
         {
             var summaries = await GetSummariesAsync(siteId);
             var summary = summaries
-                .FirstOrDefault(x => x.TemplateType == templateType && x.Default);
+                .FirstOrDefault(x => x.TemplateType == templateType && x.DefaultTemplate);
             return summary?.Id ?? 0;
         }
 

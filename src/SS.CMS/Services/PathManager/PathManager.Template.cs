@@ -40,7 +40,6 @@ namespace SS.CMS.Services
                     Id = 0,
                     TemplateId = template.Id,
                     SiteId = template.SiteId,
-                    AddDate = DateTime.Now,
                     AdminId = adminId,
                     ContentLength = content.Length,
                     TemplateContent = content
@@ -73,7 +72,7 @@ namespace SS.CMS.Services
                     content = await FileUtils.ReadTextAsync(filePath);
                 }
 
-                CacheUtils.Insert(filePath, content, TimeSpan.FromHours(12), filePath);
+                CacheUtils.Insert(filePath, content, filePath);
                 return content;
             }
             catch

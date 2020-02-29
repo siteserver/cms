@@ -1,90 +1,106 @@
 using System;
-using CacheManager.Core;
+using System.IO;
+using Microsoft.Extensions.Caching.Memory;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Core
 {
     public static class CacheUtils
     {
         private const string CachePrefix = "CacheUtils";
-        private static readonly ICacheManager<object> Cache;
+        private static IMemoryCache _cache;
 
         static CacheUtils()
         {
-            Cache = CacheFactory.Build(settings => settings
-                .WithMicrosoftMemoryCacheHandle()
-                .WithExpiration(ExpirationMode.None, TimeSpan.Zero));
+            _cache = new MemoryCache(new MemoryCacheOptions());
         }
 
         public static void ClearAll()
         {
-            Cache.Clear();
+            _cache.Dispose();
+            _cache = new MemoryCache(new MemoryCacheOptions());
         }
 
         public static void Remove(string key)
         {
-            Cache.Remove(key);
+            _cache.Remove(key);
         }
 
         public static void Insert(string key, object obj)
         {
-            InnerInsert(key, obj, null, TimeSpan.Zero);
-        }
-
-        public static void Insert(string key, object obj, string filePath)
-        {
-            InnerInsert(key, obj, filePath, TimeSpan.Zero);
-        }
-
-        public static void Insert(string key, object obj, TimeSpan timeSpan, string filePath)
-        {
-            InnerInsert(key, obj, filePath, timeSpan);
+            InnerInsert(key, obj, TimeSpan.Zero);
         }
 
         public static void InsertHours(string key, object obj, int hours)
         {
-            InnerInsert(key, obj, null, TimeSpan.FromHours(hours));
+            InnerInsert(key, obj, TimeSpan.FromHours(hours));
         }
 
         public static void InsertMinutes(string key, object obj, int minutes)
         {
-            InnerInsert(key, obj, null, TimeSpan.FromMinutes(minutes));
+            InnerInsert(key, obj, TimeSpan.FromMinutes(minutes));
         }
 
-        private static void InnerInsert(string key, object obj, string filePath, TimeSpan timeSpan)
+        private static void InnerInsert(string key, object obj, TimeSpan timeSpan)
         {
-            if (Cache == null) return;
+            if (_cache == null) return;
 
-            //var cacheManager = await Caching.GetCacheManagerAsync();
-            //cacheManager.Add(new CacheItem<object>())
+            if (string.IsNullOrEmpty(key) || obj == null) return;
 
-            if (string.IsNullOrEmpty(key)) return;
-
-            Cache.Remove(key);
-            if (obj != null)
+            if (timeSpan == TimeSpan.Zero)
             {
-                var item = timeSpan != TimeSpan.Zero
-                    ? new CacheItem<object>(key, obj, ExpirationMode.Sliding, timeSpan)
-                    : new CacheItem<object>(key, obj);
-
-                Cache.Add(item);
-                //Cache.Insert(key, obj, string.IsNullOrEmpty(filePath) ? null : new CacheDependency(filePath), Cache.NoAbsoluteExpiration, timeSpan, CacheItemPriority.Normal, null);
+                _cache.Set(key, obj);
+            }
+            else
+            {
+                _cache.Set(key, obj, new MemoryCacheEntryOptions
+                {
+                    SlidingExpiration = timeSpan
+                });
             }
         }
 
-        public static object Get(string key)
+        public static void Insert(string key, object obj, string filePath)
         {
-            var item = Cache.GetCacheItem(key);
-            return item?.Value;
+            if (_cache == null) return;
+
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                var directoryPath = DirectoryUtils.GetDirectoryPath(filePath);
+                var fileName = PathUtils.GetFileName(filePath);
+                var watcher = new FileSystemWatcher
+                {
+                    Filter = fileName,
+                    Path = directoryPath,
+                    EnableRaisingEvents = true
+                };
+                watcher.Changed += (sender, e) =>
+                {
+                    _cache.Remove(key);
+                };
+                watcher.Renamed += (sender, e) =>
+                {
+                    _cache.Remove(key);
+                };
+                watcher.Deleted += (sender, e) =>
+                {
+                    _cache.Remove(key);
+                };
+                _cache.Set(key, obj, new MemoryCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromHours(12)
+                });
+            }
         }
 
         public static T Get<T>(string key) where T : class
         {
-            return Cache.Get(key) as T;
+            return _cache.TryGetValue(key, out T value) ? value : default;
         }
 
         public static bool Exists(string key)
         {
-            return Cache.Exists(key);
+            return _cache.TryGetValue(key, out _);
         }
 
         public static string GetCacheKey(string nameofClass, params string[] values)

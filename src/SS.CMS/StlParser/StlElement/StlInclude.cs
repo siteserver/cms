@@ -42,20 +42,17 @@ namespace SS.CMS.StlParser.StlElement
 
         private static async Task<string> ParseImplAsync(IParseManager parseManager, string file, Dictionary<string, string> parameters)
         {
-            var pageInfo = parseManager.PageInfo;
-            var contextInfo = parseManager.ContextInfo;
-
             if (string.IsNullOrEmpty(file)) return string.Empty;
 
-            var pageParameters = pageInfo.Parameters;
-            pageInfo.Parameters = parameters;
+            var pageParameters = parseManager.PageInfo.Parameters;
+            parseManager.PageInfo.Parameters = parameters;
 
-            var content = await parseManager.PathManager.GetIncludeContentAsync(pageInfo.Site, file);
+            var content = await parseManager.PathManager.GetIncludeContentAsync(parseManager.PageInfo.Site, file);
             var contentBuilder = new StringBuilder(content);
-            await parseManager.ParseTemplateContentAsync(contentBuilder, pageInfo, contextInfo);
+            await parseManager.ParseTemplateContentAsync(contentBuilder);
             var parsedContent = contentBuilder.ToString();
 
-            pageInfo.Parameters = pageParameters;
+            parseManager.PageInfo.Parameters = pageParameters;
 
             return parsedContent;
         }

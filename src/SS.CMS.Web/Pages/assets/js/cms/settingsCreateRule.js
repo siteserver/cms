@@ -89,7 +89,10 @@ var methods = {
   },
 
   getChannelUrl: function(data) {
-    return '../redirect.cshtml?siteId=' + this.siteId + '&channelId=' + data.value;
+    return utils.getRootUrl('redirect', {
+      siteId: this.siteId,
+      channelId: data.value
+    });
   },
 
   filterNode: function(value, data) {
@@ -107,8 +110,12 @@ var methods = {
   },
 
   btnSetClick: function(channelId, isChannel, rule) {
-    var url = 'settingsCreateRuleLayerSet.cshtml?siteId=' + this.siteId + '&isChannel=' + isChannel + '&channelId=' + channelId + '&rule=' + encodeURIComponent(rule);
-
+    var url = utils.getCmsUrl('settingsCreateRuleLayerSet', {
+      siteId: this.siteId,
+      isChannel: isChannel,
+      channelId: channelId,
+      rule: rule
+    });
     utils.openLayer({
       title: '构造',
       url: url,

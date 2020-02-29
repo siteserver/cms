@@ -282,7 +282,7 @@ selObj.selectedIndex=0;
 
                             if (nodeInfo != null)
                             {
-                                var title = WebUtils.MaxLengthText(nodeInfo.ChannelName, titleWordNum);
+                                var title = StringUtils.MaxLengthText(nodeInfo.ChannelName, titleWordNum);
                                 var url = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, nodeInfo, pageInfo.IsLocal);
                                 if (!string.IsNullOrEmpty(queryString))
                                 {
@@ -295,14 +295,14 @@ selObj.selectedIndex=0;
                 }
                 else
                 {
-                    var minContentInfoList = await databaseManager.ContentRepository.GetMinContentInfoListAsync(parseManager.DatabaseManager, pageInfo.Site, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
+                    var minContentInfoList = await databaseManager.ContentRepository.GetMinContentInfoListAsync(parseManager.DatabaseManager, parseManager.PluginManager, pageInfo.Site, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
 
                     if (minContentInfoList != null)
                     {
                         foreach (var minContentInfo in minContentInfoList)
                         {
                             var contentInfo = await databaseManager.ContentRepository.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
-                            var title = WebUtils.MaxLengthText(contentInfo.Title, titleWordNum);
+                            var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
                             var url = await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, false);
                             if (!string.IsNullOrEmpty(queryString))
                             {

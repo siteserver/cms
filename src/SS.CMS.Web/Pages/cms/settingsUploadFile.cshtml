@@ -6,9 +6,9 @@
   text-color="#fff"
   active-text-color="#ffd04b"
 >
-  <el-menu-item index="1"><el-link :underline="false" :href="'settingsUploadImage.cshtml?siteId=' + siteId">图片上传设置</el-link></el-menu-item>
-  <el-menu-item index="2"><el-link :underline="false" :href="'settingsUploadVideo.cshtml?siteId=' + siteId">视频上传设置</el-link></el-menu-item>
-  <el-menu-item index="3"><el-link :underline="false" :href="'settingsUploadFile.cshtml?siteId=' + siteId">附件上传设置</el-link></el-menu-item>
+  <el-menu-item index="1"><el-link :underline="false" :href="utils.getCmsUrl('settingsUploadImage', {siteId: siteId})">图片上传设置</el-link></el-menu-item>
+  <el-menu-item index="2"><el-link :underline="false" :href="utils.getCmsUrl('settingsUploadVideo', {siteId: siteId})">视频上传设置</el-link></el-menu-item>
+  <el-menu-item index="3"><el-link :underline="false" :href="utils.getCmsUrl('settingsUploadFile', {siteId: siteId})">附件上传设置</el-link></el-menu-item>
 </el-menu>
 
 <el-card>

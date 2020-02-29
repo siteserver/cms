@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using Datory;
 using Newtonsoft.Json;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
 
 namespace SS.CMS.Cli.Updater
 {

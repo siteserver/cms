@@ -7,7 +7,7 @@ namespace SS.CMS.Abstractions
     public class LibraryGroup : Entity
     {
         [DataColumn]
-        public LibraryType Type { get; set; }
+        public LibraryType LibraryType { get; set; }
 
         [DataColumn]
         public string GroupName { get; set; }

@@ -3,9 +3,9 @@
   "IsProtectData": false,
   "AdminDirectory": "siteserver",
   "HomeDirectory": "home",
-  "SecurityKey": "f67ab144ec93fe61",
+  "SecurityKey": "",
   "Database": {
-    "Type": "MySql",
+    "Type": "SQLite",
     "ConnectionString": ""
   },
   "Redis": {

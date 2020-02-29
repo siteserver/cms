@@ -61,7 +61,7 @@ namespace SS.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(RootUrl, attributeName))//系统根目录地址
                 {
-                    parsedContent = PageUtils.ParseConfigRootUrl("~");
+                    parsedContent = parseManager.PathManager.ParseNavigationUrl("~");
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
                         parsedContent = parsedContent.TrimEnd('/');
@@ -98,25 +98,25 @@ namespace SS.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(HomeUrl, attributeName))//用户中心地址
                 {
-                    parsedContent = PageUtils.GetHomeUrl(string.Empty).TrimEnd('/');
+                    parsedContent = parseManager.PathManager.GetHomeUrl(string.Empty).TrimEnd('/');
                 }
                 else if (StringUtils.EqualsIgnoreCase(LoginUrl, attributeName))
                 {
                     var contentInfo = await parseManager.GetContentAsync();
                     var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
-                    parsedContent = PageUtils.GetHomeUrl($"pages/login.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    parsedContent = parseManager.PathManager.GetHomeUrl($"pages/login.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.EqualsIgnoreCase(LogoutUrl, attributeName))
                 {
                     var contentInfo = await parseManager.GetContentAsync();
                     var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
-                    parsedContent = PageUtils.GetHomeUrl($"pages/logout.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    parsedContent = parseManager.PathManager.GetHomeUrl($"pages/logout.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.EqualsIgnoreCase(RegisterUrl, attributeName))
                 {
                     var contentInfo = await parseManager.GetContentAsync();
                     var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
-                    parsedContent = PageUtils.GetHomeUrl($"pages/register.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    parsedContent = parseManager.PathManager.GetHomeUrl($"pages/register.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "TableFor"))//
                 {
@@ -145,11 +145,13 @@ namespace SS.CMS.StlParser.StlEntity
 
                             if (styleInfo.Id > 0)
                             {
+                                var inputParser = new InputParserManager(parseManager.PathManager);
+
                                 parsedContent = InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image,
                                     InputType.File)
                                     ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent,
                                         pageInfo.IsLocal)
-                                    : await InputParserUtility.GetContentByTableStyleAsync(parseManager.PathManager, parsedContent, string.Empty, pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty,
+                                    : await inputParser.GetContentByTableStyleAsync(parsedContent, string.Empty, pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty,
                                         true);
                             }
                             else

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Plugins.Impl;
+using SS.CMS.Core.Plugins;
 
 namespace SS.CMS.Services
 {
@@ -12,40 +12,30 @@ namespace SS.CMS.Services
         private readonly HttpContext _context;
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
-        private readonly IConfigRepository _configRepository;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly IAdministratorRepository _administratorRepository;
-        private readonly IAdministratorsInRolesRepository _administratorsInRolesRepository;
-        private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
         private readonly IUserRepository _userRepository;
         private readonly IUserGroupRepository _userGroupRepository;
         private readonly ILogRepository _logRepository;
         private readonly ISiteLogRepository _siteLogRepository;
         private readonly IUserLogRepository _userLogRepository;
-        private readonly ISitePermissionsRepository _sitePermissionsRepository;
-        private readonly IRoleRepository _roleRepository;
-        private readonly ISiteRepository _siteRepository;
-        private readonly IChannelRepository _channelRepository;
 
-        public AuthManager(IHttpContextAccessor context, ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IUserRepository userRepository, IUserGroupRepository userGroupRepository, ILogRepository logRepository, ISiteLogRepository siteLogRepository, IUserLogRepository userLogRepository, ISitePermissionsRepository sitePermissionsRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public AuthManager(IHttpContextAccessor context, ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IUserRepository userRepository, IUserGroupRepository userGroupRepository, ILogRepository logRepository, ISiteLogRepository siteLogRepository, IUserLogRepository userLogRepository)
         {
             _context = context.HttpContext;
             _settingsManager = settingsManager;
             _pathManager = pathManager;
-            _configRepository = configRepository;
+            _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _accessTokenRepository = accessTokenRepository;
             _administratorRepository = administratorRepository;
-            _administratorsInRolesRepository = administratorsInRolesRepository;
-            _permissionsInRolesRepository = permissionsInRolesRepository;
             _userRepository = userRepository;
             _userGroupRepository = userGroupRepository;
             _logRepository = logRepository;
             _siteLogRepository = siteLogRepository;
             _userLogRepository = userLogRepository;
-            _sitePermissionsRepository = sitePermissionsRepository;
-            _roleRepository = roleRepository;
-            _siteRepository = siteRepository;
-            _channelRepository = channelRepository;
         }
 
         public async Task<IAuthManager> GetApiAsync()
@@ -233,13 +223,13 @@ namespace SS.CMS.Services
             await _logRepository.AddAdminLogAsync(Administrator, action);
         }
 
-        private PermissionsImpl _userPermissionsImpl;
+        private IPermissions _userPermissions;
 
-        private PermissionsImpl UserPermissionsImpl
+        public IPermissions UserPermissions
         {
             get
             {
-                if (_userPermissionsImpl != null) return _userPermissionsImpl;
+                if (_userPermissions != null) return _userPermissions;
 
                 if (User != null)
                 {
@@ -250,29 +240,25 @@ namespace SS.CMS.Services
                     }
                 }
 
-                _userPermissionsImpl = new PermissionsImpl(_pathManager, _administratorsInRolesRepository, _permissionsInRolesRepository, _sitePermissionsRepository, _roleRepository, _siteRepository, _channelRepository, Administrator);
+                _userPermissions = new PermissionsImpl(_pathManager, _pluginManager, _databaseManager, Administrator);
 
-                return _userPermissionsImpl;
+                return _userPermissions;
             }
         }
 
-        public IPermissions UserPermissions => UserPermissionsImpl;
+        private IPermissions _adminPermissions;
 
-        private PermissionsImpl _adminPermissionsImpl;
-
-        private PermissionsImpl AdminPermissionsImpl
+        public IPermissions AdminPermissions
         {
             get
             {
-                if (_adminPermissionsImpl != null) return _adminPermissionsImpl;
+                if (_adminPermissions != null) return _adminPermissions;
 
-                _adminPermissionsImpl = new PermissionsImpl(_pathManager, _administratorsInRolesRepository, _permissionsInRolesRepository, _sitePermissionsRepository, _roleRepository, _siteRepository, _channelRepository, Administrator);
+                _adminPermissions = new PermissionsImpl(_pathManager, _pluginManager, _databaseManager, Administrator);
 
-                return _adminPermissionsImpl;
+                return _adminPermissions;
             }
         }
-
-        public IPermissions AdminPermissions => AdminPermissionsImpl;
 
         public int AdminId => Administrator?.Id ?? 0;
 

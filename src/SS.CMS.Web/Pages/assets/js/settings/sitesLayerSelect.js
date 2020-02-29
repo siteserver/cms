@@ -25,7 +25,7 @@ var methods = {
   },
 
   getMainUrl: function (site) {
-    return '../main.cshtml?siteId=' + site.id;
+    return utils.getIndexUrl({siteId: site.id});
   }
 };
 

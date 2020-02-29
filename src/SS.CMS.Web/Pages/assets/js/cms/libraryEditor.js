@@ -83,7 +83,7 @@ var methods = {
     this.pageAlert = null;
     utils.openLayer({
       title: options.title,
-      url: "libraryLayer" + options.name + ".cshtml?siteId=" + this.siteId,
+      url: utils.getCmsUrl('libraryLayer' + options.name, {siteId: this.siteId}),
       full: options.full,
       width: options.width ? options.width : 700,
       height: options.height ? options.height : 500

@@ -22,8 +22,5 @@ namespace SS.CMS.Abstractions
 
         [DataColumn(Text = true)]
         public string Summary { get; set; }
-
-        [DataColumn]
-        public DateTime AddDate { get; set; }
     }
 }

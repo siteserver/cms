@@ -32,8 +32,9 @@ var methods = {
     var isAutoPlay = ' isAutoPlay="' + this.form.isAutoPlay + '"';
     var width = this.form.isWidth ? ' width="' + this.form.width + '"' : '';
     var height = this.form.isHeight ? ' height="' + this.form.height + '"' : '';
+    var clipUrl = utils.getAssetsUrl('images/video-clip.png');
 
-    parent.$vue.insertEditor($this.attributeName, '<img ' + imageUrl + isAutoPlay + width + height + ' playUrl="' + this.form.videoUrl + '" class="siteserver-stl-player" style="width: 333px; height: 333px" src="../assets/ueditor/video-clip.png" /><br/>');
+    parent.$vue.insertEditor($this.attributeName, '<img ' + imageUrl + isAutoPlay + width + height + ' playUrl="' + this.form.videoUrl + '" class="siteserver-stl-player" style="width: 333px; height: 333px" src="' + clipUrl + '" /><br/>');
     utils.closeLayer();
   },
 

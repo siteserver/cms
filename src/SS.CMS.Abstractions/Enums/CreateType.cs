@@ -2,25 +2,24 @@ using Datory.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-
 namespace SS.CMS.Abstractions
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum CreateType
     {
-        [DataEnum(DisplayName = "��ҳ")]
+        [DataEnum(DisplayName = "首页")]
         Index,
-        [DataEnum(DisplayName = "��Ŀҳ")]
+        [DataEnum(DisplayName = "栏目页")]
         Channel,
-        [DataEnum(DisplayName = "����ҳ")]
+        [DataEnum(DisplayName = "栏目页")]
         Content,
-        [DataEnum(DisplayName = "�ļ�ҳ")]
+        [DataEnum(DisplayName = "内容页")]
         File,
-        [DataEnum(DisplayName = "ר��ҳ")]
+        [DataEnum(DisplayName = "文件页")]
         Special,
-        [DataEnum(DisplayName = "��Ŀ����������ҳ")]
+        [DataEnum(DisplayName = "专题页")]
         AllContent,
-        [DataEnum(DisplayName = "����ҳ��")]
+        [DataEnum(DisplayName = "栏目下所有内容页")]
         All
     }
 }

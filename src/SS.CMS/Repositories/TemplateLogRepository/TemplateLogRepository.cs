@@ -48,7 +48,7 @@ namespace SS.CMS.Repositories
             {
                 var display = await _administratorRepository.GetDisplayAsync(templateLog.AdminId);
                 pairs.Add(new KeyValuePair<int, string>(templateLog.Id,
-                    $"修订时间：{DateUtils.GetDateAndTimeString(templateLog.AddDate)}，修订人：{display}，字符数：{templateLog.ContentLength}"));
+                    $"修订时间：{DateUtils.GetDateAndTimeString(templateLog.CreatedDate)}，修订人：{display}，字符数：{templateLog.ContentLength}"));
             }
 
             return pairs;

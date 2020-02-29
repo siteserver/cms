@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Dto;
-using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
@@ -34,7 +31,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
             var groupNames = await _contentGroupRepository.GetGroupNamesAsync(site.Id);
             var tagNames = await _contentTagRepository.GetTagNamesAsync(site.Id);
 
-            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+            var tableName = _channelRepository.GetTableName(site, channel);
             var allStyles = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
             var styles = allStyles.Where(style =>
                     !string.IsNullOrEmpty(style.DisplayName) && !StringUtils.ContainsIgnoreCase(ContentAttribute.MetadataAttributes.Value, style.AttributeName)).Select(
@@ -71,22 +68,6 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
                 Styles = styles,
                 CheckedLevels = checkedLevels
             };
-        }
-
-        public class GetRequest : ChannelRequest
-        {
-            public int ContentId { get; set; }
-        }
-
-        public class GetResult
-        {
-            public Content Content { get; set; }
-            public Site Site { get; set; }
-            public Channel Channel { get; set; }
-            public IEnumerable<string> GroupNames { get; set; }
-            public IEnumerable<string> TagNames { get; set; }
-            public IEnumerable<TableStyle> Styles { get; set; }
-            public List<Select<int>> CheckedLevels { get; set; }
         }
     }
 }

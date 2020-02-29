@@ -81,7 +81,7 @@ var methods = {
       var res = response.data;
 
       $this.transChannels = [res.transChannels];
-      $this.form.transChannelIds = null;
+      $this.form.transChannelIds = [];
     }).catch(function (error) {
       utils.error($this, error);
     });
@@ -89,7 +89,11 @@ var methods = {
 
   getContentUrl: function (content) {
     if (content.checked) {
-      return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
+      return utils.getRootUrl('redirect', {
+        siteId: content.siteId,
+        channelId: content.channelId,
+        contentId: content.id
+      });
     }
     return $apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
   },

@@ -94,7 +94,6 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
                     ContentId = x.ContentId,
                     AdminId = x.AdminId,
                     IpAddress = x.IpAddress,
-                    AddDate = x.AddDate,
                     Action = x.Action,
                     Summary = x.Summary,
                     SiteName = site.SiteName,

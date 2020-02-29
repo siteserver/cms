@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
-using Datory;
 using Mono.Options;
 using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
@@ -21,7 +19,7 @@ namespace SS.CMS.Cli.Services
 
         public VersionJob(ISettingsManager settingsManager)
         {
-            _settingsManager = _settingsManager;
+            _settingsManager = settingsManager;
             _options = new OptionSet {
                 { "c|config-file=", "指定配置文件Web.config路径或文件名",
                     v => _configFile = v },

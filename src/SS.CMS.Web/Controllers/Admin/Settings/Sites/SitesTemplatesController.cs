@@ -21,17 +21,19 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
 
-        public SitesTemplatesController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager)
+        public SitesTemplatesController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
         }
 
         private async Task<ListResult> GetListResultAsync()
         {
-            var manager = new SiteTemplateManager(_pathManager, _databaseManager);
+            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
             var siteTemplates = manager.GetSiteTemplateInfoList();
             var siteTemplateInfoList = new List<SiteTemplateInfo>();
             foreach (var siteTemplate in siteTemplates)
@@ -56,7 +58,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 fileNameList.Add(fileInfo.Name);
             }
 
-            var siteTemplateUrl = StringUtils.TrimSlash(PageUtils.GetSiteTemplatesUrl(string.Empty));
+            var siteTemplateUrl = StringUtils.TrimSlash(_pathManager.GetSiteTemplatesUrl(string.Empty));
             var siteAddPermission =
                 await _authManager.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd);
 
@@ -103,7 +105,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 
             return new StringResult
             {
-                Value = PageUtils.GetSiteTemplatesUrl(fileName)
+                Value = _pathManager.GetSiteTemplatesUrl(fileName)
             };
         }
 
@@ -137,7 +139,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var manager = new SiteTemplateManager(_pathManager, _databaseManager);
+            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
 
             if (!string.IsNullOrEmpty(request.DirectoryName))
             {

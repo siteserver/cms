@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "../shared/_layout"; }
 @section Styles{
-  <link rel="stylesheet" href="../assets/lib/ueditor/third-party/xiumi/xiumi-ue-v5.css">
+  <link rel="stylesheet" href="~/assets/lib/ueditor/third-party/xiumi/xiumi-ue-v5.css">
   <style>
     .el-upload, .el-upload-dragger {width: 100%;}
     .video-js {
@@ -280,10 +280,10 @@
 
 @section Scripts{
 <script type="text/javascript">
-  window.UEDITOR_HOME_URL = "../assets/lib/ueditor/";
-  window.UEDITOR_CONTROLLER_URL = apiUrl + "/sys/editors/ueditor/" + utils.getQueryInt("siteId");
+  window.UEDITOR_HOME_URL = utils.getAssetsUrl('lib/ueditor/');
+  window.UEDITOR_CONTROLLER_URL = $apiUrl + "/sys/editors/ueditor/" + utils.getQueryInt("siteId");
 </script>
-<script src="~/assets/js/cms/../assets/lib/ueditor/editor_config.js" type="text/javascript" ></script>
-<script src="~/assets/js/cms/../assets/lib/ueditor/ueditor_all_min.js" type="text/javascript" ></script>
-<script src="~/assets/js/cms/../assets/lib/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js" type="text/javascript" ></script>
+<script src="~/assets/lib/ueditor/editor_config.js" type="text/javascript" ></script>
+<script src="~/assets/lib/ueditor/ueditor_all_min.js" type="text/javascript" ></script>
+<script src="~/assets/lib/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js" type="text/javascript" ></script>
 <script src="~/assets/js/cms/settingsSite.js" type="text/javascript"></script> }

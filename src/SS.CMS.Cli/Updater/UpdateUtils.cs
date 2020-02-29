@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
 using SS.CMS.Cli.Updater.Tables;
-using SS.CMS.Core;
 using SS.CMS.Repositories;
 using TableInfo = SS.CMS.Cli.Core.TableInfo;
 

@@ -2,16 +2,16 @@
 
 var data = utils.initData({
   siteId: utils.getQueryInt("siteId"),
-  pageType: null,
-  site: null,
-  isSaveImageInTextEditor: null,
-  isAutoPageInTextEditor: null,
-  autoPageWordNum: null,
-  isContentTitleBreakLine: null,
-  isContentSubTitleBreakLine: null,
-  isAutoCheckKeywords: null,
-  checkContentLevel: null,
-  checkContentDefaultLevel: null
+  form: {
+    isSaveImageInTextEditor: null,
+    isAutoPageInTextEditor: null,
+    autoPageWordNum: null,
+    isContentTitleBreakLine: null,
+    isContentSubTitleBreakLine: null,
+    isAutoCheckKeywords: null,
+    checkContentLevel: null,
+    checkContentDefaultLevel: null,
+  }
 });
 
 var methods = {
@@ -26,19 +26,14 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.site = _.assign({}, res.value);
-
-      $this.isSaveImageInTextEditor = res.value.isSaveImageInTextEditor;
-      $this.isAutoPageInTextEditor = res.value.isAutoPageInTextEditor;
-      $this.autoPageWordNum = res.value.autoPageWordNum;
-      $this.isContentTitleBreakLine = res.value.isContentTitleBreakLine;
-      $this.isContentSubTitleBreakLine = res.value.isContentSubTitleBreakLine;
-      $this.isAutoCheckKeywords = res.value.isAutoCheckKeywords;
-
-      $this.checkContentLevel = res.value.checkContentLevel;
-      $this.checkContentDefaultLevel = res.value.checkContentDefaultLevel;
-
-      $this.pageType = 'list';
+      $this.form.isSaveImageInTextEditor = res.isSaveImageInTextEditor;
+      $this.form.isAutoPageInTextEditor = res.isAutoPageInTextEditor;
+      $this.form.autoPageWordNum = res.autoPageWordNum;
+      $this.form.isContentTitleBreakLine = res.isContentTitleBreakLine;
+      $this.form.isContentSubTitleBreakLine = res.isContentSubTitleBreakLine;
+      $this.form.isAutoCheckKeywords = res.isAutoCheckKeywords;
+      $this.form.checkContentLevel = res.checkContentLevel;
+      $this.form.checkContentDefaultLevel = res.checkContentDefaultLevel;
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -51,21 +46,19 @@ var methods = {
 
     utils.loading(this, true);
     $api.post($url, {
-      isSaveImageInTextEditor: this.isSaveImageInTextEditor,
-      isAutoPageInTextEditor: this.isAutoPageInTextEditor,
-      autoPageWordNum: this.autoPageWordNum,
-      isContentTitleBreakLine: this.isContentTitleBreakLine,
-      isContentSubTitleBreakLine: this.isContentSubTitleBreakLine,
-      isAutoCheckKeywords: this.isAutoCheckKeywords,
-      checkContentLevel: this.checkContentLevel,
-      checkContentDefaultLevel: this.checkContentDefaultLevel
+      siteId: this.siteId,
+      isSaveImageInTextEditor: this.form.isSaveImageInTextEditor,
+      isAutoPageInTextEditor: this.form.isAutoPageInTextEditor,
+      autoPageWordNum: this.form.autoPageWordNum,
+      isContentTitleBreakLine: this.form.isContentTitleBreakLine,
+      isContentSubTitleBreakLine: this.form.isContentSubTitleBreakLine,
+      isAutoCheckKeywords: this.form.isAutoCheckKeywords,
+      checkContentLevel: this.form.checkContentLevel,
+      checkContentDefaultLevel: this.form.checkContentDefaultLevel
     }).then(function (response) {
       var res = response.data;
 
-      $this.site = _.assign({}, res.value);
-
       $this.$message.success('内容设置保存成功！');
-      $this.pageType = 'list';
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -75,8 +68,8 @@ var methods = {
 
   btnSubmitClick: function () {
     var $this = this;
-    this.$validator.validate().then(function (result) {
-      if (result) {
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
         $this.apiSubmit();
       }
     });

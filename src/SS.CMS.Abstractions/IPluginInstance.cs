@@ -2,19 +2,19 @@
 {
     public interface IPluginInstance
     {
-        string Id { get; }
+        string Id { get;  }
 
-        IPackageMetadata Metadata { get; }
+        IPackageMetadata Metadata { get;  }
 
-        PluginBase Plugin { get; }
+        PluginBase Plugin { get;  }
 
-        IPluginService Service { get; }
+        IPluginService PluginService { get;  }
 
-        long InitTime { get; }
+        long InitTime { get;  }
 
-        string ErrorMessage { get; }
+        string ErrorMessage { get;  }
 
-        bool IsRunnable { get; set; }
+        bool IsRunnable { get;  }
 
         bool IsDisabled { get; set; }
 

@@ -64,7 +64,11 @@ var methods = {
   },
 
   getAdminUrl: function(adminName) {
-    return 'adminView.cshtml?pageType=admin&userName=' + adminName + '&returnUrl=' + encodeURIComponent(location.href);
+    return utils.getSettingsUrl('administratorsView', {
+      pageType: admin,
+      userName: adminName,
+      returnUrl: location.href
+    });
   },
 
   btnEditClick: function (group) {

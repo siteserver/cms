@@ -21,14 +21,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public SitesSaveController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public SitesSaveController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
         }
@@ -63,7 +65,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var manager = new SiteTemplateManager(_pathManager, _databaseManager);
+            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
 
             if (manager.IsSiteTemplateDirectoryExists(request.TemplateDir))
             {
@@ -92,7 +94,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                         }
                     }
                 }
-                if (!isSiteDirectory && !WebUtils.IsSystemDirectory(fileSystem.Name))
+                if (!isSiteDirectory && !_pathManager.IsSystemDirectory(fileSystem.Name))
                 {
                     directories.Add(fileSystem.Name);
                 }
@@ -124,7 +126,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var exportObject = new ExportObject(_pathManager, _databaseManager, site);
+            var exportObject = new ExportObject(_pathManager, _databaseManager, _pluginManager, site);
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(request.TemplateDir);
             await exportObject.ExportFilesToSiteAsync(siteTemplatePath, request.IsAllFiles, request.CheckedDirectories, request.CheckedFiles, true);
 
@@ -152,10 +154,10 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(request.TemplateDir);
             var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
 
-            var exportObject = new ExportObject(_pathManager, _databaseManager, site);
+            var exportObject = new ExportObject(_pathManager, _databaseManager, _pluginManager, site);
             await exportObject.ExportSiteContentAsync(siteContentDirectoryPath, request.IsSaveContents, request.IsSaveAllChannels, request.CheckedChannelIds);
 
-            await SiteTemplateManager.ExportSiteToSiteTemplateAsync(_pathManager, _databaseManager, site, request.TemplateDir);
+            await SiteTemplateManager.ExportSiteToSiteTemplateAsync(_pathManager, _databaseManager, _pluginManager, site, request.TemplateDir);
 
             var siteTemplateInfo = new SiteTemplateInfo
             {

@@ -69,7 +69,7 @@ namespace SS.CMS.Core
 
                 if (wordNum > 0)
                 {
-                    parsedContent = WebUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
+                    parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                 }
 
                 if (isReturnToBr)

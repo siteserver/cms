@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Home
 {
@@ -21,6 +20,7 @@ namespace SS.CMS.Web.Controllers.Home
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly IUserGroupRepository _userGroupRepository;
@@ -30,10 +30,11 @@ namespace SS.CMS.Web.Controllers.Home
         private readonly IContentRepository _contentRepository;
         private readonly IContentGroupRepository _contentGroupRepository;
 
-        public IndexController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, ITableStyleRepository tableStyleRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository)
+        public IndexController(IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, ITableStyleRepository tableStyleRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
+            _pluginManager = pluginManager;
             _configRepository = configRepository;
             _tableStyleRepository = tableStyleRepository;
             _userGroupRepository = userGroupRepository;
@@ -129,7 +130,7 @@ namespace SS.CMS.Web.Controllers.Home
                     });
                 }
 
-                defaultPageUrl = await PluginMenuManager.GetHomeDefaultPageUrlAsync();
+                defaultPageUrl = await _pluginManager.GetHomeDefaultPageUrlAsync();
             }
 
             var config = await _configRepository.GetAsync();
@@ -309,7 +310,7 @@ namespace SS.CMS.Web.Controllers.Home
                         ChannelName = await _channelRepository.GetChannelNameNavigationAsync(siteInfo.Id, channelInfo.Id)
                     };
 
-                    var tableName = await _channelRepository.GetTableNameAsync(siteInfo, channelInfo);
+                    var tableName = _channelRepository.GetTableName(siteInfo, channelInfo);
                     styles = await _tableStyleRepository.GetContentStyleListAsync(channelInfo, tableName);
 
                     var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager.AdminPermissions, siteInfo, siteInfo.Id);

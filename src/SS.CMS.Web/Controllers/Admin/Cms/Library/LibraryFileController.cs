@@ -51,7 +51,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
             groups.Insert(0, new LibraryGroup
             {
                 Id = 0,
-                Type = LibraryType.File,
+                LibraryType = LibraryType.File,
                 GroupName = "全部文件"
             });
             var count = await _libraryFileRepository.GetCountAsync(req.GroupId, req.Keyword);
@@ -105,7 +105,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
             {
                 GroupId = request.GroupId,
                 Title = PathUtils.RemoveExtension(fileName),
-                Type = fileType.ToUpper().Replace(".", string.Empty),
+                FileType = fileType.ToUpper().Replace(".", string.Empty),
                 Url = PageUtils.Combine(virtualDirectoryPath, libraryFileName)
             };
 
@@ -184,7 +184,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
 
             var libraryGroup = new LibraryGroup
             {
-                Type = LibraryType.File,
+                LibraryType = LibraryType.File,
                 GroupName = group.Name
             };
             libraryGroup.Id = await _libraryGroupRepository.InsertAsync(libraryGroup);

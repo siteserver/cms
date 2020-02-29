@@ -5,7 +5,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
-using SS.CMS.Api.Stl;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -64,7 +63,7 @@ namespace SS.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                await parseManager.AddStlErrorLogAsync(parseManager.PageInfo, ElementName, stlPageSqlContentsElement, ex);
+                await parseManager.AddStlErrorLogAsync(ElementName, stlPageSqlContentsElement, ex);
                 stlPageSqlContents.ListInfo = new ListInfo();
             }
 
@@ -226,7 +225,7 @@ namespace SS.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = await ParseManager.AddStlErrorLogAsync(ParseManager.PageInfo, ElementName, StlPageSqlContentsElement, ex);
+                parsedContent = await ParseManager.AddStlErrorLogAsync(ElementName, StlPageSqlContentsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex
@@ -255,8 +254,8 @@ namespace SS.CMS.StlParser.StlElement
             await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-            var apiUrl = ApiRouteActionsPageContents.GetUrl(pageInfo.ApiUrl);
-            var apiParameters = ApiRouteActionsPageContents.GetParameters(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.Template.Id, totalNum, pageCount, currentPageIndex, StlPageSqlContentsElement);
+            var apiUrl = ParseManager.PathManager.GetPageContentsApiUrl(pageInfo.ApiUrl);
+            var apiParameters = ParseManager.PathManager.GetPageContentsApiParameters(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.Template.Id, totalNum, pageCount, currentPageIndex, StlPageSqlContentsElement);
 
             var builder = new StringBuilder();
             builder.Append($@"<div id=""{ajaxDivId}"">");

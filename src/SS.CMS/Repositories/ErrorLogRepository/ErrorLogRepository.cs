@@ -93,11 +93,11 @@ namespace SS.CMS.Repositories
 
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                query.WhereDate(nameof(ErrorLog.AddDate), ">=", TranslateUtils.ToDateTime(dateFrom));
+                query.WhereDate(nameof(ErrorLog.CreatedDate), ">=", TranslateUtils.ToDateTime(dateFrom));
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                query.WhereDate(nameof(ErrorLog.AddDate), "<=", TranslateUtils.ToDateTime(dateTo));
+                query.WhereDate(nameof(ErrorLog.CreatedDate), "<=", TranslateUtils.ToDateTime(dateTo));
             }
 
             return query;

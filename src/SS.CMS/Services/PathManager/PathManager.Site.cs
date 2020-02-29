@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
-using SS.CMS.Api.Preview;
 using SS.CMS.Core;
 using SS.CMS.Core.PathRules;
 
@@ -13,6 +12,67 @@ namespace SS.CMS.Services
 {
     public partial class PathManager
     {
+        // 系统根目录访问地址
+        public string GetRootUrl(string relatedUrl)
+        {
+            return PageUtils.Combine(WebUrl, relatedUrl);
+        }
+
+        public string GetAdminUrl(string relatedUrl)
+        {
+            return PageUtils.Combine(WebUrl, _settingsManager.AdminDirectory, relatedUrl);
+        }
+
+        public string GetHomeUrl(string relatedUrl)
+        {
+            return PageUtils.Combine(WebUrl, _settingsManager.HomeDirectory, relatedUrl);
+        }
+
+        public string GetTemporaryFilesUrl(string relatedUrl)
+        {
+            return PageUtils.Combine(WebUrl, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
+        }
+
+        public string GetSiteTemplatesUrl(string relatedUrl)
+        {
+            return PageUtils.Combine(WebUrl, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
+        }
+
+        public string ParsePluginUrl(string pluginId, string url)
+        {
+            if (string.IsNullOrEmpty(url)) return string.Empty;
+
+            if (PageUtils.IsProtocolUrl(url)) return url;
+
+            if (StringUtils.StartsWith(url, "~/"))
+            {
+                return GetRootUrl(url.Substring(1));
+            }
+
+            if (StringUtils.StartsWith(url, "@/"))
+            {
+                return GetAdminUrl(url.Substring(1));
+            }
+
+            return GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
+        }
+
+        public string GetRootUrlByPhysicalPath(string physicalPath)
+        {
+            var requestPath = PathUtils.GetPathDifference(_settingsManager.WebRootPath, physicalPath);
+            requestPath = requestPath.Replace(PathUtils.SeparatorChar, Constants.PageSeparatorChar);
+            return GetRootUrl(requestPath);
+        }
+
+        public string ParseNavigationUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url)) return string.Empty;
+
+            url = url.StartsWith("~") ? PageUtils.Combine(WebUrl, url.Substring(1)) : url;
+            url = url.Replace(PathUtils.SeparatorChar, Constants.PageSeparatorChar);
+            return url;
+        }
+
         //根据发布系统属性判断是否为相对路径并返回解析后路径
         public async Task<string> ParseNavigationUrlAsync(Site site, string url, bool isLocal)
         {
@@ -24,9 +84,9 @@ namespace SS.CMS.Services
                 {
                     return await GetSiteUrlAsync(site, url.Substring(1), isLocal);
                 }
-                return PageUtils.ParseNavigationUrl(url);
+                return ParseNavigationUrl(url);
             }
-            return PageUtils.ParseNavigationUrl(url);
+            return ParseNavigationUrl(url);
         }
 
         public async Task<string> GetSiteUrlAsync(Site site, bool isLocal)
@@ -99,7 +159,7 @@ namespace SS.CMS.Services
             string url;
             if (site.ParentId == 0)
             {
-                url = PageUtils.ParseNavigationUrl($"~/{(site.Root ? string.Empty : site.SiteDir)}");
+                url = ParseNavigationUrl($"~/{(site.Root ? string.Empty : site.SiteDir)}");
             }
             else
             {
@@ -133,6 +193,55 @@ namespace SS.CMS.Services
             return url;
         }
 
+        public string GetLocalSiteUrl(int siteId)
+        {
+            var apiUrl = GetInnerApiUrl(Constants.RoutePreview);
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
+            return apiUrl;
+        }
+
+        public string GetLocalChannelUrl(int siteId, int channelId)
+        {
+            var apiUrl = GetInnerApiUrl(Constants.RoutePreviewChannel);
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
+            apiUrl = apiUrl.Replace("{channelId}", channelId.ToString());
+            return apiUrl;
+        }
+
+        public string GetLocalContentUrl(int siteId, int channelId, int contentId)
+        {
+            var apiUrl = GetInnerApiUrl(Constants.RoutePreviewContent);
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
+            apiUrl = apiUrl.Replace("{channelId}", channelId.ToString());
+            apiUrl = apiUrl.Replace("{contentId}", contentId.ToString());
+            return apiUrl;
+        }
+
+        public string GetContentPreviewUrl(int siteId, int channelId, int contentId, int previewId)
+        {
+            if (contentId == 0)
+            {
+                contentId = previewId;
+            }
+            return $"{GetLocalContentUrl(siteId, channelId, contentId)}?isPreview=true&previewId={previewId}";
+        }
+
+        public string GetLocalFileUrl(int siteId, int fileTemplateId)
+        {
+            var apiUrl = GetInnerApiUrl(Constants.RoutePreviewFile);
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
+            apiUrl = apiUrl.Replace("{fileTemplateId}", fileTemplateId.ToString());
+            return apiUrl;
+        }
+
+        public string GetLocalSpecialUrl(int siteId, int specialId)
+        {
+            var apiUrl = GetInnerApiUrl(Constants.RoutePreviewSpecial);
+            apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
+            apiUrl = apiUrl.Replace("{specialId}", specialId.ToString());
+            return apiUrl;
+        }
+
         // 得到发布系统首页地址
         public async Task<string> GetIndexPageUrlAsync(Site site, bool isLocal)
         {
@@ -140,7 +249,7 @@ namespace SS.CMS.Services
             var createdFileFullName = await _templateRepository.GetCreatedFileFullNameAsync(indexTemplateId);
 
             var url = isLocal
-                ? ApiRoutePreview.GetSiteUrl(site.Id)
+                ? GetLocalSiteUrl(site.Id)
                 : await ParseNavigationUrlAsync(site, createdFileFullName, false);
 
             return RemoveDefaultFileName(site, url);
@@ -151,7 +260,7 @@ namespace SS.CMS.Services
             var createdFileFullName = await _templateRepository.GetCreatedFileFullNameAsync(fileTemplateId);
 
             var url = isLocal
-                ? ApiRoutePreview.GetFileUrl(site.Id, fileTemplateId)
+                ? GetLocalFileUrl(site.Id, fileTemplateId)
                 : await ParseNavigationUrlAsync(site, createdFileFullName, false);
 
             return RemoveDefaultFileName(site, url);
@@ -174,7 +283,7 @@ namespace SS.CMS.Services
 
             if (isLocal)
             {
-                return ApiRoutePreview.GetContentUrl(site.Id, contentCurrent.ChannelId,
+                return GetLocalContentUrl(site.Id, contentCurrent.ChannelId,
                     contentCurrent.Id);
             }
 
@@ -233,7 +342,7 @@ namespace SS.CMS.Services
         {
             if (isLocal)
             {
-                return ApiRoutePreview.GetContentUrl(site.Id, channelId, contentId);
+                return GetLocalContentUrl(site.Id, channelId, contentId);
             }
 
             var contentInfoCurrent = await _contentRepository.GetAsync(site, channelId, contentId);
@@ -315,7 +424,7 @@ namespace SS.CMS.Services
 
             if (isLocal)
             {
-                return ApiRoutePreview.GetChannelUrl(site.Id, channel.Id);
+                return GetLocalChannelUrl(site.Id, channel.Id);
             }
 
             var url = string.Empty;
@@ -347,7 +456,7 @@ namespace SS.CMS.Services
                         var count = await _contentRepository.GetCountAsync(site, channel);
                         if (count == 1)
                         {
-                            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+                            var tableName = _channelRepository.GetTableName(site, channel);
                             var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(channel.DefaultTaxisType));
                             url = await GetContentUrlAsync(site, channel, contentId, isLocal);
                         }
@@ -365,7 +474,7 @@ namespace SS.CMS.Services
                         }
                         else if (count == 1)
                         {
-                            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+                            var tableName = _channelRepository.GetTableName(site, channel);
                             var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(channel.DefaultTaxisType));
                             url = await GetContentUrlAsync(site, channel, contentId, isLocal);
                         }
@@ -379,7 +488,7 @@ namespace SS.CMS.Services
                         var count = await _contentRepository.GetCountAsync(site, channel);
                         if (count >= 1)
                         {
-                            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+                            var tableName = _channelRepository.GetTableName(site, channel);
                             var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(channel.DefaultTaxisType));
                             url = await GetContentUrlAsync(site, channel, contentId, isLocal);
                         }
@@ -393,7 +502,7 @@ namespace SS.CMS.Services
                         var count = await _contentRepository.GetCountAsync(site, channel);
                         if (count >= 1)
                         {
-                            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+                            var tableName = _channelRepository.GetTableName(site, channel);
                             var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(channel.DefaultTaxisType));
                             url = await GetContentUrlAsync(site, channel, contentId, isLocal);
                         }
@@ -472,7 +581,7 @@ namespace SS.CMS.Services
         {
             if (string.IsNullOrEmpty(url)) return string.Empty;
 
-            var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{site.SiteDir}");
+            var relatedSiteUrl = ParseNavigationUrl($"~/{site.SiteDir}");
             var virtualUrl = StringUtils.ReplaceStartsWith(url, relatedSiteUrl, "@/");
             return StringUtils.ReplaceStartsWith(virtualUrl, "@//", "@/");
         }
@@ -489,6 +598,11 @@ namespace SS.CMS.Services
             if (string.IsNullOrEmpty(url)) return false;
 
             return url.StartsWith("/");
+        }
+
+        public string GetSiteFilesUrl(string relatedUrl)
+        {
+            return PageUtils.Combine(WebUrl, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
         }
 
         public string GetSiteFilesUrl(string apiUrl, string relatedUrl)
@@ -839,13 +953,13 @@ namespace SS.CMS.Services
             {
                 virtualPath = "@" + virtualPath;
             }
-            if (!virtualPath.StartsWith("@")) return WebUtils.MapPath(resolvedPath);
+            if (!virtualPath.StartsWith("@")) return MapPath(resolvedPath);
 
             if (site != null)
             {
                 return await GetSitePathAsync(site, virtualPath.Substring(1));
             }
-            return WebUtils.MapPath(resolvedPath);
+            return MapPath(resolvedPath);
         }
 
         public async Task<string> MapPathAsync(Site site, string virtualPath, bool isCopyToSite)
@@ -861,13 +975,13 @@ namespace SS.CMS.Services
             {
                 virtualPath = "@" + virtualPath;
             }
-            if (!virtualPath.StartsWith("@")) return WebUtils.MapPath(resolvedPath);
+            if (!virtualPath.StartsWith("@")) return MapPath(resolvedPath);
 
             if (site != null)
             {
                 return await GetSitePathAsync(site, virtualPath.Substring(1));
             }
-            return WebUtils.MapPath(resolvedPath);
+            return MapPath(resolvedPath);
         }
 
         public string MapPath(string directoryPath, string virtualPath)
@@ -892,7 +1006,7 @@ namespace SS.CMS.Services
                     return PageUtils.Combine(directoryPath, virtualPath.Substring(1));
                 }
             }
-            return WebUtils.MapPath(resolvedPath);
+            return MapPath(resolvedPath);
         }
 
         //将编辑器中图片上传至本机
@@ -902,7 +1016,7 @@ namespace SS.CMS.Services
             foreach (var originalImageSrc in originalImageSrcs)
             {
                 if (!PageUtils.IsProtocolUrl(originalImageSrc) ||
-                    StringUtils.StartsWithIgnoreCase(originalImageSrc, PageUtils.ApplicationPath) ||
+                    StringUtils.StartsWithIgnoreCase(originalImageSrc, WebUrl) ||
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, await GetWebUrlAsync(site)))
                     continue;
                 var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);
@@ -1208,7 +1322,7 @@ namespace SS.CMS.Services
                 foreach (var subDirectoryPath in directoryPaths)
                 {
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!WebUtils.IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
+                    if (!IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
                     {
                         DirectoryUtils.DeleteDirectoryIfExists(subDirectoryPath);
                     }
@@ -1322,6 +1436,18 @@ namespace SS.CMS.Services
                     }
                 }
             }
+        }
+
+        public bool IsSystemDirectory(string directoryName)
+        {
+            if (StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.AspnetClient.DirectoryName)
+                || StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.Bin.DirectoryName)
+                || StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.Home.DirectoryName)
+                || StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.SiteFiles.DirectoryName))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

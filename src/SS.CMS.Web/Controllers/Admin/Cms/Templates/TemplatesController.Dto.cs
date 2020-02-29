@@ -42,7 +42,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 var original = await _templateRepository.GetAsync(summary.Id);
                 var template = original.Clone<Template>();
 
-                template.Set("useCount", _channelRepository.GetTemplateUseCount(site.Id, template.Id, template.TemplateType, template.Default, channels));
+                template.Set("useCount", _channelRepository.GetTemplateUseCount(site.Id, template.Id, template.TemplateType, template.DefaultTemplate, channels));
 
                 if (template.TemplateType == TemplateType.IndexPageTemplate)
                 {

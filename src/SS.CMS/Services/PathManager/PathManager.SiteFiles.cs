@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
 
@@ -61,6 +62,36 @@ namespace SS.CMS.Services
         public string GetTemporaryFilesUrl(params string[] paths)
         {
             return GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.TemporaryFiles, PageUtils.Combine(paths)));
+        }
+
+        public string DefaultAvatarUrl => GetHomeUploadUrl("default_avatar.png");
+
+        public string GetUserUploadPath(int userId, string relatedPath)
+        {
+            return GetHomeUploadPath(userId.ToString(), relatedPath);
+        }
+
+        public string GetUserUploadFileName(string filePath)
+        {
+            var dt = DateTime.Now;
+            return $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}{PathUtils.GetExtension(filePath)}";
+        }
+
+        public string GetUserUploadUrl(int userId, string relatedUrl)
+        {
+            return GetHomeUploadUrl(userId.ToString(), relatedUrl);
+        }
+
+        public string GetUserAvatarUrl(User user)
+        {
+            var imageUrl = user?.AvatarUrl;
+
+            if (!string.IsNullOrEmpty(imageUrl))
+            {
+                return PageUtils.IsProtocolUrl(imageUrl) ? imageUrl : GetUserUploadUrl(user.Id, imageUrl);
+            }
+
+            return DefaultAvatarUrl;
         }
     }
 }

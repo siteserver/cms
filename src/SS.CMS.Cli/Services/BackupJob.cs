@@ -6,7 +6,6 @@ using Datory.Utils;
 using Mono.Options;
 using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
-using SS.CMS.Core;
 
 namespace SS.CMS.Cli.Services
 {

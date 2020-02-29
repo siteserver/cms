@@ -56,9 +56,9 @@ namespace SS.CMS.Core.PathRules
                     {LowerChannelIndex, "栏目索引(小写)"}
                 };
 
-            var channelInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
-            var tableName = await _databaseManager.ChannelRepository.GetTableNameAsync(site, channelInfo);
-            var styleInfoList = await _databaseManager.TableStyleRepository.GetContentStyleListAsync(channelInfo, tableName);
+            var channel = await _databaseManager.ChannelRepository.GetAsync(channelId);
+            var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
+            var styleInfoList = await _databaseManager.TableStyleRepository.GetContentStyleListAsync(channel, tableName);
             foreach (var styleInfo in styleInfoList)
             {
                 if (styleInfo.InputType == InputType.Text)
@@ -219,7 +219,7 @@ namespace SS.CMS.Core.PathRules
                     }
                 }
 
-                value = WebUtils.HtmlDecode(value);
+                value = StringUtils.HtmlDecode(value);
 
                 filePath = filePath.Replace(element, value);
             }

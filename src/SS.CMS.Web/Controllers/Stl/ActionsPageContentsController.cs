@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Parse;
-using SS.CMS.Api.Stl;
-using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.StlElement;
 
 namespace SS.CMS.Web.Controllers.Stl
@@ -32,7 +30,7 @@ namespace SS.CMS.Web.Controllers.Stl
             _templateRepository = templateRepository;
         }
 
-        [HttpPost, Route(ApiRouteActionsPageContents.Route)]
+        [HttpPost, Route(Constants.RouteActionsPageContents)]
         public async Task<string> Submit([FromBody] SubmitRequest request)
         {
             var auth = await _authManager.GetUserAsync();
@@ -40,14 +38,11 @@ namespace SS.CMS.Web.Controllers.Stl
             var site = await _siteRepository.GetAsync(request.SiteId);
             var stlPageContentsElement = _settingsManager.Decrypt(request.StlPageContentsElement);
 
-            var nodeInfo = await _channelRepository.GetAsync(request.PageChannelId);
-            var templateInfo = await _templateRepository.GetAsync(request.TemplateId);
+            var channel = await _channelRepository.GetAsync(request.PageChannelId);
+            var template = await _templateRepository.GetAsync(request.TemplateId);
 
-            var config = await _configRepository.GetAsync();
-            var pageInfo = ParsePage.GetPageInfo(_pathManager, config, nodeInfo.Id, 0, site, templateInfo, new Dictionary<string, object>());
-            pageInfo.User = auth.User;
-
-            var contextInfo = new ParseContext(pageInfo);
+            await _parseManager.InitAsync(site, channel.Id, 0, template);
+            _parseManager.PageInfo.User = auth.User;
 
             var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, _parseManager);
 

@@ -11,13 +11,13 @@ namespace SS.CMS.Abstractions
 
         Task RecycleDeleteAsync(Site site, int channelId, string tableName, List<int> contentIdList);
 
-        Task RecycleDeleteAllAsync(Site site);
+        Task RecycleDeleteAllAsync(IPluginManager pluginManager, Site site);
 
-        Task RecycleRestoreAllAsync(Site site, int restoreChannelId);
+        Task RecycleRestoreAllAsync(IPluginManager pluginManager, Site site, int restoreChannelId);
 
         Task RecycleRestoreAsync(Site site, int channelId, string tableName, List<int> contentIdList,
             int restoreChannelId);
 
-        Task DeleteAsync(Site site, Channel channel, int contentId);
+        Task DeleteAsync(IPluginManager pluginManager, Site site, Channel channel, int contentId);
     }
 }

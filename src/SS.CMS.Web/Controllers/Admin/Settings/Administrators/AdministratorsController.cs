@@ -26,16 +26,18 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IAdministratorsInRolesRepository _administratorsInRolesRepository;
 
-        public AdministratorsController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IAdministratorsInRolesRepository administratorsInRolesRepository)
+        public AdministratorsController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IAdministratorRepository administratorRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IAdministratorsInRolesRepository administratorsInRolesRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _administratorRepository = administratorRepository;
             _roleRepository = roleRepository;
             _siteRepository = siteRepository;
@@ -370,9 +372,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             const string fileName = "administrators.csv";
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-            var excelObject = new ExcelObject(_databaseManager);
+            var excelObject = new ExcelObject(_databaseManager, _pluginManager);
             await excelObject.CreateExcelFileForAdministratorsAsync(filePath);
-            var downloadUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
+            var downloadUrl = _pathManager.GetRootUrlByPhysicalPath(filePath);
 
             return new StringResult
             {

@@ -55,7 +55,7 @@ namespace SS.CMS.Repositories
             }
         }
 
-        public async Task<List<ChannelSummary>> GetSummaryAsync(int siteId)
+        public async Task<List<ChannelSummary>> GetSummariesAsync(int siteId)
         {
             return await _repository.GetAllAsync<ChannelSummary>(Q
                 .Select(nameof(Channel.Id), nameof(Channel.ChannelName), nameof(Channel.ParentId), nameof(Channel.IndexName), nameof(Channel.Taxis), nameof(Channel.AddDate))

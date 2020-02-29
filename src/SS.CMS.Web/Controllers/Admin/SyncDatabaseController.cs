@@ -12,14 +12,16 @@ namespace SS.CMS.Web.Controllers.Admin
         public const string Route = "syncDatabase";
 
         private readonly ISettingsManager _settingsManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
-        private readonly IDatabaseManager _databaseRepository;
 
-        public SyncDatabaseController(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseManager databaseRepository)
+        public SyncDatabaseController(ISettingsManager settingsManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IConfigRepository configRepository)
         {
             _settingsManager = settingsManager;
+            _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _configRepository = configRepository;
-            _databaseRepository = databaseRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -48,7 +50,7 @@ namespace SS.CMS.Web.Controllers.Admin
             //    return Unauthorized();
             //}
 
-            await _databaseRepository.SyncDatabaseAsync();
+            await _databaseManager.SyncDatabaseAsync(_pluginManager);
 
             return new SubmitResult
             {

@@ -42,7 +42,7 @@ namespace SS.CMS.Core.Office
             else
             {
                 var fileName = PathUtils.GetFileName(docsFilePath);
-                imageDirectoryPath = PathUtils.Combine(GlobalSettings.SettingsManager.WebRootPath, PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image));
+                imageDirectoryPath = PathUtils.Combine(pathManager.WebRootPath, PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image));
                 imageDirectoryUrl = PathUtils.GetLibraryVirtualFilePath(UploadType.Image, fileName);
             }
 

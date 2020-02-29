@@ -24,12 +24,12 @@ namespace SS.CMS.Repositories
 
         public async Task<int> InsertAsync(IPathManager pathManager, Site site, Template template, string templateContent, int adminId)
         {
-            if (template.Default)
+            if (template.DefaultTemplate)
             {
                 var defaultTemplate = await GetDefaultTemplateAsync(site.Id, template.TemplateType);
                 if (defaultTemplate != null)
                 {
-                    defaultTemplate.Default = false;
+                    defaultTemplate.DefaultTemplate = false;
                     await _repository.UpdateAsync(defaultTemplate, Q
                         .CachingRemove(GetListKey(site.Id))
                         .CachingRemove(GetEntityKey(defaultTemplate.Id))
@@ -49,12 +49,12 @@ namespace SS.CMS.Repositories
         public async Task UpdateAsync(IPathManager pathManager, Site site, Template template, string templateContent, int adminId)
         {
             var original = await GetAsync(template.Id);
-            if (original.Default != template.Default && template.Default)
+            if (original.DefaultTemplate != template.DefaultTemplate && template.DefaultTemplate)
             {
                 var defaultTemplate = await GetDefaultTemplateAsync(site.Id, template.TemplateType);
                 if (defaultTemplate != null)
                 {
-                    defaultTemplate.Default = false;
+                    defaultTemplate.DefaultTemplate = false;
                     await _repository.UpdateAsync(defaultTemplate, Q
                         .CachingRemove(GetListKey(site.Id))
                         .CachingRemove(GetEntityKey(defaultTemplate.Id))
@@ -77,7 +77,7 @@ namespace SS.CMS.Repositories
             var defaultTemplate = await GetDefaultTemplateAsync(template.SiteId, template.TemplateType);
             if (defaultTemplate != null && defaultTemplate.Id != templateId)
             {
-                defaultTemplate.Default = false;
+                defaultTemplate.DefaultTemplate = false;
                 await _repository.UpdateAsync(defaultTemplate, Q
                     .CachingRemove(GetListKey(template.SiteId))
                     .CachingRemove(GetEntityKey(defaultTemplate.Id))
@@ -85,7 +85,7 @@ namespace SS.CMS.Repositories
             }
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(Template.Default), true)
+                .Set(nameof(Template.DefaultTemplate), true)
                 .Where(nameof(Template.Id), templateId)
                 .CachingRemove(GetListKey(template.SiteId))
                 .CachingRemove(GetEntityKey(template.Id))
@@ -115,7 +115,7 @@ namespace SS.CMS.Repositories
                 RelatedFileName = "T_系统首页模板.html",
                 CreatedFileFullName = "@/index.html",
                 CreatedFileExtName = ".html",
-                Default = true
+                DefaultTemplate = true
             }, string.Empty, adminId);
 
             await InsertAsync(pathManager, site, new Template
@@ -127,7 +127,7 @@ namespace SS.CMS.Repositories
                 RelatedFileName = "T_系统栏目模板.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
-                Default = true
+                DefaultTemplate = true
             }, string.Empty, adminId);
 
             await InsertAsync(pathManager, site, new Template
@@ -139,7 +139,7 @@ namespace SS.CMS.Repositories
                 RelatedFileName = "T_系统内容模板.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
-                Default = true
+                DefaultTemplate = true
             }, string.Empty, adminId);
         }
     }

@@ -134,12 +134,16 @@ var $vue = new Vue({
         var res = response.data;
         $this.pageConfig = res.value;
       }).catch(function (error) {
-        location.href = 'login.cshtml?returnUrl=' + encodeURIComponent(location.href);
+        location.href = utils.getRootUrl('login', {
+          returnUrl: location.href
+        });
       }).then(function () {
         utils.loading($this, false);
       });
     } else {
-      location.href = 'login.cshtml?returnUrl=' + encodeURIComponent(location.href);
+      location.href = utils.getRootUrl('login', {
+        returnUrl: location.href
+      });
     }
   }
 });

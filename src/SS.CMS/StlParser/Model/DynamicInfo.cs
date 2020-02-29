@@ -1,11 +1,32 @@
 ﻿using System.Collections.Specialized;
 using Newtonsoft.Json;
 using SS.CMS.Abstractions;
+using SS.CMS.Core;
 
 namespace SS.CMS.StlParser.Model
 {
     public partial class DynamicInfo
     {
+        private ISettingsManager _settingsManager;
+
+        public static DynamicInfo GetDynamicInfo(ISettingsManager settingsManager, string value, int page, User user, string pathAndQuery)
+        {
+            var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(settingsManager.Decrypt(value));
+            dynamicInfo._settingsManager = settingsManager;
+            if (dynamicInfo.ChannelId == 0)
+            {
+                dynamicInfo.ChannelId = dynamicInfo.SiteId;
+            }
+            dynamicInfo.User = user;
+            dynamicInfo.QueryString =
+                PageUtils.GetQueryStringFilterXss(pathAndQuery);
+            dynamicInfo.QueryString.Remove("siteId");
+
+            dynamicInfo.Page = page;
+
+            return dynamicInfo;
+        }
+
         public string ElementName { get; set; }
         public int SiteId { get; set; }
         public int ChannelId { get; set; }

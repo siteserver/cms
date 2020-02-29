@@ -1,32 +1,10 @@
-Object.defineProperty(Object.prototype,"getValue",{value:function(t){var e;for(e in this)if(e.toLowerCase()==t.toLowerCase())return this[e]}});
+Object.defineProperty(Object.prototype,"getEntityValue",{value:function(t){var e;for(e in this)if(e.toLowerCase()==t.toLowerCase())return this[e]}});
 
 if (window.swal && swal.mixin) {
   var alert = swal.mixin({
     confirmButtonClass: 'btn btn-primary',
     cancelButtonClass: 'btn btn-default ml-3',
     buttonsStyling: false,
-  });
-}
-
-if (window.Vue && window.VeeValidate) {
-  VeeValidate.Validator.localize('zh_CN');
-  Vue.use(VeeValidate);
-  VeeValidate.Validator.localize({
-    zh_CN: {
-      messages: {
-        required: function (name) {
-          return name + '不能为空'
-        },
-      }
-    }
-  });
-  VeeValidate.Validator.extend('mobile', {
-    getMessage: function () {
-      return " 请输入正确的手机号码"
-    },
-    validate: function (value, args) {
-      return value.length == 11 && /^((13|14|15|16|17|18|19)[0-9]{1}\d{8})$/.test(value)
-    }
   });
 }
 

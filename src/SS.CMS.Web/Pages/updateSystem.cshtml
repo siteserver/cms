@@ -118,7 +118,7 @@
       <div v-if="step === 2">
 
         <div class="jumbotron text-center">
-          <img class="mt-3" src="assets/images/loading.gif" />
+          <img class="mt-3" src="~/assets/images/loading.gif" />
           <br />
           <br />
           <p class="lead">正在升级系统，可能需要几分钟，请稍后...</p>
@@ -133,7 +133,7 @@
           <h4>升级完成！</h4>
           <p>
             恭喜，您已经完成了 SiteServer CMS 系统的升级，请点击按钮进入数据库升级向导
-            <a class="btn btn-success m-l-5" href="syncDatabase.cshtml">进入数据库升级向导</a>
+            <a class="btn btn-success m-l-5" :href="getRootUrl('syncDatabase')">进入数据库升级向导</a>
           </p>
           <hr>
           <p class="mb-0">

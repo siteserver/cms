@@ -23,9 +23,6 @@ namespace SS.CMS.Abstractions
         public string IpAddress { get; set; }
 
         [DataColumn]
-        public DateTime AddDate { get; set; }
-
-        [DataColumn]
         public string Action { get; set; }
 
         [DataColumn]

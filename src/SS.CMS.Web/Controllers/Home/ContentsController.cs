@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.Home
 {
@@ -15,14 +14,16 @@ namespace SS.CMS.Web.Controllers.Home
         private const string Route = "";
 
         private readonly IAuthManager _authManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsController(IAuthManager authManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsController(IAuthManager authManager, IPluginManager pluginManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _pluginManager = pluginManager;
             _databaseManager = databaseManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
@@ -45,10 +46,10 @@ namespace SS.CMS.Web.Controllers.Home
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
-            var pluginIds = PluginContentManager.GetContentPluginIds(channel);
-            var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
+            var pluginIds = _pluginManager.GetContentPluginIds(channel);
+            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
 
             var pageContentInfoList = new List<Content>();
             var ccIds = await _contentRepository.GetSummariesAsync(site, channel, true);

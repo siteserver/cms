@@ -22,7 +22,7 @@ namespace SS.CMS.Repositories
         public async Task<List<TemplateSummary>> GetSummariesAsync(int siteId)
         {
             return await _repository.GetAllAsync<TemplateSummary>(Q
-                .Select(nameof(Template.Id), nameof(Template.TemplateName), nameof(Template.TemplateType), nameof(Template.Default))
+                .Select(nameof(Template.Id), nameof(Template.TemplateName), nameof(Template.TemplateType), nameof(Template.DefaultTemplate))
                 .Where(nameof(Template.SiteId), siteId)
                 .OrderBy(nameof(Template.TemplateType), nameof(Template.RelatedFileName))
                 .CachingGet(GetListKey(siteId))

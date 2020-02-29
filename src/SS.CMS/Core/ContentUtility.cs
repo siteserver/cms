@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS.Plugins;
 using Content = SS.CMS.Abstractions.Content;
 
 namespace SS.CMS.Core
@@ -33,7 +32,7 @@ namespace SS.CMS.Core
             //    StringUtils.ReplaceHrefOrSrc(builder, url, "@");
             //}
 
-            var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{site.SiteDir}");
+            var relatedSiteUrl = pathManager.ParseNavigationUrl($"~/{site.SiteDir}");
             StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");
 
             builder.Replace("@'@", "'@");
@@ -100,7 +99,7 @@ namespace SS.CMS.Core
                 }
                 else if (pathManager.IsRelativeUrl(src))
                 {
-                    collection[src] = WebUtils.MapPath(src);
+                    collection[src] = pathManager.MapPath(src);
                 }
             }
 
@@ -113,7 +112,7 @@ namespace SS.CMS.Core
                 }
                 else if (pathManager.IsRelativeUrl(href))
                 {
-                    collection[href] = WebUtils.MapPath(href);
+                    collection[href] = pathManager.MapPath(href);
                 }
             }
         }
@@ -204,7 +203,7 @@ namespace SS.CMS.Core
             }
         }
 
-        public static async Task TranslateAsync(IPathManager pathManager, IDatabaseManager databaseManager, Site site, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType, ICreateManager createManager)
+        public static async Task TranslateAsync(IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, Site site, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType, ICreateManager createManager)
         {
             if (site == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
@@ -227,7 +226,7 @@ namespace SS.CMS.Core
                 contentInfo.TranslateContentType = TranslateContentType.Copy;
                 var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
-                foreach (var service in await PluginManager.GetServicesAsync())
+                foreach (var service in await pluginManager.GetServicesAsync())
                 {
                     try
                     {
@@ -253,7 +252,7 @@ namespace SS.CMS.Core
 
                 var newContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
-                foreach (var service in await PluginManager.GetServicesAsync())
+                foreach (var service in await pluginManager.GetServicesAsync())
                 {
                     try
                     {
@@ -265,7 +264,7 @@ namespace SS.CMS.Core
                     }
                 }
 
-                await databaseManager.ContentRepository.DeleteAsync(site, channel, contentId);
+                await databaseManager.ContentRepository.DeleteAsync(pluginManager, site, channel, contentId);
 
                 //GlobalSettings.ContentRepository.DeleteContents(site.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
 
@@ -300,7 +299,7 @@ namespace SS.CMS.Core
                 contentInfo.TranslateContentType = TranslateContentType.ReferenceContent;
                 var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
-                foreach (var service in await PluginManager.GetServicesAsync())
+                foreach (var service in await pluginManager.GetServicesAsync())
                 {
                     try
                     {

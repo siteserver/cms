@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Api.Preview;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
@@ -53,9 +52,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
 
             content.Id = await _contentRepository.InsertPreviewAsync(site, channel, content);
 
-            return new PreviewResult()
+            return new PreviewResult
             {
-                Url = ApiRoutePreview.GetContentPreviewUrl(request.SiteId, request.ChannelId, request.ContentId, content.Id)
+                Url = _pathManager.GetContentPreviewUrl(request.SiteId, request.ChannelId, request.ContentId, content.Id)
             };
 
             ////contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
@@ -97,19 +96,6 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
             //{
             //    previewUrl = ApiRoutePreview.GetContentPreviewUrl(siteId, channelId, contentId, contentInfo.Id)
             //};
-        }
-
-        public class PreviewRequest
-        {
-            public int SiteId { get; set; }
-            public int ChannelId { get; set; }
-            public int ContentId { get; set; }
-            public Content Content { get; set; }
-        }
-
-        public class PreviewResult
-        {
-            public string Url { get; set; }
         }
     }
 }

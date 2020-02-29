@@ -212,7 +212,7 @@ namespace SS.CMS.StlParser.StlElement
             var dataManager = new StlDataManager(parseManager.DatabaseManager);
             var channelId = await dataManager.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
 
-            var minContentInfoList = await databaseManager.ContentRepository.GetMinContentInfoListAsync(parseManager.DatabaseManager, pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = await databaseManager.ContentRepository.GetMinContentInfoListAsync(parseManager.DatabaseManager, parseManager.PluginManager, pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
 
             if (minContentInfoList != null)
             {
@@ -233,7 +233,7 @@ namespace SS.CMS.StlParser.StlElement
                         {
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
                             {
-                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(WebUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
                                 imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
@@ -320,7 +320,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         {
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
                             {
-                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(WebUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
                                 imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
@@ -502,7 +502,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             //||contentInfo.ImageUrl.ToLower().EndsWith(".png")||contentInfo.ImageUrl.ToLower().EndsWith(".pneg")
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg"))
                             {
-                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(WebUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                                titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
                                 imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }

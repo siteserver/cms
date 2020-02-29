@@ -34,7 +34,7 @@ namespace SS.CMS.Repositories
                 var listKey = GetListKey(tableName, site.Id, channel.Id);
                 var countKey = GetCountKey(tableName, site.Id, channel.Id);
 
-                var repository = await GetRepositoryAsync(site, channel);
+                var repository = GetRepository(site, channel);
                 var cacheManager = await repository.GetCacheManagerAsync();
 
                 if (!cacheManager.Exists(listKey) && !cacheManager.Exists(countKey))
@@ -62,7 +62,7 @@ namespace SS.CMS.Repositories
                 var summary = contentSummaries.FirstOrDefault();
                 if (summary != null)
                 {
-                    var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+                    var tableName = _channelRepository.GetTableName(site, channel);
                     var repository = GetRepository(tableName);
                     var cacheManager = await repository.GetCacheManagerAsync();
 
@@ -87,7 +87,7 @@ namespace SS.CMS.Repositories
 
         public async Task<int> GetCountAsync(Site site, IChannelSummary channel)
         {
-            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+            var tableName = _channelRepository.GetTableName(site, channel);
             var repository = GetRepository(tableName);
 
             return await repository.CountAsync(
@@ -114,7 +114,7 @@ namespace SS.CMS.Repositories
 
         public async Task<Content> GetAsync(Site site, Channel channel, int contentId)
         {
-            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+            var tableName = _channelRepository.GetTableName(site, channel);
             return await GetAsync(tableName, contentId);
         }
 
@@ -132,7 +132,7 @@ namespace SS.CMS.Repositories
 
         public async Task<List<int>> GetContentIdsAsync(Site site, Channel channel, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
         {
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
             var query = Q
                 .Select(ContentAttribute.Id)
                 .Where(ContentAttribute.ChannelId, channel.Id)
@@ -190,7 +190,7 @@ namespace SS.CMS.Repositories
 
         private async Task<List<ContentSummary>> GetSummariesAsync(Site site, IChannelSummary channel)
         {
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
             var query = Q.Select(nameof(Content.Id), nameof(Content.ChannelId), nameof(Content.Checked));
 
             await QueryWhereAsync(query, site, channel.Id, false);

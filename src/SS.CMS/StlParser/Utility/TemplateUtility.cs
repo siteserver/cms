@@ -5,7 +5,6 @@ using SS.CMS.StlParser.StlElement;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions.Parse;
-using SS.CMS.Core;
 
 namespace SS.CMS.StlParser.Utility
 {
@@ -13,18 +12,19 @@ namespace SS.CMS.StlParser.Utility
 	{
         public static async Task<string> GetContentsItemTemplateStringAsync(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, IParseManager parseManager, ParseType contextType)
         {
-            var pageInfo = parseManager.PageInfo;
+            var context = parseManager.ContextInfo;
 
+            var pageInfo = parseManager.PageInfo;
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
             var content = itemContainer.ContentItem.Value;
 
-            var contextInfo = parseManager.ContextInfo.Clone();
-            contextInfo.ContextType = contextType;
-            contextInfo.ItemContainer = itemContainer;
-            contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ChannelId = content.ChannelId;
-            contextInfo.ContentId = content.Id;
-            contextInfo.SetContent(content);
+            parseManager.ContextInfo = parseManager.ContextInfo.Clone();
+            parseManager.ContextInfo.ContextType = contextType;
+            parseManager.ContextInfo.ItemContainer = itemContainer;
+            parseManager.ContextInfo.ContainerClientId = containerClientId;
+            parseManager.ContextInfo.ChannelId = content.ChannelId;
+            parseManager.ContextInfo.ContentId = content.Id;
+            parseManager.ContextInfo.SetContent(content);
 
             var preSite = pageInfo.Site;
             var prePageChannelId = pageInfo.PageChannelId;
@@ -32,8 +32,8 @@ namespace SS.CMS.StlParser.Utility
             if (content.SiteId != pageInfo.SiteId)
             {
                 var siteInfo = await parseManager.DatabaseManager.SiteRepository.GetAsync(content.SiteId);
-                contextInfo.Site = siteInfo;
-                pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
+                parseManager.ContextInfo.Site = siteInfo;
+                pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, parseManager.ContextInfo);
             }
 
             var theTemplateString = string.Empty;
@@ -79,6 +79,8 @@ namespace SS.CMS.StlParser.Utility
             {
                 pageInfo.ChangeSite(preSite, prePageChannelId, prePageContentId, parseManager.ContextInfo);
             }
+
+            parseManager.ContextInfo = context;
 
             return innerBuilder.ToString();
         }
@@ -168,17 +170,18 @@ namespace SS.CMS.StlParser.Utility
 
         public static async Task<string> GetChannelsItemTemplateStringAsync(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, IParseManager parseManager, ParseType contextType)
         {
-            var pageInfo = parseManager.PageInfo;
+            var context = parseManager.ContextInfo;
 
+            var pageInfo = parseManager.PageInfo;
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
             var channel = itemContainer.ChannelItem.Value;
 
-            var contextInfo = parseManager.ContextInfo.Clone();
-            contextInfo.ContextType = contextType;
-            contextInfo.ItemContainer = itemContainer;
-            contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ChannelId = channel.Id;
+            parseManager.ContextInfo = parseManager.ContextInfo.Clone();
+            parseManager.ContextInfo.ContextType = contextType;
+            parseManager.ContextInfo.ItemContainer = itemContainer;
+            parseManager.ContextInfo.ContainerClientId = containerClientId;
+            parseManager.ContextInfo.ChannelId = channel.Id;
 
             if (selectedItems != null && selectedItems.Count > 0)
             {
@@ -241,19 +244,22 @@ namespace SS.CMS.StlParser.Utility
 
             DbItemContainer.PopChannelItem(pageInfo);
 
+            parseManager.ContextInfo = context;
+
             return innerBuilder.ToString();
         }
 
         public static async Task<string> GetSqlContentsTemplateStringAsync(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, IParseManager parseManager, ParseType contextType)
         {
-            var pageInfo = parseManager.PageInfo;
+            var context = parseManager.ContextInfo;
 
+            var pageInfo = parseManager.PageInfo;
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
-            var contextInfo = parseManager.ContextInfo.Clone();
-            contextInfo.ContextType = contextType;
-            contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ItemContainer = itemContainer;
+            parseManager.ContextInfo = parseManager.ContextInfo.Clone();
+            parseManager.ContextInfo.ContextType = contextType;
+            parseManager.ContextInfo.ContainerClientId = containerClientId;
+            parseManager.ContextInfo.ItemContainer = itemContainer;
 
             if (selectedItems != null && selectedItems.Count > 0)
             {
@@ -272,47 +278,53 @@ namespace SS.CMS.StlParser.Utility
 
             DbItemContainer.PopSqlItem(pageInfo);
 
+            parseManager.ContextInfo = context;
+
             return innerBuilder.ToString();
         }
 
         public static async Task<string> GetSitesTemplateStringAsync(string templateString, string containerClientId, IParseManager parseManager, ParseType contextType)
         {
-            var pageInfo = parseManager.PageInfo;
+            var context = parseManager.ContextInfo;
 
+            var pageInfo = parseManager.PageInfo;
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
             var siteInfo = itemContainer.SiteItem.Value;
 
-            var contextInfo = parseManager.ContextInfo.Clone();
-            contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ItemContainer = itemContainer;
-            contextInfo.ContextType = contextType;
+            parseManager.ContextInfo = parseManager.ContextInfo.Clone();
+            parseManager.ContextInfo.ContainerClientId = containerClientId;
+            parseManager.ContextInfo.ItemContainer = itemContainer;
+            parseManager.ContextInfo.ContextType = contextType;
 
             var preSite = pageInfo.Site;
             var prePageChannelId = pageInfo.PageChannelId;
             var prePageContentId = pageInfo.PageContentId;
-            pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, contextInfo);
+            pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, parseManager.ContextInfo);
 
             var innerBuilder = new StringBuilder(templateString);
             await parseManager.ParseInnerContentAsync(innerBuilder);
 
             DbItemContainer.PopSiteItems(pageInfo);
 
-            pageInfo.ChangeSite(preSite, prePageChannelId, prePageContentId, contextInfo);
+            pageInfo.ChangeSite(preSite, prePageChannelId, prePageContentId, parseManager.ContextInfo);
+
+            parseManager.ContextInfo = context;
 
             return innerBuilder.ToString();
         }
 
         public static async Task<string> GetEachsTemplateStringAsync(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, IParseManager parseManager, ParseType contextType)
         {
-            var pageInfo = parseManager.PageInfo;
+            var context = parseManager.ContextInfo;
 
+            var pageInfo = parseManager.PageInfo;
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
-            var contextInfo = parseManager.ContextInfo.Clone();
-            contextInfo.ContextType = contextType;
-            contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ItemContainer = itemContainer;
+            parseManager.ContextInfo = parseManager.ContextInfo.Clone();
+            parseManager.ContextInfo.ContextType = contextType;
+            parseManager.ContextInfo.ContainerClientId = containerClientId;
+            parseManager.ContextInfo.ItemContainer = itemContainer;
 
             if (selectedItems != null && selectedItems.Count > 0)
             {
@@ -330,6 +342,8 @@ namespace SS.CMS.StlParser.Utility
             await parseManager.ParseInnerContentAsync(innerBuilder);
 
             DbItemContainer.PopEachItem(pageInfo);
+
+            parseManager.ContextInfo = context;
 
             return innerBuilder.ToString();
         }

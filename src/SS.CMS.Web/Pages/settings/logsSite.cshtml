@@ -59,7 +59,7 @@
     <el-table-column
       label="管理员">
       <template slot-scope="scope">
-        <a :href="'adminView.cshtml?userName=' + scope.row.userName + '&returnUrl=' + encodeURIComponent(location.href)">{{scope.row.userName}}</a>
+        <a :href="utils.getSettingsUrl('administratorsView', {userName: scope.row.userName, returnUrl: location.href})">{{scope.row.userName}}</a>
       </template>
     </el-table-column>
     <el-table-column

@@ -5,18 +5,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS.Plugins;
-using SS.CMS.Plugins.Impl;
+using SS.CMS.Core.Plugins;
 
 namespace SS.CMS.Core
 {
     public class ColumnsManager
     {
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
 
-        public ColumnsManager(IDatabaseManager databaseManager)
+        public ColumnsManager(IDatabaseManager databaseManager, IPluginManager pluginManager)
         {
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
         }
 
         private const string Sequence = nameof(Sequence);                            //序号
@@ -353,10 +354,10 @@ namespace SS.CMS.Core
                 }
             }
 
-            var pluginIds = PluginContentManager.GetContentPluginIds(channel);
-            var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
+            var pluginIds = _pluginManager.GetContentPluginIds(channel);
+            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
 
-            var tableName = await _databaseManager.ChannelRepository.GetTableNameAsync(site, channel);
+            var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
             var styleList = GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStyleListAsync(channel, tableName));
 
             styleList.Insert(0, new TableStyle

@@ -64,10 +64,10 @@
             <tbody>
               <tr v-for="package in enabledPackages" v-if="package && package.metadata">
                 <td class="text-center text-nowrap">
-                  <img :src="package.metadata.iconUrl || '../assets/images/favicon.png'" width="48" height="48">
+                  <img :src="package.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
                 </td>
                 <td class="text-nowrap">
-                  <a :href="'view.cshtml?pluginId=' + package.id + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.id }}</a>
+                  <a :href="utils.getPluginsUrl('view', {pluginId: package.id, returnUrl: location.href})">{{ package.id }}</a>
                 </td>
                 <td class="text-nowrap">
                   {{ package.metadata.title }}
@@ -116,10 +116,10 @@
             <tbody>
               <tr v-for="package in disabledPackages" v-if="package && package.metadata">
                 <td class="text-center text-nowrap">
-                  <img :src="package.metadata.iconUrl || '../assets/images/favicon.png'" width="48" height="48">
+                  <img :src="package.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
                 </td>
                 <td class="text-nowrap">
-                  <a :href="'view.cshtml?pluginId=' + package.id + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.id }}</a>
+                  <a :href="utils.getPluginsUrl('view', {pluginId: package.id, returnUrl: location.href})">{{ package.id }}</a>
                 </td>
                 <td class="text-nowrap">
                   {{ package.metadata.title }}
@@ -163,7 +163,7 @@
             <tbody>
               <tr v-for="package in errorPackages" v-if="package && package.metadata">
                 <td class="text-nowrap">
-                  <a :href="'view.cshtml?pluginId=' + package.id + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.id }}</a>
+                  <a :href="utils.getPluginsUrl('view', {pluginId: package.id, returnUrl: location.href})">{{ package.id }}</a>
                 </td>
                 <td class="text-nowrap">
                   {{ package.errorMessage }}
@@ -204,10 +204,10 @@
               <tbody>
                 <tr v-for="package in updatePackages" v-if="package && package.metadata">
                   <td class="text-center text-nowrap">
-                    <img :src="package.metadata.iconUrl || '../assets/images/favicon.png'" width="48" height="48">
+                    <img :src="package.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
                   </td>
                   <td class="text-nowrap">
-                    <a :href="'view.cshtml?pluginId=' + package.updatePackage.pluginId + '&returnUrl=' + encodeURIComponent(location.href)">{{ package.updatePackage.pluginId }}</a>
+                    <a :href="utils.getPluginsUrl('view', {pluginId: package.updatePackage.pluginId, returnUrl: location.href})">{{ package.updatePackage.pluginId }}</a>
                   </td>
                   <td class="text-nowrap">
                     {{ package.metadata.title }}
@@ -225,7 +225,7 @@
                     {{ package.updatePackage.published }}
                   </td>
                   <td class="text-center text-nowrap">
-                    <a :href="'install.cshtml?isUpdate=true&pluginIds=' + package.id" class="btn btn-warning btn-md">插件升级</a>
+                    <a :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: package.id})" class="btn btn-warning btn-md">插件升级</a>
                   </td>
                 </tr>
               </tbody>
@@ -236,7 +236,7 @@
   
       <hr />
   
-      <a :href="'install.cshtml?isUpdate=true&pluginIds=' + updatePackageIds.join(',')" class="btn btn-warning btn-md">一键升级所有插件</a>
+      <a :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: updatePackageIds.join(',')})' + " class="btn btn-warning btn-md">一键升级所有插件</a>
   
     </div>
   

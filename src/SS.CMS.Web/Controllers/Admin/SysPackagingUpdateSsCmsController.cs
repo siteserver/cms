@@ -34,7 +34,7 @@ namespace SS.CMS.Web.Controllers.Admin
             }
 
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{request.Version}";
-            var packagePath = WebUtils.GetPackagesPath(idWithVersion);
+            var packagePath = _pathManager.GetPackagesPath(idWithVersion);
             var packageWebConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
 
             if (!FileUtils.IsFileExists(packageWebConfigPath))
@@ -46,7 +46,7 @@ namespace SS.CMS.Web.Controllers.Admin
             //    WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.RedisConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
             //    WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), WebUtils.GetSiteFilesPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), _pathManager.GetSiteFilesPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), _pathManager.GetAdminDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), _pathManager.GetHomeDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), _pathManager.GetBinDirectoryPath(string.Empty), true);

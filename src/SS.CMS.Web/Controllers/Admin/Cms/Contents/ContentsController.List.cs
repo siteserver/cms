@@ -6,7 +6,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
-using SS.CMS.Plugins;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
@@ -42,10 +41,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
-            var pluginIds = PluginContentManager.GetContentPluginIds(channel);
-            var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
+            var pluginIds = _pluginManager.GetContentPluginIds(channel);
+            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
 
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             var pageContents = new List<Content>();
@@ -76,7 +75,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     var pageContent =
                         await columnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, content, columns, pluginColumns);
 
-                    var menus = await PluginMenuManager.GetContentMenusAsync(pluginIds, pageContent);
+                    var menus = await _pluginManager.GetContentMenusAsync(pluginIds, pageContent);
                     pageContent.Set("PluginMenus", menus);
 
                     pageContents.Add(pageContent);

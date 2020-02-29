@@ -37,7 +37,6 @@ namespace SS.CMS.Repositories
                 Message = ex.Message,
                 StackTrace = ex.StackTrace,
                 Summary = summary,
-                AddDate = DateTime.Now
             });
         }
         public async Task<int> AddErrorLogAsync(string pluginId, Exception ex, string summary = "")
@@ -50,7 +49,6 @@ namespace SS.CMS.Repositories
                 Message = ex.Message,
                 StackTrace = ex.StackTrace,
                 Summary = summary,
-                AddDate = DateTime.Now
             });
         }
     }

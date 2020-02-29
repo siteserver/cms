@@ -156,14 +156,22 @@ var methods = {
   },
 
   getContentUrl: function (content) {
-    return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
+    return utils.getRootUrl('redirect', {
+      siteId: content.siteId,
+      channelId: content.channelId,
+      contentId: content.id
+    });
   },
 
   btnTitleClick: function(content) {
     if (content.checked && content.channelId > 0) return false;
     utils.openLayer({
       title: "查看内容",
-      url: 'contentsLayerView.cshtml?siteId=' + this.siteId + '&channelId=' + Math.abs(content.channelId) + '&contentId=' + content.id,
+      url: utils.getCmsUrl('contentsLayerView', {
+        siteId: this.siteId,
+        channelId: Math.abs(content.channelId),
+        contentId: content.id
+      }),
       full: true
     });
   },
@@ -196,14 +204,19 @@ var methods = {
   btnAdminClick: function(adminId) {
     utils.openLayer({
       title: "管理员查看",
-      url: '../shared/adminLayerView.cshtml?adminId=' + adminId,
+      url: utils.getSharedUrl('adminLayerView', {adminId: adminId}),
       width: 550,
       height: 450
     });
   },
 
   getEditUrl: function(content) {
-    return "editor.cshtml?siteId=" + this.siteId + "&channelId=" + content.channelId + "&contentId=" + content.id + "&page=" + this.page;
+    return utils.getCmsUrl('editor', {
+      siteId: this.siteId,
+      channelId: content.channelId,
+      contentId: content.id,
+      page: this.page
+    });
   },
 
   btnCreateClick: function() {
@@ -227,38 +240,37 @@ var methods = {
   },
 
   btnLayerClick: function(options) {
-    var url = "contentsLayer" + options.name + ".cshtml?siteId=" + this.siteId;
+    var query = {
+      siteId: this.siteId, 
+      page: this.page
+    };
 
     if (options.channelId) {
-      url += "&channelId=" + options.channelId;
+      query.channelId = options.channelId;
     } else {
-      url += "&channelId=" + this.siteId;
+      query.channelId = this.siteId;
     }
-    url += '&page=' + this.page;
     if (options.contentId) {
-      url += "&contentId=" + options.contentId;
+      query.contentId = options.contentId;
     }
 
     if (options.withContents) {
       if (!this.isContentChecked) return;
-      url += "&channelContentIds=" + this.channelContentIdsString;
+      query.channelContentIds = this.channelContentIdsString;
     }
 
-    options.url = url;
-
+    options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
     utils.openLayer(options);
   },
 
   btnContentViewClick: function(contentId) {
     utils.openLayer({
       title: "查看内容",
-      url:
-        "contentsLayerView.cshtml?siteId=" +
-        this.siteId +
-        "&channelId=" +
-        this.siteId +
-        "&contentId=" +
-        contentId,
+      url: utils.getCmsUrl('contentsLayerView', {
+        siteId: this.siteId,
+        channelId: this.siteId,
+        contentId: contentId
+      }),
       full: true
     });
   },
@@ -266,13 +278,11 @@ var methods = {
   btnContentStateClick: function(contentId) {
     utils.openLayer({
       title: "查看审核状态",
-      url:
-        "contentsLayerState.cshtml?siteId=" +
-        this.siteId +
-        "&channelId=" +
-        this.siteId +
-        "&contentId=" +
-        contentId,
+      url: utils.getCmsUrl('contentsLayerState', {
+        siteId: this.siteId,
+        channelId: this.siteId,
+        contentId: contentId
+      }),
       full: true
     });
   },

@@ -13,7 +13,7 @@ namespace SS.CMS.Abstractions
         public int GroupId { get; set; }
 
         [DataColumn]
-        public string Type { get; set; }
+        public string FileType { get; set; }
 
         [DataColumn]
         public string Url { get; set; }

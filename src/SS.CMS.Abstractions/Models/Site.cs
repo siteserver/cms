@@ -32,7 +32,7 @@ namespace SS.CMS.Abstractions
 
         public int CheckContentLevel { get; set; } = 1;
 
-        public int CheckContentDefaultLevel { get; set; }
+        public int CheckContentDefaultLevel { get; set; } = 1;
 
         public bool IsSaveImageInTextEditor { get; set; } = true;
 

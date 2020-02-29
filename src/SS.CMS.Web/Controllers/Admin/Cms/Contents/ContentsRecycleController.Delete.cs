@@ -36,7 +36,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     var channel = await _channelRepository.GetAsync(channelId);
                     if (channel != null)
                     {
-                        tableName = await _channelRepository.GetTableNameAsync(site, channel);
+                        tableName = _channelRepository.GetTableName(site, channel);
                     }
 
                     await _contentRepository.RecycleDeleteAsync(site, channelId, tableName, contentIdList);
@@ -46,7 +46,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             }
             else if (request.Action == Action.DeleteAll)
             {
-                await _contentRepository.RecycleDeleteAllAsync(site);
+                await _contentRepository.RecycleDeleteAllAsync(_pluginManager, site);
                 await auth.AddSiteLogAsync(request.SiteId, "从回收站清空所有内容");
             }
             else if (request.Action == Action.Restore)
@@ -60,7 +60,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     var channel = await _channelRepository.GetAsync(channelId);
                     if (channel != null)
                     {
-                        tableName = await _channelRepository.GetTableNameAsync(site, channel);
+                        tableName = _channelRepository.GetTableName(site, channel);
                     }
 
                     await _contentRepository.RecycleRestoreAsync(site, channelId, tableName, contentIdList, request.RestoreChannelId);
@@ -70,7 +70,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             }
             else if (request.Action == Action.RestoreAll)
             {
-                await _contentRepository.RecycleRestoreAllAsync(site, request.RestoreChannelId);
+                await _contentRepository.RecycleRestoreAllAsync(_pluginManager, site, request.RestoreChannelId);
                 await auth.AddSiteLogAsync(request.SiteId, "从回收站还原所有内容");
             }
 

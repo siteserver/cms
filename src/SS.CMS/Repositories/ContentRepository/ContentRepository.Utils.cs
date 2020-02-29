@@ -79,9 +79,9 @@ namespace SS.CMS.Repositories
 
         private static readonly ConcurrentDictionary<string, Repository<Content>> TableNameRepositories = new ConcurrentDictionary<string, Repository<Content>>();
 
-        private async Task<Repository<Content>> GetRepositoryAsync(Site site, IChannelSummary channel)
+        private Repository<Content> GetRepository(Site site, IChannelSummary channel)
         {
-            var tableName = await _channelRepository.GetTableNameAsync(site, channel);
+            var tableName = _channelRepository.GetTableName(site, channel);
             return GetRepository(tableName);
         }
 

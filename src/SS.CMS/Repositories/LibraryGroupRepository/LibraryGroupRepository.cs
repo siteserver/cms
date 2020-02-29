@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SS.CMS.Core;
 
 namespace SS.CMS.Repositories
@@ -28,14 +27,14 @@ namespace SS.CMS.Repositories
         public async Task<int> InsertAsync(LibraryGroup group)
         {
             return await _repository.InsertAsync(group, Q
-                .CachingRemove(CacheKey(group.Type))
+                .CachingRemove(CacheKey(group.LibraryType))
             );
         }
 
         public async Task<bool> UpdateAsync(LibraryGroup group)
         {
             return await _repository.UpdateAsync(group, Q
-                .CachingRemove(CacheKey(group.Type))
+                .CachingRemove(CacheKey(group.LibraryType))
             );
         }
 
@@ -49,7 +48,7 @@ namespace SS.CMS.Repositories
         public async Task<List<LibraryGroup>> GetAllAsync(LibraryType type)
         {
             var list = await _repository.GetAllAsync(Q
-                .Where(nameof(LibraryGroup.Type), type.GetValue())
+                .Where(nameof(LibraryGroup.LibraryType), type.GetValue())
                 .OrderByDesc(nameof(LibraryGroup.Id))
                 .CachingGet(CacheKey(type))
             );
@@ -64,7 +63,7 @@ namespace SS.CMS.Repositories
         public async Task<bool> IsExistsAsync(LibraryType type, string groupName)
         {
             return await _repository.ExistsAsync(Q
-                .Where(nameof(LibraryGroup.Type), type.GetValue())
+                .Where(nameof(LibraryGroup.LibraryType), type.GetValue())
                 .Where(nameof(LibraryGroup.GroupName), groupName)
             );
         }

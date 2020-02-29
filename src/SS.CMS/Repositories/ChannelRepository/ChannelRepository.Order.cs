@@ -18,7 +18,7 @@ namespace SS.CMS.Repositories
 
         private async Task<int> GetMaxTaxisAsync(int siteId, int parentId)
         {
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             return summaries
                 .Where(x => x.ParentId == parentId)
                 .Select(x => x.Taxis)
@@ -28,7 +28,7 @@ namespace SS.CMS.Repositories
 
         public async Task UpdateTaxisDownAsync(int siteId, int channelId, int parentId, int taxis)
         {
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             var higher = summaries
                 .Where(x => x.ParentId == parentId && x.Taxis > taxis && x.Id != channelId)
                 .OrderBy(x => x.Taxis)
@@ -43,7 +43,7 @@ namespace SS.CMS.Repositories
 
         public async Task UpdateTaxisUpAsync(int siteId, int channelId, int parentId, int taxis)
         {
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             var lower = summaries
                 .Where(x => x.ParentId == parentId && x.Taxis < taxis && x.Id != channelId)
                 .OrderByDescending(x => x.Taxis)

@@ -8,11 +8,6 @@ namespace SS.CMS.Abstractions.Parse
     {
         private readonly IPathManager _pathManager;
 
-        private ParsePage(IPathManager pathManager)
-        {
-            _pathManager = pathManager;
-        }
-
         public SortedDictionary<string, string> HeadCodes { get; private set; }
 
         public SortedDictionary<string, string> BodyCodes { get; private set; }
@@ -61,34 +56,38 @@ namespace SS.CMS.Abstractions.Parse
 
         public ParsePage Clone()
         {
-            return GetPageInfo(_pathManager, Config, PageChannelId, PageContentId, Site, Template, PluginItems);
+            return new ParsePage(_pathManager, Config, PageChannelId, PageContentId, Site, Template, PluginItems)
+            {
+                HeadCodes = new SortedDictionary<string, string>(HeadCodes),
+                BodyCodes = new SortedDictionary<string, string>(BodyCodes),
+                FootCodes = new SortedDictionary<string, string>(FootCodes),
+                IsLocal = IsLocal
+            };
         }
 
-        public static ParsePage GetPageInfo(IPathManager pathManager, Config config, int pageChannelId, int pageContentId, Site site, Template template, Dictionary<string, object> pluginItems)
+        public ParsePage(IPathManager pathManager, Config config, int pageChannelId, int pageContentId, Site site, Template template, Dictionary<string, object> pluginItems)
         {
+            _pathManager = pathManager;
             var apiUrl = pathManager.GetApiUrl(config);
-            return new ParsePage(pathManager)
-            {
-                Template = template,
-                SiteId = site.Id,
-                PageChannelId = pageChannelId,
-                PageContentId = pageContentId,
-                IsLocal = false,
-                HeadCodes = new SortedDictionary<string, string>(),
-                BodyCodes = new SortedDictionary<string, string>(),
-                FootCodes = new SortedDictionary<string, string>(),
-                Config = config,
-                Site = site,
-                User = null,
-                _uniqueId = 1,
-                ApiUrl = apiUrl,
-                ChannelItems = new Stack<KeyValuePair<int, Channel>>(5),
-                ContentItems = new Stack<KeyValuePair<int, Content>>(5),
-                SqlItems = new Stack<KeyValuePair<int, Dictionary<string, object>>>(5),
-                SiteItems = new Stack<KeyValuePair<int, Site>>(5),
-                EachItems = new Stack<KeyValuePair<int, object>>(5),
-                PluginItems = pluginItems
-            };
+            Template = template;
+            SiteId = site.Id;
+            PageChannelId = pageChannelId;
+            PageContentId = pageContentId;
+            IsLocal = false;
+            HeadCodes = new SortedDictionary<string, string>();
+            BodyCodes = new SortedDictionary<string, string>();
+            FootCodes = new SortedDictionary<string, string>();
+            Config = config;
+            Site = site;
+            User = null;
+            _uniqueId = 1;
+            ApiUrl = apiUrl;
+            ChannelItems = new Stack<KeyValuePair<int, Channel>>(5);
+            ContentItems = new Stack<KeyValuePair<int, Content>>(5);
+            SqlItems = new Stack<KeyValuePair<int, Dictionary<string, object>>>(5);
+            SiteItems = new Stack<KeyValuePair<int, Site>>(5);
+            EachItems = new Stack<KeyValuePair<int, object>>(5);
+            PluginItems = pluginItems;
         }
 
         public void ChangeSite(Site site, int pageChannelId, int pageContentId, ParseContext contextInfo)
@@ -125,67 +124,6 @@ namespace SS.CMS.Abstractions.Parse
             {
                 HeadCodes.Add(pageJsName, await GetJsCodeAsync(pageJsName));
             }
-        }
-
-        /// <summary>
-        /// 将一个页面的js复制给本页面，提供给分页时使用
-        /// add by sessionliang at 20151209
-        /// </summary>
-        /// <param name="lastPageInfo"></param>
-        public void AddLastPageScript(ParsePage lastPageInfo)
-        {
-            foreach (var key in lastPageInfo.BodyCodes.Keys)
-            {
-                if (!BodyCodes.ContainsKey(key))
-                {
-                    BodyCodes.Add(key, lastPageInfo.BodyCodes[key]);
-                }
-            }
-            foreach (var key in lastPageInfo.FootCodes.Keys)
-            {
-                if (!FootCodes.ContainsKey(key))
-                {
-                    FootCodes.Add(key, lastPageInfo.FootCodes[key]);
-                }
-            }
-            foreach (var key in lastPageInfo.HeadCodes.Keys)
-            {
-                if (!HeadCodes.ContainsKey(key))
-                {
-                    HeadCodes.Add(key, lastPageInfo.HeadCodes[key]);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 将一个页面的js从本页面去除，提供给分页时使用
-        ///  add by sessionliang at 20151209
-        /// </summary>
-        /// <param name="lastPageInfo"></param>
-        public void ClearLastPageScript(ParsePage lastPageInfo)
-        {
-            foreach (var key in lastPageInfo.BodyCodes.Keys)
-            {
-                BodyCodes.Remove(key);
-            }
-            foreach (var key in lastPageInfo.FootCodes.Keys)
-            {
-                FootCodes.Remove(key);
-            }
-            foreach (var key in lastPageInfo.HeadCodes.Keys)
-            {
-                HeadCodes.Remove(key);
-            }
-        }
-
-        /// <summary>
-        /// 清理本页面的js
-        /// </summary>
-        public void ClearLastPageScript()
-        {
-            HeadCodes.Clear();
-            BodyCodes.Clear();
-            FootCodes.Clear();
         }
 
         public static class Const

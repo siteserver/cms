@@ -37,7 +37,7 @@ var methods = {
       siteId: this.siteId,
       specialIds: this.checkedSpecialIds
     }).then(function (response) {
-      location.href = 'createStatus.cshtml?siteId=' + $this.siteId;
+      location.href = utils.getCmsUrl('createStatus', {siteId: $this.siteId});
     }).catch(function (error) {
       utils.error($this, error);
     });

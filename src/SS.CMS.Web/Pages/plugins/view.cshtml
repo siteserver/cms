@@ -24,7 +24,7 @@
         </span>
         <span v-if="pluginInfo.tags">
           <span class="ml-2 mr-2 text-dark">|</span>
-          <span class="text-dark"> 标签： <a v-for="tagName in getTagNames(pluginInfo)" class="mr-2 text-primary" :href="'add.cshtml?q=' + encodeURIComponent(tagName)">{{
+          <span class="text-dark"> 标签： <a v-for="tagName in getTagNames(pluginInfo)" class="mr-2 text-primary" :href="utils.getPluginsUrl('add', {q: tagName})">{{
               tagName }}</a>
           </span>
         </span>
@@ -33,13 +33,13 @@
       <span v-if="installed && isShouldUpdate" class="text-warning mt-2 mb-0"> 系统检测到插件新版本，当前版本：{{ installedVersion
         }}，新版本：{{ releaseInfo.version }} </span>
       <div class="mt-2 mb-2">
-        <a v-if="installed && isShouldUpdate" href="javascript:;" v-on:click="location.href='install.cshtml?isUpdate=true&pluginIds=' + pluginInfo.pluginId;return false;"
+        <a v-if="installed && isShouldUpdate" href="javascript:;" v-on:click="location.href = utils.getPluginsUrl('install', {isUpdate: true, pluginIds: pluginInfo.pluginId});return false;"
           class="btn btn-warning">升级插件</a>
         <a v-else-if="installed" href="javascript:;" class="btn disabled ml-2">插件已安装</a>
         <template v-else>
-          <a v-if="pluginInfo.price" href="javascript:;" v-on:click="location.href='install.cshtml?pluginIds=' + pluginInfo.pluginId;return false;"
+          <a v-if="pluginInfo.price" href="javascript:;" v-on:click="location.href = utils.getPluginsUrl('install', {pluginIds: pluginInfo.pluginId});return false;"
             class="btn btn-primary">购买并安装插件</a>
-          <a v-else href="javascript:;" v-on:click="location.href='install.cshtml?pluginIds=' + pluginInfo.pluginId;return false;"
+          <a v-else href="javascript:;" v-on:click="location.href = utils.getPluginsUrl('install', {pluginIds: pluginInfo.pluginId});return false;"
             class="btn btn-primary">安装插件</a>
         </template>
         <a class="btn btn-success ml-2" target="_blank" :href="'https://www.siteserver.cn/plugins/plugin.html?id=' + pluginInfo.pluginId">插件主页</a>

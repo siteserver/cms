@@ -82,7 +82,7 @@ var methods = {
   },
 
   tableRowClassName(scope) {
-    if (scope.row.default) {
+    if (scope.row.defaultTemplate) {
       return 'default-row';
     }
     return '';
@@ -172,7 +172,11 @@ var methods = {
   },
 
   getEditorUrl: function(templateType, templateId) {
-    return 'templatesEditor.cshtml?siteId=' + this.siteId + '&templateId=' + templateId + '&templateType=' + templateType;
+    return utils.getCmsUrl('templatesEditor', {
+      siteId: this.siteId,
+      templateId: templateId,
+      templateType: templateType
+    });
   },
 
   reload: function() {

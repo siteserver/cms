@@ -7,13 +7,13 @@ namespace SS.CMS.Abstractions
     [JsonConverter(typeof(StringEnumConverter))]
     public enum TranslateContentType
     {
-        [DataEnum(DisplayName = "��������")]
+        [DataEnum(DisplayName = "复制")]
         Copy,
-        [DataEnum(DisplayName = "����")]
+        [DataEnum(DisplayName = "剪切")]
         Cut,
-        [DataEnum(DisplayName = "���õ�ַ")]
+        [DataEnum(DisplayName = "引用地址")]
         Reference,
-        [DataEnum(DisplayName = "��������")]
+        [DataEnum(DisplayName = "引用内容")]
         ReferenceContent,
     }
 }

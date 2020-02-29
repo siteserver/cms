@@ -29,11 +29,11 @@ namespace SS.CMS.Abstractions
 
         Task<List<int>> GetSiteIdListAsync(int parentId);
 
-        Task<List<string>> GetSiteTableNamesAsync();
+        Task<List<string>> GetSiteTableNamesAsync(IPluginManager pluginManager);
 
-        Task<List<string>> GetAllTableNamesAsync();
+        Task<List<string>> GetAllTableNamesAsync(IPluginManager pluginManager);
 
-        Task<List<string>> GetTableNamesAsync(Site site);
+        Task<List<string>> GetTableNamesAsync(IPluginManager pluginManager, Site site);
 
         Task<int> GetIdByIsRootAsync();
 

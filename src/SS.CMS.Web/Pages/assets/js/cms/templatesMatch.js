@@ -36,8 +36,8 @@ var methods = {
       $this.contentTemplates = res.contentTemplates;
 
       $this.expandedChannelIds = [$this.siteId];
-      $this.defaultChannelTemplate = _.find($this.channelTemplates, function(o) { return o.default; }) || {id: 0};
-      $this.defaultContentTemplate = _.find($this.contentTemplates, function(o) { return o.default; }) || {id: 0};
+      $this.defaultChannelTemplate = _.find($this.channelTemplates, function(o) { return o.defaultTemplate; }) || {id: 0};
+      $this.defaultContentTemplate = _.find($this.contentTemplates, function(o) { return o.defaultTemplate; }) || {id: 0};
       $this.channelTemplateId = $this.defaultChannelTemplate.id;
       $this.contentTemplateId = $this.defaultContentTemplate.id;
     }).catch(function (error) {
@@ -92,7 +92,10 @@ var methods = {
   },
 
   getChannelUrl: function(data) {
-    return '../redirect.cshtml?siteId=' + this.siteId + '&channelId=' + data.value;
+    return utils.getRootUrl('redirect', {
+      siteId: this.siteId,
+      channelId: data.value
+    });
   },
 
   getChannelTemplateName: function(channelTemplateId) {

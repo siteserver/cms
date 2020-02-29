@@ -7,7 +7,7 @@ namespace SS.CMS.Abstractions
     {
         Task CacheAllAsync(Site site);
 
-        Task<List<ChannelSummary>> GetSummaryAsync(int siteId);
+        Task<List<ChannelSummary>> GetSummariesAsync(int siteId);
 
         Task<Channel> GetAsync(int channelId);
     }

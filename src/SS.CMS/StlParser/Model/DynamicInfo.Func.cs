@@ -5,23 +5,6 @@ namespace SS.CMS.StlParser.Model
 {
     public partial class DynamicInfo
     {
-        public static DynamicInfo GetDynamicInfo(string value, int page, User user, string pathAndQuery)
-        {
-            var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(GlobalSettings.SettingsManager.Decrypt(value));
-            if (dynamicInfo.ChannelId == 0)
-            {
-                dynamicInfo.ChannelId = dynamicInfo.SiteId;
-            }
-            dynamicInfo.User = user;
-            dynamicInfo.QueryString =
-                PageUtils.GetQueryStringFilterXss(pathAndQuery);
-            dynamicInfo.QueryString.Remove("siteId");
-
-            dynamicInfo.Page = page;
-
-            return dynamicInfo;
-        }
-
         public string GetScript(string apiUrl, bool inline)
         {
             if (string.IsNullOrEmpty(LoadingTemplate) && 
@@ -31,7 +14,7 @@ namespace SS.CMS.StlParser.Model
                 return string.Empty;
             }
 
-            var values = GlobalSettings.SettingsManager.Encrypt(TranslateUtils.JsonSerialize(this));
+            var values = _settingsManager.Encrypt(TranslateUtils.JsonSerialize(this));
             var display = inline ? "inline-block" : "block";
 
             return $@"

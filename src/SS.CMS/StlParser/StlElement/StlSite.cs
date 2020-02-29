@@ -224,7 +224,9 @@ namespace SS.CMS.StlParser.StlElement
                         }
                         else
                         {
-                            parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parseManager.PathManager, parsedContent, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                            var inputParser = new InputParserManager(parseManager.PathManager);
+
+                            parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
 
                             inputType = styleInfo.InputType;
 

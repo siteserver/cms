@@ -214,7 +214,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                         RelatedFileName = "T_" + nodeInfo.ChannelName + ".html",
                         CreatedFileFullName = "index.html",
                         CreatedFileExtName = ".html",
-                        Default = false
+                        DefaultTemplate = false
                     };
 
                     if (StringUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
@@ -256,7 +256,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                     RelatedFileName = "T_" + nodeInfo.ChannelName + "_下级.html",
                     CreatedFileFullName = "index.html",
                     CreatedFileExtName = ".html",
-                    Default = false
+                    DefaultTemplate = false
                 };
 
                 if (StringUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
@@ -311,7 +311,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                         RelatedFileName = "T_" + nodeInfo.ChannelName + ".html",
                         CreatedFileFullName = "index.html",
                         CreatedFileExtName = ".html",
-                        Default = false
+                        DefaultTemplate = false
                     };
                     if (StringUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
                     {
@@ -350,7 +350,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                     RelatedFileName = "T_" + nodeInfo.ChannelName + "_下级.html",
                     CreatedFileFullName = "index.html",
                     CreatedFileExtName = ".html",
-                    Default = false
+                    DefaultTemplate = false
                 };
 
                 if (StringUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))

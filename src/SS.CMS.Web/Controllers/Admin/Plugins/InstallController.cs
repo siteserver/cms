@@ -4,7 +4,6 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
 using SS.CMS.Packaging;
-using SS.CMS.Plugins;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Plugins
@@ -20,13 +19,15 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public InstallController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IDbCacheRepository dbCacheRepository)
+        public InstallController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, IDbCacheRepository dbCacheRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
+            _pluginManager = pluginManager;
             _dbCacheRepository = dbCacheRepository;
         }
 
@@ -44,7 +45,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
             {
                 IsNightly = _settingsManager.IsNightlyUpdate,
                 PluginVersion = _settingsManager.PluginVersion,
-                DownloadPlugins = PluginManager.PackagesIdAndVersionList
+                DownloadPlugins = _pluginManager.PackagesIdAndVersionList
             };
         }
 
@@ -62,11 +63,11 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
             {
                 try
                 {
-                    PackageUtils.DownloadPackage(request.PackageId, request.Version);
+                    PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
                 }
                 catch
                 {
-                    PackageUtils.DownloadPackage(request.PackageId, request.Version);
+                    PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
                 }
             }
 
@@ -89,7 +90,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
             if (!StringUtils.EqualsIgnoreCase(request.PackageId, PackageUtils.PackageIdSiteServerPlugin))
             {
                 var idWithVersion = $"{request.PackageId}.{request.Version}";
-                if (!PackageUtils.UpdatePackage(_pathManager, idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))
+                if (!_pluginManager.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))
                 {
                     return this.Error(errorMessage);
                 }

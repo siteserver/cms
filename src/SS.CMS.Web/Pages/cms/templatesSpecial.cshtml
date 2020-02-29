@@ -24,7 +24,7 @@
       <template slot-scope="scope">
         <el-link
           :underline="false"
-          :href="'specialEditor.cshtml?siteId=' + scope.row.siteId + '&specialId=' + scope.row.id"
+          :href="utils.getCmsUrl('specialEditor', {siteId: scope.row.siteId, specialId: scope.row.id})"
           target="_blank"
           type="primary">
           可视化编辑

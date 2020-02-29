@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS.Api.Preview;
 using SS.CMS.Core;
 
 namespace SS.CMS.Services
@@ -16,7 +15,7 @@ namespace SS.CMS.Services
             var specialUrl = await GetSpecialUrlAsync(site, specialId);
 
             var url = isLocal
-                ? ApiRoutePreview.GetSpecialUrl(site.Id, specialId)
+                ? GetLocalSpecialUrl(site.Id, specialId)
                 : await ParseNavigationUrlAsync(site, specialUrl, false);
 
             return RemoveDefaultFileName(site, url);
@@ -31,7 +30,7 @@ namespace SS.CMS.Services
         private async Task<string> GetSpecialUrlAsync(Site site, string url)
         {
             var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
-            if (!PageUtils.IsVirtualUrl(virtualPath))
+            if (!IsVirtualUrl(virtualPath))
             {
                 virtualPath = $"@/{StringUtils.TrimSlash(virtualPath)}";
             }
@@ -96,7 +95,7 @@ namespace SS.CMS.Services
                         CreatedFileExtName = ".html",
                         CreatedFileFullName = PathUtils.Combine(special.Url, relatedPath),
                         Id = 0,
-                        Default = false,
+                        DefaultTemplate = false,
                         RelatedFileName = string.Empty,
                         SiteId = site.Id,
                         TemplateType = TemplateType.FileTemplate,
@@ -122,7 +121,7 @@ namespace SS.CMS.Services
                     content = FileUtils.ReadText(filePath, Encoding.UTF8);
                 }
 
-                CacheUtils.Insert(filePath, content, TimeSpan.FromHours(12), filePath);
+                CacheUtils.Insert(filePath, content, filePath);
                 return content;
             }
             catch

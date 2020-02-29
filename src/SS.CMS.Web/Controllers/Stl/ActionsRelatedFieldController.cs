@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Api.Stl;
 
 namespace SS.CMS.Web.Controllers.Stl
 {
@@ -14,7 +13,7 @@ namespace SS.CMS.Web.Controllers.Stl
             _relatedFieldItemRepository = relatedFieldItemRepository;
         }
 
-        [HttpPost, Route(ApiRouteActionsRelatedField.Route)]
+        [HttpPost, Route("sys/stl/actions/related_field/{siteId}")]
         public async Task<string> Submit([FromBody] SubmitRequest request)
         {
             var jsonString = await GetRelatedFieldAsync(request.SiteId, request.RelatedFieldId, request.ParentId);

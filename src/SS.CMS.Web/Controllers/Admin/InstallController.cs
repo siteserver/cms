@@ -21,14 +21,16 @@ namespace SS.CMS.Web.Controllers.Admin
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public InstallController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
+        public InstallController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _configRepository = configRepository;
             _administratorRepository = administratorRepository;
         }
@@ -63,7 +65,7 @@ namespace SS.CMS.Web.Controllers.Admin
             var siteFilesWritable = false;
             try
             {
-                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName, "index.html");
+                var filePath = PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, "index.html");
                 FileUtils.WriteText(filePath, Constants.Html5Empty);
 
                 var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName));

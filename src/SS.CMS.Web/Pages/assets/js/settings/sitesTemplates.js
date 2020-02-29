@@ -34,11 +34,17 @@ var methods = {
   },
 
   btnCreateClick: function(row) {
-    location.href = 'sitesAdd.cshtml?type=create&createType=local&createTemplateId=' + row.directoryName;
+    location.href = utils.getSettingsUrl('sitesAdd', {
+      type: create,
+      createType: local,
+      createTemplateId: row.directoryName
+    });
   },
 
   btnEditClick: function(row) {
-    location.href = 'adminRoleAdd.cshtml?roleId=' + row.id;
+    location.href = utils.getSettingsUrl('administratorsRoleAdd', {
+      roleId: row.id
+    });
   },
 
   btnDownloadClick: function(row) {

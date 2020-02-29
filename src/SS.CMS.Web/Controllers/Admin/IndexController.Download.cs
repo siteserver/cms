@@ -19,14 +19,14 @@ namespace SS.CMS.Web.Controllers.Admin
 
             try
             {
-                PackageUtils.DownloadPackage(request.PackageId, request.Version);
+                PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
             }
             catch
             {
-                PackageUtils.DownloadPackage(request.PackageId, request.Version);
+                PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
             }
 
-            var isDownload = PackageUtils.IsPackageDownload(request.PackageId, request.Version);
+            var isDownload = PackageUtils.IsPackageDownload(_pathManager, request.PackageId, request.Version);
             if (isDownload)
             {
                 if (StringUtils.EqualsIgnoreCase(request.PackageId, PackageUtils.PackageIdSsCms))

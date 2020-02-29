@@ -55,7 +55,11 @@ var methods = {
 
   getContentUrl: function (content) {
     if (content.checked) {
-      return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
+      return utils.getRootUrl('redirect', {
+        siteId: content.siteId,
+        channelId: content.channelId,
+        contentId: content.id
+      });
     }
     return $apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
   },
@@ -63,7 +67,7 @@ var methods = {
   btnAdminClick: function(adminId) {
     utils.openLayer({
       title: "管理员查看",
-      url: '../shared/adminLayerView.cshtml?adminId=' + adminId,
+      url: utils.getSharedUrl('adminLayerView', {adminId: adminId}),
       width: 550,
       height: 450
     });

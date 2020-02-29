@@ -25,7 +25,7 @@ namespace SS.CMS.Abstractions
         public string CreatedFileExtName { get; set; }
 
         [DataColumn]
-        public bool Default { get; set; }
+        public bool DefaultTemplate { get; set; }
 
         [DataIgnore]
         public string Content { get; set; }

@@ -170,7 +170,9 @@ namespace SS.CMS.StlParser.StlEntity
                             }
                             else
                             {
-                                parsedContent = await InputParserUtility.GetContentByTableStyleAsync(parseManager.PathManager, parsedContent, null, pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
+                                var inputParser = new InputParserManager(parseManager.PathManager);
+
+                                parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, null, pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
                             }
                         }
                     }

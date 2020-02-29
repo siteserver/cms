@@ -25,7 +25,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             if (site == null) return NotFound();
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.RecycleContents);
 
             var pageContents = new List<Content>();

@@ -16,7 +16,7 @@ namespace SS.CMS.Repositories
     {
         public async Task<int> GetMaxTaxisAsync(Site site, Channel channel, bool isTop)
         {
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
 
             var maxTaxis = 0;
             if (isTop)
@@ -135,7 +135,7 @@ group by tmp.adminId";
 
         public async Task<List<int>> GetIdListBySameTitleAsync(Site site, Channel channel, string title)
         {
-            var repository = await GetRepositoryAsync(site, channel);
+            var repository = GetRepository(site, channel);
 
             return await repository.GetAllAsync<int>(GetQuery(site.Id, channel.Id)
                 .Select(nameof(Content.Id))
@@ -200,7 +200,7 @@ group by tmp.adminId";
             }
 
             var channelId = await _channelRepository.GetChannelIdAsync(siteId, siteId, channelIndex, channelName);
-            var channelInfo = await _channelRepository.GetAsync(channelId);
+            var channel = await _channelRepository.GetAsync(channelId);
 
             if (isAllSites)
             {
@@ -282,7 +282,7 @@ group by tmp.adminId";
                 whereBuilder.Append($" AND {dateAttribute} BETWEEN {SqlUtils.GetComparableDateTime(_settingsManager.Database.DatabaseType, sinceDate)} AND {SqlUtils.GetComparableNow(_settingsManager.Database.DatabaseType)} ");
             }
 
-            var tableName = await _channelRepository.GetTableNameAsync(site, channelInfo);
+            var tableName = _channelRepository.GetTableName(site, channel);
             //var styleInfoList = RelatedIdentities.GetTableStyleInfoList(site, channel.Id);
 
             foreach (string key in form.Keys)

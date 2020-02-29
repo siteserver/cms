@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-
 
 namespace SS.CMS.Abstractions
 {
@@ -37,6 +35,18 @@ namespace SS.CMS.Abstractions
         public const string ScopeStl = "STL";
 
         public const string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页占位符
+
+        public const string RoutePreview = "preview/{siteId}";
+        public const string RoutePreviewChannel = "preview/{siteId}/{channelId}";
+        public const string RoutePreviewContent = "preview/{siteId}/{channelId}/{contentId}";
+        public const string RoutePreviewFile = "preview/{siteId}/file/{fileTemplateId}";
+        public const string RoutePreviewSpecial = "preview/{siteId}/special/{specialId}";
+        public const string RouteActionsDownload = "stl/actions/download";
+        public const string RouteActionsDynamic = "sys/stl/actions/dynamic";
+        public const string RouteRouteActionsIf = "sys/stl/actions/if";
+        public const string RouteActionsPageContents = "sys/stl/actions/pagecontents";
+        public const string RouteActionsSearch = "sys/stl/actions/search";
+        public const string RouteActionsTrigger = "sys/stl/actions/trigger";
 
         public static readonly List<string> ScopeList = new List<string>
         {
@@ -145,8 +155,6 @@ namespace SS.CMS.Abstractions
         }
 
         public static DateTime SqlMinValue { get; } = new DateTime(1754, 1, 1, 0, 0, 0, 0);
-
-        public static Encoding Gb2312 { get; } = Encoding.GetEncoding("gb2312");
 
         public const char PageSeparatorChar = '/';
 

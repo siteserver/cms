@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
-using SS.CMS;
 using SS.CMS.Core;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Repositories
 {
@@ -24,7 +22,7 @@ namespace SS.CMS.Repositories
         /// </summary>
         public async Task<Channel> GetChannelByLastAddDateAsyncTask(int siteId, int parentId)
         {
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             var channelId = summaries
                 .Where(x => x.ParentId == parentId)
                 .OrderByDescending(x => x.AddDate)
@@ -38,7 +36,7 @@ namespace SS.CMS.Repositories
         /// </summary>
         public async Task<Channel> GetChannelByTaxisAsync(int siteId, int parentId)
         {
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             var channelId = summaries
                 .Where(x => x.ParentId == parentId)
                 .OrderBy(x => x.Taxis)
@@ -49,7 +47,7 @@ namespace SS.CMS.Repositories
 
         public async Task<int> GetIdByParentIdAndTaxisAsync(int siteId, int parentId, int taxis, bool isNextChannel)
         {
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
 
             return isNextChannel
                 ? summaries
@@ -66,7 +64,7 @@ namespace SS.CMS.Repositories
 
         public async Task<List<string>> GetIndexNameListAsync(int siteId)
         {
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             return summaries
                 .Where(x => !string.IsNullOrEmpty(x.IndexName))
                 .Select(x => x.IndexName).ToList();
@@ -74,7 +72,7 @@ namespace SS.CMS.Repositories
 
         public async Task<bool> IsIndexNameExistsAsync(int siteId, string indexName)
         {
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             return summaries
                 .Where(x => !string.IsNullOrEmpty(x.IndexName))
                 .Any(x => x.IndexName == indexName);
@@ -83,7 +81,7 @@ namespace SS.CMS.Repositories
         public async Task<int> GetSequenceAsync(int siteId, int channelId)
         {
             var channel = await GetAsync(channelId);
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             return summaries.Count(x => x.ParentId == channel.ParentId && x.Taxis > channel.Taxis) + 1;
         }
 
@@ -117,7 +115,7 @@ namespace SS.CMS.Repositories
         {
             var list = new List<Cascade<int>>();
 
-            var summaries = await GetSummaryAsync(site.Id);
+            var summaries = await GetSummariesAsync(site.Id);
             foreach (var cache in summaries)
             {
                 if (cache == null) continue;
@@ -144,7 +142,7 @@ namespace SS.CMS.Repositories
         {
             var list = new List<Cascade<int>>();
 
-            var summaries = await GetSummaryAsync(site.Id);
+            var summaries = await GetSummariesAsync(site.Id);
 
             foreach (var summary in summaries)
             {
@@ -162,7 +160,7 @@ namespace SS.CMS.Repositories
         {
             var list = new List<Channel>();
 
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
 
             foreach (var summary in summaries)
             {
@@ -210,7 +208,7 @@ namespace SS.CMS.Repositories
         {
             if (string.IsNullOrEmpty(indexName)) return 0;
 
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             var channelInfo = summaries.FirstOrDefault(x => x != null && x.IndexName == indexName);
             return channelInfo?.Id ?? 0;
         }
@@ -219,7 +217,7 @@ namespace SS.CMS.Repositories
         {
             if (parentId <= 0 || string.IsNullOrEmpty(channelName)) return 0;
 
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
 
             IChannelSummary channel;
 
@@ -257,7 +255,7 @@ namespace SS.CMS.Repositories
 
         public async Task<List<Channel>> GetChannelListAsync(int siteId)
         {
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             var list = new List<Channel>();
             foreach (var summary in summaries)
             {
@@ -270,13 +268,13 @@ namespace SS.CMS.Repositories
 
         public async Task<List<int>> GetChannelIdListAsync(int siteId)
         {
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             return summaries.OrderBy(c => c.Taxis).Select(x => x.Id).ToList();
         }
 
         public async Task<List<string>> GetChannelIndexNameListAsync(int siteId)
         {
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             return summaries.OrderBy(c => c.Taxis).Where(channelInfo => !string.IsNullOrEmpty(channelInfo.IndexName)).Select(channelInfo => channelInfo.IndexName).ToList();
         }
 
@@ -319,7 +317,7 @@ namespace SS.CMS.Repositories
 
             if (scopeType == ScopeType.SelfAndChildren)
             {
-                var summaries = await GetSummaryAsync(siteId);
+                var summaries = await GetSummariesAsync(siteId);
                 var list = GetChildIds(summaries, channelId);
                 list.Add(channelId);
                 return list;
@@ -327,13 +325,13 @@ namespace SS.CMS.Repositories
 
             if (scopeType == ScopeType.Children)
             {
-                var summaries = await GetSummaryAsync(siteId);
+                var summaries = await GetSummariesAsync(siteId);
                 return GetChildIds(summaries, channelId);
             }
 
             if (scopeType == ScopeType.Descendant)
             {
-                var summaries = await GetSummaryAsync(siteId);
+                var summaries = await GetSummariesAsync(siteId);
                 var list = new List<int>();
                 GetChildIdsRecursive(summaries, list, channelId);
                 return list;
@@ -341,7 +339,7 @@ namespace SS.CMS.Repositories
 
             if (scopeType == ScopeType.All)
             {
-                var summaries = await GetSummaryAsync(siteId);
+                var summaries = await GetSummariesAsync(siteId);
                 var list = new List<int> { channelId };
                 GetChildIdsRecursive(summaries, list, channelId);
                 return list;
@@ -401,35 +399,22 @@ namespace SS.CMS.Repositories
 
         public async Task<string> GetTableNameAsync(Site site, int channelId)
         {
-            return await GetTableNameAsync(site, await GetAsync(channelId));
+            return GetTableName(site, await GetAsync(channelId));
         }
 
-        public async Task<string> GetTableNameAsync(Site site, IChannelSummary channel)
+        public string GetTableName(Site site, IChannelSummary channel)
         {
-            return channel != null ? await GetTableNameAsync(site, channel.ContentModelPluginId) : string.Empty;
+            return channel != null ? GetTableName(site, channel.ContentModelPluginId) : string.Empty;
         }
 
-        private async Task<string> GetTableNameAsync(Site site, string pluginId)
+        private string GetTableName(Site site, string contentModelPluginId)
         {
-            var tableName = site.TableName;
-
-            if (string.IsNullOrEmpty(pluginId)) return tableName;
-
-            var contentTable = await PluginManager.GetTableNameAsync(pluginId);
-            if (!string.IsNullOrEmpty(contentTable))
-            {
-                tableName = contentTable;
-            }
-
-            return tableName;
+            return string.IsNullOrEmpty(contentModelPluginId) ? site.TableName : contentModelPluginId;
         }
 
-        public async Task<bool> IsContentModelPluginAsync(Site site, Channel node)
+        public bool IsContentModelPlugin(Site site, Channel node)
         {
-            if (string.IsNullOrEmpty(node.ContentModelPluginId)) return false;
-
-            var contentTable = await PluginManager.GetTableNameAsync(node.ContentModelPluginId);
-            return !string.IsNullOrEmpty(contentTable);
+            return !string.IsNullOrEmpty(node.ContentModelPluginId);
         }
 
         public async Task<List<string>> GetGroupNamesAsync(int channelId)
@@ -498,6 +483,7 @@ namespace SS.CMS.Repositories
             var channelNames = new List<string>();
 
             if (channelId == 0) channelId = siteId;
+            else if (channelId < 0) channelId = Math.Abs(channelId);
 
             if (channelId == siteId)
             {
@@ -510,7 +496,7 @@ namespace SS.CMS.Repositories
                 return channel.ChannelName;
             }
 
-            var summaries = await GetSummaryAsync(siteId);
+            var summaries = await GetSummariesAsync(siteId);
             var parentIds = new List<int>
             {
                 channelId
@@ -547,7 +533,7 @@ namespace SS.CMS.Repositories
         {
             var items = new List<InputStyle>();
 
-            var tableName = await GetTableNameAsync(site, channel);
+            var tableName = GetTableName(site, channel);
             var styleList = ColumnsManager.GetContentListStyles(await _tableStyleRepository.GetContentStyleListAsync(channel, tableName));
 
             foreach (var style in styleList)

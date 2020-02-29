@@ -121,19 +121,22 @@ var methods = {
   },
 
   setEditorContent: function(val) {
+    var $this = this;
+
+    
+
     if (this.contentEditor) {
       this.contentEditor.getModel().setValue(val);
       this.contentEditor.focus();
     } else {
-      var $this = this;
       setTimeout(function () {
-        require.config({ paths: { 'vs': '../assets/lib/monaco-editor/min/vs' }});
+        require.config({ paths: { 'vs': '../../assets/lib/monaco-editor/min/vs' }});
         require(['vs/editor/editor.main'], function() {
-            $this.contentEditor = monaco.editor.create(document.getElementById('content'), {
-                value: val,
-                language: 'html'
-            });
-            $this.contentEditor.focus();
+          $this.contentEditor = monaco.editor.create(document.getElementById('templateContent'), {
+              value: val,
+              language: 'html'
+          });
+          $this.contentEditor.focus();
         });
       }, 100);
     }
@@ -152,7 +155,10 @@ var methods = {
   btnRestoreClick: function() {
     utils.openLayer({
       title: '还原历史版本',
-      url: 'templatesEditorLayerRestore.cshtml?siteId=' + this.siteId + '&templateId=' + this.templateId,
+      url: utils.getCmsUrl('templatesEditorLayerRestore', {
+        siteId: this.siteId,
+        templateId: this.templateId
+      }),
       full: true
     });
   },
@@ -185,7 +191,9 @@ var methods = {
   },
 
   btnCancelClick: function() {
-    location.href = 'templates.cshtml?siteId=' + this.siteId;
+    location.href = utils.getCmsUrl('templates', {
+      siteId: this.siteId
+    });
   }
 };
 

@@ -77,7 +77,7 @@
                 :href="getEditorUrl(scope.row.templateType, scope.row.id)"
                 type="primary">
                 {{ scope.row.templateName }}
-                <el-tag size="mini" type="danger" v-if="scope.row.default">
+                <el-tag size="mini" type="danger" v-if="scope.row.defaultTemplate">
                   默认
                 </el-tag>
               </el-link>
@@ -113,7 +113,7 @@
               </el-link>
               <el-link
                 :underline="false"
-                :disabled="scope.row.default || scope.row.templateType === 'FileTemplate'"
+                :disabled="scope.row.defaultTemplate || scope.row.templateType === 'FileTemplate'"
                 v-on:click="btnDefaultClick(scope.row)"
                 type="primary">
                 设为默认
@@ -132,7 +132,7 @@
               </el-link>
               <el-link
                 :underline="false"
-                :disabled="scope.row.default"
+                :disabled="scope.row.defaultTemplate"
                 type="danger"
                 v-on:click="btnDeleteClick(scope.row)">
                 删除

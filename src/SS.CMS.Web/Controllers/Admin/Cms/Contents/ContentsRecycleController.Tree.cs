@@ -32,7 +32,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             var tagNames = await _contentTagRepository.GetTagNamesAsync(request.SiteId);
             var checkedLevels = ElementUtils.GetCheckBoxes(CheckManager.GetCheckedLevels(site, true, site.CheckContentLevel, true));
 
-            var columnsManager = new ColumnsManager(_databaseManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.RecycleContents);
 
             return new TreeResult

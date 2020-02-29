@@ -186,7 +186,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
             foreach (var contentId in contentIdList)
             {
-                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, site, channelId, contentId, targetSiteId, targetChannelId, translateType, _createManager);
+                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, channelId, contentId, targetSiteId, targetChannelId, translateType, _createManager);
             }
         }
     }

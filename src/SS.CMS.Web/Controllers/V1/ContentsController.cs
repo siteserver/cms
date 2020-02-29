@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Plugins;
 
 namespace SS.CMS.Web.Controllers.V1
 {
@@ -20,6 +19,7 @@ namespace SS.CMS.Web.Controllers.V1
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
@@ -27,10 +27,11 @@ namespace SS.CMS.Web.Controllers.V1
         private readonly IErrorLogRepository _errorLogRepository;
         private readonly IContentCheckRepository _contentCheckRepository;
 
-        public ContentsController(IAuthManager authManager, ICreateManager createManager, IAccessTokenRepository accessTokenRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IErrorLogRepository errorLogRepository, IContentCheckRepository contentCheckRepository)
+        public ContentsController(IAuthManager authManager, ICreateManager createManager, IPluginManager pluginManager, IAccessTokenRepository accessTokenRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IErrorLogRepository errorLogRepository, IContentCheckRepository contentCheckRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _pluginManager = pluginManager;
             _accessTokenRepository = accessTokenRepository;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
@@ -101,7 +102,7 @@ namespace SS.CMS.Web.Controllers.V1
 
             contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);
 
-            foreach (var service in await PluginManager.GetServicesAsync())
+            foreach (var service in await _pluginManager.GetServicesAsync())
             {
                 try
                 {
@@ -175,7 +176,7 @@ namespace SS.CMS.Web.Controllers.V1
 
             await _contentRepository.UpdateAsync(site, channelInfo, content);
 
-            foreach (var service in await PluginManager.GetServicesAsync())
+            foreach (var service in await _pluginManager.GetServicesAsync())
             {
                 try
                 {
@@ -228,7 +229,7 @@ namespace SS.CMS.Web.Controllers.V1
             var content = await _contentRepository.GetAsync(site, channel, id);
             if (content == null) return NotFound();
 
-            await _contentRepository.DeleteAsync(site, channel, id);
+            await _contentRepository.DeleteAsync(_pluginManager, site, channel, id);
 
             return content;
         }

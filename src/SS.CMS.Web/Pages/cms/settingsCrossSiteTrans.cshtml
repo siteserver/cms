@@ -6,8 +6,8 @@
   text-color="#fff"
   active-text-color="#ffd04b"
 >
-  <el-menu-item index="1"><el-link :underline="false" :href="'settingsCrossSiteTrans.cshtml?siteId=' + siteId">跨站转发审核设置</el-link></el-menu-item>
-  <el-menu-item index="2"><el-link :underline="false" :href="'settingsCrossSiteTransChannels.cshtml?siteId=' + siteId">跨站转发栏目设置</el-link></el-menu-item>
+  <el-menu-item index="1"><el-link :underline="false" :href="utils.getCmsUrl('settingsCrossSiteTrans', {siteId: siteId})">跨站转发审核设置</el-link></el-menu-item>
+  <el-menu-item index="2"><el-link :underline="false" :href="utils.getCmsUrl('settingsCrossSiteTransChannels', {siteId: siteId})">跨站转发栏目设置</el-link></el-menu-item>
 </el-menu>
 
 <el-card>

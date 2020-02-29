@@ -53,7 +53,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
             {
                 if (fileSystem.IsDirectory)
                 {
-                    if (!WebUtils.IsSystemDirectory(fileSystem.Name) && !siteDirList.Contains(fileSystem.Name.ToLower()))
+                    if (!_pathManager.IsSystemDirectory(fileSystem.Name) && !siteDirList.Contains(fileSystem.Name.ToLower()))
                     {
                         directories.Add(fileSystem.Name);
                     }

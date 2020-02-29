@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Datory;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace SS.CMS.Cli.Updater.Tables.GovInteract
 {

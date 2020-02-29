@@ -1,48 +1,57 @@
-# https://docs.microsoft.com/azure/devops/pipelines
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-pool:
-  vmImage: 'windows-2019'
-
-variables:
-  solution: 'sscms.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-  version: 7.0.$(Build.BuildNumber)
-
-steps:
-- task: DotNetCoreInstaller@0
-  displayName: install dotnet
-  inputs:
-    version: '3.0.100'
-
-- task: NuGetToolInstaller@1
-  displayName: install nuget
-  inputs:
-    versionSpec: 
-    checkLatest: true
-
-- script: dotnet restore $(solution)
-  displayName: dotnet restore
-
-- script: nuget restore src/SS.CMS.Cli/packages.config -PackagesDirectory ./packages
-  displayName: nuget restore SS.CMS.Cli
-
-- script: nuget restore src/SS.CMS.Web/packages.config -PackagesDirectory ./packages
-  displayName: nuget restore SS.CMS.Web
-
-- task: DotNetCoreCLI@2
-  displayName: dotnet build
-  inputs:
-    command: 'build'
-    projects: '$(solution)'
-    arguments: '--configuration $(buildConfiguration)'
-
-- task: DotNetCoreCLI@2
-  displayName: dotnet test
-  inputs:
-    command: 'test'
-    projects: '**/*Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
-
-- script: dotnet pack /p:PackageVersion=$(version)
-  displayName: dotnet pack
+trigger:
+  - staging
+  
+  variables:
+    netCoreSdkVersion: '3.1.100'
+  
+  jobs:
+  - job: Linux
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+    - task: DotNetCoreInstaller@0
+      inputs:
+        packageType: 'sdk'
+        version: $(netCoreSdkVersion)
+    - script: dotnet build ./sscms.sln
+      displayName: 'dotnet build'
+  
+  - job: macOS
+    pool:
+      vmImage: 'macOS-10.13'
+    steps:
+    - task: DotNetCoreInstaller@0
+      inputs:
+        packageType: 'sdk'
+        version: $(netCoreSdkVersion)
+    - script: dotnet build ./sscms.sln
+      displayName: 'dotnet build'
+  
+  - job: Windows
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+    - task: DotNetCoreInstaller@0
+      inputs:
+        packageType: 'sdk'
+        version: $(netCoreSdkVersion)
+    - script: dotnet build ./sscms.sln
+      displayName: 'dotnet build'
+  
+  - job: LinuxRelease
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    variables:
+      buildConfiguration: 'Release'
+    steps:
+    - task: DotNetCoreInstaller@0
+      inputs:
+        packageType: 'sdk'
+        version: $(netCoreSdkVersion)
+    - script: dotnet build --configuration $(buildConfiguration)
+      displayName: 'dotnet build $(buildConfiguration)'

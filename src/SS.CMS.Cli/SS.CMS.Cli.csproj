@@ -9,6 +9,10 @@
     <ApplicationIcon>logo.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\SS.CMS\SS.CMS.csproj" />
   </ItemGroup>

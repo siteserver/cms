@@ -26,13 +26,15 @@ namespace SS.CMS.Cli.Services
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly OptionSet _options;
 
-        public RestoreJob(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseManager databaseManager)
+        public RestoreJob(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseManager databaseManager, IPluginManager pluginManager)
         {
             _settingsManager = settingsManager;
             _configRepository = configRepository;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
 
             _options = new OptionSet {
                 { "d|directory=", "从指定的文件夹中恢复数据",
@@ -246,7 +248,7 @@ namespace SS.CMS.Cli.Services
             if (!dataOnly)
             {
                 // 恢复后同步表，确保内容辅助表字段与系统一致
-                await _databaseManager.SyncContentTablesAsync();
+                await _databaseManager.SyncContentTablesAsync(_pluginManager);
                 await _configRepository.UpdateConfigVersionAsync(_settingsManager.ProductVersion);
             }
         }

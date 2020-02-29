@@ -362,7 +362,7 @@
 
                 <!-- Others -->
                 <template v-else>
-                  <span v-html="scope.row.getValue(column.attributeName)"></span>
+                  <span v-html="scope.row.getEntityValue(column.attributeName)"></span>
                 </template>
 
               </el-form-item>
@@ -496,7 +496,7 @@
 
             <!-- Others -->
             <template v-else>
-              <span v-html="scope.row.getValue(column.attributeName)"></span>
+              <span v-html="scope.row.getEntityValue(column.attributeName)"></span>
             </template>
 
           </template>

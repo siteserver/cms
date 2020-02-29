@@ -22,15 +22,17 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public ContentsLayerImportController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public ContentsLayerImportController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _createManager = createManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
         }
@@ -134,7 +136,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     if (!FileUtils.IsType(FileType.Zip, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(_pathManager, _databaseManager, site, auth.AdminId);
+                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, site, auth.AdminId);
                     contentIdList.AddRange(await importObject.ImportContentsByZipFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, auth.AdminId, 0, SourceManager.Default));
                 }
             }
@@ -147,7 +149,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     if (!FileUtils.IsType(FileType.Csv, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(_pathManager, _databaseManager, site, auth.AdminId);
+                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, site, auth.AdminId);
                     contentIdList.AddRange(await importObject.ImportContentsByCsvFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, auth.AdminId, 0, SourceManager.Default));
                 }
             }
@@ -159,7 +161,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     if (!FileUtils.IsType(FileType.Txt, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(_pathManager, _databaseManager, site, auth.AdminId);
+                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, site, auth.AdminId);
                     contentIdList.AddRange(await importObject.ImportContentsByTxtFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, auth.AdminId, 0, SourceManager.Default));
                 }
             }

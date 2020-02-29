@@ -36,7 +36,7 @@
       <el-card style="margin-bottom: 15px; margin-right: 15px;" :body-style="{ padding: '0px', textAlign: 'center' }">
         <div slot="header" class="clearfix">
           <span>
-            <el-link :underline="false" type="primary" :href="'view.cshtml?pluginId=' + package.pluginInfo.pluginId + '&returnUrl=' + encodeURIComponent(location.href)">
+            <el-link :underline="false" type="primary" :href="utils.getPluginsUrl('view', {pluginId: package.pluginInfo.pluginId, returnUrl: location.href})">
               {{ package.pluginInfo.title }}
             </el-link>
           </span>

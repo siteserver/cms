@@ -12,7 +12,6 @@ using Newtonsoft.Json.Serialization;
 using SS.CMS.Abstractions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
-using SS.CMS.Core;
 using SS.CMS.Extensions;
 
 namespace SS.CMS.Web
@@ -63,15 +62,6 @@ namespace SS.CMS.Web
             }
 
             var settingsManager = provider.GetRequiredService<ISettingsManager>();
-            var errorLogRepository = provider.GetRequiredService<IErrorLogRepository>();
-            var contentRepository = provider.GetRequiredService<IContentRepository>();
-            var pluginRepository = provider.GetRequiredService<IPluginRepository>();
-            var tableStyleRepository = provider.GetRequiredService<ITableStyleRepository>();
-            GlobalSettings.Load(settingsManager,
-                errorLogRepository,
-                contentRepository,
-                pluginRepository,
-                tableStyleRepository);
 
             app.UseExceptionHandler(a => a.Run(async context =>
             {
@@ -115,10 +105,7 @@ namespace SS.CMS.Web
             app.Map(Constants.ApiPrefix, api =>
             {
                 api.UseRouting();
-
                 api.UseAuthentication();
-                api.UseAuthorization();
-
                 api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
                 api.UseOpenApi();
