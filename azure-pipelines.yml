@@ -4,54 +4,54 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-  - staging
-  
+- staging
+
+variables:
+  netCoreSdkVersion: '3.1.100'
+
+jobs:
+- job: Linux
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - task: DotNetCoreInstaller@0
+    inputs:
+      packageType: 'sdk'
+      version: $(netCoreSdkVersion)
+  - script: dotnet build ./sscms.sln
+    displayName: 'dotnet build'
+
+- job: macOS
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - task: DotNetCoreInstaller@0
+    inputs:
+      packageType: 'sdk'
+      version: $(netCoreSdkVersion)
+  - script: dotnet build ./sscms.sln
+    displayName: 'dotnet build'
+
+- job: Windows
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - task: DotNetCoreInstaller@0
+    inputs:
+      packageType: 'sdk'
+      version: $(netCoreSdkVersion)
+  - script: dotnet build ./sscms.sln
+    displayName: 'dotnet build'
+
+- job: LinuxRelease
+  pool:
+    vmImage: 'Ubuntu 16.04'
   variables:
-    netCoreSdkVersion: '3.1.100'
-  
-  jobs:
-  - job: Linux
-    pool:
-      vmImage: 'Ubuntu 16.04'
-    steps:
-    - task: DotNetCoreInstaller@0
-      inputs:
-        packageType: 'sdk'
-        version: $(netCoreSdkVersion)
-    - script: dotnet build ./sscms.sln
-      displayName: 'dotnet build'
-  
-  - job: macOS
-    pool:
-      vmImage: 'macOS-10.13'
-    steps:
-    - task: DotNetCoreInstaller@0
-      inputs:
-        packageType: 'sdk'
-        version: $(netCoreSdkVersion)
-    - script: dotnet build ./sscms.sln
-      displayName: 'dotnet build'
-  
-  - job: Windows
-    pool:
-      vmImage: 'windows-2019'
-    steps:
-    - task: DotNetCoreInstaller@0
-      inputs:
-        packageType: 'sdk'
-        version: $(netCoreSdkVersion)
-    - script: dotnet build ./sscms.sln
-      displayName: 'dotnet build'
-  
-  - job: LinuxRelease
-    pool:
-      vmImage: 'Ubuntu 16.04'
-    variables:
-      buildConfiguration: 'Release'
-    steps:
-    - task: DotNetCoreInstaller@0
-      inputs:
-        packageType: 'sdk'
-        version: $(netCoreSdkVersion)
-    - script: dotnet build --configuration $(buildConfiguration)
-      displayName: 'dotnet build $(buildConfiguration)'
+    buildConfiguration: 'Release'
+  steps:
+  - task: DotNetCoreInstaller@0
+    inputs:
+      packageType: 'sdk'
+      version: $(netCoreSdkVersion)
+  - script: dotnet build --configuration $(buildConfiguration)
+    displayName: 'dotnet build $(buildConfiguration)'
