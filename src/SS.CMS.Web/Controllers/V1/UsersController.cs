@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
@@ -139,7 +140,7 @@ namespace SS.CMS.Web.Controllers.V1
         }
 
         [HttpPost, Route(RouteUserAvatar)]
-        public async Task<ActionResult<User>> UploadAvatar(int id, [FromBody]UploadAvatarRequest request)
+        public async Task<ActionResult<User>> UploadAvatar([FromQuery] int id, [FromForm] IFormFile file)
         {
             var auth = await _authManager.GetApiAsync();
 
@@ -154,12 +155,12 @@ namespace SS.CMS.Web.Controllers.V1
             var user = await _userRepository.GetByUserIdAsync(id);
             if (user == null) return NotFound();
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
 
             fileName = _pathManager.GetUserUploadFileName(fileName);
             var filePath = _pathManager.GetUserUploadPath(user.Id, fileName);
@@ -169,8 +170,7 @@ namespace SS.CMS.Web.Controllers.V1
                 return this.Error("文件只能是 Image 格式，请选择有效的文件上传");
             }
 
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            request.File.CopyTo(new FileStream(filePath, FileMode.Create));
+            await _pathManager.UploadAsync(file, filePath);
 
             user.AvatarUrl = _pathManager.GetUserUploadUrl(user.Id, fileName);
 

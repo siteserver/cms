@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SS.CMS.Abstractions;
@@ -48,11 +49,6 @@ namespace SS.CMS.Services
             return PageUtils.Combine(WebUrl, PageUtils.Combine(paths));
         }
 
-        public string GetAdminPath(params string[] paths)
-        {
-            return PathUtils.Combine(_settingsManager.ContentRootPath, Constants.AdminRootDirectory, PathUtils.Combine(paths));
-        }
-
         public string GetAdminUrl(params string[] paths)
         {
             return PageUtils.Combine(WebUrl, _settingsManager.AdminDirectory, PageUtils.Combine(paths), "/");
@@ -97,6 +93,13 @@ namespace SS.CMS.Services
             var retVal = PathUtils.Combine(rootPath, virtualPath) ?? string.Empty;
 
             return retVal.Replace("/", "\\");
+        }
+
+        public async Task UploadAsync(IFormFile file, string filePath)
+        {
+            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
         }
     }
 }

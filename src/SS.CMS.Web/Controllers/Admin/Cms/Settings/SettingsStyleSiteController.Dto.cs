@@ -30,10 +30,5 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             public int SiteId { get; set; }
             public string AttributeName { get; set; }
         }
-
-        public class ImportRequest : SiteRequest
-        {
-            public IFormFile File { get; set; }
-        }
     }
 }

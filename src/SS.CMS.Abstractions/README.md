@@ -1,6 +1,6 @@
-﻿# SiteServer CMS 插件SDK开发包
+﻿# SS CMS 插件SDK开发包
 
-[SiteServer CMS 插件开发参考手册](https://www.siteserver.cn/docs/plugins)
+[SS CMS 插件开发参考手册](https://www.siteserver.cn/docs/plugins)
 
 SDK 版本 ：
 

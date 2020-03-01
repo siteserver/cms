@@ -12,11 +12,6 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             public int CheckedLevel { get; set; }
         }
 
-        public class UploadRequest : ChannelRequest
-        {
-            public IFormFile File { get; set; }
-        }
-
         public class UploadResult
         {
             public string Name { get; set; }

@@ -35,10 +35,5 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
 
             public string Content { get; set; }
         }
-
-        public class UploadRequest : SiteRequest
-        {
-            public IFormFile File { set; get; }
-        }
     }
 }

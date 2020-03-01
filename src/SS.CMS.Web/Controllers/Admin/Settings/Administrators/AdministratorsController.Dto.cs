@@ -60,11 +60,6 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             public string Roles { get; set; }
         }
 
-        public class ImportRequest
-        {
-            public IFormFile File { set; get; }
-        }
-
         public class ImportResult
         {
             public bool Value { set; get; }

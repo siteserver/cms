@@ -15,11 +15,6 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             public List<string> FilePaths { get; set; }
         }
 
-        public class UploadRequest : SiteRequest
-        {
-            public IFormFile File { set; get; }
-        }
-
         public class UploadResult
         {
             public string Name { get; set; }

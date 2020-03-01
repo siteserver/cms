@@ -10,7 +10,7 @@ namespace SS.CMS.Abstractions
     {
         /// <summary>
         /// 初始化插件。
-        /// 此方法将由 SiteServer CMS 系统载入插件时调用。
+        /// 此方法将由 SS CMS 系统载入插件时调用。
         /// </summary>
         /// <param name="metadata">插件元数据接口。</param>
         public sealed override void Initialize(IPackageMetadata metadata)

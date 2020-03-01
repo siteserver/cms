@@ -19,11 +19,6 @@ namespace SS.CMS.Web.Controllers.V1
             public List<User> Users { get; set; }
         }
 
-        public class UploadAvatarRequest
-        {
-            public IFormFile File { get; set; }
-        }
-
         public class LoginRequest
         {
             /// <summary>

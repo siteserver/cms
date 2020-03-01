@@ -172,8 +172,6 @@ namespace SS.CMS.Abstractions
 
         string GetHomeDirectoryPath(string relatedPath);
 
-        string PhysicalSiteServerPath { get; }
-
         string PhysicalSiteFilesPath { get; }
 
         string GetLibraryFilePath(string virtualUrl);

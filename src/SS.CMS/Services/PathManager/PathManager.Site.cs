@@ -1295,8 +1295,6 @@ namespace SS.CMS.Services
             return PathUtils.Combine(_settingsManager.WebRootPath, _settingsManager.HomeDirectory, relatedPath);
         }
 
-        public string PhysicalSiteServerPath => PathUtils.Combine(_settingsManager.WebRootPath, Constants.AdminRootDirectory);
-
         public string PhysicalSiteFilesPath => PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName);
 
         public string GetLibraryFilePath(string virtualUrl)

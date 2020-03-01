@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Shared
@@ -24,19 +26,19 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         }
 
         [HttpPost, Route(RouteUploadVideo)]
-        public async Task<ActionResult<UploadResult>> UploadVideo([FromBody]UploadRequest request)
+        public async Task<ActionResult<UploadResult>> UploadVideo([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
 
             if (!PathUtils.IsExtension(PathUtils.GetExtension(fileName), ".mp4", ".flv", ".f4v", ".webm", ".m4v", ".mov", ".3gp", ".3g2"))
             {
@@ -46,8 +48,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Video);
             var filePath = PathUtils.Combine(localDirectoryPath, _pathManager.GetUploadFileName(site, fileName));
 
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            request.File.CopyTo(new FileStream(filePath, FileMode.Create));
+            await _pathManager.UploadAsync(file, filePath);
 
             var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
 
@@ -60,19 +61,19 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         }
 
         [HttpPost, Route(RouteUploadImage)]
-        public async Task<ActionResult<UploadResult>> UploadImage([FromBody]UploadRequest request)
+        public async Task<ActionResult<UploadResult>> UploadImage([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
 
             if (!PathUtils.IsExtension(PathUtils.GetExtension(fileName), ".jpg", ".jpeg", ".bmp", ".gif", ".png", ".webp"))
             {
@@ -82,8 +83,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Image);
             var filePath = PathUtils.Combine(localDirectoryPath, _pathManager.GetUploadFileName(site, fileName));
 
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            request.File.CopyTo(new FileStream(filePath, FileMode.Create));
+            await _pathManager.UploadAsync(file, filePath);
 
             var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
 

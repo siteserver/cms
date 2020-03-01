@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
@@ -89,10 +88,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
             }
             var fileName = $"logo{extension}";
             var filePath = _pathManager.GetSiteFilesPath(fileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
+            await _pathManager.UploadAsync(file, filePath);
+
             var adminLogoUrl = _pathManager.GetSiteFilesUrl(fileName);
 
             return new StringResult

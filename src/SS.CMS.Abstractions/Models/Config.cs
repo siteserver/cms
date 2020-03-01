@@ -80,11 +80,11 @@ namespace SS.CMS.Abstractions
 
         public string UserDefaultGroupAdminName { get; set; }
 
-        public string AdminTitle { get; set; } = "SiteServer CMS";
+        public string AdminTitle { get; set; } = "SS CMS";
 
         public string AdminLogoUrl { get; set; }
 
-        public string AdminWelcomeHtml { get; set; } = @"欢迎使用 SiteServer CMS 管理后台";
+        public string AdminWelcomeHtml { get; set; } = @"欢迎使用 SS CMS 管理后台";
 
         public bool IsHomeClosed { get; set; }
 

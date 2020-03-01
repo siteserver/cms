@@ -9,7 +9,7 @@
         /// 初始化插件类。
         /// </summary>
         /// <remarks>
-        /// 此方法将由 SiteServer CMS 系统载入插件时调用。
+        /// 此方法将由 SS CMS 系统载入插件时调用。
         /// </remarks>
         /// <param name="metadata">插件元数据接口。</param>
         public virtual void Initialize(IPackageMetadata metadata)

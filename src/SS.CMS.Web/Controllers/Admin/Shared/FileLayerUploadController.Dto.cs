@@ -8,7 +8,6 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         public class UploadRequest : SiteRequest
         {
             public bool IsChangeFileName { get; set; }
-            public IFormFile File { set; get; }
         }
 
         public class UploadResult

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
@@ -66,7 +67,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         }
 
         [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromBody] UploadRequest request)
+        public async Task<ActionResult<UploadResult>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
         {
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin ||
@@ -79,12 +80,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
             var site = await _siteRepository.GetAsync(request.SiteId);
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
 
             var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
             if (!StringUtils.EqualsIgnoreCase(extendName, ".zip") && !StringUtils.EqualsIgnoreCase(extendName, ".csv") && !StringUtils.EqualsIgnoreCase(extendName, ".txt"))
@@ -93,8 +94,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             }
 
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            request.File.CopyTo(new FileStream(filePath, FileMode.Create));
+
+            await _pathManager.UploadAsync(file, filePath);
 
             var url = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
 

@@ -32,7 +32,6 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         public class UploadRequest : SiteRequest
         {
             public string Guid { get; set; }
-            public IFormFile File { set; get; }
         }
 
         public class SubmitRequest : SiteRequest

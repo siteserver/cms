@@ -44,7 +44,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Utilities
                 new KeyValuePair<string, string>("站点根目录地址", _settingsManager.WebRootPath),
                 new KeyValuePair<string, string>(".NET 框架", _settingsManager.TargetFramework),
                 new KeyValuePair<string, string>(".NET Core 版本", Environment.Version.ToString()),
-                new KeyValuePair<string, string>("SiteServer CMS 版本", _settingsManager.ProductVersion),
+                new KeyValuePair<string, string>("SS CMS 版本", _settingsManager.ProductVersion),
                 new KeyValuePair<string, string>("SS.CMS.Abstractions 版本", _settingsManager.PluginVersion),
                 new KeyValuePair<string, string>("最近升级时间", DateUtils.GetDateAndTimeString(config.UpdateDate)),
                 new KeyValuePair<string, string>("数据库类型", _settingsManager.Database.DatabaseType.GetValue()),

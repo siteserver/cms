@@ -12,11 +12,6 @@ namespace SS.CMS.Web.Controllers.Home
             public Site Site { get; set; }
         }
 
-        public class UploadRequest : ChannelRequest
-        {
-            public IFormFile File { set; get; }
-        }
-
         public class UploadResult
         {
             public string Path { get; set; }

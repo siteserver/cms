@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Core;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Plugins
@@ -41,7 +41,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         }
 
         [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromBody]UploadRequest request)
+        public async Task<ActionResult<UploadResult>> Upload([FromForm]IFormFile file)
         {
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin ||
@@ -50,12 +50,12 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
 
             string filePath = null;
 
@@ -63,8 +63,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
             if (extendName == ".nupkg")
             {
                 filePath = _pathManager.GetTemporaryFilesPath(fileName);
-                DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-                request.File.CopyTo(new FileStream(filePath, FileMode.Create));
+                await _pathManager.UploadAsync(file, filePath);
             }
 
             FileInfo fileInfo = null;
@@ -100,7 +99,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
 
             foreach (var fileName in request.FileNames)
             {
-                var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
+                //var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
 
                 //var importObject = new ImportObject(siteId, request.AdminName);
                 //importObject.ImportContentsByZipFile(channel, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);

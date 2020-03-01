@@ -36,7 +36,7 @@ var methods = {
 
   insertText: function(attributeName, no, text) {
     var count = this.form[utils.getCountName(attributeName)];
-    if (count < no) {
+    if (count && count < no) {
       this.form[utils.getCountName(attributeName)] = no;
     }
     this.form[utils.getExtendName(attributeName, no)] = text;
@@ -174,6 +174,16 @@ var methods = {
       this.collapseSettings.push('linkUrl');
     }
 
+    for (var i = 0; i < this.styles.length; i++) {
+      var style = this.styles[i];
+      if (style.inputType !== 'Image' && style.inputType !== 'File' && style.inputType !== 'Video') continue;
+      
+      var count = this.form[utils.getCountName(style.attributeName)];
+      if (!count){
+        this.form[utils.getCountName(style.attributeName)] = 0;
+      }
+    }
+
     var $this = this;
     setTimeout(function () {
       for (var i = 0; i < $this.styles.length; i++) {
@@ -305,12 +315,14 @@ var methods = {
     var no = this.form[utils.getCountName(style.attributeName)] + 1;
     this.form[utils.getCountName(style.attributeName)] = no;
     this.form[utils.getExtendName(style.attributeName, no)] = '';
+    this.form = _.assign({}, this.form);
   },
 
   btnExtendRemoveClick: function(style) {
     var no = this.form[utils.getCountName(style.attributeName)] - 1;
     this.form[utils.getCountName(style.attributeName)] = no;
     this.form[utils.getExtendName(style.attributeName, no)] = '';
+    this.form = _.assign({}, this.form);
   },
 };
 

@@ -37,7 +37,7 @@ namespace SS.CMS.Web
 
             services.Configure<FormOptions>(options =>
             {
-                options.MultipartBodyLengthLimit = 60000000;//60MB
+                options.MultipartBodyLengthLimit = 524288000;//500MB
             });
 
             services.AddCache(settingsManager.Redis.ConnectionString);

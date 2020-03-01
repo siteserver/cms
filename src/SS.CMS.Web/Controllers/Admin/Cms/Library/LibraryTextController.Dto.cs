@@ -32,7 +32,6 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         public class CreateRequest : SiteRequest
         {
             public int GroupId { get; set; }
-            public IFormFile File { get; set; }
         }
 
         public class DeleteRequest : SiteRequest

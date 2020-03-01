@@ -20,7 +20,7 @@ var methods = {
       $this.version = res.version;
       $this.lastActivityDate = res.lastActivityDate;
       $this.updateDate = res.updateDate;
-      $this.adminWelcomeHtml = res.adminWelcomeHtml || '欢迎使用 SiteServer CMS 管理后台';
+      $this.adminWelcomeHtml = res.adminWelcomeHtml || '欢迎使用 SS CMS 管理后台';
 
       $this.getUnCheckedList();
     }).catch(function (error) {

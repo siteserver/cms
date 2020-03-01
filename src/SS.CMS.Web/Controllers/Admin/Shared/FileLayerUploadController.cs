@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Shared
@@ -24,19 +24,19 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         }
 
         [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromBody]UploadRequest request)
+        public async Task<ActionResult<UploadResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
 
             if (!_pathManager.IsFileExtensionAllowed(site, PathUtils.GetExtension(fileName)))
             {
@@ -47,8 +47,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             var localFileName = _pathManager.GetUploadFileName(fileName, request.IsChangeFileName);
             var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            request.File.CopyTo(new FileStream(filePath, FileMode.Create));
+            await _pathManager.UploadAsync(file, filePath);
 
             var fileUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
 

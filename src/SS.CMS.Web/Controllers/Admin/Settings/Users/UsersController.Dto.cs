@@ -24,11 +24,6 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
             public List<UserGroup> Groups { get; set; }
         }
 
-        public class ImportRequest
-        {
-            public IFormFile File { set; get; }
-        }
-
         public class ImportResult
         {
             public bool Value { set; get; }

@@ -185,10 +185,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
             
             FileUtils.DeleteFileIfExists(filePath);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
+            await _pathManager.UploadAsync(file, filePath);
 
             ZipUtils.ExtractZip(filePath, directoryPath);
 

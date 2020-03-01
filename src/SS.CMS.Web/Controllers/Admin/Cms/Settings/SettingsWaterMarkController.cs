@@ -2,11 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Core;
 using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
@@ -51,7 +51,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         }
 
         [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromBody] UploadRequest request)
+        public async Task<ActionResult<UploadResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
             var auth = await _authManager.GetAdminAsync();
 
@@ -63,25 +63,26 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 
             var site = await _siteRepository.GetAsync(request.SiteId);
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
 
             var fileExtName = PathUtils.GetExtension(fileName).ToLower();
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
             var localFileName = _pathManager.GetUploadFileName(site, fileName);
-            var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
+            var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
             if (!FileUtils.IsImage(fileExtName))
             {
                 return this.Error("请选择有效的图片文件上传");
             }
 
-            request.File.CopyTo(new FileStream(localFilePath, FileMode.Create));
-            var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, localFilePath, true);
+            await _pathManager.UploadAsync(file, filePath);
+
+            var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
             var virtualUrl = _pathManager.GetVirtualUrl(site, imageUrl);
 
             return new UploadResult

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
@@ -232,21 +233,21 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         }
 
         [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<StringResult>> Upload([FromBody] UploadRequest request)
+        public async Task<ActionResult<StringResult>> Upload([FromQuery] int siteId, [FromForm]IFormFile file)
         {
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.SiteId, Constants.ChannelPermissions.ChannelAdd))
+                !await auth.AdminPermissions.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.ChannelAdd))
             {
                 return Unauthorized();
             }
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
 
             var sExt = PathUtils.GetExtension(fileName);
             if (!StringUtils.EqualsIgnoreCase(sExt, ".zip"))
@@ -256,8 +257,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
             fileName = $"{StringUtils.GetShortGuid(false)}.zip";
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            request.File.CopyTo(new FileStream(filePath, FileMode.Create));
+
+            await _pathManager.UploadAsync(file, filePath);
 
             return new StringResult
             {

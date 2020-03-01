@@ -20,16 +20,15 @@ namespace SS.CMS.Web
                 .ConfigureAppConfiguration(ConfigConfiguration)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseKestrel((ctx, options) => { options.Limits.MaxRequestBodySize = null; })
+                        .UseStartup<Startup>();
                 });
 
         static void ConfigConfiguration(IConfigurationBuilder config)
         {
             config.SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile(Constants.ConfigFileName, optional: true, reloadOnChange: true)
-                .AddJsonFile("ss.Development.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
         }
     }

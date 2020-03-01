@@ -1,5 +1,4 @@
 ﻿var $url = "/admin/cms/channels/channels"
-var $urlUpload = $apiUrl + '/admin/cms/channels/channels/actions/upload?siteId=' + utils.getQueryInt("siteId");
 
 var data = utils.initData({
   siteId: utils.getQueryInt("siteId"),
@@ -547,6 +546,7 @@ var $vue = new Vue({
     }
   },
   created: function () {
+    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.siteId;
     this.apiList();
   }
 });

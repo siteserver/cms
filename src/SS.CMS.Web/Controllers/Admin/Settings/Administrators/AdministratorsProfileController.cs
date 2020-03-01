@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -69,10 +68,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             {
                 return this.Error("文件只能是图片格式，请选择有效的文件上传!");
             }
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
+
+            await _pathManager.UploadAsync(file, filePath);
+
             var avatarUrl = _pathManager.GetAdministratorUploadUrl(userId, fileName);
 
             return new StringResult

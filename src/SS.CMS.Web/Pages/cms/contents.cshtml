@@ -73,13 +73,16 @@
     <el-main>
       <el-row id="commands">
         <el-col :span="24">
+          <el-button size="mini" plain type="primary" icon="el-icon-circle-plus-outline" :disabled="!permissions.isAdd" v-on:click="btnAddClick">
+            添加
+          </el-button>
+          
           <el-dropdown size="mini" v-on:command="btnAddClick">
             <el-button size="mini" :disabled="!permissions.isAdd" v-on:click="btnAddClick">
-              新建<i class="el-icon-arrow-down el-icon--right"></i>
+              导入<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="Add"><i class="el-icon-circle-plus-outline"></i>添加内容</el-dropdown-item>
-              <el-dropdown-item command="Word"><i class="fa fa-wikipedia-w"></i>导入Word</el-dropdown-item>
+              <el-dropdown-item command="Word"><i class="el-icon-tickets"></i>导入Word</el-dropdown-item>
               <el-dropdown-item command="Import"><i class="el-icon-upload2"></i>批量导入</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>

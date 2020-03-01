@@ -1,5 +1,5 @@
-﻿
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace SS.CMS.Abstractions
 {
@@ -14,8 +14,6 @@ namespace SS.CMS.Abstractions
 
         string GetWebPath(params string[] paths);
 
-        string GetAdminPath(params string[] paths);
-
         string GetAdminUrl(params string[] paths);
 
         string GetUploadFileName(string fileName);
@@ -25,5 +23,7 @@ namespace SS.CMS.Abstractions
         Task<string> GetAssetsUrlAsync(Site site);
 
         string MapPath(string virtualPath);
+
+        Task UploadAsync(IFormFile file, string filePath);
     }
 }

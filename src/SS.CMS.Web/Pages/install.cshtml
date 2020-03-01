@@ -13,7 +13,7 @@
 
 <el-card v-else class="box-card">
   <div slot="header" class="clearfix">
-    <span>SiteServer CMS 安装向导</span>
+    <span>SS CMS 安装向导</span>
   </div>
 
   <el-steps :active="pageIndex" class="mb-3" finish-status="success">
@@ -33,7 +33,7 @@
   <template v-if="pageIndex === 0">
     
     <div style="padding: 10px 0">
-      SiteServer CMS 开源协议（GPL-3.0）
+      SS CMS 开源协议（GPL-3.0）
       <el-link :underline="false" type="primary" :href="utils.getAssetsUrl('pages/eula.html')" target="_blank"> 可打印版本</el-link>
     </div>
 
@@ -260,14 +260,14 @@
     <div role="alert" class="el-alert el-alert--success is-light" style="padding: 30px">
       <div class="el-alert__content">
         <span class="el-alert__title is-bold" style="font-size: 14px;">安装完成！</span>
-        <p class="el-alert__description" style="font-size: 14px;">恭喜，您已经完成了 SiteServer CMS 的安装</p>
+        <p class="el-alert__description" style="font-size: 14px;">恭喜，您已经完成了 SS CMS 的安装</p>
         <p>
           <el-button type="primary" v-on:click="btnEnterClick" size="medium">进入管理后台</el-button>
         </p>
         <el-divider></el-divider>
         <p class="el-alert__description" style="font-size: 14px;">
           获取更多使用帮助请访问
-          <el-link :underline="false" type="primary" style="font-size: 14px;" href="https://www.siteserver.cn/docs/" target="_blank">SiteServer CMS 文档中心</el-link>
+          <el-link :underline="false" type="primary" style="font-size: 14px;" href="https://www.siteserver.cn/docs/" target="_blank">SS CMS 文档中心</el-link>
         </p>
       </div>
     </div>

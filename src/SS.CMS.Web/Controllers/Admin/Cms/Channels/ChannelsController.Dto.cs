@@ -44,11 +44,6 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
             public bool IsOverride { get; set; }
         }
 
-        public class UploadRequest : SiteRequest
-        {
-            public IFormFile File { set; get; }
-        }
-
         public class OrderRequest : ChannelRequest
         {
             public int ParentId { get; set; }

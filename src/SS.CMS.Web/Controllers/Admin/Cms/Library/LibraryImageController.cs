@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
@@ -20,13 +21,15 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ILibraryGroupRepository _libraryGroupRepository;
         private readonly ILibraryImageRepository _libraryImageRepository;
 
-        public LibraryImageController(ISettingsManager settingsManager, IAuthManager authManager, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository)
+        public LibraryImageController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
+            _pathManager = pathManager;
             _libraryGroupRepository = libraryGroupRepository;
             _libraryImageRepository = libraryImageRepository;
         }
@@ -61,7 +64,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         }
 
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<LibraryImage>> Create([FromBody]CreateRequest request)
+        public async Task<ActionResult<LibraryImage>> Create([FromQuery]CreateRequest request, [FromForm] IFormFile file)
         {
             var auth = await _authManager.GetAdminAsync();
 
@@ -77,12 +80,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
                 GroupId = request.GroupId
             };
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
 
             if (!PathUtils.IsExtension(PathUtils.GetExtension(fileName), ".jpg", ".jpeg", ".bmp", ".gif", ".png", ".svg", ".webp"))
             {
@@ -95,8 +98,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
             var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
             var filePath = PathUtils.Combine(directoryPath, libraryFileName);
 
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            request.File.CopyTo(new FileStream(filePath, FileMode.Create));
+            await _pathManager.UploadAsync(file, filePath);
 
             library.Title = fileName;
             library.Url = PageUtils.Combine(virtualDirectoryPath, libraryFileName);

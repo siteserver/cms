@@ -37,7 +37,6 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         public class ImportRequest : SiteRequest
         {
             public int ChannelId { get; set; }
-            public IFormFile File { get; set; }
         }
     }
 }

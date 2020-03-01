@@ -45,7 +45,7 @@ var methods = {
       var res = response.data;
 
       utils.closeLayer();
-      parent.$vue.apiList($this.form.channelId, 1, '文件导入成功！');
+      parent.$vue.apiList($this.form.channelId, 1, '文件导入成功！', true);
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {

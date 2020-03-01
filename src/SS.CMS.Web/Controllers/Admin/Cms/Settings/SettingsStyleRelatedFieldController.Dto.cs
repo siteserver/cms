@@ -50,10 +50,5 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         {
             public int RelatedFieldId { get; set; }
         }
-
-        public class ImportRequest : SiteRequest
-        {
-            public IFormFile File { get; set; }
-        }
     }
 }

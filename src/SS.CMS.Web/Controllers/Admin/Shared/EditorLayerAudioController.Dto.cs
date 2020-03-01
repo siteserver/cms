@@ -1,15 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using SS.CMS.Abstractions.Dto.Request;
-
-namespace SS.CMS.Web.Controllers.Admin.Shared
+﻿namespace SS.CMS.Web.Controllers.Admin.Shared
 {
     public partial class EditorLayerAudioController
     {
-        public class UploadRequest : SiteRequest
-        {
-            public IFormFile File { set; get; }
-        }
-
         public class UploadResult
         {
             public string Name { get; set; }

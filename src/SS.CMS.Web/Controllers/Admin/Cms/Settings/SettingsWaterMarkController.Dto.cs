@@ -33,10 +33,5 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             public int WaterMarkFontSize { get; set; }
             public string WaterMarkImagePath { get; set; }
         }
-
-        public class UploadRequest : SiteRequest
-        {
-            public IFormFile File { get; set; }
-        }
     }
 }

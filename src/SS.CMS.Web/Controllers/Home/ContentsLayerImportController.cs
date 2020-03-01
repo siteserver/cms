@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
@@ -60,7 +61,7 @@ namespace SS.CMS.Web.Controllers.Home
         }
 
         [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromBody]UploadRequest request)
+        public async Task<ActionResult<UploadResult>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
         {
             var auth = await _authManager.GetUserAsync();
             if (!auth.IsUserLoggin ||
@@ -69,20 +70,19 @@ namespace SS.CMS.Web.Controllers.Home
                 return Unauthorized();
             }
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
             if (!PathUtils.IsExtension(PathUtils.GetExtension(fileName), ".zip", ".csv", ".txt"))
             {
                 return this.Error("请选择有效的文件上传!");
             }
 
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            request.File.CopyTo(new FileStream(filePath, FileMode.Create));
+            await _pathManager.UploadAsync(file, filePath);
 
             FileInfo fileInfo = null;
             if (!string.IsNullOrEmpty(filePath))

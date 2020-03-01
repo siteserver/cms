@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
@@ -66,7 +67,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         }
 
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<LibraryVideo>> Create([FromQuery] CreateRequest request)
+        public async Task<ActionResult<LibraryVideo>> Create([FromQuery] CreateRequest request, [FromForm] IFormFile file)
         {
             var auth = await _authManager.GetAdminAsync();
 
@@ -79,12 +80,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
 
             var site = await _siteRepository.GetAsync(request.SiteId);
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
 
             var fileType = PathUtils.GetExtension(fileName);
             if (!_pathManager.IsUploadExtensionAllowed(UploadType.Video, site, fileType))
@@ -98,8 +99,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
             var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
             var filePath = PathUtils.Combine(directoryPath, libraryVideoName);
 
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            request.File.CopyTo(new FileStream(filePath, FileMode.Create));
+            await _pathManager.UploadAsync(file, filePath);
 
             var library = new LibraryVideo
             {

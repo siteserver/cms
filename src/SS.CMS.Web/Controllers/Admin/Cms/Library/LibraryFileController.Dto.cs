@@ -26,7 +26,6 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         public class CreateRequest : SiteRequest
         {
             public int GroupId { get; set; }
-            public IFormFile File { set; get; }
         }
 
         public class DownloadRequest : SiteRequest

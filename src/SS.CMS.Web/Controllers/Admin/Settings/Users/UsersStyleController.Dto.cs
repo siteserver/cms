@@ -34,11 +34,6 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
             public List<Style> Styles { get; set; }
         }
 
-        public class UploadRequest
-        {
-            public IFormFile File { set; get; }
-        }
-
         public class ResetResult
         {
             public List<Style> Styles { get; set; }

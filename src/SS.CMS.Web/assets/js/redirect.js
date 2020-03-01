@@ -1,10 +1,7 @@
 var $url = '/admin/redirect';
 var $redirectUrl = utils.getQueryString('redirectUrl');
 
-var data = {
-  pageLoad: true,
-  pageAlert: null,
-};
+var data = utils.initData({});
 
 var methods = {
   load: function () {
@@ -28,6 +25,7 @@ var methods = {
         }, 200);
       }
     }).catch(function (error) {
+      utils.loading($this, false);
       utils.error($this, error);
     });
   }

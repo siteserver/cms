@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
@@ -81,7 +82,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         }
 
         [HttpPost, Route(RouteImport)]
-        public async Task<ActionResult<ImportResult>> Import([FromBody] ImportRequest request)
+        public async Task<ActionResult<ImportResult>> Import([FromForm] IFormFile file)
         {
             var auth = await _authManager.GetAdminAsync();
             if (!auth.IsAdminLoggin ||
@@ -90,12 +91,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            if (request.File == null)
+            if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(request.File.FileName);
+            var fileName = Path.GetFileName(file.FileName);
 
             var sExt = PathUtils.GetExtension(fileName);
             if (!StringUtils.EqualsIgnoreCase(sExt, ".xlsx"))
@@ -104,8 +105,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
             }
 
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            request.File.CopyTo(new FileStream(filePath, FileMode.Create));
+            await _pathManager.UploadAsync(file, filePath);
 
             var errorMessage = string.Empty;
             var success = 0;
