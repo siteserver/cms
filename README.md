@@ -71,6 +71,28 @@ SiteServer CMS 基于 .NET Core，能够以最低的成本、最少的人力投�
 └─tests                         测试库
 ```
 
+## 发布跨平台版本
+
+Window(64位)：
+```
+dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r win-x64 --configuration Release -o dist/sscms-win-x64
+```
+
+Window(32位)：
+```
+dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r win-x86 --configuration Release -o dist/sscms-win-x86
+```
+
+Linux：
+```
+dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r linux-x64 --configuration Release -o dist/sscms-linux-x64
+```
+
+MacOS：
+```
+dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r osx-x64 --configuration Release -o dist/sscms-osx-x64
+```
+
 ## 贡献代码
 
 代码贡献有很多形式，从提交问题，撰写文档，到提交代码，我们欢迎任何形式的贡献！

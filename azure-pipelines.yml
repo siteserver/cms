@@ -49,25 +49,25 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '-r win-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64'
+      arguments: './src/SS.CMS.Web/SS.CMS.Web.csproj -r win-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64'
 
   - task: DotNetCoreCLI@2
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '-r win-x86 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86'
+      arguments: './src/SS.CMS.Web/SS.CMS.Web.csproj -r win-x86 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86'
 
   - task: DotNetCoreCLI@2
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '-r linux-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64'
+      arguments: './src/SS.CMS.Web/SS.CMS.Web.csproj -r linux-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64'
 
   - task: DotNetCoreCLI@2
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '-r osx-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64'
+      arguments: './src/SS.CMS.Web/SS.CMS.Web.csproj -r osx-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64'
   
   # this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
   - task: PublishBuildArtifacts@1
