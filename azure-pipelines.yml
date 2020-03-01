@@ -9,6 +9,7 @@ trigger:
 variables:
   netCoreSdkVersion: '3.1.100'
   buildConfiguration: 'Release'
+  productVersion: '7.0.0-preview1'
 
 jobs:
 - job: macOS
@@ -48,32 +49,28 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '-r win-x64 --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/sscms-win-x64'
-      zipAfterPublish: True
+      arguments: '-r win-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64'
 
   - task: DotNetCoreCLI@2
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '-r win-x86 --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/sscms-win-x86'
-      zipAfterPublish: True
+      arguments: '-r win-x86 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86'
 
   - task: DotNetCoreCLI@2
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '-r linux-x64 --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/sscms-linux-x64'
-      zipAfterPublish: True
+      arguments: '-r linux-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64'
 
   - task: DotNetCoreCLI@2
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '-r osx-x64 --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/sscms-osx-x64'
-      zipAfterPublish: True
+      arguments: '-r osx-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64'
   
   # this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-      artifactName: 'sscms'
+      artifactName: 'sscms-$(productVersion)'
