@@ -10,6 +10,8 @@ namespace SS.CMS.Abstractions
         // 系统根目录访问地址
         string GetRootUrl(string relatedUrl);
 
+        string GetRootPath(params string[] paths);
+
         string GetAdminUrl(string relatedUrl);
 
         string GetHomeUrl(string relatedUrl);

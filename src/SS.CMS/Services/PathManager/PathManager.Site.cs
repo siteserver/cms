@@ -18,6 +18,12 @@ namespace SS.CMS.Services
             return PageUtils.Combine(WebUrl, relatedUrl);
         }
 
+        public string GetRootPath(params string[] paths)
+        {
+            var path = PathUtils.Combine(_settingsManager.WebRootPath, PathUtils.Combine(paths));
+            return path;
+        }
+
         public string GetAdminUrl(string relatedUrl)
         {
             return PageUtils.Combine(WebUrl, _settingsManager.AdminDirectory, relatedUrl);

@@ -8,6 +8,7 @@
     <VersionPrefix>7.0.0</VersionPrefix>
     <VersionSuffix>preview1</VersionSuffix>
     <ApplicationIcon>logo.ico</ApplicationIcon>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,14 +24,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="assets\" CopyToPublishDirectory="PreserveNewest" />
-    <Folder Include="wwwroot\" />
+    <Content Include="assets\**\*">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot\index.html">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SS.CMS.Abstractions\SS.CMS.Abstractions.csproj" />
     <ProjectReference Include="..\SS.CMS\SS.CMS.csproj" />
   </ItemGroup>
-
 
 </Project>
