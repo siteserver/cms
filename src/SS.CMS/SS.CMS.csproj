@@ -34,6 +34,7 @@
     <PackageReference Include="NuGet.Packaging" Version="5.4.0" />
     <PackageReference Include="NuGet.Versioning" Version="5.4.0" />
     <PackageReference Include="Open-Xml-PowerTools" Version="4.4.0" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

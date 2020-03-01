@@ -8,19 +8,9 @@ trigger:
 
 variables:
   netCoreSdkVersion: '3.1.100'
+  buildConfiguration: 'Release'
 
 jobs:
-- job: Linux
-  pool:
-    vmImage: 'Ubuntu 16.04'
-  steps:
-  - task: DotNetCoreInstaller@0
-    inputs:
-      packageType: 'sdk'
-      version: $(netCoreSdkVersion)
-  - script: dotnet build ./sscms.sln
-    displayName: 'dotnet build'
-
 - job: macOS
   pool:
     vmImage: 'macOS-10.13'
@@ -29,7 +19,7 @@ jobs:
     inputs:
       packageType: 'sdk'
       version: $(netCoreSdkVersion)
-  - script: dotnet build ./sscms.sln
+  - script: dotnet build ./sscms.sln --configuration $(buildConfiguration)
     displayName: 'dotnet build'
 
 - job: Windows
@@ -40,14 +30,12 @@ jobs:
     inputs:
       packageType: 'sdk'
       version: $(netCoreSdkVersion)
-  - script: dotnet build ./sscms.sln
+  - script: dotnet build ./sscms.sln --configuration $(buildConfiguration)
     displayName: 'dotnet build'
 
-- job: LinuxRelease
+- job: Linux
   pool:
     vmImage: 'Ubuntu 16.04'
-  variables:
-    buildConfiguration: 'Release'
   steps:
   - task: DotNetCoreInstaller@0
     inputs:
@@ -60,7 +48,28 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+      arguments: '-r win-x64 --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/sscms-win-x64'
+      zipAfterPublish: True
+
+  - task: DotNetCoreCLI@2
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '-r win-x86 --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/sscms-win-x86'
+    zipAfterPublish: True
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: publish
+      publishWebProjects: True
+      arguments: '-r linux-x64 --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/sscms-linux-x64'
+      zipAfterPublish: True
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: publish
+      publishWebProjects: True
+      arguments: '-r osx-x64 --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/sscms-osx-x64'
       zipAfterPublish: True
   
   # this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.

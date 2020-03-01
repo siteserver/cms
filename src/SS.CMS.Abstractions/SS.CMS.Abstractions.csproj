@@ -20,11 +20,6 @@
     <PackageReleaseNotes>Add netstandard2.0 support</PackageReleaseNotes>
     <RootNamespace>SS.CMS.Abstractions</RootNamespace>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Services\IIdentityManager\**" />
-    <EmbeddedResource Remove="Services\IIdentityManager\**" />
-    <None Remove="Services\IIdentityManager\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Datory" Version="1.0.14" />
@@ -35,6 +30,15 @@
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="SqlKata" Version="1.1.7" />
     <PackageReference Include="YamlDotNet" Version="8.1.0" />
+    <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Threading" Version="4.3.0" />
+    <PackageReference Include="System.Globalization" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
+    <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Threading.ThreadPool" Version="4.3.0" />
   </ItemGroup>
 
 </Project>
