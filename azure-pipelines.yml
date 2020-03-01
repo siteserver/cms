@@ -23,17 +23,6 @@ jobs:
   - script: dotnet build ./sscms.sln --configuration $(buildConfiguration)
     displayName: 'dotnet build'
 
-- job: Windows
-  pool:
-    vmImage: 'windows-2019'
-  steps:
-  - task: DotNetCoreInstaller@0
-    inputs:
-      packageType: 'sdk'
-      version: $(netCoreSdkVersion)
-  - script: dotnet build ./sscms.sln --configuration $(buildConfiguration)
-    displayName: 'dotnet build'
-
 - job: Linux
   pool:
     vmImage: 'Ubuntu 16.04'
@@ -44,6 +33,17 @@ jobs:
       version: $(netCoreSdkVersion)
   - script: dotnet build --configuration $(buildConfiguration)
     displayName: 'dotnet build $(buildConfiguration)'
+
+- job: Windows
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - task: DotNetCoreInstaller@0
+    inputs:
+      packageType: 'sdk'
+      version: $(netCoreSdkVersion)
+  - script: dotnet build ./sscms.sln --configuration $(buildConfiguration)
+    displayName: 'dotnet build'
   - script: dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r win-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64
     displayName: 'dotnet publish win-x64'
   - script: dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r win-x86 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86

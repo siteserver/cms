@@ -27,6 +27,7 @@
     <Content Include="assets\**\*">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Include="Pages\**\*"></Content>
     <Content Include="wwwroot\index.html">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
