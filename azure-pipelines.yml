@@ -57,24 +57,28 @@ jobs:
     inputs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64' 
       archiveType: 'zip'
+      includeRootFolder: false
       archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-win-x64.zip' 
 
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86' 
       archiveType: 'zip'
+      includeRootFolder: false
       archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-win-x86.zip' 
 
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64' 
       archiveType: 'zip'
+      includeRootFolder: false
       archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-linux-x64.zip' 
 
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64' 
       archiveType: 'zip'
+      includeRootFolder: false
       archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-osx-x64.zip' 
 
   - task: PublishBuildArtifacts@1
