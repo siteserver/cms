@@ -14,7 +14,7 @@ variables:
 jobs:
 - job: macOS
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.15'
   steps:
   - task: DotNetCoreInstaller@0
     inputs:

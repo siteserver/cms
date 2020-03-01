@@ -89,11 +89,13 @@ namespace SS.CMS.Web
             });
             app.UseStaticFiles();
 
-            app.UseStaticFiles(new StaticFileOptions
+            app.Map("/" + settingsManager.AdminDirectory + "/assets", admin =>
             {
-                FileProvider = new PhysicalFileProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), $"{Constants.AdminRootDirectory}/assets")),
-                RequestPath = "/" + settingsManager.AdminDirectory + "/assets"
+                admin.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(
+                        Path.Combine(Directory.GetCurrentDirectory(), "assets"))
+                });
             });
 
             app.Map("/" + settingsManager.AdminDirectory, admin =>
