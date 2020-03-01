@@ -53,8 +53,46 @@ jobs:
   - script: dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r osx-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64
     displayName: 'dotnet publish osx-x64'
   
-  # this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64' 
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-win-x64.zip' 
+
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-      artifactName: 'sscms-$(productVersion)'
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64/publish' 
+      artifactName: 'sscms-$(productVersion)-win-x64'
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86' 
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-win-x86.zip' 
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86/publish' 
+      artifactName: 'sscms-$(productVersion)-win-x86'
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64' 
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-linux-x64.zip' 
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64/publish' 
+      artifactName: 'sscms-$(productVersion)-linux-x64'
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64' 
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-osx-x64.zip' 
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64/publish' 
+      artifactName: 'sscms-$(productVersion)-osx-x64'
