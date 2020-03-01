@@ -52,11 +52,11 @@ jobs:
       zipAfterPublish: True
 
   - task: DotNetCoreCLI@2
-  inputs:
-    command: publish
-    publishWebProjects: True
-    arguments: '-r win-x86 --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/sscms-win-x86'
-    zipAfterPublish: True
+    inputs:
+      command: publish
+      publishWebProjects: True
+      arguments: '-r win-x86 --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/sscms-win-x86'
+      zipAfterPublish: True
 
   - task: DotNetCoreCLI@2
     inputs:
