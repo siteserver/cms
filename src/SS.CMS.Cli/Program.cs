@@ -4,9 +4,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
 using SS.CMS.Cli.Services;
-using SS.CMS.Utils;
+using SS.CMS.Cli.Updater;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.Cli
 {
@@ -39,30 +41,26 @@ namespace SS.CMS.Cli
                 IConfigurationRoot configuration = builder.Build();
 
                 var services = new ServiceCollection();
-
                 var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
-                services.AddDistributedCache(settingsManager.CacheType, settingsManager.CacheConnectionString);
-
+                
+                var application = new Application(settingsManager);
+                services.AddSingleton(application);
+                services.AddCache(settingsManager.Redis.ConnectionString);
                 services.AddRepositories();
-                services.AddPathManager();
-                services.AddPluginManager();
-                services.AddUrlManager();
-                services.AddFileManager();
-                services.AddCreateManager();
+                services.AddServices();
+                services.AddScoped<UpdaterManager>();
 
-                services.AddTransient<Application>();
-                services.AddTransient<BackupJob>();
-                services.AddTransient<InstallJob>();
-                services.AddTransient<RestoreJob>();
-                services.AddTransient<TestJob>();
-                services.AddTransient<UpdateJob>();
-                services.AddTransient<VersionJob>();
-                services.AddTransient<UpdaterManager>();
+                services.AddScoped<IJobService, BackupJob>();
+                services.AddScoped<IJobService, InstallJob>();
+                services.AddScoped<IJobService, RestoreJob>();
+                services.AddScoped<IJobService, SyncJob>();
+                services.AddScoped<IJobService, TestJob>();
+                services.AddScoped<IJobService, UpdateJob>();
+                services.AddScoped<IJobService, VersionJob>();
 
                 var provider = services.BuildServiceProvider();
-                CliUtils.Provider = provider;
+                CliUtils.SetProvider(provider);
 
-                var application = provider.GetService<Application>();
                 await application.RunAsync(args);
             }
             finally

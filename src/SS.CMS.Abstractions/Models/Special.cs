@@ -1,19 +1,22 @@
 using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_Special")]
     public class Special : Entity
-    {
-        [DataColumn]
-        public int SiteId { get; set; }
+	{
+	    [DataColumn]
+	    public int SiteId { get; set; }
 
         [DataColumn]
         public string Title { get; set; }
 
         [DataColumn]
         public string Url { get; set; }
+
+        [DataColumn]
+        public DateTime AddDate { get; set; }
     }
 }

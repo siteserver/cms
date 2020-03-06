@@ -1,17 +1,16 @@
-using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_Role")]
     public class Role : Entity
     {
         [DataColumn]
-        public string RoleName { get; set; }
+        public string RoleName  { get; set; }
 
         [DataColumn]
-        public int UserId { get; set; }
+        public string CreatorUserName { get; set; }
 
         [DataColumn]
         public string Description { get; set; }

@@ -1,9 +1,9 @@
 using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_TemplateLog")]
     public class TemplateLog : Entity
     {
@@ -14,7 +14,7 @@ namespace SS.CMS.Models
         public int SiteId { get; set; }
 
         [DataColumn]
-        public int UserId { get; set; }
+        public int AdminId { get; set; }
 
         [DataColumn]
         public int ContentLength { get; set; }

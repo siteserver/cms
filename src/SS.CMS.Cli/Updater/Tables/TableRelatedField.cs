@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+﻿using Newtonsoft.Json;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableRelatedField
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableRelatedField(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("relatedFieldID")]
         public long RelatedFieldId { get; set; }
 
@@ -24,35 +29,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("suffixes")]
         public string Suffixes { get; set; }
-    }
-
-    public partial class TableRelatedField
-    {
-        public static readonly List<string> OldTableNames = new List<string>
-        {
-            "siteserver_RelatedField",
-            "wcm_RelatedField"
-        };
-
-        public static ConvertInfo GetConverter(IRelatedFieldRepository relatedFieldRepository)
-        {
-            return new ConvertInfo
-            {
-                NewTableName = relatedFieldRepository.TableName,
-                NewColumns = relatedFieldRepository.TableColumns,
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(RelatedField.Id), nameof(RelatedFieldId)},
-                {nameof(RelatedField.Title), nameof(RelatedFieldName)},
-                {nameof(RelatedField.SiteId), nameof(PublishmentSystemId)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

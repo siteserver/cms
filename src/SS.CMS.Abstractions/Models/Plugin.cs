@@ -1,9 +1,9 @@
-using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_Plugin")]
     public class Plugin : Entity
     {
@@ -11,7 +11,7 @@ namespace SS.CMS.Models
         public string PluginId { get; set; }
 
         [DataColumn]
-        public bool IsDisabled { get; set; }
+        public bool Disabled { get; set; }
 
         [DataColumn]
         public int Taxis { get; set; }

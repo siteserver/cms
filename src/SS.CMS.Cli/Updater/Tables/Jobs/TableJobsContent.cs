@@ -1,14 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
-using SS.CMS.Data;
-using SS.CMS.Models;
-using SS.CMS.Utils;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Cli.Updater.Tables.Jobs
 {
     public partial class TableJobsContent
     {
+        private readonly ISettingsManager _settingsManager;
+        public TableJobsContent(ISettingsManager settingsManager)
+        {
+            _settingsManager = settingsManager;
+        }
+
         [JsonProperty("id")]
         public long Id { get; set; }
 
@@ -32,6 +35,9 @@ namespace SS.CMS.Cli.Updater.Tables.Jobs
 
         [JsonProperty("contentGroupNameCollection")]
         public string ContentGroupNameCollection { get; set; }
+
+        [JsonProperty("groupNameCollection")]
+        public string GroupNameCollection { get; set; }
 
         [JsonProperty("tags")]
         public string Tags { get; set; }
@@ -113,95 +119,5 @@ namespace SS.CMS.Cli.Updater.Tables.Jobs
 
         [JsonProperty("addDate")]
         public DateTimeOffset AddDate { get; set; }
-    }
-
-    public partial class TableJobsContent
-    {
-        public static readonly string NewTableName = "ss_jobs";
-
-        private static List<TableColumn> NewColumns => new List<TableColumn>
-        {
-            new TableColumn
-            {
-                AttributeName = "Department",
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = "Location",
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = "NumberOfPeople",
-                DataType = DataType.VarChar,
-                DataLength = 200
-            },
-            new TableColumn
-            {
-                AttributeName = "Responsibility",
-                DataType = DataType.Text
-            },
-            new TableColumn
-            {
-                AttributeName = "Requirement",
-                DataType = DataType.Text
-            }
-        };
-
-        private static List<TableColumn> GetNewColumns(IList<TableColumn> oldColumns)
-        {
-            var columns = new List<TableColumn>();
-            var tableColumns = (new Database(null, null)).GetTableColumns<Content>();
-
-            columns.AddRange(tableColumns);
-            columns.AddRange(NewColumns);
-
-            foreach (var tableColumnInfo in oldColumns)
-            {
-                if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
-                {
-                    tableColumnInfo.AttributeName = nameof(Models.Content.ChannelId);
-                }
-                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
-                {
-                    tableColumnInfo.AttributeName = nameof(Models.Content.SiteId);
-                }
-                else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
-                {
-                    tableColumnInfo.AttributeName = nameof(Models.Content.GroupNameCollection);
-                }
-
-                if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
-                {
-                    columns.Add(tableColumnInfo);
-                }
-            }
-
-            return columns;
-        }
-
-        public static ConvertInfo GetConverter(IList<TableColumn> oldColumns)
-        {
-            return new ConvertInfo
-            {
-                NewTableName = NewTableName,
-                NewColumns = GetNewColumns(oldColumns),
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(Models.Content.ChannelId), nameof(NodeId)},
-                {nameof(Models.Content.SiteId), nameof(PublishmentSystemId)},
-                {nameof(Models.Content.GroupNameCollection), nameof(ContentGroupNameCollection)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

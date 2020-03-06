@@ -1,58 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using Datory;
+using Datory.Utils;
 using Mono.Options;
+using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
-using SS.CMS.Data;
-using SS.CMS.Utils;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Services
 {
-    public class BackupJob
+    public class BackupJob : IJobService
     {
-        public const string CommandName = "backup";
-
-        public static async Task Execute(IJobContext context)
-        {
-            var application = CliUtils.Provider.GetService<BackupJob>();
-            await application.RunAsync(context);
-        }
-
-        public static void PrintUsage()
-        {
-            Console.WriteLine("数据库备份: siteserver backup");
-            var job = new BackupJob();
-            job._options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
-        }
+        public string CommandName => "backup";
 
         private string _directory;
         private string _configFile;
-        private string _databaseType;
-        private string _connectionString;
         private List<string> _includes;
         private List<string> _excludes;
         private int _maxRows;
         private bool _isHelp;
+
+        private readonly ISettingsManager _settingsManager;
+        private readonly IDatabaseManager _databaseManager;
         private readonly OptionSet _options;
 
-        public BackupJob()
+        public BackupJob(ISettingsManager settingsManager, IDatabaseManager databaseManager)
         {
-            _options = new OptionSet() {
+            _settingsManager = settingsManager;
+            _databaseManager = databaseManager;
+            _options = new OptionSet
+            {
                 { "d|directory=", "指定保存备份文件的文件夹名称",
                     v => _directory = v },
-                { "c|config-file=", "指定配置文件appSettings.json路径或文件名",
+                { "c|config-file=", "指定配置文件Web.config路径或文件名",
                     v => _configFile = v },
-                { "database-type=", "指定需要备份的数据库类型",
-                    v => _databaseType = v },
-                { "connection-string=", "指定需要备份的数据库连接字符串",
-                    v => _connectionString = v },
                 { "includes=", "指定需要备份的表，多个表用英文逗号隔开，默认备份所有表",
-                    v => _includes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
+                    v => _includes = v == null ? null : Utilities.GetStringList(v) },
                 { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
-                    v => _excludes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
+                    v => _excludes = v == null ? null : Utilities.GetStringList(v) },
                 { "max-rows=", "指定需要备份的表的最大行数",
                     v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v) },
                 { "h|help",  "命令说明",
@@ -60,7 +45,14 @@ namespace SS.CMS.Cli.Services
             };
         }
 
-        public async Task RunAsync(IJobContext context)
+        public void PrintUsage()
+        {
+            Console.WriteLine("数据库备份: siteserver backup");
+            _options.WriteOptionDescriptions(Console.Out);
+            Console.WriteLine();
+        }
+
+        public async Task ExecuteAsync(IJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
@@ -76,19 +68,34 @@ namespace SS.CMS.Cli.Services
                 directory = $"backup/{DateTime.Now:yyyy-MM-dd}";
             }
 
-            var treeInfo = new TreeInfo(directory);
+            var treeInfo = new TreeInfo(_settingsManager, directory);
             DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
 
-            var (db, errorMessage) = CliUtils.GetDatabase(_databaseType, _connectionString, _configFile);
-            if (db == null)
+            var webConfigPath = CliUtils.GetWebConfigPath(_configFile, _settingsManager);
+            if (!FileUtils.IsFileExists(webConfigPath))
             {
-                await CliUtils.PrintErrorAsync(errorMessage);
+                await CliUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
                 return;
             }
 
-            await Console.Out.WriteLineAsync($"数据库类型: {db.DatabaseType.Value}");
-            await Console.Out.WriteLineAsync($"连接字符串: {db.ConnectionString}");
-            await Console.Out.WriteLineAsync($"备份文件夹: {treeInfo.DirectoryPath}");
+            //WebConfigUtils.Load(_settingsManager.ContentRootPath, webConfigPath);
+
+            //if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+            //{
+            //    await CliUtils.PrintErrorAsync($"{webConfigPath} 中数据库连接字符串 connectionString 未设置");
+            //    return;
+            //}
+
+            //await Console.Out.WriteLineAsync($"数据库类型: {_settingsManager.Database.DatabaseType.GetValue()}");
+            //await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
+            //await Console.Out.WriteLineAsync($"备份文件夹: {treeInfo.DirectoryPath}");
+
+            //var (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
+            //if (!isConnectionWorks)
+            //{
+            //    await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
+            //    return;
+            //}
 
             if (_excludes == null)
             {
@@ -100,18 +107,27 @@ namespace SS.CMS.Cli.Services
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            var allTableNames = await db.GetTableNamesAsync();
+            await Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
+
+            await CliUtils.PrintRowLineAsync();
+            await Console.Out.WriteLineAsync($"恭喜，成功备份数据库至文件夹：{treeInfo.DirectoryPath}！");
+        }
+
+        public static async Task Backup(ISettingsManager settingsManager, IDatabaseManager databaseManager, List<string> includes, List<string> excludes, int maxRows, TreeInfo treeInfo)
+        {
+            var allTableNames = await settingsManager.Database.GetTableNamesAsync();
+
             var tableNames = new List<string>();
 
             foreach (var tableName in allTableNames)
             {
-                if (_includes != null && !StringUtils.ContainsIgnoreCase(_includes, tableName)) continue;
-                if (StringUtils.ContainsIgnoreCase(_excludes, tableName)) continue;
+                if (includes != null && !StringUtils.ContainsIgnoreCase(includes, tableName)) continue;
+                if (StringUtils.ContainsIgnoreCase(excludes, tableName)) continue;
                 if (StringUtils.ContainsIgnoreCase(tableNames, tableName)) continue;
                 tableNames.Add(tableName);
             }
 
-            await FileUtils.WriteTextAsync(treeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(tableNames));
+            await FileUtils.WriteTextAsync(treeInfo.TablesFilePath, TranslateUtils.JsonSerialize(tableNames));
 
             await CliUtils.PrintRowLineAsync();
             await CliUtils.PrintRowAsync("备份表名称", "总条数");
@@ -119,44 +135,47 @@ namespace SS.CMS.Cli.Services
 
             foreach (var tableName in tableNames)
             {
-                var repository = new Repository(db, tableName);
+                var repository = new Repository(settingsManager.Database, tableName);
                 var tableInfo = new TableInfo
                 {
-                    Columns = await db.GetTableColumnsAsync(tableName),
+                    Columns = repository.TableColumns,
                     TotalCount = await repository.CountAsync(),
                     RowFiles = new List<string>()
                 };
 
-                if (_maxRows > 0 && tableInfo.TotalCount > _maxRows)
+                if (maxRows > 0 && tableInfo.TotalCount > maxRows)
                 {
-                    tableInfo.TotalCount = _maxRows;
+                    tableInfo.TotalCount = maxRows;
                 }
 
                 await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                var identityColumnName = await db.AddIdentityColumnIdIfNotExistsAsync(tableName, tableInfo.Columns);
+                var identityColumnName = await settingsManager.Database.AddIdentityColumnIdIfNotExistsAsync(tableName, tableInfo.Columns);
 
                 if (tableInfo.TotalCount > 0)
                 {
                     var current = 1;
                     if (tableInfo.TotalCount > CliUtils.PageSize)
                     {
-                        var pageCount = (int)Math.Ceiling((double)tableInfo.TotalCount / CliUtils.PageSize);
+                        var pageCount = (int) Math.Ceiling((double) tableInfo.TotalCount / CliUtils.PageSize);
 
                         using (var progress = new ProgressBar())
                         {
                             for (; current <= pageCount; current++)
                             {
-                                progress.Report((double)(current - 1) / pageCount);
+                                progress.Report((double) (current - 1) / pageCount);
 
                                 var fileName = $"{current}.json";
                                 tableInfo.RowFiles.Add(fileName);
                                 var offset = (current - 1) * CliUtils.PageSize;
-                                var limit = tableInfo.TotalCount - offset < CliUtils.PageSize ? tableInfo.TotalCount - offset : CliUtils.PageSize;
+                                var limit = tableInfo.TotalCount - offset < CliUtils.PageSize
+                                    ? tableInfo.TotalCount - offset
+                                    : CliUtils.PageSize;
 
-                                var rows = await repository.GetAllAsync<IEnumerable<dynamic>>(Q.Offset(offset).Limit(limit).OrderBy(identityColumnName));
+                                var rows = databaseManager.GetPageObjects(tableName, identityColumnName, offset,
+                                    limit);
 
-                                await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
+                                await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), TranslateUtils.JsonSerialize(rows));
                             }
                         }
                     }
@@ -164,17 +183,15 @@ namespace SS.CMS.Cli.Services
                     {
                         var fileName = $"{current}.json";
                         tableInfo.RowFiles.Add(fileName);
-                        var rows = await repository.GetAllAsync<IEnumerable<dynamic>>(Q.OrderBy(identityColumnName));
+                        var rows = databaseManager.GetObjects(tableName);
 
-                        await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
+                        await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), TranslateUtils.JsonSerialize(rows));
                     }
                 }
 
-                await FileUtils.WriteTextAsync(treeInfo.GetTableMetadataFilePath(tableName), Encoding.UTF8, TranslateUtils.JsonSerialize(tableInfo));
+                await FileUtils.WriteTextAsync(treeInfo.GetTableMetadataFilePath(tableName),
+                    TranslateUtils.JsonSerialize(tableInfo));
             }
-
-            await CliUtils.PrintRowLineAsync();
-            await Console.Out.WriteLineAsync($"恭喜，成功备份数据库至文件夹：{treeInfo.DirectoryPath}！");
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
-using SS.CMS.Enums;
-using SS.CMS.Models;
 
-namespace SS.CMS
+namespace SS.CMS.Abstractions
 {
     /// <summary>
     /// STL解析上下文。

@@ -1,13 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableSiteLog
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableSiteLog(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public long Id { get; set; }
 
@@ -34,30 +39,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("summary")]
         public string Summary { get; set; }
-    }
-
-    public partial class TableSiteLog
-    {
-        public static readonly List<string> OldTableNames = new List<string>
-        {
-            "siteserver_Log",
-            "wcm_Log"
-        };
-
-        public static ConvertInfo GetConverter(ISiteLogRepository siteLogRepository) => new ConvertInfo
-        {
-            NewTableName = siteLogRepository.TableName,
-            NewColumns = siteLogRepository.TableColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
-        };
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(SiteLog.SiteId), nameof(PublishmentSystemId)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

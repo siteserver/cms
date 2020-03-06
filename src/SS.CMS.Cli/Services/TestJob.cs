@@ -2,34 +2,29 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Mono.Options;
+using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
-using SS.CMS.Services;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Services
 {
-    public class TestJob
+    public class TestJob : IJobService
     {
-        public const string CommandName = "test add";
-
-        public static async Task Execute(IJobContext context)
-        {
-            var application = CliUtils.Provider.GetService<TestJob>();
-            await application.RunAsync(context);
-        }
+        public string CommandName => "test add";
 
         private bool _isHelp;
-        private string _configFileName;
-        private readonly OptionSet _options;
+        private string _webConfigFileName;
+
         private readonly ISettingsManager _settingsManager;
+        private readonly OptionSet _options;
+
         public TestJob(ISettingsManager settingsManager)
         {
             _settingsManager = settingsManager;
-            _options = new OptionSet()
+            _options = new OptionSet
             {
                 {
                     "c|config=", "the {web.config} file name.",
-                    v => _configFileName = v
+                    v => _webConfigFileName = v
                 },
                 {
                     "h|help", "命令说明",
@@ -38,7 +33,14 @@ namespace SS.CMS.Cli.Services
             };
         }
 
-        public async Task RunAsync(IJobContext context)
+        public void PrintUsage()
+        {
+            Console.WriteLine("测试: siteserver test add");
+            _options.WriteOptionDescriptions(Console.Out);
+            Console.WriteLine();
+        }
+
+        public async Task ExecuteAsync(IJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
@@ -49,7 +51,7 @@ namespace SS.CMS.Cli.Services
 
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             await Console.Out.WriteLineAsync($"SiteServer CLI Version: {version.Substring(0, version.Length - 2)}");
-            await Console.Out.WriteLineAsync($"Work Directory: {CliUtils.PhysicalApplicationPath}");
+            await Console.Out.WriteLineAsync($"Work Directory: {_settingsManager.ContentRootPath}");
             await Console.Out.WriteLineAsync($"siteserver.exe Path: {Assembly.GetExecutingAssembly().Location}");
             await Console.Out.WriteLineAsync();
         }

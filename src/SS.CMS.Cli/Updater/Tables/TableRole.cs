@@ -1,11 +1,17 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
-using SS.CMS.Repositories;
+﻿using Newtonsoft.Json;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableRole
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableRole(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public long Id { get; set; }
 
@@ -20,22 +26,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("description")]
         public string Description { get; set; }
-    }
-
-    public partial class TableRole
-    {
-        public const string OldTableName = "bairong_Roles";
-
-        public static ConvertInfo GetConverter(IRoleRepository roleRepository) => new ConvertInfo
-        {
-            NewTableName = roleRepository.TableName,
-            NewColumns = roleRepository.TableColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
-        };
-
-        private static readonly Dictionary<string, string> ConvertKeyDict = null;
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

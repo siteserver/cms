@@ -1,25 +1,27 @@
-using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_RelatedFieldItem")]
     public class RelatedFieldItem : Entity
-    {
+	{
         [DataColumn]
-        public int RelatedFieldId { get; set; }
+        public int SiteId { get; set; }
 
         [DataColumn]
-        public string ItemName { get; set; }
+	    public int RelatedFieldId { get; set; }
 
         [DataColumn]
-        public string ItemValue { get; set; }
+        public string Label { get; set; }
+
+        [DataColumn]
+        public string Value { get; set; }
 
         [DataColumn]
         public int ParentId { get; set; }
 
         [DataColumn]
         public int Taxis { get; set; }
-    }
+	}
 }

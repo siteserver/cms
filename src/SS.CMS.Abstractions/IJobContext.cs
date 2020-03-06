@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SS.CMS
+namespace SS.CMS.Abstractions
 {
     /// <summary>
     /// 包含SiteServer Cli命令行执行任务时的上下文信息。

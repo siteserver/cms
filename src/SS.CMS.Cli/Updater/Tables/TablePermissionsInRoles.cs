@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+﻿using Newtonsoft.Json;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TablePermissionsInRoles
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TablePermissionsInRoles(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public long Id { get; set; }
 
@@ -15,30 +20,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("generalPermissions")]
         public string GeneralPermissions { get; set; }
-    }
-
-    public partial class TablePermissionsInRoles
-    {
-        public static readonly List<string> OldTableNames = new List<string>
-        {
-            "bairong_PermissionsInRoles",
-            "siteserver_PermissionsInRoles"
-        };
-
-        public static ConvertInfo GetConverter(IPermissionRepository permissionRepository) => new ConvertInfo
-        {
-            NewTableName = permissionRepository.TableName,
-            NewColumns = permissionRepository.TableColumns,
-            ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
-        };
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(Models.Permission.AppPermissions), nameof(GeneralPermissions)},
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

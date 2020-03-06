@@ -1,4 +1,4 @@
-﻿using SS.CMS.Utils;
+﻿using SS.CMS.Abstractions;
 
 namespace SS.CMS.Cli.Core
 {
@@ -6,9 +6,9 @@ namespace SS.CMS.Cli.Core
     {
         public string DirectoryPath { get; }
 
-        public TreeInfo(string directory)
+        public TreeInfo(ISettingsManager settingsManager,  string directory)
         {
-            DirectoryPath = PathUtils.Combine(CliUtils.PhysicalApplicationPath, directory);
+            DirectoryPath = PathUtils.Combine(settingsManager.ContentRootPath, directory);
         }
 
         public string TablesFilePath => PathUtils.Combine(DirectoryPath, "_tables.json");

@@ -1,24 +1,20 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Reflection;
 using System.Threading.Tasks;
 using Mono.Options;
 using Quartz;
 using Quartz.Impl;
+using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
-using SS.CMS.Cli.Services;
-using SS.CMS.Services;
-using SS.CMS.Utils;
 
 namespace SS.CMS.Cli
 {
     public class Application
     {
-        private bool _isHelp { get; set; }
-        private string _repeat { get; set; }
+        private bool _isHelp;
+        private string _repeat;
         private readonly OptionSet _options;
-        private static Dictionary<string, Func<IJobContext, Task>> Jobs { get; set; }
         public static string CommandName { get; private set; }
         public static string[] CommandArgs { get; private set; }
 
@@ -64,16 +60,6 @@ namespace SS.CMS.Cli
             Console.WriteLine("欢迎使用 SiteServer Cli 命令行工具");
             Console.WriteLine();
 
-            Jobs = new Dictionary<string, Func<IJobContext, Task>>(StringComparer.CurrentCultureIgnoreCase)
-            {
-                {BackupJob.CommandName, BackupJob.Execute},
-                {InstallJob.CommandName, InstallJob.Execute},
-                {RestoreJob.CommandName, RestoreJob.Execute},
-                {UpdateJob.CommandName, UpdateJob.Execute},
-                {VersionJob.CommandName, VersionJob.Execute},
-                {TestJob.CommandName, TestJob.Execute}
-            };
-
             // PluginManager.LoadPlugins(CliUtils.PhysicalApplicationPath);
             // var pluginJobs = PluginJobManager.GetJobs();
             // if (pluginJobs != null && pluginJobs.Count > 0)
@@ -87,13 +73,15 @@ namespace SS.CMS.Cli
             //     }
             // }
 
-            if (!Jobs.ContainsKey(CommandName))
+            var jobServiceCommandNames = CliUtils.GetJobServiceCommandNames();
+
+            if (!StringUtils.ContainsIgnoreCase(jobServiceCommandNames, CommandName))
             {
-                await RunHelpAsync(_isHelp, CommandName);
+                await RunHelpAsync(CommandName);
             }
             else if (!string.IsNullOrEmpty(_repeat))
             {
-                await RunRepeatAsync(_repeat);
+                await RunRepeatAsync();
             }
             else
             {
@@ -101,24 +89,24 @@ namespace SS.CMS.Cli
             }
         }
 
-        private async Task RunHelpAsync(bool _isHelp, string commandName)
+        private async Task RunHelpAsync(string commandName)
         {
             if (_isHelp || string.IsNullOrEmpty(commandName))
             {
-                var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                await Console.Out.WriteLineAsync($"Cli 命令行版本: {version.Substring(0, version.Length - 2)}");
-                await Console.Out.WriteLineAsync($"当前文件夹: {CliUtils.PhysicalApplicationPath}");
-                await Console.Out.WriteLineAsync($"Cli 命令行文件夹: {Assembly.GetExecutingAssembly().Location}");
+                await Console.Out.WriteLineAsync($"Cli 命令行版本: {_settingsManager.ProductVersion}");
+                await Console.Out.WriteLineAsync($"当前文件夹: {_settingsManager.ContentRootPath}");
                 await Console.Out.WriteLineAsync();
 
                 await CliUtils.PrintRowLine();
                 await CliUtils.PrintRow("Usage");
                 await CliUtils.PrintRowLine();
-                BackupJob.PrintUsage();
-                InstallJob.PrintUsage();
-                RestoreJob.PrintUsage();
-                UpdateJob.PrintUsage();
-                VersionJob.PrintUsage();
+
+                var services = CliUtils.GetJobServices();
+                foreach (var service in services)
+                {
+                    service.PrintUsage();
+                }
+
                 await CliUtils.PrintRowLine();
                 await CliUtils.PrintRow("https://www.siteserver.cn/docs/cli");
                 await CliUtils.PrintRowLine();
@@ -130,7 +118,7 @@ namespace SS.CMS.Cli
             }
         }
 
-        private async Task RunRepeatAsync(string schedule)
+        private async Task RunRepeatAsync()
         {
             try
             {
@@ -149,7 +137,7 @@ namespace SS.CMS.Cli
                 var trigger = TriggerBuilder.Create()
                     .WithIdentity("trigger1", "group1")
                     .StartNow()
-                    .WithCronSchedule(schedule)
+                    .WithCronSchedule(_repeat)
                     .WithPriority(1)
                     .Build();
 
@@ -163,25 +151,22 @@ namespace SS.CMS.Cli
             }
         }
 
-        public static async Task RunExecuteAsync(string commandName, string[] commandArgs, IJobExecutionContext jobContext)
+        public async Task RunExecuteAsync(string commandName, string[] commandArgs, IJobExecutionContext jobContext)
         {
             try
             {
-                Func<IJobContext, Task> job;
-                if (Jobs.TryGetValue(commandName, out job))
+                var service = CliUtils.GetJobService(commandName);
+                if (service != null)
                 {
-                    if (job != null)
-                    {
-                        var context = new JobContextImpl(commandName, commandArgs, jobContext);
-                        await job(context);
-                    }
+                    var context = new JobContextImpl(commandName, commandArgs, jobContext);
+                    await service.ExecuteAsync(context);
                 }
             }
             catch (Exception ex)
             {
                 await CliUtils.PrintErrorAsync(ex.Message);
 
-                var errorLogFilePath = CliUtils.CreateErrorLogFile("siteserver");
+                var errorLogFilePath = CliUtils.CreateErrorLogFile("siteserver", _settingsManager);
 
                 await CliUtils.AppendErrorLogsAsync(errorLogFilePath, new List<TextLogInfo>
                 {

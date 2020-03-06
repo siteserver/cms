@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Data;
+using Datory;
 
 namespace SS.CMS.Cli.Updater
 {
@@ -10,7 +10,7 @@ namespace SS.CMS.Cli.Updater
 
         public string NewTableName { get; set; }
 
-        public IList<TableColumn> NewColumns { get; set; }
+        public List<TableColumn> NewColumns { get; set; }
 
         public Dictionary<string, string> ConvertKeyDict { get; set; }
 

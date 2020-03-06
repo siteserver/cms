@@ -1,4 +1,4 @@
-﻿using SS.CMS.Utils;
+﻿using SS.CMS.Abstractions;
 using Xunit;
 
 namespace SS.CMS.Cli.Tests

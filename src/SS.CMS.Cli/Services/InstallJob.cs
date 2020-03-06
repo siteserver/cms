@@ -1,59 +1,37 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Datory;
 using Mono.Options;
+using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
-using SS.CMS.Repositories;
-using SS.CMS.Services;
-using SS.CMS.Utils.Enumerations;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using SS.CMS.Data;
-using SS.CMS.Core.Repositories;
-using Microsoft.Extensions.Caching.Distributed;
-using SS.CMS.Core.Common;
+using SS.CMS.Core;
 
 namespace SS.CMS.Cli.Services
 {
-    public class InstallJob
+    public class InstallJob : IJobService
     {
-        public const string CommandName = "install";
-
-        public static async Task Execute(IJobContext context)
-        {
-            var application = CliUtils.Provider.GetService<InstallJob>();
-            await application.RunAsync(context);
-        }
-
-        public static void PrintUsage()
-        {
-            Console.WriteLine("系统安装: siteserver install");
-            var job = new InstallJob(null, null);
-            job._options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
-        }
+        public string CommandName => "install";
 
         private string _configFile;
-        private string _databaseType;
-        private string _connectionString;
         private string _userName;
         private string _password;
         private bool _isHelp;
+
+        private readonly ISettingsManager _settingsManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
+        private readonly IConfigRepository _configRepository;
         private readonly OptionSet _options;
-        private IDistributedCache _cache;
-        private ISettingsManager _settingsManager;
 
-        public InstallJob(IDistributedCache cache, ISettingsManager settingsManager)
+        public InstallJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IConfigRepository configRepository)
         {
-            _cache = cache;
             _settingsManager = settingsManager;
-
+            _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
+            _configRepository = configRepository;
             _options = new OptionSet {
                 { "c|config-file=", "指定配置文件Web.config路径或文件名",
                     v => _configFile = v },
-                { "database-type=", "指定需要安装的数据库类型",
-                    v => _databaseType = v },
-                { "connection-string=", "指定需要安装的数据库连接字符串",
-                    v => _connectionString = v },
                 { "u|userName=", "超级管理员用户名",
                     v => _userName = v },
                 { "p|password=", "超级管理员密码",
@@ -63,7 +41,14 @@ namespace SS.CMS.Cli.Services
             };
         }
 
-        public async Task RunAsync(IJobContext context)
+        public void PrintUsage()
+        {
+            Console.WriteLine("系统安装: siteserver install");
+            _options.WriteOptionDescriptions(Console.Out);
+            Console.WriteLine();
+        }
+
+        public async Task ExecuteAsync(IJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
@@ -73,10 +58,16 @@ namespace SS.CMS.Cli.Services
                 return;
             }
 
-            var (db, errorMessage) = CliUtils.GetDatabase(_databaseType, _connectionString, _configFile);
-            if (db == null)
+            var webConfigPath = CliUtils.GetWebConfigPath(_configFile, _settingsManager);
+            if (!FileUtils.IsFileExists(webConfigPath))
             {
-                await CliUtils.PrintErrorAsync(errorMessage);
+                await CliUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(_settingsManager.Database.ConnectionString))
+            {
+                await CliUtils.PrintErrorAsync($"{webConfigPath} 中数据库连接字符串 connectionString 未设置");
                 return;
             }
 
@@ -98,52 +89,36 @@ namespace SS.CMS.Cli.Services
                 return;
             }
 
-            if (!EUserPasswordRestrictionUtils.IsValid(_password, EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit)))
+            if (!PasswordRestrictionUtils.IsValid(_password, PasswordRestriction.LetterAndDigit.GetValue()))
             {
-                await CliUtils.PrintErrorAsync($"管理员密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestriction.LetterAndDigit)}");
+                await CliUtils.PrintErrorAsync($"管理员密码不符合规则，请包含{PasswordRestriction.LetterAndDigit.GetDisplayName()}");
                 return;
             }
 
-            await Console.Out.WriteLineAsync($"系统文件夹: {CliUtils.PhysicalApplicationPath}");
+            //WebConfigUtils.Load(_settingsManager.ContentRootPath, webConfigPath);
 
-            if (!string.IsNullOrEmpty(db.ConnectionString))
+            //await Console.Out.WriteLineAsync($"数据库类型: {_settingsManager.Database.DatabaseType.GetValue()}");
+            //await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
+            //await Console.Out.WriteLineAsync($"系统文件夹: {_settingsManager.ContentRootPath}");
+
+            //var (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
+            //if (!isConnectionWorks)
+            //{
+            //    await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
+            //    return;
+            //}
+
+            if (!await _configRepository.IsNeedInstallAsync())
             {
-                await Console.Out.WriteLineAsync($"数据库类型: {db.DatabaseType.Value}");
-                await Console.Out.WriteLineAsync($"连接字符串: {db.ConnectionString}");
                 await CliUtils.PrintErrorAsync("系统已安装在 web.config 指定的数据库中，命令执行失败");
                 return;
             }
 
-            // await tableManager.SyncDatabaseAsync();
+            //WebConfigUtils.UpdateWebConfig(WebConfigUtils.IsProtectData, _settingsManager.Database.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.RedisConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory, StringUtils.GetShortGuid(), false);
 
-            // var configInfo = new ConfigInfo
-            // {
-            //     DatabaseVersion = _settingsManager.ProductVersion,
-            //     UpdateDate = DateTime.UtcNow,
-            //     ExtendValues = string.Empty
-            // };
-            // await _configRepository.DeleteAllAsync();
-            // await _configRepository.InsertAsync(configInfo);
+            await _databaseManager.InstallAsync(_pluginManager, _userName, _password, string.Empty, string.Empty);
 
-            // var userInfo = new UserInfo
-            // {
-            //     UserName = install.AdminName,
-            //     Password = install.AdminPassword,
-            //     RoleName = AuthTypes.Roles.SuperAdministrator
-            // };
-
-            // var (isSuccess, userId, errorMessage) = await userRepository.InsertAsync(userInfo);
-
-            var (databaseRepository, repositories) = DatabaseUtils.GetAllRepositories(_cache, _settingsManager);
-            var (isSuccess, errorMessageInstall) = await databaseRepository.InstallDatabaseAsync(_userName, _password, repositories);
-            if (isSuccess)
-            {
-                await Console.Out.WriteLineAsync("恭喜，系统安装成功！");
-            }
-            else
-            {
-                await Console.Error.WriteLineAsync(errorMessageInstall);
-            }
+            await Console.Out.WriteLineAsync("恭喜，系统安装成功！");
         }
     }
 }

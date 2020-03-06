@@ -1,5 +1,5 @@
 ﻿using System;
-using SS.CMS.Utils;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Cli.Core
 {

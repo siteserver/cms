@@ -1,5 +1,6 @@
 ﻿using System;
 using Quartz;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Cli.Core
 {

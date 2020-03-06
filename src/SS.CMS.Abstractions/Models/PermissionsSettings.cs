@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
     [Serializable]
     public class PermissionsSettings

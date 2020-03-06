@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SS.CMS.Enums;
-using SS.CMS.Models;
 
-namespace SS.CMS
+namespace SS.CMS.Abstractions
 {
     /// <summary>
     /// 为STL解析事件提供数据。
@@ -12,7 +10,7 @@ namespace SS.CMS
     public class ParseEventArgs : EventArgs
     {
         /// <summary>
-        /// 初始化 <see cref="T:SS.CMS.ParseEventArgs" /> 类的新实例。
+        /// 初始化 <see cref="T:SS.CMS.Abstractions.ParseEventArgs" /> 类的新实例。
         /// </summary>
         /// <param name="siteId">站点Id。</param>
         /// <param name="channelId">栏目Id。</param>

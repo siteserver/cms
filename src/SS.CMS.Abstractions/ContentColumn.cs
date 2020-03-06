@@ -1,16 +1,11 @@
-﻿using SS.CMS.Data;
-using SS.CMS.Enums;
-
-namespace SS.CMS
+﻿namespace SS.CMS.Abstractions
 {
-    public class ContentColumn : TableColumn
+    public class ContentColumn
     {
+        public string AttributeName { get; set; }
         public string DisplayName { get; set; }
-
         public InputType InputType { get; set; }
-
         public bool IsList { get; set; }
-
-        public bool IsCalculate { get; set; }
+        public bool IsSearchable { get; set; }
     }
 }

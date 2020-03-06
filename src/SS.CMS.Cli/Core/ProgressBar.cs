@@ -46,8 +46,8 @@ namespace SS.CMS.Cli.Core
             {
                 if (disposed) return;
 
-                int progressBlockCount = (int)(currentProgress * blockCount);
-                int percent = (int)(currentProgress * 100);
+                int progressBlockCount = (int) (currentProgress * blockCount);
+                int percent = (int) (currentProgress * 100);
                 string text = string.Format("[{0}{1}] {2,3}% {3}",
                     new string('#', progressBlockCount), new string('-', blockCount - progressBlockCount),
                     percent,

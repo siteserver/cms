@@ -1,4 +1,4 @@
-﻿namespace SS.CMS
+﻿namespace SS.CMS.Abstractions
 {
     /// <summary>表示将用于处理内容编辑（新增）页面的载入事件的方法。</summary>
     /// <param name="sender">事件源。</param>

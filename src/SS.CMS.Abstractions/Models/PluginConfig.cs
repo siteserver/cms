@@ -1,12 +1,11 @@
-using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_PluginConfig")]
     public class PluginConfig : Entity
-    {
+	{
         [DataColumn]
         public string PluginId { get; set; }
 
@@ -18,5 +17,5 @@ namespace SS.CMS.Models
 
         [DataColumn(Text = true)]
         public string ConfigValue { get; set; }
-    }
+	}
 }

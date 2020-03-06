@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SS.CMS
+namespace SS.CMS.Abstractions
 {
     /// <summary>
     /// 插件菜单。

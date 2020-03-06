@@ -1,0 +1,57 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-form ref="form" :model="form" label-width="100px" size="small">
+  <el-form-item label="导出类型">
+    <el-radio v-model="form.exportType" label="zip">导出压缩包</el-radio>
+    <el-radio v-model="form.exportType" label="excel">导出Excel文件</el-radio>
+    <div class="tips">导出压缩包能够将内容以及内容相关的图片、附件等文件一并导出，导出Excel则仅能导出数据。</div>
+  </el-form-item>
+  <el-form-item label="审核状态">
+    <el-radio v-model="form.isAllCheckedLevel" :label="true">全部状态</el-radio>
+    <el-radio v-model="form.isAllCheckedLevel" :label="false">自定义状态</el-radio>
+  </el-form-item>
+  <el-form-item v-if="!form.isAllCheckedLevel" label="自定义状态">
+    <el-checkbox-group v-model="form.checkedLevelKeys">
+      <el-checkbox v-for="level in checkedLevels" :key="level.key" :label="level.value" :value="level.key"></el-checkbox>
+    </el-checkbox-group>
+  </el-form-item>
+  <el-form-item label="内容添加时间">
+    <el-radio v-model="form.isAllDate" :label="true">全部时间段</el-radio>
+    <el-radio v-model="form.isAllDate" :label="false">自定义时间段</el-radio>
+  </el-form-item>
+  <el-form-item v-if="!form.isAllDate" label="开始时间">
+    <el-date-picker
+      v-model="form.startDate"
+      type="datetime"
+      placeholder="选择日期时间">
+    </el-date-picker>
+  </el-form-item>
+  <el-form-item v-if="!form.isAllDate" label="结束时间">
+    <el-date-picker
+      v-model="form.endDate"
+      type="datetime"
+      placeholder="选择日期时间">
+    </el-date-picker>
+  </el-form-item>
+  <el-form-item v-if="form.exportType === 'excel'" label="导出字段">
+    <el-radio v-model="form.isAllColumns" :label="true">全部字段</el-radio>
+    <el-radio v-model="form.isAllColumns" :label="false">自定义字段</el-radio>
+  </el-form-item>
+  <el-form-item v-if="form.exportType === 'excel' && !form.isAllColumns" label="自定义字段">
+    <el-checkbox-group v-model="form.columnNames">
+      <el-checkbox v-for="column in columns" :key="column.attributeName" :label="column.displayName" :value="column.attributeName"></el-checkbox>
+    </el-checkbox-group>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="~/assets/js/cms/contentsLayerExport.js" type="text/javascript"></script> }

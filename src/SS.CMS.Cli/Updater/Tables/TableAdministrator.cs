@@ -1,14 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
-using SS.CMS.Data;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableAdministrator
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableAdministrator(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public int Id { get; set; }
 
@@ -74,33 +78,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("language")]
         public string Language { get; set; }
-    }
-
-    public partial class TableAdministrator
-    {
-        public static readonly List<string> OldTableNames = new List<string>
-        {
-            "bairong_Administrator",
-            "siteserver_Administrator"
-        };
-
-        public static ConvertInfo GetConverter(IUserRepository userRepository)
-        {
-            return new ConvertInfo
-            {
-                NewTableName = userRepository.TableName,
-                NewColumns = userRepository.TableColumns,
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(User.SiteId), nameof(PublishmentSystemId)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

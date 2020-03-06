@@ -1,0 +1,365 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using SS.CMS.Abstractions;
+using SS.CMS.Cli.Core;
+using SS.CMS.Cli.Updater.Tables;
+using SS.CMS.Cli.Updater.Tables.GovInteract;
+using SS.CMS.Cli.Updater.Tables.GovPublic;
+using SS.CMS.Cli.Updater.Tables.Jobs;
+using SS.CMS.Repositories;
+using TableInfo = SS.CMS.Cli.Core.TableInfo;
+
+namespace SS.CMS.Cli.Updater
+{
+    public class UpdaterManager
+    {
+        private readonly ISettingsManager _settingsManager;
+        private readonly IDatabaseManager _databaseManager;
+
+        public UpdaterManager(ISettingsManager settingsManager, IDatabaseManager databaseManager)
+        {
+            _settingsManager = settingsManager;
+            _databaseManager = databaseManager;
+        }
+
+        protected TreeInfo OldTreeInfo { get; private set; }
+
+        protected TreeInfo NewTreeInfo { get; private set; }
+
+        public void Load(TreeInfo oldTreeInfo, TreeInfo newTreeInfo)
+        {
+            OldTreeInfo = oldTreeInfo;
+            NewTreeInfo = newTreeInfo;
+        }
+
+        public async Task<Tuple<string, TableInfo>> GetNewTableInfoAsync(string oldTableName, TableInfo oldTableInfo, ConvertInfo converter)
+        {
+            if (converter == null)
+            {
+                converter = new ConvertInfo();
+            }
+
+            if (converter.IsAbandon)
+            {
+                await CliUtils.PrintRowAsync(oldTableName, "Abandon", "--");
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(converter.NewTableName))
+            {
+                converter.NewTableName = oldTableName;
+            }
+            if (converter.NewColumns == null || converter.NewColumns.Count == 0)
+            {
+                converter.NewColumns = oldTableInfo.Columns;
+            }
+
+            var newTableInfo = new TableInfo
+            {
+                Columns = converter.NewColumns,
+                TotalCount = oldTableInfo.TotalCount,
+                RowFiles = oldTableInfo.RowFiles
+            };
+
+            await CliUtils.PrintRowAsync(oldTableName, converter.NewTableName, oldTableInfo.TotalCount.ToString("#,0"));
+
+            if (oldTableInfo.RowFiles.Count > 0)
+            {
+                var i = 0;
+                using (var progress = new ProgressBar())
+                {
+                    foreach (var fileName in oldTableInfo.RowFiles)
+                    {
+                        progress.Report((double)i++ / oldTableInfo.RowFiles.Count);
+
+                        var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
+                        var newFilePath = NewTreeInfo.GetTableContentFilePath(converter.NewTableName, fileName);
+
+                        if (converter.ConvertKeyDict != null)
+                        {
+                            var oldRows =
+                                TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
+
+                            var newRows = UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict, converter.Process);
+
+                            await FileUtils.WriteTextAsync(newFilePath, TranslateUtils.JsonSerialize(newRows));
+                        }
+                        else
+                        {
+                            FileUtils.CopyFile(oldFilePath, newFilePath);
+                        }
+                    }
+                }
+            }
+
+            return new Tuple<string, TableInfo>(converter.NewTableName, newTableInfo);
+        }
+
+        public async Task UpdateSplitContentsTableInfoAsync(Dictionary<int, TableInfo> splitSiteTableDict, List<int> siteIdList, string oldTableName, TableInfo oldTableInfo, ConvertInfo converter)
+        {
+            if (converter == null)
+            {
+                converter = new ConvertInfo();
+            }
+
+            if (converter.IsAbandon)
+            {
+                await CliUtils.PrintRowAsync(oldTableName, "Abandon", "--");
+                return;
+            }
+
+            if (converter.NewColumns == null || converter.NewColumns.Count == 0)
+            {
+                converter.NewColumns = oldTableInfo.Columns;
+            }
+
+            await CliUtils.PrintRowAsync(oldTableName, "#split-content#", oldTableInfo.TotalCount.ToString("#,0"));
+
+            if (oldTableInfo.RowFiles.Count > 0)
+            {
+                var i = 0;
+                using (var progress = new ProgressBar())
+                {
+                    foreach (var fileName in oldTableInfo.RowFiles)
+                    {
+                        progress.Report((double)i++ / oldTableInfo.RowFiles.Count);
+
+                        var newRows = new List<Dictionary<string, object>>();
+
+                        var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
+
+                        var oldRows =
+                            TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
+
+                        newRows.AddRange(UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict, converter.Process));
+
+                        var siteIdWithRows = new Dictionary<int, List<Dictionary<string, object>>>();
+                        foreach (var siteId in siteIdList)
+                        {
+                            siteIdWithRows.Add(siteId, new List<Dictionary<string, object>>());
+                        }
+
+                        foreach (var newRow in newRows)
+                        {
+                            if (newRow.ContainsKey(nameof(Content.SiteId)))
+                            {
+                                var siteId = Convert.ToInt32(newRow[nameof(Content.SiteId)]);
+                                if (siteIdList.Contains(siteId))
+                                {
+                                    var rows = siteIdWithRows[siteId];
+                                    rows.Add(newRow);
+                                }
+                            }
+                        }
+
+                        foreach (var siteId in siteIdList)
+                        {
+                            var siteRows = siteIdWithRows[siteId];
+                            var siteTableName = ContentRepository.GetContentTableName(siteId);
+                            var siteTableInfo = splitSiteTableDict[siteId];
+                            siteTableInfo.TotalCount += siteRows.Count;
+
+                            foreach(var tableColumn in converter.NewColumns)
+                            {
+                                if (!siteTableInfo.Columns.Any(t => StringUtils.EqualsIgnoreCase(t.AttributeName, tableColumn.AttributeName)))
+                                {
+                                    siteTableInfo.Columns.Add(tableColumn);
+                                }
+                            }
+
+                            if (siteRows.Count > 0)
+                            {
+                                var siteTableFileName = $"{siteTableInfo.RowFiles.Count + 1}.json";
+                                siteTableInfo.RowFiles.Add(siteTableFileName);
+                                var filePath = NewTreeInfo.GetTableContentFilePath(siteTableName, siteTableFileName);
+                                await FileUtils.WriteTextAsync(filePath, TranslateUtils.JsonSerialize(siteRows));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public async Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob)
+        {
+            ConvertInfo converter = null;
+
+            if (StringUtils.EqualsIgnoreCase(TableAdministrator.OldTableName, oldTableName))
+            {
+                var table = new TableAdministrator(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableAdministratorsInRoles.OldTableName, oldTableName))
+            {
+                var table = new TableAdministratorsInRoles(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(TableChannel.OldTableNames, oldTableName))
+            {
+                var table = new TableChannel(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(TableChannelGroup.OldTableNames, oldTableName))
+            {
+                var table = new TableChannelGroup(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableConfig.OldTableName, oldTableName))
+            {
+                var table = new TableConfig(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableContentCheck.OldTableName, oldTableName))
+            {
+                var table = new TableContentCheck(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(TableContentGroup.OldTableNames, oldTableName))
+            {
+                var table = new TableContentGroup(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableDbCache.OldTableName, oldTableName))
+            {
+                var table = new TableDbCache(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableErrorLog.OldTableName, oldTableName))
+            {
+                converter = TableErrorLog.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableLog.OldTableName, oldTableName))
+            {
+                var table = new TableLog(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TablePermissionsInRoles.OldTableName, oldTableName))
+            {
+                var table = new TablePermissionsInRoles(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(TableRelatedField.OldTableNames, oldTableName))
+            {
+                var table = new TableRelatedField(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(TableRelatedFieldItem.OldTableNames, oldTableName))
+            {
+                var table = new TableRelatedFieldItem(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableRole.OldTableName, oldTableName))
+            {
+                var table = new TableRole(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(TableSite.OldTableNames, oldTableName))
+            {
+                var table = new TableSite(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(TableSiteLog.OldTableNames, oldTableName))
+            {
+                var table = new TableSiteLog(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(TableSitePermissions.OldTableNames, oldTableName))
+            {
+                var table = new TableSitePermissions(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableTableStyle.OldTableName, oldTableName))
+            {
+                var table = new TableTableStyle(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableContentTag.OldTableName, oldTableName))
+            {
+                var table = new TableContentTag(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(TableTemplate.OldTableNames, oldTableName))
+            {
+                var table = new TableTemplate(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(TableTemplateLog.OldTableNames, oldTableName))
+            {
+                var table = new TableTemplateLog(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableUser.OldTableName, oldTableName))
+            {
+                var table = new TableUser(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableUserLog.OldTableName, oldTableName))
+            {
+                var table = new TableUserLog(_databaseManager);
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableGovInteractChannel.OldTableName, oldTableName))
+            {
+                var table = new TableGovInteractChannel();
+                converter = table.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableGovInteractLog.OldTableName, oldTableName))
+            {
+                converter = TableGovInteractLog.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableGovInteractPermissions.OldTableName, oldTableName))
+            {
+                converter = TableGovInteractPermissions.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableGovInteractRemark.OldTableName, oldTableName))
+            {
+                converter = TableGovInteractRemark.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableGovInteractReply.OldTableName, oldTableName))
+            {
+                converter = TableGovInteractReply.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableGovInteractType.OldTableName, oldTableName))
+            {
+                converter = TableGovInteractType.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableGovPublicCategory.OldTableName, oldTableName))
+            {
+                converter = TableGovPublicCategory.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableGovPublicCategoryClass.OldTableName, oldTableName))
+            {
+                converter = TableGovPublicCategoryClass.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableGovPublicIdentifierRule.OldTableName, oldTableName))
+            {
+                converter = TableGovPublicIdentifierRule.Converter;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TableGovPublicIdentifierSeq.OldTableName, oldTableName))
+            {
+                converter = TableGovPublicIdentifierSeq.Converter;
+            }
+            else if (StringUtils.ContainsIgnoreCase(tableNameListForGovPublic, oldTableName))
+            {
+                var table = new TableGovPublicContent(_settingsManager);
+                converter = table.GetConverter(oldTableInfo.Columns);
+            }
+            else if (StringUtils.ContainsIgnoreCase(tableNameListForGovInteract, oldTableName))
+            {
+                var table = new TableGovInteractContent(_settingsManager);
+                converter = table.GetConverter(oldTableInfo.Columns);
+            }
+            else if (StringUtils.ContainsIgnoreCase(tableNameListForJob, oldTableName))
+            {
+                var table = new TableJobsContent(_settingsManager);
+                converter = table.GetConverter(oldTableInfo.Columns);
+            }
+
+            return await GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
+        }
+    }
+}

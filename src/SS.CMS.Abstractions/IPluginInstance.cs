@@ -1,20 +1,20 @@
-﻿namespace SS.CMS
+﻿namespace SS.CMS.Abstractions
 {
     public interface IPluginInstance
     {
-        string Id { get; }
+        string Id { get;  }
 
-        IPackageMetadata Metadata { get; }
+        IPackageMetadata Metadata { get;  }
 
-        PluginBase Plugin { get; }
+        PluginBase Plugin { get;  }
 
-        IService Service { get; }
+        IPluginService PluginService { get;  }
 
-        long InitTime { get; }
+        long InitTime { get;  }
 
-        string ErrorMessage { get; }
+        string ErrorMessage { get;  }
 
-        bool IsRunnable { get; set; }
+        bool IsRunnable { get;  }
 
         bool IsDisabled { get; set; }
 

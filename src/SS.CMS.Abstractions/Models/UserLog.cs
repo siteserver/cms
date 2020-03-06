@@ -1,9 +1,8 @@
-using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_UserLog")]
     public class UserLog : Entity
     {
@@ -18,5 +17,5 @@ namespace SS.CMS.Models
 
         [DataColumn]
         public string Summary { get; set; }
-    }
+	}
 }

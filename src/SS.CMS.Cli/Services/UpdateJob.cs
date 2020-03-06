@@ -4,45 +4,32 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Mono.Options;
+using SS.CMS.Abstractions;
 using SS.CMS.Cli.Core;
 using SS.CMS.Cli.Updater;
 using SS.CMS.Repositories;
-using SS.CMS.Utils;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace SS.CMS.Cli.Services
 {
-    public class UpdateJob
+    public class UpdateJob : IJobService
     {
-        public const string CommandName = "update";
-
-        public static async Task Execute(IJobContext context)
-        {
-            var application = CliUtils.Provider.GetService<UpdateJob>();
-            await application.RunAsync(context);
-        }
-
-        public static void PrintUsage()
-        {
-            Console.WriteLine("系统升级: siteserver update");
-            var job = new UpdateJob(null, null);
-            job._options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
-        }
-
+        public string CommandName => "update";
         private const string Folder = "update";
 
         private string _directory;
         private bool _contentSplit;
         private bool _isHelp;
-        private readonly OptionSet _options;
-        private ISiteRepository _siteRepository;
-        private UpdaterManager _updaterManager;
-        public UpdateJob(ISiteRepository siteRepository, UpdaterManager updaterManager)
-        {
-            _siteRepository = siteRepository;
-            _updaterManager = updaterManager;
 
+        private readonly ISettingsManager _settingsManager;
+        private readonly UpdaterManager _updaterManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly OptionSet _options;
+
+        public UpdateJob(ISettingsManager settingsManager, UpdaterManager updaterManager, IDatabaseManager databaseManager)
+        {
+            _settingsManager = settingsManager;
+            _updaterManager = updaterManager;
+            _databaseManager = databaseManager;
             _options = new OptionSet {
                 { "d|directory=", "指定需要升级至最新版本的备份数据文件夹",
                     v => _directory = v },
@@ -53,7 +40,14 @@ namespace SS.CMS.Cli.Services
             };
         }
 
-        public async Task RunAsync(IJobContext context)
+        public void PrintUsage()
+        {
+            Console.WriteLine("系统升级: siteserver update");
+            _options.WriteOptionDescriptions(Console.Out);
+            Console.WriteLine();
+        }
+
+        public async Task ExecuteAsync(IJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
@@ -69,8 +63,8 @@ namespace SS.CMS.Cli.Services
                 return;
             }
 
-            var oldTreeInfo = new TreeInfo(_directory);
-            var newTreeInfo = new TreeInfo(Folder);
+            var oldTreeInfo = new TreeInfo(_settingsManager, _directory);
+            var newTreeInfo = new TreeInfo(_settingsManager, Folder);
 
             if (!DirectoryUtils.IsDirectoryExists(oldTreeInfo.DirectoryPath))
             {
@@ -79,7 +73,7 @@ namespace SS.CMS.Cli.Services
             }
             DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
 
-            _updaterManager.LoadTree(oldTreeInfo, newTreeInfo);
+            _updaterManager.Load(oldTreeInfo, newTreeInfo);
 
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             await Console.Out.WriteLineAsync($"备份数据文件夹: {oldTreeInfo.DirectoryPath}，升级数据文件夹: {newTreeInfo.DirectoryPath}，升级版本: {version.Substring(0, version.Length - 2)}");
@@ -100,10 +94,12 @@ namespace SS.CMS.Cli.Services
             UpdateUtils.LoadSites(oldTreeInfo, siteIdList,
                 tableNameListForContent, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
 
+            var table = new TableContentConverter(_settingsManager);
+
             var splitSiteTableDict = new Dictionary<int, TableInfo>();
             if (_contentSplit)
             {
-                var converter = ContentConverter.GetSplitConverter();
+                var converter = table.GetSplitConverter();
                 foreach (var siteId in siteIdList)
                 {
                     splitSiteTableDict.Add(siteId, new TableInfo
@@ -127,20 +123,20 @@ namespace SS.CMS.Cli.Services
                 {
                     if (_contentSplit)
                     {
-                        var converter = ContentConverter.GetConverter(oldTableName, oldTableInfo.Columns);
+                        var converter = table.GetConverter(oldTableName, oldTableInfo.Columns);
 
                         await _updaterManager.UpdateSplitContentsTableInfoAsync(splitSiteTableDict, siteIdList, oldTableName,
                             oldTableInfo, converter);
                     }
                     else
                     {
-                        var converter = ContentConverter.GetConverter(oldTableName, oldTableInfo.Columns);
+                        var converter = table.GetConverter(oldTableName, oldTableInfo.Columns);
                         var tuple = await _updaterManager.GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
                         if (tuple != null)
                         {
                             newTableNames.Add(tuple.Item1);
 
-                            await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), Encoding.UTF8, TranslateUtils.JsonSerialize(tuple.Item2));
+                            await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), TranslateUtils.JsonSerialize(tuple.Item2));
                         }
                     }
                 }
@@ -151,7 +147,7 @@ namespace SS.CMS.Cli.Services
                     {
                         newTableNames.Add(tuple.Item1);
 
-                        await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), Encoding.UTF8, TranslateUtils.JsonSerialize(tuple.Item2));
+                        await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), TranslateUtils.JsonSerialize(tuple.Item2));
                     }
                 }
             }
@@ -161,16 +157,16 @@ namespace SS.CMS.Cli.Services
                 foreach (var siteId in siteIdList)
                 {
                     var siteTableInfo = splitSiteTableDict[siteId];
-                    var siteTableName = StringUtils.GetContentTableName(siteId);
+                    var siteTableName = ContentRepository.GetContentTableName(siteId);
                     newTableNames.Add(siteTableName);
 
-                    await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(siteTableInfo));
+                    await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), TranslateUtils.JsonSerialize(siteTableInfo));
                 }
 
-                await UpdateUtils.UpdateSitesSplitTableNameAsync(newTreeInfo, splitSiteTableDict, _siteRepository);
+                await UpdateUtils.UpdateSitesSplitTableNameAsync(_databaseManager, newTreeInfo, splitSiteTableDict);
             }
 
-            await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newTableNames));
+            await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, TranslateUtils.JsonSerialize(newTableNames));
 
             await CliUtils.PrintRowLineAsync();
             await Console.Out.WriteLineAsync($"恭喜，成功从备份文件夹：{oldTreeInfo.DirectoryPath} 升级至新版本：{newTreeInfo.DirectoryPath} ！");

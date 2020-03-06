@@ -1,15 +1,12 @@
 using System;
-using SS.CMS.Data;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_ContentCheck")]
-    public class ContentCheck : Entity
-    {
-        [DataColumn]
-        public string TableName { get; set; }
-
+	public class ContentCheck : Entity
+	{
         [DataColumn]
         public int SiteId { get; set; }
 
@@ -20,16 +17,16 @@ namespace SS.CMS.Models
         public int ContentId { get; set; }
 
         [DataColumn]
-        public int UserId { get; set; }
+        public int AdminId { get; set; }
 
         [DataColumn]
-        public bool IsChecked { get; set; }
+        public bool Checked { get; set; }
 
         [DataColumn]
         public int CheckedLevel { get; set; }
 
         [DataColumn]
-        public DateTime? CheckDate { get; set; }
+        public DateTime CheckDate { get; set; }
 
         [DataColumn]
         public string Reasons { get; set; }

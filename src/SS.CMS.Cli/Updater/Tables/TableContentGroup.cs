@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
-using SS.CMS.Models;
-using SS.CMS.Repositories;
+﻿using Newtonsoft.Json;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Cli.Updater.Tables
 {
     public partial class TableContentGroup
     {
+        private readonly IDatabaseManager _databaseManager;
+
+        public TableContentGroup(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
+
         [JsonProperty("id")]
         public long Id { get; set; }
 
@@ -21,34 +26,5 @@ namespace SS.CMS.Cli.Updater.Tables
 
         [JsonProperty("description")]
         public string Description { get; set; }
-    }
-
-    public partial class TableContentGroup
-    {
-        public static readonly List<string> OldTableNames = new List<string>
-        {
-            "siteserver_ContentGroup",
-            "wcm_ContentGroup"
-        };
-
-        public static ConvertInfo GetConverter(IContentGroupRepository contentGroupRepository)
-        {
-            return new ConvertInfo
-            {
-                NewTableName = contentGroupRepository.TableName,
-                NewColumns = contentGroupRepository.TableColumns,
-                ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
-            };
-        }
-
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
-            {
-                {nameof(ContentGroup.GroupName), nameof(ContentGroupName)},
-                {nameof(ContentGroup.SiteId), nameof(PublishmentSystemId)}
-            };
-
-        private static readonly Dictionary<string, string> ConvertValueDict = null;
     }
 }

@@ -1,20 +1,23 @@
-﻿using System;
-using SS.CMS.Data;
+﻿using System.Collections.Generic;
+using Datory;
+using Datory.Annotations;
 
-namespace SS.CMS.Models
+namespace SS.CMS.Abstractions
 {
-    [Serializable]
     [DataTable("siteserver_UserMenu")]
     public class UserMenu : Entity
     {
         [DataColumn]
         public string SystemId { get; set; }
 
-        [DataColumn(Text = true)]
-        public string GroupIdCollection { get; set; }
+        [DataColumn]
+        public bool IsGroup { get; set; }
 
         [DataColumn]
-        public bool IsDisabled { get; set; }
+        public List<int> GroupIds { get; set; }
+
+        [DataColumn]
+        public bool Disabled { get; set; }
 
         [DataColumn]
         public int ParentId { get; set; }
