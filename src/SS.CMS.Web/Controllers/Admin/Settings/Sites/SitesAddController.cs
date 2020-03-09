@@ -6,8 +6,8 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
+using SS.CMS.Extensions;
 using SS.CMS.Repositories;
-using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 {

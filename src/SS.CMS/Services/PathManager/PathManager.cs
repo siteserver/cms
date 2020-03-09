@@ -98,7 +98,7 @@ namespace SS.CMS.Services
         public async Task UploadAsync(IFormFile file, string filePath)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            using var stream = new FileStream(filePath, FileMode.Create);
+            await using var stream = new FileStream(filePath, FileMode.Create);
             await file.CopyToAsync(stream);
         }
     }

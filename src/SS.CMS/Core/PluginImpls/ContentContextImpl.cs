@@ -2,7 +2,7 @@
 
 using SS.CMS.Abstractions;
 
-namespace SS.CMS.Core.Plugins
+namespace SS.CMS.Core.PluginImpls
 {
     public class ContentContextImpl : IContentContext
     {

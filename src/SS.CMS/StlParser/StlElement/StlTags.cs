@@ -6,7 +6,7 @@ using SS.CMS.Abstractions.Parse;
 using SS.CMS.Core;
 using SS.CMS.StlParser.Model;
 
-namespace SiteServer.CMS.StlParser.StlElement
+namespace SS.CMS.StlParser.StlElement
 {
     [StlElement(Title = "标签", Description = "通过 stl:tags 标签在模板中显示内容标签")]
     public class StlTags

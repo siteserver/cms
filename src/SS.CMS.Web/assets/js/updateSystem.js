@@ -48,7 +48,7 @@ var methods = {
       var res = response.data;
 
       $this.package = res.value[0];
-      $this.isShouldUpdate = compareversion($this.installedVersion, $this.package.version) == -1;
+      $this.isShouldUpdate = utils.compareVersion($this.installedVersion, $this.package.version) == -1;
       var major = $this.package.version.split('.')[0];
       var minor = $this.package.version.split('.')[1];
       $this.updatesUrl = 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
@@ -66,7 +66,7 @@ var methods = {
     //   if (err || !res || !res.value) return;
 
     //   $this.package = res.value;
-    //   $this.isShouldUpdate = compareversion($this.installedVersion, $this.package.version) == -1;
+    //   $this.isShouldUpdate = utils.compareVersion($this.installedVersion, $this.package.version) == -1;
     //   var major = $this.package.version.split('.')[0];
     //   var minor = $this.package.version.split('.')[1];
     //   $this.updatesUrl = 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';

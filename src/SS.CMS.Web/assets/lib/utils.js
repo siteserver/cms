@@ -9,7 +9,7 @@ if (window.swal && swal.mixin) {
 }
 
 var $api = axios.create({
-  baseURL: $apiUrl || '../api',
+  baseURL: $apiUrl || '/api',
   withCredentials: true
 });
 
@@ -29,10 +29,10 @@ var utils = {
     }, data);
   },
 
-  getQueryString: function (name) {
+  getQueryString: function (name, defaultValue) {
     var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
     if (!result || result.length < 1) {
-      return "";
+      return defaultValue || '';
     }
     return decodeURIComponent(result[1]);
   },

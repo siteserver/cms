@@ -242,7 +242,7 @@ namespace SS.CMS.Repositories
 
             if (includePluginTables)
             {
-                var pluginTableNames = await pluginManager.GetContentTableNameListAsync();
+                var pluginTableNames = pluginManager.GetContentTableNameList();
                 foreach (var pluginTableName in pluginTableNames)
                 {
                     if (!string.IsNullOrEmpty(pluginTableName) && !StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))
@@ -263,10 +263,10 @@ namespace SS.CMS.Repositories
             {
                 if (!string.IsNullOrEmpty(summary.ContentModelPluginId))
                 {
-                    var service = await pluginManager.GetServiceAsync(summary.ContentModelPluginId);
-                    if (service != null && !string.IsNullOrEmpty(service.ContentTableName) && !tableNames.Contains(service.ContentTableName))
+                    var plugin = pluginManager.GetPlugin(summary.ContentModelPluginId);
+                    if (plugin != null && !string.IsNullOrEmpty(plugin.ContentTableName) && !tableNames.Contains(plugin.ContentTableName))
                     {
-                        tableNames.Add(service.ContentTableName);
+                        tableNames.Add(plugin.ContentTableName);
                     }
                 }
             }

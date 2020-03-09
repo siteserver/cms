@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageId>SiteServer.CMS</PackageId>
+    <PackageId>SS.CMS</PackageId>
     <Version>1.0.0</Version>
     <PackageVersion>1.0.0</PackageVersion>
     <Authors>SS CMS</Authors>
@@ -28,13 +28,12 @@
     <PackageReference Include="CacheManager.Microsoft.Extensions.Configuration" Version="1.2.0" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.21" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.2" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.21" />    
     <PackageReference Include="NuGet.Packaging" Version="5.4.0" />
     <PackageReference Include="NuGet.Versioning" Version="5.4.0" />
     <PackageReference Include="Open-Xml-PowerTools" Version="4.4.0" />
-    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="3.0.0" />
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

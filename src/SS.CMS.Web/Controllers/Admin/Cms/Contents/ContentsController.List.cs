@@ -6,7 +6,7 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
-using SS.CMS.Web.Extensions;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -42,7 +42,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
             var pluginIds = _pluginManager.GetContentPluginIds(channel);
-            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
+            var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
 
             var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);

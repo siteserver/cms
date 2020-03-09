@@ -36,11 +36,11 @@ namespace SS.CMS.Services
 
         public async Task ParseAsync(StringBuilder contentBuilder, string filePath, bool isDynamic)
         {
-            foreach (var service in await PluginManager.GetServicesAsync())
+            foreach (var plugin in PluginManager.GetPlugins())
             {
                 try
                 {
-                    service.OnBeforeStlParse(new ParseEventArgs
+                    plugin.OnBeforeStlParse(new ParseEventArgs
                     (
                         PageInfo.SiteId,
                         PageInfo.PageChannelId,
@@ -57,7 +57,7 @@ namespace SS.CMS.Services
                 }
                 catch (Exception ex)
                 {
-                    await AddStlErrorLogAsync(service.PluginId, nameof(service.OnBeforeStlParse),
+                    await AddStlErrorLogAsync(plugin.PluginId, nameof(plugin.OnBeforeStlParse),
                         ex);
                 }
             }
@@ -67,18 +67,18 @@ namespace SS.CMS.Services
                 await ParseTemplateContentAsync(contentBuilder);
             }
 
-            foreach (var service in await PluginManager.GetServicesAsync())
+            foreach (var plugin in PluginManager.GetPlugins())
             {
                 try
                 {
-                    service.OnAfterStlParse(new ParseEventArgs(PageInfo.SiteId, PageInfo.PageChannelId,
+                    plugin.OnAfterStlParse(new ParseEventArgs(PageInfo.SiteId, PageInfo.PageChannelId,
                         PageInfo.PageContentId, await GetContentAsync(),
                         PageInfo.Template.TemplateType, PageInfo.Template.Id, filePath, PageInfo.HeadCodes,
                         PageInfo.BodyCodes, PageInfo.FootCodes, contentBuilder));
                 }
                 catch (Exception ex)
                 {
-                    await AddStlErrorLogAsync(service.PluginId, nameof(service.OnAfterStlParse), ex);
+                    await AddStlErrorLogAsync(plugin.PluginId, nameof(plugin.OnAfterStlParse), ex);
                 }
             }
 

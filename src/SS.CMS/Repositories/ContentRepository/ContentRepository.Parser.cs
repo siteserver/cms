@@ -157,7 +157,7 @@ namespace SS.CMS.Repositories
                 where = $"ID <> {contentId}";
             }
 
-            var sqlWhereString = await pluginManager.IsExistsAsync(channel.ContentModelPluginId)
+            var sqlWhereString = pluginManager.IsExists(channel.ContentModelPluginId)
                 ? GetStlWhereString(site.Id, groupContent, groupContentNot,
                     tags, isTopExists, isTop, where)
                 : GetStlWhereString(site.Id, groupContent,

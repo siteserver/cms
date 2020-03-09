@@ -44,9 +44,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
             }
 
             var pluginIds = new List<Select<string>>();
-            foreach (var pluginInfo in await _pluginManager.GetAllPluginInfoListAsync())
+            foreach (var plugin in _pluginManager.GetPlugins())
             {
-                pluginIds.Add(new Select<string>(pluginInfo.Id, pluginInfo.Metadata.Title));
+                pluginIds.Add(new Select<string>(plugin.PluginId, plugin.Name));
             }
 
             return new SearchResult

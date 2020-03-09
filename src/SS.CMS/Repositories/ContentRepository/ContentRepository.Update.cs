@@ -20,16 +20,7 @@ namespace SS.CMS.Repositories
                         site.AutoPageWordNum));
             }
 
-            //出现IsTop与Taxis不同步情况
-            if (content.Top == false && content.Taxis >= TaxisIsTopStartValue)
-            {
-                content.Taxis = await GetMaxTaxisAsync(site, channel, false) + 1;
-            }
-            else if (content.Top && content.Taxis < TaxisIsTopStartValue)
-            {
-                content.Taxis = await GetMaxTaxisAsync(site, channel, true) + 1;
-            }
-
+            content.Taxis = await SyncTaxisAsync(site, channel, content);
             content.LastEditDate = DateTime.Now;
 
             var repository = GetRepository(site, channel);

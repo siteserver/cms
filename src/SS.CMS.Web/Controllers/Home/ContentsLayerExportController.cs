@@ -87,7 +87,7 @@ namespace SS.CMS.Web.Controllers.Home
             var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
             var pluginIds = _pluginManager.GetContentPluginIds(channel);
-            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
+            var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
 
             var contentInfoList = new List<Content>();
             var ccIds = await _contentRepository.GetSummariesAsync(site, channel, true);

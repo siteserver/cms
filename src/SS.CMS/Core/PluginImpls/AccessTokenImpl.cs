@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SS.CMS.Core.Plugins
+namespace SS.CMS.Core.PluginImpls
 {
     public class AccessTokenImpl
     {

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Core.Plugins;
+using SS.CMS.Core.PluginImpls;
 
 namespace SS.CMS.Web.Controllers.Admin.Shared
 {

@@ -2,7 +2,7 @@
 
 namespace SS.CMS.Abstractions
 {
-    public partial interface ICreateManager : IService
+    public partial interface ICreateManager
     {
         Task CreateByAllAsync(int siteId);
 

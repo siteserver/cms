@@ -1,7 +1,7 @@
 ﻿var $url = '/admin/plugins/manage';
 
 var data = utils.initData({
-  pageType: utils.toInt(utils.getQueryString("pageType") || '1'),
+  pageType: utils.getQueryString("pageType", "1"),
   isNightly: null,
   pluginVersion: null,
   allPackages: null,
@@ -28,21 +28,21 @@ var methods = {
 
       $this.isNightly = res.isNightly;
       $this.pluginVersion = res.pluginVersion;
-      $this.allPackages = res.allPackages;
+      $this.enabledPackages = res.enabledPackages;
       $this.packageIds = res.packageIds;
 
-      for (var i = 0; i < $this.allPackages.length; i++) {
-        var pkg = $this.allPackages[i];
-        if (pkg.isRunnable && pkg.metadata) {
-          if (pkg.isDisabled) {
-            $this.disabledPackages.push(pkg);
-          } else {
-            $this.enabledPackages.push(pkg);
-          }
-        } else {
-          $this.errorPackages.push(pkg);
-        }
-      }
+      // for (var i = 0; i < $this.allPackages.length; i++) {
+      //   var pkg = $this.allPackages[i];
+      //   if (pkg.isRunnable && pkg.metadata) {
+      //     if (pkg.isDisabled) {
+      //       $this.disabledPackages.push(pkg);
+      //     } else {
+      //       $this.enabledPackages.push(pkg);
+      //     }
+      //   } else {
+      //     $this.errorPackages.push(pkg);
+      //   }
+      // }
 
       $apiCloud.get('updates', {
         params: {
@@ -64,7 +64,7 @@ var methods = {
             installedPackage.updatePackage = releaseInfo;
 
             if (installedPackage.metadata && installedPackage.metadata.version) {
-              if (compareversion(installedPackage.metadata.version, releaseInfo.version) == -1) {
+              if (utils.compareVersion(installedPackage.metadata.version, releaseInfo.version) == -1) {
                 $this.updatePackages.push(installedPackage);
                 $this.updatePackageIds.push(installedPackage.id);
               }
@@ -153,6 +153,10 @@ var methods = {
           });
         }
       });
+  },
+
+  handleSelect: function(key, keyPath) {
+    this.pageType = key;
   },
 
   btnReload: function () {

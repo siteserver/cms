@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS.Core.Plugins;
+using SS.CMS.Core.PluginImpls;
 using SS.CMS.StlParser.StlElement;
 using SS.CMS.StlParser.Utility;
 
@@ -139,7 +139,7 @@ namespace SS.CMS.Services
                 }
                 else
                 {
-                    var parsers = await PluginManager.GetParsesAsync();
+                    var parsers = PluginManager.GetParses();
                     if (parsers.ContainsKey(elementName))
                     {
                         if (stlElementInfo.IsDynamic)

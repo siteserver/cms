@@ -8,7 +8,7 @@ using StackExchange.Redis;
 
 namespace SS.CMS.Abstractions
 {
-    public partial interface IParseManager : IService
+    public partial interface IParseManager
     {
         ISettingsManager SettingsManager { get; }
         IPathManager PathManager { get; }

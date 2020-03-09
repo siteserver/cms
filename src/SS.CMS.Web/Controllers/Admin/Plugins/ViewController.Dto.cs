@@ -1,4 +1,5 @@
 ﻿using SS.CMS.Abstractions;
+using SS.CMS.Packaging;
 
 namespace SS.CMS.Web.Controllers.Admin.Plugins
 {
@@ -10,7 +11,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
             public string PluginVersion { get; set; }
             public bool Installed { get; set; }
             public string InstalledVersion { get; set; }
-            public PluginBase Package { get; set; }
+            public PackageMetadata Package { get; set; }
         }
     }
 }

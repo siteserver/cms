@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
+using SS.CMS.Extensions;
 using SS.CMS.Packaging;
 using SS.CMS.Web.Controllers.Admin.Settings.Sites;
-using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin
 {
@@ -117,15 +117,14 @@ namespace SS.CMS.Web.Controllers.Admin
                 PackageUtils.PackageIdSsCms
             };
             var packageList = new List<object>();
-            var dict = await _pluginManager.GetPluginIdAndVersionDictAsync();
-            foreach (var id in dict.Keys)
+            var plugins = _pluginManager.GetPlugins();
+            foreach (var plugin in plugins)
             {
-                packageIds.Add(id);
-                var version = dict[id];
+                packageIds.Add(plugin.PluginId);
                 packageList.Add(new
                 {
-                    id,
-                    version
+                    Id = plugin.PluginId,
+                    plugin.Version
                 });
             }
 

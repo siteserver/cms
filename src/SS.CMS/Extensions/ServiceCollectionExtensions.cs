@@ -7,7 +7,9 @@ using Datory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Plugins;
 using SS.CMS.Services;
 
 namespace SS.CMS.Extensions
@@ -22,7 +24,7 @@ namespace SS.CMS.Extensions
             return settingsManager;
         }
 
-        public static IServiceCollection AddCache(this IServiceCollection services, string redisConnectionString)
+        public static void AddCache(this IServiceCollection services, string redisConnectionString)
         {
             services.AddCacheManagerConfiguration(async settings =>
             {
@@ -56,7 +58,7 @@ namespace SS.CMS.Extensions
                             .WithRetryTimeout(100)
                             .WithJsonSerializer()
                             .WithRedisBackplane("redis")
-                            .WithRedisCacheHandle("redis", true);
+                            .WithRedisCacheHandle("redis");
 
                         isBackPlane = true;
                     }
@@ -70,10 +72,9 @@ namespace SS.CMS.Extensions
                 }
             });
             services.AddCacheManager();
-            return services;
         }
 
-        public static IServiceCollection AddRepositories(this IServiceCollection services)
+        public static void AddRepositories(this IServiceCollection services)
         {
             var baseType = typeof(IRepository);
 
@@ -89,13 +90,13 @@ namespace SS.CMS.Extensions
             {
                 var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
                 if (interfaceType != null)
+                {
                     services.AddScoped(interfaceType, implementType);
+                }
             }
-
-            return services;
         }
 
-        public static IServiceCollection AddServices(this IServiceCollection services)
+        public static void AddServices(this IServiceCollection services)
         {
             services.AddScoped<IAuthManager, AuthManager>();
             services.AddScoped<IPathManager, PathManager>();
@@ -103,87 +104,40 @@ namespace SS.CMS.Extensions
             services.AddScoped<IDatabaseManager, DatabaseManager>();
             services.AddScoped<IParseManager, ParseManager>();
             services.AddScoped<IPluginManager, PluginManager>();
-
-            return services;
         }
 
-        //public static IServiceCollection AddDatabase(this IServiceCollection services, DatabaseType databaseType, string connectionString)
-        //{
-        //    services.TryAdd(ServiceDescriptor.Singleton<IDatabase>(sp =>
-        //    {
-        //        return new Database(databaseType, connectionString);
-        //    }));
+        public static void AddPlugins(this IServiceCollection services)
+        {
+            var path = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
+            var assemblies = Directory.GetFiles(path, "SS.*.dll").Select(Assembly.LoadFrom).ToArray();
 
-        //    return services;
-        //}
+            var baseType = typeof(IPlugin);
+            var types = assemblies
+                .SelectMany(a => a.DefinedTypes)
+                .Select(type => type.AsType())
+                .Where(x => x != baseType && baseType.IsAssignableFrom(x)).ToArray();
+            var implementTypes = types.Where(x => !x.IsAbstract && x.IsClass).ToArray();
+            var interfaceTypes = types.Where(x => x.IsInterface).ToArray();
+            foreach (var implementType in implementTypes)
+            {
+                services.AddScoped(baseType, implementType);
+                var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
+                if (interfaceType != null && interfaceType != baseType)
+                {
+                    services.AddScoped(interfaceType, implementType);
+                }
+            }
 
+            AssemblyUtils.SetAssemblies(assemblies);
+            IServiceProvider provider = services.BuildServiceProvider();
+            var logger = provider.GetService<ILoggerFactory>().CreateLogger<IServiceCollection>();
 
-
-
-
-        //public static IServiceCollection AddPathManager(this IServiceCollection services)
-        //{
-        //    services.TryAdd(ServiceDescriptor.Singleton<IPathManager, PathManager>());
-
-        //    return services;
-        //}
-
-        //public static IServiceCollection AddRepositories(this IServiceCollection services)
-        //{
-        //    services.TryAdd(ServiceDescriptor.Transient<IAccessTokenRepository, AccessTokenRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IAreaRepository, AreaRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IChannelGroupRepository, ChannelGroupRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IChannelRepository, ChannelRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IConfigRepository, ConfigRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IContentCheckRepository, ContentCheckRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IContentGroupRepository, ContentGroupRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IDatabaseRepository, DatabaseRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IDbCacheRepository, DbCacheRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IDepartmentRepository, DepartmentRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IErrorLogRepository, ErrorLogRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<ILogRepository, LogRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IPermissionRepository, PermissionRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IPluginConfigRepository, PluginConfigRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IPluginRepository, PluginRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IRelatedFieldItemRepository, RelatedFieldItemRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IRelatedFieldRepository, RelatedFieldRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IRoleRepository, RoleRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<ISiteLogRepository, SiteLogRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<ISiteRepository, SiteRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<ISpecialRepository, SpecialRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<ITableStyleItemRepository, TableStyleItemRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<ITableStyleRepository, TableStyleRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<ITagRepository, TagRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<ITemplateLogRepository, TemplateLogRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<ITemplateRepository, TemplateRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IUserGroupRepository, UserGroupRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IUserLogRepository, UserLogRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IUserMenuRepository, UserMenuRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IUserRepository, UserRepository>());
-        //    services.TryAdd(ServiceDescriptor.Transient<IUserRoleRepository, UserRoleRepository>());
-
-        //    return services;
-        //}
-
-        //public static IServiceCollection AddFileManager(this IServiceCollection services)
-        //{
-        //    services.TryAdd(ServiceDescriptor.Singleton<IFileManager, FileManager>());
-
-        //    return services;
-        //}
-
-        //public static IServiceCollection AddCreateManager(this IServiceCollection services)
-        //{
-        //    services.TryAdd(ServiceDescriptor.Singleton<ICreateManager, CreateManager>());
-
-        //    return services;
-        //}
-
-        //public static IServiceCollection AddPluginManager(this IServiceCollection services)
-        //{
-        //    services.TryAdd(ServiceDescriptor.Singleton<IPluginManager, PluginManager>());
-
-        //    return services;
-        //}
+            foreach (var action in AssemblyUtils.GetInstances<IConfigureServices>())
+            {
+                logger.LogInformation("Executing ConfigureServices '{0}'", action.GetType().FullName);
+                action.ConfigureServices(services, provider);
+                provider = services.BuildServiceProvider();
+            }
+        }
     }
 }

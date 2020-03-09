@@ -9,7 +9,7 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core.Serialization;
-using SS.CMS.Web.Extensions;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 {
@@ -85,8 +85,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
 
             var channelTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
             var contentTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
-            var contentPlugins = await _pluginManager.GetContentModelPluginsAsync();
-            var relatedPlugins = await _pluginManager.GetAllContentRelatedPluginsAsync(false);
+            var contentPlugins = _pluginManager.GetContentModelPlugins();
+            var relatedPlugins = _pluginManager.GetAllContentRelatedPlugins(false);
 
             return new ChannelsResult
             {

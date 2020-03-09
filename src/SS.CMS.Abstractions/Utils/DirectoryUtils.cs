@@ -7,10 +7,8 @@ namespace SS.CMS.Abstractions
     /// </summary>
     public static class DirectoryUtils
     {
-        public static class AspnetClient
-        {
-            public const string DirectoryName = "aspnet_client";
-        }
+        public const string Plugins = "plugins";
+        public const string Packages = "packages";
 
         public static class Bin
         {
@@ -41,8 +39,7 @@ namespace SS.CMS.Abstractions
             public const string Library = "Library";
             public const string BackupFiles = "BackupFiles";
             public const string TemporaryFiles = "TemporaryFiles";
-            public const string Plugins = "Plugins";
-            public const string Packages = "packages";
+            
             public const string Home = "Home";
             public const string Administrators = "Administrators";
             public const string Users = "Users";

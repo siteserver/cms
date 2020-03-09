@@ -33,7 +33,7 @@
           </a>
           <ul v-if="isDesktop" id="topMenus" class="navigation-menu">
             <li v-for="topMenu in menus" class="has-submenu">
-              <a href="javascript:;" v-on:click="btnTopMenuClick(topMenu, $event)" v-html="topMenu.text"></a>
+              <a href="javascript:;" v-on:click="btnTopMenuClick(topMenu, $event)" :style="{fontWeight: (topMenu == menu ? 'bold' : 'normal')}" v-html="topMenu.text"></a>
             </li>
           </ul>
           <div v-if="isDesktop" class="menu-extras">

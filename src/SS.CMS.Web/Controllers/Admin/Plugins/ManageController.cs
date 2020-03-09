@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
+using SS.CMS.Packaging;
 
 namespace SS.CMS.Web.Controllers.Admin.Plugins
 {
@@ -16,13 +18,15 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         private const string RouteActionsReload = "actions/reload";
         private const string RoutePluginIdEnable = "{pluginId}/actions/enable";
 
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPluginManager _pluginManager;
         private readonly IPluginRepository _pluginRepository;
 
-        public ManageController(ISettingsManager settingsManager, IAuthManager authManager, IPluginManager pluginManager, IPluginRepository pluginRepository)
+        public ManageController(IHostApplicationLifetime hostApplicationLifetime, ISettingsManager settingsManager, IAuthManager authManager, IPluginManager pluginManager, IPluginRepository pluginRepository)
         {
+            _hostApplicationLifetime = hostApplicationLifetime;
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pluginManager = pluginManager;
@@ -39,16 +43,20 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            var dict = await _pluginManager.GetPluginIdAndVersionDictAsync();
-            var list = dict.Keys.ToList();
-            var packageIds = Utilities.ToString(list);
+            //var dict = await _pluginManager.GetPluginIdAndVersionDictAsync();
+            //var list = dict.Keys.ToList();
+            //var packageIds = Utilities.ToString(list);
+
+            var plugins = _pluginManager.GetPlugins();
+            var packagesIds = plugins.Select(x => x.PluginId);
+            var enabledPackages = plugins.Select(x => new PackageMetadata(x));
 
             return new GetResult
             {
                 IsNightly = _settingsManager.IsNightlyUpdate,
                 PluginVersion = _settingsManager.PluginVersion,
-                AllPackages = await _pluginManager.GetAllPluginInfoListAsync(),
-                PackageIds = packageIds
+                EnabledPackages = enabledPackages,
+                PackageIds = Utilities.ToString(packagesIds)
             };
         }
 
@@ -83,7 +91,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            CacheUtils.ClearAll();
+            _hostApplicationLifetime.StopApplication();
 
             return new BoolResult
             {
@@ -101,14 +109,12 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            var pluginInfo = await _pluginManager.GetPluginInfoAsync(pluginId);
-            if (pluginInfo != null)
+            var plugin = _pluginManager.GetPlugin(pluginId);
+            if (plugin != null)
             {
-                pluginInfo.IsDisabled = !pluginInfo.IsDisabled;
-                await _pluginRepository.UpdateIsDisabledAsync(pluginId, pluginInfo.IsDisabled);
-                _pluginManager.ClearCache();
+                await _pluginRepository.UpdateIsDisabledAsync(pluginId, false);
 
-                await auth.AddAdminLogAsync(!pluginInfo.IsDisabled ? "禁用插件" : "启用插件", $"插件:{pluginId}");
+                await auth.AddAdminLogAsync("启用插件", $"插件:{pluginId}");
             }
 
             CacheUtils.ClearAll();

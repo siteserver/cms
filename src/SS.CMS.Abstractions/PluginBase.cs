@@ -1,131 +1,209 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Datory;
+using SS.CMS.Abstractions.Plugins;
 
 namespace SS.CMS.Abstractions
 {
-    /// <summary>
-    /// 插件父类，所有插件必须继承此类并实现Startup方法。
-    /// </summary>
-    public abstract class PluginBase : Initializer, IPackageMetadata
+    public abstract class PluginBase : IPlugin
     {
-        /// <summary>
-        /// 初始化插件。
-        /// 此方法将由 SS CMS 系统载入插件时调用。
-        /// </summary>
-        /// <param name="metadata">插件元数据接口。</param>
-        public sealed override void Initialize(IPackageMetadata metadata)
+        public string PluginId => AssemblyUtils.GetPluginId(GetType());
+
+        public virtual string Name => AssemblyUtils.GetPluginName(GetType());
+
+        public virtual string Version => AssemblyUtils.GetPluginVersion(GetType());
+
+        public virtual string IconUrl => null;
+
+        public virtual string ProjectUrl => null;
+
+        public virtual string LicenseUrl => null;
+
+        public virtual string Copyright => null;
+
+        public virtual string Description => null;
+
+        public virtual string ReleaseNotes => null;
+
+        public virtual string Tags => null;
+
+        public virtual string Authors => null;
+
+        public virtual string Owners => null;
+
+        public virtual string Language => null;
+
+        public string SystemDefaultPageUrl { get; private set; }
+        public string HomeDefaultPageUrl { get; private set; }
+
+        public virtual List<Menu> GetSystemMenus() => null;
+
+        public virtual async Task<List<Menu>> GetSystemMenusAsync()
         {
-            Id = metadata.Id;
-            Version = metadata.Version;
-            IconUrl = metadata.IconUrl;
-            ProjectUrl = metadata.ProjectUrl;
-            LicenseUrl = metadata.LicenseUrl;
-            Copyright = metadata.Copyright;
-            Description = metadata.Description;
-            ReleaseNotes = metadata.ReleaseNotes;
-            RequireLicenseAcceptance = metadata.RequireLicenseAcceptance;
-            Summary = metadata.Summary;
-            Title = metadata.Title;
-            Tags = metadata.Tags;
-            Authors = metadata.Authors;
-            Owners = metadata.Owners;
-            Language = metadata.Language;
+            return await Task.FromResult<List<Menu>>(null);
         }
 
-        /// <summary>
-        /// Startup方法是插件机制的核心，用于定义插件能够提供的各种服务。
-        /// </summary>
-        /// <param name="service">插件服务注册接口。</param>
-        public abstract void Startup(IPluginService service);
+        public virtual List<Menu> GetSiteMenus(int siteId) => null;
 
-        /// <inheritdoc />
-        public string Id { get; private set; }
+        public virtual async Task<List<Menu>> GetSiteMenusAsync(int siteId)
+        {
+            return await Task.FromResult<List<Menu>>(null);
+        }
 
-        /// <inheritdoc />
-        public string Version { get; private set; }
+        public virtual List<Menu> GetHomeMenus() => null;
 
-        /// <inheritdoc />
-        public Uri IconUrl { get; private set; }
+        public virtual async Task<List<Menu>> GetHomeMenusAsync()
+        {
+            return await Task.FromResult<List<Menu>>(null);
+        }
 
-        /// <inheritdoc />
-        public Uri ProjectUrl { get; private set; }
+        public virtual List<Menu> GetContentMenus(Content content) => null;
 
-        /// <inheritdoc />
-        public Uri LicenseUrl { get; private set; }
+        public virtual async Task<List<Menu>> GetContentMenusAsync(Content content)
+        {
+            return await Task.FromResult<List<Menu>>(null);
+        }
 
-        /// <inheritdoc />
-        public string Copyright { get; private set; }
+        public string ContentTableName { get; private set; }
+        public bool IsApiAuthorization { get; private set; }
 
-        /// <inheritdoc />
-        public string Description { get; private set; }
+        public List<TableColumn> ContentTableColumns { get; private set; }
 
-        /// <inheritdoc />
-        public string ReleaseNotes { get; private set; }
+        public List<InputStyle> ContentInputStyles { get; private set; }
 
-        /// <inheritdoc />
-        public bool RequireLicenseAcceptance { get; private set; }
+        public Dictionary<string, List<TableColumn>> DatabaseTables { get; private set; }
 
-        /// <inheritdoc />
-        public string Summary { get; private set; }
+        public event EventHandler<ContentEventArgs> ContentAddCompleted;
 
-        /// <inheritdoc />
-        public string Title { get; private set; }
+        public void OnContentAddCompleted(ContentEventArgs e)
+        {
+            ContentAddCompleted?.Invoke(this, e);
+        }
 
-        /// <inheritdoc />
-        public string Tags { get; private set; }
+        public event EventHandler<ContentEventArgs> ContentDeleteCompleted;
 
-        /// <inheritdoc />
-        public List<string> Authors { get; private set; }
+        public void OnContentDeleteCompleted(ContentEventArgs e)
+        {
+            ContentDeleteCompleted?.Invoke(this, e);
+        }
 
-        /// <inheritdoc />
-        public string Owners { get; private set; }
+        public event EventHandler<ContentTranslateEventArgs> ContentTranslateCompleted;
 
-        /// <inheritdoc />
-        public string Language { get; private set; }
+        public void OnContentTranslateCompleted(ContentTranslateEventArgs e)
+        {
+            ContentTranslateCompleted?.Invoke(this, e);
+        }
 
-        ///// <inheritdoc />
-        //public DatabaseType DatabaseType { get; private set; }
+        public event ContentFormLoadEventHandler ContentFormLoad;
 
-        ///// <inheritdoc />
-        //public string ConnectionString { get; private set; }
+        public string OnContentFormLoad(ContentFormLoadEventArgs e)
+        {
+            if (ContentFormLoad == null) return string.Empty;
+            var html = ContentFormLoad.Invoke(this, e);
+            return html;
+        }
 
-        ///// <inheritdoc />
-        //public string AdminDirectory { get; private set; }
+        public event EventHandler<ContentFormSubmitEventArgs> ContentFormSubmit;
 
-        ///// <inheritdoc />
-        //public string PhysicalApplicationPath { get; private set; }
+        public void OnContentFormSubmit(ContentFormSubmitEventArgs e)
+        {
+            ContentFormSubmit?.Invoke(this, e);
+        }
 
-        ///// <inheritdoc />
-        //public IRequest Request => _environment.Request;
+        public Dictionary<string, Func<IParseContext, string>> StlElementsToParse { get; private set; }
 
-        ///// <inheritdoc />
-        //public IAdminApi AdminApi { get; private set; }
+        public Dictionary<string, Func<IJobContext, Task>> Jobs { get; private set; }
 
-        ///// <inheritdoc />
-        //public IConfigApi ConfigApi { get; private set; }
+        public Dictionary<string, Func<IContentContext, string>> ContentColumns { get; private set; }
 
-        ///// <inheritdoc />
-        //public IContentApi ContentApi { get; private set; }
+        public IPlugin SetSystemDefaultPage(string pageUrl)
+        {
+            SystemDefaultPageUrl = pageUrl;
+            return this;
+        }
 
-        ///// <inheritdoc />
-        //public IDatabaseApi DatabaseApi { get; private set; }
+        public IPlugin SetHomeDefaultPage(string pageUrl)
+        {
+            HomeDefaultPageUrl = pageUrl;
+            return this;
+        }
 
-        ///// <inheritdoc />
-        //public IChannelApi ChannelApi { get; private set; }
+        public IPlugin AddContentModel(string tableName, List<TableColumn> tableColumns, List<InputStyle> inputStyles)
+        {
+            ContentTableName = tableName;
+            ContentTableColumns = tableColumns;
+            ContentInputStyles = inputStyles;
 
-        ///// <inheritdoc />
-        //public IParseApi ParseApi { get; private set; }
+            return this;
+        }
 
-        ///// <inheritdoc />
-        //public IPluginApi PluginApi { get; private set; }
+        public IPlugin AddDatabaseTable(string tableName, List<TableColumn> tableColumns)
+        {
+            if (DatabaseTables == null)
+            {
+                DatabaseTables = new Dictionary<string, List<TableColumn>>();
+            }
 
-        ///// <inheritdoc />
-        //public ISiteApi SiteApi { get; private set; }
+            DatabaseTables[tableName] = tableColumns;
 
-        ///// <inheritdoc />
-        //public IUserApi UserApi { get; private set; }
+            return this;
+        }
 
-        ///// <inheritdoc />
-        //public IUtilsApi UtilsApi { get; private set; }
+        public IPlugin AddContentColumn(string columnName, Func<IContentContext, string> columnFunc)
+        {
+            if (ContentColumns == null)
+            {
+                ContentColumns = new Dictionary<string, Func<IContentContext, string>>();
+            }
+
+            ContentColumns[columnName] = columnFunc;
+
+            return this;
+        }
+
+        public IPlugin AddStlElementParser(string elementName, Func<IParseContext, string> parse)
+        {
+            if (StlElementsToParse == null)
+            {
+                StlElementsToParse = new Dictionary<string, Func<IParseContext, string>>();
+            }
+
+            StlElementsToParse[elementName] = parse;
+
+            return this;
+        }
+
+        public IPlugin AddJob(string command, Func<IJobContext, Task> job)
+        {
+            if (Jobs == null)
+            {
+                Jobs = new Dictionary<string, Func<IJobContext, Task>>(StringComparer.CurrentCultureIgnoreCase);
+            }
+
+            Jobs[command] = job;
+
+            return this;
+        }
+
+        public IPlugin AddApiAuthorization()
+        {
+            IsApiAuthorization = true;
+
+            return this;
+        }
+
+        public event EventHandler<ParseEventArgs> BeforeStlParse;
+        public event EventHandler<ParseEventArgs> AfterStlParse;
+
+        public void OnBeforeStlParse(ParseEventArgs e)
+        {
+            BeforeStlParse?.Invoke(this, e);
+        }
+
+        public void OnAfterStlParse(ParseEventArgs e)
+        {
+            AfterStlParse?.Invoke(this, e);
+        }
     }
 }

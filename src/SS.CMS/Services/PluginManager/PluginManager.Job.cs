@@ -7,17 +7,17 @@ namespace SS.CMS.Services
 {
     public partial class PluginManager
     {
-        public async Task<Dictionary<string, Func<IJobContext, Task>>> GetJobsAsync()
+        public Dictionary<string, Func<IJobContext, Task>> GetJobs()
         {
             var jobs = new Dictionary<string, Func<IJobContext, Task>>(StringComparer.CurrentCultureIgnoreCase);
 
-            foreach (var service in await GetServicesAsync())
+            foreach (var plugin in GetPlugins())
             {
-                if (service.Jobs != null && service.Jobs.Count > 0)
+                if (plugin.Jobs != null && plugin.Jobs.Count > 0)
                 {
-                    foreach (var command in service.Jobs.Keys)
+                    foreach (var command in plugin.Jobs.Keys)
                     {
-                        jobs[command] = service.Jobs[command];
+                        jobs[command] = plugin.Jobs[command];
                     }
                 }
             }

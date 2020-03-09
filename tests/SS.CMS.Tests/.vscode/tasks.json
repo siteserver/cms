@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/SiteServer.CMS.Tests.csproj"
+                "${workspaceFolder}/SS.CMS.Tests.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -17,7 +17,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/SiteServer.CMS.Tests.csproj"
+                "${workspaceFolder}/SS.CMS.Tests.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -28,7 +28,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/SiteServer.CMS.Tests.csproj"
+                "${workspaceFolder}/SS.CMS.Tests.csproj"
             ],
             "problemMatcher": "$tsc"
         }

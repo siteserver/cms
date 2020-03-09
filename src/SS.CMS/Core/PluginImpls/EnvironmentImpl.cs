@@ -1,6 +1,6 @@
 ﻿using Datory;
 
-namespace SS.CMS.Core.Plugins
+namespace SS.CMS.Core.PluginImpls
 {
     public class EnvironmentImpl
     {

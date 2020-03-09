@@ -28,7 +28,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             var channel = await _channelRepository.GetAsync(request.SiteId);
 
             var pluginIds = _pluginManager.GetContentPluginIds(channel);
-            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
+            var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
 
             var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);

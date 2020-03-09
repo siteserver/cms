@@ -6,7 +6,7 @@ using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
 using SS.CMS.Core.Serialization;
-using SS.CMS.Web.Extensions;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 {

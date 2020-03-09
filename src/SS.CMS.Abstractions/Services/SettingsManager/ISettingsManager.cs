@@ -5,7 +5,7 @@ using Datory;
 // ReSharper disable CheckNamespace
 namespace SS.CMS.Abstractions
 {
-    public interface ISettingsManager : IService
+    public interface ISettingsManager
     {
         string ContentRootPath { get; }
         string WebRootPath { get; }

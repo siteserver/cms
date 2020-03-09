@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Parse;
 
-namespace SS.CMS.Core.Plugins
+namespace SS.CMS.Core.PluginImpls
 {
     public class ParseContextImpl : IParseContext
     {

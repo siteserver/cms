@@ -5,7 +5,7 @@ using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
 using SS.CMS.Core.PathRules;
-using SS.CMS.Web.Extensions;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 {

@@ -8,7 +8,7 @@ using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Core;
 using SS.CMS.Core.Office;
 using SS.CMS.Core.Serialization;
-using SS.CMS.Web.Extensions;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -87,7 +87,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
             var pluginIds = _pluginManager.GetContentPluginIds(channel);
-            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
+            var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
 
             var contentInfoList = new List<Content>();
             var calculatedContentInfoList = new List<Content>();

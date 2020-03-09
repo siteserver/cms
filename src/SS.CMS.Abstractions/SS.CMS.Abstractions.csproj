@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>SS.CMS.Abstractions</PackageId>
@@ -22,23 +22,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Datory" Version="1.0.14" />
     <PackageReference Include="HtmlSanitizer" Version="5.0.298" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.2" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="SqlKata" Version="1.1.7" />
     <PackageReference Include="YamlDotNet" Version="8.1.0" />
-    <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
-    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
-    <PackageReference Include="System.Threading" Version="4.3.0" />
-    <PackageReference Include="System.Globalization" Version="4.3.0" />
-    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
-    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
-    <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Threading.ThreadPool" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

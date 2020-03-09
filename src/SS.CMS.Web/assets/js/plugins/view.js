@@ -1,8 +1,8 @@
-﻿var pluginId = utils.getQueryString('pluginId');
-var returnUrl = utils.getQueryString('returnUrl');
-var $url = '/admin/plugins/view/' + pluginId;
+﻿var $url = '/admin/plugins/view';
 
 var data = utils.initData({
+  pluginId: utils.getQueryString('pluginId'),
+  returnUrl: utils.getQueryString('returnUrl'),
   isNightly: null,
   pluginVersion: null,
   installed: null,
@@ -15,6 +15,46 @@ var data = utils.initData({
 });
 
 var methods = {
+  apiGet: function () {
+    var $this = this;
+
+    $api.get($url, {
+      params: {
+        pluginId: this.pluginId
+      }
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.isNightly = res.isNightly;
+      $this.pluginVersion = res.pluginVersion;
+      $this.installed = res.installed;
+      $this.installedVersion = res.installedVersion;
+      $this.package = res.package || {};
+
+      $apiCloud.get('plugins/' + this.pluginId, {
+        params: {
+          isNightly: $this.isNightly,
+          pluginVersion: $this.pluginVersion
+        }
+      }).then(function (response) {
+        var res = response.data;
+
+        $this.pluginInfo = res.value.pluginInfo;
+        $this.releaseInfo = res.value.releaseInfo;
+        $this.userInfo = res.value.userInfo;
+
+        $this.isShouldUpdate = utils.compareVersion($this.installedVersion, $this.releaseInfo.version) == -1;
+      }).then(function () {
+        utils.loading($this, false);
+      });
+
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
   getIconUrl: function (url) {
     if (url && url.indexOf('://') !== -1) return url;
     return 'https://www.siteserver.cn/plugins/' + url;
@@ -28,48 +68,8 @@ var methods = {
     return tagNames;
   },
 
-  load: function () {
-    var $this = this;
-
-    $api.get($url).then(function (response) {
-      var res = response.data;
-
-      $this.isNightly = res.isNightly;
-      $this.pluginVersion = res.pluginVersion;
-      $this.installed = res.installed;
-      $this.installedVersion = res.installedVersion;
-      $this.package = res.package || {};
-
-      $apiCloud.get('plugins/' + pluginId, {
-        params: {
-          isNightly: $this.isNightly,
-          pluginVersion: $this.pluginVersion
-        }
-      }).then(function (response) {
-        var res = response.data;
-
-        $this.pluginInfo = res.value.pluginInfo;
-        $this.releaseInfo = res.value.releaseInfo;
-        $this.userInfo = res.value.userInfo;
-
-        $this.isShouldUpdate = compareversion($this.installedVersion, $this.releaseInfo.version) == -1;
-      }).catch(function (error) {
-        utils.error($this, {
-          message: '系统在线获取插件信息失败，请检查网络环境是否能够访问外网'
-        });
-      }).then(function () {
-        utils.loading($this, false);
-      });
-
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
   btnReturn: function () {
-    location.href = returnUrl;
+    location.href = this.returnUrl;
   }
 };
 
@@ -78,6 +78,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.load();
+    this.apiGet();
   }
 });

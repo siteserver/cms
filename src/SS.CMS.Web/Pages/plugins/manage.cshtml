@@ -1,245 +1,232 @@
 ﻿@page
 @{ Layout = "../shared/_layout"; }
+@section Styles{
+  <style>
+    .el-badge__content.is-fixed {
+      top: 16px;
+      right: 4px;
+      border: 0;
+    }
+  </style>
+}
+
+<el-menu :default-active="pageType" mode="horizontal"
+  background-color="#545c64"
+  text-color="#fff"
+  active-text-color="#ffd04b"
+  v-on:select="handleSelect">
+  <el-menu-item index="1">
+      <el-link :underline="false">
+        <el-badge type="primary" :value="enabledPackages.length">已启用</el-badge>
+      </el-link>
+  </el-menu-item>
+  <el-menu-item index="2">
+    <el-link :underline="false">
+      <el-badge type="warning" :value="disabledPackages.length">已禁用</el-badge>
+    </el-link>
+  </el-menu-item>
+  <el-menu-item index="3" v-if="errorPackages.length > 0">
+    <el-link :underline="false">
+      <el-badge :value="errorPackages.length">运行错误</el-badge>
+    </el-link>
+  </el-menu-item>
+  <el-menu-item index="4" v-if="updatePackages.length > 0">
+    <el-link :underline="false">
+      <el-badge type="warning" :value="updatePackages.length">发现新版本</el-badge>
+    </el-link>
+  </el-menu-item>
+</el-menu>
 
 <el-card class="box-card">
 
   <div slot="header" class="clearfix">
     <span>管理插件</span>
+    <el-button style="float: right; padding: 10px; margin-top: -8px;" type="warning" icon="el-icon-refresh" v-on:click="btnReload">重新加载所有插件</el-button>
   </div>
 
-  <div class="row mt-4 mb-4">
-    <div class="col-8">
-      <ul class="nav nav-pills">
-        <li class="nav-item" :class="{ active: pageType == 1 }">
-          <a class="nav-link" :class="{'text-white': pageType == 1 }" href="javascript:;" v-on:click="pageType = 1">
-            已启用
-            <span class="badge badge-secondary" :class="{ 'badge-light': pageType == 1 }">{{ enabledPackages.length }}</span>
-          </a>
-        </li>
-        <li class="nav-item" :class="{ active: pageType == 2 }">
-          <a class="nav-link" :class="{'text-white': pageType == 2 }" href="javascript:;" v-on:click="pageType = 2">
-            已禁用
-            <span class="badge badge-secondary" :class="{ 'badge-light': pageType == 2 }">{{ disabledPackages.length }}</span>
-          </a>
-        </li>
-        <li class="nav-item" :class="{ active: pageType == 3 }" :style="{ display: errorPackages.length > 0 ? '' : 'none' }"
-          style="display: none">
-          <a class="nav-link" :class="{'text-white': pageType == 3 }" href="javascript:;" v-on:click="pageType = 3">
-            运行错误
-            <span class="badge badge-danger" :style="{ color: (pageType == 3 ? '#fff' : '') }">{{ errorPackages.length }}</span>
-          </a>
-        </li>
-        <li class="nav-item" :class="{ active: pageType == 4 }" :style="{ display: updatePackages.length > 0 ? '' : 'none' }"
-          style="display: none">
-          <a class="nav-link" :class="{'text-white': pageType == 4 }" href="javascript:;" v-on:click="pageType = 4">
-            发现新版本
-            <span class="badge badge-warning" :style="{ color: (pageType == 4 ? '#fff' : '') }">{{ updatePackages.length }}</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-    <div class="col-4">
-      <a v-on:click="btnReload" href="javascript:;" class="btn btn-primary float-right btn-md">重新加载所有插件</a>
-    </div>
+  <div v-if="pageType === '4'" style="margin-bottom: 10px;">
+    <el-alert type="warning">
+      发现以下插件发布了新版本，请点击升级插件按钮开始升级
+    </el-alert>
   </div>
   
-  <div class="mt-4 mb-4">
+
+  <el-table v-if="pageType == '1'" :data="enabledPackages" style="width: 100%">
+    <el-table-column label="LOGO" width="80" align="center">
+      <template slot-scope="scope">
+        <img :src="scope.row.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
+      </template>
+    </el-table-column>
+    <el-table-column label="插件Id">
+      <template slot-scope="scope">
+        <el-link :underline="false" type="primary" :href="utils.getPluginsUrl('view', {pluginId: scope.row.pluginId, returnUrl: location.href})">{{ scope.row.pluginId }}</el-link>
+      </template>
+    </el-table-column>
+    <el-table-column label="插件名称">
+      <template slot-scope="scope">
+        {{ scope.row.name }}
+      </template>
+    </el-table-column>
+    <el-table-column label="版本号">
+      <template slot-scope="scope">
+        {{ scope.row.version }}
+      </template>
+    </el-table-column>
+    <el-table-column label="作者">
+      <template slot-scope="scope">
+        {{ scope.row.authors }}
+      </template>
+    </el-table-column>
+    <el-table-column label="插件介绍">
+      <template slot-scope="scope">
+        {{ scope.row.description }}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="100">
+      <template slot-scope="scope">
+        <el-link
+          :underline="false"
+          v-on:click="enablePackage(scope.row)"
+          type="primary">
+          {{ scope.row.isDisabled ? '启用' : '禁用' }}
+        </el-link>
+        <el-link
+          :underline="false"
+          type="danger"
+          v-on:click="deletePackage(scope.row)">
+          删除插件
+        </el-link>
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <el-table v-else-if="pageType == '2'" :data="disabledPackages" style="width: 100%">
+    <el-table-column label="LOGO" width="80" align="center">
+      <template slot-scope="scope">
+        <img :src="scope.row.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
+      </template>
+    </el-table-column>
+    <el-table-column label="插件Id">
+      <template slot-scope="scope">
+        <el-link :underline="false" type="primary" :href="utils.getPluginsUrl('view', {pluginId: scope.row.id, returnUrl: location.href})">{{ scope.row.id }}</el-link>
+      </template>
+    </el-table-column>
+    <el-table-column label="插件名称">
+      <template slot-scope="scope">
+        {{ scope.row.metadata.title }}
+      </template>
+    </el-table-column>
+    <el-table-column label="版本号">
+      <template slot-scope="scope">
+        {{ scope.row.metadata.version }}
+      </template>
+    </el-table-column>
+    <el-table-column label="作者">
+      <template slot-scope="scope">
+        {{ scope.row.metadata.owners }}
+      </template>
+    </el-table-column>
+    <el-table-column label="插件介绍">
+      <template slot-scope="scope">
+        {{ scope.row.metadata.description }}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="100">
+      <template slot-scope="scope">
+        <el-link
+          :underline="false"
+          v-on:click="enablePackage(scope.row)"
+          type="primary">
+          {{ scope.row.isDisabled ? '启用' : '禁用' }}
+        </el-link>
+        <el-link
+          :underline="false"
+          type="danger"
+          v-on:click="deletePackage(scope.row)">
+          删除插件
+        </el-link>
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <el-table v-else-if="pageType == '3'" :data="errorPackages" style="width: 100%">
+    <el-table-column label="插件Id" width="200">
+      <template slot-scope="scope">
+        <el-link :underline="false" type="primary" :href="utils.getPluginsUrl('view', {pluginId: scope.row.id, returnUrl: location.href})">{{ scope.row.id }}</el-link>
+      </template>
+    </el-table-column>
+    <el-table-column prop="errorMessage" label="错误详情"></el-table-column>
+    <el-table-column label="操作" width="100">
+      <template slot-scope="scope">
+        <el-link
+          :underline="false"
+          type="danger"
+          v-on:click="deletePackage(scope.row)">
+          删除插件
+        </el-link>
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <el-table v-else-if="pageType == '4'" :data="updatePackages" style="width: 100%">
+    <el-table-column label="LOGO" width="80" align="center">
+      <template slot-scope="scope">
+        <img :src="scope.row.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
+      </template>
+    </el-table-column>
+    <el-table-column label="插件Id">
+      <template slot-scope="scope">
+        <el-link :underline="false" type="primary" :href="utils.getPluginsUrl('view', {pluginId: scope.row.updatePackage.pluginId, returnUrl: location.href})">{{ scope.row.updatePackage.pluginId }}</el-link>
+      </template>
+    </el-table-column>
+    <el-table-column label="插件名称">
+      <template slot-scope="scope">
+        {{ scope.row.metadata.title }}
+      </template>
+    </el-table-column>
+    <el-table-column label="已安装版本">
+      <template slot-scope="scope">
+        {{ scope.row.metadata ? scope.row.metadata.version : '' }}
+      </template>
+    </el-table-column>
+    <el-table-column label="新版本">
+      <template slot-scope="scope">
+        {{ scope.row.updatePackage.version }}
+      </template>
+    </el-table-column>
+    <el-table-column label="更新说明">
+      <template slot-scope="scope">
+        {{ scope.row.updatePackage.releaseNotes }}
+      </template>
+    </el-table-column>
+    <el-table-column label="发布时间">
+      <template slot-scope="scope">
+        {{ scope.row.updatePackage.published }}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="100">
+      <template slot-scope="scope">
+        <el-link
+          :underline="false"
+          type="warning"
+          :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: package.id})">
+          插件升级
+        </el-link>
+      </template>
+    </el-table-column>
+  </el-table>
   
-    <div class="panel panel-default" :style="{ display: pageType == 1 ? '' : 'none' }">
-      <div class="panel-body p-0">
-        <div class="table-responsive">
-          <table class="table tablesaw table-hover m-0">
-            <thead>
-              <tr class="thead">
-                <th class="text-nowrap">LOGO</th>
-                <th class="text-nowrap">插件Id</th>
-                <th class="text-nowrap">插件名称</th>
-                <th class="text-nowrap">版本号</th>
-                <th class="text-nowrap">作者</th>
-                <th>插件介绍</th>
-                <th class="text-center text-nowrap">载入时间</th>
-                <th class="text-nowrap"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="package in enabledPackages" v-if="package && package.metadata">
-                <td class="text-center text-nowrap">
-                  <img :src="package.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
-                </td>
-                <td class="text-nowrap">
-                  <a :href="utils.getPluginsUrl('view', {pluginId: package.id, returnUrl: location.href})">{{ package.id }}</a>
-                </td>
-                <td class="text-nowrap">
-                  {{ package.metadata.title }}
-                </td>
-                <td class="text-nowrap">
-                  {{ package.metadata.version }}
-                </td>
-                <td class="text-nowrap">
-                  {{ package.metadata.owners }}
-                </td>
-                <td>
-                  {{ package.metadata.description }}
-                </td>
-                <td class="text-center text-nowrap">
-                  {{ package.initTime }}毫秒
-                </td>
-                <td class="text-center text-nowrap">
-                  <a href="javascript:;" v-on:click="enablePackage(package)">{{ package.isDisabled ? '启用' : '禁用' }}</a>
-                  &nbsp;&nbsp;
-                  <a href="javascript:;" v-on:click="deletePackage(package)">删除插件</a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-  
-        </div>
-      </div>
-    </div>
-  
-    <div class="panel panel-default" :style="{ display: pageType == 2 ? '' : 'none' }">
-      <div class="panel-body p-0">
-        <div class="table-responsive">
-          <table class="table tablesaw table-hover m-0">
-            <thead>
-              <tr class="thead">
-                <th class="text-nowrap">LOGO</th>
-                <th class="text-nowrap">插件Id</th>
-                <th class="text-nowrap">插件名称</th>
-                <th class="text-nowrap">版本号</th>
-                <th class="text-nowrap">作者</th>
-                <th>插件介绍</th>
-                <th class="text-center text-nowrap">载入时间</th>
-                <th class="text-nowrap"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="package in disabledPackages" v-if="package && package.metadata">
-                <td class="text-center text-nowrap">
-                  <img :src="package.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
-                </td>
-                <td class="text-nowrap">
-                  <a :href="utils.getPluginsUrl('view', {pluginId: package.id, returnUrl: location.href})">{{ package.id }}</a>
-                </td>
-                <td class="text-nowrap">
-                  {{ package.metadata.title }}
-                </td>
-                <td class="text-nowrap">
-                  {{ package.metadata.version }}
-                </td>
-                <td class="text-nowrap">
-                  {{ package.metadata.owners }}
-                </td>
-                <td>
-                  {{ package.metadata.description }}
-                </td>
-                <td class="text-center text-nowrap">
-                  {{ package.initTime }}毫秒
-                </td>
-                <td class="text-center text-nowrap">
-                  <a href="javascript:;" v-on:click="enablePackage(package)">{{ package.isDisabled ? '启用' : '禁用' }}</a>
-                  &nbsp;&nbsp;
-                  <a href="javascript:;" v-on:click="deletePackage(package)">删除插件</a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-  
-        </div>
-      </div>
-    </div>
-  
-    <div class="panel panel-default" :style="{ display: pageType == 3 ? '' : 'none' }">
-      <div class="panel-body p-0">
-        <div class="table-responsive">
-          <table class="table tablesaw table-hover m-0">
-            <thead>
-              <tr class="thead">
-                <th>插件Id</th>
-                <th>错误详情</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="package in errorPackages" v-if="package && package.metadata">
-                <td class="text-nowrap">
-                  <a :href="utils.getPluginsUrl('view', {pluginId: package.id, returnUrl: location.href})">{{ package.id }}</a>
-                </td>
-                <td class="text-nowrap">
-                  {{ package.errorMessage }}
-                </td>
-                <td class="text-center text-nowrap">
-                  <a href="javascript:;" v-on:click="deletePackage(package)">删除插件</a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-  
-        </div>
-      </div>
-    </div>
-  
-    <div :style="{ display: pageType == 4 ? '' : 'none' }">
-  
-      <div class="alert alert-success">
-        发现以下插件发布了新版本，请点击升级插件按钮开始升级
-      </div>
-  
-      <div class="panel panel-default">
-        <div class="panel-body p-0">
-          <div class="table-responsive">
-            <table class="table tablesaw table-hover m-0">
-              <thead>
-                <tr class="thead">
-                  <th class="text-nowrap">LOGO</th>
-                  <th class="text-nowrap">插件Id</th>
-                  <th class="text-nowrap">插件名称</th>
-                  <th class="text-nowrap">已安装版本</th>
-                  <th class="text-nowrap">新版本</th>
-                  <th>更新说明</th>
-                  <th class="text-center text-nowrap">发布时间</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="package in updatePackages" v-if="package && package.metadata">
-                  <td class="text-center text-nowrap">
-                    <img :src="package.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
-                  </td>
-                  <td class="text-nowrap">
-                    <a :href="utils.getPluginsUrl('view', {pluginId: package.updatePackage.pluginId, returnUrl: location.href})">{{ package.updatePackage.pluginId }}</a>
-                  </td>
-                  <td class="text-nowrap">
-                    {{ package.metadata.title }}
-                  </td>
-                  <td class="text-nowrap">
-                    {{ package.metadata ? package.metadata.version : '' }}
-                  </td>
-                  <td class="text-nowrap">
-                    {{ package.updatePackage.version }}
-                  </td>
-                  <td>
-                    {{ package.updatePackage.releaseNotes }}
-                  </td>
-                  <td class="text-center text-nowrap">
-                    {{ package.updatePackage.published }}
-                  </td>
-                  <td class="text-center text-nowrap">
-                    <a :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: package.id})" class="btn btn-warning btn-md">插件升级</a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-  
-      <hr />
-  
-      <a :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: updatePackageIds.join(',')})' + " class="btn btn-warning btn-md">一键升级所有插件</a>
-  
-    </div>
-  
+  <div v-if="pageType === '4'">
+    <div style="height: 10px"></div>
+    <el-divider></el-divider>
+    <div style="height: 10px"></div>
+
+    <el-button
+      size="small"
+      type="warning"
+      v-on:click="location.href = utils.getPluginsUrl('install', {isUpdate: true, pluginIds: updatePackageIds.join(',')})">
+      一键升级所有插件
+    </el-button>
   </div>
 
 </el-card>

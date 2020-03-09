@@ -3,16 +3,18 @@ using Microsoft.AspNetCore.Http;
 
 namespace SS.CMS.Abstractions
 {
-    public partial interface IPathManager : IService
+    public partial interface IPathManager
     {
         string ContentRootPath { get; }
         string WebRootPath { get; }
 
         string WebUrl { get; }
 
+        string GetContentRootPath(params string[] paths);
+
         string GetWebUrl(params string[] paths);
 
-        string GetWebPath(params string[] paths);
+        string GetWebRootPath(params string[] paths);
 
         string GetAdminUrl(params string[] paths);
 

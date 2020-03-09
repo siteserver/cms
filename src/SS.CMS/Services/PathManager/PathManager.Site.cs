@@ -13,15 +13,19 @@ namespace SS.CMS.Services
     public partial class PathManager
     {
         // 系统根目录访问地址
-        public string GetRootUrl(string relatedUrl)
+        public string GetWebRootUrl(string relatedUrl)
         {
             return PageUtils.Combine(WebUrl, relatedUrl);
         }
 
-        public string GetRootPath(params string[] paths)
+        public string GetWebRootPath(params string[] paths)
         {
-            var path = PathUtils.Combine(_settingsManager.WebRootPath, PathUtils.Combine(paths));
-            return path;
+            return PathUtils.Combine(_settingsManager.WebRootPath, PathUtils.Combine(paths));
+        }
+
+        public string GetContentRootPath(params string[] paths)
+        {
+            return PathUtils.Combine(_settingsManager.ContentRootPath, PathUtils.Combine(paths));
         }
 
         public string GetAdminUrl(string relatedUrl)
@@ -44,30 +48,11 @@ namespace SS.CMS.Services
             return PageUtils.Combine(WebUrl, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
         }
 
-        public string ParsePluginUrl(string pluginId, string url)
-        {
-            if (string.IsNullOrEmpty(url)) return string.Empty;
-
-            if (PageUtils.IsProtocolUrl(url)) return url;
-
-            if (StringUtils.StartsWith(url, "~/"))
-            {
-                return GetRootUrl(url.Substring(1));
-            }
-
-            if (StringUtils.StartsWith(url, "@/"))
-            {
-                return GetAdminUrl(url.Substring(1));
-            }
-
-            return GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
-        }
-
         public string GetRootUrlByPhysicalPath(string physicalPath)
         {
             var requestPath = PathUtils.GetPathDifference(_settingsManager.WebRootPath, physicalPath);
             requestPath = requestPath.Replace(PathUtils.SeparatorChar, Constants.PageSeparatorChar);
-            return GetRootUrl(requestPath);
+            return GetWebRootUrl(requestPath);
         }
 
         public string ParseNavigationUrl(string url)
@@ -1444,8 +1429,7 @@ namespace SS.CMS.Services
 
         public bool IsSystemDirectory(string directoryName)
         {
-            if (StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.AspnetClient.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.Bin.DirectoryName)
+            if (StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.Bin.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.Home.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.SiteFiles.DirectoryName))
             {

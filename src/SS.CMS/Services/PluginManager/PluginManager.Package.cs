@@ -42,7 +42,7 @@ namespace SS.CMS.Services
                 }
                 else if (packageType == PackageType.Plugin)
                 {
-                    var pluginPath = _pathManager.GetPluginPath(metadata.Id);
+                    var pluginPath = _pathManager.GetPluginPath(metadata.PluginId);
                     DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
 
                     DirectoryUtils.Copy(PathUtils.Combine(packagePath, "content"), pluginPath, true);
@@ -58,10 +58,8 @@ namespace SS.CMS.Services
                     //    DirectoryUtils.Copy(dependencyDdlDirectoryPath, PathUtils.Combine(pluginPath, "Bin"), true);
                     //}
 
-                    var configFilelPath = PathUtils.Combine(pluginPath, $"{metadata.Id}.nuspec");
+                    var configFilelPath = PathUtils.Combine(pluginPath, $"{metadata.PluginId}.nuspec");
                     FileUtils.CopyFile(nuspecPath, configFilelPath, true);
-
-                    ClearCache();
                 }
                 else if (packageType == PackageType.Library)
                 {

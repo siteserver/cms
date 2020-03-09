@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Core;
+using SS.CMS.Extensions;
 using SS.CMS.Packaging;
-using SS.CMS.Web.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin
 {

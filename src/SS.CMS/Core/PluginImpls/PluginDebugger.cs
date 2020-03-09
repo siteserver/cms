@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using SS.CMS.Abstractions;
 
-namespace SS.CMS.Core.Plugins
+namespace SS.CMS.Core.PluginImpls
 {
     public class PluginDebugger
     {
@@ -34,13 +34,12 @@ namespace SS.CMS.Core.Plugins
         private void Watcher_EventHandler(object sender, FileSystemEventArgs e)
         {
             var fileName = PathUtils.GetFileNameWithoutExtension(e.FullPath);
-            if (!_pluginManager.IsExistsAsync(fileName).GetAwaiter().GetResult()) return;
+            if (!_pluginManager.IsExists(fileName)) return;
             if (!e.FullPath.EndsWith(".nuspec") && !e.FullPath.EndsWith(".dll")) return;
 
             try
             {
                 _watcher.EnableRaisingEvents = false;
-                _pluginManager.ClearCache();
             }
             finally
             {

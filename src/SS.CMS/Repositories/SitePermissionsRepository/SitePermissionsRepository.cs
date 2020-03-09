@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
-using SS.CMS.Core.Plugins;
+using SS.CMS.Core.PluginImpls;
 
 namespace SS.CMS.Repositories
 {

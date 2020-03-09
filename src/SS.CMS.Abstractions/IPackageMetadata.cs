@@ -11,7 +11,7 @@ namespace SS.CMS.Abstractions
         /// <summary>
         /// 插件Id，作为插件的唯一标识。
         /// </summary>
-        string Id { get; }
+        string PluginId { get; }
 
         /// <summary>
         /// 插件版本号。
@@ -21,17 +21,17 @@ namespace SS.CMS.Abstractions
         /// <summary>
         /// 插件图标访问地址。
         /// </summary>
-        Uri IconUrl { get; }
+        string IconUrl { get; }
 
         /// <summary>
         /// 插件官网地址。
         /// </summary>
-        Uri ProjectUrl { get; }
+        string ProjectUrl { get; }
 
         /// <summary>
         /// 插件授权许可说明地址。
         /// </summary>
-        Uri LicenseUrl { get; }
+        string LicenseUrl { get; }
 
         /// <summary>
         /// 插件版权。
@@ -49,19 +49,9 @@ namespace SS.CMS.Abstractions
         string ReleaseNotes { get; }
 
         /// <summary>
-        /// 使用插件前是否需要用户阅读并确认同意授权许可说明。
-        /// </summary>
-        bool RequireLicenseAcceptance { get; }
-
-        /// <summary>
-        /// 插件概要。
-        /// </summary>
-        string Summary { get; }
-
-        /// <summary>
         /// 插件名称。
         /// </summary>
-        string Title { get; }
+        string Name { get; }
 
         /// <summary>
         /// 插件标签。
@@ -71,7 +61,7 @@ namespace SS.CMS.Abstractions
         /// <summary>
         /// 插件作者列表。
         /// </summary>
-        List<string> Authors { get; }
+        string Authors { get; }
 
         /// <summary>
         /// 插件拥有者。

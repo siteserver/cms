@@ -20,7 +20,9 @@ namespace SS.CMS.Web
                 .ConfigureAppConfiguration(ConfigConfiguration)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseKestrel((ctx, options) => { options.Limits.MaxRequestBodySize = null; })
+                    webBuilder
+                        .UseKestrel((ctx, options) => { options.Limits.MaxRequestBodySize = null; })
+                        .UseIIS()
                         .UseStartup<Startup>();
                 });
 

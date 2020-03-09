@@ -10,6 +10,75 @@ namespace SS.CMS.Repositories
 {
     public partial class ContentRepository
     {
+        private async Task<int> SyncTaxisAsync(Site site, Channel channel, Content content)
+        {
+            var taxis = content.Taxis;
+            var updateHigher = false;
+
+            var repository = GetRepository(site, channel);
+
+            var query = Q
+                .Where(nameof(Content.ChannelId), channel.Id)
+                .WhereNot(nameof(Content.SourceId), SourceManager.Preview)
+                .Where(nameof(Content.Taxis), content.Top ? ">=" : "<", TaxisIsTopStartValue);
+
+            if (channel.DefaultTaxisType == TaxisType.OrderByAddDate)
+            {
+                if (content.AddDate.HasValue)
+                {
+                    taxis = (await repository.MaxAsync(nameof(Content.Taxis), query.Clone()
+                                 .WhereDate(nameof(Content.AddDate), ">", content.AddDate.Value)
+                             ) ?? 0) + 1;
+                    updateHigher = true;
+                }
+            }
+            else if (channel.DefaultTaxisType == TaxisType.OrderByAddDateDesc)
+            {
+                if (content.AddDate.HasValue)
+                {
+                    taxis = (await repository.MaxAsync(nameof(Content.Taxis), query.Clone()
+                                 .WhereDate(nameof(Content.AddDate), "<", content.AddDate.Value)
+                             ) ?? 0) + 1;
+                    updateHigher = true;
+                }
+            }
+            else if (channel.DefaultTaxisType == TaxisType.OrderByTaxis)
+            {
+                taxis = 1;
+                updateHigher = true;
+            }
+            else
+            {
+                if (content.Top == false && content.Taxis >= TaxisIsTopStartValue)
+                {
+                    taxis = await GetMaxTaxisAsync(site, channel, false) + 1;
+                }
+                else if (content.Top && content.Taxis < TaxisIsTopStartValue)
+                {
+                    taxis = await GetMaxTaxisAsync(site, channel, true) + 1;
+                }
+
+                if (taxis == 0)
+                {
+                    taxis = (await repository.MaxAsync(nameof(Content.Taxis), query.Clone()) ?? 0) + 1;
+                }
+            }
+
+            if (content.Top && taxis < TaxisIsTopStartValue)
+            {
+                taxis += TaxisIsTopStartValue;
+            }
+
+            if (updateHigher)
+            {
+                await repository.IncrementAsync(nameof(Content.Taxis), query
+                    .Where(nameof(Content.Taxis), ">=", taxis)
+                );
+            }
+
+            return taxis;
+        }
+
         public async Task<int> InsertAsync(Site site, Channel channel, Content content)
         {
             var taxis = 0;
@@ -20,14 +89,7 @@ namespace SS.CMS.Repositories
             }
             else
             {
-                if (content.Top)
-                {
-                    taxis = await GetMaxTaxisAsync(site, channel, true) + 1;
-                }
-                else
-                {
-                    taxis = await GetMaxTaxisAsync(site, channel, false) + 1;
-                }
+                content.Taxis = await SyncTaxisAsync(site, channel, content);
             }
             return await InsertWithTaxisAsync(site, channel, content, taxis);
         }

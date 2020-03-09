@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NuGet.Packaging;
 using NuGet.Versioning;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Packaging
 {
@@ -15,10 +16,27 @@ namespace SS.CMS.Packaging
 
         public PackageMetadata(string directoryName)
         {
-            Id = directoryName;
-            Title = directoryName;
-            IconUrl = new Uri("https://www.siteserver.cn/assets/images/favicon.png");
+            PluginId = directoryName;
+            Name = directoryName;
+            IconUrl = "https://www.siteserver.cn/assets/images/favicon.png";
             Version = "0.0.0";
+        }
+
+        public PackageMetadata(IPlugin plugin)
+        {
+            PluginId = plugin.PluginId;
+            Version = plugin.Version;
+            IconUrl = plugin.IconUrl;
+            ProjectUrl = plugin.ProjectUrl;
+            LicenseUrl = plugin.LicenseUrl;
+            Copyright = plugin.Copyright;
+            Description = plugin.Description;
+            ReleaseNotes = plugin.ReleaseNotes;
+            Name = plugin.Name;
+            Tags = plugin.Tags;
+            Language = plugin.Language;
+            Owners = plugin.Owners;
+            Authors = plugin.Authors;
         }
 
         public PackageMetadata(
@@ -39,21 +57,19 @@ namespace SS.CMS.Packaging
 
         private void SetPropertiesFromMetadata()
         {
-            Id = GetValue("id", string.Empty);
-            Version = GetValue("version", string.Empty);
-            IconUrl = GetValue(PackageMetadataStrings.IconUrl, (Uri)null);
-            ProjectUrl = GetValue(PackageMetadataStrings.ProjectUrl, (Uri)null);
-            LicenseUrl = GetValue(PackageMetadataStrings.LicenseUrl, (Uri)null);
-            Copyright = GetValue(PackageMetadataStrings.Copyright, (string)null);
-            Description = GetValue(PackageMetadataStrings.Description, (string)null);
-            ReleaseNotes = GetValue(PackageMetadataStrings.ReleaseNotes, (string)null);
-            RequireLicenseAcceptance = GetValue(PackageMetadataStrings.RequireLicenseAcceptance, false);
-            Summary = GetValue(PackageMetadataStrings.Summary, (string)null);
-            Title = GetValue(PackageMetadataStrings.Title, (string)null);
-            Tags = GetValue(PackageMetadataStrings.Tags, (string)null);
-            Language = GetValue(PackageMetadataStrings.Language, (string)null);
-            Owners = GetValue(PackageMetadataStrings.Owners, (string)null);
-            Authors = new List<string>(GetValue(PackageMetadataStrings.Authors, Owners ?? string.Empty).Split(',').Select(author => author.Trim()));
+            PluginId = GetValue(PackageMetadataStrings.Id, string.Empty);
+            Version = GetValue(PackageMetadataStrings.Version, string.Empty);
+            IconUrl = GetValue(PackageMetadataStrings.IconUrl, string.Empty);
+            ProjectUrl = GetValue(PackageMetadataStrings.ProjectUrl, string.Empty);
+            LicenseUrl = GetValue(PackageMetadataStrings.LicenseUrl, string.Empty);
+            Copyright = GetValue(PackageMetadataStrings.Copyright, string.Empty);
+            Description = GetValue(PackageMetadataStrings.Description, string.Empty);
+            ReleaseNotes = GetValue(PackageMetadataStrings.ReleaseNotes, string.Empty);
+            Name = GetValue(PackageMetadataStrings.Name, string.Empty);
+            Tags = GetValue(PackageMetadataStrings.Tags, string.Empty);
+            Language = GetValue(PackageMetadataStrings.Language, string.Empty);
+            Owners = GetValue(PackageMetadataStrings.Owners, string.Empty);
+            Authors = GetValue(PackageMetadataStrings.Authors, string.Empty);
 
             if (Version == "$version$")
             {
@@ -72,19 +88,17 @@ namespace SS.CMS.Packaging
             }
         }
 
-        public string Id { get; private set; }
+        public string PluginId { get; private set; }
         public string Version { get; private set; }
-        public Uri IconUrl { get; private set; }
-        public Uri ProjectUrl { get; private set; }
-        public Uri LicenseUrl { get; private set; }
+        public string IconUrl { get; private set; }
+        public string ProjectUrl { get; private set; }
+        public string LicenseUrl { get; private set; }
         public string Copyright { get; private set; }
         public string Description { get; private set; }
         public string ReleaseNotes { get; private set; }
-        public bool RequireLicenseAcceptance { get; private set; }
-        public string Summary { get; private set; }
-        public string Title { get; private set; }
+        public string Name { get; private set; }
         public string Tags { get; private set; }
-        public List<string> Authors { get; private set; }
+        public string Authors { get; private set; }
         public string Owners { get; private set; }
         public string Language { get; private set; }
 
@@ -93,7 +107,7 @@ namespace SS.CMS.Packaging
 
         public string GetValueFromMetadata(string key)
         {
-            return GetValue(key, (string)null);
+            return GetValue(key, string.Empty);
         }
 
         public IReadOnlyCollection<PackageDependencyGroup> GetDependencyGroups()
@@ -137,7 +151,7 @@ namespace SS.CMS.Packaging
 
         private Uri GetValue(string key, Uri alternateValue)
         {
-            var value = GetValue(key, (string)null);
+            var value = GetValue(key, string.Empty);
             if (!string.IsNullOrEmpty(value))
             {
                 Uri result;

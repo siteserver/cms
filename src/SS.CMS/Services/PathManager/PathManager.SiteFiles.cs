@@ -15,7 +15,7 @@ namespace SS.CMS.Services
 
         public string GetSiteFilesUrl(params string[] paths)
         {
-            return GetWebUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.DirectoryName, PageUtils.Combine(paths)));
+            return GetWebUrl(new[] {PageUtils.Combine(DirectoryUtils.SiteFiles.DirectoryName, PageUtils.Combine(paths))});
         }
 
         public string GetAdministratorUploadPath(int userId, params string[] paths)
@@ -26,8 +26,8 @@ namespace SS.CMS.Services
 
         public string GetAdministratorUploadUrl(int userId, params string[] paths)
         {
-            return GetWebUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.Administrators,
-                PageUtils.Combine(userId.ToString(), PageUtils.Combine(paths))));
+            return GetWebUrl(new[] {PageUtils.Combine(DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.Administrators,
+                PageUtils.Combine(userId.ToString(), PageUtils.Combine(paths)))});
         }
 
         public string GetUserUploadPath(int userId, params string[] paths)
@@ -38,8 +38,8 @@ namespace SS.CMS.Services
 
         public string GetUserUploadUrl(int userId, params string[] paths)
         {
-            return GetWebUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.Users,
-                PageUtils.Combine(userId.ToString(), PageUtils.Combine(paths))));
+            return GetWebUrl(new[] {PageUtils.Combine(DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.Users,
+                PageUtils.Combine(userId.ToString(), PageUtils.Combine(paths)))});
         }
 
         public string GetHomeUploadPath(params string[] paths)

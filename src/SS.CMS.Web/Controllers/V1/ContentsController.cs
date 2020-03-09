@@ -102,15 +102,15 @@ namespace SS.CMS.Web.Controllers.V1
 
             contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);
 
-            foreach (var service in await _pluginManager.GetServicesAsync())
+            foreach (var plugin in _pluginManager.GetPlugins())
             {
                 try
                 {
-                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(request.SiteId, request.ChannelId, contentInfo.Id, request.ToDictionary(), contentInfo));
+                    plugin.OnContentFormSubmit(new ContentFormSubmitEventArgs(request.SiteId, request.ChannelId, contentInfo.Id, request.ToDictionary(), contentInfo));
                 }
                 catch (Exception ex)
                 {
-                    await _errorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(IPluginService.ContentFormSubmit));
+                    await _errorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(IPlugin.ContentFormSubmit));
                 }
             }
 
@@ -176,15 +176,15 @@ namespace SS.CMS.Web.Controllers.V1
 
             await _contentRepository.UpdateAsync(site, channelInfo, content);
 
-            foreach (var service in await _pluginManager.GetServicesAsync())
+            foreach (var plugin in _pluginManager.GetPlugins())
             {
                 try
                 {
-                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(request.SiteId, request.ChannelId, content.Id, content.ToDictionary(), content));
+                    plugin.OnContentFormSubmit(new ContentFormSubmitEventArgs(request.SiteId, request.ChannelId, content.Id, content.ToDictionary(), content));
                 }
                 catch (Exception ex)
                 {
-                    await _errorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(IPluginService.ContentFormSubmit));
+                    await _errorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(IPlugin.ContentFormSubmit));
                 }
             }
 

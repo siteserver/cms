@@ -3,7 +3,6 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
 using SS.CMS.Extensions;
 
 namespace SS.CMS.Tests

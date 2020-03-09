@@ -202,15 +202,15 @@ namespace SS.CMS.Repositories
                 .CachingRemove(GetListKey(repository.TableName, site.Id, channel.Id))
             );
 
-            foreach (var service in await pluginManager.GetServicesAsync())
+            foreach (var plugin in pluginManager.GetPlugins())
             {
                 try
                 {
-                    service.OnContentDeleteCompleted(new ContentEventArgs(site.Id, channel.Id, contentId));
+                    plugin.OnContentDeleteCompleted(new ContentEventArgs(site.Id, channel.Id, contentId));
                 }
                 catch (Exception ex)
                 {
-                    await _errorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
+                    await _errorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentDeleteCompleted));
                 }
             }
         }

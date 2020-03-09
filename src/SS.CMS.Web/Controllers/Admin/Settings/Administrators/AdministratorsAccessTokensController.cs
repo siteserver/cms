@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
-using SS.CMS.Web.Extensions;
+using SS.CMS.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -48,11 +48,11 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             var scopes = new List<string>(Constants.ScopeList);
 
-            foreach (var service in await _pluginManager.GetServicesAsync())
+            foreach (var plugin in _pluginManager.GetPlugins())
             {
-                if (service.IsApiAuthorization)
+                if (plugin.IsApiAuthorization)
                 {
-                    scopes.Add(service.PluginId);
+                    scopes.Add(plugin.PluginId);
                 }
             }
 

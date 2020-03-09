@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
-using SS.CMS.Core.Plugins;
+using SS.CMS.Core.PluginImpls;
 
 namespace SS.CMS.Services
 {

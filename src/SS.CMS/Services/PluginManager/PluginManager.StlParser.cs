@@ -7,17 +7,17 @@ namespace SS.CMS.Services
 {
     public partial class PluginManager
     {
-        public async Task<Dictionary<string, Func<IParseContext, string>>> GetParsesAsync()
+        public Dictionary<string, Func<IParseContext, string>> GetParses()
         {
             var elementsToParse = new Dictionary<string, Func<IParseContext, string>>();
 
-            foreach (var service in await GetServicesAsync())
+            foreach (var plugin in GetPlugins())
             {
-                if (service.StlElementsToParse != null && service.StlElementsToParse.Count > 0)
+                if (plugin.StlElementsToParse != null && plugin.StlElementsToParse.Count > 0)
                 {
-                    foreach (var elementName in service.StlElementsToParse.Keys)
+                    foreach (var elementName in plugin.StlElementsToParse.Keys)
                     {
-                        elementsToParse[elementName.ToLower()] = service.StlElementsToParse[elementName];
+                        elementsToParse[elementName.ToLower()] = plugin.StlElementsToParse[elementName];
                     }
                 }
             }

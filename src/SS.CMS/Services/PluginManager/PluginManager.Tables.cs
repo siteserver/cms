@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using Datory.Utils;
 using SS.CMS.Abstractions;
 
 namespace SS.CMS.Services
 {
     public partial class PluginManager
     {
-        public async void SyncTable(IPluginService pluginService)
+        public async void SyncTable(IPlugin pluginService)
         {
             if (pluginService.DatabaseTables == null || pluginService.DatabaseTables.Count <= 0) return;
 
@@ -27,26 +30,26 @@ namespace SS.CMS.Services
             }
         }
 
-        public bool IsContentTable(IPluginService pluginService)
+        public bool IsContentTable(IPlugin pluginService)
         {
             return !string.IsNullOrEmpty(pluginService.ContentTableName) &&
                                      pluginService.ContentTableColumns != null && pluginService.ContentTableColumns.Count > 0;
         }
 
-        public async Task<string> GetTableNameAsync(string pluginId)
+        public string GetTableName(string pluginId)
         {
-            foreach (var service in await GetServicesAsync())
+            foreach (var plugin in GetPlugins())
             {
-                if (service.PluginId == pluginId && IsContentTable(service))
+                if (plugin.PluginId == pluginId && IsContentTable(plugin))
                 {
-                    return service.ContentTableName;
+                    return plugin.ContentTableName;
                 }
             }
 
             return string.Empty;
         }
 
-        public async Task SyncContentTableAsync(IPluginService pluginService)
+        public async Task SyncContentTableAsync(IPlugin pluginService)
         {
             if (!IsContentTable(pluginService)) return;
 
@@ -223,6 +226,120 @@ namespace SS.CMS.Services
                     await _databaseManager.TableStyleRepository.UpdateAsync(styleInfo);
                 }
             }
+        }
+
+        public List<IPackageMetadata> GetContentModelPlugins()
+        {
+            var list = new List<IPackageMetadata>();
+
+            foreach (var plugin in GetPlugins())
+            {
+                if (IsContentTable(plugin))
+                {
+                    list.Add(plugin);
+                }
+            }
+
+            return list;
+        }
+
+        public List<string> GetContentTableNameList()
+        {
+            var list = new List<string>();
+
+            foreach (var plugin in GetPlugins())
+            {
+                if (IsContentTable(plugin))
+                {
+                    if (!StringUtils.ContainsIgnoreCase(list, plugin.ContentTableName))
+                    {
+                        list.Add(plugin.ContentTableName);
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        public List<IPackageMetadata> GetAllContentRelatedPlugins(bool includeContentTable)
+        {
+            var list = new List<IPackageMetadata>();
+
+            foreach (var plugin in GetPlugins())
+            {
+                var isContentModel = IsContentTable(plugin);
+
+                if (!includeContentTable && isContentModel) continue;
+
+                if (isContentModel)
+                {
+                    list.Add(plugin);
+                }
+                else if (plugin.ContentColumns != null && plugin.ContentColumns.Count > 0)
+                {
+                    list.Add(plugin);
+                }
+                //else
+                //{
+                //    var contentMenus = plugin.GetContentMenus(content) ?? await plugin.GetContentMenusAsync(content);
+                //    if (contentMenus == null) continue;
+                //}
+            }
+
+            return list;
+        }
+
+        public List<IPlugin> GetContentPlugins(Channel channel, bool includeContentTable)
+        {
+            var list = new List<IPlugin>();
+            var pluginIds = Utilities.GetStringList(channel.ContentRelatedPluginIds);
+            if (!string.IsNullOrEmpty(channel.ContentModelPluginId))
+            {
+                pluginIds.Add(channel.ContentModelPluginId);
+            }
+
+            foreach (var plugin in GetPlugins())
+            {
+                if (!pluginIds.Contains(plugin.PluginId)) continue;
+
+                if (!includeContentTable && IsContentTable(plugin)) continue;
+
+                list.Add(plugin);
+            }
+
+            return list;
+        }
+
+        public List<string> GetContentPluginIds(Channel channel)
+        {
+            if (channel.ContentRelatedPluginIds != null && channel.ContentRelatedPluginIds.Any() &&
+                string.IsNullOrEmpty(channel.ContentModelPluginId))
+            {
+                return null;
+            }
+
+            var pluginIds = Utilities.GetStringList(channel.ContentRelatedPluginIds);
+            if (!string.IsNullOrEmpty(channel.ContentModelPluginId))
+            {
+                pluginIds.Add(channel.ContentModelPluginId);
+            }
+
+            return pluginIds;
+        }
+
+        public Dictionary<string, Dictionary<string, Func<IContentContext, string>>> GetContentColumns(List<string> pluginIds)
+        {
+            var dict = new Dictionary<string, Dictionary<string, Func<IContentContext, string>>>();
+            if (pluginIds == null || pluginIds.Count == 0) return dict;
+
+            foreach (var plugin in GetPlugins())
+            {
+                if (!pluginIds.Contains(plugin.PluginId) || plugin.ContentColumns == null || plugin.ContentColumns.Count == 0) continue;
+
+                dict[plugin.PluginId] = plugin.ContentColumns;
+            }
+
+            return dict;
         }
     }
 }

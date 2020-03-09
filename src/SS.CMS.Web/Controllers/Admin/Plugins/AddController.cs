@@ -32,9 +32,8 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            var dict = await _pluginManager.GetPluginIdAndVersionDictAsync();
-            var list = dict.Keys.ToList();
-            var packageIds = Utilities.ToString(list);
+            var plugins = _pluginManager.GetPlugins();
+            var packageIds = Utilities.ToString(plugins.Select(x => x.PluginId));
 
             return new GetResult
             {

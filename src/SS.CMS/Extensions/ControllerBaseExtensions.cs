@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 
-namespace SS.CMS.Web.Extensions
+namespace SS.CMS.Extensions
 {
     public static class ControllerBaseExtensions
     {

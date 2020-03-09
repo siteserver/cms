@@ -226,15 +226,15 @@ namespace SS.CMS.Core
                 contentInfo.TranslateContentType = TranslateContentType.Copy;
                 var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
-                foreach (var service in await pluginManager.GetServicesAsync())
+                foreach (var plugin in pluginManager.GetPlugins())
                 {
                     try
                     {
-                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId));
+                        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId));
                     }
                     catch (Exception ex)
                     {
-                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
                     }
                 }
 
@@ -252,15 +252,15 @@ namespace SS.CMS.Core
 
                 var newContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
-                foreach (var service in await pluginManager.GetServicesAsync())
+                foreach (var plugin in pluginManager.GetPlugins())
                 {
                     try
                     {
-                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, newContentId));
+                        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, newContentId));
                     }
                     catch (Exception ex)
                     {
-                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
                     }
                 }
 
@@ -299,15 +299,15 @@ namespace SS.CMS.Core
                 contentInfo.TranslateContentType = TranslateContentType.ReferenceContent;
                 var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
-                foreach (var service in await pluginManager.GetServicesAsync())
+                foreach (var plugin in pluginManager.GetPlugins())
                 {
                     try
                     {
-                        service.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId));
+                        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId));
                     }
                     catch (Exception ex)
                     {
-                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
                     }
                 }
 

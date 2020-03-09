@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
-using SS.CMS.Core.Plugins;
+using SS.CMS.Core.PluginImpls;
 
 namespace SS.CMS.Core
 {
@@ -355,7 +355,7 @@ namespace SS.CMS.Core
             }
 
             var pluginIds = _pluginManager.GetContentPluginIds(channel);
-            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
+            var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
 
             var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
             var styleList = GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStyleListAsync(channel, tableName));

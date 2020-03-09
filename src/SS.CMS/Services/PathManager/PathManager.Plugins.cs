@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SS.CMS.Abstractions;
+using SS.CMS.Core;
 
 namespace SS.CMS.Services
 {
@@ -10,16 +11,16 @@ namespace SS.CMS.Services
     {
         public string GetPackagesPath(params string[] paths)
         {
-            var packagesPath = GetSiteFilesPath(DirectoryUtils.SiteFiles.Packages, PathUtils.Combine(paths));
+            var packagesPath = GetContentRootPath(DirectoryUtils.Packages, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(packagesPath);
             return packagesPath;
         }
 
-        public string PluginsPath => GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins);
+        public string PluginsPath => GetContentRootPath(DirectoryUtils.Plugins);
 
         public string GetPluginPath(string pluginId, params string[] paths)
         {
-            return GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins, pluginId, PathUtils.Combine(paths));
+            return GetContentRootPath(DirectoryUtils.Plugins, pluginId, PathUtils.Combine(paths));
         }
 
         public string GetPluginNuspecPath(string pluginId)
@@ -68,6 +69,25 @@ namespace SS.CMS.Services
             //}
 
             return string.Empty;
+        }
+
+        public string ParsePluginUrl(string pluginId, string url)
+        {
+            if (string.IsNullOrEmpty(url)) return string.Empty;
+
+            if (PageUtils.IsProtocolUrl(url)) return url;
+
+            if (StringUtils.StartsWith(url, "~/"))
+            {
+                return GetWebRootUrl(url.Substring(1));
+            }
+
+            if (StringUtils.StartsWith(url, "@/"))
+            {
+                return GetAdminUrl(url.Substring(1));
+            }
+
+            return GetWebRootUrl(PageUtils.Combine(DirectoryUtils.Plugins, pluginId, url));
         }
     }
 }

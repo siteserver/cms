@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SS.CMS.Abstractions
 {
-    public partial interface IAuthManager : IService
+    public partial interface IAuthManager
     {
         Task<IAuthManager> GetApiAsync();
 

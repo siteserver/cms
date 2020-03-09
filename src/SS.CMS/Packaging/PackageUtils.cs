@@ -182,7 +182,7 @@ namespace SS.CMS.Packaging
                 }
             }
 
-            if (string.IsNullOrEmpty(metadata?.Id))
+            if (string.IsNullOrEmpty(metadata?.PluginId))
             {
                 metadata = new PackageMetadata(directoryName);
             }
@@ -225,7 +225,7 @@ namespace SS.CMS.Packaging
                 return null;
             }
 
-            var packageId = metadata.Id;
+            var packageId = metadata.PluginId;
 
             if (string.IsNullOrEmpty(packageId))
             {

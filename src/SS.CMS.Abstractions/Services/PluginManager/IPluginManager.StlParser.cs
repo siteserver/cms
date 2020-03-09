@@ -6,6 +6,6 @@ namespace SS.CMS.Abstractions
 {
     public partial interface IPluginManager
     {
-        Task<Dictionary<string, Func<IParseContext, string>>> GetParsesAsync();
+        Dictionary<string, Func<IParseContext, string>> GetParses();
     }
 }
