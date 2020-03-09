@@ -13,9 +13,9 @@ namespace SS.CMS.Services
     public partial class PathManager
     {
         // 系统根目录访问地址
-        public string GetWebRootUrl(string relatedUrl)
+        public string GetWebRootUrl(params string[] paths)
         {
-            return PageUtils.Combine(WebUrl, relatedUrl);
+            return PageUtils.Combine(WebUrl, PathUtils.Combine(paths));
         }
 
         public string GetWebRootPath(params string[] paths)

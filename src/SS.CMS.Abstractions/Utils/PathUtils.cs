@@ -8,7 +8,7 @@ namespace SS.CMS.Abstractions
 {
     public static class PathUtils
     {
-        public const char SeparatorChar = '\\';
+        public static char SeparatorChar = Path.DirectorySeparatorChar;
         public static readonly char[] InvalidPathChars = Path.GetInvalidPathChars();
 
         public static string Combine(params string[] paths)
@@ -80,7 +80,7 @@ namespace SS.CMS.Abstractions
             if (!string.IsNullOrEmpty(path))
             {
                 path = RemoveQueryString(path);
-                path = path.Trim('/', '\\').Trim();
+                path = path.Trim('/', SeparatorChar).Trim();
                 try
                 {
                     retVal = Path.GetExtension(path);

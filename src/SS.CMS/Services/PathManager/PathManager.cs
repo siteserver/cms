@@ -39,16 +39,6 @@ namespace SS.CMS.Services
 
         public string WebUrl => "/";
 
-        public string GetWebPath(params string[] paths)
-        {
-            return PathUtils.Combine(_settingsManager.WebRootPath, PageUtils.Combine(paths));
-        }
-
-        public string GetWebUrl(params string[] paths)
-        {
-            return PageUtils.Combine(WebUrl, PageUtils.Combine(paths));
-        }
-
         public string GetAdminUrl(params string[] paths)
         {
             return PageUtils.Combine(WebUrl, _settingsManager.AdminDirectory, PageUtils.Combine(paths), "/");

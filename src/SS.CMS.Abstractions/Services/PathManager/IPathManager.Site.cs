@@ -7,6 +7,10 @@ namespace SS.CMS.Abstractions
 {
     partial interface IPathManager
     {
+        string GetWebRootUrl(params string[] paths);
+
+        string GetWebRootPath(params string[] paths);
+
         string GetAdminUrl(string relatedUrl);
 
         string GetHomeUrl(string relatedUrl);

@@ -12,10 +12,6 @@ namespace SS.CMS.Abstractions
 
         string GetContentRootPath(params string[] paths);
 
-        string GetWebUrl(params string[] paths);
-
-        string GetWebRootPath(params string[] paths);
-
         string GetAdminUrl(params string[] paths);
 
         string GetUploadFileName(string fileName);
