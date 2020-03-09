@@ -1,18 +1,22 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SixLabors.Fonts;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Result;
 using SS.CMS.Extensions;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.Primitives;
 
 namespace SS.CMS.Web.Controllers.Admin
 {
     public partial class LoginController
     {
-        private static readonly Color[] Colors = { Color.FromArgb(37, 72, 91), Color.FromArgb(68, 24, 25), Color.FromArgb(17, 46, 2), Color.FromArgb(70, 16, 100), Color.FromArgb(24, 88, 74) };
+        private static readonly Color[] Colors = { Color.FromRgb(37, 72, 91), Color.FromRgb(68, 24, 25), Color.FromRgb(17, 46, 2), Color.FromRgb(70, 16, 100), Color.FromRgb(24, 88, 74) };
 
         public class CheckRequest
         {
@@ -39,40 +43,40 @@ namespace SS.CMS.Web.Controllers.Admin
 
             byte[] buffer;
 
-            using (var image = new Bitmap(130, 53, PixelFormat.Format32bppRgb))
+            var width = 130;
+            var height = 53;
+            using (var image = new Image<Rgba32>(width, height))
             {
-                var colors = Colors[r.Next(0, 5)];
+                var font = SystemFonts.CreateFont("Arial", 40, FontStyle.Bold | FontStyle.Italic);
 
-                using (var g = Graphics.FromImage(image))
+                image.Mutate(ctx =>
                 {
-                    g.FillRectangle(new SolidBrush(Color.FromArgb(240, 243, 248)), 0, 0, 200, 200); //矩形框
-                    g.DrawString(code, new Font(FontFamily.GenericSerif, 28, FontStyle.Bold | FontStyle.Italic), new SolidBrush(colors), new PointF(14, 3));//字体/颜色
+                    ctx.Fill(Color.FromRgb(240, 243, 248));
+                    ctx.DrawText(code, font, Colors[r.Next(0, 5)], new PointF(10, 10));
 
                     var random = new Random();
 
                     for (var i = 0; i < 25; i++)
                     {
-                        var x1 = random.Next(image.Width);
-                        var x2 = random.Next(image.Width);
-                        var y1 = random.Next(image.Height);
-                        var y2 = random.Next(image.Height);
+                        var x1 = random.Next(width);
+                        var x2 = random.Next(width);
+                        var y1 = random.Next(height);
+                        var y2 = random.Next(height);
 
-                        g.DrawLine(new Pen(Color.Silver), x1, y1, x2, y2);
+                        ctx.DrawLines(new Pen(Colors[r.Next(0, 5)], 1), new PointF(x1, y1), new PointF(x2, y2));
                     }
 
                     for (var i = 0; i < 100; i++)
                     {
-                        var x = random.Next(image.Width);
-                        var y = random.Next(image.Height);
+                        var x = random.Next(width);
+                        var y = random.Next(height);
 
-                        image.SetPixel(x, y, Color.FromArgb(random.Next()));
+                        ctx.DrawLines(new Pen(Colors[r.Next(0, 5)], 1), new PointF(x, y), new PointF(x + 1, y + 1));
                     }
-
-                    g.Save();
-                }
+                });
 
                 using var ms = new MemoryStream();
-                image.Save(ms, ImageFormat.Png);
+                image.Save(ms, PngFormat.Instance);
                 buffer = ms.ToArray();
             }
 
