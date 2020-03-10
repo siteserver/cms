@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
@@ -31,8 +30,7 @@ namespace SS.CMS.Core
             const int height = 53;
             using (var image = new Image<Rgba32>(width, height))
             {
-                var defaultFont = SystemFonts.Families.First();
-                var font = SystemFonts.CreateFont(defaultFont.Name, 40, FontStyle.Bold | FontStyle.Italic);
+                var font = SystemFonts.CreateFont(FontManager.DefaultFont.Name, 40, FontStyle.Bold | FontStyle.Italic);
 
                 image.Mutate(ctx =>
                 {
