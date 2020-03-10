@@ -9,7 +9,7 @@ namespace SS.CMS.Core
     {
         public static List<string> GetFontFamilies()
         {
-            return new FontCollection().Families.Select(x => x.Name).ToList();
+            return SystemFonts.Families.Select(x => x.Name).ToList();
         }
     }
 }
