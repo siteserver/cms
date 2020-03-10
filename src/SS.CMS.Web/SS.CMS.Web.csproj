@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Controllers\Admin\SysUEditorController.cs" />
     <Compile Remove="Controllers\Admin\SysUEditorController.Dto.cs" />
     <Compile Remove="Controllers\Stl\StlActionsLoadingChannelsController.cs" />
