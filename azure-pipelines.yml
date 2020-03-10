@@ -9,7 +9,7 @@ trigger:
 variables:
   netCoreSdkVersion: '3.1.100'
   buildConfiguration: 'Release'
-  productVersion: '7.0.0-preview1'
+  productVersion: '7.0.0-preview2'
 
 jobs:
 - job: macOS
@@ -22,6 +22,20 @@ jobs:
       version: $(netCoreSdkVersion)
   - script: dotnet build ./sscms.sln --configuration $(buildConfiguration)
     displayName: 'dotnet build'
+  - script: dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r osx-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64
+    displayName: 'dotnet publish osx-x64'
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64' 
+      archiveType: 'zip'
+      includeRootFolder: false
+      archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-osx-x64.zip'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/publish' 
+      artifactName: 'sscms-$(productVersion)-osx'
 
 - job: Linux
   pool:
@@ -31,8 +45,22 @@ jobs:
     inputs:
       packageType: 'sdk'
       version: $(netCoreSdkVersion)
-  - script: dotnet build --configuration $(buildConfiguration)
-    displayName: 'dotnet build $(buildConfiguration)'
+  - script: dotnet build ./sscms.sln --configuration $(buildConfiguration)
+    displayName: 'dotnet build'
+  - script: dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r linux-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64
+    displayName: 'dotnet publish linux-x64'
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64' 
+      archiveType: 'zip'
+      includeRootFolder: false
+      archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-linux-x64.zip'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/publish' 
+      artifactName: 'sscms-$(productVersion)-linux'
 
 - job: Windows
   pool:
@@ -48,10 +76,6 @@ jobs:
     displayName: 'dotnet publish win-x64'
   - script: dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r win-x86 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86
     displayName: 'dotnet publish win-x86'
-  - script: dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r linux-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64
-    displayName: 'dotnet publish linux-x64'
-  - script: dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r osx-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64
-    displayName: 'dotnet publish osx-x64'
   
   - task: ArchiveFiles@2
     inputs:
@@ -67,21 +91,7 @@ jobs:
       includeRootFolder: false
       archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-win-x86.zip' 
 
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64' 
-      archiveType: 'zip'
-      includeRootFolder: false
-      archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-linux-x64.zip' 
-
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64' 
-      archiveType: 'zip'
-      includeRootFolder: false
-      archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-osx-x64.zip' 
-
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/publish' 
-      artifactName: 'sscms-$(productVersion)'
+      artifactName: 'sscms-$(productVersion)-win'
