@@ -45,6 +45,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="appsettings.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SS.CMS.Abstractions\SS.CMS.Abstractions.csproj" />
     <ProjectReference Include="..\SS.CMS\SS.CMS.csproj" />
   </ItemGroup>
