@@ -1,12 +1,11 @@
-﻿using System.Drawing.Text;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
+using SS.CMS.Core;
 using SS.CMS.Extensions;
 
 namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
@@ -39,7 +38,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var families = new InstalledFontCollection().Families.Select(x => x.Name);
+            var families = FontManager.GetFontFamilies();
             var imageUrl = await _pathManager.ParseNavigationUrlAsync(site, site.WaterMarkImagePath, true);
 
             return new GetResult

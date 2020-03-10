@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-
 
 namespace SS.CMS.Abstractions
 {
@@ -155,20 +153,6 @@ namespace SS.CMS.Abstractions
                 return datetime;
             }
             return datetime;
-        }
-
-        public static Color ToColor(string colorStr)
-        {
-            var color = Color.Empty;
-            try
-            {
-                color = Color.FromName(colorStr.Trim());
-            }
-            catch
-            {
-                // ignored
-            }
-            return color;
         }
 
         public static string ToTwoCharString(int i)

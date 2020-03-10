@@ -6,6 +6,11 @@ namespace SS.CMS.Web.Controllers.Admin
 {
     public partial class LoginController
     {
+        public class CheckRequest
+        {
+            public string Captcha { get; set; }
+        }
+
         public class GetResult
         {
             public bool Success { get; set; }

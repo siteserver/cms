@@ -6,11 +6,11 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
     <VersionPrefix>7.0.0</VersionPrefix>
-    <VersionSuffix>preview1</VersionSuffix>
+    <VersionSuffix>preview2</VersionSuffix>
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
-    <PackageId />
-    <Version>7.0.0-preview1</Version>
+    <PackageId>SS.CMS.Web</PackageId>
+    <Version>7.0.0-preview2</Version>
     <StartupObject>SS.CMS.Web.Program</StartupObject>
   </PropertyGroup>
 
@@ -23,9 +23,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.2.5" />
-    <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta0009" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0007" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0007" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -80,7 +80,7 @@ namespace SS.CMS.Web
                 await context.Response.WriteAsync(result);
             }));
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseDefaultFiles(new DefaultFilesOptions
             {
