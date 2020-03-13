@@ -58,7 +58,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 var content = await _contentRepository.GetAsync(site, channel, summary.Id);
                 if (content == null) continue;
 
-                var pageContent = new Content(content.ToDictionary());
+                var pageContent = content.Clone<Content>();
                 pageContent.Set(ContentAttribute.CheckState, CheckManager.GetCheckState(site, content));
                 contents.Add(pageContent);
             }

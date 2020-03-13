@@ -46,14 +46,13 @@
                 <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'imageLayerSelect', attributeName: style.attributeName, no: 0, full: true})">
                   选择
                 </el-button>
-                <el-button size="mini" type="info" plain v-if="form[style.attributeName]" v-on:click="btnExtendPreviewClick(style.attributeName, 0)">
+                <el-button size="mini" type="info" plain v-if="form[style.attributeName]" v-on:click="btnExtendPreviewClick(style, 0)">
                   预览
                 </el-button>
                 <el-button size="mini" type="info" plain v-on:click="btnExtendAddClick(style)">
                   新增
                 </el-button>
               </el-button-group>
-              {{ form[style.attributeName] }}
               <el-input
                 v-model="form[style.attributeName]"
                 size="small"
@@ -67,7 +66,7 @@
                   <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'imageLayerSelect', attributeName: style.attributeName, no: n, full: true})">
                     选择
                   </el-button>
-                  <el-button size="mini" type="info" plain v-if="form[utils.getExtendName(style.attributeName, n)]" v-on:click="btnExtendPreviewClick(style.attributeName, n)">
+                  <el-button size="mini" type="info" plain v-if="form[utils.getExtendName(style.attributeName, n)]" v-on:click="btnExtendPreviewClick(style, n)">
                     预览
                   </el-button>
                   <el-button size="mini" type="info" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendRemoveClick(style)">

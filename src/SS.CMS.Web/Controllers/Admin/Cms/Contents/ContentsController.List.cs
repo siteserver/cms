@@ -44,7 +44,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             var pluginIds = _pluginManager.GetContentPluginIds(channel);
             var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             var pageContents = new List<Content>();

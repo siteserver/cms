@@ -225,6 +225,9 @@ var methods = {
     if (options.contentId) {
       query.contentId = options.contentId;
     }
+    if (options.no) {
+      query.no = options.no;
+    }
 
     utils.openLayer({
       title: options.title,
@@ -319,14 +322,28 @@ var methods = {
   },
 
   btnExtendRemoveClick: function(style) {
-    var no = this.form[utils.getCountName(style.attributeName)] - 1;
-    this.form[utils.getCountName(style.attributeName)] = no;
+    var no = this.form[utils.getCountName(style.attributeName)];
+    this.form[utils.getCountName(style.attributeName)] = no - 1;
     this.form[utils.getExtendName(style.attributeName, no)] = '';
     this.form = _.assign({}, this.form);
   },
 
-  btnExtendPreviewClick: function(attributeName, no) {
-    var imageUrl = this.form[utils.getExtendName(attributeName, no)];
+  btnExtendPreviewClick: function(style, no) {
+    var count = this.form[utils.getCountName(style.attributeName)];
+    var data = [];
+    for (var i = 0; i <= count; i++) {
+      var imageUrl = this.form[utils.getExtendName(style.attributeName, i)];
+      data.push({
+        "src": imageUrl
+      });
+    }
+    layer.photos({
+      photos: {
+        "start": no,
+        "data": data
+      }
+      ,anim: 5
+    });
   }
 };
 

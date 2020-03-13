@@ -13,15 +13,17 @@ namespace SS.CMS.Web.Controllers.Home
         private readonly IAuthManager _authManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
+        private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerViewController(IAuthManager authManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerViewController(IAuthManager authManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
+            _pathManager = pathManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -49,7 +51,7 @@ namespace SS.CMS.Web.Controllers.Home
 
             var channelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
             var attributes = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             return new GetResult

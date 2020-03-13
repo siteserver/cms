@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Plugins;
+using SS.CMS.Repositories;
 using SS.CMS.Services;
 
 namespace SS.CMS.Extensions
@@ -91,6 +92,8 @@ namespace SS.CMS.Extensions
                 var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
                 if (interfaceType != null)
                 {
+                    //if (interfaceType == typeof(IContentRepository)) continue;
+
                     services.AddScoped(interfaceType, implementType);
                 }
             }
@@ -104,6 +107,7 @@ namespace SS.CMS.Extensions
             services.AddScoped<IDatabaseManager, DatabaseManager>();
             services.AddScoped<IParseManager, ParseManager>();
             services.AddScoped<IPluginManager, PluginManager>();
+            //services.AddScoped<IContentRepository, ContentRepository>();
         }
 
         public static void AddPlugins(this IServiceCollection services)

@@ -50,7 +50,7 @@ namespace SS.CMS.Web.Controllers.Home
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, request.SiteId);
@@ -81,7 +81,7 @@ namespace SS.CMS.Web.Controllers.Home
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
             var pluginIds = _pluginManager.GetContentPluginIds(channel);
             var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
@@ -151,7 +151,7 @@ namespace SS.CMS.Web.Controllers.Home
                         var fileName = $"{channel.ChannelName}.csv";
                         var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-                        var excelObject = new ExcelObject(_databaseManager, _pluginManager);
+                        var excelObject = new ExcelObject(_databaseManager, _pluginManager, _pathManager);
 
                         await excelObject.CreateExcelFileForContentsAsync(filePath, site, channel, contentInfoList, request.ColumnNames);
                         downloadUrl = _pathManager.GetTemporaryFilesUrl(fileName);

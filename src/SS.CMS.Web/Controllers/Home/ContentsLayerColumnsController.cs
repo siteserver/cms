@@ -15,14 +15,16 @@ namespace SS.CMS.Web.Controllers.Home
         private readonly IAuthManager _authManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
+        private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public ContentsLayerColumnsController(IAuthManager authManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public ContentsLayerColumnsController(IAuthManager authManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _authManager = authManager;
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
+            _pathManager = pathManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
         }
@@ -42,7 +44,7 @@ namespace SS.CMS.Web.Controllers.Home
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
             var attributes = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             return new GetResult

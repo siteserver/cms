@@ -88,7 +88,7 @@ namespace SS.CMS.Web.Controllers.V1
             var adminId = await _authManager.GetAdminIdAsync();
             var userId = await _authManager.GetUserIdAsync();
 
-            var contentInfo = new Content(request.ToDictionary())
+            var contentInfo = new Content
             {
                 SiteId = request.SiteId,
                 ChannelId = request.ChannelId,
@@ -100,6 +100,7 @@ namespace SS.CMS.Web.Controllers.V1
                 Checked = isChecked,
                 CheckedLevel = checkedLevel
             };
+            contentInfo.LoadDict(request.ToDictionary());
 
             contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);
 

@@ -374,7 +374,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             const string fileName = "administrators.csv";
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-            var excelObject = new ExcelObject(_databaseManager, _pluginManager);
+            var excelObject = new ExcelObject(_databaseManager, _pluginManager, _pathManager);
             await excelObject.CreateExcelFileForAdministratorsAsync(filePath);
             var downloadUrl = _pathManager.GetRootUrlByPhysicalPath(filePath);
 

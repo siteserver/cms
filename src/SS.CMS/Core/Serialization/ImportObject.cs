@@ -251,7 +251,7 @@ namespace SS.CMS.Core.Serialization
         public async Task ImportContentsByCsvFileAsync(int channelId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
             var channelInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
-            var excelObject = new ExcelObject(_databaseManager, _pluginManager);
+            var excelObject = new ExcelObject(_databaseManager, _pluginManager, _pathManager);
             var contentInfoList = await excelObject.GetContentsByCsvFileAsync(csvFilePath, _site, channelInfo);
             contentInfoList.Reverse();
 
@@ -318,7 +318,7 @@ namespace SS.CMS.Core.Serialization
 
         public async Task<List<int>> ImportContentsByCsvFileAsync(Channel channel, string csvFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
-            var excelObject = new ExcelObject(_databaseManager, _pluginManager);
+            var excelObject = new ExcelObject(_databaseManager, _pluginManager, _pathManager);
             var contentInfoList = await excelObject.GetContentsByCsvFileAsync(csvFilePath, _site, channel);
             contentInfoList.Reverse();
 

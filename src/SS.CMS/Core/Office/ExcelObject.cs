@@ -11,11 +11,13 @@ namespace SS.CMS.Core.Office
     {
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
+        private readonly IPathManager _pathManager;
 
-        public ExcelObject(IDatabaseManager databaseManager, IPluginManager pluginManager)
+        public ExcelObject(IDatabaseManager databaseManager, IPluginManager pluginManager, IPathManager pathManager)
         {
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
+            _pathManager = pathManager;
         }
 
         public async Task CreateExcelFileForContentsAsync(string filePath, Site site,
@@ -77,7 +79,7 @@ namespace SS.CMS.Core.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             foreach (var column in columns)
@@ -229,15 +231,16 @@ namespace SS.CMS.Core.Office
                     }
                 }
 
-                var contentInfo = new Content(dict);
+                var content = new Content();
+                content.LoadDict(dict);
 
-                if (!string.IsNullOrEmpty(contentInfo.Title))
+                if (!string.IsNullOrEmpty(content.Title))
                 {
-                    contentInfo.SiteId = site.Id;
-                    contentInfo.ChannelId = channel.Id;
-                    contentInfo.LastEditDate = DateTime.Now;
+                    content.SiteId = site.Id;
+                    content.ChannelId = channel.Id;
+                    content.LastEditDate = DateTime.Now;
 
-                    contentInfoList.Add(contentInfo);
+                    contentInfoList.Add(content);
                 }
             }
 

@@ -31,7 +31,9 @@ namespace SS.CMS.Core.Office
                                 {ContentAttribute.ChannelId, node.Id},
                                 {ContentAttribute.LastEditDate, DateTime.Now}
                             };
-                            var contentInfo = new Content(dict);
+                            var contentInfo = new Content();
+                            contentInfo.LoadDict(dict);
+
                             contentInfo.Set(ContentAttribute.Content, StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim()));
 
                             contentInfoList.Add(contentInfo);

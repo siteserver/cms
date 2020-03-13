@@ -325,14 +325,14 @@
 
                 <!-- ImageUrl -->
                 <template v-else-if="column.attributeName === 'ImageUrl'">
-                  <el-link :underline="false" :href="getUrl(scope.row.imageUrl)" target="_blank" v-on:click.stop.native>
-                    <el-image v-if="scope.row.imageUrl"  :src="getUrl(scope.row.imageUrl)" style="max-width: 100px; max-height: 100px"></el-image>
+                  <el-link :underline="false" :href="scope.row.imageUrl" target="_blank" v-on:click.stop.native>
+                    <el-image v-if="scope.row.imageUrl"  :src="scope.row.imageUrl" style="max-width: 100px; max-height: 100px"></el-image>
                   </el-link>
                 </template>
 
                 <!-- LinkUrl -->
                 <template v-else-if="column.attributeName === 'LinkUrl'">
-                  <el-link v-if="scope.row.linkUrl" :underline="false" type="primary" :href="getUrl(scope.row.linkUrl)" target="_blank" v-on:click.stop.native>{{scope.row.linkUrl}}</el-link>
+                  <el-link v-if="scope.row.linkUrl" :underline="false" type="primary" :href="scope.row.linkUrl" target="_blank" v-on:click.stop.native>{{scope.row.linkUrl}}</el-link>
                 </template>
 
                 <!-- AdminId -->
@@ -408,7 +408,7 @@
                   v-if="scope.row.imageUrl"
                   width="400"
                   trigger="hover">
-                  <el-image :src="getUrl(scope.row.imageUrl)"></el-image>
+                  <el-image :src="scope.row.imageUrl"></el-image>
                   <el-link slot="reference" :underline="false">
                     <i class="el-icon-picture-outline"></i>
                   </el-link>
@@ -416,13 +416,13 @@
               </el-tooltip>
               <!-- video -->
               <el-tooltip v-if="scope.row.videoUrl" effect="light" content="视频" placement="top">
-                <el-link :underline="false" :href="getUrl(scope.row.videoUrl)" target="_blank" v-on:click.stop>
+                <el-link :underline="false" :href="scope.row.videoUrl" target="_blank" v-on:click.stop>
                   <i class="el-icon-video-play"></i>
                 </el-link>
               </el-tooltip>
               <!-- fileUrl -->
               <el-tooltip v-if="scope.row.fileUrl" effect="light" content="附件" placement="top">
-                <el-link :underline="false" :href="getUrl(scope.row.fileUrl)" target="_blank" v-on:click.stop>
+                <el-link :underline="false" :href="scope.row.fileUrl" target="_blank" v-on:click.stop>
                   <i class="el-icon-document"></i>
                 </el-link>
               </el-tooltip>
@@ -459,14 +459,14 @@
 
             <!-- ImageUrl -->
             <template v-else-if="column.attributeName === 'ImageUrl'">
-              <el-link :underline="false" :href="getUrl(scope.row.imageUrl)" target="_blank" v-on:click.stop.native>
-                <el-image v-if="scope.row.imageUrl"  :src="getUrl(scope.row.imageUrl)" style="max-width: 100px; max-height: 100px"></el-image>
+              <el-link :underline="false" :href="scope.row.imageUrl" target="_blank" v-on:click.stop.native>
+                <el-image v-if="scope.row.imageUrl"  :src="scope.row.imageUrl" style="max-width: 100px; max-height: 100px"></el-image>
               </el-link>
             </template>
 
             <!-- LinkUrl -->
             <template v-else-if="column.attributeName === 'LinkUrl'">
-              <el-link v-if="scope.row.linkUrl" :underline="false" type="primary" :href="getUrl(scope.row.linkUrl)" target="_blank" v-on:click.stop.native>{{scope.row.linkUrl}}</el-link>
+              <el-link v-if="scope.row.linkUrl" :underline="false" type="primary" :href="scope.row.linkUrl" target="_blank" v-on:click.stop.native>{{scope.row.linkUrl}}</el-link>
             </template>
 
             <!-- AdminId -->

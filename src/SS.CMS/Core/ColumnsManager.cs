@@ -13,11 +13,13 @@ namespace SS.CMS.Core
     {
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
+        private readonly IPathManager _pathManager;
 
-        public ColumnsManager(IDatabaseManager databaseManager, IPluginManager pluginManager)
+        public ColumnsManager(IDatabaseManager databaseManager, IPluginManager pluginManager, IPathManager pathManager)
         {
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
+            _pathManager = pathManager;
         }
 
         private const string Sequence = nameof(Sequence);                            //序号
@@ -222,7 +224,8 @@ namespace SS.CMS.Core
         {
             if (source == null) return null;
 
-            var content = new Content(source.ToDictionary(new List<string> {ContentAttribute.Content}));
+            var channel = await _databaseManager.ChannelRepository.GetAsync(source.ChannelId);
+            var content = await _pathManager.ParsePathAsync(site, channel, source);
 
             content.Set(State, CheckManager.GetCheckState(site, content));
 
@@ -230,7 +233,11 @@ namespace SS.CMS.Core
             {
                 if (!StringUtils.ContainsIgnoreCase(CalculatedAttributes, column.AttributeName)) continue;
 
-                if (StringUtils.EqualsIgnoreCase(column.AttributeName, Sequence))
+                if (column.InputType == InputType.TextEditor)
+                {
+                    content.Set(column.AttributeName, string.Empty);
+                }
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, Sequence))
                 {
                     content.Set(Sequence, sequence);
                 }
@@ -299,6 +306,8 @@ namespace SS.CMS.Core
                     }
                 }
             }
+
+            
 
             return content;
         }

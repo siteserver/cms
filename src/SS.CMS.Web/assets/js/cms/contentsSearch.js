@@ -339,11 +339,6 @@ var methods = {
       return 400;
     }
     return '';
-  },
-
-  getUrl: function(virtualUrl) {
-    if (!virtualUrl) return '';
-    return _.replace(virtualUrl, '@/', this.siteUrl + '/');
   }
 };
 

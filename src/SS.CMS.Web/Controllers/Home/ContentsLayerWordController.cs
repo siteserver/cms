@@ -144,7 +144,7 @@ namespace SS.CMS.Web.Controllers.Home
 
                 var dict = await ColumnsManager.SaveAttributesAsync(_pathManager, site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value);
 
-                var contentInfo = new Content(dict)
+                var contentInfo = new Content
                 {
                     ChannelId = channel.Id,
                     SiteId = request.SiteId,
@@ -156,6 +156,7 @@ namespace SS.CMS.Web.Controllers.Home
                     Checked = isChecked,
                     CheckedLevel = request.CheckedLevel
                 };
+                contentInfo.LoadDict(dict);
 
                 contentInfo.LastEditDate = contentInfo.AddDate;
 

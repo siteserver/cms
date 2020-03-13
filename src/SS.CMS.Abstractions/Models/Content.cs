@@ -7,16 +7,6 @@ namespace SS.CMS.Abstractions
 {
     public class Content : Entity
     {
-        public Content()
-        {
-
-        }
-
-        public Content(IDictionary<string, object> dict) : base(dict)
-        {
-
-        }
-
         [DataColumn]
         public int ChannelId { get; set; }
 

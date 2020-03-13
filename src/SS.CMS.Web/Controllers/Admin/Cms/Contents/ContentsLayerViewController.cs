@@ -58,7 +58,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
             var channelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
 
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 

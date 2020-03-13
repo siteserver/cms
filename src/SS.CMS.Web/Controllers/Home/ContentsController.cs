@@ -16,15 +16,17 @@ namespace SS.CMS.Web.Controllers.Home
         private readonly IAuthManager _authManager;
         private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsController(IAuthManager authManager, IPluginManager pluginManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsController(IAuthManager authManager, IPluginManager pluginManager, IDatabaseManager databaseManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _pluginManager = pluginManager;
             _databaseManager = databaseManager;
+            _pathManager = pathManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -45,7 +47,7 @@ namespace SS.CMS.Web.Controllers.Home
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
             var pluginIds = _pluginManager.GetContentPluginIds(channel);
             var pluginColumns = _pluginManager.GetContentColumns(pluginIds);

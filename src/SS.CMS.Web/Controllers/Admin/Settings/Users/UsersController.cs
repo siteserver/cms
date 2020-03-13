@@ -174,7 +174,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
             const string fileName = "users.csv";
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-            var excelObject = new ExcelObject(_databaseManager, _pluginManager);
+            var excelObject = new ExcelObject(_databaseManager, _pluginManager, _pathManager);
             await excelObject.CreateExcelFileForUsersAsync(filePath, null);
 
             return this.Download(filePath);

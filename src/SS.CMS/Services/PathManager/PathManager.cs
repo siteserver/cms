@@ -18,8 +18,9 @@ namespace SS.CMS.Services
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public PathManager(IHttpContextAccessor httpContextAccessor, ISettingsManager settingsManager, IDatabaseManager databaseManager, ISpecialRepository specialRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public PathManager(IHttpContextAccessor httpContextAccessor, ISettingsManager settingsManager, IDatabaseManager databaseManager, ISpecialRepository specialRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
         {
             _httpContext = httpContextAccessor.HttpContext;
             _settingsManager = settingsManager;
@@ -30,6 +31,7 @@ namespace SS.CMS.Services
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         //public string ApplicationPath => StringUtils.TrimEnd(_httpContext.Request.PathBase.Value, Constants.ApiPrefix);

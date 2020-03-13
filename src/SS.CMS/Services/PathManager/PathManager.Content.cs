@@ -4,11 +4,48 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
+using SS.CMS.Core;
 
 namespace SS.CMS.Services
 {
     public partial class PathManager
     {
+        public async Task<Content> ParsePathAsync(Site site, Channel channel, int contentId)
+        {
+            var content = await _contentRepository.GetAsync(site, channel, contentId);
+            return await ParsePathAsync(site, channel, content);
+        }
+
+
+        public async Task<Content> ParsePathAsync(Site site, Channel channel, Content content)
+        {
+            var parsedContent = content.Clone<Content>();
+
+            var tableName = _channelRepository.GetTableName(site, channel);
+            var tableStyles = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
+            foreach (var style in tableStyles)
+            {
+                if (style.InputType == InputType.Image)
+                {
+                    var value = parsedContent.Get<string>(style.AttributeName);
+                    value = await ParseNavigationUrlAsync(site, value, false);
+
+                    parsedContent.Set(style.AttributeName, value);
+                }
+                else if (style.InputType == InputType.TextEditor)
+                {
+                    var value = parsedContent.Get<string>(style.AttributeName);
+                    value = await TextEditorContentDecodeAsync(site, value, true);
+                    value = UEditorUtils.TranslateToHtml(value);
+                    value = StringUtils.HtmlEncode(value);
+
+                    parsedContent.Set(style.AttributeName, value);
+                }
+            }
+
+            return parsedContent;
+        }
+
         public async Task<string> TextEditorContentEncodeAsync(Site site, string content)
         {
             if (site == null) return content;
@@ -45,6 +82,7 @@ namespace SS.CMS.Services
 
             var builder = new StringBuilder(content);
 
+            var webUrl = await GetWebUrlAsync(site);
             var virtualAssetsUrl = $"@/{site.AssetsDir}";
             string assetsUrl;
             if (isLocal)
@@ -57,8 +95,8 @@ namespace SS.CMS.Services
                 assetsUrl = await GetAssetsUrlAsync(site);
             }
             StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@/", GetWebUrlAsync(site) + "/");
-            StringUtils.ReplaceHrefOrSrc(builder, "@", GetWebUrlAsync(site) + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@/", webUrl + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@", webUrl + "/");
             StringUtils.ReplaceHrefOrSrc(builder, "//", "/");
 
             builder.Replace("&#xa0;", "&nbsp;");
