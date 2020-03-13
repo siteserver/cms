@@ -28,9 +28,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpPost, Route(RouteUploadVideo)]
         public async Task<ActionResult<UploadResult>> UploadVideo([FromQuery]SiteRequest request, [FromForm] IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -68,9 +68,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpPost, Route(RouteUploadImage)]
         public async Task<ActionResult<UploadResult>> UploadImage([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();

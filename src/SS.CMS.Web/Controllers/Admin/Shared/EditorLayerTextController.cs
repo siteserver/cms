@@ -24,8 +24,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(RouteList)]
         public async Task<ActionResult<QueryResult>> List([FromBody]QueryRequest req)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Text);
             groups.Insert(0, new LibraryGroup
@@ -47,8 +47,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(RouteId)]
         public async Task<ActionResult<LibraryText>> Get([FromQuery]int id)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             return await _libraryTextRepository.GetAsync(id);
         }

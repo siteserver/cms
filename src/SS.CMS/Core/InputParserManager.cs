@@ -78,7 +78,7 @@ namespace SS.CMS.Core
             //}
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = await ContentUtility.TextEditorContentDecodeAsync(_pathManager, site, parsedContent, true);
+                parsedContent = await _pathManager.TextEditorContentDecodeAsync(site, parsedContent, true);
             }
             else if (inputType == InputType.Image)
             {
@@ -147,7 +147,7 @@ namespace SS.CMS.Core
             }
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = await ContentUtility.TextEditorContentDecodeAsync(_pathManager, site, value, true);
+                parsedContent = await _pathManager.TextEditorContentDecodeAsync(site, value, true);
             }
             else if (inputType == InputType.Image)
             {

@@ -39,9 +39,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
             {
                 return Unauthorized();
             }
@@ -74,10 +74,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteOptions)]
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody]GetOptionsRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigCrossSiteTrans))
             {
                 return Unauthorized();
@@ -108,9 +108,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Translate([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
             {
                 return Unauthorized();
             }
@@ -118,7 +118,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            await TranslateAsync(site, request.TransSiteId, request.TransChannelId, request.TranslateType, request.ChannelIds, request.IsDeleteAfterTranslate, auth.AdminId);
+            var adminId = await _authManager.GetAdminIdAsync();
+            await TranslateAsync(site, request.TransSiteId, request.TransChannelId, request.TranslateType, request.ChannelIds, request.IsDeleteAfterTranslate, adminId);
 
             return new BoolResult
             {

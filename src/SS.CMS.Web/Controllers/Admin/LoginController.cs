@@ -62,7 +62,7 @@ namespace SS.CMS.Web.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
             Administrator adminInfo;
 
@@ -81,7 +81,7 @@ namespace SS.CMS.Web.Controllers.Admin
 
             adminInfo = await _administratorRepository.GetByUserNameAsync(userName);
             await _administratorRepository.UpdateLastActivityDateAndCountOfLoginAsync(adminInfo); // 记录最后登录时间、失败次数清零
-            var accessToken = await auth.AdminLoginAsync(adminInfo.UserName, request.IsAutoLogin);
+            var accessToken = await _authManager.AdminLoginAsync(adminInfo.UserName, request.IsAutoLogin);
             var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
             var sessionId = StringUtils.Guid();

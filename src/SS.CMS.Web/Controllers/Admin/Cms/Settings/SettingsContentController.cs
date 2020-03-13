@@ -27,9 +27,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(Route)]
         public async Task<ActionResult<Site>> Get([FromQuery] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ConfigContents))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ConfigContents))
             {
                 return Unauthorized();
             }
@@ -42,9 +42,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ConfigContents))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ConfigContents))
             {
                 return Unauthorized();
             }
@@ -82,7 +82,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 await _contentRepository.SetAutoPageContentToSiteAsync(_pluginManager, site);
             }
 
-            await auth.AddSiteLogAsync(request.SiteId, "修改内容设置");
+            await _authManager.AddSiteLogAsync(request.SiteId, "修改内容设置");
 
             return new BoolResult
             {

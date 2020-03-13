@@ -30,7 +30,7 @@ namespace SS.CMS.Core
             const int height = 53;
             using (var image = new Image<Rgba32>(width, height))
             {
-                var font = SystemFonts.CreateFont(FontManager.DefaultFont.Name, 40, FontStyle.Bold | FontStyle.Italic);
+                var font = FontManager.Fonts.CreateFont(FontManager.DefaultFont.Name, 40);
 
                 image.Mutate(ctx =>
                 {

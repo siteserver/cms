@@ -30,9 +30,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ObjectResult<IEnumerable<string>>>> Get([FromQuery] ChannelRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
@@ -52,9 +51,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteAdd)]
         public async Task<ActionResult<List<int>>> Add([FromBody] AddRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
@@ -73,12 +71,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
             if (await _channelGroupRepository.IsExistsAsync(request.SiteId, group.GroupName))
             {
                 await _channelGroupRepository.UpdateAsync(group);
-                await auth.AddSiteLogAsync(request.SiteId, "修改栏目组", $"栏目组:{group.GroupName}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "修改栏目组", $"栏目组:{group.GroupName}");
             }
             else
             {
                 await _channelGroupRepository.InsertAsync(group);
-                await auth.AddSiteLogAsync(request.SiteId, "添加栏目组", $"栏目组:{group.GroupName}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "添加栏目组", $"栏目组:{group.GroupName}");
             }
 
             var expendedChannelIds = new List<int>
@@ -102,7 +100,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 await _channelRepository.UpdateAsync(channel);
             }
 
-            await auth.AddSiteLogAsync(request.SiteId, "批量设置栏目组", $"栏目组:{group.GroupName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "批量设置栏目组", $"栏目组:{group.GroupName}");
 
             return expendedChannelIds;
         }
@@ -110,9 +108,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(Route)]
         public async Task<ActionResult<List<int>>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
@@ -162,7 +159,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 await _channelRepository.UpdateAsync(channel);
             }
 
-            await auth.AddSiteLogAsync(request.SiteId, request.IsCancel ? "批量取消栏目组" : "批量设置栏目组");
+            await _authManager.AddSiteLogAsync(request.SiteId, request.IsCancel ? "批量取消栏目组" : "批量设置栏目组");
 
             return expendedChannelIds;
         }

@@ -23,9 +23,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Utilities
         [HttpPost, Route(Route)]
         public async Task<ActionResult<StringResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesEncrypt))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesEncrypt))
             {
                 return Unauthorized();
             }

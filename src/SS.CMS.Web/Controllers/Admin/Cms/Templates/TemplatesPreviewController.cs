@@ -34,9 +34,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
             {
                 return Unauthorized();
             }
@@ -66,9 +66,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteCache)]
         public async Task<ActionResult<BoolResult>> Cache([FromBody]CacheRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
             {
                 return Unauthorized();
             }
@@ -84,9 +84,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(Route)]
         public async Task<ActionResult<StringResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
             {
                 return Unauthorized();
             }

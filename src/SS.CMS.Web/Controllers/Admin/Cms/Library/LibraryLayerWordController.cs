@@ -32,9 +32,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery]SiteRequest request, [FromForm] IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -70,10 +70,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpPost, Route(Route)]
         public async Task<ActionResult<StringResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -89,7 +89,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
 
                 var filePath = _pathManager.GetTemporaryFilesPath(fileName);
                 var (_, wordContent) = await WordManager.GetWordAsync(_pathManager, site, false, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
-                wordContent = await ContentUtility.TextEditorContentDecodeAsync(_pathManager, site, wordContent, true);
+                wordContent = await _pathManager.TextEditorContentDecodeAsync(site, wordContent, true);
                 builder.Append(wordContent);
                 FileUtils.DeleteFileIfExists(filePath);
             }

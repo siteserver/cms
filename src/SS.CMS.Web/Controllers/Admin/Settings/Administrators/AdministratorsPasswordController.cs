@@ -23,14 +23,15 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
             var userId = request.UserId;
-            if (userId == 0) userId = auth.AdminId;
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            var adminId = await _authManager.GetAdminIdAsync();
+
+            if (userId == 0) userId = adminId;
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
             var administrator = await _administratorRepository.GetByUserIdAsync(userId);
             if (administrator == null) return NotFound();
-            if (auth.AdminId != userId &&
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (adminId != userId &&
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -44,14 +45,15 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
             var userId = request.UserId;
-            if (userId == 0) userId = auth.AdminId;
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            var adminId = await _authManager.GetAdminIdAsync();
+
+            if (userId == 0) userId = adminId;
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
             var adminInfo = await _administratorRepository.GetByUserIdAsync(userId);
             if (adminInfo == null) return NotFound();
-            if (auth.AdminId != userId &&
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (adminId != userId &&
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -63,7 +65,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return this.Error($"更改密码失败：{valid.ErrorMessage}");
             }
 
-            await auth.AddAdminLogAsync("重设管理员密码", $"管理员:{adminInfo.UserName}");
+            await _authManager.AddAdminLogAsync("重设管理员密码", $"管理员:{adminInfo.UserName}");
 
             return new BoolResult
             {

@@ -31,9 +31,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ConfigSite))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ConfigSite))
             {
                 return Unauthorized();
             }
@@ -77,9 +77,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ConfigSite))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ConfigSite))
             {
                 return Unauthorized();
             }
@@ -93,7 +93,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
                 var inputType = style.InputType;
                 if (inputType == InputType.TextEditor)
                 {
-                    value = await ContentUtility.TextEditorContentEncodeAsync(_pathManager, site, value);
+                    value = await _pathManager.TextEditorContentEncodeAsync(site, value);
                     value = UEditorUtils.TranslateToStlElement(value);
                 }
                 else if (inputType == InputType.Image || 
@@ -142,7 +142,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             site.IsCreateDoubleClick = request.IsCreateDoubleClick;
             await _siteRepository.UpdateAsync(site);
 
-            await auth.AddSiteLogAsync(request.SiteId, "修改站点设置");
+            await _authManager.AddSiteLogAsync(request.SiteId, "修改站点设置");
 
             return new BoolResult
             {

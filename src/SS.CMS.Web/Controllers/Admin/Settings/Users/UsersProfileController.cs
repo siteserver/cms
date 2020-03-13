@@ -28,9 +28,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]int userId)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -50,9 +50,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int userId, [FromForm]IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -78,9 +78,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -126,12 +126,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 {
                     return this.Error($"用户添加失败：{valid.ErrorMessage}");
                 }
-                await auth.AddAdminLogAsync("添加用户", $"用户:{user.UserName}");
+                await _authManager.AddAdminLogAsync("添加用户", $"用户:{user.UserName}");
             }
             else
             {
                 await _userRepository.UpdateAsync(user);
-                await auth.AddAdminLogAsync("修改用户属性", $"用户:{user.UserName}");
+                await _authManager.AddAdminLogAsync("修改用户属性", $"用户:{user.UserName}");
             }
 
             return new BoolResult

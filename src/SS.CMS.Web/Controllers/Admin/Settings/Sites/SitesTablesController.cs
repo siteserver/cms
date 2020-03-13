@@ -29,9 +29,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }
@@ -61,9 +61,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(RouteTable)]
         public async Task<ActionResult<GetColumnsResult>> GetColumns(string tableName)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }
@@ -80,9 +80,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteTableActionsRemoveCache)]
         public async Task<ActionResult<GetColumnsResult>> RemoveCache(string tableName)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }

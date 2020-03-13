@@ -283,7 +283,7 @@ namespace SS.CMS.StlParser.StlElement
                 }
                 else if (ContentAttribute.Content.ToLower().Equals(type))
                 {
-                    parsedContent = await ContentUtility.TextEditorContentDecodeAsync(parseManager.PathManager, pageInfo.Site, content.Get<string>(ContentAttribute.Content), pageInfo.IsLocal);
+                    parsedContent = await parseManager.PathManager.TextEditorContentDecodeAsync(pageInfo.Site, content.Get<string>(ContentAttribute.Content), pageInfo.IsLocal);
 
                     if (isClearTags)
                     {
@@ -311,7 +311,7 @@ namespace SS.CMS.StlParser.StlElement
                 {
                     //if (contextInfo.IsInnerElement)
                     // {
-                    parsedContent = await ContentUtility.TextEditorContentDecodeAsync(parseManager.PathManager, pageInfo.Site, content.Get<string>(ContentAttribute.Content), pageInfo.IsLocal);
+                    parsedContent = await parseManager.PathManager.TextEditorContentDecodeAsync(pageInfo.Site, content.Get<string>(ContentAttribute.Content), pageInfo.IsLocal);
 
                     if (isClearTags)
                     {

@@ -41,9 +41,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResults>> Get([FromQuery]GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -64,16 +64,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] IdRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
 
             var user = await _userRepository.DeleteAsync(request.Id);
 
-            await auth.AddAdminLogAsync("删除用户", $"用户:{user.UserName}");
+            await _authManager.AddAdminLogAsync("删除用户", $"用户:{user.UserName}");
 
             return new BoolResult
             {
@@ -84,9 +84,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<ImportResult>> Import([FromForm] IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -164,9 +164,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(RouteExport)]
         public async Task<ActionResult> Export()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -183,9 +183,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteCheck)]
         public async Task<ActionResult<BoolResult>> Check([FromBody] IdRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -195,7 +195,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 request.Id
             });
 
-            await auth.AddAdminLogAsync("审核用户", $"用户Id:{request.Id}");
+            await _authManager.AddAdminLogAsync("审核用户", $"用户Id:{request.Id}");
 
             return new BoolResult
             {
@@ -206,9 +206,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteLock)]
         public async Task<ActionResult<BoolResult>> Lock([FromBody] IdRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -220,7 +220,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 request.Id
             });
 
-            await auth.AddAdminLogAsync("锁定用户", $"用户:{user.UserName}");
+            await _authManager.AddAdminLogAsync("锁定用户", $"用户:{user.UserName}");
 
             return new BoolResult
             {
@@ -231,9 +231,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteUnLock)]
         public async Task<ActionResult<BoolResult>> UnLock([FromBody] IdRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -245,7 +245,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
                 request.Id
             });
 
-            await auth.AddAdminLogAsync("解锁用户", $"用户:{user.UserName}");
+            await _authManager.AddAdminLogAsync("解锁用户", $"用户:{user.UserName}");
 
             return new BoolResult
             {

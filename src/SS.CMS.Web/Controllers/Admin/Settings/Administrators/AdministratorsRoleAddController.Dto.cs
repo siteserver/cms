@@ -64,7 +64,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             var channelPermissions = new List<Permission>();
             var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager, _pluginManager);
 
-            if (await _authManager.AdminPermissions.IsSuperAdminAsync())
+            if (await _authManager.IsSuperAdminAsync())
             {
                 foreach (var permission in instance.WebsiteSysPermissions)
                 {
@@ -135,9 +135,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             }
             else
             {
-                if (await _authManager.AdminPermissions.HasSitePermissionsAsync(siteId))
+                if (await _authManager.HasSitePermissionsAsync(siteId))
                 {
-                    var websitePermissionList = await _authManager.AdminPermissions.GetSitePermissionsAsync(siteId);
+                    var websitePermissionList = await _authManager.GetSitePermissionsAsync(siteId);
                     foreach (var websitePermission in websitePermissionList)
                     {
                         foreach (var permission in instance.WebsiteSysPermissions)
@@ -168,7 +168,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                     }
                 }
 
-                var channelPermissionList = await _authManager.AdminPermissions.GetChannelPermissionsAsync(siteId);
+                var channelPermissionList = await _authManager.GetChannelPermissionsAsync(siteId);
                 foreach (var channelPermission in channelPermissionList)
                 {
                     foreach (var permission in instance.ChannelPermissions)

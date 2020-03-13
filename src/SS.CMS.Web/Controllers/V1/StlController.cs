@@ -29,12 +29,10 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeStl);
+            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeStl);
 
             var stlRequest = new StlRequest();
-            await stlRequest.LoadAsync(auth, _pathManager, _configRepository, _siteRepository, isApiAuthorized, request);
+            await stlRequest.LoadAsync(_authManager, _pathManager, _configRepository, _siteRepository, isApiAuthorized, request);
 
             if (!stlRequest.IsApiAuthorized)
             {

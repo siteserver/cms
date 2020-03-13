@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
 using SS.CMS.Extensions;
 
 namespace SS.CMS.Web.Controllers.V1
@@ -35,12 +34,10 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpPost, Route(RouteSite)]
         public async Task<ActionResult<Channel>> Create([FromBody]CreateRequest request)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isAuth = auth.IsApiAuthenticated && await
-                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
-                         auth.IsAdminLoggin &&
-                         await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ParentId,
+            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
+                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeChannels) ||
+                         await _authManager.IsAdminAuthenticatedAsync() &&
+                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId,
                              Constants.ChannelPermissions.ChannelAdd);
             if (!isAuth) return Unauthorized();
 
@@ -142,7 +139,7 @@ namespace SS.CMS.Web.Controllers.V1
 
             await _createManager.CreateChannelAsync(request.SiteId, channelInfo.Id);
 
-            await auth.AddSiteLogAsync(request.SiteId, "添加栏目", $"栏目:{request.ChannelName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "添加栏目", $"栏目:{request.ChannelName}");
 
             return channelInfo;
         }
@@ -150,12 +147,10 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpPut, Route(RouteChannel)]
         public async Task<ActionResult<Channel>> Update([FromBody] UpdateRequest request)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isAuth = auth.IsApiAuthenticated && await
-                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
-                         auth.IsAdminLoggin &&
-                         await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
+            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
+                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeChannels) ||
+                         await _authManager.IsAdminAuthenticatedAsync() &&
+                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
                              Constants.ChannelPermissions.ChannelEdit);
             if (!isAuth) return Unauthorized();
 
@@ -314,12 +309,10 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpDelete, Route(RouteChannel)]
         public async Task<ActionResult<Channel>> Delete(int siteId, int channelId)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isAuth = auth.IsApiAuthenticated && await
-                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
-                         auth.IsAdminLoggin &&
-                         await auth.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
+            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
+                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeChannels) ||
+                         await _authManager.IsAdminAuthenticatedAsync() &&
+                         await _authManager.HasChannelPermissionsAsync(siteId, channelId,
                              Constants.ChannelPermissions.ChannelDelete);
             if (!isAuth) return Unauthorized();
 
@@ -329,8 +322,9 @@ namespace SS.CMS.Web.Controllers.V1
             var channel = await _channelRepository.GetAsync(channelId);
             if (channel == null) return NotFound();
 
-            await _contentRepository.RecycleAllAsync(site, channelId, auth.AdminId);
-            await _channelRepository.DeleteAsync(site, channelId, auth.AdminId);
+            var adminId = await _authManager.GetAdminIdAsync();
+            await _contentRepository.RecycleAllAsync(site, channelId, adminId);
+            await _channelRepository.DeleteAsync(site, channelId, adminId);
 
             return channel;
         }
@@ -338,11 +332,9 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpGet, Route(RouteChannel)]
         public async Task<ActionResult<Channel>> Get(int siteId, int channelId)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isAuth = auth.IsApiAuthenticated && await
-                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
-                         auth.IsAdminLoggin;
+            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
+                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeChannels) ||
+                         await _authManager.IsAdminAuthenticatedAsync();
             if (!isAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(siteId);
@@ -359,11 +351,9 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpGet, Route(RouteSite)]
         public async Task<ActionResult<List<IDictionary<string, object>>>> GetChannels(int siteId)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isAuth = auth.IsApiAuthenticated && await
-                             _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeChannels) ||
-                         auth.IsAdminLoggin;
+            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
+                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeChannels) ||
+                         await _authManager.IsAdminAuthenticatedAsync();
             if (!isAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(siteId);

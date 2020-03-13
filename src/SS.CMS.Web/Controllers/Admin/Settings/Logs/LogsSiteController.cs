@@ -29,8 +29,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         //[HttpGet, Route(Route)]
         //public async Task<SiteLogPageResult> List([FromBody] PageRequest request)
         //{
-        //    var auth = await _authManager.GetAdminAsync();
-        //    await auth.CheckPermissionAsync(Request, Constants.AppPermissions.SettingsLog);
+        //    
+        //    await _authManager.CheckPermissionAsync(Request, Constants.AppPermissions.SettingsLog);
 
         //    var count = await _siteLogRepository.GetCountAsync(null, null, null, null, null, null);
         //    var siteLogs = await _siteLogRepository.GetAllAsync(null, null, null, null, null, null, request.Offset, request.Limit);
@@ -69,9 +69,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SiteLogPageResult>> List([FromBody] SearchRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsSite))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsSite))
             {
                 return Unauthorized();
             }
@@ -116,16 +116,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsSite))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsSite))
             {
                 return Unauthorized();
             }
 
             await _siteLogRepository.DeleteAllAsync();
 
-            await auth.AddAdminLogAsync("清空站点日志");
+            await _authManager.AddAdminLogAsync("清空站点日志");
 
             return new BoolResult
             {

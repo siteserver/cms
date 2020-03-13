@@ -4,12 +4,12 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using SS.CMS.Abstractions;
 
-namespace SS.CMS.Core
+namespace SS.CMS.Abstractions
 {
     public static class PageUtils
     {
+        public const char SeparatorChar = '/';
         public const string UnClickableUrl = "javascript:;";
 
         public static string AddProtocolToUrl(string url)
@@ -123,10 +123,10 @@ namespace SS.CMS.Core
         {
             if (urls == null || urls.Length <= 0) return string.Empty;
 
-            var retVal = urls[0]?.Replace(PathUtils.SeparatorChar, Constants.PageSeparatorChar) ?? string.Empty;
+            var retVal = urls[0]?.Replace(PathUtils.SeparatorChar, SeparatorChar) ?? string.Empty;
             for (var i = 1; i < urls.Length; i++)
             {
-                var url = (urls[i] != null) ? urls[i].Replace(PathUtils.SeparatorChar, Constants.PageSeparatorChar) : string.Empty;
+                var url = (urls[i] != null) ? urls[i].Replace(PathUtils.SeparatorChar, SeparatorChar) : string.Empty;
                 retVal = Combine(retVal, url);
             }
             return retVal;
@@ -147,7 +147,7 @@ namespace SS.CMS.Core
                 return url2;
             }
 
-            return url1.TrimEnd(Constants.PageSeparatorChar) + Constants.PageSeparatorChar + url2.TrimStart(Constants.PageSeparatorChar);
+            return url1.TrimEnd(SeparatorChar) + SeparatorChar + url2.TrimStart(SeparatorChar);
         }
 
         public static string AddQueryString(string url, string queryString)

@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Net;
 using System.Text;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Core
 {

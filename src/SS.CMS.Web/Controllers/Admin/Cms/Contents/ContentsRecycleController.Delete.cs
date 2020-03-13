@@ -14,9 +14,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] DeleteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ContentsRecycle))
             {
                 return Unauthorized();
@@ -42,12 +42,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     await _contentRepository.RecycleDeleteAsync(site, channelId, tableName, contentIdList);
                 }
 
-                await auth.AddSiteLogAsync(request.SiteId, "从回收站删除内容");
+                await _authManager.AddSiteLogAsync(request.SiteId, "从回收站删除内容");
             }
             else if (request.Action == Action.DeleteAll)
             {
                 await _contentRepository.RecycleDeleteAllAsync(_pluginManager, site);
-                await auth.AddSiteLogAsync(request.SiteId, "从回收站清空所有内容");
+                await _authManager.AddSiteLogAsync(request.SiteId, "从回收站清空所有内容");
             }
             else if (request.Action == Action.Restore)
             {
@@ -66,12 +66,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     await _contentRepository.RecycleRestoreAsync(site, channelId, tableName, contentIdList, request.RestoreChannelId);
                 }
 
-                await auth.AddSiteLogAsync(request.SiteId, "从回收站还原内容");
+                await _authManager.AddSiteLogAsync(request.SiteId, "从回收站还原内容");
             }
             else if (request.Action == Action.RestoreAll)
             {
                 await _contentRepository.RecycleRestoreAllAsync(_pluginManager, site, request.RestoreChannelId);
-                await auth.AddSiteLogAsync(request.SiteId, "从回收站还原所有内容");
+                await _authManager.AddSiteLogAsync(request.SiteId, "从回收站还原所有内容");
             }
 
             return new BoolResult

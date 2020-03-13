@@ -21,9 +21,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsConfig))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsConfig))
             {
                 return Unauthorized();
             }
@@ -39,9 +39,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<GetResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsConfig))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsConfig))
             {
                 return Unauthorized();
             }
@@ -61,7 +61,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
 
             await _configRepository.UpdateAsync(config);
 
-            await auth.AddAdminLogAsync("修改日志设置");
+            await _authManager.AddAdminLogAsync("修改日志设置");
 
             return new GetResult
             {

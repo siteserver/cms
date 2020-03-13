@@ -33,8 +33,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(Route)]
         public async Task<ActionResult<QueryResult>> List([FromQuery]QueryRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Image);
             groups.Insert(0, new LibraryGroup
@@ -56,8 +56,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(RouteSelect)]
         public async Task<ActionResult<StringResult>> Select([FromBody]SelectRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             var library = await _libraryImageRepository.GetAsync(request.LibraryId);

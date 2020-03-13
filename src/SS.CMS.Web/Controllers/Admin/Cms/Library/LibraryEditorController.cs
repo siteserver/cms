@@ -34,10 +34,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpGet, Route(RouteId)]
         public async Task<ActionResult<LibraryText>> Get([FromBody]GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -49,10 +49,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpPost, Route(Route)]
         public async Task<ActionResult<LibraryText>> Create([FromBody] CreateRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -84,10 +84,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpPut, Route(RouteId)]
         public async Task<ActionResult<LibraryText>> Update([FromBody] UpdateRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -106,10 +106,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();

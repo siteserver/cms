@@ -44,7 +44,7 @@ namespace SS.CMS.Web.Controllers.Admin
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SubmitResult>> Submit()
         {
-            //var auth = await _authManager.GetAdminAsync();
+            //
             //if (!request.IsAdminLoggin || !request.AdminPermissions.IsSuperAdmin())
             //{
             //    return Unauthorized();

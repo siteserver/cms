@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SS.CMS.Abstractions;
@@ -38,159 +39,227 @@ namespace SS.CMS.Services
             _userLogRepository = userLogRepository;
         }
 
-        public async Task<IAuthManager> GetApiAsync()
-        {
-            var apiToken = ApiToken;
-            if (!string.IsNullOrEmpty(apiToken))
-            {
-                var tokenInfo = await _accessTokenRepository.GetByTokenAsync(apiToken);
-                if (tokenInfo != null)
-                {
-                    if (!string.IsNullOrEmpty(tokenInfo.AdminName))
-                    {
-                        var adminInfo = await _administratorRepository.GetByUserNameAsync(tokenInfo.AdminName);
-                        if (adminInfo != null && !adminInfo.Locked)
-                        {
-                            Administrator = adminInfo;
-                            IsAdminLoggin = true;
-                        }
-                    }
+        private bool _init;
+        private string _adminToken;
+        private string _userToken;
+        private string _apiToken;
+        private bool _isAdminAuthenticated;
+        private Administrator _administrator;
+        private bool _isUserAuthenticated;
+        private User _user;
+        private UserGroup _userGroup;
+        private bool _isApiAuthenticated;
+        private IPermissions _permissions;
 
-                    IsApiAuthenticated = true;
+        private async Task InitAsync()
+        {
+            if (_init) return;
+
+            if (!string.IsNullOrEmpty(GetAdminToken()))
+            {
+                var tokenImpl = ParseAccessToken(_adminToken);
+                if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
+                {
+                    var admin = await _administratorRepository.GetByUserIdAsync(tokenImpl.UserId);
+                    if (admin != null && !admin.Locked && admin.UserName == tokenImpl.UserName)
+                    {
+                        _isAdminAuthenticated = true;
+                        _administrator = admin;
+                    }
                 }
             }
-
-            return this;
-        }
-
-        public async Task<IAuthManager> GetUserAsync()
-        {
-            var userToken = UserToken;
-            if (!string.IsNullOrEmpty(userToken))
+            else if (!string.IsNullOrEmpty(GetUserToken()))
             {
-                var tokenImpl = ParseAccessToken(userToken);
+                var tokenImpl = ParseAccessToken(_userToken);
                 if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                 {
                     var user = await _userRepository.GetByUserIdAsync(tokenImpl.UserId);
                     if (user != null && !user.Locked && user.Checked && user.UserName == tokenImpl.UserName)
                     {
-                        User = user;
-                        IsUserLoggin = true;
+                        _user = user;
+                        _isUserAuthenticated = true;
+
+                        _userGroup = await _userGroupRepository.GetUserGroupAsync(user.GroupId);
+                        if (_userGroup != null)
+                        {
+                            _administrator = await _administratorRepository.GetByUserNameAsync(_userGroup.AdminName);
+                        }
                     }
                 }
             }
-
-            return this;
-        }
-
-        public async Task<IAuthManager> GetAdminAsync()
-        {
-            var adminToken = AdminToken;
-            if (!string.IsNullOrEmpty(adminToken))
+            else if (!string.IsNullOrEmpty(GetApiToken()))
             {
-                var tokenImpl = ParseAccessToken(adminToken);
-                if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
+                var tokenInfo = await _accessTokenRepository.GetByTokenAsync(_apiToken);
+                if (tokenInfo != null)
                 {
-                    var adminInfo = await _administratorRepository.GetByUserIdAsync(tokenImpl.UserId);
-                    if (adminInfo != null && !adminInfo.Locked && adminInfo.UserName == tokenImpl.UserName)
+                    if (!string.IsNullOrEmpty(tokenInfo.AdminName))
                     {
-                        Administrator = adminInfo;
-                        IsAdminLoggin = true;
+                        var admin = await _administratorRepository.GetByUserNameAsync(tokenInfo.AdminName);
+                        if (admin != null && !admin.Locked)
+                        {
+                            _isAdminAuthenticated = true;
+                            _administrator = admin;
+                        }
                     }
+
+                    _isApiAuthenticated = true;
                 }
             }
 
-            return this;
+            _permissions = new PermissionsImpl(_pathManager, _pluginManager, _databaseManager, _administrator);
+
+            _init = true;
         }
 
-        public bool IsApiAuthenticated { get; private set; }
-
-        public bool IsUserLoggin { get; private set; }
-
-        public bool IsAdminLoggin { get; private set; }
-
-        public string ApiToken
+        public string GetApiToken()
         {
-            get
+            if (!string.IsNullOrEmpty(_apiToken)) return _apiToken;
+
+            _apiToken = string.Empty;
+
+            if (_context.Request.Headers.TryGetValue(Constants.AuthKeyApiHeader, out var headerValue))
             {
-                var accessTokenStr = string.Empty;
-
-                if (_context.Request.Headers.TryGetValue(Constants.AuthKeyApiHeader, out var headerValue))
-                {
-                    accessTokenStr = headerValue;
-                }
-                else if (_context.Request.Query.TryGetValue(Constants.AuthKeyApiQuery, out var queryValue))
-                {
-                    accessTokenStr = queryValue;
-                }
-                else if (_context.Request.Cookies.TryGetValue(Constants.AuthKeyApiCookie, out var cookieValue))
-                {
-                    accessTokenStr = cookieValue;
-                }
-
-                if (!string.IsNullOrEmpty(accessTokenStr) && StringUtils.EndsWith(accessTokenStr, Constants.EncryptStingIndicator))
-                {
-                    accessTokenStr = _settingsManager.Decrypt(accessTokenStr);
-                }
-
-                return accessTokenStr;
+                _apiToken = headerValue;
             }
+            else if (_context.Request.Query.TryGetValue(Constants.AuthKeyApiQuery, out var queryValue))
+            {
+                _apiToken = queryValue;
+            }
+            else if (_context.Request.Cookies.TryGetValue(Constants.AuthKeyApiCookie, out var cookieValue))
+            {
+                _apiToken = cookieValue;
+            }
+
+            if (!string.IsNullOrEmpty(_apiToken) && StringUtils.EndsWith(_apiToken, Constants.EncryptStingIndicator))
+            {
+                _apiToken = _settingsManager.Decrypt(_apiToken);
+            }
+
+            return _apiToken;
         }
 
-        private string UserToken
+        public string GetUserToken()
         {
-            get
+            if (_userToken != null) return _userToken;
+            _userToken = string.Empty;
+
+            if (_context.Request.Cookies.TryGetValue(Constants.AuthKeyUserCookie, out var cookieValue))
             {
-                var accessTokenStr = string.Empty;
-
-                if (_context.Request.Cookies.TryGetValue(Constants.AuthKeyUserCookie, out var cookieValue))
-                {
-                    accessTokenStr = cookieValue;
-                }
-                else if (_context.Request.Headers.TryGetValue(Constants.AuthKeyUserHeader, out var headerValue))
-                {
-                    accessTokenStr = headerValue;
-                }
-                else if (_context.Request.Query.TryGetValue(Constants.AuthKeyUserQuery, out var queryValue))
-                {
-                    accessTokenStr = queryValue;
-                }
-
-                if (!string.IsNullOrEmpty(accessTokenStr) && StringUtils.EndsWith(accessTokenStr, Constants.EncryptStingIndicator))
-                {
-                    accessTokenStr = _settingsManager.Decrypt(accessTokenStr);
-                }
-
-                return accessTokenStr;
+                _userToken = cookieValue;
             }
+            else if (_context.Request.Headers.TryGetValue(Constants.AuthKeyUserHeader, out var headerValue))
+            {
+                _userToken = headerValue;
+            }
+            else if (_context.Request.Query.TryGetValue(Constants.AuthKeyUserQuery, out var queryValue))
+            {
+                _userToken = queryValue;
+            }
+
+            if (!string.IsNullOrEmpty(_userToken) && StringUtils.EndsWith(_userToken, Constants.EncryptStingIndicator))
+            {
+                _userToken = _settingsManager.Decrypt(_userToken);
+            }
+
+            return _userToken;
         }
 
-        public string AdminToken
+        public string GetAdminToken()
         {
-            get
+            if (_adminToken != null) return _adminToken;
+
+            _adminToken = string.Empty;
+
+            if (_context.Request.Cookies.TryGetValue(Constants.AuthKeyAdminCookie, out var cookieValue))
             {
-                var accessTokenStr = string.Empty;
-
-                if (_context.Request.Cookies.TryGetValue(Constants.AuthKeyAdminCookie, out var cookieValue))
-                {
-                    accessTokenStr = cookieValue;
-                }
-                else if (_context.Request.Headers.TryGetValue(Constants.AuthKeyAdminHeader, out var headerValue))
-                {
-                    accessTokenStr = headerValue;
-                }
-                else if (_context.Request.Query.TryGetValue(Constants.AuthKeyAdminQuery, out var queryValue))
-                {
-                    accessTokenStr = queryValue;
-                }
-
-                if (!string.IsNullOrEmpty(accessTokenStr) && StringUtils.EndsWith(accessTokenStr, Constants.EncryptStingIndicator))
-                {
-                    accessTokenStr = _settingsManager.Decrypt(accessTokenStr);
-                }
-
-                return accessTokenStr;
+                _adminToken = cookieValue;
             }
+            else if (_context.Request.Headers.TryGetValue(Constants.AuthKeyAdminHeader, out var headerValue))
+            {
+                _adminToken = headerValue;
+            }
+            else if (_context.Request.Query.TryGetValue(Constants.AuthKeyAdminQuery, out var queryValue))
+            {
+                _adminToken = queryValue;
+            }
+
+            if (!string.IsNullOrEmpty(_adminToken) && StringUtils.EndsWith(_adminToken, Constants.EncryptStingIndicator))
+            {
+                _adminToken = _settingsManager.Decrypt(_adminToken);
+            }
+
+            return _adminToken;
+        }
+
+        public async Task<User> GetUserAsync()
+        {
+            await InitAsync();
+            return _user;
+        }
+
+        public async Task<Administrator> GetAdminAsync()
+        {
+            await InitAsync();
+            return _administrator;
+        }
+
+        public async Task<bool> IsApiAuthenticatedAsync()
+        {
+            await InitAsync();
+            return _isApiAuthenticated;
+        }
+
+        public async Task<bool> IsUserAuthenticatedAsync()
+        {
+            await InitAsync();
+            return _isUserAuthenticated;
+        }
+
+        public async Task<bool> IsAdminAuthenticatedAsync()
+        {
+            await InitAsync();
+            return _isAdminAuthenticated;
+        }
+
+        //public async Task<IPermissions> GetPermissionsAsync()
+        //{
+        //    await InitAsync();
+        //    return _permissions;
+        //}
+
+        public async Task<int> GetAdminIdAsync()
+        {
+            await InitAsync();
+            return _administrator?.Id ?? 0;
+        }
+
+        public async Task<string> GetAdminNameAsync()
+        {
+            await InitAsync();
+
+            if (_administrator != null)
+            {
+                return _administrator.UserName;
+            }
+
+            if (_userGroup != null)
+            {
+                return _userGroup.AdminName;
+            }
+
+            return string.Empty;
+        }
+
+        public async Task<int> GetUserIdAsync()
+        {
+            await InitAsync();
+            return _user?.Id ?? 0;
+        }
+
+        public async Task<string> GetUserNameAsync()
+        {
+            await InitAsync();
+            return _user?.UserName ?? string.Empty;
         }
 
         public async Task AddSiteLogAsync(int siteId, string action)
@@ -205,100 +274,38 @@ namespace SS.CMS.Services
 
         public async Task AddSiteLogAsync(int siteId, int channelId, string action, string summary)
         {
-            await _siteLogRepository.AddSiteLogAsync(siteId, channelId, 0, Administrator, action, summary);
+            await InitAsync();
+            await _siteLogRepository.AddSiteLogAsync(siteId, channelId, 0, _administrator, action, summary);
         }
 
         public async Task AddSiteLogAsync(int siteId, int channelId, int contentId, string action, string summary)
         {
-            await _siteLogRepository.AddSiteLogAsync(siteId, channelId, contentId, Administrator, action, summary);
+            await InitAsync();
+            await _siteLogRepository.AddSiteLogAsync(siteId, channelId, contentId, _administrator, action, summary);
         }
 
         public async Task AddAdminLogAsync(string action, string summary)
         {
-            await _logRepository.AddAdminLogAsync(Administrator, action, summary);
+            await InitAsync();
+            await _logRepository.AddAdminLogAsync(_administrator, action, summary);
         }
 
         public async Task AddAdminLogAsync(string action)
         {
-            await _logRepository.AddAdminLogAsync(Administrator, action);
+            await InitAsync();
+            await _logRepository.AddAdminLogAsync(_administrator, action);
         }
-
-        private IPermissions _userPermissions;
-
-        public IPermissions UserPermissions
-        {
-            get
-            {
-                if (_userPermissions != null) return _userPermissions;
-
-                if (User != null)
-                {
-                    var groupInfo = _userGroupRepository.GetUserGroupAsync(User.GroupId).GetAwaiter().GetResult();
-                    if (groupInfo != null)
-                    {
-                        Administrator = _administratorRepository.GetByUserNameAsync(groupInfo.AdminName).GetAwaiter().GetResult();
-                    }
-                }
-
-                _userPermissions = new PermissionsImpl(_pathManager, _pluginManager, _databaseManager, Administrator);
-
-                return _userPermissions;
-            }
-        }
-
-        private IPermissions _adminPermissions;
-
-        public IPermissions AdminPermissions
-        {
-            get
-            {
-                if (_adminPermissions != null) return _adminPermissions;
-
-                _adminPermissions = new PermissionsImpl(_pathManager, _pluginManager, _databaseManager, Administrator);
-
-                return _adminPermissions;
-            }
-        }
-
-        public int AdminId => Administrator?.Id ?? 0;
-
-        public string AdminName
-        {
-            get
-            {
-                if (Administrator != null)
-                {
-                    return Administrator.UserName;
-                }
-
-                if (User != null)
-                {
-                    var groupInfo = _userGroupRepository.GetUserGroupAsync(User.GroupId).GetAwaiter().GetResult();
-                    if (groupInfo != null)
-                    {
-                        return groupInfo.AdminName;
-                    }
-                }
-
-                return string.Empty;
-            }
-        }
-
-        public Administrator Administrator { get; private set; }
 
         public async Task<string> AdminLoginAsync(string userName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(userName)) return null;
-            var adminInfo = await _administratorRepository.GetByUserNameAsync(userName);
-            if (adminInfo == null || adminInfo.Locked) return null;
-
-            Administrator = adminInfo;
-            IsAdminLoggin = true;
+            var admin = await _administratorRepository.GetByUserNameAsync(userName);
+            if (admin == null || admin.Locked) return null;
 
             var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
-            var accessToken = GetAccessToken(adminInfo.Id, adminInfo.UserName, expiresAt);
+            var accessToken = GetAccessToken(admin.Id, admin.UserName, expiresAt);
 
-            await _logRepository.AddAdminLogAsync(adminInfo, "管理员登录");
+            await _logRepository.AddAdminLogAsync(admin, "管理员登录");
 
             if (isAutoLogin)
             {
@@ -322,12 +329,6 @@ namespace SS.CMS.Services
             _context.Response.Cookies.Delete(Constants.AuthKeyAdminCookie);
         }
 
-        public int UserId => User?.Id ?? 0;
-
-        public string UserName => User?.UserName ?? string.Empty;
-
-        public User User { get; private set; }
-
         public async Task<string> UserLoginAsync(string userName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(userName)) return null;
@@ -335,12 +336,10 @@ namespace SS.CMS.Services
             var user = await _userRepository.GetByUserNameAsync(userName);
             if (user == null || user.Locked || !user.Checked) return null;
 
-            User = user;
-
             var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
-            var accessToken = GetAccessToken(UserId, UserName, expiresAt);
+            var accessToken = GetAccessToken(user.Id, user.UserName, expiresAt);
 
-            await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(User);
+            await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user);
             await _userLogRepository.AddUserLoginLogAsync(user.Id);
 
             if (isAutoLogin)
@@ -362,7 +361,6 @@ namespace SS.CMS.Services
 
         public void UserLogout()
         {
-            User = null;
             _context.Response.Cookies.Delete(Constants.AuthKeyUserCookie);
         }
 
@@ -394,7 +392,7 @@ namespace SS.CMS.Services
             return JsonWebToken.Encode(userToken, _settingsManager.SecurityKey, JwtHashAlgorithm.HS256);
         }
 
-        public AccessTokenImpl ParseAccessToken(string accessToken)
+        private AccessTokenImpl ParseAccessToken(string accessToken)
         {
             if (string.IsNullOrEmpty(accessToken)) return new AccessTokenImpl();
 
@@ -413,6 +411,90 @@ namespace SS.CMS.Services
             }
 
             return new AccessTokenImpl();
+        }
+
+        public async Task<bool> IsSuperAdminAsync()
+        {
+            await InitAsync();
+            return await _permissions.IsSuperAdminAsync();
+        }
+
+        public async Task<bool> IsSiteAdminAsync()
+        {
+            await InitAsync();
+            return await _permissions.IsSuperAdminAsync();
+        }
+
+        public async Task<string> GetAdminLevelAsync()
+        {
+            await InitAsync();
+            return await _permissions.GetAdminLevelAsync();
+        }
+
+        public async Task<List<int>> GetSiteIdListAsync()
+        {
+            await InitAsync();
+            return await _permissions.GetSiteIdListAsync();
+        }
+
+        public async Task<List<int>> GetChannelIdListAsync(int siteId, params string[] permissions)
+        {
+            await InitAsync();
+            return await _permissions.GetChannelIdListAsync(siteId, permissions);
+        }
+
+        public async Task<bool> HasSystemPermissionsAsync(params string[] permissions)
+        {
+            await InitAsync();
+            return await _permissions.HasSystemPermissionsAsync(permissions);
+        }
+
+        public async Task<bool> HasSitePermissionsAsync(int siteId, params string[] permissions)
+        {
+            await InitAsync();
+            return await _permissions.HasSitePermissionsAsync(siteId, permissions);
+        }
+
+        public async Task<bool> HasChannelPermissionsAsync(int siteId, int channelId, params string[] permissions)
+        {
+            await InitAsync();
+            return await _permissions.HasChannelPermissionsAsync(siteId, channelId, permissions);
+        }
+
+        public async Task<List<string>> GetPermissionListAsync()
+        {
+            await InitAsync();
+            return await _permissions.GetPermissionListAsync();
+        }
+
+        public async Task<bool> HasSitePermissionsAsync(int siteId)
+        {
+            await InitAsync();
+            return await _permissions.HasSitePermissionsAsync(siteId);
+        }
+
+        public async Task<List<string>> GetSitePermissionsAsync(int siteId)
+        {
+            await InitAsync();
+            return await _permissions.GetSitePermissionsAsync(siteId);
+        }
+
+        public async Task<bool> HasChannelPermissionsAsync(int siteId, int channelId)
+        {
+            await InitAsync();
+            return await _permissions.HasChannelPermissionsAsync(siteId, channelId);
+        }
+
+        public async Task<List<string>> GetChannelPermissionsAsync(int siteId, int channelId)
+        {
+            await InitAsync();
+            return await _permissions.GetChannelPermissionsAsync(siteId, channelId);
+        }
+
+        public async Task<List<string>> GetChannelPermissionsAsync(int siteId)
+        {
+            await InitAsync();
+            return await _permissions.GetChannelPermissionsAsync(siteId);
         }
     }
 }

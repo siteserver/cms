@@ -60,7 +60,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 
             var siteTemplateUrl = StringUtils.TrimSlash(_pathManager.GetSiteTemplatesUrl(string.Empty));
             var siteAddPermission =
-                await _authManager.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd);
+                await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd);
 
             return new ListResult
             {
@@ -74,9 +74,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> GetList()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -87,9 +87,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteZip)]
         public async Task<ActionResult<StringResult>> Zip([FromBody]ZipRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -112,9 +112,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteUnZip)]
         public async Task<ActionResult<ListResult>> UnZip([FromBody]UnZipRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -132,9 +132,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody]DeleteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -144,12 +144,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
             if (!string.IsNullOrEmpty(request.DirectoryName))
             {
                 manager.DeleteSiteTemplate(request.DirectoryName);
-                await auth.AddAdminLogAsync("删除站点模板", $"站点模板:{request.DirectoryName}");
+                await _authManager.AddAdminLogAsync("删除站点模板", $"站点模板:{request.DirectoryName}");
             }
             if (!string.IsNullOrEmpty(request.FileName))
             {
                 manager.DeleteZipSiteTemplate(request.FileName);
-                await auth.AddAdminLogAsync("删除未解压站点模板", $"站点模板:{request.FileName}");
+                await _authManager.AddAdminLogAsync("删除未解压站点模板", $"站点模板:{request.FileName}");
             }
 
             return new BoolResult
@@ -161,9 +161,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<ListResult>> Upload([FromForm]IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }

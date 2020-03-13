@@ -48,8 +48,6 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<ActionResult<object>> GetConfig([FromQuery]GetRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-
             if (request.PageName == PageNameRegister)
             {
                 return await GetRegisterAsync();
@@ -75,7 +73,7 @@ namespace SS.CMS.Web.Controllers.Home
 
             return new
             {
-                Value = auth.User,
+                Value = await _authManager.GetUserAsync(),
                 Config = config
             };
         }
@@ -83,10 +81,11 @@ namespace SS.CMS.Web.Controllers.Home
         private async Task<object> GetRegisterAsync()
         {
             var config = await _configRepository.GetAsync();
+            var user = await _authManager.GetUserAsync();
 
             return new
             {
-                Value = _authManager.User,
+                Value = user,
                 Config = config,
                 Styles = await _tableStyleRepository.GetUserStyleListAsync(),
                 Groups = await _userGroupRepository.GetUserGroupListAsync()
@@ -97,19 +96,21 @@ namespace SS.CMS.Web.Controllers.Home
         {
             var menus = new List<object>();
             var defaultPageUrl = string.Empty;
+            var user = await _authManager.GetUserAsync();
 
-            if (_authManager.IsUserLoggin)
+            if (await _authManager.IsUserAuthenticatedAsync())
             {
                 var userMenus = await _userMenuRepository.GetUserMenuListAsync();
+
                 foreach (var menuInfo1 in userMenus)
                 {
                     if (menuInfo1.Disabled || menuInfo1.ParentId != 0 ||
-                        menuInfo1.GroupIds.Contains(_authManager.User.GroupId)) continue;
+                        menuInfo1.GroupIds.Contains(user.GroupId)) continue;
                     var children = new List<object>();
                     foreach (var menuInfo2 in userMenus)
                     {
                         if (menuInfo2.Disabled || menuInfo2.ParentId != menuInfo1.Id ||
-                            menuInfo2.GroupIds.Contains(_authManager.User.GroupId)) continue;
+                            menuInfo2.GroupIds.Contains(user.GroupId)) continue;
 
                         children.Add(new
                         {
@@ -137,7 +138,7 @@ namespace SS.CMS.Web.Controllers.Home
 
             return new
             {
-                Value = _authManager.User,
+                Value = user,
                 Config = config,
                 Menus = menus,
                 DefaultPageUrl = defaultPageUrl
@@ -147,10 +148,11 @@ namespace SS.CMS.Web.Controllers.Home
         private async Task<object> GetProfileAsync()
         {
             var config = await _configRepository.GetAsync();
+            var user = await _authManager.GetUserAsync();
 
             return new
             {
-                Value = _authManager.User,
+                Value = user,
                 Config = config,
                 Styles = await _tableStyleRepository.GetUserStyleListAsync()
             };
@@ -163,11 +165,11 @@ namespace SS.CMS.Web.Controllers.Home
             object siteInfo = null;
             object channel = null;
 
-            if (_authManager.IsUserLoggin)
+            if (await _authManager.IsUserAuthenticatedAsync())
             {
                 Site site = null;
                 Channel channelInfo = null;
-                var siteIdList = await _authManager.UserPermissions.GetSiteIdListAsync();
+                var siteIdList = await _authManager.GetSiteIdListAsync();
                 foreach (var siteId in siteIdList)
                 {
                     var permissionSite = await _siteRepository.GetAsync(siteId);
@@ -189,7 +191,7 @@ namespace SS.CMS.Web.Controllers.Home
 
                 if (site != null)
                 {
-                    var channelIdList = await _authManager.UserPermissions.GetChannelIdListAsync(site.Id,
+                    var channelIdList = await _authManager.GetChannelIdListAsync(site.Id,
                         Constants.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
@@ -224,10 +226,11 @@ namespace SS.CMS.Web.Controllers.Home
             }
 
             var config = await _configRepository.GetAsync();
+            var user = await _authManager.GetUserAsync();
 
             return new
             {
-                Value = _authManager.User,
+                Value = user,
                 Config = config,
                 Sites = sites,
                 Channels = channels,
@@ -249,11 +252,11 @@ namespace SS.CMS.Web.Controllers.Home
             List<KeyValuePair<int, string>> checkedLevels = null;
             var checkedLevel = 0;
 
-            if (_authManager.IsUserLoggin)
+            if (await _authManager.IsUserAuthenticatedAsync())
             {
                 Site siteInfo = null;
                 Channel channelInfo = null;
-                var siteIdList = await _authManager.UserPermissions.GetSiteIdListAsync();
+                var siteIdList = await _authManager.GetSiteIdListAsync();
                 foreach (var siteId in siteIdList)
                 {
                     var permissionSiteInfo = await _siteRepository.GetAsync(siteId);
@@ -275,7 +278,7 @@ namespace SS.CMS.Web.Controllers.Home
 
                 if (siteInfo != null)
                 {
-                    var channelIdList = await _authManager.UserPermissions.GetChannelIdListAsync(siteInfo.Id,
+                    var channelIdList = await _authManager.GetChannelIdListAsync(siteInfo.Id,
                         Constants.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
@@ -313,7 +316,7 @@ namespace SS.CMS.Web.Controllers.Home
                     var tableName = _channelRepository.GetTableName(siteInfo, channelInfo);
                     styles = await _tableStyleRepository.GetContentStyleListAsync(channelInfo, tableName);
 
-                    var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager.AdminPermissions, siteInfo, siteInfo.Id);
+                    var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, siteInfo, siteInfo.Id);
                     checkedLevels = CheckManager.GetCheckedLevels(siteInfo, userIsChecked, userCheckedLevel, true);
 
                     if (requestContentId != 0)
@@ -342,10 +345,11 @@ namespace SS.CMS.Web.Controllers.Home
             }
 
             var config = await _configRepository.GetAsync();
+            var user = await _authManager.GetUserAsync();
 
             return new
             {
-                Value = _authManager.User,
+                Value = user,
                 Config = config,
                 Sites = sites,
                 Channels = channels,

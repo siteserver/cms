@@ -36,9 +36,9 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }
@@ -63,15 +63,15 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         [HttpDelete, Route(RoutePluginId)]
         public async Task<ActionResult<BoolResult>> Delete(string pluginId)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }
 
             _pluginManager.Delete(pluginId);
-            await auth.AddAdminLogAsync("删除插件", $"插件:{pluginId}");
+            await _authManager.AddAdminLogAsync("删除插件", $"插件:{pluginId}");
 
             CacheUtils.ClearAll();
 
@@ -84,9 +84,9 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteActionsReload)]
         public async Task<ActionResult<BoolResult>> Reload()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }
@@ -102,9 +102,9 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RoutePluginIdEnable)]
         public async Task<ActionResult<BoolResult>> Enable(string pluginId)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }
@@ -114,7 +114,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
             {
                 await _pluginRepository.UpdateIsDisabledAsync(pluginId, false);
 
-                await auth.AddAdminLogAsync("启用插件", $"插件:{pluginId}");
+                await _authManager.AddAdminLogAsync("启用插件", $"插件:{pluginId}");
             }
 
             CacheUtils.ClearAll();

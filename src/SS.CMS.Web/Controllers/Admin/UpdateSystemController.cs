@@ -29,8 +29,8 @@ namespace SS.CMS.Web.Controllers.Admin
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin || !await auth.AdminPermissions.IsSuperAdminAsync())
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() || !await _authManager.IsSuperAdminAsync())
             {
                 return Unauthorized();
             }

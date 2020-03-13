@@ -42,9 +42,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentAdd))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentAdd))
             {
                 return Unauthorized();
             }
@@ -55,7 +54,7 @@ namespace SS.CMS.Web.Controllers.Home
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(auth.AdminPermissions, site, request.SiteId);
+            var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, request.SiteId);
             var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, false);
 
             return new GetResult
@@ -68,9 +67,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
                     Constants.ChannelPermissions.ContentAdd))
             {
                 return Unauthorized();
@@ -115,9 +113,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
                     Constants.ChannelPermissions.ContentAdd))
             {
                 return Unauthorized();
@@ -132,9 +129,10 @@ namespace SS.CMS.Web.Controllers.Home
             var tableName = _channelRepository.GetTableName(site, channel);
             var styleList = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
+            var adminId = await _authManager.GetAdminIdAsync();
+            var userId = await _authManager.GetUserIdAsync();
 
             var contentIdList = new List<int>();
-
             foreach (var fileName in request.FileNames)
             {
                 if (string.IsNullOrEmpty(fileName)) continue;
@@ -152,9 +150,9 @@ namespace SS.CMS.Web.Controllers.Home
                     SiteId = request.SiteId,
                     AddDate = DateTime.Now,
                     SourceId = SourceManager.User,
-                    AdminId = auth.AdminId,
-                    UserId = auth.UserId,
-                    LastEditAdminId = auth.AdminId,
+                    AdminId = adminId,
+                    UserId = userId,
+                    LastEditAdminId = adminId,
                     Checked = isChecked,
                     CheckedLevel = request.CheckedLevel
                 };

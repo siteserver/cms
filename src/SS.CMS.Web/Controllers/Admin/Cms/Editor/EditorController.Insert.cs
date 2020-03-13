@@ -12,11 +12,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Insert([FromBody] SaveRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Contents) ||
-                !await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentAdd))
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentAdd))
             {
                 return Unauthorized();
             }
@@ -29,7 +29,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
             var content = request.Content;
             content.SiteId = site.Id;
             content.ChannelId = channel.Id;
-            content.LastEditAdminId = auth.AdminId;
+            content.LastEditAdminId = await _authManager.GetAdminIdAsync();
             content.LastEditDate = DateTime.Now;
 
             content.Checked = request.Content.CheckedLevel >= site.CheckContentLevel;

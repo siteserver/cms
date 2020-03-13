@@ -378,7 +378,7 @@ namespace SS.CMS.Core.Serialization.Components
                 var contentInfo = await _databaseManager.ContentRepository.GetAsync(site, channelInfo, contentId);
                 try
                 {
-                    ContentUtility.PutImagePaths(_pathManager, site, contentInfo, collection);
+                    await _pathManager.PutImagePathsAsync(site, contentInfo, collection);
                 }
                 catch
                 {
@@ -400,7 +400,7 @@ namespace SS.CMS.Core.Serialization.Components
             return true;
         }
 
-        public bool ExportContents(Site site, List<Content> contentInfoList)
+        public async Task<bool> ExportContentsAsync(Site site, List<Content> contentInfoList)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
             var feed = AtomUtility.GetEmptyFeed();
@@ -411,7 +411,7 @@ namespace SS.CMS.Core.Serialization.Components
             {
                 try
                 {
-                    ContentUtility.PutImagePaths(_pathManager, site, contentInfo, collection);
+                    await _pathManager.PutImagePathsAsync(site, contentInfo, collection);
                 }
                 catch
                 {

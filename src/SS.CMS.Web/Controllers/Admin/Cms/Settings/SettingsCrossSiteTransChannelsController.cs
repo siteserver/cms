@@ -36,9 +36,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> List([FromQuery] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigCrossSiteTrans))
             {
                 return Unauthorized();
@@ -91,10 +91,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(RouteOptions)]
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody]GetOptionsRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigCrossSiteTrans))
             {
                 return Unauthorized();
@@ -214,9 +214,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpPut, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigCrossSiteTrans))
             {
                 return Unauthorized();
@@ -236,7 +236,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 
             await _channelRepository.UpdateAsync(channel);
 
-            await auth.AddSiteLogAsync(request.SiteId, "修改跨站转发设置");
+            await _authManager.AddSiteLogAsync(request.SiteId, "修改跨站转发设置");
 
             return new BoolResult
             {

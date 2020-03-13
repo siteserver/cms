@@ -33,9 +33,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> List([FromQuery] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
             {
                 return Unauthorized();
             }
@@ -65,9 +65,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] FileRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
             {
                 return Unauthorized();
             }
@@ -76,7 +76,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             if (site == null) return NotFound();
 
             FileUtils.DeleteFileIfExists(await _pathManager.GetSitePathAsync(site, request.DirectoryPath, request.FileName));
-            await auth.AddSiteLogAsync(request.SiteId, "删除资源文件", $"{request.DirectoryPath}:{request.FileName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "删除资源文件", $"{request.DirectoryPath}:{request.FileName}");
 
             return new BoolResult
             {
@@ -87,9 +87,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteConfig)]
         public async Task<ActionResult<GetResult>> Config([FromBody] ConfigRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
             {
                 return Unauthorized();
             }
@@ -102,7 +102,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             site.TemplatesAssetsJsDir = request.JsDir.Trim('/');
 
             await _siteRepository.UpdateAsync(site);
-            await auth.AddSiteLogAsync(request.SiteId, "资源文件文件夹设置");
+            await _authManager.AddSiteLogAsync(request.SiteId, "资源文件文件夹设置");
 
             var directories = new List<Cascade<string>>();
             var files = new List<KeyValuePair<string, string>>();

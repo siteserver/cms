@@ -14,9 +14,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         [HttpPost, Route(RouteList)]
         public async Task<ActionResult<ListResult>> List([FromBody] ListRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ContentsSearch))
             {
                 return Unauthorized();
@@ -39,7 +39,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             if (request.IsAdvanced)
             {
                 var isAdmin = false;
-                var adminId = auth.AdminId;
+                var adminId = await _authManager.GetAdminIdAsync();
                 var isUser = false;
                 if (request.SearchType == SearchType.Admin)
                 {

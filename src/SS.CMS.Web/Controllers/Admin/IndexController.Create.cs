@@ -12,12 +12,13 @@ namespace SS.CMS.Web.Controllers.Admin
         [HttpPost, Route(RouteActionsCreate)]
         public async Task<ActionResult<IntResult>> Create([FromBody] CreateRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin)
+            if (!await _authManager.IsAdminAuthenticatedAsync())
             {
                 return Unauthorized();
             }
-            var cacheKey = Constants.GetSessionIdCacheKey(auth.AdminId);
+
+            var admin = await _authManager.GetAdminAsync();
+            var cacheKey = Constants.GetSessionIdCacheKey(admin.Id);
             var sessionId = await _dbCacheRepository.GetValueAsync(cacheKey);
             if (string.IsNullOrEmpty(request.SessionId) || sessionId != request.SessionId)
             {
@@ -26,9 +27,9 @@ namespace SS.CMS.Web.Controllers.Admin
 
             var config = await _configRepository.GetAsync();
 
-            if (auth.Administrator.LastActivityDate != null && config.IsAdminEnforceLogout)
+            if (admin.LastActivityDate != null && config.IsAdminEnforceLogout)
             {
-                var ts = new TimeSpan(DateTime.Now.Ticks - auth.Administrator.LastActivityDate.Value.Ticks);
+                var ts = new TimeSpan(DateTime.Now.Ticks - admin.LastActivityDate.Value.Ticks);
                 if (ts.TotalMinutes > config.AdminEnforceLogoutMinutes)
                 {
                     return Unauthorized();

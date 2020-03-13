@@ -27,9 +27,9 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(Route)]
         public async Task<ActionResult<BoolResult>> GetConfig()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -43,9 +43,9 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromForm]IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -90,9 +90,9 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -105,7 +105,7 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
                 //importObject.ImportContentsByZipFile(channel, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
             }
 
-            await auth.AddAdminLogAsync("安装离线插件", string.Empty);
+            await _authManager.AddAdminLogAsync("安装离线插件", string.Empty);
 
             return new BoolResult
             {

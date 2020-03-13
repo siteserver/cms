@@ -26,8 +26,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var styles = new List<Style>
             {
@@ -46,8 +46,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             foreach (var style in request.Styles)
             {
@@ -76,7 +76,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
                 await _tableStyleRepository.InsertAsync(request.RelatedIdentities, tableStyle);
             }
 
-            await auth.AddAdminLogAsync("批量添加表单显示样式");
+            await _authManager.AddAdminLogAsync("批量添加表单显示样式");
 
             return new BoolResult
             {

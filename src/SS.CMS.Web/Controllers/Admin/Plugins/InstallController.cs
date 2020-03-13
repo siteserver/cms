@@ -34,9 +34,9 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(RouteConfig)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -52,9 +52,9 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteDownload)]
         public async Task<ActionResult<BoolResult>> Download([FromBody]DownloadRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -80,9 +80,9 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteUpdate)]
         public async Task<ActionResult<BoolResult>> Update([FromBody]UploadRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -106,9 +106,9 @@ namespace SS.CMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteCache)]
         public async Task<ActionResult<BoolResult>> Cache()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }

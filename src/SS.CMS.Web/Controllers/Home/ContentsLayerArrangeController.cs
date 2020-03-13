@@ -26,9 +26,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
             {
                 return Unauthorized();
             }
@@ -41,7 +40,7 @@ namespace SS.CMS.Web.Controllers.Home
 
             await _contentRepository.UpdateArrangeTaxisAsync(site, channel, request.AttributeName, request.IsDesc);
 
-            await auth.AddSiteLogAsync(request.SiteId, "批量整理", string.Empty);
+            await _authManager.AddSiteLogAsync(request.SiteId, "批量整理", string.Empty);
 
             return new BoolResult
             {

@@ -38,9 +38,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(Route)]
         public async Task<ActionResult<IEnumerable<RelatedField>>> Get([FromQuery] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();
@@ -52,9 +52,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<IEnumerable<RelatedField>>> Delete([FromBody] DeleteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();
@@ -62,7 +62,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 
             await _relatedFieldRepository.DeleteAsync(request.RelatedFieldId);
 
-            await auth.AddSiteLogAsync(request.SiteId, "删除联动字段");
+            await _authManager.AddSiteLogAsync(request.SiteId, "删除联动字段");
 
             return await _relatedFieldRepository.GetRelatedFieldListAsync(request.SiteId);
         }
@@ -70,9 +70,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(Route)]
         public async Task<ActionResult<IEnumerable<RelatedField>>> Add([FromBody]RelatedField request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();
@@ -80,7 +80,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 
             await _relatedFieldRepository.InsertAsync(request);
 
-            await auth.AddSiteLogAsync(request.SiteId, "新增联动字段");
+            await _authManager.AddSiteLogAsync(request.SiteId, "新增联动字段");
 
             return await _relatedFieldRepository.GetRelatedFieldListAsync(request.SiteId);
         }
@@ -88,9 +88,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpPut, Route(Route)]
         public async Task<ActionResult<IEnumerable<RelatedField>>> Edit([FromBody]RelatedField request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();
@@ -98,7 +98,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
 
             await _relatedFieldRepository.UpdateAsync(request);
 
-            await auth.AddSiteLogAsync(request.SiteId, "编辑联动字段");
+            await _authManager.AddSiteLogAsync(request.SiteId, "编辑联动字段");
 
             return await _relatedFieldRepository.GetRelatedFieldListAsync(request.SiteId);
         }
@@ -106,9 +106,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<BoolResult>> Import([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();
@@ -137,7 +137,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
             FileUtils.DeleteFileIfExists(filePath);
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
 
-            await auth.AddSiteLogAsync(request.SiteId, "导入联动字段");
+            await _authManager.AddSiteLogAsync(request.SiteId, "导入联动字段");
 
             return new BoolResult
             {
@@ -148,9 +148,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(RouteExport)]
         public async Task<ActionResult<StringResult>> Export([FromBody] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();

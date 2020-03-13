@@ -28,10 +28,11 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]int userId)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
-            if (auth.AdminId != userId &&
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
+
+            var adminId = await _authManager.GetAdminIdAsync();
+            if (adminId != userId &&
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -51,12 +52,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int userId, [FromForm]IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
+
             var administrator = await _administratorRepository.GetByUserIdAsync(userId);
             if (administrator == null) return NotFound();
-            if (auth.AdminId != userId &&
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+
+            var adminId = await _authManager.GetAdminIdAsync();
+            if (adminId != userId &&
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -82,11 +85,12 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
             var userId = request.UserId;
-            if (!auth.IsAdminLoggin) return Unauthorized();
-            if (auth.AdminId != userId &&
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
+
+            var adminId = await _authManager.GetAdminIdAsync();
+            if (adminId != userId &&
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -105,7 +109,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             if (administrator.Id == 0)
             {
                 administrator.UserName = request.UserName;
-                administrator.CreatorUserName = auth.AdminName;
+                administrator.CreatorUserName = await _authManager.GetAdminNameAsync();
                 administrator.CreationDate = DateTime.Now;
             }
             else
@@ -133,7 +137,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 {
                     return this.Error($"管理员添加失败：{errorMessage}");
                 }
-                await auth.AddAdminLogAsync("添加管理员", $"管理员:{administrator.UserName}");
+                await _authManager.AddAdminLogAsync("添加管理员", $"管理员:{administrator.UserName}");
             }
             else
             {
@@ -142,7 +146,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 {
                     return this.Error($"管理员修改失败：{errorMessage}");
                 }
-                await auth.AddAdminLogAsync("修改管理员属性", $"管理员:{administrator.UserName}");
+                await _authManager.AddAdminLogAsync("修改管理员属性", $"管理员:{administrator.UserName}");
             }
 
             return new BoolResult

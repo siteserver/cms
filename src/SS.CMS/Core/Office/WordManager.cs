@@ -65,7 +65,7 @@ namespace SS.CMS.Core.Office
 
             if (siteInfo != null)
             {
-                content = await ContentUtility.TextEditorContentDecodeAsync(pathManager, siteInfo, content, true);
+                content = await pathManager.TextEditorContentDecodeAsync(siteInfo, content, true);
             }
 
             return (title, content);

@@ -27,9 +27,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.CreateFiles))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.CreateFiles))
             {
                 return Unauthorized();
             }
@@ -50,9 +50,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Create([FromBody] CreateRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.CreateFiles))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.CreateFiles))
             {
                 return Unauthorized();
             }

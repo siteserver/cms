@@ -1,30 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Microsoft.Extensions.FileProviders;
 using SixLabors.Fonts;
-using SS.CMS.Abstractions;
 
 namespace SS.CMS.Core
 {
     public static class FontManager
     {
+        public static FontCollection Fonts { get; }
+
+        static FontManager()
+        {
+            Fonts = new FontCollection();
+
+            var list = new List<string>
+            {
+                "Fonts/arial.ttf",
+                "Fonts/arialbd.ttf",
+                "Fonts/arialbi.ttf",
+                "Fonts/ariali.ttf",
+                "Fonts/ariblk.ttf"
+            };
+
+            var embeddedProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
+            foreach (var fileName in list)
+            {
+                using var reader = embeddedProvider.GetFileInfo(fileName).CreateReadStream();
+                Fonts.Install(reader);
+            }
+
+            //var assembly = typeof(FontManager).Assembly;
+            //var resource = assembly.GetManifestResourceStream("SS.CMS.Fonts.OpenSans-Regular.ttf");
+            //var font1 = Fonts.Install(resource);
+        }
+
         public static List<string> GetFontFamilies()
         {
-            return SystemFonts.Families.Select(x => x.Name).ToList();
+            return Fonts.Families.Select(x => x.Name).ToList();
         }
 
-        private static FontFamily _defaultFamily;
-
-        public static FontFamily DefaultFont
-        {
-            get
-            {
-                return _defaultFamily ??= SystemFonts.Families.FirstOrDefault(x =>
-                                              StringUtils.EqualsIgnoreCase(x.Name, "Arial") ||
-                                              StringUtils.EqualsIgnoreCase(x.Name, "Helvetica") ||
-                                              StringUtils.EqualsIgnoreCase(x.Name, "Sans-Serif")) ??
-                                          SystemFonts.Families.First();
-            }
-        }
+        public static FontFamily DefaultFont => Fonts.Families.First();
     }
 }

@@ -23,8 +23,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var group = await _channelGroupRepository.GetAsync(request.SiteId, request.GroupId);
 
@@ -38,8 +38,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(Route)]
         public async Task<ActionResult<ListResult>> Add([FromBody] AddRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             if (await _channelGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
             {
@@ -55,7 +55,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
 
             await _channelGroupRepository.InsertAsync(groupInfo);
 
-            await auth.AddSiteLogAsync(request.SiteId, "新增栏目组", $"栏目组:{groupInfo.GroupName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "新增栏目组", $"栏目组:{groupInfo.GroupName}");
 
             var groups = await _channelGroupRepository.GetChannelGroupsAsync(request.SiteId);
             var groupNames = groups.Select(x => x.GroupName);
@@ -70,8 +70,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpPut, Route(Route)]
         public async Task<ActionResult<ListResult>> Edit([FromBody] EditRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var groupInfo = await _channelGroupRepository.GetAsync(request.SiteId, request.GroupId);
 
@@ -85,7 +85,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
 
             await _channelGroupRepository.UpdateAsync(groupInfo);
 
-            await auth.AddSiteLogAsync(request.SiteId, "修改栏目组", $"栏目组:{groupInfo.GroupName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "修改栏目组", $"栏目组:{groupInfo.GroupName}");
 
             var groups = await _channelGroupRepository.GetChannelGroupsAsync(request.SiteId);
             var groupNames = groups.Select(x => x.GroupName);

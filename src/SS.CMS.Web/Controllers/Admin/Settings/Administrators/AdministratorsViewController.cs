@@ -31,8 +31,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin)
+            if (!await _authManager.IsAdminAuthenticatedAsync())
             {
                 return Unauthorized();
             }
@@ -52,8 +51,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 return NotFound();
             }
 
-            if (auth.AdminId != admin.Id &&
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            var adminId = await _authManager.GetAdminIdAsync();
+            if (adminId != admin.Id &&
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }

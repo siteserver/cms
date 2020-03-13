@@ -28,8 +28,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var style = await _tableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities) ?? new TableStyle
             {
@@ -102,8 +102,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var styleDatabase =
                 await _tableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities) ??
@@ -116,13 +116,13 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             if (styleDatabase.Id == 0 && styleDatabase.RelatedIdentity == 0 || styleDatabase.RelatedIdentity != request.RelatedIdentities[0])
             {
                 (isSuccess, errorMessage) = await InsertTableStyleAsync(request);
-                await auth.AddAdminLogAsync("添加表单显示样式", $"字段名:{request.AttributeName}");
+                await _authManager.AddAdminLogAsync("添加表单显示样式", $"字段名:{request.AttributeName}");
             }
             //数据库中有此项的表样式
             else
             {
                 (isSuccess, errorMessage) = await UpdateTableStyleAsync(styleDatabase, request);
-                await auth.AddAdminLogAsync("修改表单显示样式", $"字段名:{request.AttributeName}");
+                await _authManager.AddAdminLogAsync("修改表单显示样式", $"字段名:{request.AttributeName}");
             }
 
             if (!isSuccess)

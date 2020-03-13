@@ -22,9 +22,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersConfig))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersConfig))
             {
                 return Unauthorized();
             }
@@ -40,9 +40,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersConfig))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersConfig))
             {
                 return Unauthorized();
             }
@@ -62,7 +62,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
 
             await _configRepository.UpdateAsync(config);
 
-            await auth.AddAdminLogAsync("修改用户设置");
+            await _authManager.AddAdminLogAsync("修改用户设置");
 
             return new BoolResult
             {

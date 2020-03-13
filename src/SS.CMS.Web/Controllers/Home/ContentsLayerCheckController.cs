@@ -33,9 +33,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromBody] GetRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentCheckLevel1))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentCheckLevel1))
             {
                 return Unauthorized();
             }
@@ -58,11 +57,11 @@ namespace SS.CMS.Web.Controllers.Home
                 retVal.Add(dict);
             }
 
-            var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(auth.AdminPermissions, site, request.ChannelId);
+            var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, request.ChannelId);
             var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
             var allChannels =
-                await _channelRepository.GetChannelsAsync(request.SiteId, auth.AdminPermissions, Constants.ChannelPermissions.ContentAdd);
+                await _channelRepository.GetChannelsAsync(request.SiteId, _authManager, Constants.ChannelPermissions.ContentAdd);
 
             return new GetResult
             {
@@ -76,10 +75,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentCheckLevel1))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentCheckLevel1))
             {
                 return Unauthorized();
             }
@@ -96,13 +93,14 @@ namespace SS.CMS.Web.Controllers.Home
                 request.CheckedLevel = 0;
             }
 
+            var adminId = await _authManager.GetAdminIdAsync();
             var contentInfoList = new List<Content>();
             foreach (var contentId in request.ContentIds)
             {
                 var contentInfo = await _contentRepository.GetAsync(site, channelInfo, contentId);
                 if (contentInfo == null) continue;
 
-                contentInfo.CheckAdminId = auth.AdminId;
+                contentInfo.CheckAdminId = adminId;
                 contentInfo.CheckDate = DateTime.Now;
                 contentInfo.CheckReasons = request.Reasons;
 
@@ -127,7 +125,7 @@ namespace SS.CMS.Web.Controllers.Home
                     SiteId = request.SiteId,
                     ChannelId = contentInfo.ChannelId,
                     ContentId = contentInfo.Id,
-                    AdminId = auth.AdminId,
+                    AdminId = adminId,
                     Checked = isChecked,
                     CheckedLevel = request.CheckedLevel,
                     CheckDate = DateTime.Now,
@@ -135,7 +133,7 @@ namespace SS.CMS.Web.Controllers.Home
                 });
             }
 
-            await auth.AddSiteLogAsync(request.SiteId, "批量审核内容");
+            await _authManager.AddSiteLogAsync(request.SiteId, "批量审核内容");
 
             foreach (var contentInfo in contentInfoList)
             {

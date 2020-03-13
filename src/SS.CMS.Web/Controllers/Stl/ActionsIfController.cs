@@ -22,9 +22,9 @@ namespace SS.CMS.Web.Controllers.Stl
         [HttpPost, Route(Constants.RouteRouteActionsIf)]
         public async Task<SubmitResult> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
+            var user = await _authManager.GetUserAsync();
 
-            var dynamicInfo = DynamicInfo.GetDynamicInfo(_settingsManager, request.Value, request.Page, auth.User, Request.Path + Request.QueryString);
+            var dynamicInfo = DynamicInfo.GetDynamicInfo(_settingsManager, request.Value, request.Page, user, Request.Path + Request.QueryString);
             var ifInfo = TranslateUtils.JsonDeserialize<DynamicInfo.IfInfo>(dynamicInfo.ElementValues);
 
             var isSuccess = false;
@@ -34,15 +34,15 @@ namespace SS.CMS.Web.Controllers.Stl
             {
                 if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsUserLoggin))
                 {
-                    isSuccess = auth.IsUserLoggin;
+                    isSuccess = await _authManager.IsUserAuthenticatedAsync();
                 }
                 else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsAdministratorLoggin))
                 {
-                    isSuccess = auth.IsAdminLoggin;
+                    isSuccess = await _authManager.IsAdminAuthenticatedAsync();
                 }
                 else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsUserOrAdministratorLoggin))
                 {
-                    isSuccess = auth.IsUserLoggin || auth.IsAdminLoggin;
+                    isSuccess = await _authManager.IsUserAuthenticatedAsync() || await _authManager.IsAdminAuthenticatedAsync();
                 }
 
                 var template = isSuccess ? dynamicInfo.SuccessTemplate : dynamicInfo.FailureTemplate;

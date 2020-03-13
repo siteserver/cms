@@ -22,9 +22,9 @@ namespace SS.CMS.Web.Controllers.Stl
         [HttpPost, Route(Constants.RouteActionsDynamic)]
         public async Task<SubmitResult> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
+            var user = await _authManager.GetUserAsync();
 
-            var dynamicInfo = DynamicInfo.GetDynamicInfo(_settingsManager, request.Value, request.Page, auth.User, Request.Path + Request.QueryString);
+            var dynamicInfo = DynamicInfo.GetDynamicInfo(_settingsManager, request.Value, request.Page, user, Request.Path + Request.QueryString);
 
             return new SubmitResult
             {

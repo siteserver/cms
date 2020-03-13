@@ -26,9 +26,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
             {
                 return Unauthorized();
             }
@@ -67,7 +66,7 @@ namespace SS.CMS.Web.Controllers.Home
                         await _contentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
-                    await auth.AddSiteLogAsync(request.SiteId, "设置内容属性");
+                    await _authManager.AddSiteLogAsync(request.SiteId, "设置内容属性");
                 }
             }
             else if (request.PageType == "cancelAttributes")
@@ -98,7 +97,7 @@ namespace SS.CMS.Web.Controllers.Home
                         await _contentRepository.UpdateAsync(site, channelInfo, contentInfo);
                     }
 
-                    await auth.AddSiteLogAsync(request.SiteId, "取消内容属性");
+                    await _authManager.AddSiteLogAsync(request.SiteId, "取消内容属性");
                 }
             }
             else if (request.PageType == "setHits")
@@ -112,7 +111,7 @@ namespace SS.CMS.Web.Controllers.Home
                     await _contentRepository.UpdateAsync(site, channelInfo, contentInfo);
                 }
 
-                await auth.AddSiteLogAsync(request.SiteId, "设置内容点击量");
+                await _authManager.AddSiteLogAsync(request.SiteId, "设置内容点击量");
             }
 
             return new BoolResult

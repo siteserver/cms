@@ -23,8 +23,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var group = await _contentGroupRepository.GetAsync(request.SiteId, request.GroupId);
 
@@ -38,8 +38,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(Route)]
         public async Task<ActionResult<ListResult>> Add([FromBody] AddRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             if (await _contentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
             {
@@ -55,7 +55,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
 
             await _contentGroupRepository.InsertAsync(groupInfo);
 
-            await auth.AddSiteLogAsync(request.SiteId, "新增内容组", $"内容组:{groupInfo.GroupName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "新增内容组", $"内容组:{groupInfo.GroupName}");
 
             var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
             var groupNames = groups.Select(x => x.GroupName);
@@ -70,8 +70,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpPut, Route(Route)]
         public async Task<ActionResult<ListResult>> Edit([FromBody] EditRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var groupInfo = await _contentGroupRepository.GetAsync(request.SiteId, request.GroupId);
 
@@ -85,7 +85,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
 
             await _contentGroupRepository.UpdateAsync(groupInfo);
 
-            await auth.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
 
             var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
             var groupNames = groups.Select(x => x.GroupName);

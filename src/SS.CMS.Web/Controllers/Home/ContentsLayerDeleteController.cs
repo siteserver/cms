@@ -30,9 +30,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentDelete))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentDelete))
             {
                 return Unauthorized();
             }
@@ -64,9 +63,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentDelete))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentDelete))
             {
                 return Unauthorized();
             }
@@ -88,18 +86,19 @@ namespace SS.CMS.Web.Controllers.Home
                 var content = await _contentRepository.GetAsync(site, channel, contentId);
                 if (content != null)
                 {
-                    await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, contentId, "删除内容",
+                    await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, contentId, "删除内容",
                         $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId)},内容标题:{content.Title}");
                 }
 
             }
             else
             {
-                await auth.AddSiteLogAsync(request.SiteId, "批量删除内容",
+                await _authManager.AddSiteLogAsync(request.SiteId, "批量删除内容",
                     $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId)},内容条数:{request.ContentIds.Count}");
             }
 
-            await _contentRepository.RecycleContentsAsync(site, channel, request.ContentIds, auth.AdminId);
+            var adminId = await _authManager.GetAdminIdAsync();
+            await _contentRepository.RecycleContentsAsync(site, channel, request.ContentIds, adminId);
 
             await _createManager.TriggerContentChangedEventAsync(request.SiteId, request.ChannelId);
 

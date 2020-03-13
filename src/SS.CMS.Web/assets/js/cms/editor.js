@@ -324,6 +324,10 @@ var methods = {
     this.form[utils.getExtendName(style.attributeName, no)] = '';
     this.form = _.assign({}, this.form);
   },
+
+  btnExtendPreviewClick: function(attributeName, no) {
+    var imageUrl = this.form[utils.getExtendName(attributeName, no)];
+  }
 };
 
 var $vue = new Vue({

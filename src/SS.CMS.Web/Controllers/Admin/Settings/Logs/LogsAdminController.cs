@@ -24,9 +24,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<PageResult<Log>>> List([FromBody] SearchRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsAdmin))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsAdmin))
             {
                 return Unauthorized();
             }
@@ -53,16 +53,16 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Logs
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsAdmin))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsAdmin))
             {
                 return Unauthorized();
             }
 
             await _logRepository.DeleteAllAsync();
 
-            await auth.AddAdminLogAsync("清空管理员日志");
+            await _authManager.AddAdminLogAsync("清空管理员日志");
 
             return new BoolResult
             {

@@ -27,9 +27,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
             {
                 return Unauthorized();
             }
@@ -56,9 +56,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpPut, Route(RouteWeb)]
         public async Task<ActionResult<EditWebResult>> EditWeb([FromBody]EditWebRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
             {
                 return Unauthorized();
             }
@@ -78,7 +78,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
             site.AssetsDir = request.AssetsDir;
 
             await _siteRepository.UpdateAsync(site);
-            await auth.AddSiteLogAsync(request.SiteId, "修改站点访问地址");
+            await _authManager.AddSiteLogAsync(request.SiteId, "修改站点访问地址");
 
             var siteIdList = await _siteRepository.GetSiteIdListAsync(0);
             var sites = new List<Site>();
@@ -96,9 +96,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpPut, Route(RouteApi)]
         public async Task<ActionResult<BoolResult>> EditApi([FromBody]EditApiRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
             {
                 return Unauthorized();
             }
@@ -110,7 +110,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 
             await _configRepository.UpdateAsync(config);
 
-            await auth.AddAdminLogAsync("修改API访问地址");
+            await _authManager.AddAdminLogAsync("修改API访问地址");
 
             return new BoolResult
             {

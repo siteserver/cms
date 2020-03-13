@@ -33,11 +33,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ObjectResult<IEnumerable<string>>>> Get([FromQuery] ChannelRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Contents) ||
-                !await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
             {
                 return Unauthorized();
             }
@@ -56,11 +56,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         [HttpPost, Route(RouteAdd)]
         public async Task<ActionResult<BoolResult>> Add([FromBody] AddRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Contents) ||
-                !await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
             {
                 return Unauthorized();
             }
@@ -80,12 +80,12 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
             if (await _contentGroupRepository.IsExistsAsync(request.SiteId, group.GroupName))
             {
                 await _contentGroupRepository.UpdateAsync(group);
-                await auth.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组:{group.GroupName}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组:{group.GroupName}");
             }
             else
             {
                 await _contentGroupRepository.InsertAsync(group);
-                await auth.AddSiteLogAsync(request.SiteId, "添加内容组", $"内容组:{group.GroupName}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "添加内容组", $"内容组:{group.GroupName}");
             }
 
             foreach (var channelContentId in channelContentIds)
@@ -101,7 +101,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 await _contentRepository.UpdateAsync(site, channel, content);
             }
 
-            await auth.AddSiteLogAsync(request.SiteId, "批量设置内容组", $"内容组:{group.GroupName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "批量设置内容组", $"内容组:{group.GroupName}");
 
             return new BoolResult
             {
@@ -112,11 +112,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Contents) ||
-                !await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
             {
                 return Unauthorized();
             }
@@ -158,7 +158,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 await _contentRepository.UpdateAsync(site, channel, content);
             }
 
-            await auth.AddSiteLogAsync(request.SiteId, request.IsCancel ? "批量取消内容组" : "批量设置内容组");
+            await _authManager.AddSiteLogAsync(request.SiteId, request.IsCancel ? "批量取消内容组" : "批量设置内容组");
 
             return new BoolResult
             {

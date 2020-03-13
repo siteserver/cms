@@ -39,9 +39,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -60,7 +60,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             }
 
             var permissions = new List<Permission>();
-            var generalPermissionList = await auth.AdminPermissions.GetPermissionListAsync();
+            var generalPermissionList = await _authManager.GetPermissionListAsync();
             var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager, _pluginManager);
             var generalPermissions = instance.GeneralPermissions;
 
@@ -82,14 +82,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             var siteList = new List<Site>();
             var checkedSiteIdList = new List<int>();
-            foreach (var permissionSiteId in await auth.AdminPermissions.GetSiteIdListAsync())
+            foreach (var permissionSiteId in await _authManager.GetSiteIdListAsync())
             {
-                if (await auth.AdminPermissions.HasChannelPermissionsAsync(permissionSiteId, permissionSiteId) &&
-                    await auth.AdminPermissions.HasSitePermissionsAsync(permissionSiteId))
+                if (await _authManager.HasChannelPermissionsAsync(permissionSiteId, permissionSiteId) &&
+                    await _authManager.HasSitePermissionsAsync(permissionSiteId))
                 {
                     var listOne =
-                        await auth.AdminPermissions.GetChannelPermissionsAsync(permissionSiteId, permissionSiteId);
-                    var listTwo = await auth.AdminPermissions.GetSitePermissionsAsync(permissionSiteId);
+                        await _authManager.GetChannelPermissionsAsync(permissionSiteId, permissionSiteId);
+                    var listTwo = await _authManager.GetSitePermissionsAsync(permissionSiteId);
                     if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                     {
                         siteList.Add(await _siteRepository.GetAsync(permissionSiteId));
@@ -121,9 +121,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(RouteSiteId)]
         public async Task<ActionResult<SitePermissionsResult>> GetSitePermissions([FromRoute]int siteId, [FromQuery]GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -134,9 +134,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> InsertRole([FromBody]RoleRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -153,7 +153,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             await _roleRepository.InsertRoleAsync(new Role
             {
                 RoleName = request.RoleName,
-                CreatorUserName = auth.AdminName,
+                CreatorUserName = await _authManager.GetAdminNameAsync(),
                 Description = request.Description
             });
 
@@ -179,7 +179,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             CacheUtils.ClearAll();
 
-            await auth.AddAdminLogAsync("新增管理员角色", $"角色名称:{request.RoleName}");
+            await _authManager.AddAdminLogAsync("新增管理员角色", $"角色名称:{request.RoleName}");
 
             return new BoolResult
             {
@@ -190,9 +190,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPut, Route(RouteRoleId)]
         public async Task<ActionResult<BoolResult>> UpdateRole([FromRoute]int roleId, [FromBody]RoleRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -240,7 +240,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             CacheUtils.ClearAll();
 
-            await auth.AddAdminLogAsync("修改管理员角色", $"角色名称:{request.RoleName}");
+            await _authManager.AddAdminLogAsync("修改管理员角色", $"角色名称:{request.RoleName}");
 
             return new BoolResult
             {

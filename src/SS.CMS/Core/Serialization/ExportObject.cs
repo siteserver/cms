@@ -322,7 +322,7 @@ namespace SS.CMS.Core.Serialization
             return isExport;
         }
 
-        public bool ExportContents(string filePath, List<Content> contentInfoList)
+        public async Task<bool> ExportContentsAsync(string filePath, List<Content> contentInfoList)
         {
             var siteContentDirectoryPath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), PathUtils.GetFileNameWithoutExtension(filePath));
 
@@ -331,7 +331,7 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
             var contentIe = new ContentIe(_pathManager, _databaseManager, _site, siteContentDirectoryPath);
-            var isExport = contentIe.ExportContents(_site, contentInfoList);
+            var isExport = await contentIe.ExportContentsAsync(_site, contentInfoList);
             if (isExport)
             {
                 ZipUtils.CreateZip(filePath, siteContentDirectoryPath);

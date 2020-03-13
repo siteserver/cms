@@ -33,7 +33,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
             var permission = string.Empty;
             if (request.Type == CreateType.Index)
@@ -53,8 +53,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
                 permission = Constants.SitePermissions.CreateAll;
             }
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, permission))
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, permission))
             {
                 return Unauthorized();
             }
@@ -93,7 +93,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Create([FromBody] CreateRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
             var permission = string.Empty;
             if (request.Type == CreateType.Index)
@@ -113,8 +113,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
                 permission = Constants.SitePermissions.CreateAll;
             }
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, permission))
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, permission))
             {
                 return Unauthorized();
             }
@@ -215,9 +215,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
         [HttpPost, Route(RouteAll)]
         public async Task<ActionResult<BoolResult>> CreateAll([FromBody] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.CreateAll))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.CreateAll))
             {
                 return Unauthorized();
             }

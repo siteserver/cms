@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Dto.Request;
 using SS.CMS.Abstractions.Dto.Result;
-using SS.CMS.Core;
 using SS.CMS.Core.Office;
 using SS.CMS.Extensions;
 
@@ -32,8 +31,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
 
@@ -65,8 +64,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(Route)]
         public async Task<ActionResult<StringResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
@@ -78,7 +77,7 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
 
                 var filePath = _pathManager.GetTemporaryFilesPath(fileName);
                 var (_, wordContent) = await WordManager.GetWordAsync(_pathManager, site, false, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
-                wordContent = await ContentUtility.TextEditorContentDecodeAsync(_pathManager, site, wordContent, true);
+                wordContent = await _pathManager.TextEditorContentDecodeAsync(site, wordContent, true);
                 builder.Append(wordContent);
                 FileUtils.DeleteFileIfExists(filePath);
             }

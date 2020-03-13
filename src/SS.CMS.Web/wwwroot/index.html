@@ -1,68 +1,641 @@
+<!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="cache-control" content="max-age=0" />
-    <meta http-equiv="cache-control" content="no-cache" />
-    <meta http-equiv="expires" content="0" />
-    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-    <meta http-equiv="pragma" content="no-cache" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="renderer" content="webkit" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <link
-      href="/siteserver/assets/images/favicon.png"
-      rel="icon"
-      type="image/png"
-    />
-    <link
-      href="/siteserver/assets/css/ionicons-2.0.0.min.css"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <link
-      href="/siteserver/assets/css/font-awesome-4.7.0.min.css"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <link
-      href="/siteserver/assets/css/bootstrap-4.1.0.min.css"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <link
-      href="/siteserver/assets/css/siteserver.min.css"
-      rel="stylesheet"
-      type="text/css"
-    />
-  </head>
-  <body>
-    <div id="main" class="m-t-15 m-b-15 m-l-15 m-r-15">
-      <div class="" style="">
-        <div class="wrapper-page">
-          <div class="card-box">
-            <h4 class="m-l-5">默认页面</h4>
-            <form method="post" class="form-horizontal m-t-20" _lpchecked="1">
-              <div class="form-group row">
-                <div class="col-12">
-                  <button
-                    type="button"
-                    class="btn btn-primary btn-large btn-custom w-md"
-                    style="width: 100%;" onclick="location.href = '/siteserver/';">
-                    进入管理后台
-                  </button>
-                </div>
-              </div>
-              <hr />
-              <div class="text-muted text-center">
-                <small>SS CMS 7.0.0-preview1</small>
-              </div>
-            </form>
+
+<head>
+  <meta charset="UTF-8">
+  <title>SiteServer CMS - 开源、免费、企业级CMS系统</title>
+<meta name="keywords" content="CMS,开源CMS,.net cms,政府CMS,企业级CMS,网站群,WCM,内容管理系统,网站内容管理,门户系统,建站系统">
+<meta name="description" content="SiteServer CMS 是开源、免费、企业级的CMS内容管理系统，能够以最低的成本、最少的人力投入在最短的时间内架设一个功能齐全、性能优异、规模庞大并易于维护的网站平台。">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="/assets/images/favicon.png">
+
+<link rel="stylesheet" href="/assets/css/bootstrap-4.1.0.min.css">
+<link rel="stylesheet" href="/assets/css/font-awesome-4.7.0.min.css">
+<link rel="stylesheet" href="/assets/css/siteserver.min.css">
+<link rel="stylesheet" href="/assets/css/swiper-4.1.6.min.css">
+<link rel="stylesheet" href="/assets/css/style.css">
+
+<!-- <link as="script" href="/assets/lib/jquery-1.10.1.min.js" rel="preload">
+<link as="script" href="/assets/lib/swiper-4.1.6.min.js" rel="preload">
+<link as="script" href="/assets/lib/axios-0.17.1.min.js" rel="preload">
+<link as="script" href="/assets/lib/sweetalert-2.1.0.min.js" rel="preload">
+<link as="script" href="/assets/lib/layer-3.1.1/layer.js" rel="preload">
+<link as="script" href="/assets/lib/public.js" rel="preload">
+<link as="script" href="/assets/lib/vue-2.5.16.min.js" rel="preload">
+<link as="script" href="/assets/lib/vuex-3.0.1.min.js" rel="preload">
+<link as="script" href="/assets/js/utils.js" rel="preload">
+<link as="script" href="/assets/js/status.js" rel="preload"> -->
+</head>
+
+<body class="sHomeBody">
+  <div id="mainContent">
+    <nav class="navbar home-top-navbar navbar-expand-md fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <span class="logo"></span>
+        </a>
+        <button class="navbar-toggler collapsed menu-toggle-button" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/">首 页</a>
+            </li>
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/cms/">产 品</a>
+              </li>
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/vip/">服 务</a>
+              </li>
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/plugins/">插 件</a>
+              </li>
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/templates/">模 板</a>
+              </li>
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/docs/">文 档</a>
+              </li>
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/blog/">博 客</a>
+              </li>
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/aboutus/">关 于</a>
+              </li>
+            
+          </ul>
+        </div>
+        <style>
+  .nav-link {
+    display: inline;
+    padding: 0;
+  }
+
+  .ss-dropdown {
+    width: 260px;
+  }
+
+  .dropdown-item {
+    cursor: pointer;
+  }
+</style>
+<div id="status">
+  <template v-if="user && pageLoad">
+    <div class="menu-extras">
+
+      <ul class="list-inline float-right mb-0">
+
+        <li class="list-inline-item dropdown notification-list">
+
+          <!-- <a @click="openMessage" style="margin-right: 10px;" class="nav-link dropdown-toggle arrow-none waves-effect"
+            href="javascript:;">
+            <i class="fa fa-bell" style="font-size: 20px;"></i>
+            <span class="badge badge-danger noti-icon-badge" style="top: -16px;">4</span>
+          </a>
+
+          <div @click="menuClick" :style="{display: isMessageMenu ? 'block': 'none'}" class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-menu-lg">
+            <div class="dropdown-item noti-title">
+              <h5 class="font-16">消息</h5>
+            </div>
+
+            <a href="javascript:void(0);" class="dropdown-item notify-item">
+              <p class="notify-details" style="margin-left: 0px">Robert S. Taylor commented on Admin<small class="text-muted">1
+                  min ago</small></p>
+            </a>
+
+            <a href="javascript:void(0);" class="dropdown-item notify-item">
+              <p class="notify-details" style="margin-left: 0px">New user registered.<small class="text-muted">1 min
+                  ago</small></p>
+            </a>
+
+            <a href="javascript:void(0);" class="dropdown-item notify-item">
+              <p class="notify-details" style="margin-left: 0px">Carlos Crouch liked <b>Admin</b><small class="text-muted">1
+                  min ago</small></p>
+            </a>
+
+            <a href="javascript:void(0);" class="dropdown-item notify-item notify-all">
+              查看全部
+            </a>
+
+          </div> -->
+
+          <a @click="openUserMenu" class="nav-link dropdown-toggle nav-user" href="javascript:;" style="position: relative;display: block;width: 80px;">
+            <img :src="user.avatarUrl" alt="user" class="rounded-circle">
+            <span v-if="user.isVip" class="badge badge-purple noti-icon-badge" style="top: -12px;right: 12px;">vip</span>
+          </a>
+
+          <div @click="menuClick" :style="{display: isUserMenu ? 'block': 'none'}" class="dropdown-menu dropdown-menu-right ss-dropdown">
+
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item text-muted font-15">
+                欢迎回来，{{ user.displayName || user.userName }}
+              </li>
+            </ul>
+
+            <a href="/home/" class="dropdown-item notify-item">
+              <i class="fa fa-home"></i>
+              用户中心
+            </a>
+
+            <a href="/home/#pages/settings.html" class="dropdown-item notify-item">
+              <i class="fa fa-gear"></i>
+              设 置
+            </a>
+
+            <ul class="list-group list-group-flush">
+              <li @click="logout" class="list-group-item dropdown-item">
+                <i class="fa fa-sign-out"></i>
+                退 出
+              </li>
+            </ul>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+  </template>
+  <template v-else-if="pageLoad">
+    <span>
+      <a class="nav-link" @click="redirectToRegister" href="javascript:;">
+        注 册
+      </a>
+      <a class="nav-link" @click="redirectToLogin" href="javascript:;">
+        登 录
+      </a>
+    </span>
+  </template>
+</div>
+
+      </div>
+    </nav>
+    <div class="hmBanBox">
+      <div class="container clearfix">
+        <img class="hmBan_img" src="assets/images/hmBanImg.png" width="663" height="382">
+        <div class="hmBanTxt">
+          <div class="hmBan_timg">
+            <span>SiteServer CMS</span> 内容管理系统 </div>
+          <div class="hmBan_st">开源、免费、企业级</div>
+          <a href="https://api.siteserver.cn/downloads/install/" class="hmBan_down">免费下载</a>
+          <div class="hmBan_tg"> 最新版本： <span class="mr-2"> V </span> 发布日期： <span> 
+            </span>
+          </div>
+          <div class="hmBan_bm"> 超过 <span>50</span> 万网站的选择 — 加入这个大家庭 <iframe src="https://ghbtns.com/github-btn.html?user=siteserver&amp;repo=cms&amp;type=star&amp;count=true"
+              allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20" style="margin:0 10px -6px;border: none;"></iframe>
           </div>
         </div>
       </div>
     </div>
-  </body>
+    <div class="hmCon1">
+      <div class="container clearfix">
+        
+          <a target="_blank" class="hmc1_aBox" href="https://github.com/siteserver/cms/issues/1683">
+            <img class="hmc1_icon" width="40" height="40" src="/assets/images/todo.svg">
+            <strong>
+              1月/2月迭代计划
+            </strong>
+            <p>
+              这个计划包含我们2019年1月/2月的工作。这是一个8周的迭代计划，我们将在2019年3月1日号发布 SiteServer CMS V6.9 正式版。
+            </p>
+          </a>
+        
+          <a target="_blank" class="hmc1_aBox" href="/blog/7/104.html">
+            <img class="hmc1_icon" width="40" height="40" src="/assets/images/done.svg">
+            <strong>
+              11月/12月迭代计划
+            </strong>
+            <p>
+              这个计划包含我们2018年11月/12月的工作。这是一个8周的迭代计划，我们将在2019年1月1日号发布 SiteServer CMS V6.8 正式版。
+            </p>
+          </a>
+        
+          <a target="_blank" class="hmc1_aBox" href="/blog/7/93.html">
+            <img class="hmc1_icon" width="40" height="40" src="/assets/images/done.svg">
+            <strong>
+              9月/10月迭代计划
+            </strong>
+            <p>
+              欢迎来到2018年11月1日发布的SiteServer CMS 新版本 V6.7，经过两个月的连续迭代开发，V6.7 版本新增了几项重要功能，我们希望你会喜欢，一些关键的亮点包括：
+            </p>
+          </a>
+        
+          <a target="_blank" class="hmc1_aBox" href="https://github.com/siteserver/cms/issues/718">
+            <img class="hmc1_icon" width="40" height="40" src="/assets/images/map.svg">
+            <strong>
+               2018 产品路线图
+            </strong>
+            <p>
+              此文档为 SiteServer CMS 的2018年路线图，在此，我们将公布 SiteServer CMS 2018年的主要开发工作。
+            </p>
+          </a>
+        
+      </div>
+    </div>
+    <div class="hmCon4">
+      <div class="container">
+        <div class="row clearfix">
+          <div class="col col-sm-12 col-md-6">
+            <div class="hmc4box">
+              <div class="hmc4_t">
+                <span>文 档</span>
+                <a class="hmc4_more" href="/docs/">更多>></a>
+              </div>
+              
+                <div class="hmc4Top">
+                  <a target="_blank" href="https://docs.siteserver.cn/faq/#/is-free">
+                    <span class="float-left">
+                      <img width="148" height="102" src="/assets/images/faq.png">
+                    </span>
+                    <div class="hmc4TopR">
+                      <strong>
+                        产品是否免费开源？
+                      </strong>
+                      <span>
+                        2020年03月12日
+                      </span>
+                      <p>
+                        产品完全开源免费，用于商业用途不需要支付任何的产品费用。
+                      </p>
+                    </div>
+                  </a>
+                </div>
+              
+              <ul class="hmc4_ul">
+                
+                  <li> 【常见问题】 <a class="text-primary" target="_blank" href="https://docs.siteserver.cn/faq/#/is-free">产品是否免费开源？</a>
+                    <span class="float-right">
+                      2020-03-12
+                    </span>
+                  </li>
+                
+                  <li> 【常见问题】 <a class="text-primary" target="_blank" href="https://docs.siteserver.cn/faq/#/download-install-package">如何获取产品最新安装包？</a>
+                    <span class="float-right">
+                      2020-03-12
+                    </span>
+                  </li>
+                
+                  <li> 【常见问题】 <a class="text-primary" target="_blank" href="https://docs.siteserver.cn/faq/#/service-support">官方提供哪些服务与支持？</a>
+                    <span class="float-right">
+                      2020-03-12
+                    </span>
+                  </li>
+                
+                  <li> 【常见问题】 <a class="text-primary" target="_blank" href="https://docs.siteserver.cn/faq/#/runtime-environment">需要准备什么样的服务器环境？</a>
+                    <span class="float-right">
+                      2020-03-12
+                    </span>
+                  </li>
+                
+              </ul>
+            </div>
+          </div>
+          <div class="col col-sm-12 col-md-6">
+            <div class="hmc4box">
+              <div class="hmc4_t">
+                <span>博 客</span>
+                <a class="hmc4_more" href="/blog/">更多>></a>
+              </div>
+              
+                <div class="hmc4Top">
+                  <a target="_blank" href="/blog/105/57.html">
+                    <span class="float-left">
+                      <img width="148" height="102" src="/upload/images/2019/1/a70c0344ebfaf2d6.png">
+                    </span>
+                    <div class="hmc4TopR">
+                      <strong>
+                        SiteServer CMS 新版本 V6.8
+                      </strong>
+                      <span>
+                        2019年01月03日
+                      </span>
+                      <p>
+                        欢迎来到2019年1月3日发布的SiteServer CMS 新版本 V6.8，经过两个月的连续迭代开发，V6.8 版本新增了几项重...
+                      </p>
+                    </div>
+                  </a>
+                </div>
+              
+              <ul class="hmc4_ul">
+                
+                  <li>
+                    <a class="text-primary" target="_blank" href="/blog/105/56.html">SiteServer CMS 新版本 V6.7</a>
+                    <span class="float-right">
+                      2018-11-01
+                    </span>
+                  </li>
+                
+                  <li>
+                    <a class="text-primary" target="_blank" href="/blog/105/55.html">SiteServer CMS 新版本 V6.6</a>
+                    <span class="float-right">
+                      2018-09-01
+                    </span>
+                  </li>
+                
+                  <li>
+                    <a class="text-primary" target="_blank" href="/blog/105/54.html">SiteServer CMS 新版本 V6.5</a>
+                    <span class="float-right">
+                      2018-08-01
+                    </span>
+                  </li>
+                
+                  <li>
+                    <a class="text-primary" target="_blank" href="/blog/105/53.html">SiteServer CMS 新版本 V6.4</a>
+                    <span class="float-right">
+                      2018-07-01
+                    </span>
+                  </li>
+                
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="bg-white p-4">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 m-auto text-center">
+            <h2 class="p-3 m-3"> 产品用户 </h2>
+            <div class="row mt-3 pb-2">
+              <div class="col-md-4">
+                <h4 class="text-primary mb-0" style="font-size: 2rem;">50万+</h4>
+                <p class="font-18">网站用户</p>
+              </div>
+              <div class="col-md-4">
+                <h4 class="text-primary mb-0" style="font-size: 2rem;">3000+</h4>
+                <p class="font-18">付费用户</p>
+              </div>
+              <div class="col-md-4">
+                <h4 class="text-primary mb-0" style="font-size: 2rem;">500+</h4>
+                <p class="font-18">重点客户</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 u-mt-80">
+            <ul class="hmc5_ul clearfix">
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/bjbank.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/dfhk.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/gjjt.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/hqjy.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/hydc.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/msbank.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/nyb.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/szsm.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/yyrj.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/zgjbw.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/zgjt.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/zgyd.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/zsbank.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/gjhyj.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/dxsw.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/hjk.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/hnyx.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/hqjy.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/mleg.png">
+                </span>
+              </li>
+              <li>
+                <span class="hmc5_sBox">
+                  <img src="../assets/images/customers/zgjt.png">
+                </span>
+              </li>
+            </ul>
+          </div>
+          <a href="/vip/#pricing" class="hmc5_more mx-auto mb-5">
+            <span>获取服务</span>
+          </a>
+        </div>
+      </div>
+    </section>
+    <!-- <div class="sBom1">
+  <div class="container clearfix">
+    <div class="sBom1L">
+      <strong class="aBom_t">立即咨询</strong>
+      <a href="#" class="sBom1_a1"></a>
+      <a href="#" class="sBom1_a2"></a>
+    </div>
+    <div class="sBom1M">
+      <strong class="aBom_t">我们联系您</strong>
+      <div class="sBom_search">
+        <input class="sBom_int" name="" type="text">
+        <button type="submit" class="sBom_submit">免费回拨</button>
+      </div>
+    </div>
+    <div class="sBom1R">
+      <div class="sBomTel">
+        24小时热线
+        <span>400-6116-150</span>
+      </div>
+      <div class="sBomWx">
+        <img src="/assets/images/qrcode_for_wx.jpg" width="77" height="77">
+        <br>微信服务号</div>
+    </div>
+  </div>
+</div> -->
+<div class="sBom2">
+  <div class="container clearfix">
+    <img class="sBom2_logo" src="/assets/images/bom_logo.png" width="195" height="34">
+    <dl class="sBom2_dl">
+      <dt>产品</dt>
+      <dd>
+        <a href="https://docs.siteserver.cn/introduction/" target="_blank" class="sBom2_a">产品介绍</a>
+      </dd>
+      <dd>
+        <a href="https://docs.siteserver.cn/getting-started/" target="_blank" class="sBom2_a">新手入门</a>
+      </dd>
+      <dd>
+        <a href="https://docs.siteserver.cn/faq/" target="_blank" target="_blank" class="sBom2_a">常见问题</a>
+      </dd>
+      <dd>
+        <a href="https://github.com/siteserver/cms" target="_blank" target="_blank" class="sBom2_a">GitHub 仓库</a>
+      </dd>
+      <dd>
+        <a href="https://gitee.com/siteserver/cms" target="_blank" target="_blank" class="sBom2_a">码云仓库</a>
+      </dd>
+    </dl>
+    <dl class="sBom2_dl">
+      <dt>参考手册</dt>
+      <dd>
+        <a href="https://docs.siteserver.cn/stl/" target="_blank" target="_blank" class="sBom2_a">STL语言</a>
+      </dd>
+      <dd>
+        <a href="https://docs.siteserver.cn/plugins/" target="_blank" target="_blank" class="sBom2_a">插件开发</a>
+      </dd>
+      <dd>
+        <a href="https://docs.siteserver.cn/cli/" target="_blank" target="_blank" class="sBom2_a">CLI命令行</a>
+      </dd>
+      <dd>
+        <a href="https://docs.siteserver.cn/api/" target="_blank" target="_blank" class="sBom2_a">REST API </a>
+      </dd>
+      <dd>
+        <a href="https://docs.siteserver.cn/model/" target="_blank" target="_blank" class="sBom2_a">数据结构</a>
+      </dd>
+    </dl>
+    <dl class="sBom2_dl">
+      <dt>技术支持</dt>
+      <dd>
+        <a href="/vip/" class="sBom2_a">VIP 服务</a>
+      </dd>
+      <dd>
+        <a href="https://github.com/siteserver/cms/issues" target="_blank" class="sBom2_a">产品论坛</a>
+      </dd>
+      <dd>
+        <a href="https://gitee.com/siteserver/cms" target="_blank" class="sBom2_a">源码下载</a>
+      </dd>
+      <dd>
+        <a href="/aboutus/" class="sBom2_a">联系我们</a>
+      </dd>
+      <dd>
+        <a href="javascript:;" class="sBom2_a">热线：400-6116-150</a>
+      </dd>
+    </dl>
+    <div class="sBom2_dl text-center">
+      <img src="/assets/images/qrcode_for_wx.jpg" width="120" height="120">
+      <br>
+      <small class="text-white">微信服务号</small>
+    </div>
+  </div>
+</div>
+<footer class="footer" style="height: 65px">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center"> Copyright 2003 - 2019 <a href="http://www.siteserver.cn">SiteServer CMS</a>
+        京ICP备10013847号 </div>
+    </div>
+  </div>
+</footer>
+<a href="#" class="backToTop"></a>
+
+  </div>
+  <div id="menuContent">
+  <div class="row">
+    <div class="col-12">
+      <div class="card-body">
+        <a class="text-dark font-18" href="/">首 页</a>
+        <hr />
+        
+          <a class="text-dark font-18" href="/cms/">产 品</a>
+              <hr>
+        
+          <a class="text-dark font-18" href="/vip/">服 务</a>
+              <hr>
+        
+          <a class="text-dark font-18" href="/plugins/">插 件</a>
+              <hr>
+        
+          <a class="text-dark font-18" href="/templates/">模 板</a>
+              <hr>
+        
+          <a class="text-dark font-18" href="/docs/">文 档</a>
+              <hr>
+        
+          <a class="text-dark font-18" href="/blog/">博 客</a>
+              <hr>
+        
+          <a class="text-dark font-18" href="/aboutus/">关 于</a>
+              <hr>
+        
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+
 </html>
+<script type="text/javascript" src="/assets/lib/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" src="/assets/lib/slideout-1.0.1.min.js"></script>
+<script type="text/javascript" src="/assets/lib/swiper-4.1.6.min.js"></script>
+<script type="text/javascript" src="/assets/lib/es6-promise.auto.min.js"></script>
+<script type="text/javascript" src="/assets/lib/axios-0.17.1.min.js"></script>
+<script type="text/javascript" src="/assets/lib/layer-3.1.1/layer.js"></script>
+<script type="text/javascript" src="/assets/lib/vue-2.5.16.min.js"></script>
+<script type="text/javascript" src="/assets/lib/vee-validate-2.1.0.js"></script>
+<script type="text/javascript" src="/assets/lib/vee-validate-locale-zh_CN-2.1.0.js"></script>
+<script type="text/javascript" src="/assets/lib/js.cookie-2.2.0.js"></script>
+<script type="text/javascript" src="/assets/lib/lodash-4.17.10.min.js"></script>
+
+<script type="text/javascript" src="/assets/js/public.js"></script>
+<script type="text/javascript" src="/assets/js/utils.js"></script>
+<script type="text/javascript" src="/assets/js/status.js"></script>

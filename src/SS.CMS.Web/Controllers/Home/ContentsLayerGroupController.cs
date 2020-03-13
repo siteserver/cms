@@ -30,9 +30,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentDelete))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentDelete))
             {
                 return Unauthorized();
             }
@@ -54,9 +53,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
                     Constants.ChannelPermissions.ContentEdit))
             {
                 return Unauthorized();
@@ -85,7 +83,7 @@ namespace SS.CMS.Web.Controllers.Home
                     await _contentRepository.UpdateAsync(site, channel, contentInfo);
                 }
 
-                await auth.AddSiteLogAsync(request.SiteId, "批量设置内容组", $"内容组:{Utilities.ToString(request.GroupNames)}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "批量设置内容组", $"内容组:{Utilities.ToString(request.GroupNames)}");
             }
             else if (request.PageType == "cancelGroup")
             {
@@ -104,7 +102,7 @@ namespace SS.CMS.Web.Controllers.Home
                     await _contentRepository.UpdateAsync(site, channel, contentInfo);
                 }
 
-                await auth.AddSiteLogAsync(request.SiteId, "批量取消内容组", $"内容组:{Utilities.ToString(request.GroupNames)}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "批量取消内容组", $"内容组:{Utilities.ToString(request.GroupNames)}");
             }
             else if (request.PageType == "addGroup")
             {
@@ -118,12 +116,12 @@ namespace SS.CMS.Web.Controllers.Home
                 if (await _contentGroupRepository.IsExistsAsync(request.SiteId, groupInfo.GroupName))
                 {
                     await _contentGroupRepository.UpdateAsync(groupInfo);
-                    await auth.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
+                    await _authManager.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
                 }
                 else
                 {
                     await _contentGroupRepository.InsertAsync(groupInfo);
-                    await auth.AddSiteLogAsync(request.SiteId, "添加内容组", $"内容组:{groupInfo.GroupName}");
+                    await _authManager.AddSiteLogAsync(request.SiteId, "添加内容组", $"内容组:{groupInfo.GroupName}");
                 }
 
                 foreach (var contentId in request.ContentIds)
@@ -138,7 +136,7 @@ namespace SS.CMS.Web.Controllers.Home
                     await _contentRepository.UpdateAsync(site, channel, contentInfo);
                 }
 
-                await auth.AddSiteLogAsync(request.SiteId, "批量设置内容组", $"内容组:{groupInfo.GroupName}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "批量设置内容组", $"内容组:{groupInfo.GroupName}");
             }
 
             return new BoolResult

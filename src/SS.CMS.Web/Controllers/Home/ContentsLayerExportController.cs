@@ -38,9 +38,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentView))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentView))
             {
                 return Unauthorized();
             }
@@ -54,7 +53,7 @@ namespace SS.CMS.Web.Controllers.Home
             var columnsManager = new ColumnsManager(_databaseManager, _pluginManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
-            var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(auth.AdminPermissions, site, request.SiteId);
+            var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, request.SiteId);
             var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
             return new GetResult
@@ -68,15 +67,13 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-
-            var downloadUrl = string.Empty;
-
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelEdit))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelEdit))
             {
                 return Unauthorized();
             }
+
+            var downloadUrl = string.Empty;
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
@@ -144,7 +141,7 @@ namespace SS.CMS.Web.Controllers.Home
                         var filePath = _pathManager.GetTemporaryFilesPath(fileName);
                         var exportObject = new ExportObject(_pathManager, _databaseManager, _pluginManager, site);
                         contentInfoList.Reverse();
-                        if (exportObject.ExportContents(filePath, contentInfoList))
+                        if (await exportObject.ExportContentsAsync(filePath, contentInfoList))
                         {
                             downloadUrl = _pathManager.GetTemporaryFilesUrl(fileName);
                         }

@@ -182,7 +182,7 @@ namespace SS.CMS.StlParser.StlEntity
                             parsedContent = contentInfo.Get<string>(ContentAttribute.Content);
                         }
 
-                        parsedContent = await ContentUtility.TextEditorContentDecodeAsync(parseManager.PathManager, pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                        parsedContent = await parseManager.PathManager.TextEditorContentDecodeAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                     }
                     else if (StringUtils.EqualsIgnoreCase(Group, attributeName))//内容组别
                     {

@@ -32,10 +32,10 @@ namespace SS.CMS.Web.Controllers.Admin
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
-            var lastActivityDate = auth.Administrator.LastActivityDate ?? Constants.SqlMinValue;
+            var admin = await _authManager.GetAdminAsync();
+            var lastActivityDate = admin.LastActivityDate ?? Constants.SqlMinValue;
             var config = await _configRepository.GetAsync();
 
             return new GetResult
@@ -50,12 +50,11 @@ namespace SS.CMS.Web.Controllers.Admin
         [HttpGet, Route(RouteUnCheckedList)]
         public async Task<ActionResult<ObjectResult<List<Checking>>>> GetUnCheckedList()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var checkingList = new List<Checking>();
 
-            if (await auth.AdminPermissions.IsSuperAdminAsync())
+            if (await _authManager.IsSuperAdminAsync())
             {
                 foreach (var site in await _siteRepository.GetSiteListAsync())
                 {
@@ -70,11 +69,12 @@ namespace SS.CMS.Web.Controllers.Admin
                     }
                 }
             }
-            else if (await auth.AdminPermissions.IsSiteAdminAsync())
+            else if (await _authManager.IsSiteAdminAsync())
             {
-                if (auth.Administrator.SiteIds != null)
+                var admin = await _authManager.GetAdminAsync();
+                if (admin.SiteIds != null)
                 {
-                    foreach (var siteId in auth.Administrator.SiteIds)
+                    foreach (var siteId in admin.SiteIds)
                     {
                         var site = await _siteRepository.GetAsync(siteId);
                         if (site == null) continue;

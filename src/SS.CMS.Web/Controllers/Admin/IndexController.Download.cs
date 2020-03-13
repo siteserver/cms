@@ -11,8 +11,8 @@ namespace SS.CMS.Web.Controllers.Admin
         [HttpPost, Route(RouteActionsDownload)]
         public async Task<ActionResult<BoolResult>> Download([FromBody] DownloadRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin)
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync())
             {
                 return Unauthorized();
             }

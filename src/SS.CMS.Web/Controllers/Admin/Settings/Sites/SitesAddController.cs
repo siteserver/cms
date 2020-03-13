@@ -43,9 +43,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }
@@ -77,9 +77,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(Route)]
         public async Task<ActionResult<IntResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }
@@ -126,6 +126,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 }
             }
 
+            var adminId = await _authManager.GetAdminIdAsync();
+
             var siteId = await _siteRepository.InsertSiteAsync(_pathManager, channelInfo, new Site
             {
                 SiteName = request.SiteName,
@@ -133,7 +135,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 TableName = tableName,
                 ParentId = request.ParentId,
                 Root = request.Root
-            }, auth.AdminId);
+            }, adminId);
 
             if (string.IsNullOrEmpty(tableName))
             {
@@ -142,11 +144,11 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 await _siteRepository.UpdateTableNameAsync(siteId, tableName);
             }
 
-            if (await auth.AdminPermissions.IsSiteAdminAsync() && !await auth.AdminPermissions.IsSuperAdminAsync())
+            if (await _authManager.IsSiteAdminAsync() && !await _authManager.IsSuperAdminAsync())
             {
-                var siteIdList = await auth.AdminPermissions.GetSiteIdListAsync() ?? new List<int>();
+                var siteIdList = await _authManager.GetSiteIdListAsync() ?? new List<int>();
                 siteIdList.Add(siteId);
-                var adminInfo = await _administratorRepository.GetByUserIdAsync(auth.AdminId);
+                var adminInfo = await _administratorRepository.GetByUserIdAsync(adminId);
                 await _administratorRepository.UpdateSiteIdsAsync(adminInfo, siteIdList);
             }
 
@@ -157,7 +159,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
             if (request.CreateType == "local")
             {
                 var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
-                await manager.ImportSiteTemplateToEmptySiteAsync(site, request.CreateTemplateId, request.IsImportContents, request.IsImportTableStyles, auth.AdminId, request.Guid);
+                await manager.ImportSiteTemplateToEmptySiteAsync(site, request.CreateTemplateId, request.IsImportContents, request.IsImportTableStyles, adminId, request.Guid);
 
                 Caching.SetProcess(request.Guid, "生成站点页面...");
                 await _createManager.CreateByAllAsync(site.Id);
@@ -184,7 +186,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 Caching.SetProcess(request.Guid, "模板压缩包解压成功，正在导入数据...");
 
                 var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
-                await manager.ImportSiteTemplateToEmptySiteAsync(site, siteTemplateDir, request.IsImportContents, request.IsImportTableStyles, auth.AdminId, request.Guid);
+                await manager.ImportSiteTemplateToEmptySiteAsync(site, siteTemplateDir, request.IsImportContents, request.IsImportTableStyles, adminId, request.Guid);
 
                 Caching.SetProcess(request.Guid, "生成站点页面...");
                 await _createManager.CreateByAllAsync(site.Id);
@@ -202,9 +204,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteProcess)]
         public async Task<ActionResult<Caching.Process>> Process([FromBody] ProcessRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }

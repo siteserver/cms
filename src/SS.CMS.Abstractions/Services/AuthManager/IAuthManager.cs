@@ -3,23 +3,31 @@ using System.Threading.Tasks;
 
 namespace SS.CMS.Abstractions
 {
-    public partial interface IAuthManager
+    public partial interface IAuthManager : IPermissions
     {
-        Task<IAuthManager> GetApiAsync();
+        string GetApiToken();
 
-        Task<IAuthManager> GetUserAsync();
+        string GetUserToken();
 
-        Task<IAuthManager> GetAdminAsync();
+        string GetAdminToken();
 
-        bool IsApiAuthenticated { get; }
+        Task<User> GetUserAsync();
 
-        bool IsUserLoggin { get; }
+        Task<Administrator> GetAdminAsync();
 
-        bool IsAdminLoggin { get; }
+        Task<bool> IsApiAuthenticatedAsync();
 
-        string ApiToken { get; }
+        Task<bool> IsUserAuthenticatedAsync();
 
-        string AdminToken { get; }
+        Task<bool> IsAdminAuthenticatedAsync();
+
+        Task<int> GetAdminIdAsync();
+
+        Task<string> GetAdminNameAsync();
+
+        Task<int> GetUserIdAsync();
+
+        Task<string> GetUserNameAsync();
 
         Task AddSiteLogAsync(int siteId, string action);
 
@@ -33,25 +41,9 @@ namespace SS.CMS.Abstractions
 
         Task AddAdminLogAsync(string action);
 
-        IPermissions UserPermissions { get; }
-
-        IPermissions AdminPermissions { get; }
-
-        int AdminId { get; }
-
-        string AdminName { get; }
-
-        Administrator Administrator { get; }
-
         Task<string> AdminLoginAsync(string userName, bool isAutoLogin);
 
         void AdminLogout();
-
-        int UserId { get; }
-
-        string UserName { get; }
-
-        User User { get; }
 
         Task<string> UserLoginAsync(string userName, bool isAutoLogin);
 
@@ -60,7 +52,5 @@ namespace SS.CMS.Abstractions
         string GetAccessToken(int userId, string userName, TimeSpan expiresAt);
 
         string GetAccessToken(int userId, string userName, DateTime expiresAt);
-
-        //AccessTokenImpl ParseAccessToken(string accessToken);
     }
 }

@@ -36,9 +36,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> List([FromQuery] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -52,9 +52,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteDefault)]
         public async Task<ActionResult<GetResult>> Default([FromBody] TemplateRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -66,7 +66,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             if (templateInfo != null && !templateInfo.DefaultTemplate)
             {
                 await _templateRepository.SetDefaultAsync(request.TemplateId);
-                await auth.AddSiteLogAsync(site.Id,
+                await _authManager.AddSiteLogAsync(site.Id,
                     $"设置默认{templateInfo.TemplateType.GetDisplayName()}",
                     $"模板名称:{templateInfo.TemplateName}");
             }
@@ -77,9 +77,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteCreate)]
         public async Task<ActionResult<BoolResult>> Create([FromBody] TemplateRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -98,9 +98,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteCopy)]
         public async Task<ActionResult<GetResult>> Copy([FromBody] TemplateRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -138,7 +138,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
 
             var content = await _pathManager.GetTemplateContentAsync(site, template);
 
-            templateInfo.Id = await _templateRepository.InsertAsync(_pathManager, site, templateInfo, content, auth.AdminId);
+            var adminId = await _authManager.GetAdminIdAsync();
+            templateInfo.Id = await _templateRepository.InsertAsync(_pathManager, site, templateInfo, content, adminId);
 
             return await GetResultAsync(site);
         }
@@ -146,9 +147,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<GetResult>> Delete([FromBody] TemplateRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -160,7 +161,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             if (templateInfo != null && !templateInfo.DefaultTemplate)
             {
                 await _templateRepository.DeleteAsync(_pathManager, site, request.TemplateId);
-                await auth.AddSiteLogAsync(site.Id,
+                await _authManager.AddSiteLogAsync(site.Id,
                     $"删除{templateInfo.TemplateType.GetDisplayName()}",
                     $"模板名称:{templateInfo.TemplateName}");
             }

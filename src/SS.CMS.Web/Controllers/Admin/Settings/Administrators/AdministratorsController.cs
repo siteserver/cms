@@ -48,16 +48,18 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery]GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
 
             var roles = new List<KeyValuePair<string, string>>();
 
-            var roleNameList = await auth.AdminPermissions.IsSuperAdminAsync() ? await _roleRepository.GetRoleNameListAsync() : await _roleRepository.GetRoleNameListByCreatorUserNameAsync(auth.AdminName);
+            var adminId = await _authManager.GetAdminIdAsync();
+            var adminName = await _authManager.GetAdminNameAsync();
+            var roleNameList = await _authManager.IsSuperAdminAsync() ? await _roleRepository.GetRoleNameListAsync() : await _roleRepository.GetRoleNameListByCreatorUserNameAsync(adminName);
 
             var predefinedRoles = TranslateUtils.GetEnums<PredefinedRole>();
             foreach (var predefinedRole in predefinedRoles)
@@ -72,8 +74,8 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 }
             }
 
-            var isSuperAdmin = await auth.AdminPermissions.IsSuperAdminAsync();
-            var creatorUserName = isSuperAdmin ? string.Empty : auth.AdminName;
+            var isSuperAdmin = await _authManager.IsSuperAdminAsync();
+            var creatorUserName = isSuperAdmin ? string.Empty : adminName;
             var count = await _administratorRepository.GetCountAsync(creatorUserName, request.Role, request.LastActivityDate, request.Keyword);
             var administrators = await _administratorRepository.GetAdministratorsAsync(creatorUserName, request.Role, request.Order, request.LastActivityDate, request.Keyword, request.Offset, request.Limit);
             var admins = new List<Admin>();
@@ -100,22 +102,22 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 Administrators = admins,
                 Count = count,
                 Roles = roles,
-                IsSuperAdmin = await auth.AdminPermissions.IsSuperAdminAsync(),
-                AdminId = auth.AdminId
+                IsSuperAdmin = await _authManager.IsSuperAdminAsync(),
+                AdminId = adminId
             };
         }
 
         [HttpGet, Route(RoutePermissions)]
         public async Task<ActionResult<GetPermissionsResult>> GetPermissions(int adminId)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
 
-            if (!await auth.AdminPermissions.IsSuperAdminAsync())
+            if (!await _authManager.IsSuperAdminAsync())
             {
                 return Unauthorized();
             }
@@ -163,14 +165,14 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RoutePermissions)]
         public async Task<ActionResult<SavePermissionsResult>> SavePermissions([FromRoute]int adminId, [FromBody]SavePermissionsRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
 
-            if (!await auth.AdminPermissions.IsSuperAdminAsync())
+            if (!await _authManager.IsSuperAdminAsync())
             {
                 return Unauthorized();
             }
@@ -199,7 +201,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
 
             CacheUtils.ClearAll();
 
-            await auth.AddAdminLogAsync("设置管理员权限", $"管理员:{adminInfo.UserName}");
+            await _authManager.AddAdminLogAsync("设置管理员权限", $"管理员:{adminInfo.UserName}");
 
             return new SavePermissionsResult
             {
@@ -210,9 +212,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody]IdRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -221,7 +223,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
             await _administratorsInRolesRepository.RemoveUserAsync(adminInfo.UserName);
             await _administratorRepository.DeleteAsync(adminInfo.Id);
 
-            await auth.AddAdminLogAsync("删除管理员", $"管理员:{adminInfo.UserName}");
+            await _authManager.AddAdminLogAsync("删除管理员", $"管理员:{adminInfo.UserName}");
 
             return new BoolResult
             {
@@ -232,9 +234,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteLock)]
         public async Task<ActionResult<BoolResult>> Lock([FromBody]IdRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -246,7 +248,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 adminInfo.UserName
             });
 
-            await auth.AddAdminLogAsync("锁定管理员", $"管理员:{adminInfo.UserName}");
+            await _authManager.AddAdminLogAsync("锁定管理员", $"管理员:{adminInfo.UserName}");
 
             return new BoolResult
             {
@@ -257,9 +259,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteUnLock)]
         public async Task<ActionResult<BoolResult>> UnLock([FromBody]IdRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -271,7 +273,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
                 adminInfo.UserName
             });
 
-            await auth.AddAdminLogAsync("解锁管理员", $"管理员:{adminInfo.UserName}");
+            await _authManager.AddAdminLogAsync("解锁管理员", $"管理员:{adminInfo.UserName}");
 
             return new BoolResult
             {
@@ -282,9 +284,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<ImportResult>> Import([FromForm] IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -362,9 +364,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteExport)]
         public async Task<ActionResult<StringResult>> Export()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }

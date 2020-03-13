@@ -33,7 +33,7 @@ namespace SS.CMS.Web.Controllers.Stl
         [HttpPost, Route(Constants.RouteActionsPageContents)]
         public async Task<string> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
+            var user = await _authManager.GetUserAsync();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             var stlPageContentsElement = _settingsManager.Decrypt(request.StlPageContentsElement);
@@ -42,7 +42,7 @@ namespace SS.CMS.Web.Controllers.Stl
             var template = await _templateRepository.GetAsync(request.TemplateId);
 
             await _parseManager.InitAsync(site, channel.Id, 0, template);
-            _parseManager.PageInfo.User = auth.User;
+            _parseManager.PageInfo.User = user;
 
             var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, _parseManager);
 

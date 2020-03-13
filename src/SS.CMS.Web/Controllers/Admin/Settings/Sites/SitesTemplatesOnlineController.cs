@@ -21,15 +21,15 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplatesOnline))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplatesOnline))
             {
                 return Unauthorized();
             }
 
             var siteAddPermission =
-                await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd);
+                await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd);
 
             return new GetResult
             {

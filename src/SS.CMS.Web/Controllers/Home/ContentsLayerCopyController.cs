@@ -38,9 +38,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentTranslate))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentTranslate))
             {
                 return Unauthorized();
             }
@@ -66,7 +65,7 @@ namespace SS.CMS.Web.Controllers.Home
             var sites = new List<object>();
             var channels = new List<object>();
 
-            var siteIdList = await auth.UserPermissions.GetSiteIdListAsync();
+            var siteIdList = await _authManager.GetSiteIdListAsync();
             foreach (var permissionSiteId in siteIdList)
             {
                 var permissionSite = await _siteRepository.GetAsync(permissionSiteId);
@@ -77,7 +76,7 @@ namespace SS.CMS.Web.Controllers.Home
                 });
             }
 
-            var channelIdList = await auth.UserPermissions.GetChannelIdListAsync(site.Id,
+            var channelIdList = await _authManager.GetChannelIdListAsync(site.Id,
                 Constants.ChannelPermissions.ContentAdd);
             foreach (var permissionChannelId in channelIdList)
             {
@@ -101,9 +100,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpGet, Route(RouteGetChannels)]
         public async Task<ActionResult<GetChannelsResult>> GetChannels([FromQuery]SiteRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
             var channels = new List<object>();
-            var channelIdList = await auth.UserPermissions.GetChannelIdListAsync(request.SiteId,
+            var channelIdList = await _authManager.GetChannelIdListAsync(request.SiteId,
                 Constants.ChannelPermissions.ContentAdd);
             foreach (var permissionChannelId in channelIdList)
             {
@@ -124,9 +122,8 @@ namespace SS.CMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetUserAsync();
-            if (!auth.IsUserLoggin ||
-                !await auth.UserPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentTranslate))
+            if (!await _authManager.IsUserAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentTranslate))
             {
                 return Unauthorized();
             }
@@ -142,7 +139,7 @@ namespace SS.CMS.Web.Controllers.Home
                 await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, request.ChannelId, contentId, request.TargetSiteId, request.TargetChannelId, request.CopyType, _createManager);
             }
 
-            await auth.AddSiteLogAsync(request.SiteId, request.ChannelId, "复制内容", string.Empty);
+            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, "复制内容", string.Empty);
 
             await _createManager.TriggerContentChangedEventAsync(request.SiteId, request.ChannelId);
 

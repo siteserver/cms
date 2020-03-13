@@ -27,9 +27,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
             {
                 return Unauthorized();
             }
@@ -44,9 +44,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<GetResult>> Delete([FromBody]IdRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
             {
                 return Unauthorized();
             }
@@ -62,9 +62,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(Route)]
         public async Task<ActionResult<GetResult>> Submit([FromBody] UserGroup request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
             {
                 return Unauthorized();
             }
@@ -84,7 +84,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
 
                 await _userGroupRepository.InsertAsync(groupInfo);
 
-                await auth.AddAdminLogAsync("新增用户组", $"用户组:{groupInfo.GroupName}");
+                await _authManager.AddAdminLogAsync("新增用户组", $"用户组:{groupInfo.GroupName}");
             }
             else if (request.Id == 0)
             {
@@ -94,7 +94,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
 
                 await _configRepository.UpdateAsync(config);
 
-                await auth.AddAdminLogAsync("修改用户组", "用户组:默认用户组");
+                await _authManager.AddAdminLogAsync("修改用户组", "用户组:默认用户组");
             }
             else if (request.Id > 0)
             {
@@ -110,7 +110,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Users
 
                 await _userGroupRepository.UpdateAsync(groupInfo);
 
-                await auth.AddAdminLogAsync("修改用户组", $"用户组:{groupInfo.GroupName}");
+                await _authManager.AddAdminLogAsync("修改用户组", $"用户组:{groupInfo.GroupName}");
             }
 
             return new GetResult

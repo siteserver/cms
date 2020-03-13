@@ -62,12 +62,14 @@ namespace SS.CMS.Web.Controllers.Admin
                 };
             }
 
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin)
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync())
             {
                 return Unauthorized();
             }
-            var cacheKey = Constants.GetSessionIdCacheKey(auth.AdminId);
+
+            var admin = await _authManager.GetAdminAsync();
+            var cacheKey = Constants.GetSessionIdCacheKey(admin.Id);
             var sessionId = await _dbCacheRepository.GetValueAsync(cacheKey);
             if (string.IsNullOrEmpty(request.SessionId) || sessionId != request.SessionId)
             {
@@ -75,10 +77,9 @@ namespace SS.CMS.Web.Controllers.Admin
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var adminInfo = auth.Administrator;
-            var permissions = auth.AdminPermissions;
-            var isSuperAdmin = await permissions.IsSuperAdminAsync();
-            var siteIdListWithPermissions = await permissions.GetSiteIdListAsync();
+            var adminInfo = admin;
+            var isSuperAdmin = await _authManager.IsSuperAdminAsync();
+            var siteIdListWithPermissions = await _authManager.GetSiteIdListAsync();
 
             if (site == null || !siteIdListWithPermissions.Contains(site.Id))
             {
@@ -130,16 +131,16 @@ namespace SS.CMS.Web.Controllers.Admin
 
             var siteIdListLatestAccessed = await _administratorRepository.UpdateSiteIdAsync(adminInfo, site.Id);
 
-            var permissionList = await permissions.GetPermissionListAsync();
-            if (await permissions.HasSitePermissionsAsync(site.Id))
+            var permissionList = await _authManager.GetPermissionListAsync();
+            if (await _authManager.HasSitePermissionsAsync(site.Id))
             {
-                var websitePermissionList = await permissions.GetSitePermissionsAsync(site.Id);
+                var websitePermissionList = await _authManager.GetSitePermissionsAsync(site.Id);
                 if (websitePermissionList != null)
                 {
                     permissionList.AddRange(websitePermissionList);
                 }
             }
-            var channelPermissions = await permissions.GetChannelPermissionsAsync(site.Id);
+            var channelPermissions = await _authManager.GetChannelPermissionsAsync(site.Id);
             if (channelPermissions.Count > 0)
             {
                 permissionList.AddRange(channelPermissions);
@@ -180,7 +181,7 @@ namespace SS.CMS.Web.Controllers.Admin
                     UserId = adminInfo.Id,
                     UserName = adminInfo.UserName,
                     AvatarUrl = adminInfo.AvatarUrl,
-                    Level = await permissions.GetAdminLevelAsync()
+                    Level = await _authManager.GetAdminLevelAsync()
                 }
             };
         }

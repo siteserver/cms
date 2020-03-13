@@ -32,9 +32,7 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpPost, Route(Route)]
         public async Task<ActionResult<Administrator>> Create([FromBody] Administrator request)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             var (isValid, errorMessage) = await _administratorRepository.InsertAsync(request, request.Password);
@@ -49,9 +47,7 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpPut, Route(RouteAdministrator)]
         public async Task<ActionResult<Administrator>> Update(int id, [FromBody] Administrator administrator)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             if (administrator == null) return this.Error("Could not read administrator from body");
@@ -72,9 +68,7 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpDelete, Route(RouteAdministrator)]
         public async Task<ActionResult<Administrator>> Delete(int id)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
@@ -87,9 +81,7 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpGet, Route(RouteAdministrator)]
         public async Task<ActionResult<Administrator>> Get(int id)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
@@ -102,9 +94,7 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> List([FromQuery]ListRequest request)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             var top = request.Top;
@@ -124,8 +114,6 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpPost, Route(RouteActionsLogin)]
         public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
         {
-            var auth = await _authManager.GetApiAsync();
-
             Administrator administrator;
 
             var (isValid, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
@@ -143,7 +131,7 @@ namespace SS.CMS.Web.Controllers.V1
 
             administrator = await _administratorRepository.GetByUserNameAsync(userName);
             await _administratorRepository.UpdateLastActivityDateAndCountOfLoginAsync(administrator); // 记录最后登录时间、失败次数清零
-            var accessToken = await auth.AdminLoginAsync(administrator.UserName, request.IsAutoLogin);
+            var accessToken = await _authManager.AdminLoginAsync(administrator.UserName, request.IsAutoLogin);
             var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
             var sessionId = StringUtils.Guid();
@@ -182,10 +170,8 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpPost, Route(RouteActionsLogout)]
         public async Task<Administrator> Logout()
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var administrator = auth.IsAdminLoggin ? auth.Administrator : null;
-            auth.AdminLogout();
+            var administrator = await _authManager.GetAdminAsync();
+            _authManager.AdminLogout();
 
             return administrator;
         }
@@ -193,9 +179,7 @@ namespace SS.CMS.Web.Controllers.V1
         [HttpPost, Route(RouteActionsResetPassword)]
         public async Task<ActionResult<Administrator>> ResetPassword([FromBody]ResetPasswordRequest request)
         {
-            var auth = await _authManager.GetApiAsync();
-
-            var isApiAuthorized = auth.IsApiAuthenticated && await _accessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeAdministrators);
+            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             var (isValid, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);

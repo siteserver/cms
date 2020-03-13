@@ -15,9 +15,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpGet, Route(RouteGet)]
         public async Task<ActionResult<ChannelResult>> Get(int siteId, int channelId)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(siteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(siteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
@@ -77,9 +77,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpPut, Route(Route)]
         public async Task<ActionResult<List<int>>> Edit([FromBody] PutRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.Id, Constants.ChannelPermissions.ChannelEdit))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.Id, Constants.ChannelPermissions.ChannelEdit))
             {
                 return Unauthorized();
             }
@@ -152,7 +152,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 var inputType = style.InputType;
                 if (inputType == InputType.TextEditor)
                 {
-                    value = await ContentUtility.TextEditorContentEncodeAsync(_pathManager, site, value);
+                    value = await _pathManager.TextEditorContentEncodeAsync(site, value);
                     value = UEditorUtils.TranslateToStlElement(value);
                 }
                 else if (inputType == InputType.Image ||

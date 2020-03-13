@@ -54,9 +54,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ChannelsResult>> List([FromQuery] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
@@ -103,9 +102,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteAppend)]
         public async Task<ActionResult<List<int>>> Append([FromBody] AppendRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ParentId, Constants.ChannelPermissions.ChannelAdd))
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, Constants.ChannelPermissions.ChannelAdd))
             {
                 return Unauthorized();
             }
@@ -192,9 +190,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<List<int>>> Delete([FromBody] DeleteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelDelete))
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelDelete))
             {
                 return Unauthorized();
             }
@@ -217,13 +214,15 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                 await _createManager.DeleteChannelsAsync(site, channelIdList);
             }
 
+            var adminId = await _authManager.GetAdminIdAsync();
+
             foreach (var channelId in channelIdList)
             {
-                await _contentRepository.RecycleAllAsync(site, channelId, auth.AdminId);
-                await _channelRepository.DeleteAsync(site, channelId, auth.AdminId);
+                await _contentRepository.RecycleAllAsync(site, channelId, adminId);
+                await _channelRepository.DeleteAsync(site, channelId, adminId);
             }
 
-            await auth.AddSiteLogAsync(request.SiteId, "删除栏目", $"栏目:{channel.ChannelName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "删除栏目", $"栏目:{channel.ChannelName}");
 
             return new List<int>
             {
@@ -235,9 +234,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int siteId, [FromForm]IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.ChannelAdd))
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.ChannelAdd))
             {
                 return Unauthorized();
             }
@@ -269,9 +267,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<List<int>>> Import([FromBody] ImportRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelAdd))
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelAdd))
             {
                 return Unauthorized();
             }
@@ -280,12 +277,13 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
             {
                 var site = await _siteRepository.GetAsync(request.SiteId);
                 var filePath = _pathManager.GetTemporaryFilesPath(request.FileName);
+                var adminId = await _authManager.GetAdminIdAsync();
 
-                var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, site, auth.AdminId);
+                var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, site, adminId);
                 await importObject.ImportChannelsAndContentsByZipFileAsync(request.ChannelId, filePath,
                     request.IsOverride, null);
 
-                await auth.AddSiteLogAsync(request.SiteId, "导入栏目");
+                await _authManager.AddSiteLogAsync(request.SiteId, "导入栏目");
             }
             catch
             {
@@ -302,9 +300,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteExport)]
         public async Task<ActionResult<StringResult>> Export([FromBody] ChannelIdsRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
             }
@@ -326,9 +323,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteOrder)]
         public async Task<ActionResult<List<int>>> Order([FromBody] OrderRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();

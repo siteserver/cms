@@ -33,9 +33,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
             {
                 return Unauthorized();
             }
@@ -70,9 +70,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(Route)]
         public async Task<ActionResult<ObjectResult<Cascade<int>>>> Submit([FromBody]MatchRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
             {
                 return Unauthorized();
             }
@@ -102,7 +102,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                 }
             }
 
-            await auth.AddSiteLogAsync(request.SiteId, "模板匹配");
+            await _authManager.AddSiteLogAsync(request.SiteId, "模板匹配");
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
             var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
@@ -126,9 +126,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteCreate)]
         public async Task<ActionResult<GetResult>> Create([FromBody]CreateRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
             {
                 return Unauthorized();
             }
@@ -136,24 +136,25 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
+            var adminId = await _authManager.GetAdminIdAsync();
             if (request.IsChannelTemplate && request.IsChildren)
             {
-                await CreateChannelChildrenTemplateAsync(site, request, auth.AdminId);
+                await CreateChannelChildrenTemplateAsync(site, request, adminId);
             }
             else if (request.IsChannelTemplate && !request.IsChildren)
             {
-                await CreateChannelTemplateAsync(site, request, auth.AdminId);
+                await CreateChannelTemplateAsync(site, request, adminId);
             }
             else if (!request.IsChannelTemplate && request.IsChildren)
             {
-                await CreateContentChildrenTemplateAsync(site, request, auth.AdminId);
+                await CreateContentChildrenTemplateAsync(site, request, adminId);
             }
             else if (!request.IsChannelTemplate && !request.IsChildren)
             {
-                await CreateContentTemplateAsync(site, request, auth.AdminId);
+                await CreateContentTemplateAsync(site, request, adminId);
             }
 
-            await auth.AddSiteLogAsync(request.SiteId, "生成并匹配栏目模版");
+            await _authManager.AddSiteLogAsync(request.SiteId, "生成并匹配栏目模版");
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
             var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>

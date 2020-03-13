@@ -26,8 +26,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var style = await _tableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities);
 
@@ -44,8 +44,8 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin) return Unauthorized();
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
             var style =
                 await _tableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities);
@@ -55,13 +55,13 @@ namespace SS.CMS.Web.Controllers.Admin.Shared
             if (style.Id == 0 && style.RelatedIdentity == 0 || style.RelatedIdentity != request.RelatedIdentities[0])
             {
                 await _tableStyleRepository.InsertAsync(request.RelatedIdentities, style);
-                await auth.AddAdminLogAsync("添加表单显示样式", $"字段名:{style.AttributeName}");
+                await _authManager.AddAdminLogAsync("添加表单显示样式", $"字段名:{style.AttributeName}");
             }
             //数据库中有此项的表样式
             else
             {
                 await _tableStyleRepository.UpdateAsync(style);
-                await auth.AddAdminLogAsync("修改表单显示样式", $"字段名:{style.AttributeName}");
+                await _authManager.AddAdminLogAsync("修改表单显示样式", $"字段名:{style.AttributeName}");
             }
 
             return new BoolResult

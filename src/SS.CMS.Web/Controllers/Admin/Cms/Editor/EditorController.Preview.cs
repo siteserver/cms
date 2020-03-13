@@ -10,11 +10,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
         [HttpPost, Route(RoutePreview)]
         public async Task<ActionResult<PreviewResult>> Preview([FromBody] PreviewRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Contents) ||
-                !await auth.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
+                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
                     Constants.ChannelPermissions.ContentAdd))
             {
                 return Unauthorized();
@@ -47,7 +47,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
             var content = request.Content;
             content.SiteId = site.Id;
             content.ChannelId = channel.Id;
-            content.AdminId = auth.AdminId;
+            content.AdminId = await _authManager.GetAdminIdAsync();
             content.Checked = true;
 
             content.Id = await _contentRepository.InsertPreviewAsync(site, channel, content);

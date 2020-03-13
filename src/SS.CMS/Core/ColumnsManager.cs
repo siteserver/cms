@@ -444,7 +444,7 @@ namespace SS.CMS.Core
                 var inputType = style.InputType;
                 if (inputType == InputType.TextEditor)
                 {
-                    theValue = await ContentUtility.TextEditorContentEncodeAsync(pathManager, site, theValue);
+                    theValue = await pathManager.TextEditorContentEncodeAsync(site, theValue);
                     theValue = UEditorUtils.TranslateToStlElement(theValue);
                 }
 

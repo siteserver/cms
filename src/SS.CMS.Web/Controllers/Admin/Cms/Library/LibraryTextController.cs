@@ -37,10 +37,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpPost, Route(RouteList)]
         public async Task<ActionResult<QueryResult>> List([FromBody]QueryRequest req)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(req.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(req.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -66,10 +66,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpPost, Route(Route)]
         public async Task<ActionResult<LibraryText>> Create([FromQuery] CreateRequest request, [FromForm] IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -115,10 +115,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpDelete, Route(RouteId)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody]DeleteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -135,10 +135,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpPost, Route(RouteGroups)]
         public async Task<ActionResult<LibraryGroup>> CreateGroup([FromBody] GroupRequest group)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(group.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(group.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -157,10 +157,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpPut, Route(RouteGroupId)]
         public async Task<ActionResult<LibraryGroup>> RenameGroup([FromQuery]int id, [FromBody] GroupRequest group)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(group.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(group.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -176,10 +176,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
         [HttpDelete, Route(RouteGroupId)]
         public async Task<ActionResult<BoolResult>> DeleteGroup([FromBody]DeleteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();

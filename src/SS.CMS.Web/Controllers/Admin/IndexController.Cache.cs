@@ -10,8 +10,7 @@ namespace SS.CMS.Web.Controllers.Admin
         [HttpPost, Route(RouteActionsCache)]
         public async Task<ActionResult<IntResult>> Cache([FromBody] SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin || auth.Administrator == null)
+            if (!await _authManager.IsAdminAuthenticatedAsync())
             {
                 return Unauthorized();
             }

@@ -37,10 +37,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> List([FromQuery]SiteRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Specials))
             {
                 return Unauthorized();
@@ -59,10 +59,10 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<DeleteResult>> Delete([FromBody]SpecialIdRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
+            
 
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Specials))
             {
                 return Unauthorized();
@@ -71,7 +71,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
             var site = await _siteRepository.GetAsync(request.SiteId);
             var specialInfo = await _pathManager.DeleteSpecialAsync(site, request.SpecialId);
 
-            await auth.AddSiteLogAsync(request.SiteId,
+            await _authManager.AddSiteLogAsync(request.SiteId,
                 "删除专题",
                 $"专题名称:{specialInfo.Title}");
 
@@ -86,9 +86,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteDownload)]
         public async Task<ActionResult<StringResult>> Download([FromBody]SpecialIdRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Specials))
             {
                 return Unauthorized();
@@ -114,9 +114,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(RouteId)]
         public async Task<ActionResult<GetSpecialResult>> GetSpecial(int siteId, int specialId)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(siteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(siteId,
                     Constants.SitePermissions.Specials))
             {
                 return Unauthorized();
@@ -138,9 +138,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> SpecialUpload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Specials))
             {
                 return Unauthorized();
@@ -165,9 +165,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(Route)]
         public async Task<ActionResult<ObjectResult<IEnumerable<Special>>>> SpecialSubmit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSitePermissionsAsync(request.SiteId,
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Specials))
             {
                 return Unauthorized();
@@ -274,7 +274,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Templates
                     AddDate = DateTime.Now
                 });
 
-                await auth.AddSiteLogAsync(request.SiteId, "新建专题", $"专题名称:{request.Title}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "新建专题", $"专题名称:{request.Title}");
             }
 
             await _createManager.CreateSpecialAsync(request.SiteId, specialId);

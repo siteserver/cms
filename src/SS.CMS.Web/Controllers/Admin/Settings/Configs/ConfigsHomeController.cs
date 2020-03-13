@@ -31,9 +31,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHome))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHome))
             {
                 return Unauthorized();
             }
@@ -44,7 +44,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
             {
                 Config = config,
                 HomeDirectory = _settingsManager.HomeDirectory,
-                AdminToken = auth.AdminToken,
+                AdminToken = _authManager.GetAdminToken(),
                 Styles = await _tableStyleRepository.GetUserStyleListAsync()
             };
         }
@@ -52,9 +52,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHome))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHome))
             {
                 return Unauthorized();
             }
@@ -73,7 +73,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
 
             await _configRepository.UpdateAsync(config);
 
-            await auth.AddAdminLogAsync("修改用户中心设置");
+            await _authManager.AddAdminLogAsync("修改用户中心设置");
 
             return new BoolResult
             {
@@ -84,9 +84,9 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Configs
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromForm]IFormFile file)
         {
-            var auth = await _authManager.GetAdminAsync();
-            if (!auth.IsAdminLoggin ||
-                !await auth.AdminPermissions.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHome))
+            
+            if (!await _authManager.IsAdminAuthenticatedAsync() ||
+                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHome))
             {
                 return Unauthorized();
             }
