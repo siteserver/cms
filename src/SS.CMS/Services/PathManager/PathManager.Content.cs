@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Abstractions;
@@ -10,43 +8,81 @@ namespace SS.CMS.Services
 {
     public partial class PathManager
     {
-        public async Task<Content> ParsePathAsync(Site site, Channel channel, int contentId)
+        public async Task<Content> EncodeContentAsync(Site site, Channel channel, Content content)
         {
-            var content = await _contentRepository.GetAsync(site, channel, contentId);
-            return await ParsePathAsync(site, channel, content);
-        }
-
-
-        public async Task<Content> ParsePathAsync(Site site, Channel channel, Content content)
-        {
-            var parsedContent = content.Clone<Content>();
+            content = content.Clone<Content>();
 
             var tableName = _channelRepository.GetTableName(site, channel);
             var tableStyles = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
             foreach (var style in tableStyles)
             {
-                if (style.InputType == InputType.Image)
+                if (style.InputType == InputType.Image || style.InputType == InputType.Video || style.InputType == InputType.File)
                 {
-                    var value = parsedContent.Get<string>(style.AttributeName);
-                    value = await ParseNavigationUrlAsync(site, value, false);
+                    var countName = ColumnsManager.GetCountName(style.AttributeName);
+                    var count = content.Get<int>(countName);
+                    for (var i = 0; i <= count; i++)
+                    {
+                        var extendName = ColumnsManager.GetExtendName(style.AttributeName, i);
+                        var value = content.Get<string>(extendName);
+                        value = GetVirtualUrl(site, value);
 
-                    parsedContent.Set(style.AttributeName, value);
+                        content.Set(extendName, value);
+                    }
                 }
                 else if (style.InputType == InputType.TextEditor)
                 {
-                    var value = parsedContent.Get<string>(style.AttributeName);
-                    value = await TextEditorContentDecodeAsync(site, value, true);
-                    value = UEditorUtils.TranslateToHtml(value);
-                    value = StringUtils.HtmlEncode(value);
+                    var value = content.Get<string>(style.AttributeName);
+                    value = await EncodeTextEditorAsync(site, value);
+                    value = UEditorUtils.TranslateToStlElement(value);
 
-                    parsedContent.Set(style.AttributeName, value);
+                    content.Set(style.AttributeName, value);
                 }
             }
 
-            return parsedContent;
+            return content;
         }
 
-        public async Task<string> TextEditorContentEncodeAsync(Site site, string content)
+        public async Task<Content> DecodeContentAsync(Site site, Channel channel, int contentId)
+        {
+            var content = await _contentRepository.GetAsync(site, channel, contentId);
+            return await DecodeContentAsync(site, channel, content);
+        }
+
+        public async Task<Content> DecodeContentAsync(Site site, Channel channel, Content content)
+        {
+            content = content.Clone<Content>();
+
+            var tableName = _channelRepository.GetTableName(site, channel);
+            var tableStyles = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
+            foreach (var style in tableStyles)
+            {
+                if (style.InputType == InputType.Image || style.InputType == InputType.Video || style.InputType == InputType.File)
+                {
+                    var countName = ColumnsManager.GetCountName(style.AttributeName);
+                    var count = content.Get<int>(countName);
+                    for (var i = 0; i <= count; i++)
+                    {
+                        var extendName = ColumnsManager.GetExtendName(style.AttributeName, i);
+                        var value = content.Get<string>(extendName);
+                        value = await ParseNavigationUrlAsync(site, value, false);
+
+                        content.Set(extendName, value);
+                    }
+                }
+                else if (style.InputType == InputType.TextEditor)
+                {
+                    var value = content.Get<string>(style.AttributeName);
+                    value = await DecodeTextEditorAsync(site, value, true);
+                    value = UEditorUtils.TranslateToHtml(value);
+
+                    content.Set(style.AttributeName, value);
+                }
+            }
+
+            return content;
+        }
+
+        public async Task<string> EncodeTextEditorAsync(Site site, string content)
         {
             if (site == null) return content;
 
@@ -76,7 +112,7 @@ namespace SS.CMS.Services
             return builder.ToString();
         }
 
-        public async Task<string> TextEditorContentDecodeAsync(Site site, string content, bool isLocal)
+        public async Task<string> DecodeTextEditorAsync(Site site, string content, bool isLocal)
         {
             if (site == null) return content;
 
@@ -108,10 +144,10 @@ namespace SS.CMS.Services
         {
             if (content == null) return;
 
-            var imageUrl = content.Get<string>(ContentAttribute.ImageUrl);
-            var videoUrl = content.Get<string>(ContentAttribute.VideoUrl);
-            var fileUrl = content.Get<string>(ContentAttribute.FileUrl);
-            var body = content.Get<string>(ContentAttribute.Content);
+            var imageUrl = content.ImageUrl;
+            var videoUrl = content.VideoUrl;
+            var fileUrl = content.FileUrl;
+            var body = content.Body;
 
             if (!string.IsNullOrEmpty(imageUrl) && IsVirtualUrl(imageUrl))
             {

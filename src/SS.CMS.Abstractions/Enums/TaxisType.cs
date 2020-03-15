@@ -13,8 +13,8 @@ namespace SS.CMS.Abstractions
         [DataEnum(DisplayName = "栏目ID（降序）")] OrderByChannelIdDesc,
         [DataEnum(DisplayName = "添加时间（升序）")] OrderByAddDate,
         [DataEnum(DisplayName = "添加时间（降序）")] OrderByAddDateDesc,
-        [DataEnum(DisplayName = "更新时间（升序）")] OrderByLastEditDate,
-        [DataEnum(DisplayName = "更新时间（降序）")] OrderByLastEditDateDesc,
+        [DataEnum(DisplayName = "更新时间（升序）")] OrderByLastModifiedDate,
+        [DataEnum(DisplayName = "更新时间（降序）")] OrderByLastModifiedDateDesc,
         [DataEnum(DisplayName = "默认排序（升序）")] OrderByTaxis,
         [DataEnum(DisplayName = "默认排序（降序）")] OrderByTaxisDesc,
         [DataEnum(DisplayName = "按点击量排序")] OrderByHits,
@@ -71,13 +71,13 @@ namespace SS.CMS.Abstractions
             {
                 retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.AddDate)} DESC, {nameof(Content.Id)} DESC";
             }
-            else if (taxisType == TaxisType.OrderByLastEditDate)
+            else if (taxisType == TaxisType.OrderByLastModifiedDate)
             {
-                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.LastEditDate)} ASC, {nameof(Content.Id)} DESC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.LastModifiedDate)} ASC, {nameof(Content.Id)} DESC";
             }
-            else if (taxisType == TaxisType.OrderByLastEditDateDesc)
+            else if (taxisType == TaxisType.OrderByLastModifiedDateDesc)
             {
-                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.LastEditDate)} DESC, {nameof(Content.Id)} DESC";
+                retVal = $"ORDER BY {nameof(Content.Top)} DESC, {nameof(Content.LastModifiedDate)} DESC, {nameof(Content.Id)} DESC";
             }
             else if (taxisType == TaxisType.OrderByTaxis)
             {
@@ -129,9 +129,9 @@ namespace SS.CMS.Abstractions
                 case TaxisType.OrderByAddDateDesc:
                     retVal = nameof(Content.AddDate);
                     break;
-                case TaxisType.OrderByLastEditDate:
-                case TaxisType.OrderByLastEditDateDesc:
-                    retVal = nameof(Content.LastEditDate);
+                case TaxisType.OrderByLastModifiedDate:
+                case TaxisType.OrderByLastModifiedDateDesc:
+                    retVal = nameof(Content.LastModifiedDate);
                     break;
                 case TaxisType.OrderByHits:
                     retVal = nameof(Content.Hits);

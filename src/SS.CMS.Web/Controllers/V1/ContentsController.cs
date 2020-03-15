@@ -95,7 +95,6 @@ namespace SS.CMS.Web.Controllers.V1
                 AdminId = adminId,
                 LastEditAdminId = adminId,
                 UserId = userId,
-                LastEditDate = DateTime.Now,
                 SourceId = request.SourceId,
                 Checked = isChecked,
                 CheckedLevel = checkedLevel
@@ -164,7 +163,6 @@ namespace SS.CMS.Web.Controllers.V1
             content.SiteId = request.SiteId;
             content.ChannelId = request.ChannelId;
             content.LastEditAdminId = await _authManager.GetAdminIdAsync();
-            content.LastEditDate = DateTime.Now;
             content.SourceId = request.SourceId;
 
             var postCheckedLevel = content.CheckedLevel;
@@ -322,9 +320,9 @@ namespace SS.CMS.Web.Controllers.V1
                 var content = await _contentRepository.GetAsync(site, channel, channelContentId.Id);
                 if (content == null) continue;
 
-                content.CheckAdminId = adminId;
-                content.CheckDate = DateTime.Now;
-                content.CheckReasons = request.Reasons;
+                content.Set(ColumnsManager.CheckAdminId, adminId);
+                content.Set(ColumnsManager.CheckDate, DateTime.Now);
+                content.Set(ColumnsManager.CheckReasons, request.Reasons);
 
                 content.Checked = true;
                 content.CheckedLevel = 0;

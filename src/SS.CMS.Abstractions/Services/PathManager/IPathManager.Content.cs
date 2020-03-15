@@ -5,13 +5,15 @@ namespace SS.CMS.Abstractions
 {
     public partial interface IPathManager
     {
-        Task<Content> ParsePathAsync(Site site, Channel channel, int contentId);
+        Task<Content> EncodeContentAsync(Site site, Channel channel, Content content);
 
-        Task<Content> ParsePathAsync(Site site, Channel channel, Content content);
+        Task<Content> DecodeContentAsync(Site site, Channel channel, int contentId);
 
-        Task<string> TextEditorContentEncodeAsync(Site site, string content);
+        Task<Content> DecodeContentAsync(Site site, Channel channel, Content content);
 
-        Task<string> TextEditorContentDecodeAsync(Site site, string content, bool isLocal);
+        Task<string> EncodeTextEditorAsync(Site site, string content);
+
+        Task<string> DecodeTextEditorAsync(Site site, string content, bool isLocal);
 
         Task PutImagePathsAsync(Site site, Content content, NameValueCollection collection);
     }

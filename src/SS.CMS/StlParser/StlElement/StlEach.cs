@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Parse;
-using SS.CMS.Services;
+using SS.CMS.Core;
 using SS.CMS.StlParser.Mock;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
@@ -21,9 +21,9 @@ namespace SS.CMS.StlParser.StlElement
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
-            {ContentAttribute.ImageUrl, "遍历内容的图片字段"},
-            {ContentAttribute.VideoUrl, "遍历内容的视频字段"},
-            {ContentAttribute.FileUrl, "遍历内容的附件字段"}
+            {nameof(Content.ImageUrl), "遍历内容的图片字段"},
+            {nameof(Content.VideoUrl), "遍历内容的视频字段"},
+            {nameof(Content.FileUrl), "遍历内容的附件字段"}
         };
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
@@ -36,12 +36,11 @@ namespace SS.CMS.StlParser.StlElement
         private static async Task<string> ParseImplAsync(IParseManager parseManager, ListInfo listInfo)
         {
             var pageInfo = parseManager.PageInfo;
-            var contextInfo = parseManager.ContextInfo;
 
             var type = listInfo.Others.Get(Type);
             if (string.IsNullOrEmpty(type))
             {
-                type = ContentAttribute.ImageUrl;
+                type = nameof(Content.ImageUrl);
             }
 
             var valueList = new List<string>();
@@ -54,15 +53,24 @@ namespace SS.CMS.StlParser.StlElement
                     valueList.Add(content.Get<string>(type));
                 }
 
-                var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                var extendValues = content.Get<string>(extendAttributeName);
-                if (!string.IsNullOrEmpty(extendValues))
+                var countName = ColumnsManager.GetCountName(type);
+                var total = content.Get<int>(countName);
+                for (var i = 1; i <= total; i++)
                 {
-                    foreach (var extendValue in Utilities.GetStringList(extendValues))
-                    {
-                        valueList.Add(extendValue);
-                    }
+                    var extendName = ColumnsManager.GetExtendName(type, i);
+                    var extend = content.Get<string>(extendName);
+                    valueList.Add(extend);
                 }
+
+                //var extendAttributeName = ColumnsManager.GetExtendAttributeName(type);
+                //var extendValues = content.Get<string>(extendAttributeName);
+                //if (!string.IsNullOrEmpty(extendValues))
+                //{
+                //    foreach (var extendValue in Utilities.GetStringList(extendValues))
+                //    {
+                //        valueList.Add(extendValue);
+                //    }
+                //}
 
                 if (listInfo.StartNum > 1 || listInfo.TotalNum > 0)
                 {

@@ -118,11 +118,11 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
 
                 if (!await _settingsManager.Database.IsTableExistsAsync(tableName))
                 {
-                    await _contentRepository.CreateContentTableAsync(tableName, _contentRepository.GetDefaultTableColumns(tableName));
+                    await _contentRepository.CreateContentTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
                 }
                 else
                 {
-                    await _settingsManager.Database.AlterTableAsync(tableName, _contentRepository.GetDefaultTableColumns(tableName));
+                    await _settingsManager.Database.AlterTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
                 }
             }
 
@@ -140,7 +140,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
             if (string.IsNullOrEmpty(tableName))
             {
                 tableName = ContentRepository.GetContentTableName(siteId);
-                await _contentRepository.CreateContentTableAsync(tableName, _contentRepository.GetDefaultTableColumns(tableName));
+                await _contentRepository.CreateContentTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
                 await _siteRepository.UpdateTableNameAsync(siteId, tableName);
             }
 

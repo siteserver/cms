@@ -116,7 +116,7 @@ namespace SS.CMS.Services
                 }
                 else
                 {
-                    await AlterTableAsync(tableName, ContentRepository.GetTableColumns(tableName), string.Empty, ContentAttribute.DropAttributes.Value);
+                    await AlterTableAsync(tableName, ContentRepository.GetTableColumns(tableName), string.Empty, ColumnsManager.DropAttributes.Value);
                 }
             }
         }
@@ -165,7 +165,7 @@ namespace SS.CMS.Services
 
                 try
                 {
-                    await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
+                    await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis", $"{nameof(Content.Taxis)} DESC");
 
                     //sqlString =
                     //    $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_Taxis")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC)";

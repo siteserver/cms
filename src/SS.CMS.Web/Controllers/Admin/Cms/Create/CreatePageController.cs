@@ -157,7 +157,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
             {
                 if (request.Scope == "1month")
                 {
-                    var lastEditList = await _contentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 720);
+                    var lastEditList = await _contentRepository.GetChannelIdsCheckedByLastModifiedDateHourAsync(site, 720);
                     foreach (var channelId in lastEditList)
                     {
                         if (selectedChannelIdList.Contains(channelId))
@@ -168,7 +168,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
                 }
                 else if (request.Scope == "1day")
                 {
-                    var lastEditList = await _contentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 24);
+                    var lastEditList = await _contentRepository.GetChannelIdsCheckedByLastModifiedDateHourAsync(site, 24);
                     foreach (var channelId in lastEditList)
                     {
                         if (selectedChannelIdList.Contains(channelId))
@@ -179,7 +179,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Create
                 }
                 else if (request.Scope == "2hours")
                 {
-                    var lastEditList = await _contentRepository.GetChannelIdsCheckedByLastEditDateHourAsync(site, 2);
+                    var lastEditList = await _contentRepository.GetChannelIdsCheckedByLastModifiedDateHourAsync(site, 2);
                     foreach (var channelId in lastEditList)
                     {
                         if (selectedChannelIdList.Contains(channelId))

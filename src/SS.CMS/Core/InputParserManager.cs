@@ -78,7 +78,7 @@ namespace SS.CMS.Core
             //}
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = await _pathManager.TextEditorContentDecodeAsync(site, parsedContent, true);
+                parsedContent = await _pathManager.DecodeTextEditorAsync(site, parsedContent, true);
             }
             else if (inputType == InputType.Image)
             {
@@ -147,7 +147,7 @@ namespace SS.CMS.Core
             }
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = await _pathManager.TextEditorContentDecodeAsync(site, value, true);
+                parsedContent = await _pathManager.DecodeTextEditorAsync(site, value, true);
             }
             else if (inputType == InputType.Image)
             {
@@ -157,21 +157,9 @@ namespace SS.CMS.Core
                 }
                 else
                 {
-                    var extendAttributeName = ContentAttribute.GetExtendAttributeName(style.AttributeName);
-                    var extendValues = content.Get<string>(extendAttributeName);
-                    if (!string.IsNullOrEmpty(extendValues))
-                    {
-                        var index = 2;
-                        foreach (string extendValue in Utilities.GetStringList(extendValues))
-                        {
-                            if (index == no)
-                            {
-                                parsedContent = await GetImageOrFlashHtmlAsync(site, extendValue, attributes, isStlEntity);
-                                break;
-                            }
-                            index++;
-                        }
-                    }
+                    var extendName = ColumnsManager.GetExtendName(style.AttributeName, no - 1);
+                    var extend = content.Get<string>(extendName);
+                    parsedContent = await GetImageOrFlashHtmlAsync(site, extend, attributes, isStlEntity);
                 }
             }
             else if (inputType == InputType.Video)
@@ -182,21 +170,9 @@ namespace SS.CMS.Core
                 }
                 else
                 {
-                    var extendAttributeName = ContentAttribute.GetExtendAttributeName(style.AttributeName);
-                    var extendValues = content.Get<string>(extendAttributeName);
-                    if (!string.IsNullOrEmpty(extendValues))
-                    {
-                        var index = 2;
-                        foreach (string extendValue in Utilities.GetStringList(extendValues))
-                        {
-                            if (index == no)
-                            {
-                                parsedContent = await GetVideoHtmlAsync(config, site, extendValue, attributes, isStlEntity);
-                                break;
-                            }
-                            index++;
-                        }
-                    }
+                    var extendName = ColumnsManager.GetExtendName(style.AttributeName, no - 1);
+                    var extend = content.Get<string>(extendName);
+                    parsedContent = await GetVideoHtmlAsync(config, site, extend, attributes, isStlEntity);
                 }
             }
             else if (inputType == InputType.File)
@@ -207,21 +183,9 @@ namespace SS.CMS.Core
                 }
                 else
                 {
-                    var extendAttributeName = ContentAttribute.GetExtendAttributeName(style.AttributeName);
-                    var extendValues = content.Get<string>(extendAttributeName);
-                    if (!string.IsNullOrEmpty(extendValues))
-                    {
-                        var index = 2;
-                        foreach (string extendValue in Utilities.GetStringList(extendValues))
-                        {
-                            if (index == no)
-                            {
-                                parsedContent = GetFileHtmlWithoutCount(config, site, extendValue, attributes, innerHtml, isStlEntity, false, false);
-                                break;
-                            }
-                            index++;
-                        }
-                    }
+                    var extendName = ColumnsManager.GetExtendName(style.AttributeName, no - 1);
+                    var extend = content.Get<string>(extendName);
+                    parsedContent = GetFileHtmlWithoutCount(config, site, extend, attributes, innerHtml, isStlEntity, false, false);
                 }
             }
             else

@@ -238,7 +238,6 @@ namespace SS.CMS.Core.Office
                 {
                     content.SiteId = site.Id;
                     content.ChannelId = channel.Id;
-                    content.LastEditDate = DateTime.Now;
 
                     contentInfoList.Add(content);
                 }

@@ -87,7 +87,7 @@ namespace SS.CMS.Core
             //复制
             if (Equals(channel.TransDoneType, TranslateContentType.Copy))
             {
-                contentInfo.TranslateContentType = TranslateContentType.Copy;
+                contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.Copy.GetValue());
             }
             //引用地址
             else if (Equals(channel.TransDoneType, TranslateContentType.Reference))
@@ -96,7 +96,7 @@ namespace SS.CMS.Core
                 contentInfo.SourceId = channel.Id;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.TranslateContentType = TranslateContentType.Reference;
+                contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.Reference.GetValue());
             }
             //引用内容
             else if (Equals(channel.TransDoneType, TranslateContentType.ReferenceContent))
@@ -105,44 +105,43 @@ namespace SS.CMS.Core
                 contentInfo.SourceId = channel.Id;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.TranslateContentType = TranslateContentType.ReferenceContent;
+                contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.ReferenceContent.GetValue());
             }
 
             await _databaseManager.ContentRepository.InsertAsync(targetSite, channel, contentInfo);
 
             #region 复制资源
             //资源：图片，文件，视频
-            if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.ImageUrl)))
+            if (!string.IsNullOrEmpty(contentInfo.ImageUrl))
             {
                 //修改图片
-                var sourceImageUrl = await pathManager.MapPathAsync(site, contentInfo.Get<string>(ContentAttribute.ImageUrl));
+                var sourceImageUrl = await pathManager.MapPathAsync(site, contentInfo.ImageUrl);
                 CopyReferenceFiles(targetSite, sourceImageUrl, site);
 
-            }
-            else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl))))
-            {
-                var sourceImageUrls = Utilities.GetStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl)));
-
-                foreach (string imageUrl in sourceImageUrls)
+                var countName = ColumnsManager.GetCountName(nameof(Content.ImageUrl));
+                var count = contentInfo.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
                 {
-                    var sourceImageUrl = await pathManager.MapPathAsync(site, imageUrl);
+                    var extendName = ColumnsManager.GetExtendName(nameof(Content.ImageUrl), i);
+                    var extend = contentInfo.Get<string>(extendName);
+                    sourceImageUrl = await pathManager.MapPathAsync(site, extend);
                     CopyReferenceFiles(targetSite, sourceImageUrl, site);
                 }
             }
-            if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.FileUrl)))
+            
+            if (!string.IsNullOrEmpty(contentInfo.FileUrl))
             {
                 //修改附件
-                var sourceFileUrl = await pathManager.MapPathAsync(site, contentInfo.Get<string>(ContentAttribute.FileUrl));
+                var sourceFileUrl = await pathManager.MapPathAsync(site, contentInfo.FileUrl);
                 CopyReferenceFiles(targetSite, sourceFileUrl, site);
 
-            }
-            else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl))))
-            {
-                var sourceFileUrls = Utilities.GetStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl)));
-
-                foreach (string fileUrl in sourceFileUrls)
+                var countName = ColumnsManager.GetCountName(nameof(Content.FileUrl));
+                var count = contentInfo.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
                 {
-                    var sourceFileUrl = await pathManager.MapPathAsync(site, fileUrl);
+                    var extendName = ColumnsManager.GetExtendName(nameof(Content.FileUrl), i);
+                    var extend = contentInfo.Get<string>(extendName);
+                    sourceFileUrl = await pathManager.MapPathAsync(site, extend);
                     CopyReferenceFiles(targetSite, sourceFileUrl, site);
                 }
             }

@@ -28,9 +28,6 @@ namespace SS.CMS.Cli.Updater
         [JsonProperty("lastEditUserName")]
         public string LastEditUserName { get; set; }
 
-        [JsonProperty("lastEditDate")]
-        public DateTimeOffset LastEditDate { get; set; }
-
         [JsonProperty("taxis")]
         public long Taxis { get; set; }
 

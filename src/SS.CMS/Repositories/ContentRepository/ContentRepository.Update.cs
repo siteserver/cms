@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
 using SS.CMS.Core;
@@ -12,16 +11,13 @@ namespace SS.CMS.Repositories
         {
             if (content == null) return;
 
-            if (site.IsAutoPageInTextEditor &&
-                content.ContainsKey(ContentAttribute.Content))
+            if (site.IsAutoPageInTextEditor)
             {
-                content.Set(ContentAttribute.Content,
-                    ContentUtility.GetAutoPageContent(content.Get<string>(ContentAttribute.Content),
-                        site.AutoPageWordNum));
+                content.Body = ContentUtility.GetAutoPageBody(content.Body,
+                    site.AutoPageWordNum);
             }
 
             content.Taxis = await SyncTaxisAsync(site, channel, content);
-            content.LastEditDate = DateTime.Now;
 
             var repository = GetRepository(site, channel);
             await repository.UpdateAsync(content, Q
@@ -41,16 +37,16 @@ namespace SS.CMS.Repositories
 
                 var list = await repository.GetAllAsync<(int ContentId, string Content)>(
                     GetQuery(site.Id)
-                    .Select(ContentAttribute.Id, ContentAttribute.Content)
+                    .Select(nameof(Content.Id), nameof(Content.Body))
                 );
 
                 foreach (var (contentId, contentValue) in list)
                 {
-                    var content = ContentUtility.GetAutoPageContent(contentValue, site.AutoPageWordNum);
+                    var body = ContentUtility.GetAutoPageBody(contentValue, site.AutoPageWordNum);
                     await repository.UpdateAsync(
                         GetQuery(site.Id)
-                        .Set(ContentAttribute.Content, content)
-                        .Where(ContentAttribute.Id, contentId)
+                        .Set(nameof(Content.Body), body)
+                        .Where(nameof(Content.Id), contentId)
                         .CachingRemove(GetEntityKey(tableName, contentId))
                     );
                 }
@@ -104,16 +100,16 @@ namespace SS.CMS.Repositories
 
             var taxis = await repository.GetAsync<int>(
                 GetQuery(site.Id, channel.Id)
-                .Select(ContentAttribute.Taxis)
-                .Where(ContentAttribute.Id, contentId)
+                .Select(nameof(Content.Taxis))
+                .Where(nameof(Content.Id), contentId)
             );
 
             var result = await repository.GetAsync<Content>(
                 GetQuery(site.Id, channel.Id)
-                .Select(ContentAttribute.Id, ContentAttribute.Taxis)
-                .Where(ContentAttribute.Taxis, ">", taxis)
-                .Where(ContentAttribute.Taxis, isTop ? ">" : "<", TaxisIsTopStartValue)
-                .OrderBy(ContentAttribute.Taxis));
+                .Select(nameof(Content.Id), nameof(Content.Taxis))
+                .Where(nameof(Content.Taxis), ">", taxis)
+                .Where(nameof(Content.Taxis), isTop ? ">" : "<", TaxisIsTopStartValue)
+                .OrderBy(nameof(Content.Taxis)));
 
             var higherId = 0;
             var higherTaxis = 0;
@@ -127,14 +123,14 @@ namespace SS.CMS.Repositories
 
             await repository.UpdateAsync(
                 GetQuery(site.Id, channel.Id)
-                .Set(ContentAttribute.Taxis, higherTaxis)
-                .Where(ContentAttribute.Id, contentId)
+                .Set(nameof(Content.Taxis), higherTaxis)
+                .Where(nameof(Content.Id), contentId)
             );
 
             await repository.UpdateAsync(
                 GetQuery(site.Id, channel.Id)
-                .Set(ContentAttribute.Taxis, taxis)
-                .Where(ContentAttribute.Id, higherId)
+                .Set(nameof(Content.Taxis), taxis)
+                .Where(nameof(Content.Id), higherId)
             );
 
             await repository.RemoveCacheAsync(
@@ -152,16 +148,16 @@ namespace SS.CMS.Repositories
 
             var taxis = await repository.GetAsync<int>(
                 GetQuery(site.Id, channel.Id)
-                .Select(ContentAttribute.Taxis)
-                .Where(ContentAttribute.Id, contentId)
+                .Select(nameof(Content.Taxis))
+                .Where(nameof(Content.Id), contentId)
             );
 
             var result = await repository.GetAsync<Content>(
                 GetQuery(site.Id, channel.Id)
-                .Select(ContentAttribute.Id, ContentAttribute.Taxis)
-                .Where(ContentAttribute.Taxis, "<", taxis)
-                .Where(ContentAttribute.Taxis, isTop ? ">" : "<", TaxisIsTopStartValue)
-                .OrderByDesc(ContentAttribute.Taxis));
+                .Select(nameof(Content.Id), nameof(Content.Taxis))
+                .Where(nameof(Content.Taxis), "<", taxis)
+                .Where(nameof(Content.Taxis), isTop ? ">" : "<", TaxisIsTopStartValue)
+                .OrderByDesc(nameof(Content.Taxis)));
 
             var lowerId = 0;
             var lowerTaxis = 0;
@@ -175,14 +171,14 @@ namespace SS.CMS.Repositories
 
             await repository.UpdateAsync(
                 GetQuery(site.Id, channel.Id)
-                .Set(ContentAttribute.Taxis, lowerTaxis)
-                .Where(ContentAttribute.Id, contentId)
+                .Set(nameof(Content.Taxis), lowerTaxis)
+                .Where(nameof(Content.Id), contentId)
             );
 
             await repository.UpdateAsync(
                 GetQuery(site.Id, channel.Id)
-                .Set(ContentAttribute.Taxis, taxis)
-                .Where(ContentAttribute.Id, lowerId)
+                .Set(nameof(Content.Taxis), taxis)
+                .Where(nameof(Content.Id), lowerId)
             );
 
             await repository.RemoveCacheAsync(
@@ -198,8 +194,8 @@ namespace SS.CMS.Repositories
         {
             var repository = GetRepository(tableName);
 
-            await repository.IncrementAsync(ContentAttribute.Downloads, Q
-                .Where(ContentAttribute.Id, contentId)
+            await repository.IncrementAsync(nameof(Content.Downloads), Q
+                .Where(nameof(Content.Id), contentId)
                 .CachingRemove(GetEntityKey(tableName, contentId))
             );
         }

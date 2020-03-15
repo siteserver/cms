@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
 using SS.CMS.Abstractions;
+using SS.CMS.Core;
 
 namespace SS.CMS.Services
 {
@@ -67,7 +68,7 @@ namespace SS.CMS.Services
             }
             else
             {
-                await database.AlterTableAsync(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
+                await database.AlterTableAsync(tableName, tableColumns, ColumnsManager.DropAttributes.Value);
             }
 
             await ContentTableCreateOrUpdateStylesAsync(tableName, pluginService.ContentInputStyles);

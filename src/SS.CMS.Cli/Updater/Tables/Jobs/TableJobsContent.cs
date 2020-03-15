@@ -27,9 +27,6 @@ namespace SS.CMS.Cli.Updater.Tables.Jobs
         [JsonProperty("lastEditUserName")]
         public string LastEditUserName { get; set; }
 
-        [JsonProperty("lastEditDate")]
-        public DateTimeOffset LastEditDate { get; set; }
-
         [JsonProperty("taxis")]
         public long Taxis { get; set; }
 

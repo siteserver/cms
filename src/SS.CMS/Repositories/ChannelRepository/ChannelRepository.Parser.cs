@@ -109,12 +109,12 @@ namespace SS.CMS.Repositories
                 return channels.OrderByDescending(x => x.AddDate).ToList();
             }
 
-            if (taxisType == TaxisType.OrderByLastEditDate)
+            if (taxisType == TaxisType.OrderByLastModifiedDate)
             {
                 return channels.OrderBy(x => x.LastModifiedDate).ToList();
             }
 
-            if (taxisType == TaxisType.OrderByLastEditDateDesc)
+            if (taxisType == TaxisType.OrderByLastModifiedDateDesc)
             {
                 return channels.OrderByDescending(x => x.LastModifiedDate).ToList();
             }

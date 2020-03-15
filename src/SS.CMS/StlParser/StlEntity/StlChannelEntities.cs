@@ -114,7 +114,7 @@ namespace SS.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(Content, attributeName))//栏目正文
                 {
-                    parsedContent = await parseManager.PathManager.TextEditorContentDecodeAsync(pageInfo.Site, nodeInfo.Content, pageInfo.IsLocal);
+                    parsedContent = await parseManager.PathManager.DecodeTextEditorAsync(pageInfo.Site, nodeInfo.Content, pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(NavigationUrl, attributeName))//栏目链接地址
                 {

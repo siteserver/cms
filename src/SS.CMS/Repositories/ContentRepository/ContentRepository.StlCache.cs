@@ -20,22 +20,22 @@ namespace SS.CMS.Repositories
             if (isImageExists)
             {
                 whereBuilder.Append(isImage
-                    ? $" AND {ContentAttribute.ImageUrl} <> '' "
-                    : $" AND {ContentAttribute.ImageUrl} = '' ");
+                    ? $" AND {nameof(Content.ImageUrl)} <> '' "
+                    : $" AND {nameof(Content.ImageUrl)} = '' ");
             }
 
             if (isVideoExists)
             {
                 whereBuilder.Append(isVideo
-                    ? $" AND {ContentAttribute.VideoUrl} <> '' "
-                    : $" AND {ContentAttribute.VideoUrl} = '' ");
+                    ? $" AND {nameof(Content.VideoUrl)} <> '' "
+                    : $" AND {nameof(Content.VideoUrl)} = '' ");
             }
 
             if (isFileExists)
             {
                 whereBuilder.Append(isFile
-                    ? $" AND {ContentAttribute.FileUrl} <> '' "
-                    : $" AND {ContentAttribute.FileUrl} = '' ");
+                    ? $" AND {nameof(Content.FileUrl)} <> '' "
+                    : $" AND {nameof(Content.FileUrl)} = '' ");
             }
 
             if (isTopExists)
@@ -132,22 +132,22 @@ namespace SS.CMS.Repositories
             if (isImageExists)
             {
                 whereBuilder.Append(isImage
-                    ? $" AND {ContentAttribute.ImageUrl} <> '' "
-                    : $" AND {ContentAttribute.ImageUrl} = '' ");
+                    ? $" AND {nameof(Content.ImageUrl)} <> '' "
+                    : $" AND {nameof(Content.ImageUrl)} = '' ");
             }
 
             if (isVideoExists)
             {
                 whereBuilder.Append(isVideo
-                    ? $" AND {ContentAttribute.VideoUrl} <> '' "
-                    : $" AND {ContentAttribute.VideoUrl} = '' ");
+                    ? $" AND {nameof(Content.VideoUrl)} <> '' "
+                    : $" AND {nameof(Content.VideoUrl)} = '' ");
             }
 
             if (isFileExists)
             {
                 whereBuilder.Append(isFile
-                    ? $" AND {ContentAttribute.FileUrl} <> '' "
-                    : $" AND {ContentAttribute.FileUrl} = '' ");
+                    ? $" AND {nameof(Content.FileUrl)} <> '' "
+                    : $" AND {nameof(Content.FileUrl)} = '' ");
             }
 
             if (isTopExists)
@@ -334,7 +334,7 @@ namespace SS.CMS.Repositories
         public int GetContentId(string tableName, int channelId, bool isCheckedOnly, string orderByString)
         {
             var contentId = 0;
-            var whereString = $"WHERE {ContentAttribute.ChannelId} = {channelId}";
+            var whereString = $"WHERE {nameof(Content.ChannelId)} = {channelId}";
             if (isCheckedOnly)
             {
                 whereString += $" AND {nameof(Content.Checked)} = {true.ToString().ToLower()}";
@@ -410,7 +410,7 @@ namespace SS.CMS.Repositories
 
             return await repository.CountAsync(GetQuery(site.Id, channel.Id)
                        .WhereTrue(nameof(Content.Checked))
-                       .WhereNotNullOrEmpty(ContentAttribute.ImageUrl)
+                       .WhereNotNullOrEmpty(nameof(Content.ImageUrl))
                    ) + 1;
 
             //var tableName = await _siteRepository.GetTableNameAsync(siteId);

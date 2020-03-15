@@ -15,11 +15,11 @@ namespace SS.CMS.Tests.Services
 
             var database = _fixture.SettingsManager.Database;
 
-            await database.CreateTableAsync(tableName, _contentRepository.GetDefaultTableColumns(tableName));
+            await database.CreateTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
 
             Assert.True(await database.IsTableExistsAsync(tableName));
 
-            await database.AlterTableAsync(tableName, _contentRepository.GetDefaultTableColumns(tableName));
+            await database.AlterTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
         }
     }
 }

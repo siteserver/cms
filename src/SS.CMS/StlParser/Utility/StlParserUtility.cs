@@ -27,8 +27,8 @@ namespace SS.CMS.StlParser.Utility
         public const string OrderBack = "Back";								//默认排序的相反方向
         public const string OrderAddDate = "AddDate";							//添加时间
         public const string OrderAddDateBack = "AddDateBack";					//添加时间的相反方向
-        public const string OrderLastEditDate = "LastEditDate";				//最后更改时间（只可用于内容列表）
-        public const string OrderLastEditDateBack = "LastEditDateBack";	//最后更改时间的相反方向（只可用于内容列表）
+        public const string OrderLastModifiedDate = "LastModifiedDate";				//最后更改时间（只可用于内容列表）
+        public const string OrderLastModifiedDateBack = "LastModifiedDateBack";	//最后更改时间的相反方向（只可用于内容列表）
         public const string OrderHits = "Hits";	            //点击量
         public const string OrderHitsByDay = "HitsByDay";	    //日点击量
         public const string OrderHitsByWeek = "HitsByWeek";	//周点击量
@@ -111,7 +111,7 @@ namespace SS.CMS.StlParser.Utility
         {
             foreach (var label in list)
             {
-                if (!IsStlContentElement(label, ContentAttribute.PageContent)) continue;
+                if (!IsStlContentElement(label, ColumnsManager.PageContent)) continue;
                 return true;
             }
             return false;
@@ -122,7 +122,7 @@ namespace SS.CMS.StlParser.Utility
             var stlPageContentElement = string.Empty;
             foreach (var label in labelList)
             {
-                if (!IsStlContentElement(label, ContentAttribute.PageContent)) continue;
+                if (!IsStlContentElement(label, ColumnsManager.PageContent)) continue;
                 stlPageContentElement = label;
                 break;
             }

@@ -23,9 +23,6 @@ namespace SS.CMS.Abstractions
         public int UserId { get; set; }
 
         [DataColumn]
-        public DateTime? LastEditDate { get; set; }
-
-        [DataColumn]
         public int Taxis { get; set; }
 
         [DataColumn]
@@ -68,6 +65,30 @@ namespace SS.CMS.Abstractions
         public string Title { get; set; }
 
         [DataColumn]
+        public string SubTitle { get; set; }
+
+        [DataColumn]
+        public string ImageUrl { get; set; }
+
+        [DataColumn]
+        public string VideoUrl { get; set; }
+
+        [DataColumn]
+        public string FileUrl { get; set; }
+
+        [DataColumn(Text = true)]
+        public string Body { get; set; }
+
+        [DataColumn(Text = true)]
+        public string Summary { get; set; }
+
+        [DataColumn]
+        public string Author { get; set; }
+
+        [DataColumn]
+        public string Source { get; set; }
+
+        [DataColumn]
         public bool Top { get; set; }
 
         [DataColumn]
@@ -84,13 +105,5 @@ namespace SS.CMS.Abstractions
 
         [DataColumn] 
         public DateTime? AddDate { get; set; }
-
-        public int CheckAdminId { get; set; } //审核人
-
-        public DateTime? CheckDate { get; set; } //审核时间
-
-        public string CheckReasons { get; set; } //审核原因
-
-        public TranslateContentType TranslateContentType { get; set; } //转移内容类型
     }
 }

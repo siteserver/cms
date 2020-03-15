@@ -1,7 +1,6 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
@@ -51,7 +50,7 @@ namespace SS.CMS.StlParser.StlElement
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
-            var type = ContentAttribute.FileUrl;
+            var type = nameof(Content.FileUrl);
             var no = 0;
             var src = string.Empty;
             var isFileName = false;
@@ -154,26 +153,12 @@ namespace SS.CMS.StlParser.StlElement
                         {
                             if (no <= 1)
                             {
-                                fileUrl = contentInfo.Get<string>(StringUtils.EqualsIgnoreCase(type, ContentAttribute.FileUrl) ? ContentAttribute.FileUrl : type);
+                                fileUrl = contentInfo.Get<string>(type);
                             }
                             else
                             {
-                                var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                                var extendValues = contentInfo.Get<string>(extendAttributeName);
-                                if (!string.IsNullOrEmpty(extendValues))
-                                {
-                                    var index = 2;
-                                    foreach (var extendValue in Utilities.GetStringList(extendValues))
-                                    {
-                                        if (index == no)
-                                        {
-                                            fileUrl = extendValue;
-
-                                            break;
-                                        }
-                                        index++;
-                                    }
-                                }
+                                var extendName = ColumnsManager.GetExtendName(type, no - 1);
+                                fileUrl = contentInfo.Get<string>(extendName);
                             }
                         }
                     }

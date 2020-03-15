@@ -86,7 +86,7 @@ namespace SS.CMS.Repositories
 
             if (isAllContents)
             {
-                query.OrderBy(ContentAttribute.ChannelId).OrderByDesc(nameof(Content.Taxis), nameof(Content.Id));
+                query.OrderBy(nameof(Content.ChannelId)).OrderByDesc(nameof(Content.Taxis), nameof(Content.Id));
             }
             else
             {
@@ -208,7 +208,7 @@ namespace SS.CMS.Repositories
 
             if (isAllContents)
             {
-                query.OrderBy(ContentAttribute.ChannelId).OrderByDesc(nameof(Content.Taxis), nameof(Content.Id));
+                query.OrderBy(nameof(Content.ChannelId)).OrderByDesc(nameof(Content.Taxis), nameof(Content.Id));
             }
             else
             {
@@ -327,7 +327,7 @@ namespace SS.CMS.Repositories
                 .Where(nameof(Content.SiteId), site.Id)
                 .WhereNot(nameof(Content.SourceId), SourceManager.Preview)
                 .Where(nameof(Content.ChannelId), "<", 0)
-                .OrderByDesc(nameof(Content.LastEditDate));
+                .OrderByDesc(nameof(Content.LastModifiedDate));
 
             if (channelId.HasValue)
             {
@@ -336,11 +336,11 @@ namespace SS.CMS.Repositories
 
             if (startDate.HasValue)
             {
-                query.WhereDate(nameof(Content.LastEditDate), ">", startDate.Value);
+                query.WhereDate(nameof(Content.LastModifiedDate), ">", startDate.Value);
             }
             if (endDate.HasValue)
             {
-                query.WhereDate(nameof(Content.LastEditDate), "<", endDate.Value);
+                query.WhereDate(nameof(Content.LastModifiedDate), "<", endDate.Value);
             }
 
             if (items != null)

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SS.CMS.Core;
 
 namespace SS.CMS.Repositories
@@ -105,17 +103,15 @@ namespace SS.CMS.Repositories
 
         public async Task<int> InsertWithTaxisAsync(Site site, Channel channel, Content content, int taxis)
         {
-            if (site.IsAutoPageInTextEditor && content.ContainsKey(ContentAttribute.Content))
+            if (site.IsAutoPageInTextEditor)
             {
-                content.Set(ContentAttribute.Content, ContentUtility.GetAutoPageContent(content.Get<string>(ContentAttribute.Content), site.AutoPageWordNum));
+                content.Body = ContentUtility.GetAutoPageBody(content.Body, site.AutoPageWordNum);
             }
 
             content.Taxis = taxis;
 
             var tableName = _channelRepository.GetTableName(site, channel);
             if (string.IsNullOrEmpty(tableName)) return 0;
-
-            content.LastEditDate = DateTime.Now;
 
             var repository = GetRepository(tableName);
             if (content.SourceId == SourceManager.Preview)

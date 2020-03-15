@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Datory" Version="1.0.14" />
+    <PackageReference Include="Datory" Version="1.0.15" />
     <PackageReference Include="HtmlSanitizer" Version="5.0.298" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="SqlKata" Version="1.1.7" />

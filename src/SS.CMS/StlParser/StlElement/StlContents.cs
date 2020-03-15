@@ -187,13 +187,13 @@ namespace SS.CMS.StlParser.StlElement
                 {
                     taxisType = TaxisType.OrderByAddDate;
                 }
-                else if (StringUtils.EqualsIgnoreCase(order, StlParserUtility.OrderLastEditDate))
+                else if (StringUtils.EqualsIgnoreCase(order, StlParserUtility.OrderLastModifiedDate))
                 {
-                    taxisType = TaxisType.OrderByLastEditDateDesc;
+                    taxisType = TaxisType.OrderByLastModifiedDateDesc;
                 }
-                else if (StringUtils.EqualsIgnoreCase(order, StlParserUtility.OrderLastEditDateBack))
+                else if (StringUtils.EqualsIgnoreCase(order, StlParserUtility.OrderLastModifiedDateBack))
                 {
-                    taxisType = TaxisType.OrderByLastEditDate;
+                    taxisType = TaxisType.OrderByLastModifiedDate;
                 }
                 else if (StringUtils.EqualsIgnoreCase(order, StlParserUtility.OrderHits))
                 {

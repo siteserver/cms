@@ -227,7 +227,7 @@ namespace SS.CMS.StlParser.StlElement
                     foreach (var minContentInfo in minContentInfoList)
                     {
                         var contentInfo = await databaseManager.ContentRepository.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
+                        var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
@@ -314,7 +314,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     foreach (var minContentInfo in minContentInfoList)
                     {
                         var contentInfo = await databaseManager.ContentRepository.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
+                        var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
@@ -375,7 +375,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     foreach (var minContentInfo in minContentInfoList)
                     {
                         var contentInfo = await databaseManager.ContentRepository.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
+                        var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
@@ -494,7 +494,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     foreach (var minContentInfo in minContentInfoList)
                     {
                         var contentInfo = await databaseManager.ContentRepository.GetAsync(pageInfo.Site, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
+                        var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {

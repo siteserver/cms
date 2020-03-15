@@ -33,7 +33,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
             var tableName = _channelRepository.GetTableName(site, channel);
             var allStyles = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
             var styles = allStyles.Where(style =>
-                    !string.IsNullOrEmpty(style.DisplayName) && !StringUtils.ContainsIgnoreCase(ContentAttribute.MetadataAttributes.Value, style.AttributeName)).Select(
+                    !string.IsNullOrEmpty(style.DisplayName) && !StringUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, style.AttributeName)).Select(
                 x =>
                 {
                     var style = x.Clone<TableStyle>();
@@ -47,7 +47,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
             Content content;
             if (request.ContentId > 0)
             {
-                content = await _pathManager.ParsePathAsync(site, channel, request.ContentId);
+                content = await _pathManager.DecodeContentAsync(site, channel, request.ContentId);
             }
             else
             {

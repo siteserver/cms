@@ -12,7 +12,6 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
         [HttpPut, Route(Route)]
         public async Task<ActionResult<BoolResult>> Update([FromBody] SaveRequest request)
         {
-            
             if (!await _authManager.IsAdminAuthenticatedAsync() ||
                 !await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Contents) ||
@@ -28,18 +27,17 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
             var source = await _contentRepository.GetAsync(site, channel,  request.ContentId);
 
             var adminId = await _authManager.GetAdminIdAsync();
-            var content = request.Content;
+            var content = await _pathManager.EncodeContentAsync(site, channel, request.Content);
             content.SiteId = site.Id;
             content.ChannelId = channel.Id;
             content.LastEditAdminId = adminId;
-            content.LastEditDate = DateTime.Now;
 
             var isChecked = request.Content.CheckedLevel >= site.CheckContentLevel;
             if (isChecked != source.Checked)
             {
-                content.CheckAdminId = adminId;
-                content.CheckDate = DateTime.Now;
-                content.CheckReasons = string.Empty;
+                content.Set(ColumnsManager.CheckAdminId, adminId);
+                content.Set(ColumnsManager.CheckDate, DateTime.Now);
+                content.Set(ColumnsManager.CheckReasons, string.Empty);
                 content.Checked = isChecked;
                 if (isChecked)
                 {

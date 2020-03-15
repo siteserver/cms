@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Datory.Utils;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Parse;
+using SS.CMS.Core;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
-using SS.CMS.Core;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -52,7 +52,7 @@ namespace SS.CMS.StlParser.StlElement
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            var type = ContentAttribute.ImageUrl;
+            var type = nameof(Content.ImageUrl);
 		    var no = 0;
             var isOriginal = false;
             var src = string.Empty;
@@ -196,21 +196,8 @@ namespace SS.CMS.StlParser.StlElement
                         }
                         else
                         {
-                            var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                            var extendValues = contentInfo.Get<string>(extendAttributeName);
-                            if (!string.IsNullOrEmpty(extendValues))
-                            {
-                                var index = 2;
-                                foreach (var extendValue in Utilities.GetStringList(extendValues))
-                                {
-                                    if (index == no)
-                                    {
-                                        picUrl = extendValue;
-                                        break;
-                                    }
-                                    index++;
-                                }
-                            }
+                            var extendName = ColumnsManager.GetExtendName(nameof(type), no - 1);
+                            picUrl = contentInfo.Get<string>(extendName);
                         }
                     }
                 }

@@ -54,7 +54,8 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
                     style.InputType == InputType.Video ||
                     style.InputType == InputType.File)
                 {
-                    site.Set(EditorManager.GetCountName(style), site.Get(EditorManager.GetCountName(style), 0));
+                    site.Set(ColumnsManager.GetCountName(style.AttributeName),
+                        site.Get(ColumnsManager.GetCountName(style.AttributeName), 0));
                 }
                 else if (style.InputType == InputType.CheckBox ||
                          style.InputType == InputType.SelectMultiple)
@@ -148,40 +149,36 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Channels
             var styles = await _tableStyleRepository.GetChannelStyleListAsync(channel);
             foreach (var style in styles)
             {
-                var value = request.Get(style.AttributeName, string.Empty);
                 var inputType = style.InputType;
                 if (inputType == InputType.TextEditor)
                 {
-                    value = await _pathManager.TextEditorContentEncodeAsync(site, value);
+                    var value = request.Get(style.AttributeName, string.Empty);
+                    value = await _pathManager.EncodeTextEditorAsync(site, value);
                     value = UEditorUtils.TranslateToStlElement(value);
+                    channel.Set(style.AttributeName, value);
                 }
                 else if (inputType == InputType.Image ||
                          inputType == InputType.Video ||
                          inputType == InputType.File)
                 {
-                    var count = request.Get(EditorManager.GetCountName(style), 0);
-                    channel.Set(EditorManager.GetCountName(style), count);
+                    var count = request.Get(ColumnsManager.GetCountName(style.AttributeName), 0);
+                    channel.Set(ColumnsManager.GetCountName(style.AttributeName), count);
                     for (var n = 1; n <= count; n++)
                     {
-                        channel.Set(EditorManager.GetExtendName(style, n), request.Get(EditorManager.GetExtendName(style, n), string.Empty));
+                        channel.Set(ColumnsManager.GetExtendName(style.AttributeName, n),
+                            request.Get(ColumnsManager.GetExtendName(style.AttributeName, n), string.Empty));
                     }
                 }
-
-                if (inputType == InputType.CheckBox ||
-                    style.InputType == InputType.SelectMultiple)
+                else if (inputType == InputType.CheckBox ||
+                         style.InputType == InputType.SelectMultiple)
                 {
                     var list = request.Get<IEnumerable<object>>(style.AttributeName);
                     channel.Set(style.AttributeName, Utilities.ToString(list));
                 }
                 else
                 {
+                    var value = request.Get(style.AttributeName, string.Empty);
                     channel.Set(style.AttributeName, value);
-                }
-
-                if (inputType == InputType.Image || inputType == InputType.File || inputType == InputType.Video)
-                {
-                    var attributeName = ContentAttribute.GetExtendAttributeName(style.AttributeName);
-                    channel.Set(attributeName, request.Get(attributeName, string.Empty));
                 }
             }
 

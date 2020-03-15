@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SS.CMS.Abstractions;
 
@@ -24,17 +23,13 @@ namespace SS.CMS.Core.Office
                         var title = StringUtils.GetFirstOfStringCollection(content, '\r');
                         if (!string.IsNullOrEmpty(title))
                         {
-                            var dict = new Dictionary<string, object>
+                            var contentInfo = new Content
                             {
-                                {ContentAttribute.Title, title.Trim()},
-                                {ContentAttribute.SiteId, site.Id},
-                                {ContentAttribute.ChannelId, node.Id},
-                                {ContentAttribute.LastEditDate, DateTime.Now}
+                                Title = title.Trim(),
+                                SiteId = site.Id,
+                                ChannelId = node.Id,
+                                Body = StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim())
                             };
-                            var contentInfo = new Content();
-                            contentInfo.LoadDict(dict);
-
-                            contentInfo.Set(ContentAttribute.Content, StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim()));
 
                             contentInfoList.Add(contentInfo);
                         }

@@ -107,21 +107,21 @@ namespace SS.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedImage))//带图片的内容
             {
-                if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.ImageUrl)))
+                if (!string.IsNullOrEmpty(contentInfo.ImageUrl))
                 {
                     return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedVideo))//带视频的内容
             {
-                if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.VideoUrl)))
+                if (!string.IsNullOrEmpty(contentInfo.VideoUrl))
                 {
                     return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedFile))//带附件的内容
             {
-                if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.FileUrl)))
+                if (!string.IsNullOrEmpty(contentInfo.FileUrl))
                 {
                     return (true, selectedItems.Get(itemTypes));
                 }

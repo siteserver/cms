@@ -79,17 +79,17 @@ namespace SS.CMS.Cli.Updater
 
         private static Dictionary<string, object> Process(Dictionary<string, object> row)
         {
-            if (row.TryGetValue(ContentAttribute.Content, out var contentObj))
+            if (row.TryGetValue(nameof(Content), out var contentObj))
             {
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
-                row[ContentAttribute.Content] = content;
+                row[nameof(Abstractions.Content.Body)] = content;
             }
-            if (row.TryGetValue("SettingsXml", out contentObj))
+            if (row.TryGetValue(nameof(SettingsXml), out contentObj))
             {
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
-                row[ContentAttribute.ExtendValues] = content;
+                row["ExtendValues"] = content;
             }
 
             return row;

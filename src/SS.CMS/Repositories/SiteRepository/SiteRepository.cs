@@ -226,12 +226,12 @@ namespace SS.CMS.Repositories
                 return sites.OrderByDescending(x => x.CreatedDate).ToList();
             }
 
-            if (taxisType == TaxisType.OrderByLastEditDate)
+            if (taxisType == TaxisType.OrderByLastModifiedDate)
             {
                 return sites.OrderBy(x => x.LastModifiedDate).ToList();
             }
 
-            if (taxisType == TaxisType.OrderByLastEditDateDesc)
+            if (taxisType == TaxisType.OrderByLastModifiedDate)
             {
                 return sites.OrderByDescending(x => x.LastModifiedDate).ToList();
             }

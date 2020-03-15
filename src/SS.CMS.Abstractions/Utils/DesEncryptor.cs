@@ -3,14 +3,9 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-
 namespace SS.CMS.Abstractions
 {
-	/// <summary>
-	/// Version: 2.0
-	/// LastEditDate: 16:14 2005-10-6
-	/// </summary>
-	public class DesEncryptor
+    public class DesEncryptor
 	{
 		#region 私有成员
 		/// <summary>

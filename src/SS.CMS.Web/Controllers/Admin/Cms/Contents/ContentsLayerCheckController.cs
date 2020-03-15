@@ -63,7 +63,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 if (content == null) continue;
 
                 var pageContent = content.Clone<Content>();
-                pageContent.Set(ContentAttribute.CheckState, CheckManager.GetCheckState(site, content));
+                pageContent.Set(ColumnsManager.CheckState, CheckManager.GetCheckState(site, content));
                 contents.Add(pageContent);
             }
 
@@ -150,9 +150,9 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 var contentInfo = await _contentRepository.GetAsync(site, contentChannelInfo, summary.Id);
                 if (contentInfo == null) continue;
 
-                contentInfo.CheckAdminId = adminId;
-                contentInfo.CheckDate = DateTime.Now;
-                contentInfo.CheckReasons = request.Reasons;
+                contentInfo.Set(ColumnsManager.CheckAdminId, adminId);
+                contentInfo.Set(ColumnsManager.CheckDate, DateTime.Now);
+                contentInfo.Set(ColumnsManager.CheckReasons, request.Reasons);
 
                 contentInfo.Checked = isChecked;
                 contentInfo.CheckedLevel = request.CheckedLevel;

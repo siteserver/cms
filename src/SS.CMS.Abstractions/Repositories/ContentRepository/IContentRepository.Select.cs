@@ -21,7 +21,7 @@ namespace SS.CMS.Abstractions
 
         Task<List<int>> GetContentIdsAsync(Site site, Channel channel, bool isPeriods, string dateFrom, string dateTo, bool? checkedState);
 
-        Task<List<int>> GetChannelIdsCheckedByLastEditDateHourAsync(Site site, int hour);
+        Task<List<int>> GetChannelIdsCheckedByLastModifiedDateHourAsync(Site site, int hour);
 
         Task<List<ContentSummary>> GetSummariesAsync(Site site, Channel channel, bool isAllContents);
     }

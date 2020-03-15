@@ -38,7 +38,7 @@ namespace SS.CMS.StlParser.StlElement
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
-            var type = ContentAttribute.VideoUrl;
+            var type = nameof(Content.VideoUrl);
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
             var width = string.Empty;
@@ -111,7 +111,7 @@ namespace SS.CMS.StlParser.StlElement
                             videoUrl = contentInfo.Get<string>(type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
-                                videoUrl = contentInfo.Get<string>(ContentAttribute.VideoUrl);
+                                videoUrl = contentInfo.VideoUrl;
                             }
                         }
                     }

@@ -1,10 +1,7 @@
 ﻿using System.Threading.Tasks;
 using SS.CMS.Abstractions;
-using SS.CMS;
 using SS.CMS.Abstractions.Parse;
 using SS.CMS.StlParser.Model;
-using SS.CMS.Core;
-using SS.CMS.Services;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -32,7 +29,7 @@ namespace SS.CMS.StlParser.StlElement
 
 	    public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
-            var type = ContentAttribute.VideoUrl;
+            var type = nameof(Content.VideoUrl);
             var playUrl = string.Empty;
             var isAutoPlay = false;
             var isPreLoad = true;
@@ -84,11 +81,11 @@ namespace SS.CMS.StlParser.StlElement
                         playUrl = contentInfo.Get<string>(type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contentInfo.Get<string>(ContentAttribute.VideoUrl);
+                            playUrl = contentInfo.VideoUrl;
                         }
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contentInfo.Get<string>(ContentAttribute.FileUrl);
+                            playUrl = contentInfo.FileUrl;
                         }
                     }
                 }

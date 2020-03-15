@@ -3,6 +3,7 @@ using SS.CMS.Abstractions;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using System.Threading.Tasks;
+using Datory;
 using Datory.Utils;
 using SS.CMS.Core;
 
@@ -13,17 +14,17 @@ namespace SS.CMS.StlParser.StlEntity
     {
         public const string EntityName = "content";
 
-        public const string Id = "Id";
-        public const string Title = "Title";
+        public const string Id = nameof(Abstractions.Content.Id);
+        public const string Title = nameof(Abstractions.Content.Title);
         public const string FullTitle = "FullTitle";
         public const string NavigationUrl = "NavigationUrl";
-        public const string ImageUrl = "ImageUrl";
-        public const string VideoUrl = "VideoUrl";
-        public const string FileUrl = "FileUrl";
+        public const string ImageUrl = nameof(Abstractions.Content.ImageUrl);
+        public const string VideoUrl = nameof(Abstractions.Content.VideoUrl);
+        public const string FileUrl = nameof(Abstractions.Content.FileUrl);
         public const string DownloadUrl = "DownloadUrl";
-        public const string AddDate = "AddDate";
-        public const string LastEditDate = "LastEditDate";
-        public const string Content = "Body";
+        public const string AddDate = nameof(Abstractions.Content.AddDate);
+        public const string LastModifiedDate = nameof(Abstractions.Content.LastModifiedDate);
+        public const string Content = nameof(Abstractions.Content.Body);
         public const string Group = "Group";
         public const string Tags = "Tags";
         public const string ItemIndex = "ItemIndex";
@@ -40,7 +41,7 @@ namespace SS.CMS.StlParser.StlEntity
             {FileUrl, "内容附件地址"},
             {DownloadUrl, "内容附件地址(可统计下载量)"},
             {AddDate, "内容添加日期"},
-            {LastEditDate, "内容最后修改日期"},
+            {LastModifiedDate, "内容最后修改日期"},
             {Group, "内容组别"},
             {Tags, "内容标签"},
             {ItemIndex, "内容排序"}
@@ -60,7 +61,7 @@ namespace SS.CMS.StlParser.StlEntity
                 {
                     var contentInfo = await parseManager.GetContentAsync();
 
-                    if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && TranslateContentType.ReferenceContent == contentInfo.TranslateContentType)
+                    if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && TranslateContentType.ReferenceContent.GetValue() == contentInfo.Get<string>(ColumnsManager.TranslateContentType))
                     {
                         var targetChannelId = contentInfo.SourceId;
                         var targetSiteId = await databaseManager.ChannelRepository.GetSiteIdAsync(targetChannelId);
@@ -80,7 +81,7 @@ namespace SS.CMS.StlParser.StlEntity
                     var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
                     var attributeName = entityName.Substring(9, entityName.Length - 10);
 
-                    if (StringUtils.EqualsIgnoreCase(ContentAttribute.Id, attributeName))//内容ID
+                    if (StringUtils.EqualsIgnoreCase(nameof(Abstractions.Content.Id), attributeName))//内容ID
                     {
                         if (contentInfo != null)
                         {
@@ -117,7 +118,7 @@ namespace SS.CMS.StlParser.StlEntity
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = contentInfo.Get<string>(ContentAttribute.ImageUrl);
+                            parsedContent = contentInfo.ImageUrl;
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -129,7 +130,7 @@ namespace SS.CMS.StlParser.StlEntity
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = contentInfo.Get<string>(ContentAttribute.VideoUrl);
+                            parsedContent = contentInfo.VideoUrl;
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -141,7 +142,7 @@ namespace SS.CMS.StlParser.StlEntity
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = contentInfo.Get<string>(ContentAttribute.FileUrl);
+                            parsedContent = contentInfo.FileUrl;
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -153,7 +154,7 @@ namespace SS.CMS.StlParser.StlEntity
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = contentInfo.Get<string>(ContentAttribute.FileUrl);
+                            parsedContent = contentInfo.FileUrl;
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -168,21 +169,21 @@ namespace SS.CMS.StlParser.StlEntity
                             parsedContent = DateUtils.Format(contentInfo.AddDate, string.Empty);
                         }
                     }
-                    else if (StringUtils.EqualsIgnoreCase(LastEditDate, attributeName))//替换最后修改日期
+                    else if (StringUtils.EqualsIgnoreCase(LastModifiedDate, attributeName))//替换最后修改日期
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = DateUtils.Format(contentInfo.LastEditDate, string.Empty);
+                            parsedContent = DateUtils.Format(contentInfo.LastModifiedDate, string.Empty);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(Content, attributeName))//内容正文
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = contentInfo.Get<string>(ContentAttribute.Content);
+                            parsedContent = contentInfo.Body;
                         }
 
-                        parsedContent = await parseManager.PathManager.TextEditorContentDecodeAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                        parsedContent = await parseManager.PathManager.DecodeTextEditorAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                     }
                     else if (StringUtils.EqualsIgnoreCase(Group, attributeName))//内容组别
                     {

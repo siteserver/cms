@@ -282,7 +282,7 @@ namespace SS.CMS.Services
             var referenceId = contentCurrent.ReferenceId;
             var linkUrl = contentCurrent.LinkUrl;
             var channelId = contentCurrent.ChannelId;
-            if (referenceId > 0 && TranslateContentType.ReferenceContent == contentCurrent.TranslateContentType)
+            if (referenceId > 0 && TranslateContentType.ReferenceContent.GetValue() == contentCurrent.Get<string>(ColumnsManager.TranslateContentType))
             {
                 if (sourceId > 0 && await _channelRepository.IsExistsAsync(sourceId))
                 {
@@ -338,7 +338,7 @@ namespace SS.CMS.Services
 
             var contentInfoCurrent = await _contentRepository.GetAsync(site, channelId, contentId);
 
-            if (referenceId > 0 && TranslateContentType.ReferenceContent == contentInfoCurrent.TranslateContentType)
+            if (referenceId > 0 && TranslateContentType.ReferenceContent.GetValue() == contentInfoCurrent.Get<string>(ColumnsManager.TranslateContentType))
             {
                 if (sourceId > 0 && await _channelRepository.IsExistsAsync(sourceId))
                 {

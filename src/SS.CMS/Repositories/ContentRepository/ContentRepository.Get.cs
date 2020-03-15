@@ -55,9 +55,9 @@ namespace SS.CMS.Repositories
         {
             var repository = GetRepository(tableName);
             return await repository.GetAllAsync<ContentSummary>(Q
-                .Select(ContentAttribute.Id, ContentAttribute.ChannelId)
-                .Where(ContentAttribute.ChannelId, ">", 0)
-                .WhereIn(ContentAttribute.ReferenceId, contentIdList)
+                .Select(nameof(Content.Id), nameof(Content.ChannelId))
+                .Where(nameof(Content.ChannelId), ">", 0)
+                .WhereIn(nameof(Content.ReferenceId), contentIdList)
             );
         }
 
@@ -65,9 +65,9 @@ namespace SS.CMS.Repositories
         {
             var repository = GetRepository(tableName);
             return await repository.GetAsync<int>(Q
-                .Select(ContentAttribute.Id)
+                .Select(nameof(Content.Id))
                 .Where(nameof(Content.ChannelId), channelId)
-                .OrderByDesc(ContentAttribute.Taxis, ContentAttribute.Id)
+                .OrderByDesc(nameof(Content.Taxis), nameof(Content.Id))
             );
         }
 
@@ -79,14 +79,14 @@ namespace SS.CMS.Repositories
 SELECT AdminId as adminId, Count(AdminId) as addCount, 0 as updateCount FROM {tableName} 
 INNER JOIN {_administratorRepository.TableName} ON AdminId = {_administratorRepository.TableName}.Id 
 WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastEditDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
+AND LastModifiedDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
 GROUP BY AdminId
 Union
 SELECT LastEditAdminId as lastEditAdminId,0 as addCount, Count(LastEditAdminId) as updateCount FROM {tableName} 
 INNER JOIN {_administratorRepository.TableName} ON LastEditAdminId = {_administratorRepository.TableName}.Id 
 WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastEditDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
-AND LastEditDate != AddDate
+AND LastModifiedDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
+AND LastModifiedDate != AddDate
 GROUP BY LastEditAdminId
 ) as tmp
 group by tmp.adminId";
@@ -243,7 +243,7 @@ group by tmp.adminId";
             var typeList = new List<string>();
             if (string.IsNullOrEmpty(type))
             {
-                typeList.Add(ContentAttribute.Title);
+                typeList.Add(nameof(Content.Title));
             }
             else
             {
@@ -263,7 +263,7 @@ group by tmp.adminId";
 
             if (string.IsNullOrEmpty(dateAttribute))
             {
-                dateAttribute = ContentAttribute.AddDate;
+                dateAttribute = nameof(Content.AddDate);
             }
 
             if (!string.IsNullOrEmpty(dateFrom))

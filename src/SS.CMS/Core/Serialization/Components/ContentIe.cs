@@ -90,21 +90,21 @@ namespace SS.CMS.Core.Serialization.Components
                 try
                 {
                     taxis++;
-                    var lastEditDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LastEditDate);
+
                     var groupNameCollection = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string>{ nameof(Content.GroupNames), "GroupNameCollection", "ContentGroupNameCollection" });
                     if (isCheckedBySettings)
                     {
                         isChecked = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements,
-                            new List<string> {nameof(ContentAttribute.Checked), "IsChecked"}));
-                        checkedLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.CheckedLevel));
+                            new List<string> { nameof(Content.Checked), "IsChecked"}));
+                        checkedLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.CheckedLevel)));
                     }
-                    var hits = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Hits));
-                    var hitsByDay = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByDay));
-                    var hitsByWeek = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByWeek));
-                    var hitsByMonth = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByMonth));
-                    var lastHitsDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LastHitsDate);
-                    var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Downloads));
-                    var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Title);
+                    var hits = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Hits)));
+                    var hitsByDay = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByDay)));
+                    var hitsByWeek = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByWeek)));
+                    var hitsByMonth = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByMonth)));
+                    var lastHitsDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LastHitsDate));
+                    var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Downloads)));
+                    var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Title));
                     var isTop = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements,
                         new List<string> {nameof(Content.Top), "IsTop"}));
                     var isRecommend = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements,
@@ -113,8 +113,8 @@ namespace SS.CMS.Core.Serialization.Components
                         new List<string> {nameof(Content.Hot), "IsHot"}));
                     var isColor = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements,
                         new List<string> {nameof(Content.Color), "IsColor"}));
-                    var linkUrl = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LinkUrl));
-                    var addDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.AddDate);
+                    var linkUrl = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LinkUrl)));
+                    var addDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.AddDate));
 
                     var topTaxis = 0;
                     if (isTop)
@@ -129,7 +129,6 @@ namespace SS.CMS.Core.Serialization.Components
                         SiteId = _site.Id,
                         ChannelId = channel.Id,
                         AddDate = TranslateUtils.ToDateTime(addDate),
-                        LastEditDate = TranslateUtils.ToDateTime(lastEditDate),
                         AdminId = adminId,
                         LastEditAdminId = adminId,
                         GroupNames = Utilities.GetStringList(groupNameCollection),
@@ -229,26 +228,26 @@ namespace SS.CMS.Core.Serialization.Components
                 try
                 {
                     taxis++;
-                    var lastEditDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LastEditDate);
+
                     var groupNameCollection = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.GroupNames), "GroupNameCollection", "ContentGroupNameCollection" });
                     if (isCheckedBySettings)
                     {
                         isChecked = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string>{nameof(Content.Checked), "IsChecked" }));
-                        checkedLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.CheckedLevel));
+                        checkedLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.CheckedLevel)));
                     }
-                    var hits = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Hits));
-                    var hitsByDay = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByDay));
-                    var hitsByWeek = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByWeek));
-                    var hitsByMonth = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByMonth));
-                    var lastHitsDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LastHitsDate);
-                    var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Downloads));
-                    var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Title);
+                    var hits = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Hits)));
+                    var hitsByDay = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByDay)));
+                    var hitsByWeek = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByWeek)));
+                    var hitsByMonth = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByMonth)));
+                    var lastHitsDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LastHitsDate));
+                    var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Downloads)));
+                    var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Title));
                     var isTop = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Top), "IsTop" }));
                     var isRecommend = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Recommend), "IsRecommend" }));
                     var isHot = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Hot), "IsHot" }));
                     var isColor = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Color), "IsColor" }));
-                    var linkUrl = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LinkUrl));
-                    var addDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.AddDate);
+                    var linkUrl = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LinkUrl)));
+                    var addDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.AddDate));
 
                     var topTaxis = 0;
                     if (isTop)
@@ -267,7 +266,6 @@ namespace SS.CMS.Core.Serialization.Components
                         UserId = userId,
                         SourceId = sourceId,
                         AddDate = TranslateUtils.ToDateTime(addDate),
-                        LastEditDate = TranslateUtils.ToDateTime(lastEditDate),
                         GroupNames = Utilities.GetStringList(groupNameCollection),
                         TagNames = Utilities.GetStringList(tags),
                         Checked = isChecked,
@@ -438,46 +436,40 @@ namespace SS.CMS.Core.Serialization.Components
         {
             var entry = AtomUtility.GetEmptyEntry();
 
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Id, content.Id.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ ContentAttribute.ChannelId, "NodeId" }, content.ChannelId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { ContentAttribute.SiteId, "PublishmentSystemId" }, content.SiteId.ToString());
-            if (content.LastEditDate.HasValue)
-            {
-                AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastEditDate, content.LastEditDate.Value.ToString(CultureInfo.InvariantCulture));
-            }
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Taxis, content.Taxis.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Id), content.Id.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Content.ChannelId), "NodeId" }, content.ChannelId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.SiteId), "PublishmentSystemId" }, content.SiteId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Taxis), content.Taxis.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Content.GroupNames), "GroupNameCollection", "ContentGroupNameCollection" }, Utilities.ToString(content.GroupNames));
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.TagNames), "Tags" }, AtomUtility.Encrypt(Utilities.ToString(content.TagNames)));
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.SourceId, content.SourceId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.ReferenceId, content.ReferenceId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(ContentAttribute.Checked), "IsChecked" }, content.Checked.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.CheckedLevel, content.CheckedLevel.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Hits, content.Hits.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.HitsByDay, content.HitsByDay.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.HitsByWeek, content.HitsByWeek.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.HitsByMonth, content.HitsByMonth.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.SourceId), content.SourceId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.ReferenceId), content.ReferenceId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Checked), "IsChecked" }, content.Checked.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.CheckedLevel), content.CheckedLevel.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Hits), content.Hits.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.HitsByDay), content.HitsByDay.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.HitsByWeek), content.HitsByWeek.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.HitsByMonth), content.HitsByMonth.ToString());
             if (content.LastHitsDate.HasValue)
             {
-                AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastHitsDate,
-                    content.LastHitsDate.Value.ToString(CultureInfo.InvariantCulture));
+                AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.LastHitsDate), content.LastHitsDate.Value.ToString(CultureInfo.InvariantCulture));
             }
 
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Downloads, content.Downloads.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Title, AtomUtility.Encrypt(content.Title));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Downloads), content.Downloads.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Title), AtomUtility.Encrypt(content.Title));
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Top), "IsTop" }, content.Top.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Recommend), "IsRecommend" }, content.Recommend.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Hot), "IsHot" }, content.Hot.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Color), "IsColor" }, content.Color.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LinkUrl, AtomUtility.Encrypt(content.LinkUrl));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.LinkUrl), AtomUtility.Encrypt(content.LinkUrl));
             if (content.AddDate.HasValue)
             {
-                AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.AddDate,
-                    content.AddDate.Value.ToString(CultureInfo.InvariantCulture));
+                AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.AddDate), content.AddDate.Value.ToString(CultureInfo.InvariantCulture));
             }
 
             foreach (var attributeName in content.ToDictionary().Keys)
             {
-                if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes.Value, attributeName))
+                if (!StringUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, attributeName))
                 {
                     AtomUtility.AddDcElement(entry.AdditionalElements, attributeName, AtomUtility.Encrypt(content.Get<string>(attributeName)));
                 }

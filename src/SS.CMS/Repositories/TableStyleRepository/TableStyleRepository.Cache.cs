@@ -66,7 +66,7 @@ namespace SS.CMS.Repositories
             }
             else
             {
-                var excludeAttributeNameList = ContentAttribute.MetadataAttributes.Value;
+                var excludeAttributeNameList = ColumnsManager.MetadataAttributes.Value;
 
                 var  list = await _repository.Database.GetTableColumnsAsync(tableName);
                 if (excludeAttributeNameList != null && excludeAttributeNameList.Count > 0)
@@ -277,57 +277,57 @@ namespace SS.CMS.Repositories
                 style.VeeValidate = "required";
                 style.Taxis = 1;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.SubTitle))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.SubTitle)))
             {
-                style.AttributeName = ContentAttribute.SubTitle;
+                style.AttributeName = nameof(Content.SubTitle);
                 style.DisplayName = "副标题";
                 style.Taxis = 2;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.ImageUrl))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.ImageUrl)))
             {
-                style.AttributeName = ContentAttribute.ImageUrl;
+                style.AttributeName = nameof(Content.ImageUrl);
                 style.DisplayName = "图片";
                 style.InputType = InputType.Image;
                 style.Taxis = 3;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.VideoUrl))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.VideoUrl)))
             {
-                style.AttributeName = ContentAttribute.VideoUrl;
+                style.AttributeName = nameof(Content.VideoUrl);
                 style.DisplayName = "视频";
                 style.InputType = InputType.Video;
                 style.Taxis = 4;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.FileUrl))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.FileUrl)))
             {
-                style.AttributeName = ContentAttribute.FileUrl;
+                style.AttributeName = nameof(Content.FileUrl);
                 style.DisplayName = "附件";
                 style.InputType = InputType.File;
                 style.Taxis = 5;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Content))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Body)))
             {
-                style.AttributeName = ContentAttribute.Content;
+                style.AttributeName = nameof(Content.Body);
                 style.DisplayName = "内容";
                 style.VeeValidate = "required";
                 style.InputType = InputType.TextEditor;
                 style.Taxis = 6;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Summary))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Summary)))
             {
-                style.AttributeName = ContentAttribute.Summary;
+                style.AttributeName = nameof(Content.Summary);
                 style.DisplayName = "内容摘要";
                 style.InputType = InputType.TextArea;
                 style.Taxis = 7;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Author))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Author)))
             {
-                style.AttributeName = ContentAttribute.Author;
+                style.AttributeName = nameof(Content.Author);
                 style.DisplayName = "作者";
                 style.Taxis = 8;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Source))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Source)))
             {
-                style.AttributeName = ContentAttribute.Source;
+                style.AttributeName = nameof(Content.Source);
                 style.DisplayName = "来源";
                 style.Taxis = 9;
             }

@@ -118,13 +118,13 @@ namespace SS.CMS.StlParser.Utility
                 {
                     taxisType = TaxisType.OrderByAddDate;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastEditDate.ToLower()))
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastModifiedDate.ToLower()))
                 {
-                    taxisType = TaxisType.OrderByLastEditDateDesc;
+                    taxisType = TaxisType.OrderByLastModifiedDateDesc;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastEditDateBack.ToLower()))
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastModifiedDateBack.ToLower()))
                 {
-                    taxisType = TaxisType.OrderByLastEditDate;
+                    taxisType = TaxisType.OrderByLastModifiedDate;
                 }
                 else if (orderValue.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
                 {

@@ -330,7 +330,6 @@ namespace SS.CMS.Core.Serialization
                 {
                     contentInfo.AddDate = DateTime.Now;
                 }
-                contentInfo.LastEditDate = DateTime.Now;
                 contentInfo.AdminId = adminId;
                 contentInfo.UserId = userId;
                 contentInfo.SourceId = sourceId;
@@ -447,13 +446,11 @@ namespace SS.CMS.Core.Serialization
                 Checked = isChecked,
                 CheckedLevel = checkedLevel,
                 AddDate = DateTime.Now,
-                LastEditDate = DateTime.Now,
                 AdminId = adminId,
                 UserId = userId,
-                SourceId = sourceId
+                SourceId = sourceId,
+                Body = StringUtils.ReplaceNewlineToBr(FileUtils.ReadText(txtFilePath))
             };
-
-            contentInfo.Set(ContentAttribute.Content, StringUtils.ReplaceNewlineToBr(FileUtils.ReadText(txtFilePath, Encoding.UTF8)));
 
             if (isOverride)
             {

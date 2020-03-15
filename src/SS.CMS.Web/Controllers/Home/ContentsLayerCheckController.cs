@@ -100,9 +100,9 @@ namespace SS.CMS.Web.Controllers.Home
                 var contentInfo = await _contentRepository.GetAsync(site, channelInfo, contentId);
                 if (contentInfo == null) continue;
 
-                contentInfo.CheckAdminId = adminId;
-                contentInfo.CheckDate = DateTime.Now;
-                contentInfo.CheckReasons = request.Reasons;
+                contentInfo.Set(ColumnsManager.CheckAdminId, adminId);
+                contentInfo.Set(ColumnsManager.CheckDate, DateTime.Now);
+                contentInfo.Set(ColumnsManager.CheckReasons, request.Reasons);
 
                 contentInfo.Checked = isChecked;
                 contentInfo.CheckedLevel = request.CheckedLevel;

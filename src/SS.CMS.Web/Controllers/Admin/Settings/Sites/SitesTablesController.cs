@@ -68,7 +68,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var columns = await _databaseManager.GetTableColumnInfoListAsync(tableName, ContentAttribute.MetadataAttributes.Value);
+            var columns = await _databaseManager.GetTableColumnInfoListAsync(tableName, ColumnsManager.MetadataAttributes.Value);
 
             return new GetColumnsResult
             {
@@ -87,7 +87,7 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var columns = await _databaseManager.GetTableColumnInfoListAsync(tableName, ContentAttribute.MetadataAttributes.Value);
+            var columns = await _databaseManager.GetTableColumnInfoListAsync(tableName, ColumnsManager.MetadataAttributes.Value);
 
             return new GetColumnsResult
             {

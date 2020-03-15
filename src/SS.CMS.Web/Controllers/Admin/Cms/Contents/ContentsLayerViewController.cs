@@ -64,7 +64,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
 
             var calculatedContent =
                 await columnsManager.CalculateContentListAsync(1, site, request.ChannelId, content, columns, null);
-            calculatedContent.Set(ContentAttribute.Content, content.Get(ContentAttribute.Content));
+            calculatedContent.Body = content.Body;
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
             var groupNames = await _contentGroupRepository.GetGroupNamesAsync(request.SiteId);

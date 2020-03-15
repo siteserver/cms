@@ -47,7 +47,7 @@ namespace SS.CMS.Web.Controllers.Home
             var content = await _contentRepository.GetAsync(site, channel, request.ContentId);
             if (content == null) return NotFound();
 
-            content.Set(ContentAttribute.CheckState, CheckManager.GetCheckState(site, content));
+            content.Set(ColumnsManager.CheckState, CheckManager.GetCheckState(site, content));
 
             var channelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
 

@@ -89,7 +89,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Library
 
                 var filePath = _pathManager.GetTemporaryFilesPath(fileName);
                 var (_, wordContent) = await WordManager.GetWordAsync(_pathManager, site, false, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
-                wordContent = await _pathManager.TextEditorContentDecodeAsync(site, wordContent, true);
+                wordContent = await _pathManager.DecodeTextEditorAsync(site, wordContent, true);
                 builder.Append(wordContent);
                 FileUtils.DeleteFileIfExists(filePath);
             }

@@ -23,60 +23,6 @@ namespace SS.CMS.Repositories
             return repository.TableColumns;
         }
 
-        public List<TableColumn> GetDefaultTableColumns(string tableName)
-        {
-            var tableColumns = new List<TableColumn>();
-            tableColumns.AddRange(GetTableColumns(tableName));
-            tableColumns.Add(new TableColumn
-            {
-                AttributeName = ContentAttribute.SubTitle,
-                DataType = DataType.VarChar,
-                DataLength = 255
-            });
-            tableColumns.Add(new TableColumn
-            {
-                AttributeName = ContentAttribute.ImageUrl,
-                DataType = DataType.VarChar,
-                DataLength = 200
-            });
-            tableColumns.Add(new TableColumn
-            {
-                AttributeName = ContentAttribute.VideoUrl,
-                DataType = DataType.VarChar,
-                DataLength = 200
-            });
-            tableColumns.Add(new TableColumn
-            {
-                AttributeName = ContentAttribute.FileUrl,
-                DataType = DataType.VarChar,
-                DataLength = 200
-            });
-            tableColumns.Add(new TableColumn
-            {
-                AttributeName = nameof(ContentAttribute.Content),
-                DataType = DataType.Text
-            });
-            tableColumns.Add(new TableColumn
-            {
-                AttributeName = nameof(ContentAttribute.Summary),
-                DataType = DataType.Text
-            });
-            tableColumns.Add(new TableColumn
-            {
-                AttributeName = nameof(ContentAttribute.Author),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            });
-            tableColumns.Add(new TableColumn
-            {
-                AttributeName = nameof(ContentAttribute.Source),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            });
-
-            return tableColumns;
-        }
-
         private static readonly ConcurrentDictionary<string, Repository<Content>> TableNameRepositories = new ConcurrentDictionary<string, Repository<Content>>();
 
         private Repository<Content> GetRepository(Site site, IChannelSummary channel)

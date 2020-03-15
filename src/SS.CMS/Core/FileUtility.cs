@@ -64,40 +64,55 @@ namespace SS.CMS.Core
             {
                 var fileUrls = new List<string>
                 {
-                    content.Get<string>(ContentAttribute.ImageUrl),
-                    content.Get<string>(ContentAttribute.VideoUrl),
-                    content.Get<string>(ContentAttribute.FileUrl)
+                    content.ImageUrl,
+                    content.VideoUrl,
+                    content.FileUrl
                 };
 
-                foreach (var url in Utilities.GetStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl))))
+                var countName = ColumnsManager.GetCountName(nameof(Content.ImageUrl));
+                var count = content.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
+                {
+                    var extendName = ColumnsManager.GetExtendName(nameof(Content.ImageUrl), i);
+                    var extend = content.Get<string>(extendName);
+                    if (!fileUrls.Contains(extend))
+                    {
+                        fileUrls.Add(extend);
+                    }
+                }
+
+                countName = ColumnsManager.GetCountName(nameof(Content.VideoUrl));
+                count = content.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
+                {
+                    var extendName = ColumnsManager.GetExtendName(nameof(Content.VideoUrl), i);
+                    var extend = content.Get<string>(extendName);
+                    if (!fileUrls.Contains(extend))
+                    {
+                        fileUrls.Add(extend);
+                    }
+                }
+
+                countName = ColumnsManager.GetCountName(nameof(Content.FileUrl));
+                count = content.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
+                {
+                    var extendName = ColumnsManager.GetExtendName(nameof(Content.FileUrl), i);
+                    var extend = content.Get<string>(extendName);
+                    if (!fileUrls.Contains(extend))
+                    {
+                        fileUrls.Add(extend);
+                    }
+                }
+
+                foreach (var url in RegexUtils.GetOriginalImageSrcs(content.Body))
                 {
                     if (!fileUrls.Contains(url))
                     {
                         fileUrls.Add(url);
                     }
                 }
-                foreach (var url in Utilities.GetStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.VideoUrl))))
-                {
-                    if (!fileUrls.Contains(url))
-                    {
-                        fileUrls.Add(url);
-                    }
-                }
-                foreach (var url in Utilities.GetStringList(content.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl))))
-                {
-                    if (!fileUrls.Contains(url))
-                    {
-                        fileUrls.Add(url);
-                    }
-                }
-                foreach (var url in RegexUtils.GetOriginalImageSrcs(content.Get<string>(ContentAttribute.Content)))
-                {
-                    if (!fileUrls.Contains(url))
-                    {
-                        fileUrls.Add(url);
-                    }
-                }
-                foreach (var url in RegexUtils.GetOriginalLinkHrefs(content.Get<string>(ContentAttribute.Content)))
+                foreach (var url in RegexUtils.GetOriginalLinkHrefs(content.Body))
                 {
                     if (!fileUrls.Contains(url) && pathManager.IsVirtualUrl(url))
                     {

@@ -3,13 +3,11 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
 
 namespace SS.CMS.Services
 {
     public partial class PathManager : IPathManager
     {
-        private readonly HttpContext _httpContext;
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly ISpecialRepository _specialRepository;
@@ -20,9 +18,8 @@ namespace SS.CMS.Services
         private readonly IContentRepository _contentRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public PathManager(IHttpContextAccessor httpContextAccessor, ISettingsManager settingsManager, IDatabaseManager databaseManager, ISpecialRepository specialRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
+        public PathManager(ISettingsManager settingsManager, IDatabaseManager databaseManager, ISpecialRepository specialRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
         {
-            _httpContext = httpContextAccessor.HttpContext;
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
             _specialRepository = specialRepository;

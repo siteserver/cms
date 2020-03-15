@@ -138,11 +138,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 if (string.IsNullOrEmpty(fileName)) continue;
 
                 var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-                var (title, content) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
+                var (title, body) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
 
                 if (string.IsNullOrEmpty(title)) continue;
 
-                var dict = await ColumnsManager.SaveAttributesAsync(_pathManager, site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value);
+                var dict = await ColumnsManager.SaveAttributesAsync(_pathManager, site, styleList, new NameValueCollection(), ColumnsManager.MetadataAttributes.Value);
 
                 var contentInfo = new Content
                 {
@@ -154,11 +154,11 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                     Checked = isChecked,
                     CheckedLevel = request.CheckedLevel,
                     Title = title,
-                    LastEditDate = DateTime.Now
+                    Body = body
                 };
                 contentInfo.LoadDict(dict);
 
-                contentInfo.Set(ContentAttribute.Content, content);
+                
                 await _contentRepository.InsertAsync(site, channel, contentInfo);
                 contentIdList.Add(contentInfo.Id);
             }

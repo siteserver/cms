@@ -30,7 +30,6 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Editor
             content.SiteId = site.Id;
             content.ChannelId = channel.Id;
             content.LastEditAdminId = await _authManager.GetAdminIdAsync();
-            content.LastEditDate = DateTime.Now;
 
             content.Checked = request.Content.CheckedLevel >= site.CheckContentLevel;
             if (content.Checked)

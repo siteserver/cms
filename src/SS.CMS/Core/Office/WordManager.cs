@@ -30,7 +30,7 @@ namespace SS.CMS.Core.Office
             public string ImageDirectoryUrl { get; set; }
         }
 
-        public static async Task<(string title, string content)> GetWordAsync(IPathManager pathManager, Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath)
+        public static async Task<(string title, string body)> GetWordAsync(IPathManager pathManager, Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath)
         {
             string imageDirectoryPath;
             string imageDirectoryUrl;
@@ -59,19 +59,19 @@ namespace SS.CMS.Core.Office
                 IsSaveHtml = false
             };
 
-            var (title, content) = ConvertToHtml(docsFilePath, settings);
+            var (title, body) = ConvertToHtml(docsFilePath, settings);
 
             FileUtils.DeleteFileIfExists(docsFilePath);
 
             if (siteInfo != null)
             {
-                content = await pathManager.TextEditorContentDecodeAsync(siteInfo, content, true);
+                body = await pathManager.DecodeTextEditorAsync(siteInfo, body, true);
             }
 
-            return (title, content);
+            return (title, body);
         }
 
-        public static (string title, string content) ConvertToHtml(string docxFilePath, ConverterSettings settings)
+        public static (string title, string body) ConvertToHtml(string docxFilePath, ConverterSettings settings)
         {
             string title;
             string content;

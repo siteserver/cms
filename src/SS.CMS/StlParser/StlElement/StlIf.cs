@@ -56,7 +56,7 @@ namespace SS.CMS.StlParser.StlElement
         private const string TypeGroupChannel = "GroupChannel";			                            //栏目组名称
         private const string TypeGroupContent = "GroupContent";			                            //内容组名称
         private const string TypeAddDate = "AddDate";			                                    //添加时间
-        private const string TypeLastEditDate = "LastEditDate";			                            //最后编辑时间（仅用于判断内容）
+        private const string TypeLastModifiedDate = "LastModifiedDate";			                            //最后编辑时间（仅用于判断内容）
         private const string TypeItemIndex = "ItemIndex";			                                //当前项序号
         private const string TypeOddItem = "OddItem";			                                    //奇数项
 
@@ -76,7 +76,7 @@ namespace SS.CMS.StlParser.StlElement
             {TypeGroupChannel, "栏目组名称"},
             {TypeGroupContent, "内容组名称"},
             {TypeAddDate, "添加时间"},
-            {TypeLastEditDate, "最后编辑时间（仅用于判断内容）"},
+            {TypeLastModifiedDate, "最后编辑时间（仅用于判断内容）"},
             {TypeItemIndex, "当前项序号"},
             {TypeOddItem, "奇数项"}
         };
@@ -237,10 +237,10 @@ namespace SS.CMS.StlParser.StlElement
                 var addDate = await GetAddDateByContextAsync(parseManager);
                 isSuccess = IsDateTime(addDate, testOperate, testValue);
             }
-            else if (StringUtils.EqualsIgnoreCase(testType, TypeLastEditDate))
+            else if (StringUtils.EqualsIgnoreCase(testType, TypeLastModifiedDate))
             {
-                var lastEditDate = await GetLastEditDateByContextAsync(parseManager);
-                isSuccess = IsDateTime(lastEditDate, testOperate, testValue);
+                var lastModifiedDate = await GetLastModifiedDateGetAsync(parseManager);
+                isSuccess = IsDateTime(lastModifiedDate, testOperate, testValue);
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeItemIndex))
             {
@@ -904,21 +904,21 @@ namespace SS.CMS.StlParser.StlElement
             return addDate;
         }
 
-        private static async Task<DateTime> GetLastEditDateByContextAsync(IParseManager parseManager)
+        private static async Task<DateTime> GetLastModifiedDateGetAsync(IParseManager parseManager)
         {
-            var lastEditDate = Constants.SqlMinValue;
+            var lastModifiedDate = Constants.SqlMinValue;
 
             var contentInfo = await parseManager.GetContentAsync();
 
             if (parseManager.ContextInfo.ContextType == ParseType.Content)
             {
-                if (contentInfo.LastEditDate.HasValue)
+                if (contentInfo.LastModifiedDate.HasValue)
                 {
-                    lastEditDate = contentInfo.LastEditDate.Value;
+                    lastModifiedDate = contentInfo.LastModifiedDate.Value;
                 }
             }
 
-            return lastEditDate;
+            return lastModifiedDate;
         }
 
         private static bool IsNumber(int number, string testOperate, string testValue)

@@ -27,9 +27,6 @@ namespace SS.CMS.Cli.Updater.Tables.GovPublic
         [JsonProperty("lastEditUserName")]
         public string LastEditUserName { get; set; }
 
-        [JsonProperty("lastEditDate")]
-        public DateTime LastEditDate { get; set; }
-
         [JsonProperty("taxis")]
         public long Taxis { get; set; }
 

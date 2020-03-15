@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions;
-using SS.CMS.Core;
 using SS.CMS.Extensions;
 
 namespace SS.CMS.Web.Controllers.Stl
@@ -80,7 +79,7 @@ namespace SS.CMS.Web.Controllers.Stl
 
                     await _contentRepository.AddDownloadsAsync(_channelRepository.GetTableName(site, channel), request.ChannelId.Value, request.ContentId.Value);
 
-                    if (!string.IsNullOrEmpty(content?.Get<string>(ContentAttribute.FileUrl)))
+                    if (!string.IsNullOrEmpty(content?.FileUrl))
                     {
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {

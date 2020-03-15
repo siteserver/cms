@@ -262,48 +262,45 @@ namespace SS.CMS.Repositories
                 }
             }
 
-            if (isImageExists && repository.TableColumns.Exists(x =>
-                    StringUtils.EqualsIgnoreCase(x.AttributeName, ContentAttribute.ImageUrl)))
+            if (isImageExists)
             {
                 if (isImage)
                 {
                     query
-                        .WhereNot(ContentAttribute.ImageUrl, string.Empty)
-                        .WhereNotNull(ContentAttribute.ImageUrl);
+                        .WhereNot(nameof(Content.ImageUrl), string.Empty)
+                        .WhereNotNull(nameof(Content.ImageUrl));
                 }
                 else
                 {
-                    query.WhereNullOrEmpty(ContentAttribute.ImageUrl);
+                    query.WhereNullOrEmpty(nameof(Content.ImageUrl));
                 }
             }
 
-            if (isVideoExists && repository.TableColumns.Exists(x =>
-                    StringUtils.EqualsIgnoreCase(x.AttributeName, ContentAttribute.VideoUrl)))
+            if (isVideoExists)
             {
                 if (isVideo)
                 {
                     query
-                        .WhereNot(ContentAttribute.VideoUrl, string.Empty)
-                        .WhereNotNull(ContentAttribute.VideoUrl);
+                        .WhereNot(nameof(Content.VideoUrl), string.Empty)
+                        .WhereNotNull(nameof(Content.VideoUrl));
                 }
                 else
                 {
-                    query.WhereNullOrEmpty(ContentAttribute.VideoUrl);
+                    query.WhereNullOrEmpty(nameof(Content.VideoUrl));
                 }
             }
 
-            if (isFileExists && repository.TableColumns.Exists(x =>
-                    StringUtils.EqualsIgnoreCase(x.AttributeName, ContentAttribute.FileUrl)))
+            if (isFileExists)
             {
                 if (isFile)
                 {
                     query
-                        .WhereNot(ContentAttribute.FileUrl, string.Empty)
-                        .WhereNotNull(ContentAttribute.FileUrl);
+                        .WhereNot(nameof(Content.FileUrl), string.Empty)
+                        .WhereNotNull(nameof(Content.FileUrl));
                 }
                 else
                 {
-                    query.WhereNullOrEmpty(ContentAttribute.FileUrl);
+                    query.WhereNullOrEmpty(nameof(Content.FileUrl));
                 }
             }
 
@@ -491,15 +488,15 @@ namespace SS.CMS.Repositories
             {
                 query.OrderByDesc(nameof(Content.Top), nameof(Content.AddDate), nameof(Content.Id));
             }
-            else if (taxisType == TaxisType.OrderByLastEditDate)
+            else if (taxisType == TaxisType.OrderByLastModifiedDate)
             {
                 query.OrderByDesc(nameof(Content.Top))
-                    .OrderBy(nameof(Content.LastEditDate))
+                    .OrderBy(nameof(Content.LastModifiedDate))
                     .OrderByDesc(nameof(Content.Id));
             }
-            else if (taxisType == TaxisType.OrderByLastEditDateDesc)
+            else if (taxisType == TaxisType.OrderByLastModifiedDateDesc)
             {
-                query.OrderByDesc(nameof(Content.Top), nameof(Content.LastEditDate), nameof(Content.Id));
+                query.OrderByDesc(nameof(Content.Top), nameof(Content.LastModifiedDate), nameof(Content.Id));
             }
             else if (taxisType == TaxisType.OrderByTaxis)
             {

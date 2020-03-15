@@ -151,11 +151,11 @@ namespace SS.CMS.Web.Controllers.Admin.Settings.Sites
                 tableName = request.TableHandWrite;
                 if (!await _settingsManager.Database.IsTableExistsAsync(tableName))
                 {
-                    await _contentRepository.CreateContentTableAsync(tableName, _contentRepository.GetDefaultTableColumns(tableName));
+                    await _contentRepository.CreateContentTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
                 }
                 else
                 {
-                    await _settingsManager.Database.AlterTableAsync(tableName, _contentRepository.GetDefaultTableColumns(tableName));
+                    await _settingsManager.Database.AlterTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
                 }
             }
 

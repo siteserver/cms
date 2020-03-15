@@ -140,11 +140,11 @@ var utils = {
   },
 
   getCountName(attributeName) {
-    return _.camelCase(attributeName + '_Count');
+    return _.camelCase(attributeName + 'Count');
   },
 
   getExtendName(attributeName, n) {
-    return _.camelCase(n ? attributeName + '_' + n : attributeName);
+    return _.camelCase(n ? attributeName + n : attributeName);
   },
 
   alertDelete: function (config) {

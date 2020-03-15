@@ -2,7 +2,6 @@
 using SS.CMS.Abstractions;
 using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
-using SS.CMS.Core;
 
 namespace SS.CMS.StlParser.StlElement
 {
@@ -49,7 +48,7 @@ namespace SS.CMS.StlParser.StlElement
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            var type = ContentAttribute.ImageUrl;
+            var type = nameof(Content.ImageUrl);
             var src = string.Empty;
             var altSrc = string.Empty;
             var width = "100%";

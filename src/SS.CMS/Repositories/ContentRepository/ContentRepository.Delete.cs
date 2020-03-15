@@ -37,9 +37,8 @@ namespace SS.CMS.Repositories
             await repository.UpdateAsync(
                 GetQuery(site.Id, channel.Id)
                     .SetRaw("ChannelId = -ChannelId")
-                    .Set(nameof(Content.LastEditDate), DateTime.Now)
                     .Set(nameof(Content.LastEditAdminId), adminId)
-                    .WhereIn(ContentAttribute.Id, contentIdList)
+                    .WhereIn(nameof(Content.Id), contentIdList)
                     .CachingRemove(cacheKeys.ToArray())
             );
         }
@@ -78,8 +77,8 @@ namespace SS.CMS.Repositories
 
             await repository.DeleteAsync(Q
                 .Where(nameof(Content.SiteId), site.Id)
-                .Where(ContentAttribute.ChannelId, "<", 0)
-                .WhereIn(ContentAttribute.Id, contentIdList)
+                .Where(nameof(Content.ChannelId), "<", 0)
+                .WhereIn(nameof(Content.Id), contentIdList)
                 .CachingRemove(cacheKeys.ToArray())
             );
         }
@@ -100,7 +99,7 @@ namespace SS.CMS.Repositories
                 var channelIds = await repository.GetAllAsync<int>(Q
                     .Select(nameof(Content.ChannelId))
                     .Where(nameof(Content.SiteId), site.Id)
-                    .Where(ContentAttribute.ChannelId, "<", 0)
+                    .Where(nameof(Content.ChannelId), "<", 0)
                     .Distinct()
                 );
 
@@ -112,7 +111,7 @@ namespace SS.CMS.Repositories
 
                 await repository.DeleteAsync(Q
                     .Where(nameof(Content.SiteId), site.Id)
-                    .Where(ContentAttribute.ChannelId, "<", 0)
+                    .Where(nameof(Content.ChannelId), "<", 0)
                     .CachingRemove(cacheKeys.ToArray())
                 );
             }
@@ -139,7 +138,7 @@ namespace SS.CMS.Repositories
                 var channelIds = await repository.GetAllAsync<int>(Q
                     .Select(nameof(Content.ChannelId))
                     .Where(nameof(Content.SiteId), site.Id)
-                    .Where(ContentAttribute.ChannelId, "<", 0)
+                    .Where(nameof(Content.ChannelId), "<", 0)
                     .Distinct()
                 );
 
@@ -152,7 +151,7 @@ namespace SS.CMS.Repositories
                 await repository.UpdateAsync(Q
                     .Set(nameof(Content.ChannelId), restoreChannelId)
                     .Where(nameof(Content.SiteId), site.Id)
-                    .Where(ContentAttribute.ChannelId, "<", 0)
+                    .Where(nameof(Content.ChannelId), "<", 0)
                     .CachingRemove(cacheKeys.ToArray())
                 );
             }
@@ -184,8 +183,8 @@ namespace SS.CMS.Repositories
             await repository.UpdateAsync(Q
                 .Set(nameof(Content.ChannelId), restoreChannelId)
                 .Where(nameof(Content.SiteId), site.Id)
-                .Where(ContentAttribute.ChannelId, "<", 0)
-                .WhereIn(ContentAttribute.Id, contentIdList)
+                .Where(nameof(Content.ChannelId), "<", 0)
+                .WhereIn(nameof(Content.Id), contentIdList)
                 .CachingRemove(cacheKeys.ToArray())
             );
         }
@@ -222,8 +221,8 @@ namespace SS.CMS.Repositories
 
             await repository.DeleteAsync(
                 GetQuery(site.Id, channel.Id)
-                    .Where(ContentAttribute.ReferenceId, ">", 0)
-                    .Where(ContentAttribute.Id, summary.Id)
+                    .Where(nameof(Content.ReferenceId), ">", 0)
+                    .Where(nameof(Content.Id), summary.Id)
                     .CachingRemove(
                         GetCountKey(repository.TableName, site.Id, channel.Id),
                         GetListKey(repository.TableName, site.Id, channel.Id),

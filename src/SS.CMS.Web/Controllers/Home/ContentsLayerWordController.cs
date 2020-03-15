@@ -142,7 +142,7 @@ namespace SS.CMS.Web.Controllers.Home
 
                 if (string.IsNullOrEmpty(title)) continue;
 
-                var dict = await ColumnsManager.SaveAttributesAsync(_pathManager, site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value);
+                var dict = await ColumnsManager.SaveAttributesAsync(_pathManager, site, styleList, new NameValueCollection(), ColumnsManager.MetadataAttributes.Value);
 
                 var contentInfo = new Content
                 {
@@ -158,10 +158,8 @@ namespace SS.CMS.Web.Controllers.Home
                 };
                 contentInfo.LoadDict(dict);
 
-                contentInfo.LastEditDate = contentInfo.AddDate;
-
                 contentInfo.Title = title;
-                contentInfo.Set(ContentAttribute.Content, content);
+                contentInfo.Body = content;
 
                 contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);
 

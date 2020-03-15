@@ -53,7 +53,7 @@ namespace SS.CMS.Web.Controllers.Admin.Cms.Contents
                 if (content == null) continue;
 
                 var pageContent = content.Clone<Content>();
-                pageContent.Set(ContentAttribute.CheckState, CheckManager.GetCheckState(site, content));
+                pageContent.Set(ColumnsManager.CheckState, CheckManager.GetCheckState(site, content));
                 contents.Add(pageContent);
             }
 

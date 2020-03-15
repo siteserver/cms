@@ -71,9 +71,9 @@ namespace SS.CMS.StlParser.StlElement
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var channelIds = string.Empty;
-            var type = ContentAttribute.Title;
+            var type = nameof(Content.Title);
             var word = string.Empty;
-            var dateAttribute = ContentAttribute.AddDate;
+            var dateAttribute = nameof(Content.AddDate);
             var dateFrom = string.Empty;
             var dateTo = string.Empty;
             var since = string.Empty;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
+using Datory;
 using Datory.Utils;
 using SS.CMS.Abstractions;
 using Content = SS.CMS.Abstractions.Content;
@@ -54,7 +54,7 @@ namespace SS.CMS.Core
             return formattedTitle;
         }
 
-        public static string GetAutoPageContent(string content, int pageWordNum)
+        public static string GetAutoPageBody(string content, int pageWordNum)
         {
             var builder = new StringBuilder();
             if (!string.IsNullOrEmpty(content))
@@ -117,7 +117,7 @@ namespace SS.CMS.Core
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
-                contentInfo.TranslateContentType = TranslateContentType.Copy;
+                contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.Copy.GetValue());
                 var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var plugin in pluginManager.GetPlugins())
@@ -142,7 +142,7 @@ namespace SS.CMS.Core
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
-                contentInfo.TranslateContentType = TranslateContentType.Cut;
+                contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.Cut.GetValue());
 
                 var newContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
@@ -173,7 +173,7 @@ namespace SS.CMS.Core
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.TranslateContentType = TranslateContentType.Reference;
+                contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.Reference.GetValue());
                 //content.Attributes.Add(ContentAttribute.TranslateContentType, TranslateContentType.Reference.ToString());
                 int theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
@@ -190,7 +190,7 @@ namespace SS.CMS.Core
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.TranslateContentType = TranslateContentType.ReferenceContent;
+                contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.ReferenceContent.GetValue());
                 var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 foreach (var plugin in pluginManager.GetPlugins())
@@ -216,7 +216,7 @@ namespace SS.CMS.Core
 
             //引用链接，不需要生成内容页；引用内容，需要生成内容页；
             if (content.ReferenceId > 0 &&
-                TranslateContentType.ReferenceContent != content.TranslateContentType)
+                content.Get<string>(ColumnsManager.TranslateContentType) != TranslateContentType.ReferenceContent.GetValue())
             {
                 return false;
             }
