@@ -41,7 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\plugins\SS.CMS.Restriction\SSCMS.Restriction.csproj" />
     <ProjectReference Include="..\SSCMS.Core\SSCMS.Core.csproj" />
   </ItemGroup>
 

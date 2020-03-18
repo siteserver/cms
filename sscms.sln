@@ -9,10 +9,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{273FDE01-B4F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E23844F2-3E94-4B93-B795-1A53C41F0BA5}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
 		azure-pipelines.yml = azure-pipelines.yml
+		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Datory", "..\Datory\src\Datory\Datory.csproj", "{366F752C-5F99-4D55-9C4D-9E4C705E7742}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS", "src\SSCMS\SSCMS.csproj", "{3E604789-4F7D-4D8C-B5E3-931C83DC743E}"
 EndProject
@@ -30,18 +30,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Cli.Tests", "tests\SS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Tests", "tests\SSCMS.Tests\SSCMS.Tests.csproj", "{2D1BE054-6CDA-4D44-A094-EDCD877B8762}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Restriction", "..\plugins\SS.CMS.Restriction\SSCMS.Restriction.csproj", "{1793FA6A-41C5-491A-84E8-DF113A6AD6CA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{366F752C-5F99-4D55-9C4D-9E4C705E7742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{366F752C-5F99-4D55-9C4D-9E4C705E7742}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{366F752C-5F99-4D55-9C4D-9E4C705E7742}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{366F752C-5F99-4D55-9C4D-9E4C705E7742}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E604789-4F7D-4D8C-B5E3-931C83DC743E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E604789-4F7D-4D8C-B5E3-931C83DC743E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E604789-4F7D-4D8C-B5E3-931C83DC743E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -74,10 +68,6 @@ Global
 		{2D1BE054-6CDA-4D44-A094-EDCD877B8762}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D1BE054-6CDA-4D44-A094-EDCD877B8762}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D1BE054-6CDA-4D44-A094-EDCD877B8762}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1793FA6A-41C5-491A-84E8-DF113A6AD6CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1793FA6A-41C5-491A-84E8-DF113A6AD6CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1793FA6A-41C5-491A-84E8-DF113A6AD6CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1793FA6A-41C5-491A-84E8-DF113A6AD6CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
