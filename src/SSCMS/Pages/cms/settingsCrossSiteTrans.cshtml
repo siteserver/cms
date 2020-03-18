@@ -1,0 +1,38 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-menu default-active="1" mode="horizontal"
+  background-color="#545c64"
+  text-color="#fff"
+  active-text-color="#ffd04b"
+>
+  <el-menu-item index="1"><el-link :underline="false" :href="utils.getCmsUrl('settingsCrossSiteTrans', {siteId: siteId})">跨站转发审核设置</el-link></el-menu-item>
+  <el-menu-item index="2"><el-link :underline="false" :href="utils.getCmsUrl('settingsCrossSiteTransChannels', {siteId: siteId})">跨站转发栏目设置</el-link></el-menu-item>
+</el-menu>
+
+<el-card>
+  <div slot="header" class="clearfix">
+    <span>跨站转发审核设置</span>
+  </div>
+
+  <el-alert>提示! 选择当栏目未设置跨站转发类型时采用的默认设置，同时设置跨站转发到本站点的内容是否需要审核</el-alert>
+  <div style="height: 10px"></div>
+
+  <el-form size="small" ref="form" :model="form" label-width="280px">
+
+    <el-form-item label="跨站转发到本站点的内容是否需要审核">
+      <el-radio-group v-model="form.isCrossSiteTransChecked">
+        <el-radio :label="true">需要审核</el-radio>
+        <el-radio :label="false">无需审核</el-radio>
+      </el-radio-group>
+    </el-form-item>
+
+    <el-form-item>
+      <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+    </el-form-item>
+  </el-form>
+  
+</el-card>
+
+@section Scripts{
+<script src="/admin/assets/js/cms/settingsCrossSiteTrans.js" type="text/javascript"></script> }

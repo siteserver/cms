@@ -75,22 +75,22 @@ SiteServer CMS 基于 .NET Core，能够以最低的成本、最少的人力投�
 
 Window(64位)：
 ```
-dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r win-x64 --configuration Release -o dist/sscms-win-x64
+dotnet publish ./src/SSCMS/SSCMS.csproj -r win-x64 --configuration Release -o dist/sscms-win-x64 /p:PublishSingleFile=true
 ```
 
 Window(32位)：
 ```
-dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r win-x86 --configuration Release -o dist/sscms-win-x86
+dotnet publish ./src/SSCMS/SSCMS.csproj -r win-x86 --configuration Release -o dist/sscms-win-x86 /p:PublishSingleFile=true
 ```
 
 Linux：
 ```
-dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r linux-x64 --configuration Release -o dist/sscms-linux-x64
+dotnet publish ./src/SSCMS/SSCMS.csproj -r linux-x64 --configuration Release -o dist/sscms-linux-x64 /p:PublishSingleFile=true
 ```
 
 MacOS：
 ```
-dotnet publish ./src/SS.CMS.Web/SS.CMS.Web.csproj -r osx-x64 --configuration Release -o dist/sscms-osx-x64
+dotnet publish ./src/SSCMS/SSCMS.csproj -r osx-x64 --configuration Release -o dist/sscms-osx-x64 /p:PublishSingleFile=true
 ```
 
 ## 贡献代码

@@ -1,0 +1,35 @@
+@page
+@{ Layout = "../shared/_layout"; }
+
+<el-card class="box-card">
+
+  <div slot="header" class="clearfix">
+    <span>加密/解密字符串</span>
+  </div>
+
+  <el-form ref="form" :model="form" size="small" status-icon label-width="160px">
+    <el-form-item label="操作">
+      <el-radio v-model="form.isEncrypt" :label="true">加密</el-radio>
+      <el-radio v-model="form.isEncrypt" :label="false">解密</el-radio>
+    </el-form-item>
+    <el-form-item :label="'需要' + (form.isEncrypt ? '加密' : '解密') + '的字符串'" prop="value" :rules="{ required: true, message: '请输入字符串' }">
+      <el-input v-model="form.value" type="textarea" rows="5"></el-input>
+    </el-form-item>
+    <el-form-item v-if="results" :label="(form.isEncrypt ? '加密' : '解密') + '后的字符串'">
+      <strong>{{ results }}</strong>
+    </el-form-item>
+  </el-form>
+
+  <el-row>
+    <el-col :span="24" align="center">
+      <el-divider></el-divider>
+      <div style="height: 10px"></div>
+      <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    </el-col>
+  </el-row>
+
+</el-card>
+
+
+@section Scripts{
+<script src="/admin/assets/js/settings/utilitiesEncrypt.js" type="text/javascript"></script> }

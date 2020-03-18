@@ -1,0 +1,540 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+@section Styles{
+<style>
+  .el-main {
+    padding: 5px 5px 20px 5px;
+    overflow: hidden;
+  }
+  #commands .el-button {
+    margin-bottom: 5px;
+  }
+  #commands .el-button+.el-button {
+    margin-left: 0;
+  }
+
+  .table-expand-form .el-form-item__label {
+    width: 120px;
+    color: #909399;
+  }
+  .table-expand-form .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+</style>
+}
+
+<el-card>
+  <div slot="header" class="clearfix">
+    <span>内容回收站</span>
+  </div>
+
+  <el-container>
+    <el-main>
+      <el-row>
+        <el-col :span="20">
+          <el-form ref="searchForm" :model="searchForm" :inline="true" size="small" label-width="100px">
+            <el-form-item label="原栏目" prop="channelIds">
+              <el-cascader
+                ref="channelIds"
+                v-model="channelIds"
+                :options="[root]"
+                :props="{ checkStrictly: true }"
+                filterable
+                clearable
+                placeholder="请选择栏目">
+              </el-cascader>
+            </el-form-item>
+            <el-form-item>
+              <el-popover
+                placement="top"
+                width="580"
+                trigger="click">
+                <el-form size="mini" :model="searchForm" style="margin-top: 10px;" label-width="80px">
+                  <el-form-item label="审核状态">
+                    <el-checkbox-group v-model="searchForm.checkedLevels">
+                      <el-checkbox v-for="level in checkedLevels" v-key="level.label" :label="level.label">{{level.text}}</el-checkbox>
+                    </el-checkbox-group>
+                  </el-form-item>
+                  <el-form-item label="内容属性">
+                    <el-checkbox label="置顶" v-model="searchForm.isTop"></el-checkbox>
+                    <el-checkbox label="推荐" v-model="searchForm.isRecommend"></el-checkbox>
+                    <el-checkbox label="热点" v-model="searchForm.isHot"></el-checkbox>
+                    <el-checkbox label="醒目" v-model="searchForm.isColor"></el-checkbox>
+                  </el-form-item>
+                  <el-form-item label="内容分组" v-if="groupNames && groupNames.length > 0">
+                    <el-checkbox-group v-model="searchForm.groupNames">
+                      <el-checkbox v-for="groupName in groupNames" v-key="groupName" :label="groupName">{{groupName}}</el-checkbox>
+                    </el-checkbox-group>
+                  </el-form-item>
+                  <el-form-item label="内容标签" v-if="tagNames && tagNames.length > 0">
+                    <el-select
+                      ref="tagNames"
+                      v-model="searchForm.tagNames"
+                      multiple
+                      filterable
+                      default-first-option
+                      style="width: 100%;"
+                      placeholder="请选择内容标签">
+                      <el-option
+                        v-for="tagName in tagNames"
+                        :key="tagName"
+                        :label="tagName"
+                        :value="tagName">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-form>
+                <div slot="reference" class="el-dropdown" style="float: right; margin-right: 10px;">
+                  <el-badge v-if="isFiltered" is-dot class="item">
+                    <span style="cursor: pointer;">
+                      筛选<i class="el-icon-arrow-down el-icon--right"></i>
+                    </span>
+                  </el-badge>
+                  <span v-else style="cursor: pointer;">
+                    筛选<i class="el-icon-arrow-down el-icon--right"></i>
+                  </span>
+                </div>
+              </el-popover>
+            </el-form-item>
+          </el-form>
+        </el-col>
+        <el-col :span="4" align="right">
+          <el-form :inline="true" size="small" label-width="100px">
+            <el-form-item>
+              <el-popover
+                id="sortColumns"
+                placement="top"
+                width="360"
+                trigger="click">
+                <div>
+                  设置显示列
+                </div>
+                <el-table
+                  :data="columns"
+                  size="mini"
+                  style="width: 100%; overflow: auto; max-height: 500px !important;">
+                  <el-table-column prop="displayName"></el-table-column>
+                  <el-table-column prop="attributeName"></el-table-column>
+                  <el-table-column align="right" width="80">
+                    <template slot-scope="scope">
+                      <el-switch
+                        v-model="scope.row.isList"
+                        :disabled="scope.row.attributeName === 'Title'"
+                        v-on:change="handleColumnsChange"
+                        size="mini">
+                      </el-switch>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <div slot="reference" class="el-dropdown" style="float: right;">
+                  <span style="cursor: pointer;">
+                    显示列<i class="el-icon-arrow-down el-icon--right"></i>
+                  </span>
+                </div>
+              </el-popover>
+            </el-form-item>
+          </el-form>
+        </el-col>
+        <el-col :span="24">
+          <el-form :inline="true" size="small" label-width="100px">
+            <el-form-item label="删除日期">
+              <el-col :span="11">
+                <el-date-picker type="datetime" placeholder="选择开始日期" v-model="searchForm.startDate" style="width: 100%;"></el-date-picker>
+              </el-col>
+              <el-col class="line" :span="2" align="center">-</el-col>
+              <el-col :span="11">
+                <el-date-picker type="datetime" placeholder="选择结束日期" v-model="searchForm.endDate" style="width: 100%;"></el-date-picker>
+              </el-col>
+            </el-form-item>
+          </el-form>
+        </el-col>
+        <el-col :span="24">
+          <el-form size="small" label-width="100px">
+            <el-form-item v-for="column in searchColumns" :key="column.attributeName" :label="column.displayName">
+              <el-input v-model="column.value" placeholder="请输入搜索关键词">
+                <el-button slot="append" v-on:click="btnSelectColumnClick(column)" icon="el-icon-remove-outline"></el-button>
+              </el-input>
+            </el-form-item>
+          </el-form>
+          <el-form size="small" label-width="100px">
+            <el-form-item>
+              <el-popover
+                placement="top"
+                width="400"
+                trigger="click">
+                <div>
+                  <el-tag
+                    v-for="column in columns"
+                    v-if="column.isSearchable"
+                    :key="column.attributeName"
+                    type="primary"
+                    style="cursor: pointer; margin: 0 3px 6px 0;"
+                    v-on:click="btnSelectColumnClick(column)"
+                    :effect="getColumnEffect(column)">
+                    {{ column.displayName + '(' + column.attributeName + ')' }}
+                  </el-tag>
+                </div>
+                <el-button slot="reference" size="mini" icon="el-icon-circle-plus-outline">
+                  添加搜索项
+                </el-button>
+              </el-popover>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
+
+      <div style="height: 10px"></div>
+
+      <el-divider></el-divider>
+      <el-row align="center" style="margin-right: 5px; margin-top: 10px;">
+        <el-col :span="24" align="center">
+          <el-button size="small" type="primary" v-on:click="btnSearchClick">搜 索</el-button>
+        </el-col>
+      </el-row>
+      
+    </el-main>
+  </el-container>
+
+  <el-container v-if="pageContents">
+    <el-main>
+      <el-divider></el-divider>
+      <div style="height: 10px;"></div>
+
+      <el-row id="commands">
+        <el-col :span="24">
+
+          <el-button size="mini" :disabled="total === 0"
+            v-on:click="btnRestoreAllClick">
+            还原全部
+          </el-button>
+          <el-button size="mini" :disabled="total === 0 || !isContentChecked"
+            v-on:click="btnRestoreSelectClick">
+            还原选中
+          </el-button>
+          <el-button size="mini" :disabled="total === 0"
+            v-on:click="btnDeleteAllClick">
+            删除全部
+          </el-button>
+          <el-button size="mini" :disabled="total === 0 || !isContentChecked"
+            v-on:click="btnDeleteSelectClick">
+            删除选中
+          </el-button>
+          
+        </el-col>
+      </el-row>
+
+      <div style="height: 10px;"></div>
+
+      <el-table
+        :data="pageContents"
+        border
+        ref="multipleTable"
+        style="width: 100%;"
+        size="medium"
+        row-key="id"
+        stripe
+        :row-class-name="tableRowClassName"
+        v-on:selection-change="handleSelectionChange"
+        v-on:row-click="toggleSelection">
+        <el-table-column type="expand" width="25" align="right">
+          <template slot-scope="scope">
+            <el-form size="mini" label-position="left" inline class="table-expand-form">
+              <el-form-item
+                v-for="column in columns"
+                :key="column.attributeName"
+                v-if="column.attributeName !== 'Title'"
+                :label="column.displayName">
+
+                <!-- ChannelId -->
+                <template v-if="column.attributeName === 'ChannelId'">
+                  {{scope.row.channelName}}
+                </template>
+
+                <!-- GroupNames -->
+                <template v-else-if="column.attributeName === 'GroupNames'">
+                  <template v-if="scope.row.groupNames && groupNames" v-for="groupName in scope.row.groupNames">
+                    <el-tag v-if="groupNames.indexOf(groupName) !== -1" :key="groupName" size="mini" type="info">
+                      {{ groupName }}
+                    </el-tag>
+                  </template>
+                </template>
+
+                <!-- TagNames -->
+                <template v-else-if="column.attributeName === 'TagNames'">
+                  <template v-if="scope.row.tagNames && tagNames" v-for="tagName in scope.row.tagNames">
+                    <el-tag v-if="tagNames.indexOf(tagName) !== -1" :key="tagName" size="mini" type="info">
+                      {{ tagName }}
+                    </el-tag>
+                  </template>
+                </template>
+
+                <!-- ImageUrl -->
+                <template v-else-if="column.attributeName === 'ImageUrl'">
+                  <el-link :underline="false" :href="scope.row.imageUrl" target="_blank" v-on:click.stop.native>
+                    <el-image v-if="scope.row.imageUrl"  :src="scope.row.imageUrl" style="max-width: 100px; max-height: 100px"></el-image>
+                  </el-link>
+                </template>
+
+                <!-- LinkUrl -->
+                <template v-else-if="column.attributeName === 'LinkUrl'">
+                  <el-link v-if="scope.row.linkUrl" :underline="false" type="primary" :href="scope.row.linkUrl" target="_blank" v-on:click.stop.native>{{scope.row.linkUrl}}</el-link>
+                </template>
+
+                <!-- AdminId -->
+                <template v-else-if="column.attributeName === 'AdminId'">
+                  <el-link v-if="scope.row.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.adminId)">{{scope.row.adminName}}</el-link>
+                </template>
+
+                <!-- LastEditAdminId -->
+                <template v-else-if="column.attributeName === 'LastEditAdminId'">
+                  <el-link v-if="scope.row.lastEditAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.lastEditAdminId)">{{scope.row.lastEditAdminName}}</el-link>
+                </template>
+
+                <!-- UserId -->
+                <template v-else-if="column.attributeName === 'UserId'">
+                  <el-link v-if="scope.row.userId" :underline="false" type="primary" v-on:click.stop.native="btnUserClick(scope.row.userId)">{{scope.row.userName}}</el-link>
+                </template>
+
+                <!-- CheckAdminId -->
+                <template v-else-if="column.attributeName === 'CheckAdminId'">
+                  <el-link v-if="scope.row.checkAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.checkAdminId)">{{scope.row.checkAdminName}}</el-link>
+                </template>
+
+                <!-- SourceId -->
+                <template v-else-if="column.attributeName === 'SourceId'">
+                  {{scope.row.sourceName}}
+                </template>
+
+                <!-- Others -->
+                <template v-else>
+                  <span v-html="scope.row.getEntityValue(column.attributeName)"></span>
+                </template>
+
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column type="selection" width="45" align="center"></el-table-column>
+
+        <el-table-column
+          v-for="column in columns"
+          v-if="column.isList && column.attributeName != 'ChannelId'"
+          :key="column.attributeName"
+          :label="column.displayName"
+          :width="getColumnWidth(column)"
+          :min-width="getColumnMinWidth(column)"
+          show-overflow-tooltip
+          resizable>
+          <template slot-scope="scope">
+
+            <!-- Title -->
+            <template v-if="column.attributeName === 'Title'">
+              <el-link v-if="scope.row.checked && scope.row.channelId > 0" type="primary" :underline="false" :href="getContentUrl(scope.row)" target="_blank" v-html="scope.row.title" v-on:click.stop.native></el-link>
+              <el-link v-else type="primary" :underline="false" v-on:click="btnTitleClick(scope.row)" v-html="scope.row.title" v-on:click.stop.native></el-link>
+              <!-- top -->
+              <el-tooltip v-if="scope.row.top" effect="light" content="置顶" placement="top">
+                <el-link size="mini" :underline="false" type="danger"><i class="el-icon-top"></i></el-link>
+              </el-tooltip>
+              <!-- recommend -->
+              <el-tooltip v-if="scope.row.recommend" effect="light" content="推荐" placement="top">
+                <i class="el-icon-star-off"></i>
+              </el-tooltip>
+              <!-- hot -->
+              <el-tooltip v-if="scope.row.hot" effect="light" content="热点" placement="top">
+                <i class="el-icon-news"></i>
+              </el-tooltip>
+              <!-- color -->
+              <el-tooltip v-if="scope.row.color" effect="light" content="醒目" placement="top">
+                <i class="el-icon-view"></i>
+              </el-tooltip>
+              <!-- imageUrl -->
+              <el-tooltip v-if="scope.row.imageUrl" effect="light" content="图片" placement="top">
+                <el-popover
+                  v-if="scope.row.imageUrl"
+                  width="400"
+                  trigger="hover">
+                  <el-image :src="scope.row.imageUrl"></el-image>
+                  <el-link slot="reference" :underline="false">
+                    <i class="el-icon-picture-outline"></i>
+                  </el-link>
+                </el-popover>
+              </el-tooltip>
+              <!-- video -->
+              <el-tooltip v-if="scope.row.videoUrl" effect="light" content="视频" placement="top">
+                <el-link :underline="false" :href="scope.row.videoUrl" target="_blank" v-on:click.stop>
+                  <i class="el-icon-video-play"></i>
+                </el-link>
+              </el-tooltip>
+              <!-- fileUrl -->
+              <el-tooltip v-if="scope.row.fileUrl" effect="light" content="附件" placement="top">
+                <el-link :underline="false" :href="scope.row.fileUrl" target="_blank" v-on:click.stop>
+                  <i class="el-icon-document"></i>
+                </el-link>
+              </el-tooltip>
+              <!-- linkUrl -->
+              <el-tooltip v-if="scope.row.linkUrl" effect="light" content="外部链接" placement="top">
+                <el-link :underline="false" :href="scope.row.linkUrl" target="_blank" v-on:click.stop.native title="外部链接">
+                  <i class="el-icon-link"></i>
+                </el-link>
+              </el-tooltip>
+            </template>
+
+            <!-- ChannelId -->
+            <template v-else-if="column.attributeName === 'ChannelId'">
+              {{scope.row.channelName}}
+            </template>
+
+            <!-- GroupNames -->
+            <template v-else-if="column.attributeName === 'GroupNames'">
+              <template v-if="scope.row.groupNames && groupNames" v-for="groupName in scope.row.groupNames">
+                <el-tag v-if="groupNames.indexOf(groupName) !== -1" :key="groupName" size="mini" type="info">
+                  {{ groupName }}
+                </el-tag>
+              </template>
+            </template>
+
+            <!-- TagNames -->
+            <template v-else-if="column.attributeName === 'TagNames'">
+              <template v-if="scope.row.tagNames && tagNames" v-for="tagName in scope.row.tagNames">
+                <el-tag v-if="tagNames.indexOf(tagName) !== -1" :key="tagName" size="mini" type="info">
+                  {{ tagName }}
+                </el-tag>
+              </template>
+            </template>
+
+            <!-- ImageUrl -->
+            <template v-else-if="column.attributeName === 'ImageUrl'">
+              <el-link :underline="false" :href="scope.row.imageUrl" target="_blank" v-on:click.stop.native>
+                <el-image v-if="scope.row.imageUrl"  :src="scope.row.imageUrl" style="max-width: 100px; max-height: 100px"></el-image>
+              </el-link>
+            </template>
+
+            <!-- LinkUrl -->
+            <template v-else-if="column.attributeName === 'LinkUrl'">
+              <el-link v-if="scope.row.linkUrl" :underline="false" type="primary" :href="scope.row.linkUrl" target="_blank" v-on:click.stop.native>{{scope.row.linkUrl}}</el-link>
+            </template>
+
+            <!-- AdminId -->
+            <template v-else-if="column.attributeName === 'AdminId'">
+              <el-link v-if="scope.row.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.adminId)">{{scope.row.adminName}}</el-link>
+            </template>
+
+            <!-- LastEditAdminId -->
+            <template v-else-if="column.attributeName === 'LastEditAdminId'">
+              <el-link v-if="scope.row.lastEditAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.lastEditAdminId)">{{scope.row.lastEditAdminName}}</el-link>
+            </template>
+
+            <!-- UserId -->
+            <template v-else-if="column.attributeName === 'UserId'">
+              <el-link v-if="scope.row.userId" :underline="false" type="primary" v-on:click.stop.native="btnUserClick(scope.row.userId)">{{scope.row.userName}}</el-link>
+            </template>
+
+            <!-- CheckAdminId -->
+            <template v-else-if="column.attributeName === 'CheckAdminId'">
+              <el-link v-if="scope.row.checkAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.checkAdminId)">{{scope.row.checkAdminName}}</el-link>
+            </template>
+
+            <!-- SourceId -->
+            <template v-else-if="column.attributeName === 'SourceId'">
+              {{scope.row.sourceName}}
+            </template>
+
+            <!-- Others -->
+            <template v-else>
+              <span v-html="scope.row.getEntityValue(column.attributeName)"></span>
+            </template>
+
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          width="160"
+          align="center"
+          show-overflow-tooltip
+          label="原栏目">
+          <template slot-scope="scope">
+            {{ scope.row.channelName }}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          width="160"
+          align="center"
+          show-overflow-tooltip
+          label="删除时间">
+          <template slot-scope="scope">
+            {{ scope.row.lastEditDate }}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          fixed="right"
+          width="70"
+          align="center"
+          show-overflow-tooltip
+          label="状态">
+          <template slot-scope="scope">
+            <el-link size="mini" :underline="false" :type="(scope.row.checked ? 'primary' : 'danger')">
+              {{ scope.row.state }}
+            </el-link>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          fixed="right"
+          align="center"
+          label="操作"
+          show-overflow-tooltip
+          width="100">
+          <template slot-scope="scope">
+            <el-link size="mini" :underline="false" v-on:click.stop.native="btnRestoreClick(scope.row)" type="primary">
+              还原
+            </el-link>
+            <el-link size="mini" :underline="false" v-on:click.stop.native="btnDeleteClick(scope.row)" type="primary">
+              删除
+            </el-link>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-row style="margin-top: 7px;">
+        <el-col :span="24" align="center">
+          <el-pagination
+            size="mini"
+            background
+            v-on:current-change="handleCurrentChange"
+            :current-page="page"
+            :page-size="pageSize"
+            layout="total, prev, pager, next, jumper"
+            :total="total">
+          </el-pagination>
+        </el-col>
+      </el-row>
+    </el-main>
+  </el-container>
+</el-card>
+
+<el-dialog :title="restoreTitle" :visible.sync="isRestoreForm">
+  <el-form size="small" :model="restoreForm" ref="restoreForm">
+    <el-form-item label="还原至栏目" prop="restoreChannelIds" :rules="{ required: true, message: '请选择还原至栏目' }">
+      <el-cascader
+        v-model="restoreForm.restoreChannelIds"
+        :options="[root]"
+        :props="{ checkStrictly: true }"
+        filterable
+        clearable
+        placeholder="请选择栏目">
+      </el-cascader>
+    </el-form-item>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button size="small" type="primary" v-on:click="btnRestoreSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="isRestoreForm = false">取 消</el-button>
+  </div>
+</el-dialog>
+
+@section Scripts{
+<script src="/admin/assets/js/cms/contentsRecycle.js" type="text/javascript"></script>
+}

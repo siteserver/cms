@@ -1,0 +1,57 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-alert type="error">此操作将把以下 <strong> {{ contents.length }} </strong> 篇内容放入回收站，确定吗？</el-alert>
+
+<el-table
+  :data="contents"
+  style="width: 100%;"
+  size="small"
+  row-key="id"
+  stripe>
+  <el-table-column prop="id" label="内容Id" width="80"></el-table-column>
+  <el-table-column
+    label="内容标题"
+    show-overflow-tooltip>
+    <template slot-scope="scope">
+      <el-link type="primary" :underline="false" :href="getContentUrl(scope.row)" v-html="scope.row.title" target="_blank" v-on:click.stop.native></el-link>
+    </template>
+  </el-table-column>
+  <el-table-column prop="addDate" label="添加时间"  width="150"></el-table-column>
+  <el-table-column
+    fixed="right"
+    width="90"
+    align="center"
+    show-overflow-tooltip
+    label="状态">
+    <template slot-scope="scope">
+      <el-link size="mini" :underline="false" :type="(scope.row.checked ? 'primary' : 'danger')">
+        {{ scope.row.checked ? '已审核' : '待审核' }}
+      </el-link>
+    </template>
+  </el-table-column>
+</el-table>
+
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-form size="small" ref="form" :model="form" label-width="120px">
+  <el-form-item label="删除选项">
+    <el-radio v-model="form.isRetainFiles" :label="true">保留生成的内容页面</el-radio>
+    <el-radio v-model="form.isRetainFiles" :label="false">同时删除内容页面</el-radio>
+    <div class="tips">
+      选择保留页面将仅在数据库中删除内容
+    </div>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/admin/assets/js/cms/contentsLayerDelete.js" type="text/javascript"></script> }

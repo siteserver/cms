@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+  <stl:include file="/include/head1.html"></stl:include>
+  <body>
+    <stl:include file="/include/header.html"></stl:include>
+    <div class="clearfix"></div>
+    <div class="maincon">
+      <stl:include file="/include/banner.html"></stl:include>
+      <div class="container neicon">
+        <div class="row">
+          <stl:include file="/include/left.html"></stl:include>
+          <div class="col-md-9">
+            <div class="listcon">
+              <stl:include file="/include/location.html"></stl:include>
+              <div class="pagecon">
+                <h1 class="pagetit text-center">
+                  {Content.Title}
+                </h1>
+                <div class="pagecontent">
+                  <stl:content type="Content"></stl:content>
+                </div>
+                <div class="conbottom">
+                  <div class="row">
+                    <div class="col-sm-8 prenext">
+                      
+                      <p><stl:navigation type="PreviousContent" tiptext="上一篇：" emptyText="无"></stl:navigation> </p>
+                      <p><stl:navigation type="NextContent" tiptext="下一篇：" emptyText="无"></stl:navigation></p>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>  
+    <stl:include file="/include/footer.html"></stl:include>
+    <stl:include file="/include/right_bar.html"></stl:include>
+    <stl:include file="/include/foot_js.html"></stl:include>
+  </body>
+</html>

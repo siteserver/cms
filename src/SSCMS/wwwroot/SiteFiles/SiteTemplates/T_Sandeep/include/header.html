@@ -1,0 +1,52 @@
+<div class="themenav">
+      <div class="container">
+        <div class="logo"> <a href="{Stl.SiteUrl}/index.html"> {stl:value type=Logo} </a> </div>
+        <div class="thememenu">
+          <div class="menu-%e5%af%bc%e8%88%aa%e8%8f%9c%e5%8d%95-container">
+            <ul id="menu-%e5%af%bc%e8%88%aa%e8%8f%9c%e5%8d%95" class="mxnav">
+              <li class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home"><a href="{Stl.SiteUrl}/index.html">首页</a></li>
+              <stl:channels topLevel="0" groupChannel="nav">
+                <li class="menu-item menu-item-type-post_type menu-item-object-page"><stl:a>{Channel.Title}</stl:a></li>
+              </stl:channels>
+            </ul>
+          </div>
+        </div>
+        <div class="search">
+          <div id="sb-search" class="sb-search">
+            <form id="searchform"  method="get"  action="{Stl.SiteUrl}/utils/search.html">
+              <input class="sb-search-input" placeholder="输入关键词查找..." type="text" name="word">
+              <input id="searchsubmit"  class="sb-search-submit" type="submit">
+              <span class="glyphicon glyphicon-search"></span>
+            </form>
+          </div>
+          <script src="{Stl.SiteUrl}/js/classie.js"></script> 
+          <script src="{Stl.SiteUrl}/js/uisearch.js"></script> 
+          <script>
+            new UISearch( document.getElementById( 'sb-search' ) );
+          </script> 
+        </div>
+        <div id="sideMenu"> <span class="fa fa-navicon" id="sideMenuClosed"></span> </div>
+        <div class="clearfix"></div>
+      </div>
+      <div id="sideMenuContainer">
+        <div class="menu-%e5%af%bc%e8%88%aa%e8%8f%9c%e5%8d%95-container">
+          <ul id="menu-%e5%af%bc%e8%88%aa%e8%8f%9c%e5%8d%95-1" class="mxphonenav">
+            <li class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home"><a href="{Stl.SiteUrl}/index.html">首页</a></li>
+            <stl:channels topLevel="0" groupChannel="nav">
+              <li class="menu-item menu-item-type-post_type menu-item-object-page"><stl:a>{Channel.Title}</stl:a></li>
+            </stl:channels>
+          </ul>
+        </div>
+      </div>
+      <script src='{Stl.SiteUrl}/js/velocity.min.js'></script> 
+      <script src='{Stl.SiteUrl}/js/sideToggleExtended.js'></script> 
+      <script type="text/javascript">
+        $(document).ready(function(){
+        $('#sideMenu').sideToggle({
+        moving: '#sideMenuContainer',
+        direction: 'right'
+        });
+        
+        });
+      </script> 
+    </div>

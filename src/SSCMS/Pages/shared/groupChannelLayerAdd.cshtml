@@ -1,0 +1,23 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-form size="small" ref="form" :model="form" label-width="120px">
+  <el-form-item label="栏目组名称" prop="groupName" :rules="{ required: true, message: '请输入栏目组名称' }">
+    <el-input v-model="form.groupName" placeholder="请输入栏目组名称"></el-input>
+  </el-form-item>
+  <el-form-item label="栏目组说明" prop="description">
+    <el-input type="textarea" v-model="form.description" placeholder="请输入栏目组说明"></el-input>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/admin/assets/js/shared/groupChannelLayerAdd.js" type="text/javascript"></script>
+}

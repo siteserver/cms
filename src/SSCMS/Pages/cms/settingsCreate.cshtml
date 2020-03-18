@@ -1,0 +1,105 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-menu default-active="2" mode="horizontal"
+  background-color="#545c64"
+  text-color="#fff"
+  active-text-color="#ffd04b"
+>
+  <el-menu-item index="1"><el-link :underline="false" :href="utils.getCmsUrl('settingsCreateRule', {siteId: siteId})">页面命名规则</el-link></el-menu-item>
+  <el-menu-item index="2"><el-link :underline="false" :href="utils.getCmsUrl('settingsCreate', {siteId: siteId})">页面生成设置</el-link></el-menu-item>
+  <el-menu-item index="3"><el-link :underline="false" :href="utils.getCmsUrl('settingsCreateTrigger', {siteId: siteId})">页面生成触发器</el-link></el-menu-item>
+</el-menu>
+
+<el-card>
+  <div slot="header" class="clearfix">
+    <span>页面生成设置</span>
+  </div>
+
+  <el-form size="small" ref="form" :model="form" label-width="280px">
+
+    <el-form-item label="当内容变动时是否生成本页">
+      <el-radio-group v-model="form.isCreateContentIfContentChanged">
+        <el-radio :label="true">生成</el-radio>
+        <el-radio :label="false">不生成</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item label="当栏目变动时是否生成本页">
+      <el-radio-group v-model="form.isCreateChannelIfChannelChanged">
+        <el-radio :label="true">生成</el-radio>
+        <el-radio :label="false">不生成</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item label="生成页面中是否显示模板信息">
+      <el-radio-group v-model="form.isCreateShowPageInfo">
+        <el-radio :label="true">显示</el-radio>
+        <el-radio :label="false">不显示</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item label="是否设置meta标签强制IE8兼容">
+      <el-radio-group v-model="form.isCreateIe8Compatible">
+        <el-radio :label="false">不设置</el-radio>
+        <el-radio :label="true">强制兼容</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item label="是否设置meta标签强制浏览器清除缓存" prop="isCreateBrowserNoCache" :rules="{ required: true, message: '请输入是否启用双击生成页面' }">
+      <el-radio-group v-model="form.isCreateBrowserNoCache">
+        <el-radio :label="false">不设置</el-radio>
+        <el-radio :label="true">强制清除缓存</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item label="是否设置包含JS容错代码">
+      <el-radio-group v-model="form.isCreateJsIgnoreError">
+        <el-radio :label="false">不设置</el-radio>
+        <el-radio :label="true">包含JS容错代码</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item label="是否生成页面中包含JQuery脚本引用">
+      <el-radio-group v-model="form.isCreateWithJQuery">
+        <el-radio :label="true">包含</el-radio>
+        <el-radio :label="false">不包含</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item label="启用双击生成页面">
+      <el-radio-group v-model="form.isCreateDoubleClick">
+        <el-radio :label="false">不启用</el-radio>
+        <el-radio :label="true">启用</el-radio>
+      </el-radio-group>
+      <div class="tips">此功能通常用于制作调试期间，网站正式上线后不建议启用</div>
+    </el-form-item>
+    <el-form-item label="翻页中生成的静态页面最大数（页）" prop="createStaticMaxPage" :rules="{ required: true, message: '请输入翻页中生成的静态页面最大数' }">
+      <el-input v-model.number="form.createStaticMaxPage" placeholder="请输入翻页中生成的静态页面最大数"></el-input>
+      <div class="tips">设置翻页中生成的静态页面最大数，剩余页面将动态获取；设置为0代表将静态页面全部生成</div>
+    </el-form-item>
+    <el-form-item label="是否启用默认文件名">
+      <el-radio-group v-model="form.isCreateUseDefaultFileName">
+        <el-radio :label="true">启用</el-radio>
+        <el-radio :label="false">不启用</el-radio>
+      </el-radio-group>
+      <div class="tips">若启用此选项，文件名如果是默认文件名，文件名将省略</div>
+    </el-form-item>
+    <el-form-item label="默认文件名" v-if="form.isCreateUseDefaultFileName" prop="createDefaultFileName" :rules="{ required: true, message: '请输入默认文件名' }">
+      <el-input v-model="form.createDefaultFileName" placeholder="请输入默认文件名"></el-input>
+      <div class="tips">需要确保Web服务器支持默认文件名</div>
+    </el-form-item>
+    <el-form-item label="根据添加日期限制是否生成内容">
+      <el-radio-group v-model="form.isCreateStaticContentByAddDate">
+        <el-radio :label="true">启用</el-radio>
+        <el-radio :label="false">不启用</el-radio>
+      </el-radio-group>
+      <div class="tips">若启用此选项，系统将不再生成所选添加时间之前的内容页</div>
+    </el-form-item>
+    <el-form-item label="生成内容添加日期限制" v-if="form.isCreateStaticContentByAddDate" prop="createStaticContentAddDate" :rules="{ required: true, message: '请输入生成内容添加日期限制' }">
+      <el-input v-model="form.createStaticContentAddDate" placeholder="请输入生成内容添加日期限制"></el-input>
+      <div class="tips">在此设置内容添加日期，此日期之前的内容页将不再生成</div>
+    </el-form-item>
+
+    <el-form-item>
+      <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+    </el-form-item>
+  </el-form>
+  
+</el-card>
+
+@section Scripts{
+<script src="/admin/assets/js/cms/settingsCreate.js" type="text/javascript"></script> }

@@ -1,0 +1,251 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+@section Styles{
+  <style>
+    .el-upload, .el-upload-dragger {width:auto;}
+    .el-dropdown-link {
+      cursor: pointer;
+      color: #409EFF;
+    }
+    .el-icon-arrow-down {
+      font-size: 12px;
+    }
+    .el-icon-picture-outline {
+      font-size: 22px;
+      margin: 80px 0;
+      color: #c0c4cc;
+    }
+  </style>
+}
+
+<el-menu default-active="1" mode="horizontal"
+  background-color="#545c64"
+  text-color="#fff"
+  active-text-color="#ffd04b"
+>
+  <el-menu-item index="1"><el-link :underline="false" :href="getLinkUrl('Text')">图文</el-link></el-menu-item>
+  <el-menu-item index="2"><el-link :underline="false" :href="getLinkUrl('Image')">图片</el-link></el-menu-item>
+  <el-menu-item index="3"><el-link :underline="false" :href="getLinkUrl('Video')">视频</el-link></el-menu-item>
+  <el-menu-item index="4"><el-link :underline="false" :href="getLinkUrl('File')">文件</el-link></el-menu-item>
+</el-menu>
+
+<el-card>
+  <div slot="header" class="clearfix">
+    <span>图文素材管理</span>
+  </div>
+  <el-row>
+    <el-col :span="18">
+      <el-row>
+        <el-form :inline="true" :model="form" size="mini">
+          <el-form-item label="搜索">
+            <el-input v-model="form.keyword" placeholder="关键字"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-row>
+      <el-row>
+        <el-form :inline="true" :model="form" size="mini">
+          <el-form-item v-if="form.groupId">
+            <label style="margin-right: 10px">{{getGroupName()}}</label>
+            <el-button v-on:click="btnRenameGroupClick" type="primary" title="重命名" size="mini" icon="el-icon-edit" circle></el-button>
+            <el-button v-on:click="btnDeleteGroupClick" type="danger" title="删除" size="mini" icon="el-icon-delete" circle></el-button>
+            <el-button v-on:click="btnGroupClick(0)">
+              <i class="el-icon-back"></i>
+              返回全部分组
+            </el-button>
+          </el-form-item>
+        
+          <el-form-item v-if="form.groupId === 0" label="分组">
+  
+            <el-tag
+              v-for="group in groups"
+              :key="group.id"
+              type="success"
+              style="cursor: pointer; margin: 0 3px 6px 0;"
+              v-on:click="btnGroupClick(group.id)"
+              :effect="form.groupId === group.id ? 'dark' : 'plain'">
+              {{ group.groupName }}
+            </el-tag>
+           
+          </el-form-item>
+          <el-form-item v-if="form.groupId === 0">
+            <el-button size="small" v-on:click="btnCreateGroupClick">
+              <i class="el-icon-plus"></i>
+              新建分组
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-row>
+    </el-col>
+    <el-col align="right" :span="6">
+      <el-dropdown trigger="click" v-on:command="btnDropdownClick">
+        <span class="el-dropdown-link">
+          {{(pageType === 'card' ? '卡片视图' : '列表视图')}} <i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="card">卡片视图</el-dropdown-item>
+          <el-dropdown-item command="list">列表视图</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <div style="height: 15px"></div>
+      <el-button v-on:click="btnCreateClick()" type="success" size="small">
+        <i class="el-icon-plus"></i>
+        新建图文
+      </el-button>
+      <el-upload
+        :action="getUploadUrl()"
+        style="display: inline-block;"
+        :with-credentials="true"
+        :before-upload="uploadBefore"
+        :on-progress="uploadProgress"
+        :on-success="uploadSuccess"
+        :on-error="uploadError"
+        :multiple="true"
+        :show-file-list="false">
+        <el-button size="small" type="success">
+          <i class="el-icon-upload"></i>
+          导入Word
+        </el-button>
+      </el-upload>
+    </el-col>
+  </el-row>
+  
+  <template v-if="pageType === 'card'">
+    <el-row>
+      <el-col :span="6" v-for="(o, index) in items" :key="o.id">
+  
+        <el-card style="margin-bottom: 15px; margin-right: 15px;" :body-style="{ padding: '0px', textAlign: 'center' }">
+          <div slot="header" class="clearfix">
+            <span>{{ o.title }}</span>
+          </div>
+          <a href="javascript:;" v-on:click="btnUpdateClick(o)">
+            <el-image 
+              style="width: 100%; min-height: 120px; max-height:220px;"
+              :src="o.imageUrl">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </a>
+          <div style="padding: 14px;">
+            <div v-on:click="btnUpdateClick(o)" style="cursor: pointer; height: 20px; font-size: 12px; overflow: hidden;">{{ o.summary }}</div>
+            
+            <div class="bottom clearfix mt-2">
+              <el-button v-on:click="btnUpdateClick(o)" type="text" size="mini" icon="el-icon-edit" style="margin: 0 5px; color: #9B9B9B;">编辑</el-button>
+              <el-popover
+                v-if="groups.length > 1"
+                placement="right"
+                width="400"
+                v-model="o.isSelectGroups"
+                trigger="click">
+                <div>
+                  <el-tag
+                    title="移动分组"
+                    v-for="group in groups"
+                    v-if="group.id > 0"
+                    :key="group.id"
+                    type="success"
+                    style="cursor: pointer; margin: 0 3px 6px 0;"
+                    v-on:click="btnSelectGroupClick(group.id)"
+                    :effect="selectedGroupId === group.id ? 'dark' : 'plain'">
+                    {{ group.groupName }}
+                  </el-tag>
+                  <hr />
+                  <el-button size="small" v-on:click="btnSelectGroupSubmit(o)" type="success">确 定</el-button>
+                  <el-button size="small" v-on:click="o.isSelectGroups = false;">取 消</el-button>
+                </div>
+                <el-button slot="reference" v-on:click="o.isSelectGroups = true; selectedGroupId = o.groupId" type="text" size="mini" icon="el-icon-right" style="margin: 0 5px; color: #9B9B9B;">移动分组</el-button>
+              </el-popover>
+              <el-button v-on:click="btnDeleteClick(o)" type="text" size="mini" icon="el-icon-delete" style="margin: 0 5px; color: #9B9B9B;">删除</el-button>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </template>
+  <template v-else>
+    <el-table
+      :data="items"
+      style="width: 100%">
+      <el-table-column
+        label="图文"
+        width="130">
+        <template slot-scope="scope">
+          <a :href="scope.row.imageUrl" target="_blank">
+            <img :src="scope.row.imageUrl" style="max-height: 120px; max-width: 120px;"/>
+          </a>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="title"
+        label="标题">
+      </el-table-column>
+      <el-table-column
+        prop="summary"
+        label="摘要">
+      </el-table-column>
+      <el-table-column
+        prop="createdDate"
+        label="创建时间"
+        width="170">
+      </el-table-column>
+      <el-table-column label="操作" width="220">
+        <template slot-scope="scope">
+            <el-button v-on:click="btnUpdateClick(scope.row)" type="text" size="mini" icon="el-icon-edit" style="margin: 0 5px">编辑</el-button>
+            <el-popover
+              v-if="groups.length > 1"
+              placement="right"
+              width="400"
+              v-model="scope.row.isSelectGroups"
+              trigger="click">
+              <div>
+                <el-tag
+                  title="移动分组"
+                  v-for="group in groups"
+                  v-if="group.id > 0"
+                  :key="group.id"
+                  type="success"
+                  style="cursor: pointer; margin: 0 3px 6px 0;"
+                  v-on:click="btnSelectGroupClick(group.id)"
+                  :effect="selectedGroupId === group.id ? 'dark' : 'plain'">
+                  {{ group.groupName }}
+                </el-tag>
+                <hr />
+                <el-button size="small" v-on:click="btnSelectGroupSubmit(scope.row)" type="success">确 定</el-button>
+                <el-button size="small" v-on:click="scope.row.isSelectGroups = false;">取 消</el-button>
+              </div>
+              <el-button slot="reference" v-on:click="scope.row.isSelectGroups = true; selectedGroupId = scope.row.groupId" type="text" size="mini" icon="el-icon-right" style="margin: 0 5px">移动分组</el-button>
+            </el-popover>
+            <el-button v-on:click="btnDeleteClick(scope.row)" type="text" size="mini" icon="el-icon-delete" style="margin: 0 5px">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </template>
+  
+  <div style="text-align: center; margin-top: 15px">
+    <el-pagination
+      v-on:current-change="btnPageClick"
+      :current-page="form.page"
+      :page-size="form.perPage"
+      layout="total, prev, pager, next, jumper"
+      :total="count">
+    </el-pagination>
+  </div>
+</el-card>
+
+<el-dialog title="请输入分组名称" :visible.sync="isGroupForm">
+  <el-form ref="groupForm" size="small" :model="groupForm">
+    <el-form-item label="分组名称" prop="name">
+      <el-input v-model="groupForm.name" autocomplete="off" :rules="{ required: true, message: '请输入分组名称' }"></el-input>
+    </el-form-item>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button size="small" type="primary" v-on:click="btnGroupSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="isGroupForm = false">取 消</el-button>
+  </div>
+</el-dialog>
+
+@section Scripts{
+<script src="/admin/assets/js/cms/libraryText.js" type="text/javascript"></script> }

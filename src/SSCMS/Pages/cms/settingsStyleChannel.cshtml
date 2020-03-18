@@ -1,0 +1,146 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-menu default-active="2" mode="horizontal"
+  background-color="#545c64"
+  text-color="#fff"
+  active-text-color="#ffd04b"
+>
+  <el-menu-item index="1"><el-link :underline="false" :href="utils.getCmsUrl('settingsStyleContent', {siteId: siteId})">内容字段管理</el-link></el-menu-item>
+  <el-menu-item index="2"><el-link :underline="false" :href="utils.getCmsUrl('settingsStyleChannel', {siteId: siteId})">栏目字段管理</el-link></el-menu-item>
+  <el-menu-item index="3"><el-link :underline="false" :href="utils.getCmsUrl('settingsStyleSite', {siteId: siteId})">站点字段管理</el-link></el-menu-item>
+  <el-menu-item index="4"><el-link :underline="false" :href="utils.getCmsUrl('settingsStyleRelatedField', {siteId: siteId})">联动字段设置</el-link></el-menu-item>
+</el-menu>
+
+<el-card>
+  <div slot="header" class="clearfix">
+    <span>栏目字段管理</span>
+
+    <el-dropdown
+      style="float: right; margin-top: -8px;"
+      v-on:command="btnCommandClick">
+      <el-button type="text" :underline="false">
+        操作 <i class="el-icon-arrow-down el-icon--right"></i>
+      </el-button>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item command="Add">新增字段</el-dropdown-item>
+        <el-dropdown-item command="AddMultiple">批量新增字段</el-dropdown-item>
+        <el-dropdown-item command="Import">导 入</el-dropdown-item>
+        <el-dropdown-item command="Export">导 出</el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
+  </div>
+
+  <el-form :inline="true" size="mini">
+    <el-form-item label="栏目">
+      <el-cascader
+        v-model="channelIds"
+        :options="channels"
+        :props="{ checkStrictly: true }"
+        v-on:change="handleChannelChange"
+        placeholder="请选择栏目">
+      </el-cascader>
+      <span class="tips">下级栏目的字段默认继承上级栏目的字段，设置字段时请先选择合适的栏目</span>
+    </el-form-item>
+  </el-form>
+
+  <el-table :data="styles" style="width: 100%">
+    <el-table-column label="排序" prop="taxis" width="60">
+      <template slot-scope="scope">
+        {{ scope.row.taxis ? scope.row.taxis : '' }}
+      </template>
+    </el-table-column>
+    <el-table-column label="字段名" prop="attributeName"></el-table-column>
+    <el-table-column label="显示名称" prop="displayName"></el-table-column>
+    <el-table-column label="提交类型" prop="inputType"></el-table-column>
+    <el-table-column label="验证规则">
+      <template slot-scope="scope">
+        <el-link
+          :underline="false"
+          v-on:click="btnValidateClick(scope.row.attributeName)"
+          type="primary">
+          {{ getRules(scope.row.rules) }}
+        </el-link>
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="130">
+      <template slot-scope="scope">
+        <el-link
+          :underline="false"
+          v-on:click="btnEditClick(scope.row.attributeName)"
+          type="primary">
+          编辑
+        </el-link>
+        <el-link
+          :underline="false"
+          v-if="!scope.row.isSystem"
+          type="danger"
+          v-on:click="btnDeleteClick(scope.row.attributeName)">
+          删除
+        </el-link>
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <div style="height: 10px"></div>
+  <el-divider></el-divider>
+  <div style="height: 10px"></div>
+
+  <el-button
+    size="small"
+    type="primary"
+    v-on:click="btnAddClick">
+    新增字段
+  </el-button>
+  <el-button
+    size="small"
+    type="primary"
+    v-on:click="btnAddMultipleClick">
+    批量新增字段
+  </el-button>
+  <el-button
+    size="small"
+    type="primary"
+    v-on:click="btnImportClick">
+    导 入
+  </el-button>
+  <el-button
+    size="small"
+    type="primary"
+    v-on:click="btnExportClick">
+    导 出
+  </el-button>
+
+</el-card>
+
+<el-drawer
+  title="导入样式"
+  ref="uploadPanel"
+  :visible.sync="uploadPanel"
+  destroy-on-close
+  direction="rtl"
+  size="50%">
+  <div class="drawer__content">
+    <br />
+    <el-form ref="uploadForm" label-width="200px">
+      <el-upload
+        :drag="true"
+        :limit="1"
+        :action="urlUpload"
+        :auto-upload="true"
+        :with-credentials="true"
+        :file-list="uploadList"
+        :before-upload="uploadBefore"
+        :on-progress="uploadProgress"
+        :on-success="uploadSuccess"
+        :on-error="uploadError"
+        :multiple="false">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或 <em>点击上传</em></div>
+      </el-upload>
+    </el-form>
+  </div>
+</el-drawer>
+
+@section Scripts{
+<script src="/admin/assets/js/cms/settingsStyleChannel.js" type="text/javascript"></script> }

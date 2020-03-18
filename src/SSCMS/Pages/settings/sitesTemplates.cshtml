@@ -1,0 +1,124 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-card class="box-card">
+  <div slot="header" class="clearfix">
+    <span>站点模板管理</span>
+  </div>
+
+  <el-table
+    :data="siteTemplateInfoList"
+    style="width: 100%">
+    <el-table-column
+      prop="siteTemplateName"
+      label="站点模板名称">
+    </el-table-column>
+    <el-table-column
+      prop="directoryName"
+      label="站点模板文件夹">
+    </el-table-column>
+    <el-table-column
+      prop="description"
+      label="站点模板介绍">
+    </el-table-column>
+    <el-table-column label="操作" width="330">
+      <template slot-scope="scope">
+        <el-button-group>
+          <el-button
+            v-if="scope.row.fileExists"
+            size="mini"
+            v-on:click="btnZipClick(scope.row)">重新压缩</el-button>
+          <el-button
+            v-if="scope.row.fileExists"
+            size="mini"
+            v-on:click="btnDownloadClick(scope.row)">下载压缩包</el-button>
+          <el-button
+            v-if="!scope.row.fileExists"
+            size="mini"
+            v-on:click="btnZipClick(scope.row)">压缩</el-button>
+          <el-button
+            v-if="siteAddPermission"
+            size="mini"
+            v-on:click="btnCreateClick(scope.row)">创建站点</el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            v-on:click="btnDeleteClick(scope.row)">删除</el-button>
+        </el-button-group>
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <el-divider v-if="fileNameList && fileNameList.length > 0"></el-divider>
+
+  <el-table
+    v-if="fileNameList && fileNameList.length > 0"
+    :data="fileNameList"
+    style="width: 100%">
+    <el-table-column label="未解压站点模板">
+      <template slot-scope="scope">
+        {{ scope.row }}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="330">
+      <template slot-scope="scope">
+        <el-button-group>
+          <el-button
+            size="mini"
+            v-on:click="btnUnZipClick(scope.row)">解压</el-button>
+          <el-button
+            size="mini"
+            v-on:click="btnDownloadFileClick(scope.row)">下载压缩包</el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            v-on:click="btnDeleteFileClick(scope.row)">删除</el-button>
+        </el-button-group>
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <el-row>
+    <el-divider></el-divider>
+    <div style="height: 10px"></div>
+    <el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-upload" v-on:click="btnUploadClick">
+      导入站点模板
+    </el-button>
+  </el-row>
+
+</el-card>
+
+<el-drawer
+  title="导入站点模板"
+  ref="uploadPanel"
+  :visible.sync="uploadPanel"
+  destroy-on-close
+  direction="rtl"
+  size="50%">
+  <div class="drawer__content">
+    <br />
+
+    <el-form ref="uploadForm" label-width="200px">
+      <el-upload
+        :drag="true"
+        :limit="1"
+        :action="$urlUpload"
+        :auto-upload="true"
+        :with-credentials="true"
+        :file-list="uploadList"
+        :before-upload="uploadBefore"
+        :on-progress="uploadProgress"
+        :on-success="uploadSuccess"
+        :on-error="uploadError"
+        :multiple="false">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传zip文件</div>
+      </el-upload>
+    </el-form>
+    
+  </div>
+</el-drawer>
+
+@section Scripts{
+<script src="/admin/assets/js/settings/sitesTemplates.js" type="text/javascript"></script> }

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <stl:include file="/include/head.html"></stl:include>
+  <body>
+    <div id="slideBox" class="slideBox hid">
+      <div class="hd">
+        <ul>
+          <stl:contents channelIndex="Banner" totalNum="3">
+            <li></li>
+          </stl:contents>
+        </ul>
+      </div>
+      <div class="bd">
+        <ul>
+          <stl:contents channelIndex="Banner" totalNum="3">
+            <li> <a href="javascript:;" target="_blank">
+              <div class="divContent{Content.ItemIndex} bdimg" style="background: url({Content.ImageUrl});" ></div>
+              </a> </li>
+          </stl:contents>
+        </ul>
+      </div>
+      <a class="prev" href="javascript:void(0)"></a> <a class="next" href="javascript:void(0)"></a> </div>
+    <stl:include file="/include/header.html"></stl:include>
+    <div class="clearfix"></div>
+    <div id="slideBox" class="slideBox underslideBox">
+      <div class="hd">
+        <ul>
+          <stl:contents channelIndex="Banner" totalNum="3">
+            <li></li>
+          </stl:contents>
+        </ul>
+      </div>
+      <div class="bd underhd">
+        <ul>
+          <stl:contents channelIndex="Banner" totalNum="3">
+            <li> <a href="javascript:;" target="_blank"> <img src="{Content.ImageUrl}"> </a> </li>
+          </stl:contents>
+        </ul>
+      </div>
+      <a class="prev" href="javascript:void(0)"></a> 
+      <a class="next" href="javascript:void(0)"></a> </div>
+    <script id="jsID" type="text/javascript">
+      var ary = location.href.split("&");
+      jQuery(".slideBox").slide({ mainCell: ".bd ul", effect: ary[1], autoPlay: true, trigger: ary[3], easing: ary[4], delayTime: ary[10], mouseOverStop: ary[6], pnLoop: ary[7] });
+    </script>
+    <div class="contentpart">
+      <div class="container">
+        <div class="parttitle text-center">
+          <h2>产品与服务</h2>
+          <p><stl:channel channelIndex="产品与服务" type="Content"></stl:channel></p>
+        </div>
+        <div class="row">
+          <stl:channels channelIndex="产品与服务">
+            <div class="col-md-3">
+              <div class="youshipart text-center">
+                <div class="icon-wrapper"> <i class="fa fa-{stl:channel type=icon}" aria-hidden="true"></i> </div>
+                <h3>{Channel.Title}</h3>
+                {Channel.Content}
+              </div>
+            </div>
+          </stl:channels>
+        </div>
+      </div>
+    </div>
+    <div class="contentpart" style="background:#d8d8d8 url({stl.siteurl}/images/bg.jpg) no-repeat center center fixed !important;">
+      <div class="container">
+        <div class="indexabout text-center">
+          <stl:contents channelIndex="公司简介" totalNum="1">
+            <h4><stl:content type="Title"></stl:content></h4>
+            <h2><stl:content type="SubTitle"></stl:content></h2>
+            <p><stl:content type="Summary" wordNum="100"></stl:content></p>
+            <a href="{Channel.NavigationUrl_公司简介}" target="_blank"> 查看详情 </a> 
+          </stl:contents>
+        </div>
+      </div>
+    </div>
+    <div class="contentpart">
+      <div class="container">
+        <div class="parttitle text-center">
+          <h2>产品展示</h2>
+          <p><stl:channel channelIndex="产品展示" type="Content"></stl:channel></p>
+        </div>
+        <div class="productpart">
+          <ul id="myTab" class="nav nav-tabs">
+            <stl:channels channelIndex="产品展示">
+              <stl:if type="ItemIndex" operate="Equals" value="1">
+                <stl:yes>
+                  <li class="active"> 
+                    <a href="#listtab{Channel.ItemIndex}" data-toggle="tab">{Channel.Title}</a> </li>
+                </stl:yes>
+                <stl:no>
+                  <li><a href="#listtab{Channel.ItemIndex}" data-toggle="tab">{Channel.Title}</a> </li>
+                </stl:no>
+              </stl:if>
+            </stl:channels>
+          </ul>
+          <div id="myTabContent" class="tab-content">
+            <stl:channels channelIndex="产品展示">
+              <stl:if type="ItemIndex" operate="Equals" value="1">
+                <stl:yes>
+                  <div class="tab-pane fade active in" id="listtab{Channel.ItemIndex}">
+                    <div class="row"> 
+                      <stl:contents totalNum="6" order="AddDate">
+                        <div class="col-md-4 col-xs-6">
+                          <div class="propart">
+                            <div class="proimg"> <stl:a> <img width="300" height="220" src="{Content.ImageUrl}" class="attachment-product-thumb size-product-thumb wp-post-image" alt="{Content.Title}" /> </stl:a> </div>
+                            <stl:a class="indexprotit"><stl:content type="Title" wordNum="10" ellipsis="..."></stl:content></stl:a> </div>
+                        </div>
+                      </stl:contents>
+                    </div>
+                  </div>
+                </stl:yes>
+                <stl:no>
+                  <div class="tab-pane fade" id="listtab{Channel.ItemIndex}">
+                    <div class="row"> 
+                      <stl:contents totalNum="6" order="AddDate">
+                        <div class="col-md-4 col-xs-6">
+                          <div class="propart">
+                            <div class="proimg"> <stl:a> <img width="300" height="220" src="{Content.ImageUrl}" class="attachment-product-thumb size-product-thumb wp-post-image" alt="{Content.Title}" /> </stl:a> </div>
+                            <stl:a class="indexprotit"><stl:content type="Title" wordNum="10" ellipsis="..."></stl:content></stl:a> </div>
+                        </div>
+                      </stl:contents>
+                    </div>
+                  </div>
+                </stl:no>
+              </stl:if>
+            </stl:channels>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="contentpart" style="background: #fff;" >
+      <div class="container">
+        <div class="parttitle text-center">
+          <h2>新闻动态</h2>
+          <p><stl:channel channelIndex="新闻动态" type="Content"></stl:channel></p>
+        </div>
+        <div class="indexnews">
+          <div id="slideBox1" class="slideBox1">
+            <div class="bd">
+              <ul>
+                <stl:contents channelIndex="新闻动态" scope="SelfAndChildren" totalNum="3" order="AddDate">
+                  <li>
+                    <div class="newstext">
+                      <div class="newstime"> <stl:content type="AddDate" formatString="yyyy-MM-dd"></stl:content> </div>
+                      <div class="newstit"> <stl:content type="Title" wordNum="23" ellipsis="..."></stl:content> </div>
+                      <p class="newszy"> <stl:content type="Summary" wordNum="60" ellipsis="..."></stl:content> </p>
+                      <stl:a class="newsmore"> 查看详情 </stl:a> </div>
+                    <div class="newsimg"> <img width="456" height="287" src="{Content.ImageUrl}" class="attachment-news-thumb size-news-thumb wp-post-image"  alt="{Content.Title}" /> </div>
+                    <div class="clearfix"></div>
+                  </li>
+                </stl:contents>
+              </ul>
+            </div>
+            <a class="prev" href="javascript:void(0)"></a> <a class="next" href="javascript:void(0)"></a> </div>
+          <script id="jsID" type="text/javascript">
+            jQuery(".slideBox1").slide({mainCell:".bd ul",effect:"left",autoPlay:true,delayTime:1000});
+          </script> 
+        </div>
+      </div>
+    </div>
+    <div class="contentpart">
+      <div class="container">
+        <div class="parttitle text-center">
+          <h2>经典案例</h2>
+          <p><stl:channel channelIndex="经典案例" type="Content"></stl:channel></p>
+        </div>
+        <div class="indexcase">
+          <div class="row">
+            <stl:contents channelIndex="蓝色经典" totalNum="4" order="AddDate">
+              <div class="col-md-3 col-xs-6">
+                <div class="indexcasepart"> <stl:a>
+                  <div class="indexcaseimg"> <img width="300" height="300" src="{Content.ImageUrl}" class="attachment-case-thumb size-case-thumb wp-post-image" alt="{Content.Title}" /> </div>
+                  <p class="indexcasetit"> <stl:content type="Title" wordNum="12" ellipsis="..."></stl:content> </p>
+                  </stl:a> </div>
+              </div>
+            </stl:contents>
+          </div>
+        </div>
+      </div>
+    </div> 
+    <stl:include file="/include/footer.html"></stl:include>
+    <stl:include file="/include/right_bar.html"></stl:include>
+    <stl:include file="/include/foot_js.html"></stl:include>
+  </body>
+</html>

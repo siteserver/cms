@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+  <stl:include file="/include/head1.html"></stl:include>
+  <body>
+    <stl:include file="/include/header.html"></stl:include>
+    <div class="clearfix"></div>
+    <div class="maincon">
+      <stl:include file="/include/banner.html"></stl:include>
+      <div class="container neicon">
+        <div class="row">
+          <stl:include file="/include/left.html"></stl:include>          
+          <div class="col-md-9">
+            <div class="listcon">
+              <stl:include file="/include/location.html"></stl:include>
+              <div class="proslist" id="myTabContent">
+                <div class="row">
+                  <stl:pageContents pageNum="6" order="AddDate">
+                    <div class="col-md-4 col-xs-6">
+                      <div class="propart">
+                        <div class="proimg">
+                          <stl:a>
+                            <img width="300" height="220" src="{Content.ImageUrl}" alt="{Content.Title}" />  
+                          </stl:a>
+                        </div>
+                        <stl:a class="indexprotit">
+                          <stl:content type="Title" wordNum="10" ellipsis="..."></stl:content>
+                        </stl:a>
+                        
+                      </div> 
+                    </div> 
+                  </stl:pageContents>
+                </div>  
+              </div>
+              <div class="page_navi text-center">
+                <stl:pageItems autoHide="true">
+                  <stl:pageItem type="PreviousPage">
+                    <stl:yes>
+                      <a href="{Current.Url}" class="prev">« 上一页</a>
+                    </stl:yes>
+                    <stl:no>
+                      <a href="javascript:;" class="prev">« 上一页</a>
+                    </stl:no>
+                  </stl:pageItem>
+                  
+                  <stl:pageItem type="PageNavigation" listNum="5">
+                    <stl:yes>
+                      <a href="{Current.Url}">{Current.Num}</a>
+                    </stl:yes>
+                    <stl:no>
+                      <a href="javascript:;" class="current">{Current.Num}</a>
+                    </stl:no>
+                  </stl:pageItem>
+                  
+                  <stl:pageItem type="NextPage">
+                    <stl:yes>
+                      <a href="{Current.Url}" class="next">下一页 »</a>
+                    </stl:yes>
+                    <stl:no>
+                      <a href="javascript:;" class="next">下一页 »</a>
+                    </stl:no>
+                  </stl:pageItem>
+                </stl:pageItems>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>  
+    <stl:include file="/include/footer.html"></stl:include>
+    <stl:include file="/include/right_bar.html"></stl:include>
+    <stl:include file="/include/foot_js.html"></stl:include>
+  </body>
+</html>

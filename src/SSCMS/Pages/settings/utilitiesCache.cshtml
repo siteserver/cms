@@ -1,0 +1,32 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-card>
+  <div slot="header" class="clearfix">
+    <span>系统缓存</span>
+  </div>
+
+  <el-table
+    class="headerless"
+    :data="parameters"
+    style="width: 100%">
+    <el-table-column
+      width="280">
+      <template slot-scope="scope">
+        <strong>{{scope.row.key}}</strong>
+      </template>
+    </el-table-column>
+    <el-table-column>
+      <template slot-scope="scope">
+        {{scope.row.value}}
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <el-divider></el-divider>
+  <div style="height: 10px"></div>
+  <el-button size="small" type="primary" v-on:click="btnCleanClick">清空缓存</el-button>
+
+</el-card>
+
+@section Scripts{ <script src="/admin/assets/js/settings/utilitiesCache.js" type="text/javascript"></script> }

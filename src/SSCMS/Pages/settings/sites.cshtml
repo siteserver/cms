@@ -1,0 +1,141 @@
+﻿@page
+@{ Layout = "../shared/_layout"; }
+
+<el-card>
+  <div slot="header" class="clearfix">
+    <span>站点管理</span>
+    <el-button style="float: right; padding: 3px" type="text" icon="el-icon-plus" v-on:click="btnAddClick">新 增</el-button>
+  </div>
+
+  <el-table
+    :data="sites"
+    style="width: 100%;margin-bottom: 20px;"
+    row-key="id"
+    default-expand-all
+    :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+    <el-table-column prop="siteName" label="站点名称" :sortable="true">
+      <template slot-scope="scope">
+        <el-badge v-if="scope.row.root" style="margin-top: 10px;" value="主站">
+          <el-link :underline="false" type="primary" :href="scope.row.siteUrl" target="_blank">{{scope.row.siteName}}</el-link>
+        </el-badge>
+        <el-link :underline="false" type="primary" v-else :href="scope.row.siteUrl" target="_blank">{{scope.row.siteName}}</el-link>
+      </template>
+    </el-table-column>
+    <el-table-column prop="id" label="站点Id" :sortable="true" align="center" width="90"></el-table-column>
+    <el-table-column prop="taxis" label="排序" :sortable="true" align="center" width="90"></el-table-column>
+    <el-table-column prop="siteDir" label="站点文件夹" :sortable="true"></el-table-column>
+    <el-table-column prop="siteUrl" label="站点地址" :sortable="true">
+      <template slot-scope="scope">
+        <el-link :underline="false" type="primary" :href="scope.row.siteUrl" target="_blank">{{scope.row.siteUrl}}</el-link>
+      </template>
+    </el-table-column>
+    <el-table-column align="center" label="操作" width="290">
+      <template slot-scope="scope">
+        <el-button-group>
+          <el-button
+            size="mini"
+            v-on:click="btnSaveClick(scope.row)">保存</el-button>
+          <el-button
+            size="mini"
+            v-on:click="btnEditClick(scope.row)">修改</el-button>
+          <el-button
+            v-if="scope.row.parentId === 0 && (rootSiteId === 0 || scope.row.id === rootSiteId)"
+            size="mini"
+            v-on:click="btnChangeClick(scope.row)">{{ scope.row.root ? "转移到子目录" : "转移到根目录" }}</el-button>
+          <el-button
+            v-if="!scope.row.root"
+            size="mini"
+            type="danger"
+            v-on:click="btnDeleteClick(scope.row)">删除</el-button>
+        </el-button-group>
+      </template>
+    </el-table-column>
+  </el-table>
+
+</el-card>
+
+
+<el-drawer
+  v-if="editForm"
+  title="修改站点"
+  ref="editPanel"
+  :visible.sync="editPanel"
+  destroy-on-close
+  direction="rtl"
+  size="80%">
+  <div class="drawer__content">
+    <el-form ref="editForm" size="small" :model="editForm" :rules="editRules" label-width="120px">
+      <el-form-item label="站点名称" prop="siteName">
+        <el-input v-model="editForm.siteName"></el-input>
+      </el-form-item>
+      <el-form-item v-if="!editForm.root" prop="siteDir" label="文件夹名称">
+        <el-input v-model="editForm.siteDir"></el-input>
+        <div class="tips">修改文件夹名称将在服务器中变更站点对应的文件夹路径，只允许包含字母、数字、下划线、中划线及小数点</div>
+      </el-form-item>
+      <el-form-item v-if="!editForm.root" label="上级站点">
+        <el-select v-model="editForm.parentId" placeholder="请选择上级站点">
+          <el-option label="<无上级站点>" :value="0"></el-option>
+          <el-option v-for="parent in sites" v-if="parent.id !== editForm.siteId" :label="parent.siteName" :value="parent.id"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="taxis" label="站点排序">
+        <el-input v-model.number="editForm.taxis"></el-input>
+        <div class="tips">站点将根据排序从小到大排列</div>
+      </el-form-item>
+      <el-form-item label="默认内容表">
+        <el-radio-group v-model="editForm.tableRule">
+          <el-radio label="Choose">选择内容表</el-radio>
+          <el-radio label="HandWrite">指定内容表</el-radio>
+        </el-radio-group>
+        <div style="height: 10px"></div>
+        <div v-if="editForm.tableRule === 'HandWrite'">
+          <el-input v-model="editForm.tableHandWrite"></el-input>
+          <div class="tips">请输入内容表名称，系统将检测数据库是否已存在指定的内容表，如果不存在系统将创建此内容表</div>
+        </div>
+        <div v-else>
+          <el-select v-model="editForm.tableChoose" placeholder="内容表">
+            <el-option v-for="tableName in tableNames" :label="tableName" :value="tableName"></el-option>
+          </el-select>
+        </div>
+      </el-form-item>
+    </el-form>
+    <div class="drawer__footer">
+      <el-button type="primary" size="small" v-on:click="btnEditSubmitClick" :loading="editLoading">{{ editLoading ? '提交中 ...' : '确 定' }}</el-button>
+      <el-button size="small" v-on:click="btnEditCancelClick">取 消</el-button>
+    </div>
+  </div>
+</el-drawer>
+
+<el-drawer
+  v-if="deleteForm"
+  title="删除站点"
+  ref="deletePanel"
+  :visible.sync="deletePanel"
+  destroy-on-close
+  direction="rtl"
+  size="80%">
+  <div class="drawer__content">
+
+    <el-alert :title="'此操作将会删除站点 ' + deleteForm.siteName + '，且数据无法恢复，请谨慎操作！'" :closable="false" type="error"></el-alert>
+    <br />
+    <el-form ref="deleteForm" size="small" :model="deleteForm" label-width="120px">
+      <el-form-item label="站点名称">{{ deleteForm.siteName }}</el-form-item>
+      <el-form-item label="文件夹">{{ deleteForm.dir }}</el-form-item>
+      <el-form-item label="文件夹" prop="siteDir" :rules="{ required: true, message: '请输入站点文件夹' }">
+        <el-input v-model="deleteForm.siteDir" placeholder="请输入需要删除的站点文件夹名称" />
+      </el-form-item>
+      <el-form-item>
+        <el-radio v-model="deleteForm.deleteFiles" :label="true">删除站点文件</el-radio>
+        <el-radio v-model="deleteForm.deleteFiles" :label="false">保留站点文件</el-radio>
+      </el-form-item>
+    </el-form>
+
+    <div class="drawer__footer">
+      <el-button type="danger" size="small" v-on:click="btnDeleteSubmitClick" :loading="deleteLoading">{{ deleteLoading ? '提交中 ...' : '删 除' }}</el-button>
+      <el-button size="small" v-on:click="btnDeleteCancelClick">取 消</el-button>
+    </div>
+  </div>
+</el-drawer>
+
+@section Scripts{
+<script src="/admin/assets/js/settings/sites.js" type="text/javascript"></script> }

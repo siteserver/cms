@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+  <stl:include file="/include/head1.html"></stl:include>
+  <body>
+    <stl:include file="/include/header.html"></stl:include>
+    <div class="clearfix"></div>
+    <div class="maincon">
+      <div class="container neicon">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="sidbar">
+              <div class="sidbarnav">
+                <div class="tzggtit"> <span> {Channel.top1.Title} </span> </div>
+                <ul class="ymtitle">
+                  <stl:channels topLevel="1" groupChannel="nav">
+                    <stl:if testType="UpChannelOrSelf">
+                      <stl:yes>
+                        <li class="cat-item current-cat"><stl:a>{Channel.Title}</stl:a> </li>
+                      </stl:yes>
+                      <stl:no>
+                        <li class="cat-item"><stl:a>{Channel.Title}</stl:a> </li>
+                      </stl:no>
+                    </stl:if>
+                  </stl:channels>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-9">
+            <div class="listcon">
+              <div class="bread">
+                <div itemscope class="breadcrumbs"> 
+                  搜索结果页
+                </div>
+              </div>
+              <stl:search type="title,content" isHighlight="true">
+                <stl:yes>
+                  <div class="newsneilist">  
+                    <stl:pageContents topLevel="0" scope="All" pageNum="10" order="AddDate" isNoDup="true" groupChannelNot="not">
+                      <div class="newslistpart">
+                        <h1>
+                          <stl:a>
+                            <stl:content type="Title" wordNum="30" ellipsis="..."></stl:content>
+                          </stl:a>
+                        </h1>
+                        <div class="newstag">
+                          <span>发布时间：<stl:content type="AddDate" formatString="yyyy-MM-dd"></stl:content></span>
+                        </div>
+                        <p class="newszy"><stl:content type="Summary" wordNum="90" ellipsis="..."></stl:content></p>
+                      </div>
+                    </stl:pageContents>
+                  </div>
+                  <div class="page_navi text-center">
+                    <stl:pageItems autoHide="true">
+                      <stl:pageItem type="PreviousPage">
+                        <stl:yes>
+                          <a href="{Current.Url}" class="prev">« 上一页</a>
+                        </stl:yes>
+                        <stl:no>
+                          <a href="javascript:;" class="prev">« 上一页</a>
+                        </stl:no>
+                      </stl:pageItem>
+                      
+                      <stl:pageItem type="PageNavigation" listNum="5">
+                        <stl:yes>
+                          <a href="{Current.Url}">{Current.Num}</a>
+                        </stl:yes>
+                        <stl:no>
+                          <a href="javascript:;" class="current">{Current.Num}</a>
+                        </stl:no>
+                      </stl:pageItem>
+                      
+                      <stl:pageItem type="NextPage">
+                        <stl:yes>
+                          <a href="{Current.Url}" class="next">下一页 »</a>
+                        </stl:yes>
+                        <stl:no>
+                          <a href="javascript:;" class="next">下一页 »</a>
+                        </stl:no>
+                      </stl:pageItem>
+                    </stl:pageItems>
+                  </div>
+                </stl:yes>
+                <stl:no>
+                  <div class="alert alert-danger" role="alert">
+                    <strong>抱歉!</strong> 找不到和您的查询相符的项目
+                  </div>
+                </stl:no>
+                <stl:loading>
+                  <div class="alert alert-info" role="alert">
+                    <strong>提示!</strong> 系统正在搜索中，请稍后...
+                  </div>
+                </stl:loading>
+              </stl:search>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>  
+    <stl:include file="/include/footer.html"></stl:include>
+    <stl:include file="/include/right_bar.html"></stl:include>
+    <stl:include file="/include/foot_js.html"></stl:include>
+  </body>
+</html>
