@@ -35,7 +35,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/publish' 
-      artifactName: 'sscms-$(productVersion)-osx'
+      artifactName: 'sscms-$(productVersion)-osx-x64'
 
 - job: Linux
   pool:
@@ -60,7 +60,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/publish' 
-      artifactName: 'sscms-$(productVersion)-linux'
+      artifactName: 'sscms-$(productVersion)-linux-x64'
 
 - job: Windows
   pool:
@@ -82,16 +82,21 @@ jobs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64' 
       archiveType: 'zip'
       includeRootFolder: false
-      archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-win-x64.zip' 
+      archiveFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64/sscms-$(productVersion)-win-x64.zip' 
 
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86' 
       archiveType: 'zip'
       includeRootFolder: false
-      archiveFile: '$(Build.ArtifactStagingDirectory)/publish/sscms-$(productVersion)-win-x86.zip' 
+      archiveFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86/sscms-$(productVersion)-win-x86.zip' 
 
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: '$(Build.ArtifactStagingDirectory)/publish' 
-      artifactName: 'sscms-$(productVersion)-win'
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64' 
+      artifactName: 'sscms-$(productVersion)-win-x64'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86' 
+      artifactName: 'sscms-$(productVersion)-win-x86'
