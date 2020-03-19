@@ -13,10 +13,9 @@ src/SS.CMS/.config/
 *.sql
 *.exe
 *.exe.config
-ss.json
-ss.Development.json
+sscms.json
 appsettings.Development.json
-ss.sqlite
+database.sqlite
 package-lock.json
 Web.Backup.config
 Web.Restore.config
