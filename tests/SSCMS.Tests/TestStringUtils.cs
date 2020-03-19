@@ -1,6 +1,7 @@
-﻿using Xunit;
+﻿using SSCMS.Utils;
+using Xunit;
 
-namespace SSCMS.Abstractions.Tests
+namespace SSCMS.Tests
 {
     public class TestStringUtils
     {

@@ -3,7 +3,8 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Images
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     /// <summary>
     /// 表示表单的输入样式。

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Core.Repositories.SpecialRepository

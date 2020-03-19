@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
 using CacheManager.Core;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Settings.Utilities
+namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 {
     [Route("admin/settings/utilitiesCache")]
     public partial class UtilitiesCacheController : ControllerBase

@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SSCMS.Abstractions.Parse
+namespace SSCMS.Parse
 {
     public class ParsePage
     {

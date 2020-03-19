@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Datory;
 
 // ReSharper disable CheckNamespace
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public interface ISettingsManager
     {

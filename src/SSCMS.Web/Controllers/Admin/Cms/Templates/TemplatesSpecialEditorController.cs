@@ -1,10 +1,11 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Templates
+namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     [Route("admin/cms/templates/templatesSpecialEditor")]
     public partial class TemplatesSpecialEditorController : ControllerBase

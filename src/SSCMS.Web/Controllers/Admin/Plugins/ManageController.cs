@@ -3,12 +3,13 @@ using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Packaging;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Plugins
+namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     [Route("admin/plugins/manage")]
     public partial class ManageController : ControllerBase

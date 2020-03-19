@@ -3,11 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto;
+using SSCMS.Dto.Result;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Shared
+namespace SSCMS.Web.Controllers.Admin.Shared
 {
     [Route("admin/shared/tableStyleLayerValidate")]
     public partial class TableStyleLayerValidateController : ControllerBase

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public interface IChannelSummary
     {

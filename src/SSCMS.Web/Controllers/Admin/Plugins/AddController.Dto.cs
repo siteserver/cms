@@ -1,4 +1,4 @@
-﻿namespace SSCMS.Controllers.Admin.Plugins
+﻿namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     public partial class AddController
     {

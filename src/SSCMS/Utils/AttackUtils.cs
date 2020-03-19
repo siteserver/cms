@@ -1,8 +1,7 @@
 ﻿using System;
 using Ganss.XSS;
 
-
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public static class AttackUtils
     {

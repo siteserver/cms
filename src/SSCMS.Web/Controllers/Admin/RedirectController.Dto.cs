@@ -1,6 +1,6 @@
-﻿using SSCMS.Abstractions.Dto.Request;
+﻿using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Admin
+namespace SSCMS.Web.Controllers.Admin
 {
     public partial class RedirectController
     {

@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using Datory.Utils;
 
-
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public class CsvUtils
 	{

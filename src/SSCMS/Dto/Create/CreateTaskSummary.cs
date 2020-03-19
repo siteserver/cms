@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SSCMS.Abstractions.Dto.Create
+namespace SSCMS.Dto.Create
 {
     public class CreateTaskSummary
     {

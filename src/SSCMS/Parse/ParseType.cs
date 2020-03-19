@@ -1,4 +1,4 @@
-namespace SSCMS.Abstractions.Parse
+namespace SSCMS.Parse
 {
     public enum ParseType
 	{

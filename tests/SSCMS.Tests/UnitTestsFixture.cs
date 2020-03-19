@@ -1,8 +1,9 @@
 ﻿using System.IO;
 using Microsoft.Extensions.Configuration;
 using SSCMS.Core.Services.SettingsManager;
+using SSCMS.Utils;
 
-namespace SSCMS.Abstractions.Tests
+namespace SSCMS.Tests
 {
     public class UnitTestsFixture
     {

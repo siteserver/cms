@@ -1,12 +1,13 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Request;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Request;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Templates
+namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     [Route("admin/cms/templates/templates")]
     public partial class TemplatesController : ControllerBase

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SSCMS.Abstractions.Parse
+namespace SSCMS.Parse
 {
     public static class SiteFilesAssets
     {

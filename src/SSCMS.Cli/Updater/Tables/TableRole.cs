@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SSCMS.Abstractions;
+using SSCMS;
 
 namespace SSCMS.Cli.Updater.Tables
 {

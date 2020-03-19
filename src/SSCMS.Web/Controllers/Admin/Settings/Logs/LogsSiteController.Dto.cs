@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto;
-using SSCMS.Abstractions.Dto.Request;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto;
+using SSCMS.Dto.Request;
+using SSCMS.Dto.Result;
 
-namespace SSCMS.Controllers.Admin.Settings.Logs
+namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
     public partial class LogsSiteController
     {

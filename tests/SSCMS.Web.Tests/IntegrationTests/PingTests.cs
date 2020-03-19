@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
+using SSCMS.Web;
 using Xunit;
 
 namespace SSCMS.Tests.IntegrationTests

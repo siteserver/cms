@@ -1,8 +1,7 @@
 using System;
 using System.Xml.Serialization;
 
-
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
 	/// <summary>
 	/// Tab is a container object which represents a singe tab

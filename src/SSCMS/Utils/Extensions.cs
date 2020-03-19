@@ -1,5 +1,5 @@
 ﻿
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public static class Extensions
     {

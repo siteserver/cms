@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Shared
+namespace SSCMS.Web.Controllers.Admin.Shared
 {
     [Route("admin/shared/fileLayerSelect")]
     public partial class FileLayerSelectController : ControllerBase

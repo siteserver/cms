@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace SSCMS.Controllers
+namespace SSCMS.Web.Controllers
 {
     [Route("ping")]
     [ApiController]

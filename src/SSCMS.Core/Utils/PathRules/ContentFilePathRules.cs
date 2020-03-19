@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.PathRules
 {

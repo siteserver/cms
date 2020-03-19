@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [Route("admin/cms/library/libraryFile")]
     public partial class LibraryFileController : ControllerBase

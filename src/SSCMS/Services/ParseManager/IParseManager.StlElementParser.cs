@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public partial interface IParseManager
     {

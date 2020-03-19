@@ -1,4 +1,4 @@
-﻿namespace SSCMS.Abstractions
+﻿namespace SSCMS
 {
     /// <summary>
     /// 内容事件关联的上下文。

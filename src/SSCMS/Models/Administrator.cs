@@ -4,7 +4,7 @@ using Datory;
 using Datory.Annotations;
 using Newtonsoft.Json;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     [DataTable("siteserver_Administrator")]
     public class Administrator : Entity

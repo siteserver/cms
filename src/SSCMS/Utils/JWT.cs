@@ -5,7 +5,7 @@ using System.Text;
 
 //https://github.com/jwt-dotnet/jwt
 
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public enum JwtHashAlgorithm
     {

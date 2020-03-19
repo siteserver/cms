@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
 
-namespace SSCMS.Controllers.Admin
+namespace SSCMS.Web.Controllers.Admin
 {
     public partial class InstallController
     {

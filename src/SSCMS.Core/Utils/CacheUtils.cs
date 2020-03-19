@@ -1,7 +1,8 @@
 using System;
 using System.IO;
 using Microsoft.Extensions.Caching.Memory;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {

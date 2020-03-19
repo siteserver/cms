@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Datory;
-using SSCMS.Abstractions;
+using SSCMS;
 
-namespace SSCMS.Controllers.Admin.Cms.Settings
+namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsSiteController
     {

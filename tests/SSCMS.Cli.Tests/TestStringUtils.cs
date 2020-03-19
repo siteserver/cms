@@ -1,4 +1,5 @@
-﻿using SSCMS.Abstractions;
+﻿using SSCMS;
+using SSCMS.Utils;
 using Xunit;
 
 namespace SSCMS.Cli.Tests

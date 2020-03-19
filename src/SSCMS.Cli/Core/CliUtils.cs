@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Mono.Options;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Core
 {

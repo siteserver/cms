@@ -4,9 +4,10 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Mono.Options;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Updater;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Services
 {

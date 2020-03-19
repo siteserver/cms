@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Settings.Configs
+namespace SSCMS.Web.Controllers.Admin.Settings.Configs
 {
     [Route("admin/settings/configsAdmin")]
     public partial class ConfigsAdminController : ControllerBase

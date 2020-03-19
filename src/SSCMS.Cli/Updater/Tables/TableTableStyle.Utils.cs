@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Datory;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Updater.Tables
 {
@@ -40,7 +41,7 @@ namespace SSCMS.Cli.Updater.Tables
             {
                 if (isVisible != null && StringUtils.EqualsIgnoreCase(isVisible.ToString(), "False"))
                 {
-                    row[nameof(TableStyle.InputType)] = SSCMS.Abstractions.InputType.Hidden.GetValue();
+                    row[nameof(TableStyle.InputType)] = SSCMS.InputType.Hidden.GetValue();
                 }
             }
 

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public interface IPermissionsInRolesRepository : IRepository
     {

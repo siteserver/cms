@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace SSCMS.Controllers.Admin.Settings.Sites
+namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     public partial class SitesAddController
     {
-        private static void AddSite(List<KeyValuePair<int, string>> siteList, Abstractions.Site site, Dictionary<int, List<Abstractions.Site>> parentWithChildren, int level)
+        private static void AddSite(List<KeyValuePair<int, string>> siteList, Site site, Dictionary<int, List<Site>> parentWithChildren, int level)
         {
             if (level > 1) return;
             var padding = string.Empty;

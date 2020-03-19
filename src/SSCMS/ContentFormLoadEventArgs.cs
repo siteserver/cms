@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     /// <summary>
     /// 为内容编辑（新增）页面的载入事件提供数据。
@@ -9,7 +9,7 @@ namespace SSCMS.Abstractions
     public class ContentFormLoadEventArgs : EventArgs
     {
         /// <summary>
-        /// 初始化 <see cref="T:SSCMS.Abstractions.ContentFormLoadEventArgs" /> 类的新实例。
+        /// 初始化 <see cref="T:SSCMS.ContentFormLoadEventArgs" /> 类的新实例。
         /// </summary>
         /// <param name="siteId">站点Id。</param>
         /// <param name="channelId">栏目Id。</param>

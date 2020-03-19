@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Parse;
+using SSCMS;
+using SSCMS.Parse;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.V1
+namespace SSCMS.Web.Controllers.V1
 {
     public partial class StlController
     {

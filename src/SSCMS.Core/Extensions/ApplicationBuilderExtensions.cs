@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SSCMS.Abstractions.Plugins;
+using SSCMS.Plugins;
 
 namespace SSCMS.Core.Extensions
 {

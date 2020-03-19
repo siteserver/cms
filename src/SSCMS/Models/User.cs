@@ -3,7 +3,7 @@ using Datory;
 using Datory.Annotations;
 using Newtonsoft.Json;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     [DataTable("siteserver_User")]
     public class User : Entity

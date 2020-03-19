@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 
-namespace SSCMS.Controllers.Admin.Cms.Editor
+namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
     [Route("admin/cms/editor/editor")]
     public partial class EditorController : ControllerBase

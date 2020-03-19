@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public class Content : Entity
     {

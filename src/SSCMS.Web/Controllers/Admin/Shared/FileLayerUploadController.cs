@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Shared
+namespace SSCMS.Web.Controllers.Admin.Shared
 {
     [Route("admin/shared/fileLayerUpload")]
     public partial class FileLayerUploadController : ControllerBase

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS;
+using SSCMS.Dto;
+using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Admin.Cms.Create
+namespace SSCMS.Web.Controllers.Admin.Cms.Create
 {
     public partial class CreatePageController
     {

@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils.PluginImpls;
 
-namespace SSCMS.Controllers.Admin.Shared
+namespace SSCMS.Web.Controllers.Admin.Shared
 {
     [Route("admin/shared/adminLayerView")]
     public partial class AdminLayerViewController : ControllerBase

@@ -1,8 +1,7 @@
 using System;
 using System.Xml.Serialization;
 
-
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
 	/// <summary>
 	/// TabCollection is a container for all of the tabs.

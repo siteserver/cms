@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto;
+using SSCMS;
+using SSCMS.Dto;
 
-namespace SSCMS.Controllers.Admin.Cms.Templates
+namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     public partial class TemplatesMatchController
     {

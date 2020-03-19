@@ -7,7 +7,8 @@ using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.Extensions.Configuration;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services.SettingsManager
 {

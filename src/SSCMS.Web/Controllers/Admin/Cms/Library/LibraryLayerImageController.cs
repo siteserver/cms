@@ -3,12 +3,13 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS;
+using SSCMS.Dto.Request;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.Images;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [Route("admin/cms/library/libraryLayerImage")]
     public partial class LibraryLayerImageController : ControllerBase

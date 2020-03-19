@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.V1
+namespace SSCMS.Web.Controllers.V1
 {
     [Route("v1/contents")]
     public partial class ContentsController : ControllerBase

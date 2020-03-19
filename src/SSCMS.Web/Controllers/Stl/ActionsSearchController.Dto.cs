@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SSCMS.Controllers.Stl
+namespace SSCMS.Web.Controllers.Stl
 {
     public partial class ActionsSearchController
     {

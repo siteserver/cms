@@ -3,8 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SSCMS.Utils;
 
-namespace SSCMS.Abstractions.Plugins
+namespace SSCMS.Plugins
 {
     public static class AssemblyUtils
     {

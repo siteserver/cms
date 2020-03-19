@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Mono.Options;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Cli.Core;
 
 namespace SSCMS.Cli.Services

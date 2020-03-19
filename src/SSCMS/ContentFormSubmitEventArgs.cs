@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     /// <summary>
     /// 为内容编辑（新增）页面的提交事件提供数据。
@@ -9,7 +9,7 @@ namespace SSCMS.Abstractions
     public class ContentFormSubmitEventArgs : EventArgs
     {
         /// <summary>
-        /// 初始化 <see cref="T:SSCMS.Abstractions.ContentFormSubmitEventArgs" /> 类的新实例。
+        /// 初始化 <see cref="T:SSCMS.ContentFormSubmitEventArgs" /> 类的新实例。
         /// </summary>
         /// <param name="siteId">站点Id。</param>
         /// <param name="channelId">栏目Id。</param>
@@ -48,7 +48,7 @@ namespace SSCMS.Abstractions
         public IDictionary<string, object> Form { get; }
 
         /// <summary>
-        /// 即将保存至数据库的内容对象，可以从表单数据 <see cref="T:SSCMS.Abstractions.IAttributes" /> 中获取属性值并设置到内容对象中。
+        /// 即将保存至数据库的内容对象，可以从表单数据 <see cref="T:SSCMS.IAttributes" /> 中获取属性值并设置到内容对象中。
         /// </summary>
         public Content ContentInfo { get; }
     }

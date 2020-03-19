@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Settings.Administrators
+namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     public partial class AdministratorsRoleAddController
     {

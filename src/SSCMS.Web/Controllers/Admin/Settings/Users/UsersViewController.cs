@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 
-namespace SSCMS.Controllers.Admin.Settings.Users
+namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     [Route("admin/settings/usersView")]
     public partial class UsersViewController : ControllerBase

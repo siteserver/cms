@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Tests;
+using SSCMS;
+using SSCMS.Tests;
 using Xunit;
 
 namespace SSCMS.Core.Tests.Repositories

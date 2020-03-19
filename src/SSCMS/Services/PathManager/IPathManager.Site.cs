@@ -1,9 +1,9 @@
 ﻿using System;
-using SSCMS.Abstractions.Dto;
+using SSCMS.Dto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     partial interface IPathManager
     {

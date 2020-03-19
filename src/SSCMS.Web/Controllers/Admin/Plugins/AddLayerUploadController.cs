@@ -3,11 +3,12 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Plugins
+namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     [Route("admin/plugins/addLayerUpload")]
     public partial class AddLayerUploadController : ControllerBase

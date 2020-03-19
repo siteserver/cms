@@ -2,7 +2,7 @@ using Datory.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     /// <summary>
     /// 表单的输入类型。

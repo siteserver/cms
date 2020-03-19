@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Parse;
+using SSCMS;
+using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
-using Content = SSCMS.Abstractions.Content;
+using Content = SSCMS.Content;
 
 namespace SSCMS.Core.StlParser.StlElement
 {

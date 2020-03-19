@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum BackupType

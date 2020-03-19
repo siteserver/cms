@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto;
-using Content = SSCMS.Abstractions.Content;
+using SSCMS;
+using SSCMS.Dto;
+using SSCMS.Utils;
+using Content = SSCMS.Content;
 
 namespace SSCMS.Core.Utils
 {

@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Packaging;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Plugins
+namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     [Route("admin/plugins/view")]
     public partial class ViewController : ControllerBase

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Channels
+namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
     [Route("admin/cms/channels/channelsLayerCreate")]
     public partial class ChannelsLayerCreateController : ControllerBase

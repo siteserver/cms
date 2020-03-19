@@ -1,4 +1,4 @@
-﻿namespace SSCMS.Controllers.Admin
+﻿namespace SSCMS.Web.Controllers.Admin
 {
     public partial class UpdateSystemController
     {

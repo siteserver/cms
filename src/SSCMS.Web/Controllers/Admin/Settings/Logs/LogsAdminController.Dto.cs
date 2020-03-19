@@ -1,6 +1,6 @@
-﻿using SSCMS.Abstractions.Dto.Request;
+﻿using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Admin.Settings.Logs
+namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
     public partial class LogsAdminController
     {

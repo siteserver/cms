@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Contents
+namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
     [Route("admin/cms/contents/contentsLayerView")]
     public partial class ContentsLayerViewController : ControllerBase

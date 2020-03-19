@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Core.Utils.Serialization.Components;
-using FileUtils = SSCMS.Abstractions.FileUtils;
+using SSCMS.Utils;
+using FileUtils = SSCMS.Utils.FileUtils;
 
 namespace SSCMS.Core.Utils.Serialization
 {

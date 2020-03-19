@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 
-namespace SSCMS.Controllers.Stl
+namespace SSCMS.Web.Controllers.Stl
 {
     public partial class ActionsRelatedFieldController : ControllerBase
     {

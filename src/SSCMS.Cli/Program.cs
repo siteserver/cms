@@ -6,12 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Plugins;
+using SSCMS;
+using SSCMS.Plugins;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Services;
 using SSCMS.Cli.Updater;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli
 {

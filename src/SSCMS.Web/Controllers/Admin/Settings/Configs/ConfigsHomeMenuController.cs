@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS;
+using SSCMS.Dto.Request;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Settings.Configs
+namespace SSCMS.Web.Controllers.Admin.Settings.Configs
 {
     [Route("admin/settings/configsHomeMenu")]
     public partial class ConfigsHomeMenuController : ControllerBase

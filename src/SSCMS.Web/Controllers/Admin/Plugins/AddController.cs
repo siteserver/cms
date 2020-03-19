@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Plugins
+namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     [Route("admin/plugins/add")]
     public partial class AddController : ControllerBase

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
+using SSCMS;
 
-namespace SSCMS.Controllers.Admin
+namespace SSCMS.Web.Controllers.Admin
 {
     public partial class LoginController
     {

@@ -4,11 +4,12 @@ using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Parse;
+using SSCMS;
+using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.Utility
 {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Datory;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Updater
 {
@@ -41,19 +42,19 @@ namespace SSCMS.Cli.Updater
                 {
                     if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
                     {
-                        tableColumnInfo.AttributeName = nameof(SSCMS.Abstractions.Content.ChannelId);
+                        tableColumnInfo.AttributeName = nameof(SSCMS.Content.ChannelId);
                     }
                     else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
                     {
-                        tableColumnInfo.AttributeName = nameof(SSCMS.Abstractions.Content.SiteId);
+                        tableColumnInfo.AttributeName = nameof(SSCMS.Content.SiteId);
                     }
                     else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
                     {
-                        tableColumnInfo.AttributeName = nameof(SSCMS.Abstractions.Content.GroupNames);
+                        tableColumnInfo.AttributeName = nameof(SSCMS.Content.GroupNames);
                     }
                     else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(GroupNameCollection)))
                     {
-                        tableColumnInfo.AttributeName = nameof(SSCMS.Abstractions.Content.GroupNames);
+                        tableColumnInfo.AttributeName = nameof(SSCMS.Content.GroupNames);
                     }
 
                     if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
@@ -69,10 +70,10 @@ namespace SSCMS.Cli.Updater
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(SSCMS.Abstractions.Content.ChannelId), nameof(NodeId)},
-                {nameof(SSCMS.Abstractions.Content.SiteId), nameof(PublishmentSystemId)},
-                {nameof(SSCMS.Abstractions.Content.GroupNames), nameof(ContentGroupNameCollection)},
-                {nameof(SSCMS.Abstractions.Content.GroupNames), nameof(GroupNameCollection)}
+                {nameof(SSCMS.Content.ChannelId), nameof(NodeId)},
+                {nameof(SSCMS.Content.SiteId), nameof(PublishmentSystemId)},
+                {nameof(SSCMS.Content.GroupNames), nameof(ContentGroupNameCollection)},
+                {nameof(SSCMS.Content.GroupNames), nameof(GroupNameCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;
@@ -83,7 +84,7 @@ namespace SSCMS.Cli.Updater
             {
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
-                row[nameof(SSCMS.Abstractions.Content.Body)] = content;
+                row[nameof(SSCMS.Content.Body)] = content;
             }
             if (row.TryGetValue(nameof(SettingsXml), out contentObj))
             {

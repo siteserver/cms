@@ -1,6 +1,6 @@
-﻿using SSCMS.Abstractions.Dto.Request;
+﻿using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Stl
+namespace SSCMS.Web.Controllers.Stl
 {
     public partial class ActionsPageContentsController
     {

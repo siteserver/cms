@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public static class RegexUtils
     {

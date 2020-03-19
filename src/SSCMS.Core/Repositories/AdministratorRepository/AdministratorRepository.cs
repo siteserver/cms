@@ -6,8 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories.AdministratorRepository
 {

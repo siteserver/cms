@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Updater.Tables;
 using SSCMS.Cli.Updater.Tables.GovInteract;
 using SSCMS.Cli.Updater.Tables.GovPublic;
 using SSCMS.Cli.Updater.Tables.Jobs;
+using SSCMS.Utils;
 using TableInfo = SSCMS.Cli.Core.TableInfo;
 
 namespace SSCMS.Cli.Updater

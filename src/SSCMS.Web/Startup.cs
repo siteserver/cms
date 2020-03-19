@@ -12,11 +12,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Plugins;
+using SSCMS;
+using SSCMS.Plugins;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
-namespace SSCMS
+namespace SSCMS.Web
 {
     public class Startup
     {

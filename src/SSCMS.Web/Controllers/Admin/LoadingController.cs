@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
 
-namespace SSCMS.Controllers.Admin
+namespace SSCMS.Web.Controllers.Admin
 {
     [Route("admin/loading")]
     public partial class LoadingController : ControllerBase

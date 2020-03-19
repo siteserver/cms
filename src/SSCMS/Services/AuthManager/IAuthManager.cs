@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public interface IAuthManager : IPermissions
     {

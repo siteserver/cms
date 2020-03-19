@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
+using SSCMS;
 
 namespace SSCMS.Core.Utils
 {

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     /// <summary>
     /// 封装操作文件夹代码的类

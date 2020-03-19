@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using Datory;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto;
+using SSCMS;
+using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin
+namespace SSCMS.Web.Controllers.Admin
 {
     public partial class InstallController
     {

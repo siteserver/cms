@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS;
+using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Admin.Shared
+namespace SSCMS.Web.Controllers.Admin.Shared
 {
     public partial class ImageLayerSelectController
     {

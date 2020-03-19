@@ -1,6 +1,6 @@
-﻿using SSCMS.Abstractions.Dto.Request;
+﻿using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Admin.Cms.Settings
+namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsContentController
     {

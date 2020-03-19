@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Updater.Tables;
+using SSCMS.Utils;
 using TableInfo = SSCMS.Cli.Core.TableInfo;
 
 namespace SSCMS.Cli.Updater

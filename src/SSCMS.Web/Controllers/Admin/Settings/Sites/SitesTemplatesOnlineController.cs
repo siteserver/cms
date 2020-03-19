@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Settings.Sites
+namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
     [Route("admin/settings/sitesTemplatesOnline")]

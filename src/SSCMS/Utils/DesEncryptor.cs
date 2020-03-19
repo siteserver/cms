@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public class DesEncryptor
 	{

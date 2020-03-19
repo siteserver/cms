@@ -1,7 +1,7 @@
 ﻿using Datory;
 using Datory.Annotations;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     [DataTable("siteserver_LibraryFile")]
     public class LibraryFile : Entity

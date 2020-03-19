@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS.Abstractions;
+using SSCMS;
 using Xunit;
 
 namespace SSCMS.Core.Tests.Services

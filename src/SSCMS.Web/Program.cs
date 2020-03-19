@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
-namespace SSCMS
+namespace SSCMS.Web
 {
     public class Program
     {

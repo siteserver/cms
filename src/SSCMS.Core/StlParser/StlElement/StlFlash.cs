@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -203,9 +204,9 @@ namespace SSCMS.Core.StlParser.StlElement
 
 
 //using System.Text;
-//using SSCMS.Abstractions;
+//using SSCMS;
 //using SS.CMS;
-//using SSCMS.Abstractions.Attributes;
+//using SSCMS.Attributes;
 //using SS.CMS.StlParser.Cache;
 //using SS.CMS.StlParser.Model;
 //using SS.CMS.StlParser.Parsers;

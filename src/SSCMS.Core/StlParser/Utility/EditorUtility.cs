@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using SSCMS.Abstractions.Parse;
+using SSCMS.Parse;
 
 namespace SSCMS.Core.StlParser.Utility
 {

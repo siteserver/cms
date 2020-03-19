@@ -1,6 +1,6 @@
 ﻿
 
-using SSCMS.Abstractions;
+using SSCMS;
 
 namespace SSCMS.Core.Utils.PluginImpls
 {

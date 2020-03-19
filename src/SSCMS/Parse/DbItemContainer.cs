@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SSCMS.Abstractions.Parse
+namespace SSCMS.Parse
 {
     public class DbItemContainer
     {

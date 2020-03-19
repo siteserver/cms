@@ -1,7 +1,8 @@
 ﻿using System.IO;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Tests;
+using SSCMS;
+using SSCMS.Tests;
 using SSCMS.Core.Utils.Office;
+using SSCMS.Utils;
 using Xunit;
 
 namespace SSCMS.Core.Tests.Common.Office

@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Home
+namespace SSCMS.Web.Controllers.Home
 {
     [Route("home/contentsLayerState")]
     public partial class ContentsLayerStateController : ControllerBase

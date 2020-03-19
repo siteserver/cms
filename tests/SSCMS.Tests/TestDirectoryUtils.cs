@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using SSCMS.Utils;
 using Xunit;
 
-namespace SSCMS.Abstractions.Tests
+namespace SSCMS.Tests
 {
     public class TestDirectoryUtils
     {

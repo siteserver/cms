@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils.PluginImpls;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Settings.Administrators
+namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     [Route("admin/settings/administratorsView")]
     public partial class AdministratorsViewController : ControllerBase

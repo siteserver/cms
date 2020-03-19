@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Testing;
+using SSCMS.Web;
 using Xunit;
 
 namespace SSCMS.Tests.IntegrationTests.Cms

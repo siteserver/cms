@@ -1,4 +1,4 @@
-﻿namespace SSCMS.Controllers.Admin.Cms.Library
+﻿namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     public partial class LibraryLayerVideoController
     {

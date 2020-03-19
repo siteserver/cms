@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using SSCMS.Abstractions.Tests;
+using SSCMS.Tests;
 using Xunit;
 
 namespace SSCMS.Core.Tests.Services

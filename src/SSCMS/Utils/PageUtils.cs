@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public static class PageUtils
     {

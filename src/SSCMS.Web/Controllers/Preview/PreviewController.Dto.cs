@@ -1,6 +1,6 @@
-﻿using SSCMS.Abstractions.Dto.Request;
+﻿using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Preview
+namespace SSCMS.Web.Controllers.Preview
 {
     public partial class PreviewController
     {

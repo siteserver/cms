@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Create;
+using SSCMS;
+using SSCMS.Dto.Create;
 
 namespace SSCMS.Core.Services.CreateManager
 {

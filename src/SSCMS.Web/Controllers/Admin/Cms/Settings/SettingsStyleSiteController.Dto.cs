@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions;
+using SSCMS;
 
-namespace SSCMS.Controllers.Admin.Cms.Settings
+namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsStyleSiteController
     {

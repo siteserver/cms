@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public static class PathUtils
     {

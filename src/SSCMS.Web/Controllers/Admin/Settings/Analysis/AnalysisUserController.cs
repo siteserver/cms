@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Settings.Analysis
+namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
 {
     [Route("admin/settings/analysisUser")]
     public partial class AnalysisUserController : ControllerBase

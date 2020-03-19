@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Home
+namespace SSCMS.Web.Controllers.Home
 {
     [Route("home/contentsLayerArrange")]
     public partial class ContentsLayerArrangeController : ControllerBase

@@ -1,7 +1,6 @@
 using System.Xml;
 
-
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
 	public class XmlUtils
 	{

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using SSCMS.Utils;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace SSCMS.Abstractions.Tests
+namespace SSCMS.Tests
 {
     public class TestYamlUtils : IClassFixture<UnitTestsFixture>
     {

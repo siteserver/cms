@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SSCMS.Utils;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public partial interface IPluginManager
     {

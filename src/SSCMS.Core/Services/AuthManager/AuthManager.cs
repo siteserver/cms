@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.PluginImpls;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services.AuthManager
 {

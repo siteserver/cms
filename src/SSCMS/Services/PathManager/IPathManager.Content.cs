@@ -1,7 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Threading.Tasks;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public partial interface IPathManager
     {

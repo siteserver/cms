@@ -1,8 +1,7 @@
 using System.IO;
 using System.Xml.Serialization;
 
-
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
 	public static class Serializer
 	{

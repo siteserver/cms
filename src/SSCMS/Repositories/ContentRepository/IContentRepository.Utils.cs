@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Datory;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public partial interface IContentRepository
     {

@@ -1,4 +1,4 @@
-﻿namespace SSCMS.Controllers.Admin.Settings.Utilities
+﻿namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 {
     public partial class UtilitiesEncryptController
     {

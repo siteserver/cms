@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS.Abstractions;
+using SSCMS;
 
 namespace SSCMS.Core.Repositories.LibraryTextRepository
 {

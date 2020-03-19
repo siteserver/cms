@@ -2,7 +2,8 @@
 using System.Collections.Specialized;
 using System.Net;
 using System.Text;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {

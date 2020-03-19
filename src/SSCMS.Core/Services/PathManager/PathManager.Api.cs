@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.StlParser.StlElement;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services.PathManager
 {

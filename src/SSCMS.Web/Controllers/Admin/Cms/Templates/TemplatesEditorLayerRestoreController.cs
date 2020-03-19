@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Templates
+namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     [Route("admin/cms/templates/templatesEditorLayerRestore")]
     public partial class TemplatesEditorLayerRestoreController : ControllerBase

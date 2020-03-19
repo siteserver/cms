@@ -1,13 +1,14 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto;
-using SSCMS.Abstractions.Dto.Request;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto;
+using SSCMS.Dto.Request;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Channels
+namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
     [Route("admin/cms/channels/channelsTranslate")]
     public partial class ChannelsTranslateController : ControllerBase

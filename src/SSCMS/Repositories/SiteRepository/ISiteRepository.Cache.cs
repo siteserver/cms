@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SSCMS.Abstractions.Dto;
+using SSCMS.Dto;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public partial interface ISiteRepository
     {

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public class ResponseResult<T>
     {

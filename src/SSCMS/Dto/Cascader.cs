@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using SSCMS.Utils;
 
-namespace SSCMS.Abstractions.Dto
+namespace SSCMS.Dto
 {
     public class Cascade<T> : Dictionary<string, object>
     {

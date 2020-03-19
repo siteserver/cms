@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     /// <summary>
     /// 为STL解析事件提供数据。
@@ -10,7 +10,7 @@ namespace SSCMS.Abstractions
     public class ParseEventArgs : EventArgs
     {
         /// <summary>
-        /// 初始化 <see cref="T:SSCMS.Abstractions.ParseEventArgs" /> 类的新实例。
+        /// 初始化 <see cref="T:SSCMS.ParseEventArgs" /> 类的新实例。
         /// </summary>
         /// <param name="siteId">站点Id。</param>
         /// <param name="channelId">栏目Id。</param>

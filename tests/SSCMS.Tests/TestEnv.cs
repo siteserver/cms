@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SSCMS.Abstractions.Tests
+namespace SSCMS.Tests
 {
     public static class TestEnv
     {

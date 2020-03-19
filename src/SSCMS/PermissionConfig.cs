@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public class PermissionConfig
     {

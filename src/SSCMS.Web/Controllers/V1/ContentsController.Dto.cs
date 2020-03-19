@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions;
+using SSCMS;
 
-namespace SSCMS.Controllers.V1
+namespace SSCMS.Web.Controllers.V1
 {
     public partial class ContentsController
     {

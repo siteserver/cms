@@ -1,4 +1,4 @@
-﻿namespace SSCMS.Abstractions
+﻿namespace SSCMS
 {
     public class ContentColumn
     {

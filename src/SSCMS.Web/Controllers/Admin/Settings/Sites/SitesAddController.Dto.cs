@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions.Dto;
+using SSCMS.Dto;
 using SSCMS.Core.Utils;
 
-namespace SSCMS.Controllers.Admin.Settings.Sites
+namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     public partial class SitesAddController
     {

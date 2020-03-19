@@ -11,8 +11,6 @@ var zip = require("gulp-zip");
 var filter = require("gulp-filter");
 var runSequence = require("gulp4-run-sequence");
 
-var version = argv.version || '1.0.0';
-
 function getDependencies() {
   var str = "";
 
@@ -54,11 +52,11 @@ gulp.task("build-copy-wwwroot", function () {
 });
 
 gulp.task("build-cshtml", function () {
-  return gulp
-    .src(["./src/SSCMS.Web/Pages/**/*.cshtml"])
-    .pipe(replace('.css"', ".css?v=" + version + '"'))
-    .pipe(replace('.js"', ".js?v=" + version + '"'))
-    .pipe(gulp.dest("./build/src/SSCMS.Web/Pages"));
+    return gulp
+        .src(["./src/SSCMS.Web/Pages/**/*.cshtml"])
+        .pipe(replace('.css"', ".css?v=" + argv.version + '"'))
+        .pipe(replace('.js"', ".js?v=" + argv.version + '"'))
+        .pipe(gulp.dest("./build/src/SSCMS.Web/Pages"));
 });
 
 gulp.task("build-css", function () {
@@ -93,30 +91,30 @@ gulp.task("build-js", function () {
 gulp.task("build-nuspec", function () {
   var dependencies = getDependencies();
   return gulp
-    .src("./SS.CMS.nuspec")
-    .pipe(replace("$version$", version))
-    .pipe(replace("</metadata>", dependencies + "</metadata>"))
-    .pipe(gulp.dest("./build"));
+      .src("./SS.CMS.nuspec")
+      .pipe(replace("$version$", argv.version))
+      .pipe(replace("</metadata>", dependencies + "</metadata>"))
+      .pipe(gulp.dest("./build"));
 });
 
 gulp.task("build", async function (callback) {
-  console.log("build version: " + version);
-  return runSequence(
-    "build-copy-src",
-    "build-copy-tests",
-    "build-copy-sln",
-    "build-copy-wwwroot",
-    "build-cshtml",
-    "build-css",
-    "build-js",
-    
-    // "build-nuspec",
-  );
+    console.log("build version: " + argv.version);
+    return runSequence(
+        "build-copy-src",
+        "build-copy-tests",
+        "build-copy-sln",
+        "build-copy-wwwroot",
+        "build-cshtml",
+        "build-css",
+        "build-js",
+
+        // "build-nuspec",
+    );
 });
 
 gulp.task("zip", function (callback) {
-  gulp
-    .src(["./build/**/*", "!./build/SS.CMS.nuspec"])
-    .pipe(zip("siteserver_install.zip"))
-    .pipe(gulp.dest("./"));
+    gulp
+        .src(["./build/**/*", "!./build/SS.CMS.nuspec"])
+        .pipe(zip("siteserver_install.zip"))
+        .pipe(gulp.dest("./"));
 });

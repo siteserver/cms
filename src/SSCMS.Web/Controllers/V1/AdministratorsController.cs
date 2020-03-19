@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.V1
+namespace SSCMS.Web.Controllers.V1
 {
     [Route("v1/administrators")]
     public partial class AdministratorsController : ControllerBase

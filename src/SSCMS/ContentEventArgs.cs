@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     /// <summary>
     /// 为内容操作事件提供数据
@@ -8,7 +8,7 @@ namespace SSCMS.Abstractions
     public class ContentEventArgs : EventArgs
     {
         /// <summary>
-        /// 初始化 <see cref="T:SSCMS.Abstractions.ContentEventArgs" /> 类的新实例。
+        /// 初始化 <see cref="T:SSCMS.ContentEventArgs" /> 类的新实例。
         /// </summary>
         /// <param name="siteId">站点Id。</param>
         /// <param name="channelId">栏目Id。</param>

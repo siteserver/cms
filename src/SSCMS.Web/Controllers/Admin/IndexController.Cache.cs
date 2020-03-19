@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions.Dto.Request;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS.Dto.Request;
+using SSCMS.Dto.Result;
 
-namespace SSCMS.Controllers.Admin
+namespace SSCMS.Web.Controllers.Admin
 {
     public partial class IndexController
     {

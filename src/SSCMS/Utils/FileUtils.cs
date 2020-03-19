@@ -6,8 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory;
 
-
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {	
 	public static class FileUtils
 	{

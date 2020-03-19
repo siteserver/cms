@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Request;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Request;
+using SSCMS.Dto.Result;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Contents
+namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
     public partial class ContentsController
     {

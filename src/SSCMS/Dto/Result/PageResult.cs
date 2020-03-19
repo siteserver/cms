@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SSCMS.Abstractions.Dto.Result
+namespace SSCMS.Dto.Result
 {
     public class PageResult<T> where T : class
     {

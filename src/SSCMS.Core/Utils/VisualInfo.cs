@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Parse;
+using SSCMS;
+using SSCMS.Parse;
 
 namespace SSCMS.Core.Utils
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Datory;
-using SSCMS.Abstractions;
+using SSCMS;
 
 namespace SSCMS.Core.Repositories.ContentRepository
 {

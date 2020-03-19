@@ -1,8 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
-
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public class HtmlClearUtils
     {

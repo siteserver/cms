@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Abstractions.Parse;
+using SSCMS.Parse;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public partial interface IParseManager
     {

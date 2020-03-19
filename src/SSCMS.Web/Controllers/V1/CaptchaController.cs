@@ -2,12 +2,13 @@
 using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.V1
+namespace SSCMS.Web.Controllers.V1
 {
     [Route("v1/captcha")]
     public partial class CaptchaController : ControllerBase

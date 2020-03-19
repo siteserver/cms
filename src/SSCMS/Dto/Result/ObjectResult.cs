@@ -1,4 +1,4 @@
-﻿namespace SSCMS.Abstractions.Dto.Result
+﻿namespace SSCMS.Dto.Result
 {
     public class ObjectResult<T> where T : class
     {

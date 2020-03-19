@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public partial interface IPathManager
     {

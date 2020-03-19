@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NuGet.Packaging;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Packaging
 {
@@ -14,7 +15,7 @@ namespace SSCMS.Core.Packaging
     public static class PackageUtils
     {
         public const string PackageIdSsCms = "SS.CMS";
-        public const string PackageIdSiteServerPlugin = "SSCMS.Abstractions";
+        public const string PackageIdSiteServerPlugin = "SSCMS";
         public const string VersionDev = "0.0.0";
 
         public const string CacheKeySsCmsIsDownload = nameof(CacheKeySsCmsIsDownload);

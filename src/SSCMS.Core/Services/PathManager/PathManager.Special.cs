@@ -2,8 +2,9 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services.PathManager
 {

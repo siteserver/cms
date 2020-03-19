@@ -1,4 +1,5 @@
-﻿using SSCMS.Abstractions;
+﻿using SSCMS;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Core
 {

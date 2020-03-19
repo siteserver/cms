@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS;
+using SSCMS.Dto.Request;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Settings.Users
+namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     [Route("admin/settings/usersGroup")]
     public partial class UsersGroupController : ControllerBase

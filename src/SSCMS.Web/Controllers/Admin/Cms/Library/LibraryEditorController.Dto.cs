@@ -1,6 +1,6 @@
-﻿using SSCMS.Abstractions.Dto.Request;
+﻿using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Admin.Cms.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     public partial class LibraryEditorController
     {

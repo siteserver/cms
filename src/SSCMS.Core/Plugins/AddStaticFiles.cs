@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using SSCMS.Abstractions.Plugins;
+using SSCMS.Plugins;
 
 namespace SSCMS.Core.Plugins
 {

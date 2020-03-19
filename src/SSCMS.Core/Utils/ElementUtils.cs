@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SSCMS.Abstractions.Dto;
+using SSCMS.Dto;
 
 namespace SSCMS.Core.Utils
 {

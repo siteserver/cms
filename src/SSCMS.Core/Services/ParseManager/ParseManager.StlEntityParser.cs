@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Abstractions.Parse;
+using SSCMS.Parse;
 using SSCMS.Core.StlParser.StlEntity;
 using SSCMS.Core.StlParser.Utility;
 

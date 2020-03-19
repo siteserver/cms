@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Tests;
+using SSCMS;
+using SSCMS.Tests;
 using Xunit;
 using Xunit.Abstractions;
 

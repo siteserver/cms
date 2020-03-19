@@ -1,6 +1,7 @@
 ﻿using System;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Packaging;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services.PluginManager
 {

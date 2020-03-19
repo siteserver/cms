@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions.Dto;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS.Dto;
+using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Admin.Cms.Settings
+namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsCreateTriggerController
     {

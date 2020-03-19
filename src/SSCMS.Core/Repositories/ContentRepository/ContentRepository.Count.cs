@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using SSCMS.Abstractions;
+using SSCMS;
 
 namespace SSCMS.Core.Repositories.ContentRepository
 {

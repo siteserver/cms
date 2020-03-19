@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Packaging;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin
+namespace SSCMS.Web.Controllers.Admin
 {
     [Route("sys/admin/packaging/sync/database")]
     public partial class SysPackagingSyncDatabaseController : ControllerBase

@@ -2,43 +2,43 @@
 using Datory;
 using Datory.Utils;
 using SqlKata;
-using SSCMS.Abstractions;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.V1
+namespace SSCMS.Web.Controllers.V1
 {
     public partial class ContentsController
     {
         private async Task<Query> GetQueryAsync(int siteId, int? channelId, QueryRequest request)
         {
-            var query = Q.Where(nameof(Abstractions.Content.SiteId), siteId).Where(nameof(Abstractions.Content.ChannelId), ">", 0);
+            var query = Q.Where(nameof(SSCMS.Content.SiteId), siteId).Where(nameof(SSCMS.Content.ChannelId), ">", 0);
 
             if (channelId.HasValue)
             {
                 //query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
                 var channelIds = await _channelRepository.GetChannelIdsAsync(siteId, channelId.Value, ScopeType.All);
 
-                query.WhereIn(nameof(Abstractions.Content.ChannelId), channelIds);
+                query.WhereIn(nameof(SSCMS.Content.ChannelId), channelIds);
             }
 
             if (request.Checked.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.Checked), request.Checked.Value.ToString());
+                query.Where(nameof(SSCMS.Content.Checked), request.Checked.Value.ToString());
             }
             if (request.Top.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.Top), request.Top.Value.ToString());
+                query.Where(nameof(SSCMS.Content.Top), request.Top.Value.ToString());
             }
             if (request.Recommend.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.Recommend), request.Recommend.Value.ToString());
+                query.Where(nameof(SSCMS.Content.Recommend), request.Recommend.Value.ToString());
             }
             if (request.Color.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.Color), request.Color.Value.ToString());
+                query.Where(nameof(SSCMS.Content.Color), request.Color.Value.ToString());
             }
             if (request.Hot.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.Hot), request.Hot.Value.ToString());
+                query.Where(nameof(SSCMS.Content.Hot), request.Hot.Value.ToString());
             }
 
             if (request.GroupNames != null)
@@ -50,10 +50,10 @@ namespace SSCMS.Controllers.V1
                         if (!string.IsNullOrEmpty(groupName))
                         {
                             q
-                                .OrWhere(nameof(Abstractions.Content.GroupNames), groupName)
-                                .OrWhereLike(nameof(Abstractions.Content.GroupNames), $"{groupName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.GroupNames), $"%,{groupName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.GroupNames), $"%,{groupName}");
+                                .OrWhere(nameof(SSCMS.Content.GroupNames), groupName)
+                                .OrWhereLike(nameof(SSCMS.Content.GroupNames), $"{groupName},%")
+                                .OrWhereLike(nameof(SSCMS.Content.GroupNames), $"%,{groupName},%")
+                                .OrWhereLike(nameof(SSCMS.Content.GroupNames), $"%,{groupName}");
                         }
                     }
                     return q;
@@ -69,10 +69,10 @@ namespace SSCMS.Controllers.V1
                         if (!string.IsNullOrEmpty(tagName))
                         {
                             q
-                                .OrWhere(nameof(Abstractions.Content.TagNames), tagName)
-                                .OrWhereLike(nameof(Abstractions.Content.TagNames), $"{tagName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.TagNames), $"%,{tagName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.TagNames), $"%,{tagName}");
+                                .OrWhere(nameof(SSCMS.Content.TagNames), tagName)
+                                .OrWhereLike(nameof(SSCMS.Content.TagNames), $"{tagName},%")
+                                .OrWhereLike(nameof(SSCMS.Content.TagNames), $"%,{tagName},%")
+                                .OrWhereLike(nameof(SSCMS.Content.TagNames), $"%,{tagName}");
                         }
                     }
                     return q;
@@ -123,10 +123,10 @@ namespace SSCMS.Controllers.V1
             }
             else
             {
-                query.OrderByDesc(nameof(Abstractions.Content.Top), 
-                    nameof(Abstractions.Content.ChannelId),
-                    nameof(Abstractions.Content.Taxis),
-                    nameof(Abstractions.Content.Id));
+                query.OrderByDesc(nameof(SSCMS.Content.Top), 
+                    nameof(SSCMS.Content.ChannelId),
+                    nameof(SSCMS.Content.Taxis),
+                    nameof(SSCMS.Content.Id));
             }
 
             var page = request.Page > 0 ? request.Page : 1;

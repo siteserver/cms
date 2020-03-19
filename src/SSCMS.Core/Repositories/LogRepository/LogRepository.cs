@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using Dapper;
 using Datory;
 using SqlKata;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories.LogRepository
 {

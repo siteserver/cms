@@ -1,4 +1,4 @@
-﻿namespace SSCMS.Abstractions
+﻿namespace SSCMS
 {
     /// <summary>
     /// 表示列表中的数据项。

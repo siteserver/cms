@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.StlParser.StlElement;
 
 namespace SSCMS.Core.Services.PathManager

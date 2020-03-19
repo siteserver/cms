@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions;
+using SSCMS;
 
-namespace SSCMS.Controllers.Admin.Settings.Users
+namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     public partial class UsersStyleController
     {

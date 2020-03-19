@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS;
+using SSCMS.Dto.Request;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Settings
+namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     [Route("admin/cms/settings/settingsCreateRule")]
     public partial class SettingsCreateRuleController : ControllerBase

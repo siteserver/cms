@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS.Abstractions.Plugins;
+using SSCMS.Plugins;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public abstract class PluginBase : IPlugin
     {

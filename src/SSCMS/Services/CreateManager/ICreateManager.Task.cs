@@ -1,7 +1,7 @@
 ﻿using System;
-using SSCMS.Abstractions.Dto.Create;
+using SSCMS.Dto.Create;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     partial interface ICreateManager
     {

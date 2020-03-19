@@ -1,6 +1,6 @@
 ﻿using System;
 using Quartz;
-using SSCMS.Abstractions;
+using SSCMS;
 
 namespace SSCMS.Cli.Core
 {

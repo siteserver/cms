@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public static class Constants
     {
@@ -13,7 +13,7 @@ namespace SSCMS.Abstractions
         public const string DefaultLocalDbFileName = "database.sqlite";
         public const string ApiPrefix = "/api";
         public const string ApiRoute = "admin";
-        public const string AbstractionsAssemblyName = "SSCMS.Abstractions.dll";
+        public const string AbstractionsAssemblyName = "SSCMS.dll";
         public const string EncryptStingIndicator = "0secret0";
 
         public const string AuthKeyAdminCaptchaCookie = "SS-ADMIN-CAPTCHA";

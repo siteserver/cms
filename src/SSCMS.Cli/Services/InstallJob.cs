@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using Datory;
 using Mono.Options;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Cli.Core;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Services
 {

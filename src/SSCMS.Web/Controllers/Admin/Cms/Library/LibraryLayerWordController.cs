@@ -3,13 +3,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Request;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Request;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.Office;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [Route("admin/cms/library/libraryLayerWord")]
     public partial class LibraryLayerWordController : ControllerBase

@@ -4,8 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services.PluginManager
 {

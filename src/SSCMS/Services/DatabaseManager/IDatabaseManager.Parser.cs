@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public partial interface IDatabaseManager
     {

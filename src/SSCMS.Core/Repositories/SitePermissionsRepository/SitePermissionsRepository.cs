@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils.PluginImpls;
 
 namespace SSCMS.Core.Repositories.SitePermissionsRepository

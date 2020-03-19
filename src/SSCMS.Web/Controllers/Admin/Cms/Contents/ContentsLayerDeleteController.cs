@@ -2,11 +2,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Contents
+namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
     [Route("admin/cms/contents/contentsLayerDelete")]
     public partial class ContentsLayerDeleteController : ControllerBase

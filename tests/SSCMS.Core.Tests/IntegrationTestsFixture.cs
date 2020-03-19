@@ -4,9 +4,10 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Plugins;
+using SSCMS;
+using SSCMS.Plugins;
 using SSCMS.Core.Extensions;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Tests
 {

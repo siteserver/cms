@@ -1,7 +1,6 @@
 ﻿using System;
 
-
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     /// <summary>
     /// 用于把对象型数据转成特定数据类型的类

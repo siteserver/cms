@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Home
+namespace SSCMS.Web.Controllers.Home
 {
     public partial class ContentsLayerImportController
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Admin.Cms.Channels
+namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
     public partial class ChannelsLayerTaxisController
     {

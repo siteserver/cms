@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS;
+using SSCMS.Dto.Request;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Stl
+namespace SSCMS.Web.Controllers.Stl
 {
     public partial class ActionsRelatedFieldController
     {

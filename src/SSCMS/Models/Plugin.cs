@@ -2,7 +2,7 @@ using Datory;
 using Datory.Annotations;
 
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     [DataTable("siteserver_Plugin")]
     public class Plugin : Entity

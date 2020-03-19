@@ -1,7 +1,8 @@
 ﻿using System;
 using Datory;
+using SSCMS.Utils;
 
-namespace SSCMS.Abstractions.Dto
+namespace SSCMS.Dto
 {
     public class CheckBox<T>
     {

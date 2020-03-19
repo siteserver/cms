@@ -3,10 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Settings
+namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     [Route("admin/cms/settings/settingsContentTag")]
     public partial class SettingsContentTagController : ControllerBase

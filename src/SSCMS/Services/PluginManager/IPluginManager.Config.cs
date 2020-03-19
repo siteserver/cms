@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public partial interface IPluginManager
     {

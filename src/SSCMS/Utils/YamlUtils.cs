@@ -2,7 +2,7 @@
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public static class YamlUtils
     {

@@ -1,4 +1,4 @@
-﻿namespace SSCMS.Abstractions.Dto.Request
+﻿namespace SSCMS.Dto.Request
 {
     public class PageRequest
     {

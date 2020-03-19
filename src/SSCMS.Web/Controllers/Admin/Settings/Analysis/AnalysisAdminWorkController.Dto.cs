@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions.Dto;
+using SSCMS.Dto;
 
-namespace SSCMS.Controllers.Admin.Settings.Analysis
+namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
 {
     public partial class AnalysisAdminWorkController
     {

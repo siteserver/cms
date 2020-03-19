@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS;
+using SSCMS.Dto;
+using SSCMS.Dto.Request;
 using SSCMS.Core.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Channels
+namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
     public partial class ChannelsTranslateController
     {

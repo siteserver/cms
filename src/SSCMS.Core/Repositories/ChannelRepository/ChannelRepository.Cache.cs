@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory.Utils;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto;
+using SSCMS;
+using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories.ChannelRepository
 {

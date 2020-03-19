@@ -1,6 +1,6 @@
-﻿using SSCMS.Abstractions;
+﻿using SSCMS;
 
-namespace SSCMS.Controllers.Admin.Settings.Logs
+namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
     public partial class LogsConfigController
     {

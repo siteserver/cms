@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS;
+using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Home
+namespace SSCMS.Web.Controllers.Home
 {
     public partial class ContentsLayerExportController
     {

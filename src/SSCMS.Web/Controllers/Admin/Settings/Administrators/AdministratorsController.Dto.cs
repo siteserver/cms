@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using SSCMS.Abstractions;
+using SSCMS;
 
-namespace SSCMS.Controllers.Admin.Settings.Administrators
+namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     public partial class AdministratorsController
     {

@@ -1,6 +1,6 @@
 using System.Collections.Specialized;
 
-namespace SSCMS.Abstractions.Parse
+namespace SSCMS.Parse
 {
     public class ParseContext
     {

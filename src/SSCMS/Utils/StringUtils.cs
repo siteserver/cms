@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using Datory.Utils;
 
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public static class StringUtils
     {

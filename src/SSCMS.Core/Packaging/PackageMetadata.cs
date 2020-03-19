@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using NuGet.Packaging;
 using NuGet.Versioning;
-using SSCMS.Abstractions;
+using SSCMS;
 
 namespace SSCMS.Core.Packaging
 {
-    public class PackageMetadata : SSCMS.Abstractions.IPackageMetadata
+    public class PackageMetadata : SSCMS.IPackageMetadata
     {
         private readonly Dictionary<string, string> _metadata;
         private readonly IReadOnlyCollection<PackageDependencyGroup> _dependencyGroups;

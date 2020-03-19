@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS.Dto.Request;
 
-namespace SSCMS.Controllers.Admin.Cms.Contents
+namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
     public partial class ContentsLayerTagController
     {

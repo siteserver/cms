@@ -3,11 +3,12 @@ using System.Security.Permissions;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto;
+using SSCMS;
+using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin
+namespace SSCMS.Web.Controllers.Admin
 {
     [Route(Constants.ApiRoute)]
     public partial class InstallController : ControllerBase

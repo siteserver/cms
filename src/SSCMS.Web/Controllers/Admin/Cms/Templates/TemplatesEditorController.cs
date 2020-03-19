@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Cms.Templates
+namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     [Route("admin/cms/templates/templatesEditor")]
     public partial class TemplatesEditorController : ControllerBase

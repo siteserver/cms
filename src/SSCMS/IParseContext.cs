@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     /// <summary>
     /// STL解析上下文。

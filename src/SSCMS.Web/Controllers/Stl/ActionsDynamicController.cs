@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.StlElement;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Stl
+namespace SSCMS.Web.Controllers.Stl
 {
     public partial class ActionsDynamicController : ControllerBase
     {

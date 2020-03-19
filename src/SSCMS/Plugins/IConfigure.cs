@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 
-namespace SSCMS.Abstractions.Plugins
+namespace SSCMS.Plugins
 {
     /// <summary>
     /// Describes an action that must be executed inside the Configure method of a web application's Startup class

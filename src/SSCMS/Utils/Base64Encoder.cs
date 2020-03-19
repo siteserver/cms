@@ -1,5 +1,5 @@
 ﻿
-namespace SSCMS.Abstractions
+namespace SSCMS.Utils
 {
     public class Base64Encoder
     {

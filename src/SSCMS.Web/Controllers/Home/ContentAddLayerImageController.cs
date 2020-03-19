@@ -3,13 +3,13 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Request;
+using SSCMS;
+using SSCMS.Dto.Request;
 using SSCMS.Core.Extensions;
-using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Images;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Home
+namespace SSCMS.Web.Controllers.Home
 {
     [Route("home/contentAddLayerImage")]
     public partial class ContentAddLayerImageController : ControllerBase

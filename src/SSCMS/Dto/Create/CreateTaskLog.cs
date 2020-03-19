@@ -1,6 +1,6 @@
 using System;
 
-namespace SSCMS.Abstractions.Dto.Create
+namespace SSCMS.Dto.Create
 {
     public class CreateTaskLog
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SSCMS.Controllers.Admin.Settings.Analysis
+namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
 {
     public partial class AnalysisAdminLoginController
     {

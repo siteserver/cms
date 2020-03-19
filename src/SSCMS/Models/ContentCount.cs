@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     [Serializable]
     public class ContentCount

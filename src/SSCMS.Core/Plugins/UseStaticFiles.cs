@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using SSCMS.Abstractions.Plugins;
+using SSCMS.Plugins;
 
 namespace SSCMS.Core.Plugins
 {

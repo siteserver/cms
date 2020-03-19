@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Datory;
 using SqlKata;
 
-namespace SSCMS.Abstractions
+namespace SSCMS
 {
     public partial interface ISiteLogRepository : IRepository
     {

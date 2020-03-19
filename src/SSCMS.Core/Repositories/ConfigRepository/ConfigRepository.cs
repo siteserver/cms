@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS.Abstractions;
+using SSCMS;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Core.Repositories.ConfigRepository

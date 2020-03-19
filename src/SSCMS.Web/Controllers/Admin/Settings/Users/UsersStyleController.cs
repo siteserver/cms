@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Dto.Result;
+using SSCMS;
+using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.Serialization;
+using SSCMS.Utils;
 
-namespace SSCMS.Controllers.Admin.Settings.Users
+namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     [Route("admin/settings/usersStyle")]
     public partial class UsersStyleController : ControllerBase
