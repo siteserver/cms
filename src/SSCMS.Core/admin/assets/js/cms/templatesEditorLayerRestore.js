@@ -95,7 +95,7 @@ var methods = {
       });
     } else {
       setTimeout(function () {
-        require.config({ paths: { 'vs': utils.getAssetsUrl('lib/monaco-editor/min/vs') }});
+        require.config({ paths: { 'vs': utils.getAssetsUrl('lib/monacoeditor/min/vs') }});
         require(['vs/editor/editor.main'], function() {
             var originalModel = monaco.editor.createModel(original, "text/html");
             var modifiedModel = monaco.editor.createModel(modified, "text/html");

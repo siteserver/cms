@@ -145,7 +145,7 @@ var methods = {
         lang = 'javascript';
       }
       setTimeout(function () {
-        require.config({ paths: { 'vs': utils.getAssetsUrl('lib/monaco-editor/min/vs') }});
+        require.config({ paths: { 'vs': utils.getAssetsUrl('lib/monacoeditor/min/vs') }});
         require(['vs/editor/editor.main'], function() {
             $this.contentEditor = monaco.editor.create(document.getElementById('content'), {
                 value: val,
