@@ -25,14 +25,8 @@ jobs:
     inputs:
       versionSpec: '12.x'
       displayName: 'Install Node.js'
-  - task: Npm@1
-    inputs:
-      command: install gulp -g
-      displayName: 'Install gulp'
-  - task: Npm@1
-    inputs:
-      command: install
-      displayName: 'Install packages'
+  - script: npm install
+  - script: npm install -g gulp
   - script: gulp build
   - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
     displayName: 'dotnet build'
