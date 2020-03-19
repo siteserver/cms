@@ -1,16 +1,17 @@
 var fs = require("fs");
 var path = require("path");
+var rimraf = require("rimraf");
+var argv = require('yargs').argv;
 var gulp = require("gulp");
 var minifier = require("gulp-minifier");
 var minify = require("gulp-minify");
-var rimraf = require("rimraf");
 var rename = require("gulp-rename");
 var replace = require("gulp-replace");
 var zip = require("gulp-zip");
 var filter = require("gulp-filter");
 var runSequence = require("gulp4-run-sequence");
 
-var version = process.env.APPVEYOR_BUILD_VERSION || '7.0.0-preview4';
+var version = argv.version || '1.0.0';
 
 function getDependencies() {
   var str = "";
