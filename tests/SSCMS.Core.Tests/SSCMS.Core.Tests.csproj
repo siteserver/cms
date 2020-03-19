@@ -39,8 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SSCMS.Core\SSCMS.Core.csproj" />
-    <ProjectReference Include="..\SSCMS.Abstractions.Tests\SSCMS.Abstractions.Tests.csproj" />
+    <ProjectReference Include="..\SSCMS.Tests\SSCMS.Tests.csproj" />
   </ItemGroup>
 
 </Project>

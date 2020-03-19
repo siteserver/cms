@@ -317,6 +317,29 @@ group by tmp.adminId";
             return whereBuilder.ToString();
         }
 
+        public async Task<string> GetNewContentTableNameAsync()
+        {
+            var name = DateTime.Now.ToString("yyyyMMdd");
+
+            var i = 1;
+            do
+            {
+                var tableName = $"siteserver_{name}_{i++}";
+                if (!await _settingsManager.Database.IsTableExistsAsync(tableName))
+                {
+                    return tableName;
+                }
+            } while (true);
+        }
+
+        public async Task<string> CreateNewContentTableAsync()
+        {
+            var tableName = await GetNewContentTableNameAsync();
+            var repository = new Repository<Content>(_settingsManager.Database);
+            await CreateContentTableAsync(tableName, repository.TableColumns);
+            return tableName;
+        }
+
         public async Task CreateContentTableAsync(string tableName, List<TableColumn> columnInfoList)
         {
             var isDbExists = await _settingsManager.Database.IsTableExistsAsync(tableName);

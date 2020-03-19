@@ -138,7 +138,7 @@ namespace SSCMS.Cli.Updater
                         if (dict.ContainsKey(nameof(Site.Id)))
                         {
                             var siteId = Convert.ToInt32(dict[nameof(Site.Id)]);
-                            dict[nameof(Site.TableName)] = databaseManager.ContentRepository.GetRandomTableName();
+                            dict[nameof(Site.TableName)] = await databaseManager.ContentRepository.GetNewContentTableNameAsync();
                         }
 
                         newRows.Add(dict);

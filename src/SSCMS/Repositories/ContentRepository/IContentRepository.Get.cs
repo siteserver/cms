@@ -33,6 +33,10 @@ namespace SSCMS.Abstractions
             string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes,
             NameValueCollection form);
 
+        Task<string> GetNewContentTableNameAsync();
+
+        Task<string> CreateNewContentTableAsync();
+
         Task CreateContentTableAsync(string tableName, List<TableColumn> columnInfoList);
     }
 }

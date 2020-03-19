@@ -142,8 +142,7 @@ namespace SSCMS.Controllers.Admin.Settings.Sites
 
             if (string.IsNullOrEmpty(tableName))
             {
-                tableName = _contentRepository.GetRandomTableName();
-                await _contentRepository.CreateContentTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
+                tableName = await _contentRepository.CreateNewContentTableAsync();
                 await _siteRepository.UpdateTableNameAsync(siteId, tableName);
             }
 

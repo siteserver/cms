@@ -11,11 +11,6 @@ namespace SSCMS.Core.Repositories.ContentRepository
     {
         private const int TaxisIsTopStartValue = 2000000000;
 
-        public string GetRandomTableName()
-        {
-            return $"siteserver_{StringUtils.GetShortGuid(false)}";
-        }
-
         public List<TableColumn> GetTableColumns(string tableName)
         {
             var repository = GetRepository(tableName);

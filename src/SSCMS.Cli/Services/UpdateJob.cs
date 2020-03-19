@@ -156,7 +156,7 @@ namespace SSCMS.Cli.Services
                 foreach (var siteId in siteIdList)
                 {
                     var siteTableInfo = splitSiteTableDict[siteId];
-                    var siteTableName = _databaseManager.ContentRepository.GetRandomTableName();
+                    var siteTableName = await _databaseManager.ContentRepository.GetNewContentTableNameAsync();
                     newTableNames.Add(siteTableName);
 
                     await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), TranslateUtils.JsonSerialize(siteTableInfo));

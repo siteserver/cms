@@ -158,7 +158,7 @@ namespace SSCMS.Cli.Updater
                         foreach (var siteId in siteIdList)
                         {
                             var siteRows = siteIdWithRows[siteId];
-                            var siteTableName = _databaseManager.ContentRepository.GetRandomTableName();
+                            var siteTableName = await _databaseManager.ContentRepository.GetNewContentTableNameAsync();
                             var siteTableInfo = splitSiteTableDict[siteId];
                             siteTableInfo.TotalCount += siteRows.Count;
 
