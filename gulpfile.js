@@ -105,10 +105,9 @@ gulp.task("build", async function (callback) {
         "build-copy-tests",
         "build-copy-sln",
         "build-copy-wwwroot",
-        "build-cshtml",
         "build-css",
         "build-js",
-
+        "build-cshtml",
         // "build-nuspec",
     );
 });

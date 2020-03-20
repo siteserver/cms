@@ -79,7 +79,13 @@ jobs:
   - script: npm run build
   - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64 /p:PublishSingleFile=true
+  - powershell: Copy-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64/SSCMS.Web.exe" -Destination "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64/sscms.exe"
+  - powershell: Remove-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64/SSCMS.Web.exe"
+  - powershell: Remove-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64/SSCMS.Web.pdb"
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x86 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86 /p:PublishSingleFile=true
+  - powershell: Copy-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86/SSCMS.Web.exe" -Destination "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86/sscms.exe"
+  - powershell: Remove-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86/SSCMS.Web.exe"
+  - powershell: Remove-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86/SSCMS.Web.pdb"
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64' 
