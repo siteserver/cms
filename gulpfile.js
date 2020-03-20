@@ -11,7 +11,7 @@ var zip = require("gulp-zip");
 var filter = require("gulp-filter");
 var runSequence = require("gulp4-run-sequence");
 
-var version = process.env.productVersion || Math.random();
+var version = process.env.PRODUCTVERSION || Math.random();
 
 function getDependencies() {
   var str = "";

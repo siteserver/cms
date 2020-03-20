@@ -77,12 +77,12 @@ jobs:
   - task: NodeTool@0
     inputs:
       versionSpec: '12.x'
-  - script: npm install
-  - script: npm install -g gulp
-  - script: gulp build
-  - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
-  - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64 /p:PublishSingleFile=true
-  - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x86 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86 /p:PublishSingleFile=true
+  - powershell: npm install
+  - powershell: npm install -g gulp
+  - powershell: gulp build
+  - powershell: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
+  - powershell: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64 /p:PublishSingleFile=true
+  - powershell: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x86 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86 /p:PublishSingleFile=true
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64' 
