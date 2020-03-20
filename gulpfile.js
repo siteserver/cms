@@ -81,8 +81,8 @@ gulp.task("build-js", function () {
 gulp.task("build-cshtml", function () {
   return gulp
       .src("./src/SSCMS.Web/Pages/**/*.cshtml")
-      .pipe(replace(/.css"/g, '.css?v=' + version + '"'))
-      .pipe(replace(/.js"/g, '.js?v=' + version + '"'))
+      .pipe(replace(/.css" rel="stylesheet/g, '.css?v=' + version + '" rel="stylesheet'))
+      .pipe(replace(/.js" type="text\/javascript/g, '.js?v=' + version + '" type="text/javascript'))
       .pipe(gulp.dest("./build/src/SSCMS.Web/Pages"));
 });
 
