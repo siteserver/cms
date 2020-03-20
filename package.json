@@ -14,9 +14,7 @@
     "gulp-replace": "^1.0.0",
     "gulp-rev": "^9.0.0",
     "gulp-rev-all": "^2.0.2",
-    "gulp-zip": "^5.0.1",
-    "gulp4-run-sequence": "^1.0.1",
-    "rimraf": "^3.0.2"
+    "gulp4-run-sequence": "^1.0.1"
   },
   "scripts": {
     "build": "node ./node_modules/gulp/bin/gulp.js build"

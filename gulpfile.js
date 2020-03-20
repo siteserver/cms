@@ -1,12 +1,9 @@
 var fs = require("fs");
-var path = require("path");
-var rimraf = require("rimraf");
 var gulp = require("gulp");
 var minifier = require("gulp-minifier");
 var minify = require("gulp-minify");
 var rename = require("gulp-rename");
 var replace = require("gulp-replace");
-var zip = require("gulp-zip");
 var filter = require("gulp-filter");
 var runSequence = require("gulp4-run-sequence");
 
@@ -52,14 +49,6 @@ gulp.task("build-copy-wwwroot", function () {
   return gulp.src(["./404.html", "./favicon.ico", "./index.html"]).pipe(gulp.dest("./build/src/SSCMS.Web/wwwroot"));
 });
 
-gulp.task("build-cshtml", function () {
-    return gulp
-        .src("./src/SSCMS.Web/Pages/**/*.cshtml")
-        .pipe(replace('.css"', ".css?v=" + version + '"'))
-        .pipe(replace('.js"', ".js?v=" + version + '"'))
-        .pipe(gulp.dest("./build/src/SSCMS.Web/Pages"));
-});
-
 gulp.task("build-css", function () {
   return gulp
     .src(["./src/SSCMS.Core/admin/assets/**/*.css"])
@@ -89,6 +78,14 @@ gulp.task("build-js", function () {
     .pipe(gulp.dest("./build/src/SSCMS.Core/admin/assets"));
 });
 
+gulp.task("build-cshtml", function () {
+  return gulp
+      .src("./src/SSCMS.Web/Pages/**/*.cshtml")
+      .pipe(replace(/.css"/g, '.css?v=' + version + '"'))
+      .pipe(replace(/.js"/g, '.js?v=' + version + '"'))
+      .pipe(gulp.dest("./build/src/SSCMS.Web/Pages"));
+});
+
 gulp.task("build-nuspec", function () {
   var dependencies = getDependencies();
   return gulp
@@ -110,11 +107,4 @@ gulp.task("build", async function (callback) {
         "build-cshtml",
         // "build-nuspec",
     );
-});
-
-gulp.task("zip", function (callback) {
-    gulp
-        .src(["./build/**/*", "!./build/SS.CMS.nuspec"])
-        .pipe(zip("siteserver_install.zip"))
-        .pipe(gulp.dest("./"));
 });
