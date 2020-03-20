@@ -25,7 +25,7 @@ jobs:
       versionSpec: '12.x'
   - script: npm install
   - script: npm install -g gulp
-  - script: gulp build --version $(productVersion)
+  - script: gulp build
   - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r osx-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64 /p:PublishSingleFile=true
   - task: ArchiveFiles@2
@@ -52,7 +52,7 @@ jobs:
       versionSpec: '12.x'
   - script: npm install
   - script: npm install -g gulp
-  - script: gulp build --version $(productVersion)
+  - script: gulp build
   - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r linux-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64 /p:PublishSingleFile=true
   - task: ArchiveFiles@2
@@ -79,7 +79,7 @@ jobs:
       versionSpec: '12.x'
   - script: npm install
   - script: npm install -g gulp
-  - script: gulp build --version $(productVersion)
+  - script: gulp build
   - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x64 /p:PublishSingleFile=true
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x86 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-win-x86 /p:PublishSingleFile=true

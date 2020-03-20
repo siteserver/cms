@@ -11,6 +11,8 @@ var zip = require("gulp-zip");
 var filter = require("gulp-filter");
 var runSequence = require("gulp4-run-sequence");
 
+var version = process.env.productVersion || Math.random();
+
 function getDependencies() {
   var str = "";
 
@@ -54,8 +56,8 @@ gulp.task("build-copy-wwwroot", function () {
 gulp.task("build-cshtml", function () {
     return gulp
         .src(["./src/SSCMS.Web/Pages/**/*.cshtml"])
-        .pipe(replace('.css"', ".css?v=" + argv.version + '"'))
-        .pipe(replace('.js"', ".js?v=" + argv.version + '"'))
+        .pipe(replace('.css"', ".css?v=" + version + '"'))
+        .pipe(replace('.js"', ".js?v=" + version + '"'))
         .pipe(gulp.dest("./build/src/SSCMS.Web/Pages"));
 });
 
@@ -92,13 +94,13 @@ gulp.task("build-nuspec", function () {
   var dependencies = getDependencies();
   return gulp
       .src("./SS.CMS.nuspec")
-      .pipe(replace("$version$", argv.version))
+      .pipe(replace("$version$", version))
       .pipe(replace("</metadata>", dependencies + "</metadata>"))
       .pipe(gulp.dest("./build"));
 });
 
 gulp.task("build", async function (callback) {
-    console.log("build version: " + argv.version);
+    console.log("build version: " + version);
     return runSequence(
         "build-copy-src",
         "build-copy-tests",
