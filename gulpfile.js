@@ -1,7 +1,6 @@
 var fs = require("fs");
 var path = require("path");
 var rimraf = require("rimraf");
-var argv = require('yargs').argv;
 var gulp = require("gulp");
 var minifier = require("gulp-minifier");
 var minify = require("gulp-minify");
@@ -55,7 +54,7 @@ gulp.task("build-copy-wwwroot", function () {
 
 gulp.task("build-cshtml", function () {
     return gulp
-        .src(["./src/SSCMS.Web/Pages/**/*.cshtml"])
+        .src("./src/SSCMS.Web/Pages/**/*.cshtml")
         .pipe(replace('.css"', ".css?v=" + version + '"'))
         .pipe(replace('.js"', ".js?v=" + version + '"'))
         .pipe(gulp.dest("./build/src/SSCMS.Web/Pages"));
@@ -102,13 +101,13 @@ gulp.task("build-nuspec", function () {
 gulp.task("build", async function (callback) {
     console.log("build version: " + version);
     return runSequence(
-        "build-copy-src",
-        "build-copy-tests",
-        "build-copy-sln",
-        "build-copy-wwwroot",
+        // "build-copy-src",
+        // "build-copy-tests",
+        // "build-copy-sln",
+        // "build-copy-wwwroot",
         "build-cshtml",
-        "build-css",
-        "build-js",
+        // "build-css",
+        // "build-js",
 
         // "build-nuspec",
     );
