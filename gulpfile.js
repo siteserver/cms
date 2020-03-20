@@ -101,13 +101,13 @@ gulp.task("build-nuspec", function () {
 gulp.task("build", async function (callback) {
     console.log("build version: " + version);
     return runSequence(
-        // "build-copy-src",
-        // "build-copy-tests",
-        // "build-copy-sln",
-        // "build-copy-wwwroot",
+        "build-copy-src",
+        "build-copy-tests",
+        "build-copy-sln",
+        "build-copy-wwwroot",
         "build-cshtml",
-        // "build-css",
-        // "build-js",
+        "build-css",
+        "build-js",
 
         // "build-nuspec",
     );
