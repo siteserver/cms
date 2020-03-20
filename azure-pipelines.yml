@@ -52,10 +52,6 @@ jobs:
   - script: npm install
   - script: npm run build
   - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
-  - task: NuGetCommand@2
-    inputs:
-      command: pack
-      packagesToPack: 'build/src/SSCMS/SSCMS.csproj'
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r linux-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64 /p:PublishSingleFile=true
   - task: ArchiveFiles@2
     inputs:
