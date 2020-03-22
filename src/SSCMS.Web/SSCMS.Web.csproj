@@ -11,19 +11,6 @@
     <Version>7.0.0-preview4</Version>
   </PropertyGroup>
 
-  <!--<ItemGroup>
-    <Content Include="menus\**\*">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Pages\**\*"></Content>
-    <Compile Remove="log\**" />
-    <EmbeddedResource Remove="log\**" />
-    <None Remove="log\**" />
-    <Content Include="wwwroot\index.html">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>-->
-
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
   </ItemGroup>
