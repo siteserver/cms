@@ -55,7 +55,7 @@ gulp.task("build-copy-wwwroot", function () {
 
 gulp.task("build-css", function () {
   return gulp
-    .src(["./src/SSCMS.Core/admin/assets/**/*.css"])
+    .src(["./src/SSCMS.Web/assets/**/*.css"])
     .pipe(
       minifier({
         minify: true,
@@ -67,19 +67,19 @@ gulp.task("build-css", function () {
         ignoreFiles: ['.min.css']
       })
     )
-    .pipe(gulp.dest("./build/src/SSCMS.Core/admin/assets"));
+    .pipe(gulp.dest("./build/src/SSCMS.Web/assets"));
 });
 
 gulp.task("build-js", function () {
   const f = filter(['**/*-min.js']);
   return gulp
-    .src(["./src/SSCMS.Core/admin/assets/**/*.js"])
+    .src(["./src/SSCMS.Web/assets/**/*.js"])
     .pipe(minify())
     .pipe(f)
     .pipe(rename(function (path) {
       path.basename = path.basename.substring(0, path.basename.length - 4);
     }))
-    .pipe(gulp.dest("./build/src/SSCMS.Core/admin/assets"));
+    .pipe(gulp.dest("./build/src/SSCMS.Web/assets"));
 });
 
 gulp.task("build-cshtml", function () {
