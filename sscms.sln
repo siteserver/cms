@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E23844F2-3E94-4B93-B795-1A53C41F0BA5}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		appsettings.json = appsettings.json
 		azure-pipelines.yml = azure-pipelines.yml
 		gulpfile.js = gulpfile.js
 		package.json = package.json

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using SSCMS;
@@ -110,14 +111,14 @@ namespace SSCMS.Web
             });
             app.UseStaticFiles();
 
-            //app.Map("/" + settingsManager.AdminDirectory + "/assets", admin =>
-            //{
-            //    admin.UseStaticFiles(new StaticFileOptions
-            //    {
-            //        FileProvider = new PhysicalFileProvider(
-            //            Path.Combine(Directory.GetCurrentDirectory(), "assets"))
-            //    });
-            //});
+            app.Map("/admin/assets", assets =>
+            {
+                assets.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(
+                        Path.Combine(Directory.GetCurrentDirectory(), "assets"))
+                });
+            });
 
             app.Map("/" + settingsManager.AdminDirectory, admin =>
             {

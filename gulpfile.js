@@ -3,7 +3,6 @@ var gulp = require("gulp");
 var minifier = require("gulp-minifier");
 var minify = require("gulp-minify");
 var rename = require("gulp-rename");
-// var replace = require("gulp-replace");
 var replace = require('gulp-string-replace');
 var filter = require("gulp-filter");
 var runSequence = require("gulp4-run-sequence");
@@ -44,6 +43,10 @@ gulp.task("build-copy-tests", function () {
 
 gulp.task("build-copy-sln", function () {
   return gulp.src("./sscms.sln").pipe(gulp.dest("./build"));
+});
+
+gulp.task("build-copy-root", function () {
+  return gulp.src(["./appsettings.html"]).pipe(gulp.dest("./build/src/SSCMS.Web"));
 });
 
 gulp.task("build-copy-wwwroot", function () {
@@ -102,10 +105,10 @@ gulp.task("build", async function (callback) {
         "build-copy-src",
         "build-copy-tests",
         "build-copy-sln",
+        "build-copy-root",
         "build-copy-wwwroot",
         "build-css",
-        // "build-js",
-        "build-cshtml",
-        // "build-nuspec",
+        "build-js",
+        "build-cshtml"
     );
 });

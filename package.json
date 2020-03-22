@@ -17,6 +17,7 @@
     "gulp4-run-sequence": "^1.0.1"
   },
   "scripts": {
-    "build": "node ./node_modules/gulp/bin/gulp.js build"
+    "build": "node ./node_modules/gulp/bin/gulp.js build",
+    "web": "dotnet watch --project ./src/SSCMS.Web/SSCMS.Web.csproj run"
   }
 }

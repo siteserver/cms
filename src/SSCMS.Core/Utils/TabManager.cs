@@ -29,7 +29,7 @@ namespace SSCMS.Core.Utils
 
         public string GetMenusPath(params string[] paths)
         {
-            return PathUtils.Combine(_pathManager.ContentRootPath, "menus", PathUtils.Combine(paths));
+            return PathUtils.Combine(_pathManager.ContentRootPath, "assets/menus", PathUtils.Combine(paths));
         }
 
         public List<Tab> GetTopMenuTabs()
