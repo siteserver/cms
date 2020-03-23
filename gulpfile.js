@@ -7,7 +7,7 @@ const replace = require('gulp-string-replace');
 const filter = require("gulp-filter");
 const runSequence = require("gulp4-run-sequence");
 
-const version = process.env.PRODUCTVERSION || Math.random();
+const version = process.env.PRODUCTVERSION || (new Date().toISOString());
 let publishDir = '';
 
 // build tasks
@@ -78,14 +78,14 @@ gulp.task("build", async function (callback) {
 // copy tasks
 
 gulp.task("copy-files", async function () {
-  fs.copySync('./appsettings.json', publishDir);
+  fs.copySync('./appsettings.json', publishDir + '/appsettings.json');
   fs.copySync(publishDir + '/SSCMS.Web', publishDir + '/sscms');
   fs.removeSync(publishDir + '/SSCMS.Web.pdb');
   fs.removeSync(publishDir + '/SSCMS.Web');
   fs.copySync('./src/SSCMS.Web/assets', publishDir + '/assets');
-  fs.copySync('./404.html', publishDir + '/wwwroot');
-  fs.copySync('./favicon.ico', publishDir + '/wwwroot');
-  fs.copySync('./index.html', publishDir + '/wwwroot');
+  fs.copySync('./404.html', publishDir + '/wwwroot/404.html');
+  fs.copySync('./favicon.ico', publishDir + '/wwwroot/favicon.ico');
+  fs.copySync('./index.html', publishDir + '/wwwroot/index.html');
 });
 
 gulp.task("copy-css", function () {
