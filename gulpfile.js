@@ -77,7 +77,7 @@ gulp.task("build", async function (callback) {
 
 // copy tasks
 
-gulp.task("copy-sscms", function () {
+gulp.task("copy-sscms", async function () {
   fs.copyFileSync(publishDir + '/SSCMS.Web', publishDir + '/sscms');
   fs.unlinkSync(publishDir + '/SSCMS.Web.pdb');
   fs.unlinkSync(publishDir + '/SSCMS.Web');
