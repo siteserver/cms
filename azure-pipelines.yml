@@ -34,8 +34,8 @@ jobs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-linux-x64' 
       archiveType: 'zip'
       includeRootFolder: false
-      archiveFile: './publish/sscms-$(productVersion)-linux-x64/sscms-$(productVersion)-linux-x64.zip'
+      archiveFile: './publish/sscms-$(productVersion)-linux-x64/dist/sscms-$(productVersion)-linux-x64.zip'
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: './publish/sscms-$(productVersion)-linux-x64' 
+      pathtoPublish: './publish/sscms-$(productVersion)-linux-x64/dist' 
       artifactName: 'sscms-$(productVersion)-linux'
