@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require('fs-extra')
 const gulp = require("gulp");
 const minifier = require("gulp-minifier");
 const minify = require("gulp-minify");
@@ -77,22 +77,15 @@ gulp.task("build", async function (callback) {
 
 // copy tasks
 
-gulp.task("copy-sscms", async function () {
-  fs.copyFileSync(publishDir + '/SSCMS.Web', publishDir + '/sscms');
-  fs.unlinkSync(publishDir + '/SSCMS.Web.pdb');
-  fs.unlinkSync(publishDir + '/SSCMS.Web');
-});
-
-gulp.task("copy-root", function () {
-  return gulp.src(["./appsettings.html"]).pipe(gulp.dest(publishDir));
-});
-
-gulp.task("copy-assets", function () {
-  return gulp.src(["./src/SSCMS.Web/assets"]).pipe(gulp.dest(publishDir + "/assets"));
-});
-
-gulp.task("copy-wwwroot", function () {
-  return gulp.src(["./404.html", "./favicon.ico", "./index.html"]).pipe(gulp.dest(publishDir + "/wwwroot"));
+gulp.task("copy-files", async function () {
+  fs.copySync('./appsettings.json', publishDir);
+  fs.copySync(publishDir + '/SSCMS.Web', publishDir + '/sscms');
+  fs.removeSync(publishDir + '/SSCMS.Web.pdb');
+  fs.removeSync(publishDir + '/SSCMS.Web');
+  fs.copySync('./src/SSCMS.Web/assets', publishDir + '/assets');
+  fs.copySync('./404.html', publishDir + '/wwwroot');
+  fs.copySync('./favicon.ico', publishDir + '/wwwroot');
+  fs.copySync('./index.html', publishDir + '/wwwroot');
 });
 
 gulp.task("copy-css", function () {
@@ -129,10 +122,7 @@ gulp.task("copy-osx-x64", async function (callback) {
   console.log("publish dir: " + publishDir);
 
   return runSequence(
-      "copy-sscms",
-      "copy-root",
-      "copy-assets",
-      "copy-wwwroot",
+      "copy-files",
       "copy-css",
       "copy-js"
   );
@@ -143,10 +133,7 @@ gulp.task("copy-linux-x64", async function (callback) {
   console.log("publish dir: " + publishDir);
 
   return runSequence(
-      "copy-sscms",
-      "copy-root",
-      "copy-assets",
-      "copy-wwwroot",
+      "copy-files",
       "copy-css",
       "copy-js"
   );
@@ -157,10 +144,7 @@ gulp.task("copy-win-x64", async function (callback) {
   console.log("publish dir: " + publishDir);
 
   return runSequence(
-      "copy-sscms",
-      "copy-root",
-      "copy-assets",
-      "copy-wwwroot",
+      "copy-files",
       "copy-css",
       "copy-js"
   );
@@ -171,10 +155,7 @@ gulp.task("copy-win-x86", async function (callback) {
   console.log("publish dir: " + publishDir);
 
   return runSequence(
-      "copy-sscms",
-      "copy-root",
-      "copy-assets",
-      "copy-wwwroot",
+      "copy-files",
       "copy-css",
       "copy-js"
   );
