@@ -79,13 +79,22 @@ gulp.task("build", async function (callback) {
 
 gulp.task("copy-files", async function () {
   fs.copySync('./appsettings.json', publishDir + '/appsettings.json');
-  fs.copySync(publishDir + '/SSCMS.Web', publishDir + '/sscms');
-  fs.removeSync(publishDir + '/SSCMS.Web.pdb');
-  fs.removeSync(publishDir + '/SSCMS.Web');
   fs.copySync('./src/SSCMS.Web/assets', publishDir + '/assets');
   fs.copySync('./404.html', publishDir + '/wwwroot/404.html');
   fs.copySync('./favicon.ico', publishDir + '/wwwroot/favicon.ico');
   fs.copySync('./index.html', publishDir + '/wwwroot/index.html');
+});
+
+gulp.task("copy-sscms-linux", async function () {
+  fs.copySync(publishDir + '/SSCMS.Web', publishDir + '/sscms');
+  fs.removeSync(publishDir + '/SSCMS.Web.pdb');
+  fs.removeSync(publishDir + '/SSCMS.Web');
+});
+
+gulp.task("copy-sscms-win", async function () {
+  fs.copySync(publishDir + '/SSCMS.Web.exe', publishDir + '/sscms.exe');
+  fs.removeSync(publishDir + '/SSCMS.Web.pdb');
+  fs.removeSync(publishDir + '/SSCMS.Web.exe');
 });
 
 gulp.task("copy-css", function () {
@@ -122,9 +131,10 @@ gulp.task("copy-osx-x64", async function (callback) {
   console.log("publish dir: " + publishDir);
 
   return runSequence(
-      "copy-files",
-      "copy-css",
-      "copy-js"
+    "copy-files",
+    "copy-sscms-linux",
+    "copy-css",
+    "copy-js"
   );
 });
 
@@ -133,9 +143,10 @@ gulp.task("copy-linux-x64", async function (callback) {
   console.log("publish dir: " + publishDir);
 
   return runSequence(
-      "copy-files",
-      "copy-css",
-      "copy-js"
+    "copy-files-linux",
+    "copy-sscms-linux",
+    "copy-css",
+    "copy-js"
   );
 });
 
@@ -144,9 +155,10 @@ gulp.task("copy-win-x64", async function (callback) {
   console.log("publish dir: " + publishDir);
 
   return runSequence(
-      "copy-files",
-      "copy-css",
-      "copy-js"
+    "copy-files",
+    "copy-sscms-win",
+    "copy-css",
+    "copy-js"
   );
 });
 
@@ -155,8 +167,9 @@ gulp.task("copy-win-x86", async function (callback) {
   console.log("publish dir: " + publishDir);
 
   return runSequence(
-      "copy-files",
-      "copy-css",
-      "copy-js"
+    "copy-files",
+    "copy-sscms-win",
+    "copy-css",
+    "copy-js"
   );
 });
