@@ -124,8 +124,50 @@ gulp.task("copy-js", function () {
     .pipe(gulp.dest(publishDir + "/assets"));
 });
 
+gulp.task("copy-osx-x64", async function (callback) {
+  publishDir = './publish/sscms-' + version + '-osx-x64';
+  console.log("publish dir: " + publishDir);
+
+  return runSequence(
+      "copy-sscms",
+      "copy-root",
+      "copy-assets",
+      "copy-wwwroot",
+      "copy-css",
+      "copy-js"
+  );
+});
+
 gulp.task("copy-linux-x64", async function (callback) {
   publishDir = './publish/sscms-' + version + '-linux-x64';
+  console.log("publish dir: " + publishDir);
+
+  return runSequence(
+      "copy-sscms",
+      "copy-root",
+      "copy-assets",
+      "copy-wwwroot",
+      "copy-css",
+      "copy-js"
+  );
+});
+
+gulp.task("copy-win-x64", async function (callback) {
+  publishDir = './publish/sscms-' + version + '-win-x64';
+  console.log("publish dir: " + publishDir);
+
+  return runSequence(
+      "copy-sscms",
+      "copy-root",
+      "copy-assets",
+      "copy-wwwroot",
+      "copy-css",
+      "copy-js"
+  );
+});
+
+gulp.task("copy-win-x86", async function (callback) {
+  publishDir = './publish/sscms-' + version + '-win-x86';
   console.log("publish dir: " + publishDir);
 
   return runSequence(

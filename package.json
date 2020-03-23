@@ -18,6 +18,10 @@
   },
   "scripts": {
     "build": "node ./node_modules/gulp/bin/gulp.js build",
+    "copy-osx-x64": "node ./node_modules/gulp/bin/gulp.js copy-osx-x64",
+    "copy-linux-x64": "node ./node_modules/gulp/bin/gulp.js copy-linux-x64",
+    "copy-win-x64": "node ./node_modules/gulp/bin/gulp.js copy-win-x64",
+    "copy-win-x86": "node ./node_modules/gulp/bin/gulp.js copy-win-x86",
     "web": "dotnet watch --project ./src/SSCMS.Web/SSCMS.Web.csproj run"
   }
 }
