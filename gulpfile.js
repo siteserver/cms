@@ -1,13 +1,14 @@
-var fs = require("fs");
-var gulp = require("gulp");
-var minifier = require("gulp-minifier");
-var minify = require("gulp-minify");
-var rename = require("gulp-rename");
-var replace = require('gulp-string-replace');
-var filter = require("gulp-filter");
-var runSequence = require("gulp4-run-sequence");
+const fs = require("fs");
+const gulp = require("gulp");
+const minifier = require("gulp-minifier");
+const minify = require("gulp-minify");
+const rename = require("gulp-rename");
+const replace = require('gulp-string-replace');
+const filter = require("gulp-filter");
+const runSequence = require("gulp4-run-sequence");
 
-var version = process.env.PRODUCTVERSION || Math.random();
+const version = process.env.PRODUCTVERSION || Math.random();
+let publishDir = '';
 
 // build tasks
 
@@ -76,16 +77,22 @@ gulp.task("build", async function (callback) {
 
 // copy tasks
 
+gulp.task("copy-sscms", function () {
+  fs.copyFileSync(publishDir + '/SSCMS.Web', publishDir + '/sscms');
+  fs.unlinkSync(publishDir + '/SSCMS.Web.pdb');
+  fs.unlinkSync(publishDir + '/SSCMS.Web');
+});
+
 gulp.task("copy-root", function () {
-  return gulp.src(["./appsettings.html"]).pipe(gulp.dest("./build/src/SSCMS.Web"));
+  return gulp.src(["./appsettings.html"]).pipe(gulp.dest(publishDir));
 });
 
 gulp.task("copy-assets", function () {
-  return gulp.src(["./src/SSCMS.Web/assets"]).pipe(gulp.dest("./build/src/SSCMS.Web/assets"));
+  return gulp.src(["./src/SSCMS.Web/assets"]).pipe(gulp.dest(publishDir + "/assets"));
 });
 
 gulp.task("copy-wwwroot", function () {
-  return gulp.src(["./404.html", "./favicon.ico", "./index.html"]).pipe(gulp.dest("./build/src/SSCMS.Web/wwwroot"));
+  return gulp.src(["./404.html", "./favicon.ico", "./index.html"]).pipe(gulp.dest(publishDir + "/wwwroot"));
 });
 
 gulp.task("copy-css", function () {
@@ -102,7 +109,7 @@ gulp.task("copy-css", function () {
         ignoreFiles: ['.min.css']
       })
     )
-    .pipe(gulp.dest("./build/src/SSCMS.Web/assets"));
+    .pipe(gulp.dest(publishDir + "/assets"));
 });
 
 gulp.task("copy-js", function () {
@@ -114,12 +121,15 @@ gulp.task("copy-js", function () {
     .pipe(rename(function (path) {
       path.basename = path.basename.substring(0, path.basename.length - 4);
     }))
-    .pipe(gulp.dest("./build/src/SSCMS.Web/assets"));
+    .pipe(gulp.dest(publishDir + "/assets"));
 });
 
-gulp.task("copy", async function (callback) {
-  console.log("copy version: " + version);
+gulp.task("copy-linux-x64", async function (callback) {
+  publishDir = './publish/sscms-' + version + '-linux-x64';
+  console.log("publish dir: " + publishDir);
+
   return runSequence(
+      "copy-sscms",
       "copy-root",
       "copy-assets",
       "copy-wwwroot",
