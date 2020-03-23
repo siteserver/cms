@@ -143,7 +143,7 @@ gulp.task("copy-linux-x64", async function (callback) {
   console.log("publish dir: " + publishDir);
 
   return runSequence(
-    "copy-files-linux",
+    "copy-files",
     "copy-sscms-linux",
     "copy-css",
     "copy-js"
