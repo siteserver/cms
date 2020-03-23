@@ -27,10 +27,10 @@ jobs:
   - script: npm run build
   - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r osx-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64 /p:PublishSingleFile=true
-  - powershell: Copy-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64/SSCMS.Web" -Destination "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64/sscms"
-  - powershell: Copy-Item -Path "./build/src/SSCMS.Web/assets" -Destination "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64/sscms/assets" -Recurse -force
-  - powershell: Remove-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64/SSCMS.Web"
-  - powershell: Remove-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64/SSCMS.Web.pdb"
+  - script: npm run copy
+  - script: cp -rf $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64/SSCMS.Web $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64/sscms
+  - script: rm -rf $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64/SSCMS.Web
+  - script: rm -rf $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64/SSCMS.Web.pdb
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-osx-x64' 
@@ -57,10 +57,10 @@ jobs:
   - script: npm run build
   - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r linux-x64 --configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64 /p:PublishSingleFile=true
-  - powershell: Copy-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64/SSCMS.Web" -Destination "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64/sscms"
-  - powershell: Copy-Item -Path "./build/src/SSCMS.Web/assets" -Destination "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64/sscms/assets" -Recurse -force
-  - powershell: Remove-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64/SSCMS.Web"
-  - powershell: Remove-Item "$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64/SSCMS.Web.pdb"
+  - script: npm run copy
+  - script: cp -rf $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64/SSCMS.Web $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64/sscms
+  - script: rm -rf $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64/SSCMS.Web
+  - script: rm -rf $(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64/SSCMS.Web.pdb
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/sscms-$(productVersion)-linux-x64' 

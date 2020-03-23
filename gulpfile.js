@@ -9,6 +9,8 @@ var runSequence = require("gulp4-run-sequence");
 
 var version = process.env.PRODUCTVERSION || Math.random();
 
+// build tasks
+
 function getDependencies() {
   var str = "";
 
@@ -33,53 +35,16 @@ function getDependencies() {
   return str;
 }
 
-gulp.task("build-copy-src", function () {
+gulp.task("build-src", function () {
   return gulp.src("./src/**/*").pipe(gulp.dest("./build/src"));
 });
 
-gulp.task("build-copy-tests", function () {
+gulp.task("build-tests", function () {
   return gulp.src("./tests/**/*").pipe(gulp.dest("./build/tests"));
 });
 
-gulp.task("build-copy-sln", function () {
+gulp.task("build-sln", function () {
   return gulp.src("./sscms.sln").pipe(gulp.dest("./build"));
-});
-
-gulp.task("build-copy-root", function () {
-  return gulp.src(["./appsettings.html"]).pipe(gulp.dest("./build/src/SSCMS.Web"));
-});
-
-gulp.task("build-copy-wwwroot", function () {
-  return gulp.src(["./404.html", "./favicon.ico", "./index.html"]).pipe(gulp.dest("./build/src/SSCMS.Web/wwwroot"));
-});
-
-gulp.task("build-css", function () {
-  return gulp
-    .src(["./src/SSCMS.Web/assets/**/*.css"])
-    .pipe(
-      minifier({
-        minify: true,
-        collapseWhitespace: true,
-        conservativeCollapse: true,
-        minifyJS: false,
-        minifyCSS: true,
-        minifyHTML: false,
-        ignoreFiles: ['.min.css']
-      })
-    )
-    .pipe(gulp.dest("./build/src/SSCMS.Web/assets"));
-});
-
-gulp.task("build-js", function () {
-  const f = filter(['**/*-min.js']);
-  return gulp
-    .src(["./src/SSCMS.Web/assets/**/*.js"])
-    .pipe(minify())
-    .pipe(f)
-    .pipe(rename(function (path) {
-      path.basename = path.basename.substring(0, path.basename.length - 4);
-    }))
-    .pipe(gulp.dest("./build/src/SSCMS.Web/assets"));
 });
 
 gulp.task("build-cshtml", function () {
@@ -102,13 +67,63 @@ gulp.task("build-nuspec", function () {
 gulp.task("build", async function (callback) {
     console.log("build version: " + version);
     return runSequence(
-        "build-copy-src",
-        "build-copy-tests",
-        "build-copy-sln",
-        "build-copy-root",
-        "build-copy-wwwroot",
-        "build-css",
-        "build-js",
+        "build-src",
+        "build-tests",
+        "build-sln",
         "build-cshtml"
     );
+});
+
+// copy tasks
+
+gulp.task("copy-root", function () {
+  return gulp.src(["./appsettings.html"]).pipe(gulp.dest("./build/src/SSCMS.Web"));
+});
+
+gulp.task("copy-assets", function () {
+  return gulp.src(["./src/SSCMS.Web/assets"]).pipe(gulp.dest("./build/src/SSCMS.Web/assets"));
+});
+
+gulp.task("copy-wwwroot", function () {
+  return gulp.src(["./404.html", "./favicon.ico", "./index.html"]).pipe(gulp.dest("./build/src/SSCMS.Web/wwwroot"));
+});
+
+gulp.task("copy-css", function () {
+  return gulp
+    .src(["./src/SSCMS.Web/assets/**/*.css"])
+    .pipe(
+      minifier({
+        minify: true,
+        collapseWhitespace: true,
+        conservativeCollapse: true,
+        minifyJS: false,
+        minifyCSS: true,
+        minifyHTML: false,
+        ignoreFiles: ['.min.css']
+      })
+    )
+    .pipe(gulp.dest("./build/src/SSCMS.Web/assets"));
+});
+
+gulp.task("copy-js", function () {
+  const f = filter(['**/*-min.js']);
+  return gulp
+    .src(["./src/SSCMS.Web/assets/**/*.js"])
+    .pipe(minify())
+    .pipe(f)
+    .pipe(rename(function (path) {
+      path.basename = path.basename.substring(0, path.basename.length - 4);
+    }))
+    .pipe(gulp.dest("./build/src/SSCMS.Web/assets"));
+});
+
+gulp.task("copy", async function (callback) {
+  console.log("copy version: " + version);
+  return runSequence(
+      "copy-root",
+      "copy-assets",
+      "copy-wwwroot",
+      "copy-css",
+      "copy-js"
+  );
 });
