@@ -13,6 +13,33 @@ variables:
 
 jobs:
 
+- job: macOS
+  pool:
+    vmImage: 'macOS-10.15'
+  steps:
+  - task: DotNetCoreInstaller@0
+    inputs:
+      packageType: 'sdk'
+      version: $(netCoreSdkVersion)
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '12.x'
+  - script: npm install
+  - script: npm run build
+  - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
+  - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r osx-x64 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-osx-x64 /p:PublishSingleFile=true
+  - script: npm run copy-osx-x64
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: './publish/sscms-$(productVersion)-osx-x64' 
+      archiveType: 'zip'
+      includeRootFolder: false
+      archiveFile: './publish/dist/sscms-$(productVersion)-osx-x64.zip'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: './publish/dist' 
+      artifactName: 'sscms-$(productVersion)-osx'
+
 - job: Linux
   pool:
     vmImage: 'Ubuntu 16.04'
@@ -34,8 +61,43 @@ jobs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-linux-x64' 
       archiveType: 'zip'
       includeRootFolder: false
-      archiveFile: './publish/sscms-$(productVersion)-linux-x64/dist/sscms-$(productVersion)-linux-x64.zip'
+      archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.zip'
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: './publish/sscms-$(productVersion)-linux-x64/dist' 
+      pathtoPublish: './publish/dist' 
       artifactName: 'sscms-$(productVersion)-linux'
+
+- job: Windows
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - task: DotNetCoreInstaller@0
+    inputs:
+      packageType: 'sdk'
+      version: $(netCoreSdkVersion)
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '12.x'
+  - script: npm install
+  - script: npm run build
+  - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
+  - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x64 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64 /p:PublishSingleFile=true
+  - script: npm run copy-win-x64
+  - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x86 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x86 /p:PublishSingleFile=true
+  - script: npm run copy-win-x86
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: './publish/sscms-$(productVersion)-win-x64' 
+      archiveType: 'zip'
+      includeRootFolder: false
+      archiveFile: './publish/dist/sscms-$(productVersion)-win-x64.zip'
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: './publish/sscms-$(productVersion)-win-x86' 
+      archiveType: 'zip'
+      includeRootFolder: false
+      archiveFile: './publish/dist/sscms-$(productVersion)-win-x86.zip'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: './publish/dist' 
+      artifactName: 'sscms-$(productVersion)-win'
