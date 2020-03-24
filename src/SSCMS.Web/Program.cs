@@ -23,7 +23,6 @@ namespace SSCMS.Web
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                        //.UseUrls("http://0.0.0.0:80/")
                         .UseSerilog((hostingContext, loggerConfiguration) =>
                         {
                             loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
@@ -37,9 +36,9 @@ namespace SSCMS.Web
         static void ConfigConfiguration(IConfigurationBuilder config)
         {
             config.SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(Constants.ConfigFileName, optional: true, reloadOnChange: true)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
+                .AddJsonFile(Constants.ConfigFileName, optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables("SSCMS_");
         }
     }
 }

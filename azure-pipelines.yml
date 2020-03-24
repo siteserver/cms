@@ -59,9 +59,10 @@ jobs:
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-linux-x64' 
-      archiveType: 'zip'
+      archiveType: 'tar'
+      tarCompression: 'gz'
       includeRootFolder: false
-      archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.zip'
+      archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.tar.gz'
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: './publish/dist' 

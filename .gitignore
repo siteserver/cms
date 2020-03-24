@@ -10,12 +10,13 @@ src/SSCMS.Web/.vs/
 src/SSCMS.Web/.vscode/
 src/SSCMS.Web/.config/
 src/SSCMS.Web/version.txt
+src/SSCMS.Web/sscms.json
 
 *.zip
 *.sql
 *.exe
 *.exe.config
-sscms.json
+
 appsettings.Development.json
 database.sqlite
 package-lock.json
