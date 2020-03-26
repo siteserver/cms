@@ -1,6 +1,4 @@
-﻿using SSCMS;
-
-namespace SSCMS.Web.Controllers.Admin
+﻿namespace SSCMS.Web.Controllers.Admin
 {
     public partial class ErrorController
     {

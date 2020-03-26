@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Datory;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils

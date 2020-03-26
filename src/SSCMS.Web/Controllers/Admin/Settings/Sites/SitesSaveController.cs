@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto.Request;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
@@ -19,6 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private const string RouteFiles = "actions/files";
         private const string RouteActionsData = "actions/data";
 
+        private readonly ICacheManager<Caching.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
@@ -26,8 +27,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public SitesSaveController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public SitesSaveController(ICacheManager<Caching.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
+            _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
@@ -59,14 +61,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteSettings)]
         public async Task<ActionResult<SaveSettingsResult>> SaveSettings([FromBody] SaveRequest request)
         {
-            
             if (!await _authManager.IsAdminAuthenticatedAsync() ||
                 !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
 
-            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
+            var caching = new Caching(_cacheManager);
+            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
 
             if (manager.IsSiteTemplateDirectoryExists(request.TemplateDir))
             {
@@ -145,7 +147,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var exportObject = new ExportObject(_pathManager, _databaseManager, _pluginManager, site);
+            var caching = new Caching(_cacheManager);
+            var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(request.TemplateDir);
             await exportObject.ExportFilesToSiteAsync(siteTemplatePath, request.IsAllFiles, request.CheckedDirectories, request.CheckedFiles, true);
 
@@ -173,10 +176,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(request.TemplateDir);
             var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
 
-            var exportObject = new ExportObject(_pathManager, _databaseManager, _pluginManager, site);
+            var caching = new Caching(_cacheManager);
+            var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
             await exportObject.ExportSiteContentAsync(siteContentDirectoryPath, request.IsSaveContents, request.IsSaveAllChannels, request.CheckedChannelIds);
 
-            await SiteTemplateManager.ExportSiteToSiteTemplateAsync(_pathManager, _databaseManager, _pluginManager, site, request.TemplateDir);
+            await SiteTemplateManager.ExportSiteToSiteTemplateAsync(_pathManager, _databaseManager, caching, _pluginManager, site, request.TemplateDir);
 
             var siteTemplateInfo = new SiteTemplateInfo
             {

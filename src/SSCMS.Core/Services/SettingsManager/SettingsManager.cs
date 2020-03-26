@@ -7,7 +7,6 @@ using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.Extensions.Configuration;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services.SettingsManager
@@ -75,19 +74,17 @@ namespace SSCMS.Core.Services.SettingsManager
         public IList<Menu> Menus { get; }
         public PermissionsSettings Permissions { get; }
 
-        public string Encrypt(string inputString)
+        public string Encrypt(string inputString, string securityKey = null)
         {
-            return TranslateUtils.EncryptStringBySecretKey(inputString, SecurityKey);
+            return TranslateUtils.EncryptStringBySecretKey(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
         }
 
-        public string Decrypt(string inputString)
+        public string Decrypt(string inputString, string securityKey = null)
         {
-            return TranslateUtils.DecryptStringBySecretKey(inputString, SecurityKey);
+            return TranslateUtils.DecryptStringBySecretKey(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
         }
 
-        public async Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, string adminDirectory,
-            string homeDirectory, string securityKey, DatabaseType databaseType, string databaseConnectionString,
-            string redisConnectionString)
+        public async Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, string adminDirectory, string homeDirectory, string securityKey, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString)
         {
             var path = PathUtils.Combine(ContentRootPath, Constants.ConfigFileName);
 
@@ -96,9 +93,9 @@ namespace SSCMS.Core.Services.SettingsManager
             var redisConnectionStringValue = redisConnectionString;
             if (isProtectData)
             {
-                type = Encrypt(type);
-                databaseConnectionStringValue = Encrypt(databaseConnectionStringValue);
-                redisConnectionStringValue = Encrypt(redisConnectionString);
+                type = Encrypt(type, securityKey);
+                databaseConnectionStringValue = Encrypt(databaseConnectionStringValue, securityKey);
+                redisConnectionStringValue = Encrypt(redisConnectionString, securityKey);
             }
 
             var json = $@"

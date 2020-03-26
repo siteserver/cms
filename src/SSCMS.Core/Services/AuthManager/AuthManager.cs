@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using SSCMS;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.PluginImpls;
 using SSCMS.Utils;

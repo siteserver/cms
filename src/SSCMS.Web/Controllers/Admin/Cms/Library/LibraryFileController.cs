@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
 using SSCMS.Utils;

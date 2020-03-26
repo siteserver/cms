@@ -1,6 +1,4 @@
-﻿using SSCMS;
-
-namespace SSCMS.Web.Controllers.Admin.Shared
+﻿namespace SSCMS.Web.Controllers.Admin.Shared
 {
     public partial class AdminLayerViewController
     {

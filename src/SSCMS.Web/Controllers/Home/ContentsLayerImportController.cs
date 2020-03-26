@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto.Request;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
@@ -18,6 +18,7 @@ namespace SSCMS.Web.Controllers.Home
         private const string Route = "";
         private const string RouteUpload = "actions/upload";
 
+        private readonly ICacheManager<Caching.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
@@ -25,8 +26,9 @@ namespace SSCMS.Web.Controllers.Home
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public ContentsLayerImportController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public ContentsLayerImportController(ICacheManager<Caching.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
+            _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
@@ -123,6 +125,7 @@ namespace SSCMS.Web.Controllers.Home
             var adminId = await _authManager.GetAdminIdAsync();
             var userId = await _authManager.GetUserIdAsync();
 
+            var caching = new Caching(_cacheManager);
             if (request.ImportType == "zip")
             {
                 foreach (var fileName in request.FileNames)
@@ -132,7 +135,7 @@ namespace SSCMS.Web.Controllers.Home
                     if (!FileUtils.IsType(FileType.Zip, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, site, adminId);
+                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, caching, site, adminId);
                     await importObject.ImportContentsByZipFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, userId, SourceManager.User);
                 }
             }
@@ -146,7 +149,7 @@ namespace SSCMS.Web.Controllers.Home
                     if (!FileUtils.IsType(FileType.Csv, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, site, adminId);
+                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, caching, site, adminId);
                     await importObject.ImportContentsByCsvFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, userId, SourceManager.User);
                 }
             }
@@ -158,7 +161,7 @@ namespace SSCMS.Web.Controllers.Home
                     if (!FileUtils.IsType(FileType.Txt, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, site, adminId);
+                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, caching, site, adminId);
                     await importObject.ImportContentsByTxtFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, userId, SourceManager.User);
                 }
             }

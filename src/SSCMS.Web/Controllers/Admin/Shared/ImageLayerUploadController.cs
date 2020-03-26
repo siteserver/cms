@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.Images;
 using SSCMS.Utils;

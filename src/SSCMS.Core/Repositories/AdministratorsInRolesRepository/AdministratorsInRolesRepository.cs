@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS;
 
 namespace SSCMS.Core.Repositories.AdministratorsInRolesRepository
 {

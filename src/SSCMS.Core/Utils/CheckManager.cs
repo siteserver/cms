@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SSCMS;
 using SSCMS.Dto;
 using SSCMS.Utils;
-using Content = SSCMS.Content;
 
 namespace SSCMS.Core.Utils
 {

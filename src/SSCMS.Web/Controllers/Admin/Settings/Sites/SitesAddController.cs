@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
@@ -16,6 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         public const string Route = "settings/sitesAdd";
         private const string RouteProcess = "settings/sitesAdd/actions/process";
 
+        private readonly ICacheManager<Caching.Process> _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -26,8 +27,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly IContentRepository _contentRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public SitesAddController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
+        public SitesAddController(ICacheManager<Caching.Process> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
         {
+            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
@@ -49,7 +51,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
+            var caching = new Caching(_cacheManager);
+            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
             var siteTemplates = manager.GetSiteTemplateInfoList();
 
             var tableNameList = await _siteRepository.GetSiteTableNamesAsync(_pluginManager);
@@ -155,46 +158,47 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 await _administratorRepository.UpdateSiteIdsAsync(adminInfo, siteIdList);
             }
 
+            var caching = new Caching(_cacheManager);
             var site = await _siteRepository.GetAsync(siteId);
 
-            Caching.SetProcess(request.Guid, "任务初始化...");
+            caching.SetProcess(request.Guid, "任务初始化...");
 
             if (request.CreateType == "local")
             {
-                var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
+                var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
                 await manager.ImportSiteTemplateToEmptySiteAsync(site, request.CreateTemplateId, request.IsImportContents, request.IsImportTableStyles, adminId, request.Guid);
 
-                Caching.SetProcess(request.Guid, "生成站点页面...");
+                caching.SetProcess(request.Guid, "生成站点页面...");
                 await _createManager.CreateByAllAsync(site.Id);
 
-                Caching.SetProcess(request.Guid, "清除系统缓存...");
+                caching.SetProcess(request.Guid, "清除系统缓存...");
                 CacheUtils.ClearAll();
             }
             else if (request.CreateType == "cloud")
             {
-                Caching.SetProcess(request.Guid, "开始下载模板压缩包，可能需要几分钟，请耐心等待...");
+                caching.SetProcess(request.Guid, "开始下载模板压缩包，可能需要几分钟，请耐心等待...");
 
                 var filePath = _pathManager.GetSiteTemplatesPath($"T_{request.CreateTemplateId}.zip");
                 FileUtils.DeleteFileIfExists(filePath);
                 var downloadUrl = OnlineTemplateManager.GetDownloadUrl(request.CreateTemplateId);
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
 
-                Caching.SetProcess(request.Guid, "模板压缩包下载成功，开始解压缩，可能需要几分钟，请耐心等待...");
+                caching.SetProcess(request.Guid, "模板压缩包下载成功，开始解压缩，可能需要几分钟，请耐心等待...");
 
                 var siteTemplateDir = $"T_{request.CreateTemplateId}";
                 var directoryPath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
                 DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
                 ZipUtils.ExtractZip(filePath, directoryPath);
 
-                Caching.SetProcess(request.Guid, "模板压缩包解压成功，正在导入数据...");
+                caching.SetProcess(request.Guid, "模板压缩包解压成功，正在导入数据...");
 
-                var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
+                var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
                 await manager.ImportSiteTemplateToEmptySiteAsync(site, siteTemplateDir, request.IsImportContents, request.IsImportTableStyles, adminId, request.Guid);
 
-                Caching.SetProcess(request.Guid, "生成站点页面...");
+                caching.SetProcess(request.Guid, "生成站点页面...");
                 await _createManager.CreateByAllAsync(site.Id);
 
-                Caching.SetProcess(request.Guid, "清除系统缓存...");
+                caching.SetProcess(request.Guid, "清除系统缓存...");
                 CacheUtils.ClearAll();
             }
 
@@ -214,7 +218,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            return Caching.GetProcess(request.Guid);
+            var caching = new Caching(_cacheManager);
+            return caching.GetProcess(request.Guid);
         }
     }
 }

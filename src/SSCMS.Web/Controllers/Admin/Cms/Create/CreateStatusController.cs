@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto.Create;
 using SSCMS.Dto.Request;
 using SSCMS.Dto.Result;

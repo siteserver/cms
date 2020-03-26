@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SSCMS;
 using SSCMS.Core.Utils.Serialization;
 using SSCMS.Utils;
 
@@ -12,13 +11,15 @@ namespace SSCMS.Core.Utils
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly Caching _caching;
         private readonly string _rootPath;
 
-        public SiteTemplateManager(IPathManager pathManager, IPluginManager pluginManager, IDatabaseManager databaseManager)
+        public SiteTemplateManager(IPathManager pathManager, IPluginManager pluginManager, IDatabaseManager databaseManager, Caching caching)
         {
             _pathManager = pathManager;
             _pluginManager = pluginManager;
             _databaseManager = databaseManager;
+            _caching = caching;
             _rootPath = _pathManager.GetSiteTemplatesPath(string.Empty);
             DirectoryUtils.CreateDirectoryIfNotExists(_rootPath);
         }
@@ -96,34 +97,34 @@ namespace SSCMS.Core.Utils
             var configurationFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
             var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
 
-            var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, site, adminId);
+            var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, _caching, site, adminId);
 
-            Caching.SetProcess(guid, $"导入站点文件: {siteTemplatePath}");
+            _caching.SetProcess(guid, $"导入站点文件: {siteTemplatePath}");
             await importObject.ImportFilesAsync(siteTemplatePath, true, guid);
 
-            Caching.SetProcess(guid, $"导入模板文件: {templateFilePath}");
+            _caching.SetProcess(guid, $"导入模板文件: {templateFilePath}");
             await importObject.ImportTemplatesAsync(templateFilePath, true, adminId, guid);
 
-            Caching.SetProcess(guid, $"导入配置文件: {configurationFilePath}");
+            _caching.SetProcess(guid, $"导入配置文件: {configurationFilePath}");
             await importObject.ImportConfigurationAsync(configurationFilePath, guid);
 
             var filePathList = ImportObject.GetSiteContentFilePathList(siteContentDirectoryPath);
             foreach (var filePath in filePathList)
             {
-                Caching.SetProcess(guid, $"导入栏目文件: {filePath}");
+                _caching.SetProcess(guid, $"导入栏目文件: {filePath}");
                 await importObject.ImportSiteContentAsync(siteContentDirectoryPath, filePath, isImportContents, guid);
             }
 
             if (isImportTableStyles)
             {
-                Caching.SetProcess(guid, $"导入表字段: {tableDirectoryPath}");
+                _caching.SetProcess(guid, $"导入表字段: {tableDirectoryPath}");
                 await importObject.ImportTableStylesAsync(tableDirectoryPath, guid);
             }
         }
 
-        public static async Task ExportSiteToSiteTemplateAsync(IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, Site site, string siteTemplateDir)
+        public static async Task ExportSiteToSiteTemplateAsync(IPathManager pathManager, IDatabaseManager databaseManager, Caching caching, IPluginManager pluginManager, Site site, string siteTemplateDir)
         {
-            var exportObject = new ExportObject(pathManager, databaseManager, pluginManager, site);
+            var exportObject = new ExportObject(pathManager, databaseManager, caching, pluginManager, site);
 
             var siteTemplatePath = pathManager.GetSiteTemplatesPath(siteTemplateDir);
 

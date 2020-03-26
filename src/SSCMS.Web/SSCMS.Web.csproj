@@ -8,12 +8,13 @@
     <DockerfileContext>..\..</DockerfileContext>
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <!--<EnableDefaultContentItems>false</EnableDefaultContentItems>-->
-    <Version>7.0.0-preview4</Version>
+    <Version>7.0.0-preview5</Version>
   </PropertyGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
-  </ItemGroup>
+    this code will cause sqlserver connection not work
+  </ItemGroup>-->
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />

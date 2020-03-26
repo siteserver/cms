@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
-using SSCMS;
 using SSCMS.Plugins;
 using SSCMS.Core.Extensions;
 using SSCMS.Utils;

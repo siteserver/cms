@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SSCMS;
 using SSCMS.Dto.Create;
 
 namespace SSCMS.Core.Services.CreateManager

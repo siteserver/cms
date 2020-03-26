@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto;
 using SSCMS.Dto.Request;
 using SSCMS.Dto.Result;

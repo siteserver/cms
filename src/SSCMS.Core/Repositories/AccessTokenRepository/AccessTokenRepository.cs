@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories.AccessTokenRepository

@@ -1,6 +1,4 @@
-﻿using SSCMS;
-
-namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
+﻿namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     public partial class AdministratorsConfigController
     {

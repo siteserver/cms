@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto.Request;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
@@ -48,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var specialInfoList = await _specialRepository.GetSpecialListAsync(request.SiteId);
+            var specialInfoList = await _specialRepository.GetSpecialsAsync(request.SiteId);
 
             return new ListResult
             {
@@ -76,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 "删除专题",
                 $"专题名称:{specialInfo.Title}");
 
-            var specialInfoList = await _specialRepository.GetSpecialListAsync(request.SiteId);
+            var specialInfoList = await _specialRepository.GetSpecialsAsync(request.SiteId);
 
             return new DeleteResult
             {
@@ -280,7 +279,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
             await _createManager.CreateSpecialAsync(request.SiteId, specialId);
 
-            var specialInfoList = await _specialRepository.GetSpecialListAsync(request.SiteId);
+            var specialInfoList = await _specialRepository.GetSpecialsAsync(request.SiteId);
 
             return new ObjectResult<IEnumerable<Special>>
             {

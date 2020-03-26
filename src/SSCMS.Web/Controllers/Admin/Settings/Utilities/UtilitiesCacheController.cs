@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CacheManager.Core;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Utils;
 using SSCMS.Utils;

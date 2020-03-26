@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.PluginImpls

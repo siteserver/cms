@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto.Request;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
@@ -18,6 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
     {
         private const string Route = "";
 
+        private readonly ICacheManager<Caching.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
@@ -26,8 +27,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerExportController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerExportController(ICacheManager<Caching.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
+            _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
@@ -184,7 +186,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 {
                     var fileName = $"{channel.ChannelName}.zip";
                     var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-                    var exportObject = new ExportObject(_pathManager, _databaseManager, _pluginManager, site);
+
+                    var caching = new Caching(_cacheManager);
+                    var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
                     contentInfoList.Reverse();
                     if (await exportObject.ExportContentsAsync(filePath, contentInfoList))
                     {

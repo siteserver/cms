@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils

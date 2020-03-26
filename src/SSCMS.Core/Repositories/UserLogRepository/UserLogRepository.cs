@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using SqlKata;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories.UserLogRepository

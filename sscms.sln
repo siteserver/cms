@@ -34,6 +34,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Web", "src\SSCMS.Web\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Web.Tests", "tests\SSCMS.Web.Tests\SSCMS.Web.Tests.csproj", "{CCE9B25D-0537-48B4-98C8-F8F119631ABC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Datory", "..\Datory\src\Datory\Datory.csproj", "{87E654A5-8A43-4E45-B2BE-F09FE34E6AA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,6 +74,10 @@ Global
 		{CCE9B25D-0537-48B4-98C8-F8F119631ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCE9B25D-0537-48B4-98C8-F8F119631ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCE9B25D-0537-48B4-98C8-F8F119631ABC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87E654A5-8A43-4E45-B2BE-F09FE34E6AA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87E654A5-8A43-4E45-B2BE-F09FE34E6AA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87E654A5-8A43-4E45-B2BE-F09FE34E6AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87E654A5-8A43-4E45-B2BE-F09FE34E6AA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

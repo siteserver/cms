@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto.Request;
 using SSCMS.Dto.Result;
 using SSCMS.Utils;
@@ -39,7 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
             if (site == null) return NotFound();
 
             var specials =
-                await _specialRepository.GetSpecialListAsync(request.SiteId);
+                await _specialRepository.GetSpecialsAsync(request.SiteId);
 
             return new GetResult
             {

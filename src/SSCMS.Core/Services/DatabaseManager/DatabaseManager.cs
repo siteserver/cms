@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using CacheManager.Core;
 using Dapper;
 using Datory;
-using SSCMS;
 using SSCMS.Core.Utils;
 using SSCMS.Utils;
 

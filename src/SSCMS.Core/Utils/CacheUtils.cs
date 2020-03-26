@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using Microsoft.Extensions.Caching.Memory;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
@@ -22,16 +21,6 @@ namespace SSCMS.Core.Utils
             _cache = new MemoryCache(new MemoryCacheOptions());
         }
 
-        public static void Remove(string key)
-        {
-            _cache.Remove(key);
-        }
-
-        public static void Insert(string key, object obj)
-        {
-            InnerInsert(key, obj, TimeSpan.Zero);
-        }
-
         public static void InsertHours(string key, object obj, int hours)
         {
             InnerInsert(key, obj, TimeSpan.FromHours(hours));
@@ -42,24 +31,7 @@ namespace SSCMS.Core.Utils
             InnerInsert(key, obj, TimeSpan.FromMinutes(minutes));
         }
 
-        private static void InnerInsert(string key, object obj, TimeSpan timeSpan)
-        {
-            if (_cache == null) return;
-
-            if (string.IsNullOrEmpty(key) || obj == null) return;
-
-            if (timeSpan == TimeSpan.Zero)
-            {
-                _cache.Set(key, obj);
-            }
-            else
-            {
-                _cache.Set(key, obj, new MemoryCacheEntryOptions
-                {
-                    SlidingExpiration = timeSpan
-                });
-            }
-        }
+        
 
         public static void Insert(string key, object obj, string filePath)
         {
@@ -99,11 +71,6 @@ namespace SSCMS.Core.Utils
             return _cache.TryGetValue(key, out T value) ? value : default;
         }
 
-        public static bool Exists(string key)
-        {
-            return _cache.TryGetValue(key, out _);
-        }
-
         public static string GetCacheKey(string nameofClass, params string[] values)
         {
             var key = $"{CachePrefix}.{nameofClass}";
@@ -113,6 +80,25 @@ namespace SSCMS.Core.Utils
                 key += "." + t;
             }
             return key;
+        }
+
+        private static void InnerInsert(string key, object obj, TimeSpan timeSpan)
+        {
+            if (_cache == null) return;
+
+            if (string.IsNullOrEmpty(key) || obj == null) return;
+
+            if (timeSpan == TimeSpan.Zero)
+            {
+                _cache.Set(key, obj);
+            }
+            else
+            {
+                _cache.Set(key, obj, new MemoryCacheEntryOptions
+                {
+                    SlidingExpiration = timeSpan
+                });
+            }
         }
     }
 }

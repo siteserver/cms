@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
-using SSCMS;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Utils;
 

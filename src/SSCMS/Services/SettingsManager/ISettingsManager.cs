@@ -24,8 +24,8 @@ namespace SSCMS
         IRedis Redis { get; }
         IList<Menu> Menus { get; }
         PermissionsSettings Permissions { get; }
-        string Encrypt(string inputString);
-        string Decrypt(string inputString);
+        string Encrypt(string inputString, string securityKey = null);
+        string Decrypt(string inputString, string securityKey = null);
         Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, string adminDirectory, string homeDirectory, string securityKey, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString);
     }
 }

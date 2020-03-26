@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Core.Extensions;
 using SSCMS.Utils;
 

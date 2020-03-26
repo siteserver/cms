@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SSCMS;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {

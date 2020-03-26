@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS;
 using SSCMS.Core.Utils.Office;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Core.Utils.Serialization.Components;
@@ -18,14 +17,16 @@ namespace SSCMS.Core.Utils.Serialization
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly Caching _caching;
         private readonly Site _site;
         private readonly int _adminId;
 
-        public ImportObject(IPathManager pathManager, IPluginManager pluginManager, IDatabaseManager databaseManager, Site site, int adminId)
+        public ImportObject(IPathManager pathManager, IPluginManager pluginManager, IDatabaseManager databaseManager, Caching caching, Site site, int adminId)
         {
             _pathManager = pathManager;
             _pluginManager = pluginManager;
             _databaseManager = databaseManager;
+            _caching = caching;
             _site = site;
             _adminId = adminId;
         }
@@ -41,7 +42,7 @@ namespace SSCMS.Core.Utils.Serialization
                 {
                     var fileName = PathUtils.GetFileName(filePath);
                     var destFilePath = PathUtils.Combine(sitePath, fileName);
-                    Caching.SetProcess(guid, $"导入站点文件: {filePath}");
+                    _caching.SetProcess(guid, $"导入站点文件: {filePath}");
                     FileUtils.MoveFile(filePath, destFilePath, isOverride);
                 }
 
@@ -53,7 +54,7 @@ namespace SSCMS.Core.Utils.Serialization
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
                     if (!_pathManager.IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
                     {
-                        Caching.SetProcess(guid, $"导入站点文件夹: {subDirectoryPath}");
+                        _caching.SetProcess(guid, $"导入站点文件夹: {subDirectoryPath}");
                         var destDirectoryPath = PathUtils.Combine(sitePath, directoryName);
                         DirectoryUtils.MoveDirectory(subDirectoryPath, destDirectoryPath, isOverride);
                     }
@@ -61,7 +62,7 @@ namespace SSCMS.Core.Utils.Serialization
             }
             else
             {
-                Caching.SetProcess(guid, $"导入站点文件夹: {siteTemplatePath}");
+                _caching.SetProcess(guid, $"导入站点文件夹: {siteTemplatePath}");
                 DirectoryUtils.MoveDirectory(siteTemplatePath, sitePath, isOverride);
             }
             var siteTemplateMetadataPath = PathUtils.Combine(sitePath, DirectoryUtils.SiteTemplates.SiteTemplateMetadata);
@@ -70,7 +71,7 @@ namespace SSCMS.Core.Utils.Serialization
 
         public async Task ImportSiteContentAsync(string siteContentDirectoryPath, string filePath, bool isImportContents, string guid)
         {
-            var siteIe = new SiteIe(_pathManager, _databaseManager, _site, siteContentDirectoryPath);
+            var siteIe = new SiteIe(_pathManager, _databaseManager, _caching, _site, siteContentDirectoryPath);
             await siteIe.ImportChannelsAndContentsAsync(filePath, isImportContents, false, 0, _adminId, guid);
         }
 
@@ -80,7 +81,7 @@ namespace SSCMS.Core.Utils.Serialization
         /// </summary>
         public async Task ImportTemplatesAsync(string filePath, bool overwrite, int adminId, string guid)
         {
-            var templateIe = new TemplateIe(_pathManager, _databaseManager, _site, filePath);
+            var templateIe = new TemplateIe(_pathManager, _databaseManager, _caching, _site, filePath);
             await templateIe.ImportTemplatesAsync(overwrite, adminId, guid);
         }
 
@@ -102,7 +103,7 @@ namespace SSCMS.Core.Utils.Serialization
         {
             if (DirectoryUtils.IsDirectoryExists(tableDirectoryPath))
             {
-                var tableStyleIe = new TableStyleIe(_databaseManager, tableDirectoryPath);
+                var tableStyleIe = new TableStyleIe(_databaseManager, _caching, tableDirectoryPath);
                 await tableStyleIe.ImportTableStylesAsync(_site, guid);
             }
         }
@@ -121,7 +122,7 @@ namespace SSCMS.Core.Utils.Serialization
 
         public async Task ImportConfigurationAsync(string configurationFilePath, string guid)
         {
-            var configIe = new ConfigurationIe(_databaseManager, _site, configurationFilePath);
+            var configIe = new ConfigurationIe(_databaseManager, _caching, _site, configurationFilePath);
             await configIe.ImportAsync(guid);
         }
 
@@ -166,11 +167,11 @@ namespace SSCMS.Core.Utils.Serialization
             }
         }
 
-        public async Task ImportChannelsAndContentsFromZipAsync(int parentId, string siteContentDirectoryPath, bool isOverride, string guid)
+        private async Task ImportChannelsAndContentsFromZipAsync(int parentId, string siteContentDirectoryPath, bool isOverride, string guid)
         {
             var filePathList = GetSiteContentFilePathList(siteContentDirectoryPath);
 
-            var siteIe = new SiteIe(_pathManager, _databaseManager, _site, siteContentDirectoryPath);
+            var siteIe = new SiteIe(_pathManager, _databaseManager, _caching, _site, siteContentDirectoryPath);
 
             Hashtable levelHashtable = null;
             foreach (var filePath in filePathList)
@@ -198,7 +199,7 @@ namespace SSCMS.Core.Utils.Serialization
         {
             var filePathList = GetSiteContentFilePathList(siteContentDirectoryPath);
 
-            var siteIe = new SiteIe(_pathManager, _databaseManager, _site, siteContentDirectoryPath);
+            var siteIe = new SiteIe(_pathManager, _databaseManager, _caching, _site, siteContentDirectoryPath);
 
             var parentOrderString = "none";
             //int parentID = 0;
@@ -481,7 +482,7 @@ namespace SSCMS.Core.Utils.Serialization
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
             var sitePath = await _pathManager.GetSitePathAsync(_site);
-            var contentIe = new ContentIe(_pathManager, _databaseManager, _site, siteContentDirectoryPath);
+            var contentIe = new ContentIe(_pathManager, _databaseManager, _caching, _site, siteContentDirectoryPath);
 
             await contentIe.ImportContentsAsync(filePath, isOverride, channel, taxis, importStart, importCount, isChecked, checkedLevel, _adminId, guid);
 
@@ -494,7 +495,7 @@ namespace SSCMS.Core.Utils.Serialization
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
             var sitePath = await _pathManager.GetSitePathAsync(_site);
-            var contentIe = new ContentIe(_pathManager, _databaseManager, _site, siteContentDirectoryPath);
+            var contentIe = new ContentIe(_pathManager, _databaseManager, _caching, _site, siteContentDirectoryPath);
 
             var contentIdList = await contentIe.ImportContentsAsync(filePath, isOverride, channel, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
 

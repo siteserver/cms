@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
@@ -19,13 +19,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private const string RouteUnZip = "actions/unZip";
         private const string RouteUpload = "actions/upload";
 
+        private readonly ICacheManager<Caching.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
 
-        public SitesTemplatesController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager)
+        public SitesTemplatesController(ICacheManager<Caching.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager)
         {
+            _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
@@ -34,7 +36,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
         private async Task<ListResult> GetListResultAsync()
         {
-            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
+            var caching = new Caching(_cacheManager);
+            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
             var siteTemplates = manager.GetSiteTemplateInfoList();
             var siteTemplateInfoList = new List<SiteTemplateInfo>();
             foreach (var siteTemplate in siteTemplates)
@@ -140,7 +143,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager);
+            var caching = new Caching(_cacheManager);
+            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
 
             if (!string.IsNullOrEmpty(request.DirectoryName))
             {

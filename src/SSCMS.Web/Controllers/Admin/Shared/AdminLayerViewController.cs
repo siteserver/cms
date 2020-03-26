@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Core.Utils.PluginImpls;
 
 namespace SSCMS.Web.Controllers.Admin.Shared

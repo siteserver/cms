@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SSCMS;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Core.Repositories.ErrorLogRepository

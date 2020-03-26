@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Web
@@ -19,7 +18,14 @@ namespace SSCMS.Web
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(ConfigConfiguration)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                        .AddJsonFile(Constants.ConfigFileName, optional: true, reloadOnChange: true)
+                        .AddEnvironmentVariables("SSCMS_")
+                        .AddCommandLine(args);
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
@@ -32,13 +38,5 @@ namespace SSCMS.Web
                         .UseIIS()
                         .UseStartup<Startup>();
                 });
-
-        static void ConfigConfiguration(IConfigurationBuilder config)
-        {
-            config.SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile(Constants.ConfigFileName, optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("SSCMS_");
-        }
     }
 }

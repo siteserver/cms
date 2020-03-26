@@ -4,7 +4,7 @@ using Datory;
 
 namespace SSCMS
 {
-    public partial interface ISpecialRepository : IRepository
+    public interface ISpecialRepository : IRepository
     {
         Task<int> InsertAsync(Special special);
 
@@ -14,6 +14,14 @@ namespace SSCMS
 
         Task<bool> IsUrlExistsAsync(int siteId, string url);
 
-        Task<List<Special>> GetSpecialListAsync(int siteId);
+        Task<List<Special>> GetSpecialsAsync(int siteId);
+
+        Task DeleteAsync(int siteId, int specialId);
+
+        Task<Special> GetSpecialAsync(int siteId, int specialId);
+
+        Task<string> GetTitleAsync(int siteId, int specialId);
+
+        Task<List<int>> GetAllSpecialIdListAsync(int siteId);
     }
 }

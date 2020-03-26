@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SSCMS;
 
 namespace SSCMS.Core.Services.PluginManager
 {

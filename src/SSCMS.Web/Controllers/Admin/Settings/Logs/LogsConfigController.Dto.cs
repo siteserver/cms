@@ -1,6 +1,4 @@
-﻿using SSCMS;
-
-namespace SSCMS.Web.Controllers.Admin.Settings.Logs
+﻿namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
     public partial class LogsConfigController
     {

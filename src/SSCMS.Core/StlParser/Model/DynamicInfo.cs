@@ -1,6 +1,5 @@
 ﻿using System.Collections.Specialized;
 using Newtonsoft.Json;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.Model

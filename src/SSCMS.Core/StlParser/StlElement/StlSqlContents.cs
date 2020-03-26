@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Mock;
 using SSCMS.Core.StlParser.Model;

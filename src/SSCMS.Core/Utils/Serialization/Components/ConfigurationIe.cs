@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory.Utils;
-using SSCMS;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Utils;
 
@@ -10,6 +9,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 	public class ConfigurationIe
     {
         private readonly IDatabaseManager _databaseManager;
+        private readonly Caching _caching;
 		private readonly Site _site;
 		private readonly string _filePath;
 
@@ -18,9 +18,10 @@ namespace SSCMS.Core.Utils.Serialization.Components
 		private const string DefaultContentTemplateName = "DefaultContentTemplateName";
 		private const string DefaultFileTemplateName = "DefaultFileTemplateName";
 
-		public ConfigurationIe(IDatabaseManager databaseManager, Site site, string filePath)
+		public ConfigurationIe(IDatabaseManager databaseManager, Caching caching, Site site, string filePath)
         {
 			_databaseManager = databaseManager;
+            _caching = caching;
 			_site = site;
 			_filePath = filePath;
 		}
@@ -75,7 +76,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
 			var contentGroupList = await _databaseManager.ContentGroupRepository.GetContentGroupsAsync(_site.Id);
 
-			var contentGroupId = new ContentGroupIe(_databaseManager);
+			var contentGroupId = new ContentGroupIe(_databaseManager, _caching);
             foreach (var contentGroup in contentGroupList)
 			{
 				var entry = contentGroupId.Export(contentGroup);
@@ -136,7 +137,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             _site.IsSeparatedWeb = false;
             _site.IsCreateDoubleClick = false;
 
-            Caching.SetProcess(guid, $"更新站点配置...");
+            _caching.SetProcess(guid, $"更新站点配置...");
 			await _databaseManager.SiteRepository.UpdateAsync(_site);
 
 			var indexTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultIndexTemplateName);
@@ -179,7 +180,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 				}
 			}
 
-            var contentGroupIe = new ContentGroupIe(_databaseManager);
+            var contentGroupIe = new ContentGroupIe(_databaseManager, _caching);
 
 			await contentGroupIe.ImportAsync(feed, _site.Id, guid);
 		}

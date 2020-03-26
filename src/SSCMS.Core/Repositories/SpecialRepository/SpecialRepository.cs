@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Core.Repositories.SpecialRepository
 {
@@ -22,59 +23,67 @@ namespace SSCMS.Core.Repositories.SpecialRepository
 
         public async Task<int> InsertAsync(Special special)
         {
-            var specialId = await _repository.InsertAsync(special);
-            RemoveCache(special.SiteId);
+            var specialId = await _repository.InsertAsync(special, Q
+                .CachingRemove(CacheKey(special.SiteId))
+            );
             return specialId;
         }
 
         public async Task UpdateAsync(Special special)
         {
-            await _repository.UpdateAsync(special);
-            RemoveCache(special.SiteId);
+            await _repository.UpdateAsync(special, Q
+                .CachingRemove(CacheKey(special.SiteId))
+            );
         }
 
         public async Task DeleteAsync(int siteId, int specialId)
         {
             if (specialId <= 0) return;
-            await _repository.DeleteAsync(specialId);
-            RemoveCache(siteId);
+
+            await _repository.DeleteAsync(specialId, Q
+                .CachingRemove(CacheKey(siteId))
+            );
         }
 
         public async Task<bool> IsTitleExistsAsync(int siteId, string title)
         {
-            return await _repository.ExistsAsync(Q
-                .Where(nameof(Special.SiteId), siteId)
-                .Where(nameof(Special.Title), title)
-            );
+            var specials = await GetSpecialsAsync(siteId);
+            return specials.Exists(x => x.Url == title);
         }
 
         public async Task<bool> IsUrlExistsAsync(int siteId, string url)
         {
-            return await _repository.ExistsAsync(Q
-                .Where(nameof(Special.SiteId), siteId)
-                .Where(nameof(Special.Url), url)
-            );
+            var specials = await GetSpecialsAsync(siteId);
+            return specials.Exists(x => x.Url == url);
         }
 
-        public async Task<List<Special>> GetSpecialListAsync(int siteId)
+        public async Task<List<Special>> GetSpecialsAsync(int siteId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(nameof(Special.SiteId), siteId)
                 .OrderByDesc(nameof(Special.Id))
+                .CachingGet(CacheKey(siteId))
             );
         }
 
-        private async Task<Dictionary<int, Special>> GetSpecialDictionaryBySiteIdAsync(int siteId)
+        private string CacheKey(int siteId) => Caching.GetListKey(TableName, siteId);
+
+        public async Task<Special> GetSpecialAsync(int siteId, int specialId)
         {
-            var dictionary = new Dictionary<int, Special>();
+            var specials = await GetSpecialsAsync(siteId);
+            return specials.FirstOrDefault(x => x.Id == specialId);
+        }
 
-            var list = await _repository.GetAllAsync(Q.Where(nameof(Special.SiteId), siteId));
-            foreach (var special in list)
-            {
-                dictionary.Add(special.Id, special);
-            }
+        public async Task<string> GetTitleAsync(int siteId, int specialId)
+        {
+            var special = await GetSpecialAsync(siteId, specialId);
+            return special != null ? special.Title : string.Empty;
+        }
 
-            return dictionary;
+        public async Task<List<int>> GetAllSpecialIdListAsync(int siteId)
+        {
+            var specials = await GetSpecialsAsync(siteId);
+            return specials.Select(x => x.Id).ToList();
         }
     }
 }

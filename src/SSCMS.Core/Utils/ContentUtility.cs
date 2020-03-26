@@ -4,9 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
-using SSCMS;
 using SSCMS.Utils;
-using Content = SSCMS.Content;
 
 namespace SSCMS.Core.Utils
 {

@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using CacheManager.Core;
 using Datory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using SSCMS;
 using SSCMS.Plugins;
 using SSCMS.Core.Services.AuthManager;
 using SSCMS.Core.Services.CreateManager;

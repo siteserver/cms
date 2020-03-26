@@ -1,5 +1,4 @@
 ﻿using System.Collections.Specialized;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.Model

@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using SSCMS;
 
 namespace SSCMS.Core.Repositories.ContentRepository
 {

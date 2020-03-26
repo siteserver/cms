@@ -7,7 +7,6 @@ using Dapper;
 using Datory;
 using Datory.Utils;
 using SqlKata;
-using SSCMS;
 using SSCMS.Core.Utils;
 using SSCMS.Utils;
 

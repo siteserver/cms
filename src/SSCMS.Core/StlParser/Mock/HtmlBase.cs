@@ -1,6 +1,5 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.Mock

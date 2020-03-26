@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Core.Extensions;
 using SSCMS.Utils;
 

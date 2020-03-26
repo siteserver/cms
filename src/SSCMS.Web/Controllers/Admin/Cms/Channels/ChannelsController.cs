@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Dto.Request;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
+using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Serialization;
 using SSCMS.Utils;
 
@@ -25,6 +26,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private const string RouteExport = "actions/export";
         private const string RouteOrder = "actions/order";
 
+        private readonly ICacheManager<Caching.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
@@ -37,8 +39,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly ITemplateRepository _templateRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ChannelsController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
+        public ChannelsController(ICacheManager<Caching.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
         {
+            _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _createManager = createManager;
@@ -279,8 +282,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 var site = await _siteRepository.GetAsync(request.SiteId);
                 var filePath = _pathManager.GetTemporaryFilesPath(request.FileName);
                 var adminId = await _authManager.GetAdminIdAsync();
+                var caching = new Caching(_cacheManager);
 
-                var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, site, adminId);
+                var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, caching, site, adminId);
                 await importObject.ImportChannelsAndContentsByZipFileAsync(request.ChannelId, filePath,
                     request.IsOverride, null);
 
@@ -310,7 +314,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var exportObject = new ExportObject(_pathManager, _databaseManager, _pluginManager, site);
+            var caching = new Caching(_cacheManager);
+            var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
             var fileName = await exportObject.ExportChannelsAsync(request.ChannelIds);
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             var url = _pathManager.GetDownloadApiUrl(_pathManager.InnerApiUrl, filePath);

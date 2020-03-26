@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using SSCMS;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.AdditionalElements;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.AdditionalElements.DublinCore;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;

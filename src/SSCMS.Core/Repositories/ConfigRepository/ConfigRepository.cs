@@ -2,18 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Core.Repositories.ConfigRepository
 {
     public partial class ConfigRepository : IConfigRepository
     {
+        private readonly ISettingsManager _settingsManager;
         private readonly Repository<Config> _repository;
         private readonly string _cacheKey;
 
         public ConfigRepository(ISettingsManager settingsManager)
         {
+            _settingsManager = settingsManager;
             _repository = new Repository<Config>(settingsManager.Database, settingsManager.Redis);
             _cacheKey = Caching.GetEntityKey(TableName);
         }
@@ -44,6 +45,7 @@ namespace SSCMS.Core.Repositories.ConfigRepository
 		{
             try
             {
+                if (string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString)) return false;
                 return await _repository.ExistsAsync();
             }
 		    catch

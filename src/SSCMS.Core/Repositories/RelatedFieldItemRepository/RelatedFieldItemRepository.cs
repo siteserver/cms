@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Core.Repositories.RelatedFieldItemRepository

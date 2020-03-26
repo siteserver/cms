@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS;
 
 namespace SSCMS.Core.Repositories.ConfigRepository
 {
@@ -10,16 +9,20 @@ namespace SSCMS.Core.Repositories.ConfigRepository
         public async Task<Config> GetAsync()
         {
             Config config = null;
-            try
+
+            if (!string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString))
             {
-                config = await _repository.GetAsync(Q
-                    .OrderBy(nameof(Config.Id))
-                    .CachingGet(_cacheKey)
-                );
-            }
-            catch
-            {
-                // ignored
+                try
+                {
+                    config = await _repository.GetAsync(Q
+                        .OrderBy(nameof(Config.Id))
+                        .CachingGet(_cacheKey)
+                    );
+                }
+                catch
+                {
+                    // ignored
+                }
             }
 
             return config ?? new Config

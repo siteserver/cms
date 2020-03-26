@@ -1,6 +1,4 @@
-﻿using SSCMS;
-
-namespace SSCMS.Web.Controllers.Admin.Settings.Users
+﻿namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     public partial class UsersViewController
     {

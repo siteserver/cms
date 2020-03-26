@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services.CreateManager

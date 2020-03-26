@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {

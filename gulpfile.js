@@ -80,6 +80,7 @@ gulp.task("build", async function (callback) {
 gulp.task("copy-files", async function () {
   fs.copySync('./appsettings.json', publishDir + '/appsettings.json');
   fs.copySync('./sscms.json', publishDir + '/sscms.json');
+  fs.copySync('./web.config', publishDir + '/web.config');
   fs.copySync('./src/SSCMS.Web/assets', publishDir + '/assets');
   fs.copySync('./404.html', publishDir + '/wwwroot/404.html');
   fs.copySync('./favicon.ico', publishDir + '/wwwroot/favicon.ico');

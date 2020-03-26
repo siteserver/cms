@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS;
 using SSCMS.Core.StlParser.Model;
 
 namespace SSCMS.Core.StlParser.StlEntity

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Datory;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SSCMS;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Utils;
 
@@ -10,18 +9,20 @@ namespace SSCMS.Core.Utils.Serialization.Components
     internal class SiteIe
     {
         private readonly IDatabaseManager _databaseManager;
+        private readonly Caching _caching;
         private readonly Site _site;
         private readonly string _siteContentDirectoryPath;
         private readonly ChannelIe _channelIe;
         private readonly ContentIe _contentIe;
 
-        public SiteIe(IPathManager pathManager, IDatabaseManager databaseManager, Site site, string siteContentDirectoryPath)
+        public SiteIe(IPathManager pathManager, IDatabaseManager databaseManager, Caching caching, Site site, string siteContentDirectoryPath)
         {
             _databaseManager = databaseManager;
+            _caching = caching;
             _siteContentDirectoryPath = siteContentDirectoryPath;
             _site = site;
             _channelIe = new ChannelIe(_databaseManager, site);
-            _contentIe = new ContentIe(pathManager, databaseManager, site, siteContentDirectoryPath);
+            _contentIe = new ContentIe(pathManager, databaseManager, _caching, site, siteContentDirectoryPath);
         }
 
         public async Task<int> ImportChannelsAndContentsAsync(string filePath, bool isImportContents, bool isOverride, int theParentId, int adminId, string guid)
@@ -70,7 +71,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 var channel = await _databaseManager.ChannelRepository.ImportGetAsync(_site.Id);
                 await _channelIe.ImportChannelAsync(channel, feed.AdditionalElements, parentId, indexNameList);
 
-                Caching.SetProcess(guid, $"导入栏目: {channel.ChannelName}");
+                _caching.SetProcess(guid, $"导入栏目: {channel.ChannelName}");
                 await _databaseManager.ChannelRepository.UpdateAsync(channel);
 
                 if (isImportContents)
@@ -96,7 +97,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 }
                 if (!isUpdate)
                 {
-                    Caching.SetProcess(guid, $"导入栏目: {channel.ChannelName}");
+                    _caching.SetProcess(guid, $"导入栏目: {channel.ChannelName}");
                     channelId = await _databaseManager.ChannelRepository.InsertAsync(channel);
                 }
                 else
@@ -106,7 +107,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     //var tableName = _databaseManager.ChannelRepository.GetTableName(_site, node);
                     await _channelIe.ImportChannelAsync(channel, feed.AdditionalElements, parentId, indexNameList);
 
-                    Caching.SetProcess(guid, $"导入栏目: {channel.ChannelName}");
+                    _caching.SetProcess(guid, $"导入栏目: {channel.ChannelName}");
                     await _databaseManager.ChannelRepository.UpdateAsync(channel);
 
                     //_databaseManager.ContentRepository.DeleteContentsByChannelId(_site.Id, tableName, theSameNameChannelId);

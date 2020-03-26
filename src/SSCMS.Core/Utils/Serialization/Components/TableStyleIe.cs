@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
-using SSCMS;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Utils;
 
@@ -11,12 +10,14 @@ namespace SSCMS.Core.Utils.Serialization.Components
 	internal class TableStyleIe
     {
         private readonly IDatabaseManager _databaseManager;
-		private readonly string _directoryPath;
+        private readonly Caching _caching;
+        private readonly string _directoryPath;
 
-        public TableStyleIe(IDatabaseManager databaseManager, string directoryPath)
+        public TableStyleIe(IDatabaseManager databaseManager, Caching caching, string directoryPath)
         {
             _databaseManager = databaseManager;
-			_directoryPath = directoryPath;
+            _caching = caching;
+            _directoryPath = directoryPath;
         }
 
 		public async Task ExportTableStylesAsync(int siteId, string tableName)
@@ -257,7 +258,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
             foreach (var styleInfo in styles)
             {
-                Caching.SetProcess(guid, $"导入表字段: {styleInfo.AttributeName}");
+                _caching.SetProcess(guid, $"导入表字段: {styleInfo.AttributeName}");
                 await _databaseManager.TableStyleRepository.InsertAsync(_databaseManager.TableStyleRepository.GetRelatedIdentities(styleInfo.RelatedIdentity), styleInfo);
             }
         }

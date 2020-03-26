@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Core.Utils;
 using SSCMS.Utils;
 

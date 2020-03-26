@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SSCMS;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Utils;
 
@@ -9,9 +8,12 @@ namespace SSCMS.Core.Utils.Serialization.Components
     public class ContentGroupIe
     {
         private readonly IDatabaseManager _databaseManager;
-        public ContentGroupIe(IDatabaseManager databaseManager)
+        private readonly Caching _caching;
+
+        public ContentGroupIe(IDatabaseManager databaseManager, Caching caching)
         {
             _databaseManager = databaseManager;
+            _caching = caching;
         }
 
         public AtomEntry Export(ContentGroup @group)
@@ -53,7 +55,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
             foreach (var group in groups)
             {
-                Caching.SetProcess(guid, $"导入内容组: {group.GroupName}");
+                _caching.SetProcess(guid, $"导入内容组: {group.GroupName}");
                 await _databaseManager.ContentGroupRepository.InsertAsync(group);
             }
         }

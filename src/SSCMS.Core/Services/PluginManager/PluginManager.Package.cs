@@ -1,5 +1,4 @@
 ﻿using System;
-using SSCMS;
 using SSCMS.Core.Packaging;
 using SSCMS.Utils;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories.LogRepository

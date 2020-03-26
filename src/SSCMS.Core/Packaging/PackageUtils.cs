@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NuGet.Packaging;
-using SSCMS;
 using SSCMS.Core.Utils;
 using SSCMS.Utils;
 

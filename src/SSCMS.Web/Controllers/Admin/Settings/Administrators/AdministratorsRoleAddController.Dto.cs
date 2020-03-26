@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SSCMS;
 using SSCMS.Core.Utils;
 using SSCMS.Utils;
 

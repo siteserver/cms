@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services.PathManager

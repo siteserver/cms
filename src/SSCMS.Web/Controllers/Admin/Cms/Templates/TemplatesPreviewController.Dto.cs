@@ -1,5 +1,4 @@
-﻿using SSCMS;
-using SSCMS.Dto;
+﻿using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {

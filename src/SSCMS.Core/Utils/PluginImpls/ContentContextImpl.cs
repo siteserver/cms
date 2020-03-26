@@ -1,7 +1,5 @@
 ﻿
 
-using SSCMS;
-
 namespace SSCMS.Core.Utils.PluginImpls
 {
     public class ContentContextImpl : IContentContext

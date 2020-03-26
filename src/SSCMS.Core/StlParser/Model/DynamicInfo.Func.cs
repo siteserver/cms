@@ -1,5 +1,4 @@
-﻿using SSCMS;
-using SSCMS.Utils;
+﻿using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.Model
 {

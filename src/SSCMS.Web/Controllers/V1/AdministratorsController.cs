@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS;
 using SSCMS.Core.Extensions;
-using SSCMS.Core.Utils;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
@@ -21,13 +19,15 @@ namespace SSCMS.Web.Controllers.V1
         private readonly IConfigRepository _configRepository;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly IAdministratorRepository _administratorRepository;
+        private readonly IDbCacheRepository _dbCacheRepository;
 
-        public AdministratorsController(IAuthManager authManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository)
+        public AdministratorsController(IAuthManager authManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IDbCacheRepository dbCacheRepository)
         {
             _authManager = authManager;
             _configRepository = configRepository;
             _accessTokenRepository = accessTokenRepository;
             _administratorRepository = administratorRepository;
+            _dbCacheRepository = dbCacheRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -137,7 +137,7 @@ namespace SSCMS.Web.Controllers.V1
 
             var sessionId = StringUtils.Guid();
             var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);
-            CacheUtils.Insert(cacheKey, sessionId);
+            await _dbCacheRepository.RemoveAndInsertAsync(cacheKey, sessionId);
 
             var config = await _configRepository.GetAsync();
 

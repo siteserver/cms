@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using SSCMS;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Packaging;
 using SSCMS.Core.Utils;

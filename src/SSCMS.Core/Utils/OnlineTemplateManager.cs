@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils

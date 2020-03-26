@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services.PluginManager

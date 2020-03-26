@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Datory;
 using SqlKata;
-using SSCMS;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Core.Repositories.ContentRepository
