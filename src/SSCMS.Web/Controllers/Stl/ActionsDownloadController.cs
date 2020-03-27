@@ -22,8 +22,7 @@ namespace SSCMS.Web.Controllers.Stl
             _contentRepository = contentRepository;
         }
 
-        [HttpGet]
-        [Route(Constants.RouteActionsDownload)]
+        [HttpGet, Route(Constants.RouteActionsDownload)]
         public async Task<ActionResult> Get([FromQuery]GetRequest request)
         {
             try

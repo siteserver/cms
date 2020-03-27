@@ -11,12 +11,12 @@ namespace SSCMS.Core.Repositories.ChannelRepository
     {
         private string GetListKey(int siteId)
         {
-            return Caching.GetListKey(_repository.TableName, siteId);
+            return CacheUtils.GetListKey(_repository.TableName, siteId);
         }
 
         private string GetEntityKey(int channelId)
         {
-            return Caching.GetEntityKey(_repository.TableName, channelId);
+            return CacheUtils.GetEntityKey(_repository.TableName, channelId);
         }
 
         public async Task CacheAllAsync(Site site)

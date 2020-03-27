@@ -66,7 +66,7 @@ namespace SSCMS.Core.Repositories.SpecialRepository
             );
         }
 
-        private string CacheKey(int siteId) => Caching.GetListKey(TableName, siteId);
+        private string CacheKey(int siteId) => CacheUtils.GetListKey(TableName, siteId);
 
         public async Task<Special> GetSpecialAsync(int siteId, int specialId)
         {

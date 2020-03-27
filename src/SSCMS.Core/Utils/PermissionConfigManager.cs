@@ -1,15 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
+using CacheManager.Core;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {
     public class PermissionConfigManager
 	{
-        private static readonly string CacheKey = CacheUtils.GetCacheKey(nameof(PermissionConfigManager));
-
-	    public List<PermissionConfig> GeneralPermissions { get; } = new List<PermissionConfig>();
+        public List<PermissionConfig> GeneralPermissions { get; } = new List<PermissionConfig>();
 
 	    public List<PermissionConfig> WebsitePermissions { get; } = new List<PermissionConfig>();
 
@@ -21,21 +20,21 @@ namespace SSCMS.Core.Utils
 
         private readonly IPluginManager _pluginManager;
 
-
-		private PermissionConfigManager(IPluginManager pluginManager)
+        private PermissionConfigManager(IPluginManager pluginManager)
         {
             _pluginManager = pluginManager;
         }
 
-        public static async Task<PermissionConfigManager> GetInstanceAsync(IPathManager pathManager, IPluginManager pluginManager)
+        public static async Task<PermissionConfigManager> GetInstanceAsync(ICacheManager<object> cacheManager, IPathManager pathManager, IPluginManager pluginManager)
 		{
-            var permissionManager = CacheUtils.Get<PermissionConfigManager>(CacheKey);
+            var tabManager = new TabManager(cacheManager, pathManager, pluginManager);
+			var path = tabManager.GetMenusPath("Permissions.config");
+
+			var permissionManager = cacheManager.Get<PermissionConfigManager>(CacheUtils.GetPathKey(path));
             if (permissionManager != null) return permissionManager;
 
             permissionManager = new PermissionConfigManager(pluginManager);
 
-			var tabManager = new TabManager(pathManager, pluginManager);
-            var path = tabManager.GetMenusPath("Permissions.config");
             if (FileUtils.IsFileExists(path))
             {
                 var doc = new XmlDocument();
@@ -43,7 +42,7 @@ namespace SSCMS.Core.Utils
                 await permissionManager.LoadValuesFromConfigurationXmlAsync(doc);
             }
 
-            CacheUtils.Insert(CacheKey, permissionManager, path);
+            CacheUtils.SetFileContent(cacheManager, permissionManager, path);
             return permissionManager;
         }
 

@@ -23,7 +23,7 @@ namespace SSCMS.Core.Repositories.UserGroupRepository
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private string CacheKey => Caching.GetListKey(_repository.TableName);
+        private string CacheKey => CacheUtils.GetListKey(_repository.TableName);
 
         public async Task<int> InsertAsync(UserGroup group)
         {

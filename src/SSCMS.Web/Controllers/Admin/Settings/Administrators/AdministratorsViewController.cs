@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CacheManager.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Core.Utils.PluginImpls;
+using SSCMS.Core.Services.AuthManager;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
@@ -11,6 +13,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
     {
         private const string Route = "";
 
+        private readonly IHttpContextAccessor _context;
+        private readonly ICacheManager<object> _cacheManager;
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
@@ -18,8 +23,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public AdministratorsViewController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
+        public AdministratorsViewController(IHttpContextAccessor context, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
         {
+            _context = context;
+            _cacheManager = cacheManager;
+            _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
@@ -58,7 +66,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var permissions = new PermissionsImpl(_pathManager, _pluginManager, _databaseManager, admin);
+            var permissions = new AuthManager(_context, _cacheManager, _settingsManager, _pathManager, _databaseManager, _pluginManager);
+            permissions.Init(admin);
             var level = await permissions.GetAdminLevelAsync();
             var isSuperAdmin = await permissions.IsSuperAdminAsync();
             var siteNames = new List<string>();

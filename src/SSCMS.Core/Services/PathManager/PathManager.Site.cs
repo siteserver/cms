@@ -29,11 +29,6 @@ namespace SSCMS.Core.Services.PathManager
             return PathUtils.Combine(_settingsManager.ContentRootPath, PathUtils.Combine(paths));
         }
 
-        public string GetAdminUrl(string relatedUrl)
-        {
-            return PageUtils.Combine(WebUrl, _settingsManager.AdminDirectory, relatedUrl);
-        }
-
         public string GetHomeUrl(string relatedUrl)
         {
             return PageUtils.Combine(WebUrl, _settingsManager.HomeDirectory, relatedUrl);

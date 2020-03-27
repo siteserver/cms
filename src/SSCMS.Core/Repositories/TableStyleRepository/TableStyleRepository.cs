@@ -23,7 +23,7 @@ namespace SSCMS.Core.Repositories.TableStyleRepository
 
         private string GetCacheKey(string tableName)
         {
-            return Caching.GetListKey(_repository.TableName, tableName);
+            return CacheUtils.GetListKey(_repository.TableName, tableName);
         }
 
         private void Sync(TableStyle style)

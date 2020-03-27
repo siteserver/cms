@@ -9,7 +9,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
-    [Route(Constants.ApiRoute)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class InstallController : ControllerBase
     {
         public const string Route = "install";

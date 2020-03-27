@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
@@ -15,6 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private const string RouteSiteId = "{siteId:int}";
         private const string RouteRoleId = "{roleId:int}";
 
+        private readonly ICacheManager<object> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
@@ -24,8 +26,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private readonly ISitePermissionsRepository _sitePermissionsRepository;
         private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
 
-        public AdministratorsRoleAddController(IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
+        public AdministratorsRoleAddController(ICacheManager<object> cacheManager, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
         {
+            _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _pluginManager = pluginManager;
@@ -61,7 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             var permissions = new List<Permission>();
             var generalPermissionList = await _authManager.GetPermissionListAsync();
-            var instance = await PermissionConfigManager.GetInstanceAsync(_pathManager, _pluginManager);
+            var instance = await PermissionConfigManager.GetInstanceAsync(_cacheManager, _pathManager, _pluginManager);
             var generalPermissions = instance.GeneralPermissions;
 
             if (generalPermissions.Count > 0)
@@ -177,7 +180,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 }
             }
 
-            CacheUtils.ClearAll();
+            _cacheManager.Clear();
 
             await _authManager.AddAdminLogAsync("新增管理员角色", $"角色名称:{request.RoleName}");
 
@@ -238,7 +241,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             await _roleRepository.UpdateRoleAsync(roleInfo);
 
-            CacheUtils.ClearAll();
+            _cacheManager.Clear();
 
             await _authManager.AddAdminLogAsync("修改管理员角色", $"角色名称:{request.RoleName}");
 

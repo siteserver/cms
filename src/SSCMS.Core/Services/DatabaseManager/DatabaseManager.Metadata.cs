@@ -61,7 +61,7 @@ namespace SSCMS.Core.Services.DatabaseManager
 
             //await UpdateConfigVersionAsync();
 
-            CacheUtils.ClearAll();
+            _cacheManager.Clear();
 
             await SyncSystemTablesAsync(GetAllRepositories());
 

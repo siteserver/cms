@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private const string RouteFiles = "actions/files";
         private const string RouteActionsData = "actions/data";
 
-        private readonly ICacheManager<Caching.Process> _cacheManager;
+        private readonly ICacheManager<CacheUtils.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
@@ -27,7 +27,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public SitesSaveController(ICacheManager<Caching.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public SitesSaveController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
@@ -67,7 +67,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var caching = new Caching(_cacheManager);
+            var caching = new CacheUtils(_cacheManager);
             var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
 
             if (manager.IsSiteTemplateDirectoryExists(request.TemplateDir))
@@ -147,7 +147,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var caching = new Caching(_cacheManager);
+            var caching = new CacheUtils(_cacheManager);
             var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(request.TemplateDir);
             await exportObject.ExportFilesToSiteAsync(siteTemplatePath, request.IsAllFiles, request.CheckedDirectories, request.CheckedFiles, true);
@@ -176,7 +176,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(request.TemplateDir);
             var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
 
-            var caching = new Caching(_cacheManager);
+            var caching = new CacheUtils(_cacheManager);
             var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
             await exportObject.ExportSiteContentAsync(siteContentDirectoryPath, request.IsSaveContents, request.IsSaveAllChannels, request.CheckedChannelIds);
 

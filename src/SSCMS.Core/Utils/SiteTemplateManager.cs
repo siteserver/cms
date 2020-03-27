@@ -11,10 +11,10 @@ namespace SSCMS.Core.Utils
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly Caching _caching;
+        private readonly CacheUtils _caching;
         private readonly string _rootPath;
 
-        public SiteTemplateManager(IPathManager pathManager, IPluginManager pluginManager, IDatabaseManager databaseManager, Caching caching)
+        public SiteTemplateManager(IPathManager pathManager, IPluginManager pluginManager, IDatabaseManager databaseManager, CacheUtils caching)
         {
             _pathManager = pathManager;
             _pluginManager = pluginManager;
@@ -122,7 +122,7 @@ namespace SSCMS.Core.Utils
             }
         }
 
-        public static async Task ExportSiteToSiteTemplateAsync(IPathManager pathManager, IDatabaseManager databaseManager, Caching caching, IPluginManager pluginManager, Site site, string siteTemplateDir)
+        public static async Task ExportSiteToSiteTemplateAsync(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IPluginManager pluginManager, Site site, string siteTemplateDir)
         {
             var exportObject = new ExportObject(pathManager, databaseManager, caching, pluginManager, site);
 

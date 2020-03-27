@@ -14,11 +14,11 @@ namespace SSCMS.Core.Utils.Serialization
     {
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly Caching _caching;
+        private readonly CacheUtils _caching;
         private readonly IPluginManager _pluginManager;
         private readonly Site _site;
 
-        public ExportObject(IPathManager pathManager, IDatabaseManager databaseManager, Caching caching, IPluginManager pluginManager, Site site)
+        public ExportObject(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IPluginManager pluginManager, Site site)
         {
             _pathManager = pathManager;
             _databaseManager = databaseManager;

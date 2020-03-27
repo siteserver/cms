@@ -9,12 +9,12 @@ namespace SSCMS.Core.Repositories.TemplateRepository
     {
         private string GetListKey(int siteId)
         {
-            return Caching.GetListKey(_repository.TableName, siteId);
+            return CacheUtils.GetListKey(_repository.TableName, siteId);
         }
 
         private string GetEntityKey(int templateId)
         {
-            return Caching.GetEntityKey(_repository.TableName, templateId);
+            return CacheUtils.GetEntityKey(_repository.TableName, templateId);
         }
 
         public async Task<List<TemplateSummary>> GetSummariesAsync(int siteId)

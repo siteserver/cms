@@ -4,7 +4,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
-    [Route(Constants.ApiRoute)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class ErrorController : ControllerBase
     {
         public const string Route = "error";

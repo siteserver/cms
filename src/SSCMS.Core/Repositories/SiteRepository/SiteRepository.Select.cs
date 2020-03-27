@@ -10,12 +10,12 @@ namespace SSCMS.Core.Repositories.SiteRepository
     {
         private string GetEntityKey(int siteId)
         {
-            return Caching.GetEntityKey(_repository.TableName, siteId);
+            return CacheUtils.GetEntityKey(_repository.TableName, siteId);
         }
 
         private string GetListKey()
         {
-            return Caching.GetListKey(_repository.TableName);
+            return CacheUtils.GetListKey(_repository.TableName);
         }
 
         public async Task<Site> GetAsync(int siteId)

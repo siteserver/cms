@@ -23,7 +23,7 @@ namespace SSCMS.Core.Repositories.RelatedFieldItemRepository
 
         private string GetCacheKey(int siteId)
         {
-            return Caching.GetListKey(_repository.TableName, siteId);
+            return CacheUtils.GetListKey(_repository.TableName, siteId);
         }
 
         public async Task<int> InsertAsync(RelatedFieldItem info)

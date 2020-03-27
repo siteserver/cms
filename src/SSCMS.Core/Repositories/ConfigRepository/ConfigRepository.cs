@@ -16,7 +16,7 @@ namespace SSCMS.Core.Repositories.ConfigRepository
         {
             _settingsManager = settingsManager;
             _repository = new Repository<Config>(settingsManager.Database, settingsManager.Redis);
-            _cacheKey = Caching.GetEntityKey(TableName);
+            _cacheKey = CacheUtils.GetEntityKey(TableName);
         }
 
         public IDatabase Database => _repository.Database;

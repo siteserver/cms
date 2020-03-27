@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
@@ -16,14 +17,16 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private const string RouteUpdate = "update";
         private const string RouteCache = "cache";
 
+        private readonly ICacheManager<object> _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public InstallController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, IDbCacheRepository dbCacheRepository)
+        public InstallController(ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, IDbCacheRepository dbCacheRepository)
         {
+            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
@@ -113,7 +116,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            CacheUtils.ClearAll();
+            _cacheManager.Clear();
             await _dbCacheRepository.ClearAsync();
 
             return new BoolResult

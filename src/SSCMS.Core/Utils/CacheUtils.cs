@@ -1,104 +1,169 @@
-using System;
+﻿using System;
 using System.IO;
-using Microsoft.Extensions.Caching.Memory;
+using CacheManager.Core;
+using Datory.Utils;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {
-    public static class CacheUtils
+    public class CacheUtils
     {
-        private const string CachePrefix = "CacheUtils";
-        private static IMemoryCache _cache;
-
-        static CacheUtils()
+        private readonly ICacheManager<Process> _cacheManager;
+        public CacheUtils(ICacheManager<Process> cacheManager)
         {
-            _cache = new MemoryCache(new MemoryCacheOptions());
+            _cacheManager = cacheManager;
         }
 
-        public static void ClearAll()
+        public class Process
         {
-            _cache.Dispose();
-            _cache = new MemoryCache(new MemoryCacheOptions());
+            public int Total { get; set; }
+            public int Current { get; set; }
+            public string Message { get; set; }
         }
 
-        public static void InsertHours(string key, object obj, int hours)
+        public static void SetFileContent(ICacheManager<object> cacheManager, object value, string filePath)
         {
-            InnerInsert(key, obj, TimeSpan.FromHours(hours));
-        }
-
-        public static void InsertMinutes(string key, object obj, int minutes)
-        {
-            InnerInsert(key, obj, TimeSpan.FromMinutes(minutes));
-        }
-
-        
-
-        public static void Insert(string key, object obj, string filePath)
-        {
-            if (_cache == null) return;
-
-            if (!string.IsNullOrEmpty(filePath))
+            if (string.IsNullOrEmpty(filePath)) return;
+            var directoryPath = DirectoryUtils.GetDirectoryPath(filePath);
+            var fileName = PathUtils.GetFileName(filePath);
+            var watcher = new FileSystemWatcher
             {
-                var directoryPath = DirectoryUtils.GetDirectoryPath(filePath);
-                var fileName = PathUtils.GetFileName(filePath);
-                var watcher = new FileSystemWatcher
-                {
-                    Filter = fileName,
-                    Path = directoryPath,
-                    EnableRaisingEvents = true
-                };
-                watcher.Changed += (sender, e) =>
-                {
-                    _cache.Remove(key);
-                };
-                watcher.Renamed += (sender, e) =>
-                {
-                    _cache.Remove(key);
-                };
-                watcher.Deleted += (sender, e) =>
-                {
-                    _cache.Remove(key);
-                };
-                _cache.Set(key, obj, new MemoryCacheEntryOptions
-                {
-                    SlidingExpiration = TimeSpan.FromHours(12)
-                });
-            }
-        }
+                Filter = fileName,
+                Path = directoryPath,
+                EnableRaisingEvents = true
+            };
 
-        public static T Get<T>(string key) where T : class
-        {
-            return _cache.TryGetValue(key, out T value) ? value : default;
-        }
+            var cacheKey = GetPathKey(filePath);
 
-        public static string GetCacheKey(string nameofClass, params string[] values)
-        {
-            var key = $"{CachePrefix}.{nameofClass}";
-            if (values == null || values.Length <= 0) return key;
-            foreach (var t in values)
+            watcher.Changed += (sender, e) =>
             {
-                key += "." + t;
-            }
-            return key;
+                cacheManager.Remove(cacheKey);
+            };
+            watcher.Renamed += (sender, e) =>
+            {
+                cacheManager.Remove(cacheKey);
+            };
+            watcher.Deleted += (sender, e) =>
+            {
+                cacheManager.Remove(cacheKey);
+            };
+
+            var cacheItem = new CacheItem<object>(cacheKey, value, ExpirationMode.Sliding, TimeSpan.FromHours(12));
+            cacheManager.AddOrUpdate(cacheItem, _ => value);
         }
 
-        private static void InnerInsert(string key, object obj, TimeSpan timeSpan)
+        private static string GetProcessCacheKey(string guid)
         {
-            if (_cache == null) return;
+            return $"ss:{nameof(Process)}:{guid}";
+        }
 
-            if (string.IsNullOrEmpty(key) || obj == null) return;
+        public void SetProcess(string guid, string message)
+        {
+            if (string.IsNullOrEmpty(guid)) return;
 
-            if (timeSpan == TimeSpan.Zero)
+            //var cache = CacheUtils.Get<Process>(guid);
+            var cacheKey = GetProcessCacheKey(guid);
+            var process = _cacheManager.Get(cacheKey);
+            if (process == null)
             {
-                _cache.Set(key, obj);
+                process = new Process
+                {
+                    Total = 100,
+                    Current = 0,
+                    Message = message
+                };
             }
             else
             {
-                _cache.Set(key, obj, new MemoryCacheEntryOptions
-                {
-                    SlidingExpiration = timeSpan
-                });
+                process.Total++;
+                process.Current++;
+                process.Message = message;
             }
+
+            var cacheItem = new CacheItem<Process>(cacheKey, process, ExpirationMode.Sliding, TimeSpan.FromHours(1));
+
+            _cacheManager.AddOrUpdate(cacheItem, _ => process);
+
+            //CacheUtils.InsertHours(guid, cache, 1);
+        }
+
+        public Process GetProcess(string guid)
+        {
+            var cacheKey = GetProcessCacheKey(guid);
+            var process = _cacheManager.Get(cacheKey) ?? new Process
+            {
+                Total = 100,
+                Current = 0,
+                Message = string.Empty
+            };
+
+            return process;
+        }
+
+        public static string GetPathKey(string filePath)
+        {
+            return $"ss:{StringUtils.ToLower(filePath)}";
+        }
+
+        public static string GetClassKey(Type type, params string[] values)
+        {
+            if (values == null || values.Length <= 0) return $"ss:{type.FullName}";
+            return $"ss:{type.FullName}:{Utilities.ToString(values, ":")}";
+        }
+
+        public static string GetEntityKey(string tableName)
+        {
+            return $"ss:{tableName}:entity:only";
+        }
+
+        public static string GetEntityKey(string tableName, int id)
+        {
+            return $"ss:{tableName}:entity:{id}";
+        }
+
+        public static string GetEntityKey(string tableName, string type, string identity)
+        {
+            return $"ss:{tableName}:entity:{type}:{identity}";
+        }
+
+        public static string GetListKey(string tableName)
+        {
+            return $"ss:{tableName}:list";
+        }
+
+        public static string GetListKey(string tableName, int siteId)
+        {
+            return $"ss:{tableName}:list:{siteId}";
+        }
+
+        public static string GetListKey(string tableName, string type)
+        {
+            return $"ss:{tableName}:list:{type}";
+        }
+
+        public static string GetListKey(string tableName, string type, params string[] identities)
+        {
+            return $"ss:{tableName}:list:{type}:{Utilities.ToString(identities, ":")}";
+        }
+
+        public static string GetCountKey(string tableName, int siteId)
+        {
+            return $"ss:{tableName}:count:{siteId}";
+        }
+
+        public static string GetCountKey(string tableName, int siteId, int channelId)
+        {
+            return $"ss:{tableName}:count:{siteId}:{channelId}";
+        }
+
+        public static string GetCountKey(string tableName, int siteId, int channelId, int adminId)
+        {
+            return $"ss:{tableName}:count:{siteId}:{channelId}:{adminId}";
+        }
+
+        public static string GetCountKey(string tableName, int siteId, int channelId, params string[] identities)
+        {
+            return $"ss:{tableName}:count:{siteId}:{channelId}:{Utilities.ToString(identities, ":")}";
         }
     }
 }

@@ -9,13 +9,13 @@ namespace SSCMS.Core.Utils.Serialization.Components
     internal class SiteIe
     {
         private readonly IDatabaseManager _databaseManager;
-        private readonly Caching _caching;
+        private readonly CacheUtils _caching;
         private readonly Site _site;
         private readonly string _siteContentDirectoryPath;
         private readonly ChannelIe _channelIe;
         private readonly ContentIe _contentIe;
 
-        public SiteIe(IPathManager pathManager, IDatabaseManager databaseManager, Caching caching, Site site, string siteContentDirectoryPath)
+        public SiteIe(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, string siteContentDirectoryPath)
         {
             _databaseManager = databaseManager;
             _caching = caching;

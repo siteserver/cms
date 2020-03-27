@@ -12,7 +12,7 @@ namespace SSCMS.Utils
         public const string DefaultLanguage = "en";
         public const string DefaultLocalDbFileName = "database.sqlite";
         public const string ApiPrefix = "/api";
-        public const string ApiRoute = "admin";
+        public const string ApiAdminPrefix = "admin";
         public const string AbstractionsAssemblyName = "SSCMS.dll";
         public const string EncryptStingIndicator = "0secret0";
 

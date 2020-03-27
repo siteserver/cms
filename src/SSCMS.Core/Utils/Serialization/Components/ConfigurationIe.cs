@@ -9,7 +9,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 	public class ConfigurationIe
     {
         private readonly IDatabaseManager _databaseManager;
-        private readonly Caching _caching;
+        private readonly CacheUtils _caching;
 		private readonly Site _site;
 		private readonly string _filePath;
 
@@ -18,7 +18,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 		private const string DefaultContentTemplateName = "DefaultContentTemplateName";
 		private const string DefaultFileTemplateName = "DefaultFileTemplateName";
 
-		public ConfigurationIe(IDatabaseManager databaseManager, Caching caching, Site site, string filePath)
+		public ConfigurationIe(IDatabaseManager databaseManager, CacheUtils caching, Site site, string filePath)
         {
 			_databaseManager = databaseManager;
             _caching = caching;

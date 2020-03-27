@@ -36,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public bool IsDeleteAfterTranslate { get; set; }
         }
 
-        public async Task TranslateAsync(Site site, int targetSiteId, int targetChannelId, TranslateType translateType, IEnumerable<int> channelIds, bool isDeleteAfterTranslate, int adminId)
+        private async Task TranslateAsync(Site site, int targetSiteId, int targetChannelId, TranslateType translateType, IEnumerable<int> channelIds, bool isDeleteAfterTranslate, int adminId)
         {
             var channelIdList = new List<int>();//需要转移的栏目ID
             foreach (var channelId in channelIds)
@@ -92,8 +92,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     }
                 }
             }
-
-
         }
 
         private async Task TranslateChannelAndContentAsync(Site site, List<Channel> nodeInfoList, int targetSiteId, int parentId, TranslateType translateType, List<string> nodeIndexNameList, List<string> filePathList, bool isDeleteAfterTranslate)

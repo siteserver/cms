@@ -17,11 +17,11 @@ namespace SSCMS.Core.Utils.Serialization
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly Caching _caching;
+        private readonly CacheUtils _caching;
         private readonly Site _site;
         private readonly int _adminId;
 
-        public ImportObject(IPathManager pathManager, IPluginManager pluginManager, IDatabaseManager databaseManager, Caching caching, Site site, int adminId)
+        public ImportObject(IPathManager pathManager, IPluginManager pluginManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, int adminId)
         {
             _pathManager = pathManager;
             _pluginManager = pluginManager;

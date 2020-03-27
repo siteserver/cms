@@ -9,7 +9,7 @@ namespace SSCMS.Core.Repositories.ChannelGroupRepository
     {
         private string GetCacheKey(int siteId)
         {
-            return Caching.GetListKey(TableName, siteId);
+            return CacheUtils.GetListKey(TableName, siteId);
         }
 
         public async Task<List<string>> GetGroupNamesAsync(int siteId)

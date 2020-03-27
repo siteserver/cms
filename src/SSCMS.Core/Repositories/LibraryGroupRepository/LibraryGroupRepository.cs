@@ -21,7 +21,7 @@ namespace SSCMS.Core.Repositories.LibraryGroupRepository
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private string CacheKey(LibraryType type) => Caching.GetListKey(TableName, type.GetValue());
+        private string CacheKey(LibraryType type) => CacheUtils.GetListKey(TableName, type.GetValue());
 
         public async Task<int> InsertAsync(LibraryGroup group)
         {

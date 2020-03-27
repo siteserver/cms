@@ -8,9 +8,9 @@ namespace SSCMS.Core.Utils.Serialization.Components
     public class ContentGroupIe
     {
         private readonly IDatabaseManager _databaseManager;
-        private readonly Caching _caching;
+        private readonly CacheUtils _caching;
 
-        public ContentGroupIe(IDatabaseManager databaseManager, Caching caching)
+        public ContentGroupIe(IDatabaseManager databaseManager, CacheUtils caching)
         {
             _databaseManager = databaseManager;
             _caching = caching;

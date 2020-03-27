@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Packaging;
-using SSCMS.Core.Utils;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins
@@ -19,14 +19,16 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private const string RoutePluginIdEnable = "{pluginId}/actions/enable";
 
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private readonly ICacheManager<object> _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPluginManager _pluginManager;
         private readonly IPluginRepository _pluginRepository;
 
-        public ManageController(IHostApplicationLifetime hostApplicationLifetime, ISettingsManager settingsManager, IAuthManager authManager, IPluginManager pluginManager, IPluginRepository pluginRepository)
+        public ManageController(IHostApplicationLifetime hostApplicationLifetime, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPluginManager pluginManager, IPluginRepository pluginRepository)
         {
             _hostApplicationLifetime = hostApplicationLifetime;
+            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pluginManager = pluginManager;
@@ -73,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             _pluginManager.Delete(pluginId);
             await _authManager.AddAdminLogAsync("删除插件", $"插件:{pluginId}");
 
-            CacheUtils.ClearAll();
+            _cacheManager.Clear();
 
             return new BoolResult
             {
@@ -117,7 +119,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 await _authManager.AddAdminLogAsync("启用插件", $"插件:{pluginId}");
             }
 
-            CacheUtils.ClearAll();
+            _cacheManager.Clear();
 
             return new BoolResult
             {

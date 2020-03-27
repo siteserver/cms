@@ -22,8 +22,7 @@ namespace SSCMS.Web.Controllers.Stl
             _contentRepository = contentRepository;
         }
 
-        [HttpGet]
-        [Route(Constants.RouteActionsTrigger)]
+        [HttpGet, Route(Constants.RouteActionsTrigger)]
         public async Task<ActionResult<string>> Get([FromQuery] GetRequest request)
         {
             var site = await _siteRepository.GetAsync(request.SiteId);

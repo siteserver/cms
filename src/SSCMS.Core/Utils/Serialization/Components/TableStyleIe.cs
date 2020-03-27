@@ -10,10 +10,10 @@ namespace SSCMS.Core.Utils.Serialization.Components
 	internal class TableStyleIe
     {
         private readonly IDatabaseManager _databaseManager;
-        private readonly Caching _caching;
+        private readonly CacheUtils _caching;
         private readonly string _directoryPath;
 
-        public TableStyleIe(IDatabaseManager databaseManager, Caching caching, string directoryPath)
+        public TableStyleIe(IDatabaseManager databaseManager, CacheUtils caching, string directoryPath)
         {
             _databaseManager = databaseManager;
             _caching = caching;

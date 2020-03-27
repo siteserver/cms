@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using SSCMS.Utils;
 
@@ -8,6 +9,7 @@ namespace SSCMS.Core.Services.PathManager
 {
     public partial class PathManager : IPathManager
     {
+        private readonly ICacheManager<object> _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly ISpecialRepository _specialRepository;
@@ -18,8 +20,9 @@ namespace SSCMS.Core.Services.PathManager
         private readonly IContentRepository _contentRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public PathManager(ISettingsManager settingsManager, IDatabaseManager databaseManager, ISpecialRepository specialRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
+        public PathManager(ICacheManager<object> cacheManager, ISettingsManager settingsManager, IDatabaseManager databaseManager, ISpecialRepository specialRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
         {
+            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
             _specialRepository = specialRepository;
@@ -37,6 +40,11 @@ namespace SSCMS.Core.Services.PathManager
         public string WebRootPath => _settingsManager.WebRootPath;
 
         public string WebUrl => "/";
+
+        public string GetAdminUrl(string relatedUrl)
+        {
+            return PageUtils.Combine(WebUrl, _settingsManager.AdminDirectory, relatedUrl);
+        }
 
         public string GetAdminUrl(params string[] paths)
         {

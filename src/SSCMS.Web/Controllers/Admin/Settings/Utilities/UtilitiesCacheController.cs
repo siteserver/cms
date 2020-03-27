@@ -50,7 +50,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
             }
 
             _cacheManager.Clear();
-            CacheUtils.ClearAll();
             await _dbCacheRepository.ClearAsync();
             _cacheManager.Clear();
 

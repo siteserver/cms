@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto.Request;
 using SSCMS.Dto.Result;
@@ -13,16 +15,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     {
         private const string Route = "";
         private const string RouteCache = "actions/cache";
-        private const string CacheKey = "SiteServer.API.Controllers.Pages.Cms.PagesTemplatePreviewController";
+        private static readonly string CacheKey = CacheUtils.GetClassKey(typeof(TemplatesPreviewController));
 
+        private readonly ICacheManager<string> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IParseManager _parseManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public TemplatesPreviewController(IAuthManager authManager, IParseManager parseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public TemplatesPreviewController(ICacheManager<string> cacheManager, IAuthManager authManager, IParseManager parseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
+            _cacheManager = cacheManager;
             _authManager = authManager;
             _parseManager = parseManager;
             _siteRepository = siteRepository;
@@ -53,7 +57,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 };
             });
 
-            var content = CacheUtils.Get<string>(CacheKey);
+            var content = _cacheManager.Get(CacheKey);
 
             return new GetResult
             {
@@ -72,7 +76,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            CacheUtils.InsertHours(CacheKey, request.Content, 1);
+            var cacheItem = new CacheItem<string>(CacheKey, request.Content, ExpirationMode.Sliding, TimeSpan.FromHours(1));
+            _cacheManager.AddOrUpdate(cacheItem, _ => request.Content);
 
             return new BoolResult
             {
@@ -110,7 +115,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 }
             }
 
-            CacheUtils.InsertHours(CacheKey, request.Content, 1);
+            var cacheItem = new CacheItem<string>(CacheKey, request.Content, ExpirationMode.Sliding, TimeSpan.FromHours(1));
+            _cacheManager.AddOrUpdate(cacheItem, _ => request.Content);
 
             var templateInfo = new Template
             {

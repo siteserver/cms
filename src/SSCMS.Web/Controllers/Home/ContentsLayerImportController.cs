@@ -18,7 +18,7 @@ namespace SSCMS.Web.Controllers.Home
         private const string Route = "";
         private const string RouteUpload = "actions/upload";
 
-        private readonly ICacheManager<Caching.Process> _cacheManager;
+        private readonly ICacheManager<CacheUtils.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
@@ -26,7 +26,7 @@ namespace SSCMS.Web.Controllers.Home
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public ContentsLayerImportController(ICacheManager<Caching.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public ContentsLayerImportController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
@@ -125,7 +125,7 @@ namespace SSCMS.Web.Controllers.Home
             var adminId = await _authManager.GetAdminIdAsync();
             var userId = await _authManager.GetUserIdAsync();
 
-            var caching = new Caching(_cacheManager);
+            var caching = new CacheUtils(_cacheManager);
             if (request.ImportType == "zip")
             {
                 foreach (var fileName in request.FileNames)

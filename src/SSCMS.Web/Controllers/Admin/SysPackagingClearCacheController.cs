@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto.Result;
 using SSCMS.Core.Utils;
@@ -10,11 +11,13 @@ namespace SSCMS.Web.Controllers.Admin
     {
         private const string Route = "";
 
+        private readonly ICacheManager<CacheUtils.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public SysPackagesClearCacheController(IAuthManager authManager, IDbCacheRepository dbCacheRepository)
+        public SysPackagesClearCacheController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IDbCacheRepository dbCacheRepository)
         {
+            _cacheManager = cacheManager;
             _authManager = authManager;
             _dbCacheRepository = dbCacheRepository;
         }
@@ -29,7 +32,7 @@ namespace SSCMS.Web.Controllers.Admin
                 return Unauthorized();
             }
 
-            CacheUtils.ClearAll();
+            _cacheManager.Clear();
             await _dbCacheRepository.ClearAsync();
 
             return new BoolResult

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.PluginImpls;
@@ -8,35 +10,23 @@ using SSCMS.Utils;
 
 namespace SSCMS.Core.Services.AuthManager
 {
-    public class AuthManager : IAuthManager
+    public partial class AuthManager : IAuthManager
     {
         private readonly HttpContext _context;
+        private readonly ICacheManager<object> _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
-        private readonly IAccessTokenRepository _accessTokenRepository;
-        private readonly IAdministratorRepository _administratorRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IUserGroupRepository _userGroupRepository;
-        private readonly ILogRepository _logRepository;
-        private readonly ISiteLogRepository _siteLogRepository;
-        private readonly IUserLogRepository _userLogRepository;
 
-        public AuthManager(IHttpContextAccessor context, ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IUserRepository userRepository, IUserGroupRepository userGroupRepository, ILogRepository logRepository, ISiteLogRepository siteLogRepository, IUserLogRepository userLogRepository)
+        public AuthManager(IHttpContextAccessor context, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager)
         {
             _context = context.HttpContext;
+            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
-            _accessTokenRepository = accessTokenRepository;
-            _administratorRepository = administratorRepository;
-            _userRepository = userRepository;
-            _userGroupRepository = userGroupRepository;
-            _logRepository = logRepository;
-            _siteLogRepository = siteLogRepository;
-            _userLogRepository = userLogRepository;
         }
 
         private bool _init;
@@ -49,22 +39,38 @@ namespace SSCMS.Core.Services.AuthManager
         private User _user;
         private UserGroup _userGroup;
         private bool _isApiAuthenticated;
-        private IPermissions _permissions;
+
+        public void Init(Administrator administrator)
+        {
+            if (administrator != null && !administrator.Locked)
+            {
+                _isAdminAuthenticated = true;
+                _administrator = administrator;
+
+                _rolesKey = GetRolesCacheKey(_administrator.UserName);
+                _permissionListKey = GetPermissionListCacheKey(_administrator.UserName);
+                _websitePermissionDictKey = GetWebsitePermissionDictCacheKey(_administrator.UserName);
+                _channelPermissionDictKey = GetChannelPermissionDictCacheKey(_administrator.UserName);
+            }
+
+            _init = true;
+        }
 
         private async Task InitAsync()
         {
             if (_init) return;
+
+            Administrator administrator = null;
 
             if (!string.IsNullOrEmpty(GetAdminToken()))
             {
                 var tokenImpl = ParseAccessToken(_adminToken);
                 if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                 {
-                    var admin = await _administratorRepository.GetByUserIdAsync(tokenImpl.UserId);
+                    var admin = await _databaseManager.AdministratorRepository.GetByUserIdAsync(tokenImpl.UserId);
                     if (admin != null && !admin.Locked && admin.UserName == tokenImpl.UserName)
                     {
-                        _isAdminAuthenticated = true;
-                        _administrator = admin;
+                        administrator = admin;
                     }
                 }
             }
@@ -73,32 +79,31 @@ namespace SSCMS.Core.Services.AuthManager
                 var tokenImpl = ParseAccessToken(_userToken);
                 if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                 {
-                    var user = await _userRepository.GetByUserIdAsync(tokenImpl.UserId);
+                    var user = await _databaseManager.UserRepository.GetByUserIdAsync(tokenImpl.UserId);
                     if (user != null && !user.Locked && user.Checked && user.UserName == tokenImpl.UserName)
                     {
                         _user = user;
                         _isUserAuthenticated = true;
 
-                        _userGroup = await _userGroupRepository.GetUserGroupAsync(user.GroupId);
+                        _userGroup = await _databaseManager.UserGroupRepository.GetUserGroupAsync(user.GroupId);
                         if (_userGroup != null)
                         {
-                            _administrator = await _administratorRepository.GetByUserNameAsync(_userGroup.AdminName);
+                            administrator = await _databaseManager.AdministratorRepository.GetByUserNameAsync(_userGroup.AdminName);
                         }
                     }
                 }
             }
             else if (!string.IsNullOrEmpty(GetApiToken()))
             {
-                var tokenInfo = await _accessTokenRepository.GetByTokenAsync(_apiToken);
+                var tokenInfo = await _databaseManager.AccessTokenRepository.GetByTokenAsync(_apiToken);
                 if (tokenInfo != null)
                 {
                     if (!string.IsNullOrEmpty(tokenInfo.AdminName))
                     {
-                        var admin = await _administratorRepository.GetByUserNameAsync(tokenInfo.AdminName);
+                        var admin = await _databaseManager.AdministratorRepository.GetByUserNameAsync(tokenInfo.AdminName);
                         if (admin != null && !admin.Locked)
                         {
-                            _isAdminAuthenticated = true;
-                            _administrator = admin;
+                            administrator = admin;
                         }
                     }
 
@@ -106,9 +111,7 @@ namespace SSCMS.Core.Services.AuthManager
                 }
             }
 
-            _permissions = new PermissionsImpl(_pathManager, _pluginManager, _databaseManager, _administrator);
-
-            _init = true;
+            Init(administrator);
         }
 
         public string GetApiToken()
@@ -275,37 +278,37 @@ namespace SSCMS.Core.Services.AuthManager
         public async Task AddSiteLogAsync(int siteId, int channelId, string action, string summary)
         {
             await InitAsync();
-            await _siteLogRepository.AddSiteLogAsync(siteId, channelId, 0, _administrator, action, summary);
+            await _databaseManager.SiteLogRepository.AddSiteLogAsync(siteId, channelId, 0, _administrator, action, summary);
         }
 
         public async Task AddSiteLogAsync(int siteId, int channelId, int contentId, string action, string summary)
         {
             await InitAsync();
-            await _siteLogRepository.AddSiteLogAsync(siteId, channelId, contentId, _administrator, action, summary);
+            await _databaseManager.SiteLogRepository.AddSiteLogAsync(siteId, channelId, contentId, _administrator, action, summary);
         }
 
         public async Task AddAdminLogAsync(string action, string summary)
         {
             await InitAsync();
-            await _logRepository.AddAdminLogAsync(_administrator, action, summary);
+            await _databaseManager.LogRepository.AddAdminLogAsync(_administrator, action, summary);
         }
 
         public async Task AddAdminLogAsync(string action)
         {
             await InitAsync();
-            await _logRepository.AddAdminLogAsync(_administrator, action);
+            await _databaseManager.LogRepository.AddAdminLogAsync(_administrator, action);
         }
 
         public async Task<string> AdminLoginAsync(string userName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(userName)) return null;
-            var admin = await _administratorRepository.GetByUserNameAsync(userName);
+            var admin = await _databaseManager.AdministratorRepository.GetByUserNameAsync(userName);
             if (admin == null || admin.Locked) return null;
 
             var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
             var accessToken = GetAccessToken(admin.Id, admin.UserName, expiresAt);
 
-            await _logRepository.AddAdminLogAsync(admin, "管理员登录");
+            await _databaseManager.LogRepository.AddAdminLogAsync(admin, "管理员登录");
 
             if (isAutoLogin)
             {
@@ -333,14 +336,14 @@ namespace SSCMS.Core.Services.AuthManager
         {
             if (string.IsNullOrEmpty(userName)) return null;
 
-            var user = await _userRepository.GetByUserNameAsync(userName);
+            var user = await _databaseManager.UserRepository.GetByUserNameAsync(userName);
             if (user == null || user.Locked || !user.Checked) return null;
 
             var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
             var accessToken = GetAccessToken(user.Id, user.UserName, expiresAt);
 
-            await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user);
-            await _userLogRepository.AddUserLoginLogAsync(user.Id);
+            await _databaseManager.UserRepository.UpdateLastActivityDateAndCountOfLoginAsync(user);
+            await _databaseManager.UserLogRepository.AddUserLoginLogAsync(user.Id);
 
             if (isAutoLogin)
             {
@@ -416,85 +419,257 @@ namespace SSCMS.Core.Services.AuthManager
         public async Task<bool> IsSuperAdminAsync()
         {
             await InitAsync();
-            return await _permissions.IsSuperAdminAsync();
+            return _databaseManager.RoleRepository.IsConsoleAdministrator(await GetRolesAsync());
         }
 
         public async Task<bool> IsSiteAdminAsync()
         {
             await InitAsync();
-            return await _permissions.IsSuperAdminAsync();
+            return _databaseManager.RoleRepository.IsSystemAdministrator(await GetRolesAsync());
+        }
+
+        private async Task<bool> IsSiteAdminAsync(int siteId)
+        {
+            await InitAsync();
+            var siteIdList = await GetSiteIdListAsync();
+            return await IsSiteAdminAsync() && siteIdList.Contains(siteId);
         }
 
         public async Task<string> GetAdminLevelAsync()
         {
             await InitAsync();
-            return await _permissions.GetAdminLevelAsync();
+
+            if (await IsSiteAdminAsync())
+            {
+                return "超级管理员";
+            }
+
+            return await IsSiteAdminAsync() ? "站点总管理员" : "普通管理员";
         }
 
         public async Task<List<int>> GetSiteIdListAsync()
         {
             await InitAsync();
-            return await _permissions.GetSiteIdListAsync();
+
+            var siteIdList = new List<int>();
+
+            if (await IsSuperAdminAsync())
+            {
+                siteIdList = (await _databaseManager.SiteRepository.GetSiteIdListAsync()).ToList();
+            }
+            else if (await IsSiteAdminAsync())
+            {
+                if (_administrator?.SiteIds != null)
+                {
+                    foreach (var siteId in _administrator.SiteIds)
+                    {
+                        if (!siteIdList.Contains(siteId))
+                        {
+                            siteIdList.Add(siteId);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var dict = await GetWebsitePermissionDictAsync();
+
+                foreach (var siteId in dict.Keys)
+                {
+                    if (!siteIdList.Contains(siteId))
+                    {
+                        siteIdList.Add(siteId);
+                    }
+                }
+            }
+
+            return siteIdList;
         }
 
         public async Task<List<int>> GetChannelIdListAsync(int siteId, params string[] permissions)
         {
             await InitAsync();
-            return await _permissions.GetChannelIdListAsync(siteId, permissions);
+
+            if (await IsSiteAdminAsync(siteId))
+            {
+                return await _databaseManager.ChannelRepository.GetChannelIdListAsync(siteId);
+            }
+
+            var siteChannelIdList = new List<int>();
+            var dict = await GetChannelPermissionDictAsync();
+            foreach (var dictKey in dict.Keys)
+            {
+                var kvp = ParseChannelPermissionDictKey(dictKey);
+                var dictPermissions = dict[dictKey];
+                if (kvp.Key == siteId && dictPermissions.Any(permissions.Contains))
+                {
+                    var channelInfo = await _databaseManager.ChannelRepository.GetAsync(kvp.Value);
+
+                    var channelIdList = await _databaseManager.ChannelRepository.GetChannelIdsAsync(channelInfo.SiteId, channelInfo.Id, ScopeType.All);
+
+                    foreach (var channelId in channelIdList)
+                    {
+                        if (!siteChannelIdList.Contains(channelId))
+                        {
+                            siteChannelIdList.Add(channelId);
+                        }
+                    }
+                }
+            }
+
+            return siteChannelIdList;
         }
 
         public async Task<bool> HasSystemPermissionsAsync(params string[] permissions)
         {
             await InitAsync();
-            return await _permissions.HasSystemPermissionsAsync(permissions);
+
+            if (await IsSiteAdminAsync()) return true;
+
+            var permissionList = await GetPermissionListAsync();
+            return permissions.Any(permission => permissionList.Contains(permission));
         }
 
         public async Task<bool> HasSitePermissionsAsync(int siteId, params string[] permissions)
         {
             await InitAsync();
-            return await _permissions.HasSitePermissionsAsync(siteId, permissions);
+
+            if (await IsSiteAdminAsync()) return true;
+            var dict = await GetWebsitePermissionDictAsync();
+            if (!dict.ContainsKey(siteId)) return false;
+
+            var websitePermissionList = dict[siteId];
+            if (websitePermissionList != null && websitePermissionList.Count > 0)
+            {
+                return permissions.Any(sitePermission => websitePermissionList.Contains(sitePermission));
+            }
+
+            return false;
         }
 
         public async Task<bool> HasChannelPermissionsAsync(int siteId, int channelId, params string[] permissions)
         {
             await InitAsync();
-            return await _permissions.HasChannelPermissionsAsync(siteId, channelId, permissions);
+
+            while (true)
+            {
+                if (channelId == 0) return false;
+                if (await IsSiteAdminAsync()) return true;
+                var dictKey = GetChannelPermissionDictKey(siteId, channelId);
+                var dict = await GetChannelPermissionDictAsync();
+                if (dict.ContainsKey(dictKey) && await HasChannelPermissionsAsync(dict[dictKey], permissions)) return true;
+
+                var parentChannelId = await _databaseManager.ChannelRepository.GetParentIdAsync(siteId, channelId);
+                channelId = parentChannelId;
+            }
         }
 
         public async Task<List<string>> GetPermissionListAsync()
         {
             await InitAsync();
-            return await _permissions.GetPermissionListAsync();
+
+            if (_permissionList != null) return _permissionList;
+            if (_administrator == null || _administrator.Locked) return new List<string>();
+
+            _permissionList = _cacheManager.Get<List<string>>(_permissionListKey);
+
+            if (_permissionList == null)
+            {
+                var roles = await GetRolesAsync();
+                if (_databaseManager.RoleRepository.IsConsoleAdministrator(roles))
+                {
+                    _permissionList = new List<string>();
+                    var instance = await PermissionConfigManager.GetInstanceAsync(_cacheManager, _pathManager, _pluginManager);
+                    foreach (var permission in instance.GeneralPermissions)
+                    {
+                        _permissionList.Add(permission.Name);
+                    }
+                }
+                else if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
+                {
+                    _permissionList = new List<string>
+                    {
+                        Constants.AppPermissions.SettingsAdministrators
+                    };
+                }
+                else
+                {
+                    _permissionList = await _databaseManager.PermissionsInRolesRepository.GetGeneralPermissionListAsync(roles);
+                }
+
+                var cacheItem = new CacheItem<object>(_permissionListKey, _permissionList, ExpirationMode.Sliding, TimeSpan.FromMinutes(30));
+                _cacheManager.AddOrUpdate(cacheItem, _ => _permissionList);
+            }
+            return _permissionList ??= new List<string>();
         }
 
         public async Task<bool> HasSitePermissionsAsync(int siteId)
         {
             await InitAsync();
-            return await _permissions.HasSitePermissionsAsync(siteId);
+
+            var dict = await GetWebsitePermissionDictAsync();
+            return await IsSiteAdminAsync() || dict.ContainsKey(siteId);
         }
 
         public async Task<List<string>> GetSitePermissionsAsync(int siteId)
         {
             await InitAsync();
-            return await _permissions.GetSitePermissionsAsync(siteId);
+
+            var dict = await GetWebsitePermissionDictAsync();
+            return dict.TryGetValue(siteId, out var list) ? list : new List<string>();
         }
 
         public async Task<bool> HasChannelPermissionsAsync(int siteId, int channelId)
         {
             await InitAsync();
-            return await _permissions.HasChannelPermissionsAsync(siteId, channelId);
+
+            if (channelId == 0) return false;
+            if (await IsSiteAdminAsync(siteId))
+            {
+                return true;
+            }
+            var dictKey = GetChannelPermissionDictKey(siteId, channelId);
+            var dict = await GetChannelPermissionDictAsync();
+            if (dict.ContainsKey(dictKey))
+            {
+                return true;
+            }
+
+            var parentChannelId = await _databaseManager.ChannelRepository.GetParentIdAsync(siteId, channelId);
+            return await HasChannelPermissionsAsync(siteId, parentChannelId);
         }
 
         public async Task<List<string>> GetChannelPermissionsAsync(int siteId, int channelId)
         {
             await InitAsync();
-            return await _permissions.GetChannelPermissionsAsync(siteId, channelId);
+
+            var dictKey = GetChannelPermissionDictKey(siteId, channelId);
+            var dict = await GetChannelPermissionDictAsync();
+            return dict.TryGetValue(dictKey, out var list) ? list : new List<string>();
         }
 
         public async Task<List<string>> GetChannelPermissionsAsync(int siteId)
         {
             await InitAsync();
-            return await _permissions.GetChannelPermissionsAsync(siteId);
+
+            var list = new List<string>();
+            var dict = await GetChannelPermissionDictAsync();
+            foreach (var dictKey in dict.Keys)
+            {
+                var kvp = ParseChannelPermissionDictKey(dictKey);
+                if (kvp.Key == siteId)
+                {
+                    foreach (var permission in dict[dictKey])
+                    {
+                        if (!list.Contains(permission))
+                        {
+                            list.Add(permission);
+                        }
+                    }
+                }
+            }
+
+            return list;
         }
     }
 }

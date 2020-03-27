@@ -21,7 +21,7 @@ namespace SSCMS.Core.Repositories.UserMenuRepository
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private string CacheKey => Caching.GetListKey(_repository.TableName);
+        private string CacheKey => CacheUtils.GetListKey(_repository.TableName);
 
         public async Task<int> InsertAsync(UserMenu userMenu)
         {

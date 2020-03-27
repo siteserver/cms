@@ -5,8 +5,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
-    [ApiController]
-    [Route(Constants.ApiRoute)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class SyncDatabaseController : ControllerBase
     {
         public const string Route = "syncDatabase";

@@ -12,17 +12,17 @@ namespace SSCMS.Core.Repositories.ContentRepository
     {
         private string GetCountKey(string tableName, int siteId, int channelId)
         {
-            return Caching.GetCountKey(tableName, siteId, channelId);
+            return CacheUtils.GetCountKey(tableName, siteId, channelId);
         }
 
         private string GetEntityKey(string tableName, int contentId)
         {
-            return Caching.GetEntityKey(tableName, contentId);
+            return CacheUtils.GetEntityKey(tableName, contentId);
         }
 
         private string GetListKey(string tableName, int siteId, int channelId)
         {
-            return Caching.GetListKey(tableName ,siteId.ToString(), (Math.Abs(channelId)).ToString());
+            return CacheUtils.GetListKey(tableName ,siteId.ToString(), (Math.Abs(channelId)).ToString());
         }
 
         public async Task CacheAllListAndCountAsync(Site site, List<ChannelSummary> channelSummaries)

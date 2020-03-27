@@ -34,7 +34,7 @@ namespace SSCMS.Web.Controllers.Admin
             public bool IsEnforcePasswordChange { get; set; }
         }
 
-        public async Task<string> AdminRedirectCheckAsync()
+        private async Task<string> AdminRedirectCheckAsync()
         {
             var redirect = false;
             var redirectUrl = string.Empty;

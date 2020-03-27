@@ -10,13 +10,13 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
-    [Route(Constants.ApiRoute)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class SitesAddController : ControllerBase
     {
         public const string Route = "settings/sitesAdd";
         private const string RouteProcess = "settings/sitesAdd/actions/process";
 
-        private readonly ICacheManager<Caching.Process> _cacheManager;
+        private readonly ICacheManager<CacheUtils.Process> _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -27,7 +27,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly IContentRepository _contentRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public SitesAddController(ICacheManager<Caching.Process> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
+        public SitesAddController(ICacheManager<CacheUtils.Process> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
@@ -51,7 +51,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var caching = new Caching(_cacheManager);
+            var caching = new CacheUtils(_cacheManager);
             var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
             var siteTemplates = manager.GetSiteTemplateInfoList();
 
@@ -158,7 +158,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 await _administratorRepository.UpdateSiteIdsAsync(adminInfo, siteIdList);
             }
 
-            var caching = new Caching(_cacheManager);
+            var caching = new CacheUtils(_cacheManager);
             var site = await _siteRepository.GetAsync(siteId);
 
             caching.SetProcess(request.Guid, "任务初始化...");
@@ -172,7 +172,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 await _createManager.CreateByAllAsync(site.Id);
 
                 caching.SetProcess(request.Guid, "清除系统缓存...");
-                CacheUtils.ClearAll();
+                _cacheManager.Clear();
             }
             else if (request.CreateType == "cloud")
             {
@@ -199,7 +199,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 await _createManager.CreateByAllAsync(site.Id);
 
                 caching.SetProcess(request.Guid, "清除系统缓存...");
-                CacheUtils.ClearAll();
+                _cacheManager.Clear();
             }
 
             return new IntResult
@@ -209,7 +209,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         }
 
         [HttpPost, Route(RouteProcess)]
-        public async Task<ActionResult<Caching.Process>> Process([FromBody] ProcessRequest request)
+        public async Task<ActionResult<CacheUtils.Process>> Process([FromBody] ProcessRequest request)
         {
             
             if (!await _authManager.IsAdminAuthenticatedAsync() ||
@@ -218,7 +218,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var caching = new Caching(_cacheManager);
+            var caching = new CacheUtils(_cacheManager);
             return caching.GetProcess(request.Guid);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Extensions;
@@ -10,8 +11,7 @@ using SSCMS.Web.Controllers.Admin.Settings.Sites;
 
 namespace SSCMS.Web.Controllers.Admin
 {
-    [ApiController]
-    [Route(Constants.ApiRoute)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class IndexController : ControllerBase
     {
         private const string Route = "index";
@@ -19,6 +19,7 @@ namespace SSCMS.Web.Controllers.Admin
         private const string RouteActionsCache = "index/actions/cache";
         private const string RouteActionsDownload = "index/actions/download";
 
+        private readonly ICacheManager<object> _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
@@ -31,8 +32,9 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IContentRepository _contentRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public IndexController(ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public IndexController(ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
         {
+            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _authManager = authManager;
             _createManager = createManager;
@@ -146,7 +148,7 @@ namespace SSCMS.Web.Controllers.Admin
                 permissionList.AddRange(channelPermissions);
             }
 
-            var tabManager = new TabManager(_pathManager, _pluginManager);
+            var tabManager = new TabManager(_cacheManager, _pathManager, _pluginManager);
 
             var siteMenus =
                 await GetLeftMenusAsync(tabManager, site, Constants.TopMenu.IdSite, isSuperAdmin, permissionList);

@@ -15,11 +15,11 @@ namespace SSCMS.Core.Utils.Serialization.Components
     {
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly Caching _caching;
+        private readonly CacheUtils _caching;
         private readonly Site _site;
         private readonly string _siteContentDirectoryPath;
 
-        public ContentIe(IPathManager pathManager, IDatabaseManager databaseManager, Caching caching, Site site, string siteContentDirectoryPath)
+        public ContentIe(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, string siteContentDirectoryPath)
         {
             _pathManager = pathManager;
             _databaseManager = databaseManager;

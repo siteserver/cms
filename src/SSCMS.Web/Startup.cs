@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -73,6 +74,30 @@ namespace SSCMS.Web
                     options.SerializerSettings.ContractResolver
                         = new CamelCasePropertyNamesContractResolver();
                 });
+
+            //http://localhost:5000/api/swagger/v1/swagger.json
+            //http://localhost:5000/api/swagger/
+            //http://localhost:5000/api/docs/
+            services.AddOpenApiDocument(config =>
+            {
+                config.PostProcess = document =>
+                {
+                    document.Info.Version = "v1";
+                    document.Info.Title = "SS CMS REST API";
+                    document.Info.Description = "SS CMS REST API 为 SS CMS 提供了一个基于HTTP的API调用，允许开发者通过发送和接收JSON对象来远程与站点进行交互。";
+                    document.Info.Contact = new NSwag.OpenApiContact
+                    {
+                        Name = "SS CMS",
+                        Email = string.Empty,
+                        Url = "https://www.siteserver.cn"
+                    };
+                    document.Info.License = new NSwag.OpenApiLicense
+                    {
+                        Name = "GPL-3.0",
+                        Url = "https://github.com/siteserver/cms/blob/staging/LICENSE"
+                    };
+                };
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider provider)
@@ -98,6 +123,11 @@ namespace SSCMS.Web
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(result);
             }));
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             //app.UseHttpsRedirection();
 
@@ -130,6 +160,7 @@ namespace SSCMS.Web
                 api.UseRouting();
                 api.UseAuthentication();
                 api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+                //api.UseEndpoints(endpoints => { endpoints.MapControllerRoute("default", "{controller}/{action}/{id?}"); });
 
                 api.UseOpenApi();
                 api.UseSwaggerUi3();

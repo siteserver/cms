@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Datory;
 using SSCMS.Utils;
 
@@ -10,13 +11,13 @@ namespace SSCMS.Core.Utils.Serialization
         public const string UploadFolderName = "upload"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件夹目录
         public const string UploadFileName = "upload.xml"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件名
 
-        public static async Task BackupTemplatesAsync(IPathManager pathManager, IDatabaseManager databaseManager, Caching caching, IPluginManager pluginManager, Site site, string filePath)
+        public static async Task BackupTemplatesAsync(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IPluginManager pluginManager, Site site, string filePath)
         {
             var exportObject = new ExportObject(pathManager, databaseManager, caching, pluginManager, site);
             await exportObject.ExportTemplatesAsync(filePath);
         }
 
-        public static async Task BackupChannelsAndContentsAsync(IPathManager pathManager, IDatabaseManager databaseManager, Caching caching, IPluginManager pluginManager, Site site, string filePath)
+        public static async Task BackupChannelsAndContentsAsync(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IPluginManager pluginManager, Site site, string filePath)
         {
             var exportObject = new ExportObject(pathManager, databaseManager, caching, pluginManager, site);
 
@@ -25,14 +26,14 @@ namespace SSCMS.Core.Utils.Serialization
             await exportObject.ExportChannelsAsync(channelIdList, filePath);  
         }
 
-        public static async Task BackupFilesAsync(IPathManager pathManager, IDatabaseManager databaseManager, Caching caching, IPluginManager pluginManager, Site site, string filePath)
+        public static async Task BackupFilesAsync(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IPluginManager pluginManager, Site site, string filePath)
         {
             var exportObject = new ExportObject(pathManager, databaseManager, caching, pluginManager, site);
 
             await exportObject.ExportFilesAsync(filePath);
         }
 
-        public static async Task BackupSiteAsync(IPathManager pathManager, IDatabaseManager databaseManager, Caching caching, IPluginManager pluginManager, Site site, string filePath)
+        public static async Task BackupSiteAsync(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IPluginManager pluginManager, Site site, string filePath)
         {
             var exportObject = new ExportObject(pathManager, databaseManager, caching, pluginManager, site);
 
@@ -59,7 +60,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
         }
 
-        public static async Task RecoverySiteAsync(IPathManager pathManager, IDatabaseManager databaseManager, Caching caching, IPluginManager pluginManager, Site site, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, int adminId, string guid)
+        public static async Task RecoverySiteAsync(ICacheManager<object> cacheManager, IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IPluginManager pluginManager, Site site, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, int adminId, string guid)
         {
             var importObject = new ImportObject(pathManager, pluginManager, databaseManager, caching, site, adminId);
 
@@ -124,7 +125,7 @@ namespace SSCMS.Core.Utils.Serialization
                 await importObject.ImportTableStylesAsync(tableDirectoryPath, guid);
             }
 
-            CacheUtils.ClearAll();
+            cacheManager.Clear();
         }
     }
 }

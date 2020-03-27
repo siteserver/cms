@@ -19,13 +19,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private const string RouteUnZip = "actions/unZip";
         private const string RouteUpload = "actions/upload";
 
-        private readonly ICacheManager<Caching.Process> _cacheManager;
+        private readonly ICacheManager<CacheUtils.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
 
-        public SitesTemplatesController(ICacheManager<Caching.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager)
+        public SitesTemplatesController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
@@ -36,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
         private async Task<ListResult> GetListResultAsync()
         {
-            var caching = new Caching(_cacheManager);
+            var caching = new CacheUtils(_cacheManager);
             var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
             var siteTemplates = manager.GetSiteTemplateInfoList();
             var siteTemplateInfoList = new List<SiteTemplateInfo>();
@@ -143,7 +143,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var caching = new Caching(_cacheManager);
+            var caching = new CacheUtils(_cacheManager);
             var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
 
             if (!string.IsNullOrEmpty(request.DirectoryName))

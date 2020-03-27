@@ -36,7 +36,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             _contentRepository = contentRepository;
         }
 
-        [HttpGet, Route(Route)]
+        [HttpGet]
+        [Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery] SiteRequest request)
         {
             
@@ -105,7 +106,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             };
         }
 
-        [HttpPost, Route(Route)]
+        [HttpPost]
+        [Route(Route)]
         public async Task<ActionResult<BoolResult>> Translate([FromBody] SubmitRequest request)
         {
             

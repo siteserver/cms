@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Core.Services.AuthManager;
 using SSCMS.Core.Utils.PluginImpls;
 
 namespace SSCMS.Core.Repositories.SitePermissionsRepository
@@ -84,7 +85,7 @@ namespace SSCMS.Core.Repositories.SitePermissionsRepository
                     {
                         foreach (var channelId in systemPermissions.ChannelIds)
                         {
-                            var key = PermissionsImpl.GetChannelPermissionDictKey(systemPermissions.SiteId, channelId);
+                            var key = AuthManager.GetChannelPermissionDictKey(systemPermissions.SiteId, channelId);
 
                             if (!dict.TryGetValue(key, out var list))
                             {

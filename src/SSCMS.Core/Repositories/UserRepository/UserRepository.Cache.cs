@@ -12,22 +12,22 @@ namespace SSCMS.Core.Repositories.UserRepository
     {
         private string GetCacheKeyByUserId(int userId)
         {
-            return Caching.GetEntityKey(TableName, "userId", userId.ToString());
+            return CacheUtils.GetEntityKey(TableName, "userId", userId.ToString());
         }
 
         private string GetCacheKeyByUserName(string userName)
         {
-            return Caching.GetEntityKey(TableName, "userName", userName);
+            return CacheUtils.GetEntityKey(TableName, "userName", userName);
         }
 
         private string GetCacheKeyByMobile(string mobile)
         {
-            return Caching.GetEntityKey(TableName, "mobile", mobile);
+            return CacheUtils.GetEntityKey(TableName, "mobile", mobile);
         }
 
         private string GetCacheKeyByEmail(string email)
         {
-            return Caching.GetEntityKey(TableName, "email", email);
+            return CacheUtils.GetEntityKey(TableName, "email", email);
         }
 
         private string[] GetCacheKeysToRemove(User user)

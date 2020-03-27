@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using Datory;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private const string RouteImport = "actions/import";
         private const string RouteExport = "actions/export";
 
+        private readonly ICacheManager<object> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
@@ -33,8 +35,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private readonly ISiteRepository _siteRepository;
         private readonly IAdministratorsInRolesRepository _administratorsInRolesRepository;
 
-        public AdministratorsController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IAdministratorRepository administratorRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IAdministratorsInRolesRepository administratorsInRolesRepository)
+        public AdministratorsController(ICacheManager<object> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IAdministratorRepository administratorRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IAdministratorsInRolesRepository administratorsInRolesRepository)
         {
+            _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
@@ -199,7 +202,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     ? request.CheckedSites
                     : new List<int>());
 
-            CacheUtils.ClearAll();
+            _cacheManager.Clear();
 
             await _authManager.AddAdminLogAsync("设置管理员权限", $"管理员:{adminInfo.UserName}");
 

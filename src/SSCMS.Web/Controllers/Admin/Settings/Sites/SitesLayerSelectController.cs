@@ -4,7 +4,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
-    [Route(Constants.ApiRoute)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class SitesLayerSelectController : ControllerBase
     {
         public const string Route = "settings/sitesLayerSelect";

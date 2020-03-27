@@ -8,7 +8,7 @@ namespace SSCMS.Core.Repositories.AccessTokenRepository
     {
         private string GetCacheKeyByToken(string token)
         {
-            return Caching.GetEntityKey(TableName, "token", token);
+            return CacheUtils.GetEntityKey(TableName, "token", token);
         }
 
         public async Task<AccessToken> GetByTokenAsync(string token)

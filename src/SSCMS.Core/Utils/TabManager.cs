@@ -1,28 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CacheManager.Core;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {
     public class TabManager
     {
+        private readonly ICacheManager<object> _cacheManager;
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
 
-        public TabManager(IPathManager pathManager, IPluginManager pluginManager)
+        public TabManager(ICacheManager<object> cacheManager, IPathManager pathManager, IPluginManager pluginManager)
         {
+            _cacheManager = cacheManager;
             _pathManager = pathManager;
             _pluginManager = pluginManager;
         }
 
-	    public TabCollection GetTabs(string filePath)
+        public TabCollection GetTabs(string filePath)
 	    {
-	        var tc = CacheUtils.Get<TabCollection>(filePath);
+	        var tc = _cacheManager.Get<TabCollection>(CacheUtils.GetPathKey(filePath));
 	        if (tc != null) return tc;
 
 	        tc = Serializer.ConvertFileToObject<TabCollection>(filePath);
-	        CacheUtils.Insert(filePath, tc, filePath);
+	        CacheUtils.SetFileContent(_cacheManager, tc, filePath);
 	        return tc;
 	    }
 
