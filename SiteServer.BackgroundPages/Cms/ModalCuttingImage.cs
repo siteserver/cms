@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Images;
+using SiteServer.Utils;
+using SiteServer.Utils.Images;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -20,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 	    public static string GetOpenWindowStringWithTextBox(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("裁切图片", PageUtils.GetCmsUrl(siteId, nameof(ModalCuttingImage), new NameValueCollection
+            return LayerUtils.GetOpenScript2("裁切图片", PageUtils.GetCmsUrl(siteId, nameof(ModalCuttingImage), new NameValueCollection
             {
                 {"textBoxClientID", textBoxClientId}
             }));
@@ -58,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
             LtlScript.Text = $@"
 <script type=""text/javascript"">
     var rootUrl = '{PageUtils.GetRootUrl(string.Empty)}';
-    var siteUrl = '{PageUtils.ParseNavigationUrl($"~/{Site.SiteDir}")}';
+    var siteUrl = '{PageUtils.ParseNavigationUrl($"~/{SiteInfo.SiteDir}")}';
     var virtualUrl = {virtualUrl};
     var imageUrl = virtualUrl;
     if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png|\.webp$/i) != -1){{
@@ -79,23 +78,23 @@ namespace SiteServer.BackgroundPages.Cms
         {
             try
             {
-                var rotate = TranslateUtils.ToIntWithNegative(Request.Form["rotate"]);
+                var rotate = TranslateUtils.ToIntWithNagetive(Request.Form["rotate"]);
                 rotate = rotate % 4;
                 var flip = Request.Form["flip"];
                 var fileUrl = Request.Form["fileUrl"];
                 if (string.IsNullOrEmpty(fileUrl)) return;
 
-                var filePath = PathUtility.MapPathAsync(Site, fileUrl).GetAwaiter().GetResult();
+                var filePath = PathUtility.MapPath(SiteInfo, fileUrl);
                 if (!FileUtils.IsFileExists(filePath)) return;
 
                 var destImagePath = filePath.Substring(0, filePath.LastIndexOf('.')) + "_c" + filePath.Substring(filePath.LastIndexOf('.'));
 
                 if (rotate == 0 && string.IsNullOrEmpty(flip))
                 {
-                    var x1 = TranslateUtils.ToIntWithNegative(Request.Form["x1"]);
-                    var y1 = TranslateUtils.ToIntWithNegative(Request.Form["y1"]);
-                    var w = TranslateUtils.ToIntWithNegative(Request.Form["w"]);
-                    var h = TranslateUtils.ToIntWithNegative(Request.Form["h"]);
+                    var x1 = TranslateUtils.ToIntWithNagetive(Request.Form["x1"]);
+                    var y1 = TranslateUtils.ToIntWithNagetive(Request.Form["y1"]);
+                    var w = TranslateUtils.ToIntWithNagetive(Request.Form["w"]);
+                    var h = TranslateUtils.ToIntWithNagetive(Request.Form["h"]);
 
                     if (w > 0 && h > 0)
                     {
@@ -129,7 +128,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                var destUrl = PageUtility.GetVirtualUrl(Site, PageUtility.GetSiteUrlByPhysicalPathAsync(Site, destImagePath, true).GetAwaiter().GetResult());
+                var destUrl = PageUtility.GetVirtualUrl(SiteInfo, PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, destImagePath, true));
 
                 if (!string.IsNullOrEmpty(_textBoxClientId))
                 {

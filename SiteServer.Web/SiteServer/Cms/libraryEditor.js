@@ -1,19 +1,25 @@
-﻿var $url = "/pages/cms/library/libraryEditor";
-var $urlUpload = apiUrl + "/pages/cms/library/libraryEditor/actions/upload?siteId=" + utils.getQueryInt("siteId");
+﻿var $url = "/pages/cms/libraryEditor";
+var $urlUpload = apiUrl + "/pages/cms/libraryEditor/actions/upload?siteId=" + utils.getQueryInt("siteId");
 
 function insertHtml(html)
 {
     if (html)
     {
-      var editor = new FroalaEditor('textarea#content');
-      editor.html.insert(html);
+      var editor = UE.getEditor('content', {
+        allowDivTransToP: false,
+        maximumWords: 99999999
+      });
+
+      editor.execCommand("insertHTML", html);
     }
 }
 
-var data = utils.initData({
+var data = {
   siteId: utils.getQueryInt("siteId"),
   textId: utils.getQueryInt("textId"),
   mainHeight: '',
+  pageLoad: false,
+  pageAlert: null,
   isSettings: true,
   activeNames: ['0', '1'],
 
@@ -22,14 +28,14 @@ var data = utils.initData({
   imageUrl: null,
   summary: null,
   editor: null,
-});
+};
 
 var methods = {
   getConfig: function() {
     var $this = this;
 
     if ($this.textId === 0) {
-      utils.loading($this, false);
+      $this.pageLoad = true;
       $this.loadEditor();
       return;
     }
@@ -49,10 +55,10 @@ var methods = {
         $this.loadEditor(res);
       })
       .catch(function(error) {
-        utils.error($this, error);
+        utils.notifyError($this, error);
       })
       .then(function() {
-        utils.loading($this, false);
+        $this.pageLoad = true;
       });
   },
 
@@ -67,10 +73,14 @@ var methods = {
     var $this = this;
 
     setTimeout(function () {
-      $this.editor = new FroalaEditor('textarea#content', {
-        language: 'zh_cn',
-        heightMin: 390,
-        toolbarButtons: [['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript'], ['fontFamily', 'fontSize', 'textColor', 'backgroundColor'], ['inlineClass', 'inlineStyle', 'clearFormatting']]
+      var editor = UE.getEditor('content', {
+        allowDivTransToP: false,
+        maximumWords: 99999999
+      });
+      editor.ready(function () {
+        editor.addListener("contentChange", function () {
+          $this.content = this.getContent();
+        });
       });
     }, 100);
   },
@@ -95,7 +105,6 @@ var methods = {
   },
 
   btnSaveClick: function() {
-    this.content = this.editor.html.get(true);
     var $this = this;
 
     if (!this.title) {
@@ -107,9 +116,10 @@ var methods = {
       return;
     }
 
-    utils.loading(this, true);
+    utils.loading(true);
     if (this.textId === 0) {
-      $api.post($url, {
+      $api
+      .post($url, {
         title: this.title,
         content: this.content,
         imageUrl: this.imageUrl,
@@ -118,16 +128,23 @@ var methods = {
       .then(function(response) {
         var res = response.data;
 
-        utils.closeLayer(true);
+        var frmMain = parent.document.getElementById('frmMain');
+        var oDoc = frmMain.contentWindow || frmMain.contentDocument;
+        if (oDoc.document) {
+            oDoc = oDoc.document;
+        }
+        oDoc.location.reload();
+        utils.closeLayer();
       })
       .catch(function(error) {
-        utils.error($this, error);
+        utils.notifyError($this, error);
       })
       .then(function() {
-        utils.loading($this, false);
+        utils.loading(false);
       });
     } else {
-      $api.put($url + '/' + this.textId, {
+      $api
+      .put($url + '/' + this.textId, {
         title: this.title,
         content: this.content,
         imageUrl: this.imageUrl,
@@ -136,13 +153,19 @@ var methods = {
       .then(function(response) {
         var res = response.data;
 
-        utils.closeLayer(true);
+        var frmMain = parent.document.getElementById('frmMain');
+        var oDoc = frmMain.contentWindow || frmMain.contentDocument;
+        if (oDoc.document) {
+          oDoc = oDoc.document;
+        }
+        oDoc.location.reload();
+        utils.closeLayer();
       })
       .catch(function(error) {
-        utils.error($this, error);
+        utils.notifyError($this, error);
       })
       .then(function() {
-        utils.loading($this, false);
+        utils.loading(false);
       });
     }
   },
@@ -164,22 +187,22 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(this, true);
+    utils.loading(true)
   },
 
   uploadSuccess(res, file) {
     this.imageUrl = res.value;
-    utils.loading(this, false);
+    utils.loading(false);
   },
 
   uploadError: function(err) {
-    utils.loading(this, false);
+    utils.loading(false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: "#main",
   data: data,
   methods: methods,

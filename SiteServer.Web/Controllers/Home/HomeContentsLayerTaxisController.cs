@@ -1,92 +1,98 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 using System.Web.Http;
-using Datory.Utils;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
-using SiteServer.CMS.Framework;
+using NSwag.Annotations;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    
+    [OpenApiIgnore]
     [RoutePrefix("home/contentsLayerTaxis")]
     public class HomeContentsLayerTaxisController : ApiController
     {
         private const string Route = "";
 
-        private readonly ICreateManager _createManager;
-
-        public HomeContentsLayerTaxisController(ICreateManager createManager)
-        {
-            _createManager = createManager;
-        }
-
         [HttpPost, Route(Route)]
-        public async Task<IHttpActionResult> Submit()
+        public IHttpActionResult Submit()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-
-            var siteId = request.GetPostInt("siteId");
-            var channelId = request.GetPostInt("channelId");
-            var contentIdList = Utilities.GetIntList(request.GetPostString("contentIds"));
-            var isUp = request.GetPostBool("isUp");
-            var taxis = request.GetPostInt("taxis");
-
-            if (!request.IsUserLoggin ||
-                !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                    Constants.ChannelPermissions.ContentEdit))
+            try
             {
-                return Unauthorized();
-            }
+                var request = new AuthenticatedRequest();
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            if (site == null) return BadRequest("无法确定内容对应的站点");
+                var siteId = request.GetPostInt("siteId");
+                var channelId = request.GetPostInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                var isUp = request.GetPostBool("isUp");
+                var taxis = request.GetPostInt("taxis");
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-            if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
-            if (ETaxisTypeUtils.Equals(channelInfo.DefaultTaxisType, TaxisType.OrderByTaxis))
-            {
-                isUp = !isUp;
-            }
-
-            if (isUp == false)
-            {
-                contentIdList.Reverse();
-            }
-
-            foreach (var contentId in contentIdList)
-            {
-                var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
-                if (contentInfo == null) continue;
-
-                var isTop = contentInfo.Top;
-                for (var i = 1; i <= taxis; i++)
+                if (!request.IsUserLoggin ||
+                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                        ConfigManager.ChannelPermissions.ContentEdit))
                 {
-                    if (isUp)
+                    return Unauthorized();
+                }
+
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                if (ETaxisTypeUtils.Equals(channelInfo.Additional.DefaultTaxisType, ETaxisType.OrderByTaxis))
+                {
+                    isUp = !isUp;
+                }
+
+                if (isUp == false)
+                {
+                    contentIdList.Reverse();
+                }
+
+                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+
+                foreach (var contentId in contentIdList)
+                {
+                    var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                    if (contentInfo == null) continue;
+
+                    var isTop = contentInfo.IsTop;
+                    for (var i = 1; i <= taxis; i++)
                     {
-                        if (await DataProvider.ContentRepository.SetTaxisToUpAsync(site, channelInfo, contentId, isTop) == false)
+                        if (isUp)
                         {
-                            break;
+                            if (DataProvider.ContentDao.SetTaxisToUp(siteInfo, tableName, channelInfo, contentId, isTop) == false)
+                            {
+                                break;
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (await DataProvider.ContentRepository.SetTaxisToDownAsync(site, channelInfo, contentId, isTop) == false)
+                        else
                         {
-                            break;
+                            if (DataProvider.ContentDao.SetTaxisToDown(siteInfo, tableName, channelInfo, contentId, isTop) == false)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
+
+                CreateManager.TriggerContentChangedEvent(siteId, channelId);
+
+                request.AddSiteLog(siteId, channelId, 0, "对内容排序", string.Empty);
+
+                return Ok(new
+                {
+                    Value = contentIdList
+                });
             }
-
-            await _createManager.TriggerContentChangedEventAsync(siteId, channelId);
-
-            await request.AddSiteLogAsync(siteId, channelId, 0, "对内容排序", string.Empty);
-
-            return Ok(new
+            catch (Exception ex)
             {
-                Value = contentIdList
-            });
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
         }
     }
 }

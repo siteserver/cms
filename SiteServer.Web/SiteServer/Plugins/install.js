@@ -1,10 +1,12 @@
 ﻿var $url = '/pages/plugins/install';
 
-var $pluginIds = utils.getQueryString('pluginIds').split(',');
-var $pageType = utils.getQueryString('isUpdate') === 'true' ? '升级' : '安装';
+var $pluginIds = pageUtils.getQueryStringByName('pluginIds').split(',');
+var $pageType = pageUtils.getQueryStringByName('isUpdate') === 'true' ? '升级' : '安装';
 
-var data = utils.initData({
+var data = {
   pluginIds: $pluginIds,
+  pageLoad: false,
+  pageAlert: null,
   pageType: $pageType,
   pageStep: 1,
   isNightly: false,
@@ -21,7 +23,7 @@ var data = utils.initData({
   currentDownloadIds: [],
   currentUpdatingId: 0,
   currentUpdatedIds: []
-});
+};
 
 var methods = {
   getConfig: function () {
@@ -36,7 +38,7 @@ var methods = {
 
       $this.getPackages();
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     });
   },
 
@@ -91,9 +93,9 @@ var methods = {
       }
       $this.installListPackage();
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
     });
   },
 
@@ -139,7 +141,7 @@ var methods = {
       $this.currentDownloadIds.push(packageId);
       $this.download();
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     });
   },
 
@@ -173,7 +175,7 @@ var methods = {
       $this.currentUpdatedIds.push(packageId);
       $this.update();
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     });
   },
 
@@ -205,7 +207,7 @@ var methods = {
         window.top.location.reload(true);
       }, 3000);
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     });
   }
 };

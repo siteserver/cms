@@ -1,22 +1,19 @@
-﻿using System.Threading.Tasks;
-using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+﻿using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Framework;
 using SiteServer.CMS.Packaging;
-using SiteServer.CMS.Repositories;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    
+    [OpenApiIgnore]
     public class SysPackagesDownloadController : ApiController
     {
         [HttpPost, Route(ApiRouteDownload.Route)]
-        public async Task<IHttpActionResult> Main()
+        public IHttpActionResult Main()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
+            var request = new AuthenticatedRequest();
 
             if (!request.IsAdminLoggin)
             {
@@ -37,7 +34,7 @@ namespace SiteServer.API.Controllers.Sys
 
             if (StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSsCms))
             {
-                await DataProvider.DbCacheRepository.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
+                CacheDbUtils.RemoveAndInsert(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
             }
 
             return Ok();

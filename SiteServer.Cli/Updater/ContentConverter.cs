@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Framework;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater
 {
@@ -32,9 +35,6 @@ namespace SiteServer.Cli.Updater
 
         [JsonProperty("contentGroupNameCollection")]
         public string ContentGroupNameCollection { get; set; }
-
-        [JsonProperty("groupNameCollection")]
-        public string GroupNameCollection { get; set; }
 
         [JsonProperty("tags")]
         public string Tags { get; set; }
@@ -145,9 +145,7 @@ namespace SiteServer.Cli.Updater
         private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
-            var repository =
-                new Repository<Content>(new Database(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString));
-            columns.AddRange(repository.TableColumns);
+            columns.AddRange(DataProvider.ContentDao.TableColumns);
 
             if (oldColumns != null && oldColumns.Count > 0)
             {
@@ -155,19 +153,15 @@ namespace SiteServer.Cli.Updater
                 {
                     if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
                     {
-                        tableColumnInfo.AttributeName = nameof(Abstractions.Content.ChannelId);
+                        tableColumnInfo.AttributeName = nameof(ContentInfo.ChannelId);
                     }
                     else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
                     {
-                        tableColumnInfo.AttributeName = nameof(Abstractions.Content.SiteId);
+                        tableColumnInfo.AttributeName = nameof(ContentInfo.SiteId);
                     }
                     else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
                     {
-                        tableColumnInfo.AttributeName = nameof(Abstractions.Content.GroupNames);
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(GroupNameCollection)))
-                    {
-                        tableColumnInfo.AttributeName = nameof(Abstractions.Content.GroupNames);
+                        tableColumnInfo.AttributeName = nameof(ContentInfo.GroupNameCollection);
                     }
 
                     if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
@@ -183,27 +177,26 @@ namespace SiteServer.Cli.Updater
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(Abstractions.Content.ChannelId), nameof(NodeId)},
-                {nameof(Abstractions.Content.SiteId), nameof(PublishmentSystemId)},
-                {nameof(Abstractions.Content.GroupNames), nameof(ContentGroupNameCollection)},
-                {nameof(Abstractions.Content.GroupNames), nameof(GroupNameCollection)}
+                {nameof(ContentInfo.ChannelId), nameof(NodeId)},
+                {nameof(ContentInfo.SiteId), nameof(PublishmentSystemId)},
+                {nameof(ContentInfo.GroupNameCollection), nameof(ContentGroupNameCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;
 
         private static Dictionary<string, object> Process(Dictionary<string, object> row)
         {
-            if (row.TryGetValue(ContentAttribute.Content, out var contentObj))
+            if (row.TryGetValue(nameof(ContentInfo.Content), out var contentObj))
             {
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
-                row[ContentAttribute.Content] = content;
+                row[nameof(ContentInfo.Content)] = content;
             }
-            if (row.TryGetValue("SettingsXml", out contentObj))
+            if (row.TryGetValue(ContentAttribute.SettingsXml, out contentObj))
             {
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
-                row[ContentAttribute.ExtendValues] = content;
+                row[nameof(ContentAttribute.SettingsXml)] = content;
             }
 
             return row;

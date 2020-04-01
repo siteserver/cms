@@ -1,0 +1,55 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+
+<div class="card-box">
+  <div class="m-t-0 header-title">
+    专题管理
+  </div>
+  <p class="text-muted font-13 m-b-25">
+    点击空白处可以选中栏目
+  </p>
+
+<div class="table-responsive">
+    <table class="table tablesaw table-hover m-0">
+      <thead>
+        <tr>
+          <th>专题名称 </th>
+          <th>访问地址 </th>
+          <th>添加时间 </th>
+          <th class="text-center">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr v-for="item in items">
+          <td>
+            <a :href="siteUrl + '/' + item.url" target="_blank">{{ item.title }}</a>
+          </td>
+          <td>
+            {{ item.url }}
+          </td>
+          <td>
+            {{ item.addDate }}
+          </td>
+          <td class="text-center">
+            <!-- <a class="text-primary" :href="'specialEditor.cshtml?siteId=' + item.siteId + '&specialId=' + item.id" target="_blank">可视化编辑</a> -->
+            <a class="" href="javascript:;" v-on:click="btnEditClick(item)">修改</a>
+            <a class="" href="javascript:;" v-on:click="btnUploadClick(item)">上传文件</a>
+            <a class="" href="javascript:;" v-on:click="btnDownloadClick(item)">下载压缩包</a>
+            <a v-if="item.id > 0" class="text-danger" href="javascript:;" v-on:click="btnDeleteClick(item)">删除</a>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <hr />
+
+  <a href="javascript:;" v-on:click="btnAddClick" class="btn btn-sm btn-outline-primary pl-3 pr-3">
+    <i class="ion-plus"></i>
+    新建专题
+  </a>
+</div>
+
+@section Scripts{
+<script src="special.js" type="text/javascript"></script> }

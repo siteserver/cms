@@ -75,17 +75,17 @@
     <div style="height:10px"></div>
 
     <el-row :gutter="20">
-      <el-col :span="8" v-for="site in siteList" style="margin-bottom: 20px;">
+      <el-col :span="8" v-for="siteInfo in siteInfoList" style="margin-bottom: 20px;">
         <el-card>
           <div slot="header" class="clearfix">
-            <span :class="checkedSiteIdList.indexOf(site.id) !== -1 ? 'hasPermission' : 'noPermission'">{{site.siteName}}</span>
-            <el-button style="float: right; padding: 3px 0" type="text" v-on:click="btnPermissionClick(site)">权限设置</el-button>
+            <span :class="checkedSiteIdList.indexOf(siteInfo.id) !== -1 ? 'hasPermission' : 'noPermission'">{{siteInfo.siteName}}</span>
+            <el-button style="float: right; padding: 3px 0" type="text" v-on:click="btnPermissionClick(siteInfo)">权限设置</el-button>
           </div>
-          <div :class="checkedSiteIdList.indexOf(site.id) !== -1 ? 'hasPermission' : 'noPermission'">
-            文件夹：{{site.siteDir}}
+          <div :class="checkedSiteIdList.indexOf(siteInfo.id) !== -1 ? 'hasPermission' : 'noPermission'">
+            文件夹：{{siteInfo.siteDir}}
           </div>
-          <div :class="checkedSiteIdList.indexOf(site.id) !== -1 ? 'hasPermission' : 'noPermission'">
-            内容表：{{site.tableName}}
+          <div :class="checkedSiteIdList.indexOf(siteInfo.id) !== -1 ? 'hasPermission' : 'noPermission'">
+            内容表：{{siteInfo.tableName}}
           </div>
         </el-card>
       </el-col>
@@ -105,7 +105,7 @@
 
   <div class="form-group" style="margin-top: 15px">
     <label>
-      站点：{{site.siteName}}
+      站点：{{siteInfo.siteName}}
     </label>
   </div>
 
@@ -119,7 +119,7 @@
     </el-checkbox-group>
   </div>
 
-  <div class="form-group" v-if="permissionInfo.allPluginPermissions && permissionInfo.allPluginPermissions.length > 0">
+  <div class="form-group">
     <label>
       插件权限设置
       <el-checkbox :indeterminate="permissionInfo.isPluginIndeterminate" v-model="permissionInfo.pluginCheckAll" style="margin-left: 10px;" v-on:change="handlePluginCheckAllChange">全选</el-checkbox>

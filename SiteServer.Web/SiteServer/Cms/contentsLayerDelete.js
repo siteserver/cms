@@ -1,85 +1,57 @@
-﻿var $url = '/pages/cms/contents/contentsLayerDelete';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerDelete');
 
-var data = utils.initData({
-  page: utils.getQueryInt('page'),
-  siteId: utils.getQueryInt('siteId'),
-  channelId: utils.getQueryInt('channelId'),
-  channelContentIds: utils.getQueryString('channelContentIds'),
+var data = {
+  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
+  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
+  channelContentIds: pageUtils.getQueryString('channelContentIds'),
+  pageLoad: false,
+  pageAlert: null,
   contents: null,
-  form: {
-    isRetainFiles: false
-  }
-});
+  isRetainFiles: false
+};
 
 var methods = {
-  apiGet: function () {
+  loadConfig: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url, {
-      params: {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        channelContentIds: this.channelContentIds
-      }
-    }).then(function (response) {
-      var res = response.data;
+    $api.get({
+      siteId: $this.siteId,
+      channelId: $this.channelId,
+      channelContentIds: $this.channelContentIds
+    }, function (err, res) {
+      if (err || !res || !res.value) return;
 
-      $this.contents = res.contents;
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
+      $this.contents = res.value;
+      $this.pageAlert = {
+        type: 'danger',
+        html: '此操作将把以下 <strong>' + $this.contents.length + '</strong> 篇内容放入回收站，确定吗？'
+      };
+      $this.pageLoad = true;
     });
   },
   
-  apiSubmit: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url, {
-      siteId: this.siteId,
-      channelId: this.channelId,
-      channelContentIds: this.channelContentIds,
-      isRetainFiles: this.form.isRetainFiles,
-    }).then(function (response) {
-      var res = response.data;
-
-      parent.$vue.apiList($this.channelId, $this.page, '内容删除成功!', true);
-      utils.closeLayer();
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  getContentUrl: function (content) {
-    if (content.checked) {
-      return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
-    }
-    return apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
-  },
-
   btnSubmitClick: function () {
     var $this = this;
-      this.$refs.form.validate(function(valid) {
-        if (valid) {
-          $this.apiSubmit();
-        }
-      });
-  },
 
-  btnCancelClick: function () {
-    utils.closeLayer();
-  },
+    pageUtils.loading(true);
+    $api.post({
+      siteId: $this.siteId,
+      channelId: $this.channelId,
+      channelContentIds: $this.channelContentIds,
+      isRetainFiles: $this.isRetainFiles,
+    }, function (err, res) {
+      if (err || !res || !res.value) return;
+
+      parent.location.reload(true);
+    });
+  }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,
   created: function () {
-    this.apiGet();
+    this.loadConfig();
   }
 });

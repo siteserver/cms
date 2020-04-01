@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Http;
 using NSwag.Annotations;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Framework;
+using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -20,312 +23,353 @@ namespace SiteServer.API.Controllers.V1
         private const string RouteChannel = "{siteId:int}/{channelId:int}";
         private const string RouteContent = "{siteId:int}/{channelId:int}/{id:int}";
 
-        private readonly ICreateManager _createManager;
-
-        public ContentsController(ICreateManager createManager)
-        {
-            _createManager = createManager;
-        }
-
-        [OpenApiOperation("添加内容API", "")]
         [HttpPost, Route(RouteChannel)]
-        public async Task<IHttpActionResult> Create(int siteId, int channelId)
+        public IHttpActionResult Create(int siteId, int channelId)
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-            var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-            bool isAuth;
-            if (sourceId == SourceManager.User)
+            try
             {
-                isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentAdd);
-            }
-            else
-            {
-                isAuth = request.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
-                         request.IsUserLoggin &&
-                         await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId,
-                             Constants.ChannelPermissions.ContentAdd) ||
-                         request.IsAdminLoggin &&
-                         await request.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
-                             Constants.ChannelPermissions.ContentAdd);
-            }
-            if (!isAuth) return Unauthorized();
-
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            if (site == null) return BadRequest("无法确定内容对应的站点");
-
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-            if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
-            var attributes = request.GetPostObject<Dictionary<string, object>>();
-            if (attributes == null) return BadRequest("无法从body中获取内容实体");
-            var checkedLevel = request.GetPostInt("checkedLevel");
-
-            var isChecked = checkedLevel >= site.CheckContentLevel;
-            if (isChecked)
-            {
-                if (sourceId == SourceManager.User || request.IsUserLoggin)
+                var request = new AuthenticatedRequest();
+                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
+                bool isAuth;
+                if (sourceId == SourceManager.User)
                 {
-                    isChecked = await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                        Constants.ChannelPermissions.ContentCheckLevel1);
+                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentAdd);
                 }
-                else if (request.IsAdminLoggin)
+                else
                 {
-                    isChecked = await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                        Constants.ChannelPermissions.ContentCheckLevel1);
+                    isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                             request.IsUserLoggin &&
+                             request.UserPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentAdd) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentAdd);
                 }
-            }
+                if (!isAuth) return Unauthorized();
 
-            var contentInfo = new Content(attributes)
-            {
-                SiteId = siteId,
-                ChannelId = channelId,
-                AdminId = request.AdminId,
-                LastEditAdminId = request.AdminId,
-                UserId = request.UserId,
-                LastEditDate = DateTime.Now,
-                SourceId = sourceId,
-                Checked = isChecked,
-                CheckedLevel = checkedLevel
-            };
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
 
-            contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channelInfo, contentInfo);
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-            foreach (var service in await PluginManager.GetServicesAsync())
-            {
-                try
+                if (!channelInfo.Additional.IsContentAddable) return BadRequest("此栏目不能添加内容");
+
+                var attributes = request.GetPostObject<Dictionary<string, object>>();
+                if (attributes == null) return BadRequest("无法从body中获取内容实体");
+                var checkedLevel = request.GetPostInt("checkedLevel");
+
+                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var adminName = request.AdminName;
+
+                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                if (isChecked)
                 {
-                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, attributes, contentInfo));
+                    if (sourceId == SourceManager.User || request.IsUserLoggin)
+                    {
+                        isChecked = request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                            ConfigManager.ChannelPermissions.ContentCheck);
+                    }
+                    else if (request.IsAdminLoggin)
+                    {
+                        isChecked = request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                            ConfigManager.ChannelPermissions.ContentCheck);
+                    }
                 }
-                catch (Exception ex)
+
+                var contentInfo = new ContentInfo(attributes)
                 {
-                    await DataProvider.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(IPluginService.ContentFormSubmit));
+                    SiteId = siteId,
+                    ChannelId = channelId,
+                    AddUserName = adminName,
+                    LastEditDate = DateTime.Now,
+                    LastEditUserName = adminName,
+                    AdminId = request.AdminId,
+                    UserId = request.UserId,
+                    SourceId = sourceId,
+                    IsChecked = isChecked,
+                    CheckedLevel = checkedLevel
+                };
+
+                contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
+
+                foreach (var service in PluginManager.Services)
+                {
+                    try
+                    {
+                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, attributes, contentInfo));
+                    }
+                    catch (Exception ex)
+                    {
+                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
+                    }
                 }
+
+                if (contentInfo.IsChecked)
+                {
+                    CreateManager.CreateContent(siteId, channelId, contentInfo.Id);
+                    CreateManager.TriggerContentChangedEvent(siteId, channelId);
+                }
+
+                request.AddSiteLog(siteId, channelId, contentInfo.Id, "添加内容",
+                    $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
+
+                return Ok(new
+                {
+                    Value = contentInfo
+                });
             }
-
-            if (contentInfo.Checked)
+            catch (Exception ex)
             {
-                await _createManager.CreateContentAsync(siteId, channelId, contentInfo.Id);
-                await _createManager.TriggerContentChangedEventAsync(siteId, channelId);
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
             }
-
-            await request.AddSiteLogAsync(siteId, channelId, contentInfo.Id, "添加内容",
-                $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
-
-            return Ok(new
-            {
-                Value = contentInfo
-            });
         }
 
-        [OpenApiOperation("修改内容API", "")]
         [HttpPut, Route(RouteContent)]
-        public async Task<IHttpActionResult> Update(int siteId, int channelId, int id)
+        public IHttpActionResult Update(int siteId, int channelId, int id)
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-            var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-            bool isAuth;
-            if (sourceId == SourceManager.User)
+            try
             {
-                isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentEdit);
-            }
-            else
-            {
-                isAuth = request.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
-                         request.IsUserLoggin &&
-                         await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId,
-                             Constants.ChannelPermissions.ContentEdit) ||
-                         request.IsAdminLoggin &&
-                         await request.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
-                             Constants.ChannelPermissions.ContentEdit);
-            }
-            if (!isAuth) return Unauthorized();
-
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            if (site == null) return BadRequest("无法确定内容对应的站点");
-
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-            if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
-            var attributes = request.GetPostObject<Dictionary<string, object>>();
-            if (attributes == null) return BadRequest("无法从body中获取内容实体");
-
-            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, id);
-            if (contentInfo == null) return NotFound();
-
-            foreach (var attribute in attributes)
-            {
-                contentInfo.Set(attribute.Key, attribute.Value);
-            }
-
-            contentInfo.SiteId = siteId;
-            contentInfo.ChannelId = channelId;
-            contentInfo.LastEditAdminId = request.AdminId;
-            contentInfo.LastEditDate = DateTime.Now;
-            contentInfo.SourceId = sourceId;
-
-            var postCheckedLevel = request.GetPostInt(ContentAttribute.CheckedLevel.ToCamelCase());
-            var isChecked = postCheckedLevel >= site.CheckContentLevel;
-            var checkedLevel = postCheckedLevel;
-
-            contentInfo.Checked = isChecked;
-            contentInfo.CheckedLevel = checkedLevel;
-
-            await DataProvider.ContentRepository.UpdateAsync(site, channelInfo, contentInfo);
-
-            foreach (var service in await PluginManager.GetServicesAsync())
-            {
-                try
+                var request = new AuthenticatedRequest();
+                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
+                bool isAuth;
+                if (sourceId == SourceManager.User)
                 {
-                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, attributes, contentInfo));
+                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentEdit);
                 }
-                catch (Exception ex)
+                else
                 {
-                    await DataProvider.ErrorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(IPluginService.ContentFormSubmit));
+                    isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                             request.IsUserLoggin &&
+                             request.UserPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentEdit) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentEdit);
                 }
+                if (!isAuth) return Unauthorized();
+
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                var attributes = request.GetPostObject<Dictionary<string, object>>();
+                if (attributes == null) return BadRequest("无法从body中获取内容实体");
+
+                var adminName = request.AdminName;
+
+                var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, id);
+                if (contentInfo == null) return NotFound();
+
+                contentInfo.Load(attributes);
+                contentInfo.Load(new
+                {
+                    SiteId = siteId,
+                    ChannelId = channelId,
+                    AddUserName = adminName,
+                    LastEditDate = DateTime.Now,
+                    LastEditUserName = adminName,
+                    SourceId = sourceId
+                });
+
+                var postCheckedLevel = request.GetPostInt(ContentAttribute.CheckedLevel.ToCamelCase());
+                var isChecked = postCheckedLevel >= siteInfo.Additional.CheckContentLevel;
+                var checkedLevel = postCheckedLevel;
+
+                contentInfo.Load(new
+                {
+                    IsChecked = isChecked,
+                    CheckedLevel = checkedLevel
+                });
+
+                DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+
+                foreach (var service in PluginManager.Services)
+                {
+                    try
+                    {
+                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, attributes, contentInfo));
+                    }
+                    catch (Exception ex)
+                    {
+                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
+                    }
+                }
+
+                if (contentInfo.IsChecked)
+                {
+                    CreateManager.CreateContent(siteId, channelId, contentInfo.Id);
+                    CreateManager.TriggerContentChangedEvent(siteId, channelId);
+                }
+
+                request.AddSiteLog(siteId, channelId, contentInfo.Id, "修改内容",
+                    $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
+
+                return Ok(new
+                {
+                    Value = contentInfo
+                });
             }
-
-            if (contentInfo.Checked)
+            catch (Exception ex)
             {
-                await _createManager.CreateContentAsync(siteId, channelId, contentInfo.Id);
-                await _createManager.TriggerContentChangedEventAsync(siteId, channelId);
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
             }
-
-            await request.AddSiteLogAsync(siteId, channelId, contentInfo.Id, "修改内容",
-                $"栏目:{await DataProvider.ChannelRepository.GetChannelNameNavigationAsync(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
-
-            return Ok(new
-            {
-                Value = contentInfo
-            });
         }
 
-        [OpenApiOperation("删除内容API", "")]
         [HttpDelete, Route(RouteContent)]
-        public async Task<IHttpActionResult> Delete(int siteId, int channelId, int id)
+        public IHttpActionResult Delete(int siteId, int channelId, int id)
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-            var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-            bool isAuth;
-            if (sourceId == SourceManager.User)
+            try
             {
-                isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentDelete);
+                var request = new AuthenticatedRequest();
+                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
+                bool isAuth;
+                if (sourceId == SourceManager.User)
+                {
+                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentDelete);
+                }
+                else
+                {
+                    isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                             request.IsUserLoggin &&
+                             request.UserPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentDelete) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentDelete);
+                }
+                if (!isAuth) return Unauthorized();
+
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    ConfigManager.ChannelPermissions.ContentDelete)) return Unauthorized();
+
+                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+
+                var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, id);
+                if (contentInfo == null) return NotFound();
+
+                ContentUtility.Delete(tableName, siteInfo, channelInfo, id);
+
+                //DataProvider.ContentDao.DeleteContent(tableName, siteInfo, channelId, id);
+
+                return Ok(new
+                {
+                    Value = contentInfo
+                });
             }
-            else
+            catch (Exception ex)
             {
-                isAuth = request.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
-                         request.IsUserLoggin &&
-                         await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId,
-                             Constants.ChannelPermissions.ContentDelete) ||
-                         request.IsAdminLoggin &&
-                         await request.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
-                             Constants.ChannelPermissions.ContentDelete);
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
             }
-            if (!isAuth) return Unauthorized();
+        }
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            if (site == null) return BadRequest("无法确定内容对应的站点");
-
-            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
-            if (channel == null) return BadRequest("无法确定内容对应的栏目");
-
-            if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                Constants.ChannelPermissions.ContentDelete)) return Unauthorized();
-
-            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channel, id);
-            if (contentInfo == null) return NotFound();
-
-            await DataProvider.ContentRepository.DeleteAsync(site, channel, id);
-
-            return Ok(new
+        [HttpGet, Route(RouteContent)]
+        public IHttpActionResult Get(int siteId, int channelId, int id)
+        {
+            try
             {
-                Value = contentInfo
-            });
+                var request = new AuthenticatedRequest();
+                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
+                bool isAuth;
+                if (sourceId == SourceManager.User)
+                {
+                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentView);
+                }
+                else
+                {
+                    isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                             request.IsUserLoggin &&
+                             request.UserPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentView) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentView);
+                }
+                if (!isAuth) return Unauthorized();
+
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
+
+                var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, id);
+                if (contentInfo == null) return NotFound();
+
+                return Ok(new
+                {
+                    Value = contentInfo
+                });
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
         }
 
         [OpenApiOperation("获取内容API", "")]
-        [HttpGet, Route(RouteContent)]
-        public async Task<IHttpActionResult> Get(int siteId, int channelId, int id)
-        {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-            var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-            bool isAuth;
-            if (sourceId == SourceManager.User)
-            {
-                isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentView);
-            }
-            else
-            {
-                isAuth = request.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
-                         request.IsUserLoggin &&
-                         await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId,
-                             Constants.ChannelPermissions.ContentView) ||
-                         request.IsAdminLoggin &&
-                         await request.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
-                             Constants.ChannelPermissions.ContentView);
-            }
-            if (!isAuth) return Unauthorized();
-
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            if (site == null) return BadRequest("无法确定内容对应的站点");
-
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-            if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
-            if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                Constants.ChannelPermissions.ContentView)) return Unauthorized();
-
-            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, id);
-            if (contentInfo == null) return NotFound();
-
-            return Ok(new
-            {
-                Value = contentInfo
-            });
-        }
-
-        [OpenApiOperation("获取内容列表API", "")]
         [HttpPost, Route(Route)]
-        public async Task<QueryResult> GetContents([FromBody] QueryRequest request)
+        public QueryResult GetContents([FromBody] QueryRequest request)
         {
-            var req = await AuthenticatedRequest.GetAuthAsync();
+            var req = new AuthenticatedRequest();
             var sourceId = req.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
             var channelId = request.ChannelId ?? request.SiteId;
 
             bool isAuth;
             if (sourceId == SourceManager.User)
             {
-                
-                isAuth = req.IsUserLoggin && await req.UserPermissions.HasChannelPermissionsAsync(request.SiteId, channelId, Constants.ChannelPermissions.ContentView);
+                isAuth = req.IsUserLoggin && req.UserPermissions.HasChannelPermissions(request.SiteId, channelId, ConfigManager.ChannelPermissions.ContentView);
             }
             else
             {
-                isAuth = req.IsApiAuthenticated && await
-                             DataProvider.AccessTokenRepository.IsScopeAsync(req.ApiToken, Constants.ScopeContents) ||
+                isAuth = req.IsApiAuthenticated &&
+                         AccessTokenManager.IsScope(req.ApiToken, AccessTokenManager.ScopeContents) ||
                          req.IsUserLoggin &&
-                         await req.UserPermissions.HasChannelPermissionsAsync(request.SiteId, channelId,
-                             Constants.ChannelPermissions.ContentView) ||
+                         req.UserPermissions.HasChannelPermissions(request.SiteId, channelId,
+                             ConfigManager.ChannelPermissions.ContentView) ||
                          req.IsAdminLoggin &&
-                         await req.AdminPermissions.HasChannelPermissionsAsync(request.SiteId, channelId,
-                             Constants.ChannelPermissions.ContentView);
+                         req.AdminPermissions.HasChannelPermissions(request.SiteId, channelId,
+                             ConfigManager.ChannelPermissions.ContentView);
             }
             if (!isAuth) return Request.Unauthorized<QueryResult>();
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = SiteManager.GetSiteInfo(request.SiteId);
             if (site == null) return Request.BadRequest<QueryResult>("无法确定内容对应的站点");
 
-            var tableName = site.TableName;
-            var query = await GetQueryAsync(request.SiteId, request.ChannelId, request);
-            var totalCount = await DataProvider.ContentRepository.GetCountAsync(tableName, query);
-            var summaries = await DataProvider.ContentRepository.GetSummariesAsync(tableName, query.ForPage(request.Page, request.PerPage));
+            var channelInfo = ChannelManager.GetChannelInfo(request.SiteId, channelId);
+            if (channelInfo == null) return Request.BadRequest<QueryResult>("无法确定内容对应的栏目");
 
-            var contents = new List<Content>();
-            foreach (var summary in summaries)
+            if (!req.AdminPermissionsImpl.HasChannelPermissions(request.SiteId, channelId,
+                ConfigManager.ChannelPermissions.ContentView)) return Request.Unauthorized<QueryResult>();
+
+            var tableName = site.TableName;
+            var query = GetQuery(request.SiteId, request.ChannelId, request);
+            var totalCount = DataProvider.ContentDao.GetTotalCount(tableName, query);
+            var channelContentIds = DataProvider.ContentDao.GetChannelContentIdList(tableName, query);
+
+            var contents = new List<ContentInfo>();
+            foreach (var channelContentId in channelContentIds)
             {
-                var content = await DataProvider.ContentRepository.GetAsync(site, summary.ChannelId, summary.Id);
+                var content = DataProvider.ContentDao.Get(site, channelContentId.ChannelId, channelContentId.Id);
                 contents.Add(content);
             }
 
@@ -336,64 +380,67 @@ namespace SiteServer.API.Controllers.V1
             };
         }
 
-        [OpenApiOperation("审核内容API", "")]
         [HttpPost, Route(RouteCheck)]
-        public async Task<CheckResult> CheckContents([FromBody] CheckRequest request)
+        public CheckResult CheckContents([FromBody] CheckRequest request)
         {
-            var auth = await AuthenticatedRequest.GetAuthAsync();
-            if (!auth.IsApiAuthenticated ||
-                !await DataProvider.AccessTokenRepository.IsScopeAsync(auth.ApiToken, Constants.ScopeContents))
+            var req = new AuthenticatedRequest();
+
+            if (!req.IsApiAuthenticated ||
+                !AccessTokenManager.IsScope(req.ApiToken, AccessTokenManager.ScopeContents))
             {
                 return Request.Unauthorized<CheckResult>();
             }
 
-            var site = await DataProvider.SiteRepository.GetAsync(request.SiteId);
+            var site = SiteManager.GetSiteInfo(request.SiteId);
             if (site == null) return Request.BadRequest<CheckResult>("无法确定内容对应的站点");
 
-            var contents = new List<Content>();
+            var contents = new List<ContentInfo>();
             foreach (var channelContentId in request.Contents)
             {
-                var channel = await DataProvider.ChannelRepository.GetAsync(channelContentId.ChannelId);
-                var content = await DataProvider.ContentRepository.GetAsync(site, channel, channelContentId.Id);
+                var channel = ChannelManager.GetChannelInfo(request.SiteId, channelContentId.ChannelId);
+                var tableName = ChannelManager.GetTableName(site, channel);
+                var content = DataProvider.ContentDao.Get(site, channel, channelContentId.Id);
                 if (content == null) continue;
 
-                content.CheckAdminId = auth.AdminId;
-                content.CheckDate = DateTime.Now;
-                content.CheckReasons = request.Reasons;
-
+                content.Set(ContentAttribute.CheckUserName, req.AdminName);
+                content.Set(ContentAttribute.CheckDate, DateTime.Now);
+                content.Set(ContentAttribute.CheckReasons, request.Reasons);
                 content.Checked = true;
                 content.CheckedLevel = 0;
 
-                await DataProvider.ContentRepository.UpdateAsync(site, channel, content);
+                DataProvider.ContentDao.Update(site, channel, content);
 
                 contents.Add(content);
 
-                await DataProvider.ContentCheckRepository.InsertAsync(new ContentCheck
+                var contentCheck = new ContentCheckInfo
                 {
+                    TableName = tableName,
                     SiteId = request.SiteId,
                     ChannelId = content.ChannelId,
                     ContentId = content.Id,
-                    AdminId = auth.AdminId,
-                    Checked = true,
+                    UserName = req.AdminName,
+                    IsChecked = true,
                     CheckedLevel = 0,
                     CheckDate = DateTime.Now,
                     Reasons = request.Reasons
-                });
+                };
+
+                DataProvider.ContentCheckDao.Insert(contentCheck);
             }
 
-            await auth.AddSiteLogAsync(request.SiteId, "批量审核内容");
+            req.AddSiteLog(request.SiteId, "批量审核内容");
 
             foreach (var content in request.Contents)
             {
-                await _createManager.CreateContentAsync(request.SiteId, content.ChannelId, content.Id);
+                CreateManager.CreateContent(request.SiteId, content.ChannelId, content.Id);
             }
 
             foreach (var distinctChannelId in request.Contents.Select(x => x.ChannelId).Distinct())
             {
-                await _createManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
+                CreateManager.TriggerContentChangedEvent(request.SiteId, distinctChannelId);
             }
 
-            await _createManager.CreateChannelAsync(request.SiteId, request.SiteId);
+            CreateManager.CreateChannel(request.SiteId, request.SiteId);
 
             return new CheckResult
             {
@@ -402,46 +449,93 @@ namespace SiteServer.API.Controllers.V1
         }
 
         //[OpenApiOperation("获取站点内容API", "")]
+        //[HttpPost, Route(RouteSite)]
+        //public QueryResult GetSiteContents([FromUri]int siteId, [FromBody] QueryRequest request)
+        //{
+        //    var req = new AuthenticatedRequest();
+        //    var sourceId = req.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
+        //    bool isAuth;
+        //    if (sourceId == SourceManager.User)
+        //    {
+        //        isAuth = req.IsUserLoggin && req.UserPermissions.HasChannelPermissions(siteId, siteId, ConfigManager.ChannelPermissions.ContentView);
+        //    }
+        //    else
+        //    {
+        //        isAuth = req.IsApiAuthenticated &&
+        //                     AccessTokenManager.IsScope(req.ApiToken, AccessTokenManager.ScopeContents) ||
+        //                 req.IsUserLoggin && req.UserPermissions.HasChannelPermissions(siteId, siteId,
+        //                     ConfigManager.ChannelPermissions.ContentView) ||
+        //                 req.IsAdminLoggin && req.AdminPermissions.HasChannelPermissions(siteId, siteId,
+        //                     ConfigManager.ChannelPermissions.ContentView);
+        //    }
+        //    if (!isAuth) return Request.Unauthorized<QueryResult>();
+
+        //    var site = SiteManager.GetSiteInfo(siteId);
+        //    if (site == null) return Request.BadRequest<QueryResult>("无法确定内容对应的站点");
+
+        //    if (!req.AdminPermissionsImpl.HasChannelPermissions(siteId, siteId,
+        //        ConfigManager.ChannelPermissions.ContentView)) return Request.Unauthorized<QueryResult>();
+
+        //    var tableName = site.TableName;
+        //    var query = GetQuery(siteId, null, request);
+        //    var totalCount = DataProvider.ContentDao.GetTotalCount(tableName, query);
+        //    var channelContentIds = DataProvider.ContentDao.GetChannelContentIdList(tableName, query);
+
+        //    var contents = new List<ContentInfo>();
+        //    foreach (var channelContentId in channelContentIds)
+        //    {
+        //        var content = ContentManager.GetContentInfo(site, channelContentId.ChannelId, channelContentId.Id);
+        //        contents.Add(content);
+        //    }
+
+        //    return new QueryResult
+        //    {
+        //        Contents = contents,
+        //        TotalCount = totalCount
+        //    };
+        //}
+
+        //[OpenApiOperation("获取站点内容API", "")]
         //[HttpGet, Route(RouteSite)]
-        //public async Task<IHttpActionResult> GetSiteContents(int siteId)
+        //public IHttpActionResult GetSiteContents(int siteId)
         //{
         //    try
         //    {
-        //        var request = await AuthenticatedRequest.GetAuthAsync();
+        //        var request = new AuthenticatedRequest();
         //        var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
         //        bool isAuth;
         //        if (sourceId == SourceManager.User)
         //        {
-        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.ContentView);
+        //            isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, siteId, ConfigManager.ChannelPermissions.ContentView);
         //        }
         //        else
         //        {
-        //            isAuth = request.IsApiAuthenticated && await
-        //                         DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
+        //            isAuth = request.IsApiAuthenticated &&
+        //                     AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
         //                     request.IsUserLoggin &&
-        //                     await request.UserPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                         Constants.ChannelPermissions.ContentView) ||
+        //                     request.UserPermissions.HasChannelPermissions(siteId, siteId,
+        //                         ConfigManager.ChannelPermissions.ContentView) ||
         //                     request.IsAdminLoggin &&
-        //                     await request.AdminPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                         Constants.ChannelPermissions.ContentView);
+        //                     request.AdminPermissions.HasChannelPermissions(siteId, siteId,
+        //                         ConfigManager.ChannelPermissions.ContentView);
         //        }
         //        if (!isAuth) return Unauthorized();
 
-        //        var site = await DataProvider.SiteRepository.GetAsync(siteId);
-        //        if (site == null) return BadRequest("无法确定内容对应的站点");
+        //        var siteInfo = SiteManager.GetSiteInfo(siteId);
+        //        if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
 
-        //        if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, siteId,
-        //            Constants.ChannelPermissions.ContentView)) return Unauthorized();
+        //        if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, siteId,
+        //            ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
-        //        var tableName = site.TableName;
+        //        var tableName = siteInfo.TableName;
 
         //        var parameters = new ApiContentsParameters(request);
 
-        //        var (channelContentIds, count) = await DataProvider.ContentRepository.GetChannelContentIdListBySiteIdAsync(tableName, siteId, parameters);
-        //        var value = new List<IDictionary<string, object>>();
-        //        foreach (var channelContentId in channelContentIds)
+        //        var tupleList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, parameters, out var count);
+        //        var value = new List<Dictionary<string, object>>();
+        //        foreach (var tuple in tupleList)
         //        {
-        //            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
+        //            var contentInfo = ContentManager.GetContentInfo(siteInfo, tuple.Item1, tuple.Item2);
         //            if (contentInfo != null)
         //            {
         //                value.Add(contentInfo.ToDictionary());
@@ -452,58 +546,57 @@ namespace SiteServer.API.Controllers.V1
         //    }
         //    catch (Exception ex)
         //    {
-        //        await LogUtils.AddErrorLogAsync(ex);
+        //        LogUtils.AddErrorLog(ex);
         //        return InternalServerError(ex);
         //    }
         //}
 
-        //[OpenApiOperation("获取栏目内容API", "")]
         //[HttpGet, Route(RouteChannel)]
-        //public async Task<IHttpActionResult> GetChannelContents(int siteId, int channelId)
+        //public IHttpActionResult GetChannelContents(int siteId, int channelId)
         //{
         //    try
         //    {
-        //        var request = await AuthenticatedRequest.GetAuthAsync();
+        //        var request = new AuthenticatedRequest();
         //        var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
         //        bool isAuth;
         //        if (sourceId == SourceManager.User)
         //        {
-        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentView);
+        //            isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentView);
         //        }
         //        else
         //        {
-        //            isAuth = request.IsApiAuthenticated && await
-        //                         DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
+        //            isAuth = request.IsApiAuthenticated &&
+        //                     AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
         //                     request.IsUserLoggin &&
-        //                     await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId,
-        //                         Constants.ChannelPermissions.ContentView) ||
+        //                     request.UserPermissions.HasChannelPermissions(siteId, channelId,
+        //                         ConfigManager.ChannelPermissions.ContentView) ||
         //                     request.IsAdminLoggin &&
-        //                     await request.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
-        //                         Constants.ChannelPermissions.ContentView);
+        //                     request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+        //                         ConfigManager.ChannelPermissions.ContentView);
         //        }
         //        if (!isAuth) return Unauthorized();
 
-        //        var site = await DataProvider.SiteRepository.GetAsync(siteId);
-        //        if (site == null) return BadRequest("无法确定内容对应的站点");
+        //        var siteInfo = SiteManager.GetSiteInfo(siteId);
+        //        if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
 
-        //        var channelInfo = await DataProvider.ChannelRepository.GetAsync(siteId, channelId);
+        //        var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
         //        if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-        //        if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-        //            Constants.ChannelPermissions.ContentView)) return Unauthorized();
+        //        if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+        //            ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
-        //        var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
+        //        var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
         //        var top = request.GetQueryInt("top", 20);
         //        var skip = request.GetQueryInt("skip");
         //        var like = request.GetQueryString("like");
         //        var orderBy = request.GetQueryString("orderBy");
 
-        //        var (list, count) = await DataProvider.ContentRepository.ApiGetContentIdListByChannelIdAsync(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString);
-        //        var value = new List<IDictionary<string, object>>();
+        //        var list = DataProvider.ContentDao.ApiGetContentIdListByChannelId(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString, out var count);
+        //        var value = new List<Dictionary<string, object>>();
         //        foreach(var (contentChannelId, contentId) in list)
         //        {
-        //            var contentInfo = await DataProvider.ContentRepository.GetAsync(site, contentChannelId, contentId);
+        //            var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelId, contentId);
         //            if (contentInfo != null)
         //            {
         //                value.Add(contentInfo.ToDictionary());
@@ -514,58 +607,9 @@ namespace SiteServer.API.Controllers.V1
         //    }
         //    catch (Exception ex)
         //    {
-        //        await LogUtils.AddErrorLogAsync(ex);
+        //        LogUtils.AddErrorLog(ex);
         //        return InternalServerError(ex);
         //    }
-        //}
-
-        //[OpenApiOperation("获取内容API", "")]
-        //[HttpPost, Route(RouteSite)]
-        //public async Task<QueryResult> GetSiteContents([FromUri]int siteId, [FromBody] QueryRequest request)
-        //{
-        //    var req = await AuthenticatedRequest.GetAuthAsync();
-        //    var sourceId = req.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-        //    bool isAuth;
-        //    if (sourceId == SourceManager.User)
-        //    {
-        //        isAuth = req.IsUserLoggin && await req.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.ContentView);
-        //    }
-        //    else
-        //    {
-        //        isAuth = req.IsApiAuthenticated && await
-        //                     DataProvider.AccessTokenRepository.IsScopeAsync(req.ApiToken, Constants.ScopeContents) ||
-        //                 req.IsUserLoggin &&
-        //                 await req.UserPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                     Constants.ChannelPermissions.ContentView) ||
-        //                 req.IsAdminLoggin &&
-        //                 await req.AdminPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                     Constants.ChannelPermissions.ContentView);
-        //    }
-        //    if (!isAuth) return Request.Unauthorized<QueryResult>();
-
-        //    var site = await DataProvider.SiteRepository.GetAsync(siteId);
-        //    if (site == null) return Request.BadRequest<QueryResult>("无法确定内容对应的站点");
-
-        //    if (!await req.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, siteId,
-        //        Constants.ChannelPermissions.ContentView)) return Request.Unauthorized<QueryResult>();
-
-        //    var tableName = site.TableName;
-        //    var query = GetQuery(siteId, null, request);
-        //    var totalCount = await DataProvider.ContentRepository.GetTotalCountAsync(tableName, query);
-        //    var channelContentIds = await DataProvider.ContentRepository.GetChannelContentIdListAsync(tableName, query);
-
-        //    var contents = new List<Content>();
-        //    foreach (var channelContentId in channelContentIds)
-        //    {
-        //        var content = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
-        //        contents.Add(content);
-        //    }
-
-        //    return new QueryResult
-        //    {
-        //        Contents = contents,
-        //        TotalCount = totalCount
-        //    };
         //}
     }
 }

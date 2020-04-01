@@ -1,167 +1,186 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.Framework;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Serialization;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    
+    [OpenApiIgnore]
     [RoutePrefix("home/contentsLayerExport")]
     public class HomeContentsLayerExportController : ApiController
     {
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public async Task<IHttpActionResult> GetConfig()
+        public IHttpActionResult GetConfig()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-
-            var siteId = request.GetQueryInt("siteId");
-            var channelId = request.GetQueryInt("channelId");
-
-            if (!request.IsUserLoggin ||
-                !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                    Constants.ChannelPermissions.ContentView))
+            try
             {
-                return Unauthorized();
+                var request = new AuthenticatedRequest();
+
+                var siteId = request.GetQueryInt("siteId");
+                var channelId = request.GetQueryInt("channelId");
+
+                if (!request.IsUserLoggin ||
+                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                        ConfigManager.ChannelPermissions.ContentView))
+                {
+                    return Unauthorized();
+                }
+
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
+
+                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
+                var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, true);
+
+                return Ok(new
+                {
+                    Value = columns,
+                    CheckedLevels = checkedLevels,
+                    CheckedLevel = checkedLevel
+                });
             }
-
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            if (site == null) return BadRequest("无法确定内容对应的站点");
-
-            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
-            if (channel == null) return BadRequest("无法确定内容对应的栏目");
-
-            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
-
-            var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, site, siteId);
-            var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
-
-            return Ok(new
+            catch (Exception ex)
             {
-                Value = columns,
-                CheckedLevels = checkedLevels,
-                CheckedLevel = checkedLevel
-            });
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
         }
 
         [HttpPost, Route(Route)]
-        public async Task<IHttpActionResult> Submit()
+        public IHttpActionResult Submit()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-
-            var downloadUrl = string.Empty;
-
-            var siteId = request.GetPostInt("siteId");
-            var channelId = request.GetPostInt("channelId");
-            var exportType = request.GetPostString("exportType");
-            var isAllCheckedLevel = request.GetPostBool("isAllCheckedLevel");
-            var checkedLevelKeys = request.GetPostObject<List<int>>("checkedLevelKeys");
-            var isAllDate = request.GetPostBool("isAllDate");
-            var startDate = request.GetPostDateTime("startDate", DateTime.Now);
-            var endDate = request.GetPostDateTime("endDate", DateTime.Now);
-            var columnNames = request.GetPostObject<List<string>>("columnNames");
-
-            if (!request.IsUserLoggin ||
-                !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                    Constants.ChannelPermissions.ChannelEdit))
+            try
             {
-                return Unauthorized();
-            }
+                var request = new AuthenticatedRequest();
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            if (site == null) return BadRequest("无法确定内容对应的站点");
+                var downloadUrl = string.Empty;
 
-            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
-            if (channel == null) return BadRequest("无法确定内容对应的栏目");
+                var siteId = request.GetPostInt("siteId");
+                var channelId = request.GetPostInt("channelId");
+                var exportType = request.GetPostString("exportType");
+                var isAllCheckedLevel = request.GetPostBool("isAllCheckedLevel");
+                var checkedLevelKeys = request.GetPostObject<List<int>>("checkedLevelKeys");
+                var isAllDate = request.GetPostBool("isAllDate");
+                var startDate = request.GetPostDateTime("startDate", DateTime.Now);
+                var endDate = request.GetPostDateTime("endDate", DateTime.Now);
+                var columnNames = request.GetPostObject<List<string>>("columnNames");
 
-            var columns = await ColumnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
-            var pluginIds = PluginContentManager.GetContentPluginIds(channel);
-            var pluginColumns = await PluginContentManager.GetContentColumnsAsync(pluginIds);
-
-            var contentInfoList = new List<Content>();
-            var ccIds = await DataProvider.ContentRepository.GetSummariesAsync(site, channel, true);
-            var count = ccIds.Count();
-
-            var pages = Convert.ToInt32(Math.Ceiling((double)count / site.PageSize));
-            if (pages == 0) pages = 1;
-
-            if (count > 0)
-            {
-                for (var page = 1; page <= pages; page++)
+                if (!request.IsUserLoggin ||
+                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                        ConfigManager.ChannelPermissions.ChannelEdit))
                 {
-                    var offset = site.PageSize * (page - 1);
-                    var limit = site.PageSize;
-                    var pageCcIds = ccIds.Skip(offset).Take(limit).ToList();
-
-                    var sequence = offset + 1;
-
-                    foreach (var channelContentId in pageCcIds)
-                    {
-                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
-                        if (contentInfo == null) continue;
-
-                        if (!isAllCheckedLevel)
-                        {
-                            var checkedLevel = contentInfo.CheckedLevel;
-                            if (contentInfo.Checked)
-                            {
-                                checkedLevel = site.CheckContentLevel;
-                            }
-                            if (!checkedLevelKeys.Contains(checkedLevel))
-                            {
-                                continue;
-                            }
-                        }
-
-                        if (!isAllDate)
-                        {
-                            if (contentInfo.AddDate < startDate || contentInfo.AddDate > endDate)
-                            {
-                                continue;
-                            }
-                        }
-
-                        contentInfoList.Add(await ColumnsManager.CalculateContentListAsync(sequence++, site, channelId, contentInfo, columns, pluginColumns));
-                    }
+                    return Unauthorized();
                 }
 
-                if (contentInfoList.Count > 0)
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                //var adminId = request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
+
+                var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
+                var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
+                var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
+
+                var contentInfoList = new List<ContentInfo>();
+                var ccIds = DataProvider.ContentDao.GetSummaries(siteInfo, channelInfo, true);
+                var count = ccIds.Count;
+
+                var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
+                if (pages == 0) pages = 1;
+
+                if (count > 0)
                 {
-                    if (exportType == "zip")
+                    for (var page = 1; page <= pages; page++)
                     {
-                        var fileName = $"{channel.ChannelName}.zip";
-                        var filePath = PathUtility.GetTemporaryFilesPath(fileName);
-                        var exportObject = new ExportObject(site, request.AdminId);
-                        contentInfoList.Reverse();
-                        if (exportObject.ExportContents(filePath, contentInfoList))
+                        var offset = siteInfo.Additional.PageSize * (page - 1);
+                        var limit = siteInfo.Additional.PageSize;
+                        var pageCcIds = ccIds.Skip(offset).Take(limit).ToList();
+
+                        var sequence = offset + 1;
+
+                        foreach (var channelContentId in pageCcIds)
                         {
+                            var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelContentId.ChannelId, channelContentId.Id);
+                            if (contentInfo == null) continue;
+
+                            if (!isAllCheckedLevel)
+                            {
+                                var checkedLevel = contentInfo.CheckedLevel;
+                                if (contentInfo.IsChecked)
+                                {
+                                    checkedLevel = siteInfo.Additional.CheckContentLevel;
+                                }
+                                if (!checkedLevelKeys.Contains(checkedLevel))
+                                {
+                                    continue;
+                                }
+                            }
+
+                            if (!isAllDate)
+                            {
+                                if (contentInfo.AddDate < startDate || contentInfo.AddDate > endDate)
+                                {
+                                    continue;
+                                }
+                            }
+
+                            contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                        }
+                    }
+
+                    if (contentInfoList.Count > 0)
+                    {
+                        if (exportType == "zip")
+                        {
+                            var fileName = $"{channelInfo.ChannelName}.zip";
+                            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                            var exportObject = new ExportObject(siteId, request.AdminName);
+                            contentInfoList.Reverse();
+                            if (exportObject.ExportContents(filePath, contentInfoList))
+                            {
+                                downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
+                            }
+                        }
+                        else if (exportType == "excel")
+                        {
+                            var fileName = $"{channelInfo.ChannelName}.csv";
+                            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                            ExcelObject.CreateExcelFileForContents(filePath, siteInfo, channelInfo, contentInfoList, columnNames);
                             downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                         }
                     }
-                    else if (exportType == "excel")
-                    {
-                        var fileName = $"{channel.ChannelName}.csv";
-                        var filePath = PathUtility.GetTemporaryFilesPath(fileName);
-                        await ExcelObject.CreateExcelFileForContentsAsync(filePath, site, channel, contentInfoList, columnNames);
-                        downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
-                    }
                 }
-            }
 
-            return Ok(new
+                return Ok(new
+                {
+                    Value = downloadUrl,
+                    IsSuccess = !string.IsNullOrEmpty(downloadUrl)
+                });
+            }
+            catch (Exception ex)
             {
-                Value = downloadUrl,
-                IsSuccess = !string.IsNullOrEmpty(downloadUrl)
-            });
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
         }
     }
 }

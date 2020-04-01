@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Text;
 using System.Web.UI;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -76,7 +75,7 @@ namespace SiteServer.BackgroundPages.Controls
 					    $@"<\!--today\s+-->\s+<div\s+class=""dt_c"">\s+<div\s+class=""tn"">{DateTime.Now.Year}-{TranslateUtils
 					        .ToTwoCharString(DateTime.Now.Month)}-{TranslateUtils.ToTwoCharString(DateTime.Now.Day)}</div>\s*(?<title>[\s\S]+?)\s*</div>\s+<\!--//today\s+-->";
 
-                    var content = WebClientUtils.GetRemoteFileSource(weatherUrl, Encoding.UTF8);
+                    var content = WebClientUtils.GetRemoteFileSource(weatherUrl, ECharset.utf_8);
 
 					if (!string.IsNullOrEmpty(content))
 					{
@@ -104,7 +103,7 @@ namespace SiteServer.BackgroundPages.Controls
 					string weatherUrl = $"http://php.weather.sina.com.cn/search.php?city={PageUtils.UrlEncode(City)}";
 					var regex = "<td\\s+bgcolor=\\#FEFEFF\\s+height=25\\s+style=\"padding-left:20px;\"\\s+align=center>24小时</td>\\s*(?<title>[\\s\\S]+?)\\s*</tr>";
 
-                    var content = WebClientUtils.GetRemoteFileSource(weatherUrl, Encoding.UTF8);
+                    var content = WebClientUtils.GetRemoteFileSource(weatherUrl, ECharset.gb2312);
 
 					if (!string.IsNullOrEmpty(content))
 					{

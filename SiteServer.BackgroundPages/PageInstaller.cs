@@ -4,12 +4,10 @@ using System.Security.Permissions;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using Datory;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Repositories;
-
+using SiteServer.Plugin;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages
 {
@@ -71,7 +69,7 @@ namespace SiteServer.BackgroundPages
         {
             if (IsPostBack) return;
 
-            if (!SystemManager.IsNeedInstallAsync().GetAwaiter().GetResult())
+            if (!SystemManager.IsNeedInstall())
             {
                 Page.Response.Write("系统已安装成功，向导被禁用");
                 Page.Response.End();
@@ -102,7 +100,7 @@ namespace SiteServer.BackgroundPages
 
         public void DdlSqlDatabaseType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var databaseType = TranslateUtils.ToEnum(DdlSqlDatabaseType.SelectedValue, DatabaseType.MySql);
+            var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
             PhOracleDatabase.Visible = databaseType == DatabaseType.Oracle;
         }
 
@@ -126,7 +124,7 @@ namespace SiteServer.BackgroundPages
                 try
                 {
                     var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "version.txt");
-                    FileUtils.WriteText(filePath, SystemManager.ProductVersion);
+                    FileUtils.WriteText(filePath, ECharset.utf_8, SystemManager.ProductVersion);
 
                     var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, WebConfigUtils.PhysicalApplicationPath);
                     ioPermission.Demand();
@@ -142,7 +140,7 @@ namespace SiteServer.BackgroundPages
                 try
                 {
                     var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, "index.htm");
-                    FileUtils.WriteText(filePath, Constants.Html5Empty);
+                    FileUtils.WriteText(filePath, ECharset.utf_8, Constants.Html5Empty);
 
                     var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName));
                     ioPermission.Demand();
@@ -185,7 +183,7 @@ namespace SiteServer.BackgroundPages
                 bool isConnectValid;
                 string errorMessage;
                 var databaseNameList = new List<string>();
-                var databaseType = TranslateUtils.ToEnum(DdlSqlDatabaseType.SelectedValue, DatabaseType.MySql);
+                var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
                 if (string.IsNullOrEmpty(TbSqlServer.Text))
                 {
                     isConnectValid = false;
@@ -209,7 +207,7 @@ namespace SiteServer.BackgroundPages
                 else
                 {
                     var connectionStringWithoutDatabaseName = GetConnectionString(databaseType == DatabaseType.Oracle);
-                    isConnectValid = DataProvider.DatabaseRepository.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
+                    isConnectValid = DataProvider.DatabaseDao.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
                 }
                 
                 if (isConnectValid)
@@ -320,13 +318,13 @@ namespace SiteServer.BackgroundPages
 
         private string GetConnectionString(bool isDatabaseName)
         {
-            var databaseType = TranslateUtils.ToEnum(DdlSqlDatabaseType.SelectedValue, DatabaseType.MySql);
+            var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
             var databaseName = string.Empty;
             if (isDatabaseName)
             {
                 databaseName = databaseType == DatabaseType.Oracle ? TbOracleDatabase.Text : DdlSqlDatabaseName.SelectedValue;
             }
-            return WebUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName, TranslateUtils.ToBool(DdlIsOracleSid.SelectedValue), EOraclePrivilegeUtils.GetEnumType(DdlOraclePrivilege.SelectedValue));
+            return WebConfigUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName, TranslateUtils.ToBool(DdlIsOracleSid.SelectedValue), DdlOraclePrivilege.SelectedValue);
         }
 
         private bool CheckLoginValid(out string errorMessage)
@@ -356,10 +354,10 @@ namespace SiteServer.BackgroundPages
                 errorMessage = "两次输入的管理员密码不一致！";
                 return false;
             }
-            if (!PasswordRestrictionUtils.IsValid(TbAdminPassword.Text, PasswordRestriction.LetterAndDigit.GetValue()))
+            if (!EUserPasswordRestrictionUtils.IsValid(TbAdminPassword.Text, EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit)))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{PasswordRestriction.LetterAndDigit.GetDisplayName()}";
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestriction.LetterAndDigit)}";
                 return false;
             }
             return true;
@@ -371,7 +369,7 @@ namespace SiteServer.BackgroundPages
 
             try
             {
-                SystemManager.InstallDatabaseAsync(TbAdminName.Text, TbAdminPassword.Text).GetAwaiter().GetResult();
+                SystemManager.InstallDatabase(TbAdminName.Text, TbAdminPassword.Text);
                 
                 return true;
             }
@@ -391,7 +389,7 @@ namespace SiteServer.BackgroundPages
             try
             {
                 var isProtectData = TranslateUtils.ToBool(DdlIsProtectData.SelectedValue);
-                var databaseType = TranslateUtils.ToEnum(DdlSqlDatabaseType.SelectedValue, DatabaseType.MySql);
+                var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
                 var connectionString = GetConnectionString(true);
 
                 WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, string.Empty, "SiteServer", "Home", StringUtils.GetShortGuid(), false);

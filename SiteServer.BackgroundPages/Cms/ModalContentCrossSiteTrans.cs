@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using Datory.Utils;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.DataCache.Content;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -34,11 +32,11 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "channelId", "contentIdCollection");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
-            _contentIdList = Utilities.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
+            _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
 
             if (IsPostBack) return;
 
-            CrossSiteTransUtility.LoadSiteIdDropDownListAsync(DdlSiteId, Site, _channelId).GetAwaiter().GetResult();
+            CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelId);
 
             if (DdlSiteId.Items.Count > 0)
             {
@@ -49,13 +47,13 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBoxAsync(LbChannelId, Site, psId, DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult(), AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
+            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, ChannelManager.GetChannelInfo(SiteId, _channelId), AuthRequest.AdminPermissionsImpl);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             var targetSiteId = int.Parse(DdlSiteId.SelectedValue);
-            var targetSite = DataProvider.SiteRepository.GetAsync(targetSiteId).GetAwaiter().GetResult();
+            var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
             try
             {
                 foreach (ListItem listItem in LbChannelId.Items)
@@ -65,25 +63,26 @@ namespace SiteServer.BackgroundPages.Cms
                         var targetChannelId = TranslateUtils.ToInt(listItem.Value);
                         if (targetChannelId != 0)
                         {
-                            var targetChannelInfo = DataProvider.ChannelRepository.GetAsync(targetChannelId).GetAwaiter().GetResult();
+                            var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
+                            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
                             foreach (var contentId in _contentIdList)
                             {
-                                var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channelId, contentId).GetAwaiter().GetResult();
-                                FileUtility.MoveFileByContentAsync(Site, targetSite, contentInfo).GetAwaiter().GetResult();
+                                var contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelId, contentId);
+                                FileUtility.MoveFileByContentInfo(SiteInfo, targetSiteInfo, contentInfo);
                                 contentInfo.SiteId = targetSiteId;
                                 contentInfo.SourceId = contentInfo.ChannelId;
                                 contentInfo.ChannelId = targetChannelId;
                                 
-                                contentInfo.Checked = targetSite.IsCrossSiteTransChecked;
+                                contentInfo.IsChecked = targetSiteInfo.Additional.IsCrossSiteTransChecked;
                                 contentInfo.CheckedLevel = 0;
 
-                                DataProvider.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo).GetAwaiter().GetResult();
+                                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
                             }
                         }
                     }
                 }
 
-                AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "跨站转发", string.Empty).GetAwaiter().GetResult();
+                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "跨站转发", string.Empty);
 
                 SuccessMessage("内容转发成功，请选择后续操作。");
             }

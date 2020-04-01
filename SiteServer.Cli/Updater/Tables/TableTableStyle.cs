@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.CodeDom;
+using System.Collections.Generic;
 using Datory;
+using MySqlX.XDevAPI.Relational;
 using Newtonsoft.Json;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -68,21 +72,21 @@ namespace SiteServer.Cli.Updater.Tables
             Process = Process
         };
 
-        private static readonly string NewTableName = DataProvider.TableStyleRepository.TableName;
+        private static readonly string NewTableName = DataProvider.TableStyleDao.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.TableStyleRepository.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.TableStyleDao.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(TableStyle.Id), nameof(TableStyleId)},
-                {nameof(TableStyle.TableName), nameof(TableName)}
+                {nameof(TableStyleInfo.Id), nameof(TableStyleId)},
+                {nameof(TableStyleInfo.TableName), nameof(TableName)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
         {
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_PublishmentSystem"), DataProvider.SiteRepository.TableName},
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_Node"), DataProvider.ChannelRepository.TableName}
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), "siteserver_PublishmentSystem"), DataProvider.SiteDao.TableName},
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), "siteserver_Node"), DataProvider.ChannelDao.TableName}
         };
 
         private static Dictionary<string, object> Process(Dictionary<string, object> row)
@@ -91,7 +95,7 @@ namespace SiteServer.Cli.Updater.Tables
             {
                 if (isVisible != null && StringUtils.EqualsIgnoreCase(isVisible.ToString(), "False"))
                 {
-                    row[nameof(TableStyle.InputType)] = Abstractions.InputType.Hidden.GetValue();
+                    row[nameof(TableStyleInfo.InputType)] = Plugin.InputType.Hidden.Value;
                 }
             }
 

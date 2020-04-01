@@ -2,12 +2,9 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using Datory.Utils;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Images;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Repositories;
+using SiteServer.Utils.Images;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -23,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("插入图片",
+            return LayerUtils.GetOpenScript2("插入图片",
                 PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertImage), new NameValueCollection
                 {
                     {"attributeName", attributeName}
@@ -50,36 +47,36 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (isLoad)
             {
-                if (!string.IsNullOrEmpty(Site.ConfigUploadImageIsLinkToOriginal))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigUploadImageIsLinkToOriginal))
                 {
-                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(Site.ConfigUploadImageIsLinkToOriginal);
+                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(SiteInfo.Additional.ConfigUploadImageIsLinkToOriginal);
                 }
-                if (!string.IsNullOrEmpty(Site.ConfigUploadImageIsSmallImage))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigUploadImageIsSmallImage))
                 {
-                    CbIsSmallImage.Checked = TranslateUtils.ToBool(Site.ConfigUploadImageIsSmallImage);
+                    CbIsSmallImage.Checked = TranslateUtils.ToBool(SiteInfo.Additional.ConfigUploadImageIsSmallImage);
                 }
-                if (!string.IsNullOrEmpty(Site.ConfigUploadImageSmallImageWidth))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigUploadImageSmallImageWidth))
                 {
-                    TbSmallImageWidth.Text = Site.ConfigUploadImageSmallImageWidth;
+                    TbSmallImageWidth.Text = SiteInfo.Additional.ConfigUploadImageSmallImageWidth;
                 }
-                if (!string.IsNullOrEmpty(Site.ConfigUploadImageSmallImageHeight))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigUploadImageSmallImageHeight))
                 {
-                    TbSmallImageHeight.Text = Site.ConfigUploadImageSmallImageHeight;
+                    TbSmallImageHeight.Text = SiteInfo.Additional.ConfigUploadImageSmallImageHeight;
                 }
             }
             else
             {
-                if (Site.ConfigUploadImageIsLinkToOriginal != CbIsLinkToOriginal.Checked.ToString()
-                     || Site.ConfigUploadImageIsSmallImage != CbIsSmallImage.Checked.ToString()
-                     || Site.ConfigUploadImageSmallImageWidth != TbSmallImageWidth.Text
-                     || Site.ConfigUploadImageSmallImageHeight != TbSmallImageHeight.Text)
+                if (SiteInfo.Additional.ConfigUploadImageIsLinkToOriginal != CbIsLinkToOriginal.Checked.ToString()
+                     || SiteInfo.Additional.ConfigUploadImageIsSmallImage != CbIsSmallImage.Checked.ToString()
+                     || SiteInfo.Additional.ConfigUploadImageSmallImageWidth != TbSmallImageWidth.Text
+                     || SiteInfo.Additional.ConfigUploadImageSmallImageHeight != TbSmallImageHeight.Text)
                 {
-                    Site.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
-                    Site.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
-                    Site.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
-                    Site.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
+                    SiteInfo.Additional.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
+                    SiteInfo.Additional.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
+                    SiteInfo.Additional.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
+                    SiteInfo.Additional.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
 
-                    DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
+                    DataProvider.SiteDao.Update(SiteInfo);
                 }
             }
         }
@@ -98,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var scripts = string.Empty;
 
-            var fileNames = Utilities.GetStringList(HihFilePaths.Value);
+            var fileNames = TranslateUtils.StringCollectionToStringList(HihFilePaths.Value);
 
             foreach (var filePath in fileNames)
             {
@@ -107,16 +104,16 @@ namespace SiteServer.BackgroundPages.Cms
                     var fileName = PathUtils.GetFileName(filePath);
 
                     var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                    var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
+                    var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
 
-                    var imageUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, filePath, true).GetAwaiter().GetResult();
+                    var imageUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, filePath, true);
 
                     if (CbIsSmallImage.Checked)
                     {
                         var localSmallFileName = Constants.SmallImageAppendix + fileName;
                         var localSmallFilePath = PathUtils.Combine(localDirectoryPath, localSmallFileName);
 
-                        var smallImageUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localSmallFilePath, true).GetAwaiter().GetResult();
+                        var smallImageUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localSmallFilePath, true);
 
                         var width = TranslateUtils.ToInt(TbSmallImageWidth.Text);
                         var height = TranslateUtils.ToInt(TbSmallImageHeight.Text);
@@ -127,14 +124,14 @@ namespace SiteServer.BackgroundPages.Cms
                             : $@"<img src=""{smallImageUrl}"" border=""0"" />";
 
                         scripts += "if(parent." + UEditorUtils.GetEditorInstanceScript() + ") parent." +
-                                   UEditorUtils.GetInsertHtmlScript("Body", insertHtml);
+                                   UEditorUtils.GetInsertHtmlScript("Content", insertHtml);
                     }
                     else
                     {
                         var insertHtml = $@"<img src=""{imageUrl}"" border=""0"" />";
 
                         scripts += "if(parent." + UEditorUtils.GetEditorInstanceScript() + ") parent." +
-                                      UEditorUtils.GetInsertHtmlScript("Body", insertHtml);
+                                      UEditorUtils.GetInsertHtmlScript("Content", insertHtml);
                     }
                 }
             }

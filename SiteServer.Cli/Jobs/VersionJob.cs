@@ -3,10 +3,9 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using NDesk.Options;
-using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
-using Datory;
-using SiteServer.CMS.Framework;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -67,7 +66,7 @@ namespace SiteServer.Cli.Jobs
                     // ignored
                 }
 
-                await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.GetValue()}");
+                await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.Value}");
                 await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
                 await Console.Out.WriteLineAsync($"连接字符串（加密）: {TranslateUtils.EncryptStringBySecretKey(WebConfigUtils.ConnectionString, WebConfigUtils.SecretKey)}");
             }

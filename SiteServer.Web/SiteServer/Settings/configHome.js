@@ -1,6 +1,8 @@
-﻿var $url = '/pages/settings/configHome';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/configHome');
 
-var data = utils.initData({
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   pageType: null,
   config: null,
   files: [],
@@ -16,17 +18,16 @@ var data = utils.initData({
   isHomeAgreement: null,
   homeAgreementHtml: null,
   styles: null,
-});
+};
 
 var methods = {
   getConfig: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url).then(function (response) {
-      var res = response.data;
+    $api.get(null, function (err, res) {
+      if (err || !res || !res.value) return;
 
-      $this.config = _.assign({}, res.value);
+      $this.config = _.clone(res.value);
       $this.homeDirectory = res.homeDirectory;
 
       $this.isHomeClosed = res.value.isHomeClosed;
@@ -44,14 +45,10 @@ var methods = {
       $this.styles = res.styles;
 
       $this.pageType = 'list';
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
     });
   },
-
-  inputLogo: function(newFile, oldFile) {
+  inputLogo(newFile, oldFile) {
     if (Boolean(newFile) !== Boolean(oldFile) || oldFile.error !== newFile.error) {
       if (!this.$refs.logo.active) {
         this.$refs.logo.active = true
@@ -62,8 +59,7 @@ var methods = {
       this.homeLogoUrl = newFile.response.value;
     }
   },
-
-  inputAvatar: function(newFile, oldFile) {
+  inputAvatar(newFile, oldFile) {
     if (Boolean(newFile) !== Boolean(oldFile) || oldFile.error !== newFile.error) {
       if (!this.$refs.avatar.active) {
         this.$refs.avatar.active = true
@@ -74,7 +70,6 @@ var methods = {
       this.homeDefaultAvatarUrl = newFile.response.value;
     }
   },
-
   getUserRegistrationAttributes: function () {
     var str = '用户名, 密码';
     for (var i = 0; i < this.userRegistrationAttributes.length; i++) {
@@ -88,38 +83,41 @@ var methods = {
     }
     return str;
   },
-
   getUserRegistrationAttribute: function (val) {
     return val;
   },
-  
   submit: function (item) {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.post($url, {
-      isHomeClosed: this.isHomeClosed,
-      homeTitle: this.homeTitle,
-      isHomeLogo: this.isHomeLogo,
-      homeLogoUrl: this.homeLogoUrl,
-      homeDefaultAvatarUrl: this.homeDefaultAvatarUrl,
-      userRegistrationAttributes: this.userRegistrationAttributes.join(','),
-      isUserRegistrationGroup: this.isUserRegistrationGroup,
-      isHomeAgreement: this.isHomeAgreement,
-      homeAgreementHtml: this.homeAgreementHtml
-    }).then(function (response) {
-      var res = response.data;
+    pageUtils.loading(true);
+    $api.post({
+      isHomeClosed: $this.isHomeClosed,
+      homeTitle: $this.homeTitle,
+      isHomeLogo: $this.isHomeLogo,
+      homeLogoUrl: $this.homeLogoUrl,
+      homeDefaultAvatarUrl: $this.homeDefaultAvatarUrl,
+      userRegistrationAttributes: $this.userRegistrationAttributes.join(','),
+      isUserRegistrationGroup: $this.isUserRegistrationGroup,
+      isHomeAgreement: $this.isHomeAgreement,
+      homeAgreementHtml: $this.homeAgreementHtml
+    }, function (err, res) {
+      pageUtils.loading(false);
+      if (err) {
+        $this.pageAlert = {
+          type: 'danger',
+          html: err.message
+        };
+        return;
+      }
 
-      $this.config = _.assign({}, res.value);
+      $this.pageAlert = {
+        type: 'success',
+        html: '用户中心设置保存成功！'
+      };
+      $this.config = _.clone(res.value);
       $this.pageType = 'list';
-      $this.$message.success('用户中心设置保存成功！');
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
     });
   },
-  
   btnSubmitClick: function () {
     var $this = this;
     this.$validator.validate().then(function (result) {
@@ -130,7 +128,7 @@ var methods = {
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   components: {

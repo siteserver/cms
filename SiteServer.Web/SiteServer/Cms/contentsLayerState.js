@@ -1,80 +1,54 @@
-﻿var $url = '/pages/cms/contents/contentsLayerState';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerState');
 
-var data = utils.initData({
-  siteId: utils.getQueryInt('siteId'),
-  channelId: utils.getQueryInt('channelId'),
-  contentId: utils.getQueryInt('contentId'),
+var data = {
+  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
+  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
+  contentId: parseInt(pageUtils.getQueryStringByName('contentId')),
+  pageLoad: false,
+  pageAlert: null,
   contentChecks: null,
-  content: null,
-  state: null
-});
+  title: null,
+  checkState: null
+};
 
 var methods = {
-  apiGet: function () {
+  loadConfig: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url, {
-      params: {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        contentId: this.contentId
-      }
-    }).then(function (response) {
-      var res = response.data;
+    $api.get({
+      siteId: $this.siteId,
+      channelId: $this.channelId,
+      contentId: $this.contentId
+    }, function (err, res) {
+      if (err || !res || !res.value) return;
 
-      $this.contentChecks = res.contentChecks;
-      $this.content = res.content;
-      $this.state = res.state;
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
+      $this.contentChecks = res.value;
+      $this.title = res.title;
+      $this.checkState = res.checkState;
+
+      $this.pageLoad = true;
     });
   },
-
-  getContentUrl: function (content) {
-    if (content.checked) {
-      return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
-    }
-    return apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
-  },
-
-  btnAdminClick: function(adminId) {
-    utils.openLayer({
-      title: "管理员查看",
-      url: '../Shared/adminLayerView.cshtml?adminId=' + adminId,
-      width: 550,
-      height: 450
-    });
-  },
-  
   btnSubmitClick: function () {
     window.parent.layer.closeAll()
-    window.parent.utils.openLayer({
+    window.parent.pageUtils.openLayer({
       title: "审核内容",
       url: "contentsLayerCheck.cshtml?siteId=" +
         this.siteId +
         "&channelId=" +
         this.channelId +
-        "&channelContentIds=" +
-        this.channelId +
-        "_" +
+        "&contentIds=" +
         this.contentId,
       full: true
     });
-  },
-
-  btnCancelClick: function () {
-    utils.closeLayer();
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,
   created: function () {
-    this.apiGet();
+    this.loadConfig();
   }
 });

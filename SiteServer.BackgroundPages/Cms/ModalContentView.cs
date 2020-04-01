@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using Datory.Utils;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
-using Content = SiteServer.Abstractions.Content;
-using TableStyle = SiteServer.Abstractions.TableStyle;
-using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
+using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -31,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
         private int _channelId;
         private int _contentId;
         private string _returnUrl;
-        private Content _content;
+        private ContentInfo _contentInfo;
 
         public static string GetOpenWindowString(int siteId, int channelId, int contentId, string returnUrl)
         {
@@ -52,57 +51,57 @@ namespace SiteServer.BackgroundPages.Cms
             _channelId = AuthRequest.GetQueryInt("channelId");
             if (_channelId < 0) _channelId = -_channelId;
 
-            var channelInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
+            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             _contentId = AuthRequest.GetQueryInt("id");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            _content = DataProvider.ContentRepository.GetAsync(Site, channelInfo, _contentId).GetAwaiter().GetResult();
+            _contentInfo = DataProvider.ContentDao.Get(SiteInfo, channelInfo, _contentId);
 
             if (IsPostBack) return;
 
-            var styleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, channelInfo).GetAwaiter().GetResult();
+            var styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, channelInfo);
 
-            RptContents.DataSource = styleList;
+            RptContents.DataSource = styleInfoList;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
-            LtlTitle.Text = _content.Title;
+            LtlTitle.Text = _contentInfo.Title;
             LtlChannelName.Text = channelInfo.ChannelName;
 
-            LtlTags.Text = Utilities.ToString(_content.TagNames);
+            LtlTags.Text = _contentInfo.Tags;
             if (string.IsNullOrEmpty(LtlTags.Text))
             {
                 PhTags.Visible = false;
             }
 
-            LtlContentGroup.Text = Utilities.ToString(_content.GroupNames);
+            LtlContentGroup.Text = _contentInfo.GroupNameCollection;
             if (string.IsNullOrEmpty(LtlContentGroup.Text))
             {
                 PhContentGroup.Visible = false;
             }
 
-            LtlLastEditDate.Text = DateUtils.GetDateAndTimeString(_content.LastEditDate);
-            //LtlAddUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(_content.AddUserName).GetAwaiter().GetResult();
-            //LtlLastEditUserName.Text = DataProvider.AdministratorRepository.GetDisplayNameAsync(_content.LastEditUserName).GetAwaiter().GetResult();
+            LtlLastEditDate.Text = DateUtils.GetDateAndTimeString(_contentInfo.LastEditDate);
+            LtlAddUserName.Text = AdminManager.GetDisplayName(_contentInfo.AddUserName);
+            LtlLastEditUserName.Text = AdminManager.GetDisplayName(_contentInfo.LastEditUserName);
 
-            LtlContentLevel.Text = CheckManager.GetCheckState(Site, _content);
+            LtlContentLevel.Text = CheckManager.GetCheckState(SiteInfo, _contentInfo);
 
-            if (_content.ReferenceId > 0 && TranslateContentType.ReferenceContent ==  _content.TranslateContentType)
+            if (_contentInfo.ReferenceId > 0 && _contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
-                var referenceSiteId = DataProvider.ChannelRepository.GetSiteIdAsync(_content.SourceId).GetAwaiter().GetResult();
-                var referenceSite = DataProvider.SiteRepository.GetAsync(referenceSiteId).GetAwaiter().GetResult();
-                var referenceContentInfo = DataProvider.ContentRepository.GetAsync(referenceSite, _content.SourceId, _content.ReferenceId).GetAwaiter().GetResult();
+                var referenceSiteId = DataProvider.ChannelDao.GetSiteId(_contentInfo.SourceId);
+                var referenceSiteInfo = SiteManager.GetSiteInfo(referenceSiteId);
+                var referenceContentInfo = DataProvider.ContentDao.Get(referenceSiteInfo, _contentInfo.SourceId, _contentInfo.ReferenceId);
 
                 if (referenceContentInfo != null)
                 {
-                    var pageUrl = PageUtility.GetContentUrlAsync(referenceSite, referenceContentInfo, true).GetAwaiter().GetResult();
-                    var referenceNodeInfo = DataProvider.ChannelRepository.GetAsync(referenceContentInfo.ChannelId).GetAwaiter().GetResult();
+                    var pageUrl = PageUtility.GetContentUrl(referenceSiteInfo, referenceContentInfo, true);
+                    var referenceNodeInfo = ChannelManager.GetChannelInfo(referenceContentInfo.SiteId, referenceContentInfo.ChannelId);
                     var addEditUrl =
-                        WebUtils.GetContentAddEditUrl(referenceSite.Id,
-                            referenceNodeInfo.Id, _content.ReferenceId, AuthRequest.GetQueryString("ReturnUrl"));
+                        WebUtils.GetContentAddEditUrl(referenceSiteInfo.Id,
+                            referenceNodeInfo.Id, _contentInfo.ReferenceId, AuthRequest.GetQueryString("ReturnUrl"));
 
                     LtlScripts.Text += $@"
-<div class=""tips"">此内容为对内容 （站点：{referenceSite.SiteName},栏目：{referenceNodeInfo.ChannelName}）“<a href=""{pageUrl}"" target=""_blank"">{_content.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";
+<div class=""tips"">此内容为对内容 （站点：{referenceSiteInfo.SiteName},栏目：{referenceNodeInfo.ChannelName}）“<a href=""{pageUrl}"" target=""_blank"">{_contentInfo.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";
                 }
             }
         }
@@ -111,15 +110,15 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var style = (TableStyle)e.Item.DataItem;
+            var styleInfo = (TableStyleInfo)e.Item.DataItem;
 
-            var inputHtml = InputParserUtility.GetContentByTableStyleAsync(_content.Get<string>(style.AttributeName), Site, style).GetAwaiter().GetResult();
+            var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.GetString(styleInfo.AttributeName), SiteInfo, styleInfo);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
             ltlHtml.Text = $@"
 <div class=""form-group form-row"">
-    <label class=""col-sm-2 col-form-label"">{style.DisplayName}</label>
+    <label class=""col-sm-2 col-form-label"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-9 form-control-plaintext"">
         {inputHtml}
     </div>

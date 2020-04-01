@@ -2,11 +2,9 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.LitJson;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Repositories;
+using SiteServer.Utils.LitJson;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -19,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("插入音频", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
+            return LayerUtils.GetOpenScript2("插入音频", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
             {
                 {"AttributeName", attributeName}
             }), 600, 400);
@@ -46,10 +44,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            CbIsAutoPlay.Checked = Site.ConfigUEditorAudioIsAutoPlay;
+            CbIsAutoPlay.Checked = SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay;
         }
 
-        public string TypeCollection => Site.VideoUploadTypeCollection;
+        public string TypeCollection => SiteInfo.Additional.VideoUploadTypeCollection;
 
         private Hashtable Upload()
         {
@@ -68,12 +66,12 @@ namespace SiteServer.BackgroundPages.Cms
                         var fileExtName = PathUtils.GetExtension(filePath);
 
                         var isAllow = true;
-                        if (!PathUtility.IsVideoExtensionAllowed(Site, fileExtName))
+                        if (!PathUtility.IsVideoExtenstionAllowed(SiteInfo, fileExtName))
                         {
                             message = "此格式不允许上传，请选择有效的音频文件";
                             isAllow = false;
                         }
-                        if (!PathUtility.IsVideoSizeAllowed(Site, postedFile.ContentLength))
+                        if (!PathUtility.IsVideoSizeAllowed(SiteInfo, postedFile.ContentLength))
                         {
                             message = "上传失败，上传文件超出规定文件大小";
                             isAllow = false;
@@ -81,13 +79,13 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (isAllow)
                         {
-                            var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
-                            var localFileName = PathUtility.GetUploadFileName(Site, filePath);
+                            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
+                            var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
                             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
                             postedFile.SaveAs(localFilePath);
-                            playUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localFilePath, true).GetAwaiter().GetResult();
-                            playUrl = PageUtility.GetVirtualUrl(Site, playUrl);
+                            playUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
+                            playUrl = PageUtility.GetVirtualUrl(SiteInfo, playUrl);
                             success = true;
                         }
                     }
@@ -118,13 +116,13 @@ namespace SiteServer.BackgroundPages.Cms
             var playUrl = TbPlayUrl.Text;
             var isAutoPlay = CbIsAutoPlay.Checked;
 
-            if (isAutoPlay != Site.ConfigUEditorAudioIsAutoPlay)
+            if (isAutoPlay != SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay)
             {
-                Site.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
-                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
+                SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
+                DataProvider.SiteDao.Update(SiteInfo);
             }
 
-            var script = "parent." + UEditorUtils.GetInsertAudioScript(_attributeName, playUrl, Site);
+            var script = "parent." + UEditorUtils.GetInsertAudioScript(_attributeName, playUrl, SiteInfo);
             LayerUtils.CloseWithoutRefresh(Page, script);
         }
 

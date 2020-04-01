@@ -1,7 +1,9 @@
-﻿var $url = '/pages/cms/library/libraryLayerWord';
-var $urlUpload = apiUrl + '/pages/cms/library/libraryLayerWord/actions/upload?siteId=' + utils.getQueryInt('siteId');
+﻿var $url = '/pages/cms/libraryLayerWord';
+var $urlUpload = apiUrl + '/pages/cms/libraryLayerWord/actions/upload?siteId=' + utils.getQueryInt('siteId');
 
-var data = utils.initData({
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   uploadList: [],
   form: {
     siteId: utils.getQueryInt('siteId'),
@@ -12,7 +14,7 @@ var data = utils.initData({
     isClearImages: false,
     fileNames: []
   }
-});
+};
 
 var methods = {
   btnSubmitClick: function () {
@@ -23,23 +25,23 @@ var methods = {
       return false;
     }
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.post($url, this.form).then(function(response) {
       var res = response.data;
 
-      parent.$vue.insertHtml(res.value);
-      utils.closeLayer();
+      parent.insertHtml(res.value);
+      parent.layer.closeAll();
     })
     .catch(function(error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     })
     .then(function() {
-      utils.loading($this, false);
+      utils.loading(false);
     });
   },
 
   btnCancelClick: function () {
-    utils.closeLayer();
+    parent.layer.closeAll();
   },
 
   uploadBefore(file) {
@@ -53,7 +55,7 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(this, true);
+    utils.loading(true)
   },
 
   uploadRemove(file) {
@@ -64,17 +66,17 @@ var methods = {
 
   uploadSuccess: function(res) {
     this.form.fileNames.push(res.name);
-    utils.loading(this, false);
+    utils.loading(false);
   },
 
   uploadError: function(err) {
-    utils.loading(this, false);
+    utils.loading(false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,

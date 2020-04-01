@@ -1,147 +1,148 @@
 ﻿using System;
+using SiteServer.CMS.Model;
 using System.Text;
+using SiteServer.Utils;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
-using Datory.Utils;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.CMS.Repositories;
-using SiteServer.Abstractions;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Core
 {
     public static class TextUtility
     {
-        private static async Task<string> GetColumnValueAsync(Dictionary<string, string> nameValueCacheDict, Site site, Content content, TableStyle style)
+        private static string GetColumnValue(Dictionary<string, string> nameValueCacheDict, SiteInfo siteInfo, ContentInfo contentInfo, TableStyleInfo styleInfo)
         {
             var value = string.Empty;
-            //if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.AddUserName))
-            //{
-            //    if (!string.IsNullOrEmpty(content.AddUserName))
-            //    {
-            //        var key = ContentAttribute.AddUserName + ":" + content.AddUserName;
-            //        if (!nameValueCacheDict.TryGetValue(key, out value))
-            //        {
-            //            value = await DataProvider.AdministratorRepository.GetDisplayNameAsync(content.AddUserName);
-            //            nameValueCacheDict[key] = value;
-            //        }
-            //    }
-            //}
-            //else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.LastEditUserName))
-            //{
-            //    if (!string.IsNullOrEmpty(content.LastEditUserName))
-            //    {
-            //        var key = ContentAttribute.LastEditUserName + ":" + content.LastEditUserName;
-            //        if (!nameValueCacheDict.TryGetValue(key, out value))
-            //        {
-            //            value = await DataProvider.AdministratorRepository.GetDisplayNameAsync(content.LastEditUserName);
-            //            nameValueCacheDict[key] = value;
-            //        }
-            //    }
-            //}
-            //if (StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.CheckUserName)))
-            //{
-            //    var checkUserName = content.CheckUserName;
-            //    if (!string.IsNullOrEmpty(checkUserName))
-            //    {
-            //        var key = nameof(Content.CheckUserName) + ":" + checkUserName;
-            //        if (!nameValueCacheDict.TryGetValue(key, out value))
-            //        {
-            //            value = await DataProvider.AdministratorRepository.GetDisplayNameAsync(checkUserName);
-            //            nameValueCacheDict[key] = value;
-            //        }
-            //    }
-            //}
-            if (StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.CheckDate)))
+            if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.AddUserName))
             {
-                var checkDate = content.CheckDate;
-                if (checkDate != null)
+                if (!string.IsNullOrEmpty(contentInfo.AddUserName))
+                {
+                    var key = ContentAttribute.AddUserName + ":" + contentInfo.AddUserName;
+                    if (!nameValueCacheDict.TryGetValue(key, out value))
+                    {
+                        value = AdminManager.GetDisplayName(contentInfo.AddUserName);
+                        nameValueCacheDict[key] = value;
+                    }
+                }
+            }
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.LastEditUserName))
+            {
+                if (!string.IsNullOrEmpty(contentInfo.LastEditUserName))
+                {
+                    var key = ContentAttribute.LastEditUserName + ":" + contentInfo.LastEditUserName;
+                    if (!nameValueCacheDict.TryGetValue(key, out value))
+                    {
+                        value = AdminManager.GetDisplayName(contentInfo.LastEditUserName);
+                        nameValueCacheDict[key] = value;
+                    }
+                }
+            }
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckUserName))
+            {
+                var checkUserName = contentInfo.GetString(ContentAttribute.CheckUserName);
+                if (!string.IsNullOrEmpty(checkUserName))
+                {
+                    var key = ContentAttribute.CheckUserName + ":" + checkUserName;
+                    if (!nameValueCacheDict.TryGetValue(key, out value))
+                    {
+                        value = AdminManager.GetDisplayName(checkUserName);
+                        nameValueCacheDict[key] = value;
+                    }
+                }
+            }
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckDate))
+            {
+                var checkDate = contentInfo.GetDateTime(ContentAttribute.CheckDate, DateTime.MinValue);
+                if (checkDate != DateTime.MinValue)
                 {
                     value = DateUtils.GetDateAndTimeString(checkDate);
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.CheckReasons)))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckReasons))
             {
-                value = content.CheckReasons;
+                value = contentInfo.GetString(ContentAttribute.CheckReasons);
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.AddDate))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.AddDate))
             {
-                value = DateUtils.GetDateAndTimeString(content.AddDate);
+                value = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.LastEditDate))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.LastEditDate))
             {
-                value = DateUtils.GetDateAndTimeString(content.LastEditDate);
+                value = DateUtils.GetDateAndTimeString(contentInfo.LastEditDate);
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.SourceId))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.SourceId))
             {
-                value = await SourceManager.GetSourceNameAsync(content.SiteId, content.SourceId);
+                value = SourceManager.GetSourceName(contentInfo.SourceId);
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.TagNames)))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Tags))
             {
-                value = Utilities.ToString(content.TagNames);
+                value = contentInfo.Tags;
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.GroupNames)))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.GroupNameCollection))
             {
-                value = Utilities.ToString(content.GroupNames);
+                value = contentInfo.GroupNameCollection;
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.Hits))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Hits))
             {
-                value = content.Hits.ToString();
+                value = contentInfo.Hits.ToString();
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.HitsByDay))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.HitsByDay))
             {
-                value = content.HitsByDay.ToString();
+                value = contentInfo.HitsByDay.ToString();
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.HitsByWeek))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.HitsByWeek))
             {
-                value = content.HitsByWeek.ToString();
+                value = contentInfo.HitsByWeek.ToString();
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.HitsByMonth))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.HitsByMonth))
             {
-                value = content.HitsByMonth.ToString();
+                value = contentInfo.HitsByMonth.ToString();
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.LastHitsDate))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.LastHitsDate))
             {
-                value = DateUtils.GetDateAndTimeString(content.LastHitsDate);
+                value = DateUtils.GetDateAndTimeString(contentInfo.LastHitsDate);
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, ContentAttribute.Downloads))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Downloads))
             {
-                value = content.Downloads.ToString();
+                value = contentInfo.Downloads.ToString();
             }
-            else if (StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.Top)) || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.Color)) || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.Hot)) || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.Recommend)))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsTop) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsRecommend))
             {
-                value = StringUtils.GetTrueImageHtml(content.Get<string>(style.AttributeName));
+                value = StringUtils.GetTrueImageHtml(contentInfo.GetString(styleInfo.AttributeName));
             }
             else
             {
-                value = await InputParserUtility.GetContentByTableStyleAsync(content.Get<string>(style.AttributeName), site, style);
+                value = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), siteInfo, styleInfo);
             }
             return value;
         }
 
-        public static async Task<bool> IsEditAsync(Site site, int channelId, PermissionsImpl permissionsImpl)
+        public static bool IsEdit(SiteInfo siteInfo, int channelId, PermissionsImpl permissionsImpl)
         {
-            return await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentEdit);
+            return permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentEdit);
         }
 
-        //public static bool IsComment(Site site, int channelId, string administratorName)
+        //public static bool IsComment(SiteInfo siteInfo, int channelId, string administratorName)
         //{
-        //    return site.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, site.Id, channelId, SystemManager.Permissions.Channel.CommentCheck, SystemManager.Permissions.Channel.CommentDelete);
+        //    return siteInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete);
         //}
 
-        public static string GetColumnsHeadHtml(List<TableStyle> tableStyleList, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns, List<string> attributesOfDisplay)
+        public static string GetColumnsHeadHtml(List<TableStyleInfo> tableStyleInfoList, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns, StringCollection attributesOfDisplay)
         {
             var builder = new StringBuilder();
 
-            var styleList = ColumnsManager.GetContentListStyles(tableStyleList);
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(tableStyleInfoList);
 
-            foreach (var style in styleList)
+            foreach (var styleInfo in styleInfoList)
             {
-                if (!attributesOfDisplay.Contains(style.AttributeName) || style.AttributeName == ContentAttribute.Title) continue;
-                builder.Append($@"<th class=""text-nowrap"">{style.DisplayName}</th>");
+                if (!attributesOfDisplay.Contains(styleInfo.AttributeName) || styleInfo.AttributeName == ContentAttribute.Title) continue;
+                builder.Append($@"<th class=""text-nowrap"">{styleInfo.DisplayName}</th>");
             }
 
             if (pluginColumns != null)
@@ -164,15 +165,15 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static async Task<string> GetColumnsHtmlAsync(Dictionary<string, string> nameValueCacheDict, Site site, Content content, List<string> attributesOfDisplay, List<TableStyle> displayStyleList, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
+        public static string GetColumnsHtml(Dictionary<string, string> nameValueCacheDict, SiteInfo siteInfo, ContentInfo contentInfo, StringCollection attributesOfDisplay, List<TableStyleInfo> displayStyleInfoList, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
         {
             var builder = new StringBuilder();
 
-            foreach (var style in displayStyleList)
+            foreach (var styleInfo in displayStyleInfoList)
             {
-                if (!attributesOfDisplay.Contains(style.AttributeName) || style.AttributeName == ContentAttribute.Title) continue;
+                if (!attributesOfDisplay.Contains(styleInfo.AttributeName) || styleInfo.AttributeName == ContentAttribute.Title) continue;
 
-                var value = await GetColumnValueAsync(nameValueCacheDict, site, content, style);
+                var value = GetColumnValue(nameValueCacheDict, siteInfo, contentInfo, styleInfo);
                 builder.Append($@"<td class=""text-nowrap"">{value}</td>");
             }
 
@@ -193,15 +194,15 @@ namespace SiteServer.BackgroundPages.Core
                             var func = contentColumns[columnName];
                             var value = func(new ContentContextImpl
                             {
-                                SiteId = content.SiteId,
-                                ChannelId = content.ChannelId,
-                                ContentId = content.Id
+                                SiteId = contentInfo.SiteId,
+                                ChannelId = contentInfo.ChannelId,
+                                ContentId = contentInfo.Id
                             });
                             builder.Append($@"<td class=""text-nowrap"">{value}</td>");
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddErrorLogAsync(pluginId, ex).GetAwaiter().GetResult();
+                            LogUtils.AddErrorLog(pluginId, ex);
                         }
                     }
                 }
@@ -210,22 +211,22 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandsHtml(Site site, List<Menu> pluginMenus, Content content, string pageUrl, string administratorName, bool isEdit)
+        public static string GetCommandsHtml(SiteInfo siteInfo, List<PluginMenu> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
         {
             var builder = new StringBuilder();
 
-            //if (isEdit || administratorName == content.AddUserName)
-            //{
-            //    builder.Append($@"<a href=""{PageContentAdd.GetRedirectUrlOfEdit(site.Id, content.ChannelId, content.Id, pageUrl)}"">编辑</a>");
-            //}
+            if (isEdit || administratorName == contentInfo.AddUserName)
+            {
+                builder.Append($@"<a href=""{PageContentAdd.GetRedirectUrlOfEdit(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id, pageUrl)}"">编辑</a>");
+            }
 
             if (pluginMenus != null)
             {
                 foreach (var menu in pluginMenus)
                 {
                     builder.Append(string.IsNullOrEmpty(menu.Target)
-                        ? $@"<a class=""m-l-5"" href=""javascript:;"" onclick=""{LayerUtils.GetOpenScript(menu.Text, menu.Link)}"">{menu.Text}</a>"
-                        : $@"<a class=""m-l-5"" href=""{menu.Link}"" target=""{menu.Target}"">{menu.Text}</a>");
+                        ? $@"<a class=""m-l-5"" href=""javascript:;"" onclick=""{LayerUtils.GetOpenScript(menu.Text, menu.Href)}"">{menu.Text}</a>"
+                        : $@"<a class=""m-l-5"" href=""{menu.Href}"" target=""{menu.Target}"">{menu.Text}</a>");
                 }
             }
 

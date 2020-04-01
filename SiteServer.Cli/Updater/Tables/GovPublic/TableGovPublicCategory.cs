@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables.GovPublic
 {
@@ -120,7 +120,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             },
             new TableColumn
             {
-                AttributeName = "LastNode",
+                AttributeName = "IsLastNode",
                 DataType = DataType.Boolean
             },
             new TableColumn

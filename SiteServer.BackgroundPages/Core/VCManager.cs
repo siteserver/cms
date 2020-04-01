@@ -1,6 +1,5 @@
 ﻿using System;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Core
 {

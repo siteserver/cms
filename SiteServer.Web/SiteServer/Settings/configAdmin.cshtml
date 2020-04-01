@@ -1,4 +1,14 @@
-﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+<li class="nav-item">
+  <a class="nav-link active" href="configAdmin.cshtml">管理后台设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="configHome.cshtml">用户中心设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="configHomeMenu.cshtml">用户中心菜单</a>
+</li>
+}
 
 <template v-if="pageType === 'list'">
   <p class="text-muted font-14">
@@ -11,7 +21,7 @@
         <td>管理后台Logo</td>
         <td>
           <a href="javascript:;" v-on:click="pageType = 'adminLogoUrl'">
-            <img style="max-width: 160px;" :src="config.adminLogoUrl ? '../' + config.adminLogoUrl : '../assets/images/logo.png'" />
+            <img style="max-width: 160px;" :src="config.adminLogoUrl ? '../' + config.adminLogoUrl : '../assets/icons/logo.png'" />
           </a>
         </td>
       </tr>
@@ -54,7 +64,7 @@
     <div class="form-group">
       <label>管理后台Logo</label>
       <div>
-        <img style="max-width: 160px;" :src="adminLogoUrl ? '../' + adminLogoUrl : '../assets/images/logo.png'" />
+        <img style="max-width: 160px;" :src="adminLogoUrl ? '../' + adminLogoUrl : '../assets/icons/logo.png'" />
         <file-upload class="btn btn-success btn-sm m-t-10" :post-action="uploadUrl" extensions="gif,jpg,jpeg,png,webp"
           accept="image/png,image/gif,image/jpeg,image/webp" :multiple="false" v-model="files" v-on:input-file="inputLogo"
           ref="logo">

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
-
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -42,15 +41,15 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.ContentGroupRepository.TableName;
+        private static readonly string NewTableName = DataProvider.ContentGroupDao.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.ContentGroupRepository.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.ContentGroupDao.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(ContentGroup.GroupName), nameof(ContentGroupName)},
-                {nameof(ContentGroup.SiteId), nameof(PublishmentSystemId)}
+                {nameof(ContentGroupInfo.GroupName), nameof(ContentGroupName)},
+                {nameof(ContentGroupInfo.SiteId), nameof(PublishmentSystemId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

@@ -1,8 +1,7 @@
 ﻿using System.Text;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -154,7 +153,7 @@ namespace SiteServer.BackgroundPages.Core
                 if (_channelId > 0)
                 {
                     htmlBuilder.Append(
-                        $"<a href=\"{PageUtils.GetRedirectUrlToChannel(_siteId, _channelId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
+                        $"<a href=\"{PageRedirect.GetRedirectUrlToChannel(_siteId, _channelId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
                 }
                 else
                 {
@@ -191,10 +190,10 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_isNodeTree && _siteId != 0)
             {
-                var site = DataProvider.SiteRepository.GetAsync(_siteId).GetAwaiter().GetResult();
+                var siteInfo = SiteManager.GetSiteInfo(_siteId);
 
                 htmlBuilder.Append("&nbsp;");
-                htmlBuilder.Append(DataProvider.ChannelRepository.GetNodeTreeLastImageHtmlAsync(site, DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(siteInfo, ChannelManager.GetChannelInfo(_siteId, _channelId)));
 
                 if (_contentNum >= 0)
                 {
@@ -253,7 +252,7 @@ namespace SiteServer.BackgroundPages.Core
                 if (_channelId > 0)
                 {
                     htmlBuilder.Append(
-                        $"<a href=\"{PageUtils.GetRedirectUrlToChannel(_siteId, _channelId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
+                        $"<a href=\"{PageRedirect.GetRedirectUrlToChannel(_siteId, _channelId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
                 }
                 else
                 {
@@ -290,10 +289,10 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_isNodeTree && _siteId != 0)
             {
-                var site = DataProvider.SiteRepository.GetAsync(_siteId).GetAwaiter().GetResult();
+                var siteInfo = SiteManager.GetSiteInfo(_siteId);
 
                 htmlBuilder.Append("&nbsp;");
-                htmlBuilder.Append(DataProvider.ChannelRepository.GetNodeTreeLastImageHtmlAsync(site, DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult()).GetAwaiter().GetResult());
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(siteInfo, ChannelManager.GetChannelInfo(_siteId, _channelId)));
 
                 if (_contentNum >= 0)
                 {

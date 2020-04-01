@@ -2,22 +2,21 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using Datory;
-using Datory.Utils;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Repositories;
-using Content = SiteServer.Abstractions.Content;
-using TableStyle = SiteServer.Abstractions.TableStyle;
-using SiteServer.Abstractions;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -30,20 +29,19 @@ namespace SiteServer.BackgroundPages.Cms
         public AuxiliaryControl AcAttributes;
         public CheckBoxList CblContentAttributes;
         public CheckBoxList CblContentGroups;
-        public Button BtnContentGroupAdd;
         public RadioButtonList RblContentLevel;
         public TextBox TbTags;
         public Literal LtlTags;
         public PlaceHolder PhTranslate;
-        public Button BtnTranslate;
         public DropDownList DdlTranslateType;
         public PlaceHolder PhStatus;
         public TextBox TbLinkUrl;
         public DateTimeTextBox TbAddDate;
         public Button BtnSubmit;
 
-        private Channel _channel;
-        private List<TableStyle> _styleList;
+        private ChannelInfo _channelInfo;
+        private List<TableStyleInfo> _styleInfoList;
+        private string _tableName;
 
         protected override bool IsSinglePage => true;
 
@@ -82,25 +80,26 @@ namespace SiteServer.BackgroundPages.Cms
                 ReturnUrl = CmsPages.GetContentsUrl(SiteId, channelId);
             }
 
-            _channel = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
-            Content content = null;
-            _styleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+            _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
+            ContentInfo contentInfo = null;
+            _styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
 
             if (!IsPermissions(contentId)) return;
 
             if (contentId > 0)
             {
-                //content = ContentManager.GetContentInfo(Site, _channel, contentId);
-                content = DataProvider.ContentRepository.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                //contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
+                contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelInfo, contentId);
             }
 
-            var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : content?.Get<string>(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));
+            var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : contentInfo?.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));
             LtlTitleHtml.Text = ContentUtility.GetTitleHtml(titleFormat);
 
-            AcAttributes.Site = Site;
-            AcAttributes.ChannelId = _channel.Id;
+            AcAttributes.SiteInfo = SiteInfo;
+            AcAttributes.ChannelId = _channelInfo.Id;
             AcAttributes.ContentId = contentId;
-            AcAttributes.StyleList = _styleList;
+            AcAttributes.StyleInfoList = _styleInfoList;
 
             if (!IsPostBack)
             {
@@ -108,57 +107,59 @@ namespace SiteServer.BackgroundPages.Cms
 
                 LtlPageTitle.Text = pageTitle;
 
-                if (HasChannelPermissions(_channel.Id, Constants.ChannelPermissions.ContentTranslate))
+                if (HasChannelPermissions(_channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate))
                 {
                     PhTranslate.Visible = true;
-                    BtnTranslate.Attributes.Add("onClick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
-                    ETranslateContentTypeUtilsExtensions.AddListItems(DdlTranslateType, true);
-                    ControlUtils.SelectSingleItem(DdlTranslateType, TranslateContentType.Copy.GetValue());
+                    ETranslateContentTypeUtils.AddListItems(DdlTranslateType, true);
+                    ControlUtils.SelectSingleItem(DdlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
                 }
                 else
                 {
                     PhTranslate.Visible = false;
                 }
 
-                CblContentAttributes.Items.Add(new ListItem("置顶", nameof(Content.Top)));
-                CblContentAttributes.Items.Add(new ListItem("推荐", nameof(Content.Recommend)));
-                CblContentAttributes.Items.Add(new ListItem("热点", nameof(Content.Hot)));
-                CblContentAttributes.Items.Add(new ListItem("醒目", nameof(Content.Color)));
+                CblContentAttributes.Items.Add(new ListItem("置顶", ContentAttribute.IsTop));
+                CblContentAttributes.Items.Add(new ListItem("推荐", ContentAttribute.IsRecommend));
+                CblContentAttributes.Items.Add(new ListItem("热点", ContentAttribute.IsHot));
+                CblContentAttributes.Items.Add(new ListItem("醒目", ContentAttribute.IsColor));
                 TbAddDate.DateTime = DateTime.Now;
                 TbAddDate.Now = true;
 
-                var contentGroupNameList = DataProvider.ContentGroupRepository.GetGroupNamesAsync(SiteId).GetAwaiter().GetResult();
+                var contentGroupNameList = ContentGroupManager.GetGroupNameList(SiteId);
                 foreach (var groupName in contentGroupNameList)
                 {
                     var item = new ListItem(groupName, groupName);
                     CblContentGroups.Items.Add(item);
                 }
-                
-                //BtnContentGroupAdd.Attributes.Add("onClick", ModalContentGroupAdd.GetOpenWindowString(SiteId));
 
                 LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(SiteId));
 
-                if (HasChannelPermissions(_channel.Id, Constants.ChannelPermissions.ContentCheckLevel1))
+                if (HasChannelPermissions(_channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     PhStatus.Visible = true;
-                    var (isChecked, checkedLevel) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, _channel.Id).GetAwaiter().GetResult();
+                    var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, _channelInfo.Id, out var checkedLevel);
                     if (AuthRequest.IsQueryExists("contentLevel"))
                     {
-                        checkedLevel = TranslateUtils.ToIntWithNegative(AuthRequest.GetQueryString("contentLevel"));
-                        isChecked = checkedLevel >= Site.CheckContentLevel;
+                        checkedLevel = TranslateUtils.ToIntWithNagetive(AuthRequest.GetQueryString("contentLevel"));
+                        isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
                     }
 
-                    CheckManager.LoadContentLevelToEdit(RblContentLevel, Site, content, isChecked, checkedLevel);
+                    CheckManager.LoadContentLevelToEdit(RblContentLevel, SiteInfo, contentInfo, isChecked, checkedLevel);
                 }
                 else
                 {
                     PhStatus.Visible = false;
                 }
 
+                BtnSubmit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm", true, "autoCheckKeywords()"));
+
+                var allTagNames = DataProvider.TagDao.GetTagNames(SiteId);
+                var tagNames = new List<string>();
+
                 if (contentId == 0)
                 {
-                    var attributes = DataProvider.TableStyleRepository.GetDefaultAttributes(_styleList);
+                    var attributes = TableStyleManager.GetDefaultAttributes(_styleInfoList);
 
                     if (AuthRequest.IsQueryExists("isUploadWord"))
                     {
@@ -171,62 +172,66 @@ namespace SiteServer.BackgroundPages.Cms
                         var isClearImages = AuthRequest.GetQueryBool("isClearImages");
                         var fileName = AuthRequest.GetQueryString("fileName");
 
-                        var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                        var (title, wordContent) = WordManager.GetWordAsync(Site, isFirstLineTitle, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, filePath).GetAwaiter().GetResult();
+                        var formCollection = WordUtils.GetWordNameValueCollection(SiteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
+                        attributes.Load(formCollection);
 
-                        TbTitle.Text = title;
-                        attributes[ContentAttribute.Content] = wordContent;
+                        TbTitle.Text = formCollection[ContentAttribute.Title];
                     }
 
                     AcAttributes.Attributes = attributes;
 
-                    //ControlUtils.SelectSingleItem(RblContentLevel, Site.CheckContentDefaultLevel.ToString());
+                    //ControlUtils.SelectSingleItem(RblContentLevel, SiteInfo.Additional.CheckContentDefaultLevel.ToString());
                 }
-                else if (content != null)
+                else if (contentInfo != null)
                 {
-                    TbTitle.Text = content.Title;
+                    TbTitle.Text = contentInfo.Title;
 
-                    TbTags.Text = Utilities.ToString(content.TagNames);
+                    TbTags.Text = contentInfo.Tags;
+
+                    tagNames = TranslateUtils.StringCollectionToStringList(contentInfo.Tags, ' ');
 
                     var list = new List<string>();
-                    if (content.Top)
+                    if (contentInfo.IsTop)
                     {
-                        list.Add(nameof(Content.Top));
+                        list.Add(ContentAttribute.IsTop);
                     }
-                    if (content.Recommend)
+                    if (contentInfo.IsRecommend)
                     {
-                        list.Add(nameof(Content.Recommend));
+                        list.Add(ContentAttribute.IsRecommend);
                     }
-                    if (content.Hot)
+                    if (contentInfo.IsHot)
                     {
-                        list.Add(nameof(Content.Hot));
+                        list.Add(ContentAttribute.IsHot);
                     }
-                    if (content.Color)
+                    if (contentInfo.IsColor)
                     {
-                        list.Add(nameof(Content.Color));
+                        list.Add(ContentAttribute.IsColor);
                     }
                     ControlUtils.SelectMultiItems(CblContentAttributes, list);
-                    TbLinkUrl.Text = content.LinkUrl;
-                    if (content.AddDate.HasValue)
+                    TbLinkUrl.Text = contentInfo.LinkUrl;
+                    if (contentInfo.AddDate.HasValue)
                     {
-                        TbAddDate.DateTime = content.AddDate.Value;
+                        TbAddDate.DateTime = contentInfo.AddDate.Value;
                     }
                     
-                    ControlUtils.SelectMultiItems(CblContentGroups, content.GroupNames);
+                    ControlUtils.SelectMultiItems(CblContentGroups, TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection));
 
-                    AcAttributes.Attributes = content.ToDictionary();
+                    AcAttributes.Attributes = contentInfo;
 
-                    var checkedLevel = content.CheckedLevel;
-                    if (content.Checked)
+                    var checkedLevel = contentInfo.CheckedLevel;
+                    if (contentInfo.IsChecked)
                     {
-                        checkedLevel = Site.CheckContentLevel;
+                        checkedLevel = SiteInfo.Additional.CheckContentLevel;
                     }
                     ControlUtils.SelectSingleItem(RblContentLevel, checkedLevel.ToString());
                 }
+
+                //自动检测敏感词
+                ClientScriptRegisterStartupScript("autoCheckKeywords", WebUtils.GetAutoCheckKeywordsScript(SiteInfo, allTagNames, tagNames));
             }
             else
             {
-                AcAttributes.Attributes = TranslateUtils.NameValueCollectionToDictionary(Request.Form);
+                AcAttributes.Attributes = new AttributesImpl(Request.Form);
             }
             //DataBind();
         }
@@ -242,16 +247,16 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, _styleList, Request.Form, ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
+                    var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributes.Value);
 
-                    var contentInfo = new Content(dict)
+                    var contentInfo = new ContentInfo(dict)
                     {
-                        ChannelId = _channel.Id,
+                        ChannelId = _channelInfo.Id,
                         SiteId = SiteId,
-                        //AddUserName = AuthRequest.AdminName,
+                        AddUserName = AuthRequest.AdminName,
                         AdminId = AuthRequest.AdminId,
                         LastEditDate = DateTime.Now,
-                        GroupNames = ControlUtils.SelectedItemsValueToStringList(CblContentGroups.Items),
+                        GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items),
                         Title = TbTitle.Text
                     };
 
@@ -262,7 +267,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
                     contentInfo.Set(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title), theFormatString);
 
-                    //contentInfo.LastEditUserName = contentInfo.AddUserName;
+                    contentInfo.LastEditUserName = contentInfo.AddUserName;
 
                     foreach (ListItem listItem in CblContentAttributes.Items)
                     {
@@ -273,76 +278,73 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.LinkUrl = TbLinkUrl.Text;
                     contentInfo.AddDate = TbAddDate.DateTime;
 
-                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNegative(RblContentLevel.SelectedValue);
+                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
                     
-                    contentInfo.Checked = contentInfo.CheckedLevel >= Site.CheckContentLevel;
-                    //contentInfo.TagNames = DataProvider.ContentTagRepository.ParseTagsString(TbTags.Text);
+                    contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
+                    contentInfo.Tags = TranslateUtils.ObjectCollectionToString(TagUtils.ParseTagsString(TbTags.Text), " ");
 
-                    foreach (var service in PluginManager.GetServicesAsync().GetAwaiter().GetResult())
+                    foreach (var service in PluginManager.Services)
                     {
                         try
                         {
-                            service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _channel.Id,
+                            service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _channelInfo.Id,
                                 contentInfo.Id, TranslateUtils.ToDictionary(Request.Form), contentInfo));
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddErrorLogAsync(service.PluginId, ex, nameof(IService.ContentFormSubmit)).GetAwaiter().GetResult();
+                            LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
                         }
                     }
 
                     
                     //判断是不是有审核权限
-                    var (isCheckedOfUser, checkedLevelOfUser) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, contentInfo.ChannelId).GetAwaiter().GetResult();
-                    if (CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
+                    int checkedLevelOfUser;
+                    var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, contentInfo.ChannelId, out checkedLevelOfUser);
+                    if (CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                     {
-                        if (contentInfo.Checked)
+                        if (contentInfo.IsChecked)
                         {
                             contentInfo.CheckedLevel = 0;
                         }
 
-                        contentInfo.CheckAdminId = AuthRequest.AdminId;
-                        contentInfo.CheckDate = DateTime.Now;
-                        contentInfo.CheckReasons = string.Empty;
+                        contentInfo.Set(ContentAttribute.CheckUserName, AuthRequest.AdminName);
+                        contentInfo.Set(ContentAttribute.CheckDate, DateUtils.GetDateAndTimeString(DateTime.Now));
+                        contentInfo.Set(ContentAttribute.CheckReasons, string.Empty);
                     }
 
-                    contentInfo.Id = DataProvider.ContentRepository.InsertAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
+                    contentInfo.Id = DataProvider.ContentDao.Insert(_tableName, SiteInfo, _channelInfo, contentInfo);
 
-                    //DataProvider.ContentTagRepository.UpdateTagsAsync(string.Empty, TbTags.Text, SiteId, contentInfo.ChannelId, contentInfo.Id).GetAwaiter().GetResult();
+                    TagUtils.UpdateTags(string.Empty, TbTags.Text, SiteId, contentInfo.Id);
 
-                    CreateManager.CreateContentAsync(SiteId, _channel.Id, contentInfo.Id).GetAwaiter().GetResult();
-                    CreateManager.TriggerContentChangedEventAsync(SiteId, _channel.Id).GetAwaiter().GetResult();
+                    CreateManager.CreateContent(SiteId, _channelInfo.Id, contentInfo.Id);
+                    CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
 
-                    AuthRequest.AddSiteLogAsync(SiteId, _channel.Id, contentInfo.Id, "添加内容",
-                        $"栏目:{DataProvider.ChannelRepository.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult()},内容标题:{contentInfo.Title}").GetAwaiter().GetResult();
+                    AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, contentInfo.Id, "添加内容",
+                        $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
-                    ContentUtility.TranslateAsync(Site, _channel.Id, contentInfo.Id, Request.Form["translateCollection"], TranslateUtils.ToEnum(DdlTranslateType.SelectedValue, TranslateContentType.Copy)).GetAwaiter().GetResult();
+                    ContentUtility.Translate(SiteInfo, _channelInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
 
-                    redirectUrl = PageContentAddAfter.GetRedirectUrl(SiteId, _channel.Id, contentInfo.Id,
+                    redirectUrl = PageContentAddAfter.GetRedirectUrl(SiteId, _channelInfo.Id, contentInfo.Id,
                         ReturnUrl);
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLogAsync(ex).GetAwaiter().GetResult();
+                    LogUtils.AddErrorLog(ex);
                     FailMessage($"内容添加失败：{ex.Message}");
                 }
             }
             else
             {
-                var contentInfo = DataProvider.ContentRepository.GetAsync(Site, _channel, contentId).GetAwaiter().GetResult();
+                var contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelInfo, contentId);
                 try
                 {
-                    //contentInfo.LastEditUserName = AuthRequest.AdminName;
+                    contentInfo.LastEditUserName = AuthRequest.AdminName;
                     contentInfo.LastEditDate = DateTime.Now;
 
-                    var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, _styleList, Request.Form, ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
+                    var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributes.Value);
+                    contentInfo.Load(dict);
 
-                    foreach (var o in dict)
-                    {
-                        contentInfo.Set(o.Key, o.Value);
-                    }
-
-                    contentInfo.GroupNames = ControlUtils.SelectedItemsValueToStringList(CblContentGroups.Items);
+                    contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
 
                     contentInfo.Title = TbTitle.Text;
                     var formatString = TranslateUtils.ToBool(Request.Form[ContentAttribute.Title + "_formatStrong"]);
@@ -360,35 +362,35 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.LinkUrl = TbLinkUrl.Text;
                     contentInfo.AddDate = TbAddDate.DateTime;
 
-                    var checkedLevel = TranslateUtils.ToIntWithNegative(RblContentLevel.SelectedValue);
-                    contentInfo.Checked = checkedLevel >= Site.CheckContentLevel;
+                    var checkedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
+                    contentInfo.IsChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
                     contentInfo.CheckedLevel = checkedLevel;
 
-                    //DataProvider.ContentTagRepository.UpdateTagsAsync(Utilities.ToString(contentInfo.TagNames), TbTags.Text, SiteId, _channel.Id, contentId).GetAwaiter().GetResult();
-                    //contentInfo.TagNames = DataProvider.ContentTagRepository.ParseTagsString(TbTags.Text);
+                    TagUtils.UpdateTags(contentInfo.Tags, TbTags.Text, SiteId, contentId);
+                    contentInfo.Tags = TranslateUtils.ObjectCollectionToString(TagUtils.ParseTagsString(TbTags.Text), " ");
 
-                    foreach (var service in PluginManager.GetServicesAsync().GetAwaiter().GetResult())
+                    foreach (var service in PluginManager.Services)
                     {
                         try
                         {
-                            service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _channel.Id,
+                            service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _channelInfo.Id,
                                 contentInfo.Id, TranslateUtils.ToDictionary(Request.Form), contentInfo));
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddErrorLogAsync(service.PluginId, ex, nameof(IService.ContentFormSubmit)).GetAwaiter().GetResult();
+                            LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
                         }
                     }
 
-                    DataProvider.ContentRepository.UpdateAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
+                    DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
 
-                    ContentUtility.TranslateAsync(Site, _channel.Id, contentInfo.Id, Request.Form["translateCollection"], TranslateUtils.ToEnum(DdlTranslateType.SelectedValue, TranslateContentType.Copy)).GetAwaiter().GetResult();
+                    ContentUtility.Translate(SiteInfo, _channelInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
 
-                    CreateManager.CreateContentAsync(SiteId, _channel.Id, contentId).GetAwaiter().GetResult();
-                    CreateManager.TriggerContentChangedEventAsync(SiteId, _channel.Id).GetAwaiter().GetResult();
+                    CreateManager.CreateContent(SiteId, _channelInfo.Id, contentId);
+                    CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
 
-                    AuthRequest.AddSiteLogAsync(SiteId, _channel.Id, contentId, "修改内容",
-                        $"栏目:{DataProvider.ChannelRepository.GetChannelNameNavigationAsync(SiteId, contentInfo.ChannelId).GetAwaiter().GetResult()},内容标题:{contentInfo.Title}").GetAwaiter().GetResult();
+                    AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, contentId, "修改内容",
+                        $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                     redirectUrl = ReturnUrl;
 
@@ -401,11 +403,11 @@ namespace SiteServer.BackgroundPages.Cms
                     //var tableList = DataProvider.TableDao.GetTableCollectionInfoListCreatedInDb();
                     //foreach (var table in tableList)
                     //{
-                    //    var targetContentIdList = DataProvider.ContentRepository.GetReferenceIdList(table.TableName, sourceContentIdList);
+                    //    var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(table.TableName, sourceContentIdList);
                     //    foreach (var targetContentId in targetContentIdList)
                     //    {
-                    //        var targetContentInfo = DataProvider.ContentRepository.GetContentInfo(table.TableName, targetContentId);
-                    //        if (targetContentInfo == null || targetContentInfo.GetString(ContentAttribute.TranslateContentType) != TranslateContentType.ReferenceContent.ToString()) continue;
+                    //        var targetContentInfo = DataProvider.ContentDao.GetContentInfo(table.TableName, targetContentId);
+                    //        if (targetContentInfo == null || targetContentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString()) continue;
 
                     //        contentInfo.Id = targetContentId;
                     //        contentInfo.SiteId = targetContentInfo.SiteId;
@@ -414,10 +416,10 @@ namespace SiteServer.BackgroundPages.Cms
                     //        contentInfo.ReferenceId = targetContentInfo.ReferenceId;
                     //        contentInfo.Taxis = targetContentInfo.Taxis;
                     //        contentInfo.Set(ContentAttribute.TranslateContentType, targetContentInfo.GetString(ContentAttribute.TranslateContentType));
-                    //        DataProvider.ContentRepository.Update(table.TableName, contentInfo);
+                    //        DataProvider.ContentDao.Update(table.TableName, contentInfo);
 
                     //        //资源：图片，文件，视频
-                    //        var targetSite = DataProvider.SiteRepository.GetSite(targetContentInfo.SiteId);
+                    //        var targetSiteInfo = SiteManager.GetSiteInfo(targetContentInfo.SiteId);
                     //        var bgContentInfo = contentInfo as BackgroundContentInfo;
                     //        var bgTargetContentInfo = targetContentInfo as BackgroundContentInfo;
                     //        if (bgTargetContentInfo != null && bgContentInfo != null)
@@ -425,34 +427,34 @@ namespace SiteServer.BackgroundPages.Cms
                     //            if (bgContentInfo.ImageUrl != bgTargetContentInfo.ImageUrl)
                     //            {
                     //                //修改图片
-                    //                var sourceImageUrl = PathUtility.MapPath(Site, bgContentInfo.ImageUrl);
-                    //                CopyReferenceFiles(targetSite, sourceImageUrl);
+                    //                var sourceImageUrl = PathUtility.MapPath(SiteInfo, bgContentInfo.ImageUrl);
+                    //                CopyReferenceFiles(targetSiteInfo, sourceImageUrl);
                     //            }
                     //            else if (bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)) != bgTargetContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)))
                     //            {
-                    //                var sourceImageUrls = StringUtils.GetStringList(bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
+                    //                var sourceImageUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
 
                     //                foreach (string imageUrl in sourceImageUrls)
                     //                {
-                    //                    var sourceImageUrl = PathUtility.MapPath(Site, imageUrl);
-                    //                    CopyReferenceFiles(targetSite, sourceImageUrl);
+                    //                    var sourceImageUrl = PathUtility.MapPath(SiteInfo, imageUrl);
+                    //                    CopyReferenceFiles(targetSiteInfo, sourceImageUrl);
                     //                }
                     //            }
                     //            if (bgContentInfo.FileUrl != bgTargetContentInfo.FileUrl)
                     //            {
                     //                //修改附件
-                    //                var sourceFileUrl = PathUtility.MapPath(Site, bgContentInfo.FileUrl);
-                    //                CopyReferenceFiles(targetSite, sourceFileUrl);
+                    //                var sourceFileUrl = PathUtility.MapPath(SiteInfo, bgContentInfo.FileUrl);
+                    //                CopyReferenceFiles(targetSiteInfo, sourceFileUrl);
 
                     //            }
                     //            else if (bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)) != bgTargetContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)))
                     //            {
-                    //                var sourceFileUrls = StringUtils.GetStringList(bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
+                    //                var sourceFileUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
 
                     //                foreach (var fileUrl in sourceFileUrls)
                     //                {
-                    //                    var sourceFileUrl = PathUtility.MapPath(Site, fileUrl);
-                    //                    CopyReferenceFiles(targetSite, sourceFileUrl);
+                    //                    var sourceFileUrl = PathUtility.MapPath(SiteInfo, fileUrl);
+                    //                    CopyReferenceFiles(targetSiteInfo, sourceFileUrl);
                     //                }
                     //            }
                     //        }
@@ -461,7 +463,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLogAsync(ex).GetAwaiter().GetResult();
+                    LogUtils.AddErrorLog(ex);
                     FailMessage($"内容修改失败：{ex.Message}");
                     return;
                 }
@@ -474,13 +476,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (contentId == 0)
             {
-                if (_channel == null)
+                if (_channelInfo == null || _channelInfo.Additional.IsContentAddable == false)
                 {
                     PageUtils.RedirectToErrorPage("此栏目不能添加内容！");
                     return false;
                 }
 
-                if (!HasChannelPermissions(_channel.Id, Constants.ChannelPermissions.ContentAdd))
+                if (!HasChannelPermissions(_channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {
@@ -494,7 +496,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                if (!HasChannelPermissions(_channel.Id, Constants.ChannelPermissions.ContentEdit))
+                if (!HasChannelPermissions(_channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {

@@ -1,37 +1,35 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Http;
-using Datory.Utils;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Framework;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
-    
+    [OpenApiIgnore]
     [RoutePrefix("pages/plugins/add")]
     public class PagesAddController : ApiController
     {
         private const string Route = "";
 
         [HttpGet, Route(Route)]
-        public async Task<IHttpActionResult> Get()
+        public IHttpActionResult Get()
         {
             try
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
+                var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
-                    !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
 
-                var dict = await PluginManager.GetPluginIdAndVersionDictAsync();
+                var dict = PluginManager.GetPluginIdAndVersionDict();
                 var list = dict.Keys.ToList();
-                var packageIds = Utilities.ToString(list);
+                var packageIds = TranslateUtils.ObjectCollectionToString(list);
 
                 return Ok(new
                 {

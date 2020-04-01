@@ -1,24 +1,21 @@
-﻿using System.Threading.Tasks;
-using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+﻿using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Framework;
 using SiteServer.CMS.Packaging;
-using SiteServer.CMS.Repositories;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    
+    [OpenApiIgnore]
     public class SysPackagesUpdateSsCmsController : ApiController
     {
         [HttpPost, Route(ApiRouteUpdateSsCms.Route)]
-        public async Task<IHttpActionResult> Main()
+        public IHttpActionResult Main()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
+            var request = new AuthenticatedRequest();
 
-            var isDownload = TranslateUtils.ToBool(await DataProvider.DbCacheRepository.GetValueAndRemoveAsync(PackageUtils.CacheKeySsCmsIsDownload));
+            var isDownload = TranslateUtils.ToBool(CacheDbUtils.GetValueAndRemove(PackageUtils.CacheKeySsCmsIsDownload));
 
             if (!isDownload)
             {
@@ -28,7 +25,7 @@ namespace SiteServer.API.Controllers.Sys
             var version = request.GetPostString("version");
 
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{version}";
-            var packagePath = WebUtils.GetPackagesPath(idWithVersion);
+            var packagePath = PathUtils.GetPackagesPath(idWithVersion);
             var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
 
             if (!FileUtils.IsFileExists(packageWebConfigPath))
@@ -40,10 +37,10 @@ namespace SiteServer.API.Controllers.Sys
                 WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.RedisConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
                 WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), WebUtils.GetSiteFilesPath(string.Empty), true);
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtility.GetAdminDirectoryPath(string.Empty), true);
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), PathUtility.GetHomeDirectoryPath(string.Empty), true);
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtility.GetBinDirectoryPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtils.GetSiteFilesPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), PathUtils.GetHomeDirectoryPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);
             var isCopyFiles = FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
 
             //SystemManager.SyncDatabase();

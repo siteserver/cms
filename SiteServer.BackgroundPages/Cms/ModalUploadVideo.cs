@@ -2,8 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -18,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTextBox(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("上传视频", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript2("上传视频", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadVideo), new NameValueCollection
             {
                 {"TextBoxClientID", textBoxClientId}
             }), 520, 220);
@@ -53,21 +52,21 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
                 if (!string.IsNullOrEmpty(_currentRootPath))
                 {
-                    localDirectoryPath = PathUtility.MapPathAsync(Site, _currentRootPath).GetAwaiter().GetResult();
+                    localDirectoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
-                var localFileName = PathUtility.GetUploadFileName(Site, filePath);
+                var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-                if (!PathUtility.IsVideoExtensionAllowed(Site, fileExtName))
+                if (!PathUtility.IsVideoExtenstionAllowed(SiteInfo, fileExtName))
                 {
                     FailMessage("上传失败，上传视频格式不正确！");
                     return;
                 }
-                if (!PathUtility.IsVideoSizeAllowed(Site, HifUpload.PostedFile.ContentLength))
+                if (!PathUtility.IsVideoSizeAllowed(SiteInfo, HifUpload.PostedFile.ContentLength))
                 {
                     FailMessage("上传失败，上传视频超出规定文件大小！");
                     return;
@@ -75,8 +74,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                 HifUpload.PostedFile.SaveAs(localFilePath);
 
-                var videoUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localFilePath, true).GetAwaiter().GetResult();
-                var textBoxUrl = PageUtility.GetVirtualUrl(Site, videoUrl);
+                var videoUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
+                var textBoxUrl = PageUtility.GetVirtualUrl(SiteInfo, videoUrl);
 
                 if (string.IsNullOrEmpty(_textBoxClientId))
                 {

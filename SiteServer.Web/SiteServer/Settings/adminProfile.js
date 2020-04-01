@@ -2,15 +2,17 @@
 var $pageTypeAdmin = 'admin';
 var $pageTypeUser = 'user';
 
-var data = utils.initData({
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   pageType: utils.getQueryString('pageType'),
-  userId: utils.getQueryInt('userId') || '0',
+  userId: parseInt(utils.getQueryString('userId') || '0'),
   adminInfo: null,
   password: null,
   confirmPassword: null,
   uploadUrl: null,
   files: []
-});
+};
 
 var methods = {
   getConfig: function () {
@@ -22,9 +24,9 @@ var methods = {
       $this.adminInfo = res.value;
       $this.uploadUrl = apiUrl + '/pages/settings/adminProfile/upload?adminToken=' + res.adminToken + '&userId=' + $this.userId;
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
     });
   },
 
@@ -43,9 +45,9 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.post($url + '?userId=' + this.userId, _.assign({}, this.adminInfo, {
-      password: this.password
+    pageUtils.loading(true);
+    $api.post($url + '?userId=' + $this.userId, _.assign({}, $this.adminInfo, {
+      password: $this.password
     })).then(function (response) {
       var res = response.data;
 
@@ -63,9 +65,9 @@ var methods = {
         }
       });
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      utils.loading($this, false);
+      pageUtils.loading(false);
     });
   },
 
@@ -88,7 +90,7 @@ var methods = {
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   components: {

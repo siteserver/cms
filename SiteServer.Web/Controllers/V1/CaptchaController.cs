@@ -2,12 +2,11 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -29,10 +28,10 @@ namespace SiteServer.API.Controllers.V1
         {
             var response = HttpContext.Current.Response;
 
-            var code = CaptchaManager.CreateValidateCode();
+            var code = VcManager.CreateValidateCode();
             if (CacheUtils.Exists($"SiteServer.API.Controllers.V1.CaptchaController.{code}"))
             {
-                code = CaptchaManager.CreateValidateCode();
+                code = VcManager.CreateValidateCode();
             }
 
             CookieUtils.SetCookie("SS-" + name, code, DateTime.Now.AddMinutes(10));
@@ -93,25 +92,33 @@ namespace SiteServer.API.Controllers.V1
         [HttpPost, Route(ApiRouteActionsCheck)]
         public IHttpActionResult Check(string name, [FromBody] CaptchaInfo captchaInfo)
         {
-            var code = CookieUtils.GetCookie("SS-" + name);
-
-            if (string.IsNullOrEmpty(code) || CacheUtils.Exists($"SiteServer.API.Controllers.V1.CaptchaController.{code}"))
+            try
             {
-                return BadRequest("验证码已超时，请点击刷新验证码！");
+                var code = CookieUtils.GetCookie("SS-" + name);
+
+                if (string.IsNullOrEmpty(code) || CacheUtils.Exists($"SiteServer.API.Controllers.V1.CaptchaController.{code}"))
+                {
+                    return BadRequest("验证码已超时，请点击刷新验证码！");
+                }
+
+                CookieUtils.Erase("SS-" + name);
+                CacheUtils.InsertMinutes($"SiteServer.API.Controllers.V1.CaptchaController.{code}", true, 10);
+
+                if (!StringUtils.EqualsIgnoreCase(code, captchaInfo.Captcha))
+                {
+                    return BadRequest("验证码不正确，请重新输入！");
+                }
+
+                return Ok(new
+                {
+                    Value = true
+                });
             }
-
-            CookieUtils.Erase("SS-" + name);
-            CacheUtils.InsertMinutes($"SiteServer.API.Controllers.V1.CaptchaController.{code}", true, 10);
-
-            if (!StringUtils.EqualsIgnoreCase(code, captchaInfo.Captcha))
+            catch (Exception ex)
             {
-                return BadRequest("验证码不正确，请重新输入！");
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
             }
-
-            return Ok(new
-            {
-                Value = true
-            });
         }
     }
 }

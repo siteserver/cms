@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.Utils;
+using SiteServer.CMS.DataCache;
 using System.Collections.Generic;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -29,8 +28,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            _siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdListAsync().GetAwaiter().GetResult();
-            RptContents.DataSource = DataProvider.SiteRepository.GetSiteIdListOrderByLevelAsync().GetAwaiter().GetResult();
+            _siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList();
+            RptContents.DataSource = SiteManager.GetSiteIdListOrderByLevel();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -39,9 +38,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var site = DataProvider.SiteRepository.GetAsync((int)e.Item.DataItem).GetAwaiter().GetResult();
+            var siteInfo = SiteManager.GetSiteInfo((int)e.Item.DataItem);
 
-            if (!_siteIdList.Contains(site.Id))
+            if (!_siteIdList.Contains(siteInfo.Id))
             {
                 e.Item.Visible = false;
                 return;
@@ -51,10 +50,10 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlDir = (Literal)e.Item.FindControl("ltlDir");
             var ltlWebUrl = (Literal)e.Item.FindControl("ltlWebUrl");
 
-            ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageUtils.GetMainUrl(site.Id))}"" target=""_top"">{DataProvider.SiteRepository.GetSiteNameAsync(site).GetAwaiter().GetResult()}</a>";
-            ltlDir.Text = site.SiteDir;
+            ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageUtils.GetMainUrl(siteInfo.Id))}"" target=""_top"">{SiteManager.GetSiteName(siteInfo)}</a>";
+            ltlDir.Text = siteInfo.SiteDir;
 
-            ltlWebUrl.Text = $@"<a href=""{site.GetWebUrlAsync()}"" target=""_blank"">{site.GetWebUrlAsync()}</a>";
+            ltlWebUrl.Text = $@"<a href=""{siteInfo.Additional.WebUrl}"" target=""_blank"">{siteInfo.Additional.WebUrl}</a>";
         }
     }
 }

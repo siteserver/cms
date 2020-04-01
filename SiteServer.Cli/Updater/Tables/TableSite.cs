@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
-
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -75,19 +74,19 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.SiteRepository.TableName;
+        private static readonly string NewTableName = DataProvider.SiteDao.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.SiteRepository.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.SiteDao.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(Site.Id), nameof(PublishmentSystemId)},
-                {nameof(Site.SiteName), nameof(PublishmentSystemName)},
-                {nameof(Site.TableName), nameof(AuxiliaryTableForContent)},
-                {nameof(Site.SiteDir), nameof(PublishmentSystemDir)},
-                {"IsRoot", nameof(IsHeadquarters)},
-                {nameof(Site.ParentId), nameof(ParentPublishmentSystemId)}
+                {nameof(SiteInfo.Id), nameof(PublishmentSystemId)},
+                {nameof(SiteInfo.SiteName), nameof(PublishmentSystemName)},
+                {nameof(SiteInfo.TableName), nameof(AuxiliaryTableForContent)},
+                {nameof(SiteInfo.SiteDir), nameof(PublishmentSystemDir)},
+                {nameof(SiteInfo.IsRoot), nameof(IsHeadquarters)},
+                {nameof(SiteInfo.ParentId), nameof(ParentPublishmentSystemId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

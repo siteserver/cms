@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
-using Content = SiteServer.Abstractions.Content;
+using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -75,11 +75,11 @@ namespace SiteServer.BackgroundPages.Cms
             var titles = new StringBuilder();
             foreach (var channelId in _idsDictionary.Keys)
             {
-                var tableName = DataProvider.ChannelRepository.GetTableNameAsync(Site, channelId).GetAwaiter().GetResult();
+                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
-                    var title = DataProvider.ContentRepository.GetValueAsync(tableName, contentId, ContentAttribute.Title).GetAwaiter().GetResult();
+                    var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
                     titles.Append(title + "<br />");
                 }
             }
@@ -95,7 +95,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var channelId in _idsDictionary.Keys)
             {
-                var (isCheckedByChannelId, checkedLevelByChannelId) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, channelId).GetAwaiter().GetResult();
+                int checkedLevelByChannelId;
+                var isCheckedByChannelId = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, channelId, out checkedLevelByChannelId);
                 if (checkedLevel > checkedLevelByChannelId)
                 {
                     checkedLevel = checkedLevelByChannelId;
@@ -106,42 +107,43 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            CheckManager.LoadContentLevelToCheck(DdlCheckType, Site, isChecked, checkedLevel);
+            CheckManager.LoadContentLevelToCheck(DdlCheckType, SiteInfo, isChecked, checkedLevel);
 
             var listItem = new ListItem("<保持原栏目不变>", "0");
             DdlTranslateChannelId.Items.Add(listItem);
 
-            DataProvider.ChannelRepository.AddListItemsForAddContentAsync(DdlTranslateChannelId.Items, Site, true, AuthRequest.AdminPermissionsImpl).GetAwaiter().GetResult();
+            ChannelManager.AddListItemsForAddContent(DdlTranslateChannelId.Items, SiteInfo, true, AuthRequest.AdminPermissionsImpl);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var checkedLevel = TranslateUtils.ToIntWithNegative(DdlCheckType.SelectedValue);
+            var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlCheckType.SelectedValue);
 
-            var isChecked = checkedLevel >= Site.CheckContentLevel;
+            var isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
 
-            var contentInfoListToCheck = new List<Content>();
+            var contentInfoListToCheck = new List<ContentInfo>();
             var idsDictionaryToCheck = new Dictionary<int, List<int>>();
             foreach (var channelId in _idsDictionary.Keys)
             {
-                var channelInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
+                var channelInfo = ChannelManager.GetChannelInfo(SiteInfo.Id, channelId);
                 var contentIdList = _idsDictionary[channelId];
                 var contentIdListToCheck = new List<int>();
 
-                var (isCheckedOfUser, checkedLevelOfUser) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, channelId).GetAwaiter().GetResult();
+                int checkedLevelOfUser;
+                var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, channelId, out checkedLevelOfUser);
 
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentRepository.GetAsync(Site, channelInfo, contentId).GetAwaiter().GetResult();
+                    var contentInfo = DataProvider.ContentDao.Get(SiteInfo, channelInfo, contentId);
                     if (contentInfo != null)
                     {
-                        if (CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
+                        if (CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                         {
                             contentInfoListToCheck.Add(contentInfo);
                             contentIdListToCheck.Add(contentId);
                         }
 
-                        //DataProvider.ContentRepository.Update(Site, channel, contentInfo);
+                        //DataProvider.ContentDao.Update(SiteInfo, channelInfo, contentInfo);
 
                         //CreateManager.CreateContent(SiteId, contentInfo.ChannelId, contentId);
                         //CreateManager.TriggerContentChangedEvent(SiteId, contentInfo.ChannelId);
@@ -163,12 +165,13 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var channelId in idsDictionaryToCheck.Keys)
             {
-                var channelInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
+                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                 var contentIdList = idsDictionaryToCheck[channelId];
-                DataProvider.ContentRepository.UpdateIsCheckedAsync(Site, channelInfo, contentIdList, translateChannelId, AuthRequest.AdminId, isChecked, checkedLevel, TbCheckReasons.Text).GetAwaiter().GetResult();
+                DataProvider.ContentDao.UpdateIsChecked(tableName, SiteInfo, channelInfo, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
             }
 
-            AuthRequest.AddSiteLogAsync(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text).GetAwaiter().GetResult();
+            AuthRequest.AddSiteLog(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);
 
             foreach (var channelId in idsDictionaryToCheck.Keys)
             {
@@ -177,8 +180,8 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        CreateManager.CreateContentAsync(SiteId, channelId, contentId).GetAwaiter().GetResult();
-                        CreateManager.TriggerContentChangedEventAsync(SiteId, channelId).GetAwaiter().GetResult();
+                        CreateManager.CreateContent(SiteId, channelId, contentId);
+                        CreateManager.TriggerContentChangedEvent(SiteId, channelId);
                     }
                 }
             }

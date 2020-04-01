@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using Datory.Utils;
-using SiteServer.Abstractions;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -35,12 +32,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         private void LoadDisplayAttributeCheckBoxList()
         {
-            var nodeInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
-            var styleList = ColumnsManager.GetContentListStyles(DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, nodeInfo).GetAwaiter().GetResult());
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(SiteInfo, nodeInfo));
 
-            foreach (var style in styleList)
+            foreach (var styleInfo in styleInfoList)
             {
-                var listItem = new ListItem(style.DisplayName, style.AttributeName)
+                var listItem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName)
                 {
                     Selected = true
                 };
@@ -63,31 +60,31 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (isLoad)
             {
-                if (!string.IsNullOrEmpty(Site.ConfigExportType))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigExportType))
                 {
-                    DdlExportType.SelectedValue = Site.ConfigExportType;
+                    DdlExportType.SelectedValue = SiteInfo.Additional.ConfigExportType;
                 }
-                if (!string.IsNullOrEmpty(Site.ConfigExportPeriods))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigExportPeriods))
                 {
-                    DdlPeriods.SelectedValue = Site.ConfigExportPeriods;
+                    DdlPeriods.SelectedValue = SiteInfo.Additional.ConfigExportPeriods;
                 }
-                if (!string.IsNullOrEmpty(Site.ConfigExportDisplayAttributes))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigExportDisplayAttributes))
                 {
-                    var displayAttributes = Utilities.GetStringList(Site.ConfigExportDisplayAttributes);
+                    var displayAttributes = TranslateUtils.StringCollectionToStringList(SiteInfo.Additional.ConfigExportDisplayAttributes);
                     ControlUtils.SelectMultiItems(CblDisplayAttributes, displayAttributes);
                 }
-                if (!string.IsNullOrEmpty(Site.ConfigExportIsChecked))
+                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigExportIsChecked))
                 {
-                    DdlIsChecked.SelectedValue = Site.ConfigExportIsChecked;
+                    DdlIsChecked.SelectedValue = SiteInfo.Additional.ConfigExportIsChecked;
                 }
             }
             else
             {
-                Site.ConfigExportType = DdlExportType.SelectedValue;
-                Site.ConfigExportPeriods = DdlPeriods.SelectedValue;
-                Site.ConfigExportDisplayAttributes = ControlUtils.GetSelectedListControlValueCollection(CblDisplayAttributes);
-                Site.ConfigExportIsChecked = DdlIsChecked.SelectedValue;
-                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
+                SiteInfo.Additional.ConfigExportType = DdlExportType.SelectedValue;
+                SiteInfo.Additional.ConfigExportPeriods = DdlPeriods.SelectedValue;
+                SiteInfo.Additional.ConfigExportDisplayAttributes = ControlUtils.GetSelectedListControlValueCollection(CblDisplayAttributes);
+                SiteInfo.Additional.ConfigExportIsChecked = DdlIsChecked.SelectedValue;
+                DataProvider.SiteDao.Update(SiteInfo);
             }
         }
 

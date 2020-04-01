@@ -2,12 +2,11 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Utils;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.Repositories;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -35,24 +34,26 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             var channelId = AuthRequest.GetQueryInt("channelId", SiteId);
-            var channelIdList = DataProvider.ChannelRepository.GetChannelIdListAsync(SiteId).GetAwaiter().GetResult();
+            var channelIdList = ChannelManager.GetChannelIdList(SiteId);
             var nodeCount = channelIdList.Count;
             _isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
             {
-                var nodeInfo = DataProvider.ChannelRepository.GetAsync(theChannelId).GetAwaiter().GetResult();
+                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, theChannelId);
                 var itemChannelId = nodeInfo.Id;
                 var nodeName = nodeInfo.ChannelName;
                 var parentsCount = nodeInfo.ParentsCount;
+                var isLastNode = nodeInfo.IsLastNode;
                 var value = IsOwningChannelId(itemChannelId) ? itemChannelId.ToString() : string.Empty;
+                value = (nodeInfo.Additional.IsChannelAddable) ? value : string.Empty;
                 if (!string.IsNullOrEmpty(value))
                 {
-                    if (!HasChannelPermissions(theChannelId, Constants.ChannelPermissions.ChannelAdd))
+                    if (!HasChannelPermissions(theChannelId, ConfigManager.ChannelPermissions.ChannelAdd))
                     {
                         value = string.Empty;
                     }
                 }
-                var listitem = new ListItem(GetTitle(itemChannelId, nodeName, parentsCount), value);
+                var listitem = new ListItem(GetTitle(itemChannelId, nodeName, parentsCount, isLastNode), value);
                 if (itemChannelId == channelId)
                 {
                     listitem.Selected = true;
@@ -61,14 +62,26 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-        public string GetTitle(int channelId, string nodeName, int parentsCount)
+        public string GetTitle(int channelId, string nodeName, int parentsCount, bool isLastNode)
         {
             var str = "";
-
+            if (channelId == SiteId)
+            {
+                isLastNode = true;
+            }
+            if (isLastNode == false)
+            {
+                _isLastNodeArray[parentsCount] = false;
+            }
+            else
+            {
+                _isLastNodeArray[parentsCount] = true;
+            }
             for (var i = 0; i < parentsCount; i++)
             {
                 str = string.Concat(str, _isLastNodeArray[i] ? "　" : "│");
             }
+            str = string.Concat(str, isLastNode ? "└" : "├");
             str = string.Concat(str, nodeName);
             return str;
         }
@@ -90,10 +103,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                     HifFile.PostedFile.SaveAs(localFilePath);
 
-					var importObject = new ImportObject(Site, AuthRequest.AdminId);
-                    importObject.ImportChannelsAndContentsByZipFileAsync(TranslateUtils.ToInt(DdlParentChannelId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), null).GetAwaiter().GetResult();
+					var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
+                    importObject.ImportChannelsAndContentsByZipFile(TranslateUtils.ToInt(DdlParentChannelId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
-                    AuthRequest.AddSiteLogAsync(SiteId, "导入栏目").GetAwaiter().GetResult();
+                    AuthRequest.AddSiteLog(SiteId, "导入栏目");
 
                     LayerUtils.Close(Page);
 				}

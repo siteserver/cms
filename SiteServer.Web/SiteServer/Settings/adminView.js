@@ -2,50 +2,45 @@
 var $pageTypeAdmin = 'admin';
 var $pageTypeUser = 'user';
 
-var data = utils.initData({
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   pageType: utils.getQueryString('pageType'),
-  userId: utils.getQueryInt('userId'),
-  userName: utils.getQueryString('userName'),
-  returnUrl: utils.getQueryString('returnUrl'),
-  administrator: null,
+  userId: parseInt(utils.getQueryString('userId') || '0'),
+  adminInfo: null,
   level: null,
   isSuperAdmin: null,
   siteNames: null,
   isOrdinaryAdmin: null,
   roleNames: null
-});
+};
 
 var methods = {
   getConfig: function () {
     var $this = this;
 
-    $api.get($url, {
-      params: {
-        userId: this.userId,
-        userName: this.userName
-      }
-    }).then(function (response) {
+    $api.get($url + '?userId=' + $this.userId).then(function (response) {
       var res = response.data;
 
-      $this.administrator = res.administrator;
+      $this.adminInfo = res.value;
       $this.level = res.level;
       $this.isSuperAdmin = res.isSuperAdmin;
       $this.siteNames = res.siteNames;
       $this.isOrdinaryAdmin = res.isOrdinaryAdmin;
       $this.roleNames = res.roleNames;
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
     });
   },
 
   btnReturnClick: function () {
-    location.href = this.returnUrl || 'admin.cshtml';
+    location.href = 'admin.cshtml';
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,

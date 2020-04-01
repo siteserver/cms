@@ -1,7 +1,10 @@
 ﻿var $url = '/pages/plugins/manage';
+var $urlReload = '/pages/plugins/manage/actions/reload';
 
-var data = utils.initData({
-  pageType: utils.toInt(utils.getQueryString("pageType") || '1'),
+var data = {
+  pageLoad: false,
+  pageAlert: null,
+  pageType: parseInt(utils.getQueryString("pageType") || '1'),
   isNightly: null,
   pluginVersion: null,
   allPackages: null,
@@ -12,17 +15,16 @@ var data = utils.initData({
   updatePackages: [],
   updatePackageIds: [],
   referencePackageIds: []
-});
+};
 
 var methods = {
   getIconUrl: function (url) {
     return 'https://www.siteserver.cn/plugins/' + url;
   },
 
-  apiGet: function () {
+  load: function () {
     var $this = this;
 
-    utils.loading(this, true);
     $api.get($url).then(function (response) {
       var res = response.data;
 
@@ -76,21 +78,19 @@ var methods = {
         }
 
       }).catch(function (error) {
-        utils.error($this, error);
+        $this.pageAlert = utils.getPageAlert(error);
       }).then(function () {
-        utils.loading($this, false);
+        $this.pageLoad = true;
       });
 
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
     });
   },
 
   enablePackage: function (pkg) {
-    var $this = this;
-    
     var text = pkg.isDisabled ? '启用' : '禁用';
     var isReference = this.referencePackageIds.indexOf(pkg.id) !== -1;
     if (isReference) {
@@ -105,9 +105,9 @@ var methods = {
       confirmButtonText: pkg.isDisabled ? '启 用' : '禁 用'
     }).then(function (result) {
       if (result.value) {
-        utils.loading($this, true);
+        utils.loading(true);
         $api.post($url + '/' + pkg.id + '/actions/enable').then(function () {
-          utils.loading($this, false);
+          utils.loading(false);
           swal({
             type: 'success',
             title: '插件' + text + '成功',
@@ -122,8 +122,6 @@ var methods = {
   },
 
   deletePackage: function (pkg) {
-    var $this = this;
-
     var isReference = this.referencePackageIds.indexOf(pkg.id) !== -1;
     if (isReference) {
       return swal("无法删除", "存在其他插件依赖此插件，需要删除依赖插件后才能进行删除操作", "error");
@@ -138,9 +136,9 @@ var methods = {
       })
       .then(function (result) {
         if (result.value) {
-          utils.loading($this, true);
+          utils.loading(true);
           $api.delete($url + '/' + pkg.id).then(function () {
-            utils.loading($this, false);
+            utils.loading(false);
             swal({
                 type: 'success',
                 title: '插件删除成功',
@@ -156,11 +154,9 @@ var methods = {
   },
 
   btnReload: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url + '/actions/reload').then(function () {
-      utils.loading($this, false);
+    utils.loading(true);
+    $api.post($urlReload).then(function () {
+      utils.loading(false);
       swal({
         type: 'success',
         title: '插件重新加载成功',
@@ -178,6 +174,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.apiGet();
+    this.load();
   }
 });

@@ -4,10 +4,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
-using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Provider;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -128,7 +129,7 @@ namespace SiteServer.Cli.Jobs
                         {
                             newTableNames.Add(tuple.Item1);
 
-                            await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), TranslateUtils.JsonSerialize(tuple.Item2));
+                            await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), Encoding.UTF8, TranslateUtils.JsonSerialize(tuple.Item2));
                         }
                     }
                 }
@@ -139,7 +140,7 @@ namespace SiteServer.Cli.Jobs
                     {
                         newTableNames.Add(tuple.Item1);
 
-                        await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), TranslateUtils.JsonSerialize(tuple.Item2));
+                        await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), Encoding.UTF8, TranslateUtils.JsonSerialize(tuple.Item2));
                     }
                 }
             }
@@ -149,16 +150,16 @@ namespace SiteServer.Cli.Jobs
                 foreach (var siteId in siteIdList)
                 {
                     var siteTableInfo = splitSiteTableDict[siteId];
-                    var siteTableName = ContentRepository.GetContentTableName(siteId);
+                    var siteTableName = ContentDao.GetContentTableName(siteId);
                     newTableNames.Add(siteTableName);
 
-                    await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), TranslateUtils.JsonSerialize(siteTableInfo));
+                    await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(siteTableInfo));
                 }
 
                 await UpdateUtils.UpdateSitesSplitTableNameAsync(newTreeInfo, splitSiteTableDict);
             }
 
-            await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, TranslateUtils.JsonSerialize(newTableNames));
+            await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newTableNames));
 
             await CliUtils.PrintRowLineAsync();
             await Console.Out.WriteLineAsync($"恭喜，成功从备份文件夹：{oldTreeInfo.DirectoryPath} 升级至新版本：{newTreeInfo.DirectoryPath} ！");

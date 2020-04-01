@@ -1,89 +1,112 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.Abstractions.Dto.Result;
-using SiteServer.API.Context;
+using NSwag.Annotations;
+using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Framework;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Packaging;
-using SiteServer.CMS.Repositories;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/dashboard")]
-    public partial class PagesDashboardController : ApiController
+    public class PagesDashboardController : ApiController
     {
         private const string Route = "";
-        private const string RouteUnCheckedList = "actions/unCheckedList";
+        private const string RouteUnCheckedList = "unCheckedList";
 
         [HttpGet, Route(Route)]
-        public async Task<GetResult> Get()
+        public IHttpActionResult Get()
         {
-            var auth = await AuthenticatedRequest.GetAuthAsync();
-            if (!auth.IsAdminLoggin) return Request.Unauthorized<GetResult>();
-
-            var lastActivityDate = auth.Administrator.LastActivityDate ?? Constants.SqlMinValue;
-            var config = await DataProvider.ConfigRepository.GetAsync();
-
-            return new GetResult
+            try
             {
-                Version = SystemManager.ProductVersion == PackageUtils.VersionDev ? "dev" : SystemManager.ProductVersion,
-                LastActivityDate = DateUtils.GetDateString(lastActivityDate, DateFormatType.Chinese),
-                UpdateDate = DateUtils.GetDateString(config.UpdateDate, DateFormatType.Chinese),
-                AdminWelcomeHtml = config.AdminWelcomeHtml
-            };
+                var request = new AuthenticatedRequest();
+                if (!request.IsAdminLoggin)
+                {
+                    return Unauthorized();
+                }
+
+                var lastActivityDate = request.AdminInfo.LastActivityDate ?? DateUtils.SqlMinValue;
+
+                return Ok(new
+                {
+                    Value = new
+                    {
+                        Version = SystemManager.ProductVersion == PackageUtils.VersionDev ? "dev" : SystemManager.ProductVersion,
+                        LastActivityDate = DateUtils.GetDateString(lastActivityDate, EDateFormatType.Chinese),
+                        UpdateDate = DateUtils.GetDateString(ConfigManager.Instance.UpdateDate, EDateFormatType.Chinese),
+                        ConfigManager.SystemConfigInfo.AdminWelcomeHtml
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         [HttpGet, Route(RouteUnCheckedList)]
-        public async Task<ObjectResult<List<Checking>>> GetUnCheckedList()
+        public IHttpActionResult GetUnCheckedList()
         {
-            var auth = await AuthenticatedRequest.GetAuthAsync();
-            if (!auth.IsAdminLoggin) return Request.Unauthorized<ObjectResult<List<Checking>>>();
-
-            var checkingList = new List<Checking>();
-
-            if (await auth.AdminPermissionsImpl.IsSuperAdminAsync())
+            try
             {
-                foreach (var site in await DataProvider.SiteRepository.GetSiteListAsync())
+                var request = new AuthenticatedRequest();
+                if (!request.IsAdminLoggin)
                 {
-                    var count = await DataProvider.ContentRepository.GetCountCheckingAsync(site);
-                    if (count > 0)
-                    {
-                        checkingList.Add(new Checking
-                        {
-                            SiteName = site.SiteName,
-                            Count = count
-                        });
-                    }
+                    return Unauthorized();
                 }
-            }
-            else if (await auth.AdminPermissionsImpl.IsSiteAdminAsync())
-            {
-                if (auth.Administrator.SiteIds != null)
-                {
-                    foreach (var siteId in auth.Administrator.SiteIds)
-                    {
-                        var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                        if (site == null) continue;
 
-                        var count = await DataProvider.ContentRepository.GetCountCheckingAsync(site);
+                var checkingList = new List<object>();
+
+                if (request.AdminPermissionsImpl.IsConsoleAdministrator)
+                {
+                    foreach(var siteInfo in SiteManager.GetSiteInfoList())
+                    {
+                        var count = DataProvider.ContentDao.GetCountChecking(siteInfo.Id);
                         if (count > 0)
                         {
-                            checkingList.Add(new Checking
+                            checkingList.Add(new
                             {
-                                SiteName = site.SiteName,
+                                Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
+                                siteInfo.SiteName,
                                 Count = count
                             });
                         }
                     }
                 }
-            }
+                else if (request.AdminPermissionsImpl.IsSystemAdministrator)
+                {
+                    foreach (var siteId in TranslateUtils.StringCollectionToIntList(request.AdminInfo.SiteIdCollection))
+                    {
+                        var siteInfo = SiteManager.GetSiteInfo(siteId);
+                        if (siteInfo == null) continue;
 
-            return new ObjectResult<List<Checking>>
+                        var count = DataProvider.ContentDao.GetCountChecking(siteInfo.Id);
+                        if (count > 0)
+                        {
+                            checkingList.Add(new
+                            {
+                                Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
+                                siteInfo.SiteName,
+                                Count = count
+                            });
+                        }
+                    }
+                }
+
+                return Ok(new
+                {
+                    Value = checkingList
+                });
+            }
+            catch (Exception ex)
             {
-                Value = checkingList
-            };
+                return InternalServerError(ex);
+            }
         }
     }
 }

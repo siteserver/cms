@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
-
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -45,16 +44,16 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.RelatedFieldRepository.TableName;
+        private static readonly string NewTableName = DataProvider.RelatedFieldDao.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldRepository.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldDao.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(RelatedField.Id), nameof(RelatedFieldId)},
-                {nameof(RelatedField.Title), nameof(RelatedFieldName)},
-                {nameof(RelatedField.SiteId), nameof(PublishmentSystemId)}
+                {nameof(RelatedFieldInfo.Id), nameof(RelatedFieldId)},
+                {nameof(RelatedFieldInfo.Title), nameof(RelatedFieldName)},
+                {nameof(RelatedFieldInfo.SiteId), nameof(PublishmentSystemId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

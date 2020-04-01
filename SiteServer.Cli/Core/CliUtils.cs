@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Framework;
+using SiteServer.Utils;
 
 namespace SiteServer.Cli.Core
 {
@@ -100,7 +99,7 @@ namespace SiteServer.Cli.Core
 
             if (!FileUtils.IsFileExists(filePath))
             {
-                await FileUtils.WriteTextAsync(filePath, string.Empty);
+                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, string.Empty);
             }
 
             var builder = new StringBuilder();
@@ -121,7 +120,7 @@ namespace SiteServer.Cli.Core
 
             if (!FileUtils.IsFileExists(filePath))
             {
-                await FileUtils.WriteTextAsync(filePath, string.Empty);
+                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, string.Empty);
             }
 
             var builder = new StringBuilder();

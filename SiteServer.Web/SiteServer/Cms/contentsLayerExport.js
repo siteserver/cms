@@ -1,119 +1,131 @@
-﻿var $url = '/pages/cms/contents/contentsLayerExport';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerExport');
 
-var data = utils.initData({
+var data = {
+  siteId: parseInt(pageUtils.getQueryString('siteId')),
+  channelId: parseInt(pageUtils.getQueryString('channelId')),
+  channelContentIds: pageUtils.getQueryString('channelContentIds'),
+  pageLoad: false,
+  pageAlert: null,
   columns: null,
   checkedLevels: null,
   checkedLevel: null,
 
-  form: {
-    siteId: utils.getQueryInt('siteId'),
-    channelId: utils.getQueryInt('channelId'),
-    channelContentIds: utils.getQueryString('channelContentIds'),
-    exportType: 'zip',
-    isAllCheckedLevel: true,
-    checkedLevelKeys: [],
-    isAllDate: true,
-    startDate: new Date(new Date().setDate(new Date().getDate() - 30)),
-    endDate: new Date(),
-    isAllColumns: true,
-    columnNames: []
-  }
-});
+  exportType: 'zip',
+  isAllCheckedLevel: true,
+  checkedLevelKeys: [],
+  isAllDate: true,
+  startDate: new Date(new Date().setDate(new Date().getDate() - 30)),
+  endDate: new Date(),
+  isAllColumns: false,
+  columnNames: []
+};
 
 var methods = {
-  apiGet: function () {
+  loadConfig: function () {
     var $this = this;
+    $api.get({
+        siteId: $this.siteId,
+        channelId: $this.channelId
+      },
+      function (err, res) {
+        if (err || !res || !res.value) return;
 
-    utils.loading(this, true);
-    $api.get($url, {
-      params: {
-        siteId: this.form.siteId,
-        channelId: this.form.channelId
-      }
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.columns = res.value;
-      $this.form.columnNames = [];
-      for (var i = 0; i < $this.columns.length; i++) {
-        var attribute = $this.columns[i];
-        if (attribute.isList) {
-          $this.form.columnNames.push(attribute.attributeName);
+        $this.columns = res.value;
+        $this.columnNames = [];
+        for (var i = 0; i < $this.columns.length; i++) {
+          var attribute = $this.columns[i];
+          if (attribute.isList) {
+            $this.columnNames.push(attribute.attributeName);
+          }
         }
+        $this.checkedLevels = res.checkedLevels;
+        for (var i = 0; i < $this.checkedLevels.length; i++) {
+          var checkedLevel = $this.checkedLevels[i];
+          $this.checkedLevelKeys.push(checkedLevel.key);
+        }
+        $this.checkedLevel = res.checkedLevel;
+        $this.pageLoad = true;
       }
-      $this.checkedLevels = res.checkedLevels;
-      for (var i = 0; i < $this.checkedLevels.length; i++) {
-        var checkedLevel = $this.checkedLevels[i];
-        $this.form.checkedLevelKeys.push(checkedLevel.key);
-      }
-      $this.checkedLevel = res.checkedLevel;
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  apiSubmit: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url, this.form).then(function (response) {
-      var res = response.data;
-
-      if (res.isSuccess) {
-        window.open(res.value);
-        utils.closeLayer();
-      } else {
-        return $this.$message.error('没有符合条件的内容，请重新选择导出条件');
-      }
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
+    );
   },
 
   btnIsAllCheckedLevelClick: function () {
-    this.isAllCheckedLevel = !this.form.isAllCheckedLevel;
-    this.form.checkedLevelKeys = [];
-    if (this.form.isAllCheckedLevel) {
+    this.isAllCheckedLevel = !this.isAllCheckedLevel;
+    this.checkedLevelKeys = [];
+    if (this.isAllCheckedLevel) {
       for (var i = 0; i < this.checkedLevels.length; i++) {
         var checkedLevel = this.checkedLevels[i];
-        this.form.checkedLevelKeys.push(checkedLevel.key);
+        this.checkedLevelKeys.push(checkedLevel.key);
       }
     }
   },
 
   btnIsAllColumnsClick: function () {
-    this.form.isAllColumns = !this.form.isAllColumns;
-    this.form.columnNames = ['Title'];
-    if (this.form.isAllColumns) {
+    this.isAllColumns = !this.isAllColumns;
+    this.columnNames = ['Title'];
+    if (this.isAllColumns) {
       for (var i = 0; i < this.columns.length; i++) {
         var column = this.columns[i];
-        this.form.columnNames.push(column.attributeName);
+        this.columnNames.push(column.attributeName);
       }
     }
   },
 
   btnSubmitClick: function () {
-    if (this.form.checkedLevelKeys.length === 0) {
-      return this.$message.error('必须至少选择一项内容状态');
+    var $this = this;
+    this.pageAlert = null;
+
+    if (this.checkedLevelKeys.length === 0) {
+      return this.pageAlert = {
+        type: 'danger',
+        html: '必须至少选择一项内容状态'
+      };
     }
 
-    this.apiSubmit();
-  },
+    parent.pageUtils.loading(true);
+    $api.post({
+        siteId: $this.siteId,
+        channelId: $this.channelId,
+        channelContentIds: $this.channelContentIds,
+        exportType: $this.exportType,
+        isAllCheckedLevel: $this.isAllCheckedLevel,
+        checkedLevelKeys: $this.checkedLevelKeys,
+        isAllDate: $this.isAllDate,
+        startDate: $this.startDate,
+        endDate: $this.endDate,
+        columnNames: $this.columnNames
+      },
+      function (err, res) {
+        parent.pageUtils.loading(false);
 
-  btnCancelClick: function () {
-    utils.closeLayer();
-  },
+        if (err) {
+          return $this.pageAlert = {
+            type: 'danger',
+            html: res.message
+          };
+        }
+
+        if (res.isSuccess) {
+          window.open(res.value);
+          parent.layer.closeAll();
+        } else {
+          return $this.pageAlert = {
+            type: 'danger',
+            html: '没有符合条件的内容，请重新选择导出条件'
+          };
+        }
+      }
+    );
+  }
 };
 
-var $vue = new Vue({
+Vue.component("date-picker", window.DatePicker.default);
+
+new Vue({
   el: '#main',
   data: data,
   methods: methods,
   created: function () {
-    this.apiGet();
+    this.loadConfig();
   }
 });

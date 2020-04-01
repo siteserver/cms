@@ -2,11 +2,9 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using Datory;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -16,24 +14,24 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlIsFileUploadChangeFileName;
         public Literal LtlScript;
 
-        private UploadType _uploadType;
+        private EUploadType _uploadType;
         private string _realtedPath;
         private string _textBoxClientId;
 
-        public static string GetOpenWindowStringToTextBox(int siteId, UploadType uploadType, string textBoxClientId)
+        public static string GetOpenWindowStringToTextBox(int siteId, EUploadType uploadType, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("上传附件", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadFile), new NameValueCollection
+            return LayerUtils.GetOpenScript2("上传附件", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadFile), new NameValueCollection
             {
-                {"uploadType", uploadType.GetValue()},
+                {"uploadType", EUploadTypeUtils.GetValue(uploadType)},
                 {"TextBoxClientID", textBoxClientId}
             }), 550, 250);
         }
 
-        public static string GetOpenWindowStringToList(int siteId, UploadType uploadType, string realtedPath)
+        public static string GetOpenWindowStringToList(int siteId, EUploadType uploadType, string realtedPath)
         {
             return LayerUtils.GetOpenScript("上传附件", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadFile), new NameValueCollection
             {
-                {"uploadType", uploadType.GetValue()},
+                {"uploadType", EUploadTypeUtils.GetValue(uploadType)},
                 {"realtedPath", realtedPath}
             }), 550, 250);
         }
@@ -43,14 +41,14 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("siteId");
-            _uploadType = TranslateUtils.ToEnum(AuthRequest.GetQueryString("uploadType"), UploadType.Image);
+            _uploadType = EUploadTypeUtils.GetEnumType(AuthRequest.GetQueryString("uploadType"));
             _realtedPath = AuthRequest.GetQueryString("realtedPath");
             _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
 
             if (IsPostBack) return;
 
             EBooleanUtils.AddListItems(DdlIsFileUploadChangeFileName, "采用系统生成文件名", "采用原有文件名");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, Site.IsFileUploadChangeFileName.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, SiteInfo.Additional.IsFileUploadChangeFileName.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -62,33 +60,33 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
                 if (!string.IsNullOrEmpty(_realtedPath))
                 {
-                    localDirectoryPath = PathUtility.MapPathAsync(Site, _realtedPath).GetAwaiter().GetResult();
+                    localDirectoryPath = PathUtility.MapPath(SiteInfo, _realtedPath);
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
                 var localFileName = PathUtility.GetUploadFileName(filePath, TranslateUtils.ToBool(DdlIsFileUploadChangeFileName.SelectedValue));
 
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-                if (_uploadType == UploadType.Image && !EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName))
+                if (_uploadType == EUploadType.Image && !EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName))
                 {
                     FailMessage("此格式不允许上传，此文件夹只允许上传图片以及音视频文件！");
                     return;
                 }
-                if (_uploadType == UploadType.Video && !EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName))
+                if (_uploadType == EUploadType.Video && !EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName))
                 {
                     FailMessage("此格式不允许上传，此文件夹只允许上传图片以及音视频文件！");
                     return;
                 }
-                if (_uploadType == UploadType.File && !PathUtility.IsFileExtensionAllowed(Site, fileExtName))
+                if (_uploadType == EUploadType.File && !PathUtility.IsFileExtenstionAllowed(SiteInfo, fileExtName))
                 {
                     FailMessage("此格式不允许上传，请选择有效的文件！");
                     return;
                 }
                     
-                if (!PathUtility.IsFileSizeAllowed(Site, HifUpload.PostedFile.ContentLength))
+                if (!PathUtility.IsFileSizeAllowed(SiteInfo, HifUpload.PostedFile.ContentLength))
                 {
                     FailMessage("上传失败，上传文件超出规定文件大小！");
                     return;
@@ -96,10 +94,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                 HifUpload.PostedFile.SaveAs(localFilePath);
 
-                FileUtility.AddWaterMarkAsync(Site, localFilePath).GetAwaiter().GetResult();
+                FileUtility.AddWaterMark(SiteInfo, localFilePath);
 
-                var fileUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localFilePath, true).GetAwaiter().GetResult();
-                var textBoxUrl = PageUtility.GetVirtualUrl(Site, fileUrl);
+                var fileUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
+                var textBoxUrl = PageUtility.GetVirtualUrl(SiteInfo, fileUrl);
 
                 if (string.IsNullOrEmpty(_textBoxClientId))
                 {

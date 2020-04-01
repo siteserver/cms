@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -49,14 +50,14 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.ConfigRepository.TableName;
+        private static readonly string NewTableName = DataProvider.ConfigDao.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.ConfigRepository.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.ConfigDao.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {"SystemConfig", nameof(SettingsXml)}
+                {nameof(ConfigInfo.SystemConfig), nameof(SettingsXml)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

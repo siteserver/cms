@@ -5,14 +5,16 @@ var $contentId = utils.getQueryString('contentId');
 var $formId = utils.getQueryString('formId');
 var $returnUrl = utils.getQueryString('returnUrl');
 
-var data = utils.initData({
+var data = {
   pageConfig: null,
+  pageLoad: false,
+  pageAlert: null,
   pageType: 'list',
   formInfo: null,
   fieldInfoList: [],
   administratorSmsAttributeNames: null,
   administratorSmsNotifyKeys: null
-});
+};
 
 var methods = {
   submit: function () {
@@ -46,9 +48,9 @@ var methods = {
       payload.administratorSmsNotifyMobile = this.formInfo.additional.administratorSmsNotifyMobile;
     }
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.post(payload, function (err, res) {
-      utils.loading($this, false);
+      utils.loading(false);
       if (err) {
         $this.pageAlert = {
           type: 'danger',
@@ -133,10 +135,9 @@ var $vue = new Vue({
       $ssApi.get($urlStatus).then(function (response) {
         var res = response.data;
         $this.pageConfig = res.value;
+        $this.pageLoad = true;
       }).catch(function (error) {
         location.href = 'login.cshtml?returnUrl=' + encodeURIComponent(location.href);
-      }).then(function () {
-        utils.loading($this, false);
       });
     } else {
       location.href = 'login.cshtml?returnUrl=' + encodeURIComponent(location.href);

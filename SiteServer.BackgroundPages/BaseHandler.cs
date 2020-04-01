@@ -1,6 +1,8 @@
 ﻿using System.Web;
-using SiteServer.Abstractions;
 using SiteServer.CMS.Core;
+using SiteServer.Utils;
+using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages
 {
@@ -10,7 +12,7 @@ namespace SiteServer.BackgroundPages
 
         public void ProcessRequest(HttpContext context)
         {
-            AuthRequest = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
+            AuthRequest = new AuthenticatedRequest(context.Request);
 
             if (!AuthRequest.IsAdminLoggin) return;
 

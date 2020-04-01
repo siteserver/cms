@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.UI;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -15,6 +13,8 @@ namespace SiteServer.BackgroundPages.Ajax
     {
         private const string TypeGetTitles = "GetTitles";
         private const string TypeGetWordSpliter = "GetWordSpliter";
+        private const string TypeGetDetection = "GetDetection";
+        private const string TypeGetDetectionReplace = "GetDetectionReplace";
         private const string TypeGetTags = "GetTags";
 
         public static string GetRedirectUrl(string type)
@@ -44,6 +44,24 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
+        public static string GetDetectionUrl(int siteId)
+        {
+            return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
+            {
+                {"type", TypeGetDetection},
+                {"siteId", siteId.ToString()}
+            });
+        }
+
+        public static string GetDetectionReplaceUrl(int siteId)
+        {
+            return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
+            {
+                {"type", TypeGetDetectionReplace},
+                {"siteId", siteId.ToString()}
+            });
+        }
+
         public static string GetTagsUrl(int siteId)
         {
             return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
@@ -63,7 +81,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var siteId = TranslateUtils.ToInt(Request["siteId"]);
                 var channelId = TranslateUtils.ToInt(Request["channelId"]);
                 var title = Request["title"];
-                var titles = GetTitlesAsync(siteId, channelId, title).GetAwaiter().GetResult();
+                var titles = GetTitles(siteId, channelId, title);
 
                 Page.Response.Write(titles);
                 Page.Response.End();
@@ -74,7 +92,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var siteId = TranslateUtils.ToInt(Request["siteId"]);
                 var contents = Request.Form["content"];
-                var tags = WordSpliter.GetKeywordsAsync(contents, siteId, 10).GetAwaiter().GetResult();
+                var tags = WordSpliter.GetKeywords(contents, siteId, 10);
 
                 Page.Response.Write(tags);
                 Page.Response.End();
@@ -86,7 +104,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var siteId = TranslateUtils.ToInt(Request["siteId"]);
                 var tag = Request["tag"];
-                var tags = GetTagsAsync(siteId, tag).GetAwaiter().GetResult();
+                var tags = GetTags(siteId, tag);
 
                 Page.Response.Write(tags);
                 Page.Response.End();
@@ -94,18 +112,45 @@ namespace SiteServer.BackgroundPages.Ajax
                 return;
             }
 
+            if (type == TypeGetDetection)
+            {
+                var content = Request.Form["content"];
+                var arraylist = DataProvider.KeywordDao.GetKeywordListByContent(content);
+                var keywords = TranslateUtils.ObjectCollectionToString(arraylist);
+
+                Page.Response.Write(keywords);
+                Page.Response.End();
+            }
+            else if (type == TypeGetDetectionReplace)
+            {
+                var content = Request.Form["content"];
+                var keywordList = DataProvider.KeywordDao.GetKeywordListByContent(content);
+                var keywords = string.Empty;
+                if (keywordList.Count > 0)
+                {
+                    var list = DataProvider.KeywordDao.GetKeywordInfoList(keywordList);
+                    foreach (var keywordInfo in list)
+                    {
+                        keywords += keywordInfo.Keyword + "|" + keywordInfo.Alternative + ",";
+                    }
+                    keywords = keywords.TrimEnd(',');
+                }
+                Page.Response.Write(keywords);
+                Page.Response.End();
+            }
+
             Page.Response.Write(retString);
             Page.Response.End();
         }
 
-        public async Task<string> GetTitlesAsync(int siteId, int channelId, string title)
+        public string GetTitles(int siteId, int channelId, string title)
         {
             var retVal = new StringBuilder();
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            var channel = await DataProvider.ChannelRepository.GetAsync(channelId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
-            var titleList = await DataProvider.ContentRepository.GetValueListByStartStringAsync(site, channel, ContentAttribute.Title, title, 10);
+            var titleList = DataProvider.ContentDao.GetValueListByStartString(tableName, channelId, ContentAttribute.Title, title, 10);
             if (titleList.Count > 0)
             {
                 foreach (var value in titleList)
@@ -119,20 +164,20 @@ namespace SiteServer.BackgroundPages.Ajax
             return retVal.ToString();
         }
 
-        public async Task<string> GetTagsAsync(int siteId, string tag)
+        public string GetTags(int siteId, string tag)
         {
             var retVal = new StringBuilder();
 
-            //var tagList = await DataProvider.ContentTagRepository.GetTagListByStartStringAsync(siteId, tag, 10);
-            //if (tagList.Count > 0)
-            //{
-            //    foreach (var value in tagList)
-            //    {
-            //        retVal.Append(value);
-            //        retVal.Append("|");
-            //    }
-            //    retVal.Length -= 1;
-            //}
+            var tagList = DataProvider.TagDao.GetTagListByStartString(siteId, tag, 10);
+            if (tagList.Count > 0)
+            {
+                foreach (var value in tagList)
+                {
+                    retVal.Append(value);
+                    retVal.Append("|");
+                }
+                retVal.Length -= 1;
+            }
 
             return retVal.ToString();
         }

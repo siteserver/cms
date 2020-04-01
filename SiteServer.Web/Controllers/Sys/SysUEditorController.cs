@@ -1,13 +1,13 @@
 ﻿using System.Web;
 using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.API.Context.UEditor;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Editors;
-using Config = SiteServer.API.Context.UEditor.Config;
+using SiteServer.CMS.UEditor;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    
+    [OpenApiIgnore]
     public class SysUEditorController : ApiController
     {
         [HttpGet, Route(ApiRouteUEditor.Route)]
@@ -39,7 +39,7 @@ namespace SiteServer.API.Controllers.Sys
                         PathFormat = Config.GetString("imagePathFormat"),
                         SizeLimit = Config.GetInt("imageMaxSize"),
                         UploadFieldName = Config.GetString("imageFieldName")
-                    }, siteId, UploadType.Image);
+                    }, siteId, EUploadType.Image);
                     break;
                 case "uploadscrawl":
                     action = new UploadHandler(HttpContext.Current, new UploadConfig
@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Sys
                         UploadFieldName = Config.GetString("scrawlFieldName"),
                         Base64 = true,
                         Base64Filename = "scrawl.png"
-                    }, siteId, UploadType.Image);
+                    }, siteId, EUploadType.Image);
                     break;
                 case "uploadvideo":
                     action = new UploadHandler(HttpContext.Current, new UploadConfig
@@ -59,7 +59,7 @@ namespace SiteServer.API.Controllers.Sys
                         PathFormat = Config.GetString("videoPathFormat"),
                         SizeLimit = Config.GetInt("videoMaxSize"),
                         UploadFieldName = Config.GetString("videoFieldName")
-                    }, siteId, UploadType.Video);
+                    }, siteId, EUploadType.Video);
                     break;
                 case "uploadfile":
                     action = new UploadHandler(HttpContext.Current, new UploadConfig
@@ -68,13 +68,13 @@ namespace SiteServer.API.Controllers.Sys
                         PathFormat = Config.GetString("filePathFormat"),
                         SizeLimit = Config.GetInt("fileMaxSize"),
                         UploadFieldName = Config.GetString("fileFieldName")
-                    }, siteId, UploadType.File);
+                    }, siteId, EUploadType.File);
                     break;
                 case "listimage":
-                    action = new ListFileManager(HttpContext.Current, Config.GetString("imageManagerListPath"), Config.GetStringList("imageManagerAllowFiles"), siteId, UploadType.Image);
+                    action = new ListFileManager(HttpContext.Current, Config.GetString("imageManagerListPath"), Config.GetStringList("imageManagerAllowFiles"), siteId, EUploadType.Image);
                     break;
                 case "listfile":
-                    action = new ListFileManager(HttpContext.Current, Config.GetString("fileManagerListPath"), Config.GetStringList("fileManagerAllowFiles"), siteId, UploadType.File);
+                    action = new ListFileManager(HttpContext.Current, Config.GetString("fileManagerListPath"), Config.GetStringList("fileManagerAllowFiles"), siteId, EUploadType.File);
                     break;
                 case "catchimage":
                     action = new CrawlerHandler(HttpContext.Current, siteId);

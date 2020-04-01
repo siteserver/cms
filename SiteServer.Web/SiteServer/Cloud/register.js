@@ -38,20 +38,18 @@ var methods = {
     this.groups = groups;
     this.reload();
   },
-
   reload: function () {
     this.captcha = '';
     this.captchaUrl = $captchaGetUrl + '?r=' + new Date().getTime();
   },
-
   checkCaptcha: function () {
     var $this = this;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $captchaCheckApi.post({
-      captcha: this.captcha
+      captcha: $this.captcha
     }, function (err) {
-      utils.loading($this, false);
+      utils.loading(false);
 
       if (err) {
         $this.reload();
@@ -78,9 +76,9 @@ var methods = {
       payload[style.attributeName] = style.value;
     }
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.post(payload, function (err, res) {
-      utils.loading($this, false);
+      utils.loading(false);
       if (err) {
         $this.reload();
         $this.pageAlert = {
@@ -128,7 +126,7 @@ var methods = {
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   directives: {

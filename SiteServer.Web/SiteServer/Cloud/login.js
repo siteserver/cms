@@ -1,11 +1,13 @@
-var data = utils.initData({
+var data = {
+  pageLoad: false,
   pageSubmit: false,
+  pageAlert: null,
   account: null,
   password: null,
   isAutoLogin: false,
   captcha: null,
   captchaUrl: null
-});
+};
 
 var methods = {
   reload: function () {
@@ -18,7 +20,7 @@ var methods = {
   checkCaptcha: function () {
     var $this = this;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $ssApi.post($urlCaptchaCheck, {
         captcha: $this.captcha
       })
@@ -26,10 +28,10 @@ var methods = {
         $this.login();
       })
       .catch(function (error) {
-        utils.error($this, error);
+        $this.pageAlert = utils.getPageAlert(error);
       })
       .then(function () {
-        utils.loading($this, false);
+        utils.loading(false);
         $this.reload();
       });
   },
@@ -37,11 +39,11 @@ var methods = {
   login: function () {
     var $this = this;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $ssApi.post($urlLogin, {
-        account: this.account,
-        password: md5(this.password),
-        isAutoLogin: this.isAutoLogin
+        account: $this.account,
+        password: md5($this.password),
+        isAutoLogin: $this.isAutoLogin
       })
       .then(function (response) {
         var res = response.data;
@@ -50,10 +52,10 @@ var methods = {
         location.href = utils.getQueryString('returnUrl') || 'settings.html';
       })
       .catch(function (error) {
-        utils.error($this, error);
+        $this.pageAlert = utils.getPageAlert(error);
       })
       .then(function () {
-        utils.loading($this, false);
+        utils.loading(false);
         $this.reload();
       });
   },
@@ -68,7 +70,7 @@ var methods = {
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   directives: {

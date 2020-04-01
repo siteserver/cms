@@ -128,6 +128,16 @@
                       <a href="javascript:;" v-if="style.value" v-on:click="btnImageClick(style.value)" class="btn btn-outline-primary">预览</a>
                     </template>
 
+                    <template v-if="style.inputType === 'Video'">
+                      <a v-on:click="btnLayerClick({ title: '上传视频', name: 'Video', full: true, args: {attributeName: style.attributeName, inputType: style.inputType} })"
+                        href="javascritp:;" class="btn btn-outline-primary">上传</a>
+                    </template>
+
+                    <template v-if="style.inputType === 'File'">
+                      <a v-on:click="btnLayerClick({ title: '上传附件', name: 'File', full: true, args: {attributeName: style.attributeName, inputType: style.inputType} })"
+                        href="javascritp:;" class="btn btn-outline-primary">上传</a>
+                    </template>
+
                     <template v-else-if="style.inputType === 'TextEditor'">
                       <a v-on:click="btnLayerClick({ title: '插入图片', name: 'Image', full: true, args: {attributeName: style.attributeName, inputType: style.inputType} })"
                         href="javascritp:;" class="btn btn-outline-primary">插入图片</a>

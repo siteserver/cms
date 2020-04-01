@@ -1,7 +1,8 @@
-﻿var $url = '/pages/cms/library/libraryImage';
+﻿var $url = '/pages/cms/libraryImage';
 
-var data = utils.initData({
+var data = {
   siteId: utils.getQueryInt("siteId"),
+  pageLoad: false,
   pageType: 'card',
   drawer: false,
   isGroupForm: false,
@@ -26,14 +27,13 @@ var data = utils.initData({
     page: 1,
     perPage: 24
   }
-});
+};
 
 var methods = {
   apiList: function (page) {
     var $this = this;
     this.form.page = page;
 
-    utils.loading(this, true);
     $api.post($url + '/list', this.form).then(function (response) {
       var res = response.data;
 
@@ -44,16 +44,17 @@ var methods = {
         return item.url;
       });
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.notifyError($this, error);
     }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
+      utils.loading(false);
     });
   },
 
   apiCreateGroup: function () {
     var $this = this;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.post($url + '/groups', this.groupForm).then(function (response) {
       var res = response.data;
 
@@ -65,14 +66,14 @@ var methods = {
         });
     }).then(function () {
       $this.isGroupForm = false;
-      utils.loading($this, false);
+      utils.loading(false);
     });
   },
 
   apiRenameGroup: function () {
     var $this = this;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.put($url + '/groups/' + this.form.groupId, this.groupForm).then(function (response) {
       var res = response.data;
 
@@ -85,14 +86,14 @@ var methods = {
         });
     }).then(function () {
       $this.isGroupForm = false;
-      utils.loading($this, false);
+      utils.loading(false);
     });
   },
 
   apiDeleteGroup: function () {
     var $this = this;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.delete($url + '/groups/' + this.form.groupId).then(function (response) {
       var res = response.data;
 
@@ -107,22 +108,22 @@ var methods = {
     }).then(function () {
       $this.isGroupForm = false;
       $this.form.groupId = 0;
-      utils.loading($this, false);
+      utils.loading(false);
     });
   },
 
   apiDelete: function (library) {
     var $this = this;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.delete($url + '/' + library.id).then(function (response) {
       var res = response.data;
 
       $this.items.splice($this.items.indexOf(library), 1);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.notifyError($this, error);
     }).then(function () {
-      utils.loading($this, false);
+      utils.loading(false);
     });
   },
 
@@ -141,6 +142,15 @@ var methods = {
 
   getUploadUrl: function() {
     return apiUrl + $url + '?siteId=' + this.siteId + '&groupId=' + this.form.groupId
+  },
+
+  getPreviewSrcList: function(url) {
+    var list = _.map(this.items, function (item) {
+      return item.url;
+    });
+    list.splice(list.indexOf(url), 1);
+    list.splice(0, 0, url);
+    return list;
   },
 
   btnTitleClick: function(library) {
@@ -174,7 +184,7 @@ var methods = {
         $this.btnSearchClick();
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.notifyError($this, error);
     });
   },
 
@@ -195,7 +205,7 @@ var methods = {
 
       $this.$message.success('编辑名称成功');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.notifyError($this, error);
     });
 
     return false;
@@ -207,7 +217,7 @@ var methods = {
     this.form.groupId = groupId;
     this.form.page = 1;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.post($url + '/list', this.form).then(function (response) {
       var res = response.data;
 
@@ -223,7 +233,8 @@ var methods = {
           message: error.message
         });
     }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
+      utils.loading(false);
     });
   },
 
@@ -283,17 +294,17 @@ var methods = {
   },
 
   btnSearchClick() {
-    utils.loading(this, true);
+    utils.loading(true);
     this.apiList(1);
   },
 
   btnPageClick: function(val) {
-    utils.loading(this, true);
+    utils.loading(true);
     this.apiList(val);
   },
 
   uploadBefore(file) {
-    var re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.svg|\.png|\.webp|\.jfif)$/i;
+    var re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.svg|\.png|\.webp)$/i;
     if(!re.exec(file.name))
     {
       this.$message.error('文件只能是图片格式，请选择有效的文件上传!');
@@ -309,23 +320,23 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(this, true);
+    utils.loading(true)
   },
 
   uploadSuccess: function(res) {
     this.items.splice(0, 0, res);
     this.count++;
-    utils.loading(this, false);
+    utils.loading(false);
   },
 
   uploadError: function(err) {
-    utils.loading(this, false);
+    utils.loading(false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,

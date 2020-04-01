@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.DataCache;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Config
 {
-    
+    [OpenApiIgnore]
     [RoutePrefix("pages/settings/configAdmin")]
     public class PagesConfigAdminController : ApiController
     {
@@ -18,88 +17,106 @@ namespace SiteServer.API.Controllers.Pages.Settings.Config
         private const string RouteUpload = "upload";
 
         [HttpGet, Route(Route)]
-        public async Task<IHttpActionResult> GetConfig()
+        public IHttpActionResult GetConfig()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-            if (!request.IsAdminLoggin ||
-                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigAdmin))
+            try
             {
-                return Unauthorized();
+                var request = new AuthenticatedRequest();
+                if (!request.IsAdminLoggin ||
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.AppPermissions.SettingsConfigAdmin))
+                {
+                    return Unauthorized();
+                }
+
+                return Ok(new
+                {
+                    Value = ConfigManager.Instance.SystemConfigInfo,
+                    request.AdminToken
+                });
             }
-
-            var config = await DataProvider.ConfigRepository.GetAsync();
-
-            return Ok(new
+            catch (Exception ex)
             {
-                Value = config,
-                request.AdminToken
-            });
+                return InternalServerError(ex);
+            }
         }
 
         [HttpPost, Route(Route)]
-        public async Task<IHttpActionResult> Submit()
+        public IHttpActionResult Submit()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-            if (!request.IsAdminLoggin ||
-                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigAdmin))
+            try
             {
-                return Unauthorized();
+                var request = new AuthenticatedRequest();
+                if (!request.IsAdminLoggin ||
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.AppPermissions.SettingsConfigAdmin))
+                {
+                    return Unauthorized();
+                }
+
+                ConfigManager.SystemConfigInfo.AdminTitle = request.GetPostString("adminTitle");
+                ConfigManager.SystemConfigInfo.AdminLogoUrl = request.GetPostString("adminLogoUrl");
+                ConfigManager.SystemConfigInfo.AdminWelcomeHtml = request.GetPostString("adminWelcomeHtml");
+
+                DataProvider.ConfigDao.Update(ConfigManager.Instance);
+
+                request.AddAdminLog("修改管理后台设置");
+
+                return Ok(new
+                {
+                    Value = ConfigManager.SystemConfigInfo
+                });
             }
-
-            var config = await DataProvider.ConfigRepository.GetAsync();
-
-            config.AdminTitle = request.GetPostString("adminTitle");
-            config.AdminLogoUrl = request.GetPostString("adminLogoUrl");
-            config.AdminWelcomeHtml = request.GetPostString("adminWelcomeHtml");
-
-            await DataProvider.ConfigRepository.UpdateAsync(config);
-
-            await request.AddAdminLogAsync("修改管理后台设置");
-
-            return Ok(new
+            catch (Exception ex)
             {
-                Value = config
-            });
+                return InternalServerError(ex);
+            }
         }
 
         [HttpPost, Route(RouteUpload)]
-        public async Task<IHttpActionResult> Upload()
+        public IHttpActionResult Upload()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-            if (!request.IsAdminLoggin ||
-                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigAdmin))
+            try
             {
-                return Unauthorized();
-            }
-
-            var adminLogoUrl = string.Empty;
-
-            foreach (string name in HttpContext.Current.Request.Files)
-            {
-                var postFile = HttpContext.Current.Request.Files[name];
-
-                if (postFile == null)
+                var request = new AuthenticatedRequest();
+                if (!request.IsAdminLoggin ||
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.AppPermissions.SettingsConfigAdmin))
                 {
-                    return BadRequest("Could not read image from body");
+                    return Unauthorized();
                 }
 
-                var fileName = postFile.FileName;
-                var filePath = PathUtility.GetAdminDirectoryPath(fileName);
+                var adminLogoUrl = string.Empty;
 
-                if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
+                foreach (string name in HttpContext.Current.Request.Files)
                 {
-                    return BadRequest("image file extension is not correct");
+                    var postFile = HttpContext.Current.Request.Files[name];
+
+                    if (postFile == null)
+                    {
+                        return BadRequest("Could not read image from body");
+                    }
+
+                    var fileName = postFile.FileName;
+                    var filePath = PathUtils.GetAdminDirectoryPath(fileName);
+
+                    if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
+                    {
+                        return BadRequest("image file extension is not correct");
+                    }
+
+                    postFile.SaveAs(filePath);
+
+                    adminLogoUrl = fileName;
                 }
 
-                postFile.SaveAs(filePath);
-
-                adminLogoUrl = fileName;
+                return Ok(new
+                {
+                    Value = adminLogoUrl
+                });
             }
-
-            return Ok(new
+            catch (Exception ex)
             {
-                Value = adminLogoUrl
-            });
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
         }
     }
 }

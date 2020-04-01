@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -112,35 +114,41 @@ namespace SiteServer.Cli.Updater.Tables
             Process = Process
         };
 
-        private static readonly string NewTableName = DataProvider.ChannelRepository.TableName;
+        private static readonly string NewTableName = DataProvider.ChannelDao.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.ChannelRepository.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.ChannelDao.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(Channel.Id), nameof(NodeId)},
-                {nameof(Channel.ChannelName), nameof(NodeName)},
-                {nameof(Channel.SiteId), nameof(PublishmentSystemId)},
-                {nameof(Channel.IndexName), nameof(NodeIndexName)},
-                {"GroupNameCollection", nameof(NodeGroupNameCollection)},
-                {nameof(Channel.ContentModelPluginId), nameof(ContentModelId)}
+                {nameof(ChannelInfo.Id), nameof(NodeId)},
+                {nameof(ChannelInfo.ChannelName), nameof(NodeName)},
+                {nameof(ChannelInfo.SiteId), nameof(PublishmentSystemId)},
+                {nameof(ChannelInfo.IndexName), nameof(NodeIndexName)},
+                {nameof(ChannelInfo.GroupNameCollection), nameof(NodeGroupNameCollection)},
+                {nameof(ChannelInfo.ContentModelPluginId), nameof(ContentModelId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
         {
-            {UpdateUtils.GetConvertValueDictKey(nameof(Channel.ContentModelPluginId), "GovInteract"), "SS.GovInteract"},
-            {UpdateUtils.GetConvertValueDictKey(nameof(Channel.ContentModelPluginId), "GovPublic"), "SS.GovPublic"},
-            {UpdateUtils.GetConvertValueDictKey(nameof(Channel.ContentModelPluginId), "Job"), "SS.Jobs"},
+            {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "GovInteract"), "SS.GovInteract"},
+            {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "GovPublic"), "SS.GovPublic"},
+            {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "Job"), "SS.Jobs"},
         };
 
         private static Dictionary<string, object> Process(Dictionary<string, object> row)
         {
-            if (row.TryGetValue(nameof(Channel.Content), out var contentObj))
+            if (row.TryGetValue(ChannelAttribute.Content, out var contentObj))
             {
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
-                row[nameof(Channel.Content)] = content;
+                row[ChannelAttribute.Content] = content;
+            }
+            if (row.TryGetValue(ChannelAttribute.ExtendValues, out contentObj))
+            {
+                var content = contentObj.ToString();
+                content = content.Replace("@upload", "@/upload");
+                row[ChannelAttribute.ExtendValues] = content;
             }
 
             return row;

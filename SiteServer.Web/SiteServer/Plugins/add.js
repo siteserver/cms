@@ -1,13 +1,15 @@
 ﻿var $url = '/pages/plugins/add';
 
-var data = utils.initData({
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   isNightly: null,
   pluginVersion: null,
   packageIds: null,
   q: utils.getQueryString('q'),
   keyword: utils.getQueryString('q') || '',
   packages: null
-});
+};
 
 var methods = {
   getIconUrl: function (url) {
@@ -43,15 +45,15 @@ var methods = {
 
         $this.packages = res.value;
       }).catch(function (error) {
-        utils.error($this, error);
+        this.pageAlert = utils.getPageAlert(error);
       }).then(function () {
-        utils.loading($this, false);
+        $this.pageLoad = true;
       });
 
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
     });
   },
 
@@ -60,7 +62,7 @@ var methods = {
   },
 
   btnUploadClick: function () {
-    utils.openLayer({
+    pageUtils.openLayer({
       title: '离线安装插件',
       url: 'addLayerUpload.cshtml',
       full: true

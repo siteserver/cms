@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Repositories;
-using SiteServer.Abstractions;
+using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
+using SiteServer.Utils.IO;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -37,10 +37,14 @@ namespace SiteServer.BackgroundPages.Cms
             });
 		}
 
-        public static string GetOpenWindowString(Site site, string textBoxClientId)
+        public string SiteUrl => SiteInfo.Additional.WebUrl;
+
+	    public string RootUrl => PageUtils.ApplicationPath;
+
+	    public static string GetOpenWindowString(SiteInfo siteInfo, string textBoxClientId)
 	    {
-	        return LayerUtils.GetOpenScript("选择视频",
-	            PageUtils.GetCmsUrl(site.Id, nameof(ModalSelectVideo), new NameValueCollection
+	        return LayerUtils.GetOpenScript2("选择视频",
+	            PageUtils.GetCmsUrl(siteInfo.Id, nameof(ModalSelectVideo), new NameValueCollection
 	            {
 	                {"RootPath", "@"},
 	                {"CurrentRootPath", string.Empty},
@@ -60,16 +64,16 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = Site.ConfigSelectVideoCurrentUrl.TrimEnd('/');
+                _currentRootPath = SiteInfo.Additional.ConfigSelectVideoCurrentUrl.TrimEnd('/');
             }
             else
             {
-                Site.ConfigSelectVideoCurrentUrl = _currentRootPath;
-                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
+                SiteInfo.Additional.ConfigSelectVideoCurrentUrl = _currentRootPath;
+                DataProvider.SiteDao.Update(SiteInfo);
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 
-			_directoryPath = PathUtility.MapPathAsync(Site, _currentRootPath).GetAwaiter().GetResult();
+			_directoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
 
             if (Page.IsPostBack) return;
@@ -107,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
                     else if (directoryName.Equals("@"))
                     {
                         navigationBuilder.Append(
-                            $"<a href='{GetRedirectUrl(_rootPath)}'>{Site.SiteDir}</a>");
+                            $"<a href='{GetRedirectUrl(_rootPath)}'>{SiteInfo.SiteDir}</a>");
                     }
                     else
                     {
@@ -167,7 +171,7 @@ namespace SiteServer.BackgroundPages.Cms
 			var builder = new StringBuilder();
             builder.Append(@"<table class=""table table-noborder table-hover"">");
 			
-			var directoryUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, _directoryPath, true).GetAwaiter().GetResult();
+			var directoryUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, _directoryPath, true);
             var backgroundImageUrl = SiteServerAssets.GetIconUrl("filesystem/management/background.gif");
 			var directoryImageUrl = SiteServerAssets.GetFileSystemIconUrl(EFileSystemType.Directory, true);
 
@@ -195,8 +199,8 @@ namespace SiteServer.BackgroundPages.Cms
 				</td>
 			</tr>
 			<tr>
-				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"">{WebUtils
-                    .MaxLengthText(subDirectoryInfo.Name, 7)}</a></td>
+				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"">{StringUtils
+				    .MaxLengthText(subDirectoryInfo.Name, 7)}</a></td>
 			</tr>
 		</table>
 	</td>
@@ -211,7 +215,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			foreach (FileSystemInfoExtend fileInfo in fileSystemInfoExtendCollection.Files)
 			{
-                if (!PathUtility.IsVideoExtensionAllowed(Site, fileInfo.Type))
+                if (!PathUtility.IsVideoExtenstionAllowed(SiteInfo, fileInfo.Type))
 				{
 					continue;
 				}
@@ -225,7 +229,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var fileImageUrl = SiteServerAssets.GetFileSystemIconUrl(EFileSystemType.Video, true);
 
-                var textBoxUrl = PageUtility.GetVirtualUrl(Site, linkUrl);
+                var textBoxUrl = PageUtility.GetVirtualUrl(SiteInfo, linkUrl);
 
 				builder.Append($@"
 <td onmouseover=""this.className='tdbg-dark';"" onmouseout=""this.className='';"">
@@ -240,8 +244,8 @@ namespace SiteServer.BackgroundPages.Cms
 				</td>
 			</tr>
 			<tr>
-				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"" title=""点击浏览视频"" target=""_blank"">{WebUtils
-                    .MaxLengthText(fileInfo.Name, 7)}</a></td>
+				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"" title=""点击浏览视频"" target=""_blank"">{StringUtils
+				    .MaxLengthText(fileInfo.Name, 7)}</a></td>
 			</tr>
 		</table>
 	</td>

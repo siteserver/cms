@@ -2,10 +2,9 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -68,22 +67,22 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
                 if (!string.IsNullOrEmpty(_currentRootPath))
                 {
-                    localDirectoryPath = PathUtility.MapPathAsync(Site, _currentRootPath).GetAwaiter().GetResult();
+                    localDirectoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
-                var localFileName = PathUtility.GetUploadFileName(Site, filePath);
+                var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
 
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-                if (!PathUtility.IsImageExtensionAllowed(Site, fileExtName))
+                if (!PathUtility.IsImageExtenstionAllowed(SiteInfo, fileExtName))
                 {
                     FailMessage("上传失败，上传图片格式不正确！");
                     return;
                 }
-                if (!PathUtility.IsImageSizeAllowed(Site, HifUpload.PostedFile.ContentLength))
+                if (!PathUtility.IsImageSizeAllowed(SiteInfo, HifUpload.PostedFile.ContentLength))
                 {
                     FailMessage("上传失败，上传图片超出规定文件大小！");
                     return;
@@ -95,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (isImage && _isNeedWaterMark)
                 {
-                    FileUtility.AddWaterMarkAsync(Site, localFilePath).GetAwaiter().GetResult();
+                    FileUtility.AddWaterMark(SiteInfo, localFilePath);
                 }
 
                 if (string.IsNullOrEmpty(_textBoxClientId))
@@ -104,8 +103,8 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var imageUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localFilePath, true).GetAwaiter().GetResult();
-                    var textBoxUrl = PageUtility.GetVirtualUrl(Site, imageUrl);
+                    var imageUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
+                    var textBoxUrl = PageUtility.GetVirtualUrl(SiteInfo, imageUrl);
 
                     LtlScript.Text = $@"
 <script type=""text/javascript"" language=""javascript"">

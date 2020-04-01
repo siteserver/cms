@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
-
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -45,15 +44,15 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.SitePermissionsRepository.TableName;
+        private static readonly string NewTableName = DataProvider.SitePermissionsDao.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.SitePermissionsRepository.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.SitePermissionsDao.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(SitePermissions.SiteId), nameof(PublishmentSystemId)},
-                {"ChannelIdCollection", nameof(NodeIdCollection)}
+                {nameof(SitePermissionsInfo.SiteId), nameof(PublishmentSystemId)},
+                {nameof(SitePermissionsInfo.ChannelIdCollection), nameof(NodeIdCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

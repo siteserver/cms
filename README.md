@@ -15,6 +15,8 @@ SiteServer CMS 基于.NET 平台，能够以最低的成本、最少的人力投
 
 ## 迭代计划
 
+[2019 年 9 月/10 月迭代计划](https://mp.weixin.qq.com/s?__biz=MjM5MTE5MzgyNQ==&mid=2257483819&idx=1&sn=5c7872d787dbdc33c20ff07ef62825b3&chksm=a5c397a592b41eb3fa1fb63c81991fca25e8774ecb6aa38c5dde8ee332aa858062459cc7f074&scene=0&xtrack=1&key=79a78721542791212f32b13a1e4813e5de2132c8fffd9a98e2d0b6a8c3c529f38b975ccf4c071d642f8bdee97f4df145374556f6e63ec09ef361632dc37e2e24ee1b7f40dea9c688f947d76acf4a043c&ascene=1&uin=MTUyMjE4MTU2NQ%3D%3D&devicetype=Windows+10&version=62060833&lang=zh_CN&pass_ticket=zEXWDQP%2BAmijF6pKkhJsqtyuWssR%2BYFwJzTqiW0TnwgcoTUqMxJH1Ki%2F0Wdf%2FDKu)
+
 [2019 年 7 月/8 月迭代计划](https://mp.weixin.qq.com/s/c-khP44sahCG1phjl8ZHeg)
 
 [2019 年 5 月/6 月迭代计划](https://github.com/siteserver/cms/issues/1879)

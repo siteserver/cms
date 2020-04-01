@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 using System.Web.UI;
-using SiteServer.Abstractions;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retVal = new NameValueCollection();
-            var request = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
+            var request = new AuthenticatedRequest();
 
             if (type == TypeGetCountArray)
             {
@@ -69,19 +69,17 @@ namespace SiteServer.BackgroundPages.Ajax
                 var siteTemplateDir = Request.Form["siteTemplateDir"];
                 var onlineTemplateName = Request.Form["onlineTemplateName"];
 
-                var site = DataProvider.SiteRepository.GetAsync(siteId).GetAwaiter().GetResult();
-
                 if (!string.IsNullOrEmpty(siteTemplateDir))
                 {
-                    retVal = CreateSiteBySiteTemplateDirAsync(siteId, isImportContents, isImportTableStyles, siteTemplateDir, userKeyPrefix, request.AdminId).GetAwaiter().GetResult();
+                    retVal = CreateSiteBySiteTemplateDir(siteId, isImportContents, isImportTableStyles, siteTemplateDir, userKeyPrefix, request.AdminName);
                 }
                 else if (!string.IsNullOrEmpty(onlineTemplateName))
                 {
-                    retVal = CreateSiteByOnlineTemplateNameAsync(site, isImportContents, isImportTableStyles, onlineTemplateName, userKeyPrefix, request.AdminId).GetAwaiter().GetResult();
+                    retVal = CreateSiteByOnlineTemplateName(siteId, isImportContents, isImportTableStyles, onlineTemplateName, userKeyPrefix, request.AdminName);
                 }
                 else
                 {
-                    retVal = CreateSiteAsync(siteId, userKeyPrefix, request.AdminName).GetAwaiter().GetResult();
+                    retVal = CreateSite(siteId, userKeyPrefix, request.AdminName);
                 }
             }
 
@@ -104,7 +102,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retVal;
         }
 
-        public async Task<NameValueCollection> CreateSiteBySiteTemplateDirAsync(int siteId, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, string userKeyPrefix, int adminId)
+        public NameValueCollection CreateSiteBySiteTemplateDir(int siteId, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, string userKeyPrefix, string administratorName)
         {
             var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
@@ -121,23 +119,23 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
-                var site = await DataProvider.SiteRepository.GetAsync(siteId);
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在导入数据...");//存储消息
-                await SiteTemplateManager.Instance.ImportSiteTemplateToEmptySiteAsync(site, siteTemplateDir, isImportContents, isImportTableStyles, adminId);
-                await CreateManager.CreateByAllAsync(siteId);
+                SiteTemplateManager.Instance.ImportSiteTemplateToEmptySite(siteId, siteTemplateDir, isImportContents, isImportTableStyles, administratorName);
+                CreateManager.CreateByAll(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection(
-                        $"站点 <strong>{site.SiteName}<strong> 创建成功!", string.Empty,
+                        $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
                         $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                await LogUtils.AddErrorLogAsync(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
@@ -148,7 +146,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retVal;
         }
 
-        public async Task<NameValueCollection> CreateSiteByOnlineTemplateNameAsync(Site site, bool isImportContents, bool isImportTableStyles, string onlineTemplateName, string userKeyPrefix, int adminId)
+        public NameValueCollection CreateSiteByOnlineTemplateName(int siteId, bool isImportContents, bool isImportTableStyles, string onlineTemplateName, string userKeyPrefix, string administratorName)
         {
             var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
@@ -182,19 +180,20 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "模板压缩包解压成功，正在导入数据...");//存储消息
 
-                await SiteTemplateManager.Instance.ImportSiteTemplateToEmptySiteAsync(site, siteTemplateDir, isImportContents, isImportTableStyles, adminId);
-                await CreateManager.CreateByAllAsync(site.Id);
+                SiteTemplateManager.Instance.ImportSiteTemplateToEmptySite(siteId, siteTemplateDir, isImportContents, isImportTableStyles, administratorName);
+                CreateManager.CreateByAll(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "4");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
 
-                retVal = AjaxManager.GetWaitingTaskNameValueCollection($"站点 <strong>{site.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageUtils.GetMainUrl(site.Id)}';");
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                retVal = AjaxManager.GetWaitingTaskNameValueCollection($"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
+                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                await LogUtils.AddErrorLogAsync(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
@@ -205,7 +204,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retVal;
         }
 
-        public async Task<NameValueCollection> CreateSiteAsync(int siteId, string userKeyPrefix, string administratorName)
+        public NameValueCollection CreateSite(int siteId, string userKeyPrefix, string administratorName)
         {
             var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
@@ -222,18 +221,18 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
-                var site = await DataProvider.SiteRepository.GetAsync(siteId);
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection(
-                        $"站点 <strong>{site.SiteName}<strong> 创建成功!", string.Empty,
+                        $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
                         $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                await LogUtils.AddErrorLogAsync(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数

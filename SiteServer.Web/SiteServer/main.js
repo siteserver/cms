@@ -6,9 +6,10 @@ var $url = '/pages/main';
 var $urlCreate = '/pages/main/actions/create';
 var $urlDownload = '/pages/main/actions/download';
 var $packageIdSsCms = 'SS.CMS';
+var $siteId = parseInt(utils.getQueryString('siteId') || '0');
 
-var data = utils.initData({
-  siteId: utils.getQueryInt('siteId'),
+var data = {
+  pageLoad: false,
   pageAlert: null,
   defaultPageUrl: null,
   isNightly: null,
@@ -21,14 +22,12 @@ var data = utils.initData({
   isSuperAdmin: null,
   packageList: null,
   packageIds: null,
-  menus: [],
-  siteUrl: null,
-  previewUrl: null,
-  local: null,
-
-  menu: null,
+  topMenus: null,
+  siteMenus: null,
   activeParentMenu: null,
   activeChildMenu: null,
+  pluginMenus: null,
+  local: null,
 
   newVersion: null,
   updatePackages: 0,
@@ -40,26 +39,13 @@ var data = utils.initData({
   winWidth: 0,
   isDesktop: true,
   isMobileMenu: false
-});
+};
 
 var methods = {
-  openPageCreateStatus() {
-    utils.openLayer({
-      title: '生成进度查看',
-      url: "cms/createStatus.cshtml?siteId=" + this.siteId,
-      full: true
-    });
-    return false;
-  },
-
-  apiGet: function () {
+  getConfig: function () {
     var $this = this;
 
-    $api.get($url, {
-      params: {
-        siteId: this.siteId
-      }
-    }).then(function (response) {
+    $api.get($url + '?siteId=' + $siteId).then(function (response) {
       var res = response.data;
       if (res.value) {
         $this.defaultPageUrl = res.defaultPageUrl;
@@ -68,30 +54,29 @@ var methods = {
         $this.productVersion = res.productVersion;
         $this.targetFramework = res.targetFramework;
         $this.environmentVersion = res.environmentVersion;
-        $this.adminLogoUrl = res.adminLogoUrl || './assets/images/logo.png';
+        $this.adminLogoUrl = res.adminLogoUrl || './assets/icons/logo.png';
         $this.adminTitle = res.adminTitle || 'SiteServer CMS';
         $this.isSuperAdmin = res.isSuperAdmin;
         $this.packageList = res.packageList;
         $this.packageIds = res.packageIds;
-        $this.menus = res.menus;
-        $this.siteUrl = res.siteUrl;
-        $this.previewUrl = res.previewUrl;
+        $this.topMenus = res.topMenus;
+        $this.siteMenus = res.siteMenus;
+        $this.pluginMenus = res.pluginMenus;
         $this.local = res.local;
-        $this.menu = $this.menus[0];
-        $this.activeParentMenu = $this.menus[0].children[0];
+        $this.activeParentMenu = $this.siteMenus[0];
 
         document.title = $this.adminTitle;
+
+        setTimeout($this.ready, 100);
       } else {
         location.href = res.redirectUrl;
       }
     }).catch(function (error) {
       if (error.response && error.response.status === 401) {
-        location.href = 'login.cshtml';
+        location.href = 'pageLogin.cshtml';
       } else if (error.response && error.response.status === 500) {
-        utils.error($this, error);
+        $this.pageAlert = utils.getPageAlert(error);
       }
-    }).then(function () {
-      setTimeout($this.ready, 100);
     });
   },
 
@@ -99,12 +84,12 @@ var methods = {
     var $this = this;
 
     $api.post($url + '/actions/cache', {
-      siteId: this.siteId
+      siteId: $siteId
     }).then(function (response) {
       var res = response.data;
       
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
       $this.create();
     });
@@ -130,7 +115,7 @@ var methods = {
       }
     }, 60000);
 
-    utils.loading($this, false);
+    $this.pageLoad = true;
   },
 
   getUpdates: function () {
@@ -194,7 +179,7 @@ var methods = {
 
   create: function () {
     var $this = this;
-    
+
     $this.lastExecuteTime = new Date();
     clearTimeout($this.timeoutId);
     var sessionId = localStorage.getItem('sessionId');
@@ -211,7 +196,7 @@ var methods = {
       }
     }).catch(function (error) {
       if (error.response && error.response.status === 401) {
-        location.href = 'login.cshtml';
+        location.href = 'pageLogin.cshtml';
       }
       $this.timeoutId = setTimeout($this.create, 1000);
     });
@@ -224,36 +209,33 @@ var methods = {
   },
 
   getHref: function (menu) {
-    var href = menu.target != '_layer' ? menu.href : '';
-    return href || "javascript:;";
+    return menu.href && menu.target != '_layer' ? menu.href : "javascript:;";
   },
 
   getTarget: function (menu) {
     return menu.target ? menu.target : "right";
   },
 
-  btnTopMenuClick: function (menu) {
-    if (menu.hasChildren) {
-      for(var i = 0; i < menu.children.length; i++) {
-        var child = menu.children[i];
-        if (child.hasChildren) {
-          this.activeParentMenu = child;
-          break;
-        }
-      }
+  btnTopMenuClick: function (menu, e) {
+    if (menu.target == '_layer') {
+      utils.openLayer({
+        title: menu.text,
+        url: menu.href,
+        full: true
+      });
+      e.stopPropagation();
+      e.preventDefault();
     }
-    this.menu = menu;
+    return false;
   },
 
-  btnLeftMenuClick: function (menu, e) {
+  btnLeftMenuClick: function (menu) {
     if (menu.hasChildren) {
       this.activeParentMenu = this.activeParentMenu === menu ? null : menu;
     } else {
       this.activeChildMenu = menu;
       this.isMobileMenu = false;
       if (menu.target == '_layer') {
-        e.stopPropagation();
-        e.preventDefault();
         utils.openLayer({
           title: menu.text,
           url: menu.href,
@@ -268,12 +250,12 @@ var methods = {
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: "#wrapper",
   data: data,
   methods: methods,
   created: function () {
-    this.apiGet();
+    this.getConfig();
   },
   computed: {
     leftMenuWidth: function () {
@@ -282,3 +264,20 @@ var $vue = new Vue({
     }
   }
 });
+
+function redirect(url) {
+  $('#right').src = url;
+}
+
+function openPageCreateStatus() {
+  utils.openLayer({
+    title: '生成进度查看',
+    url: "cms/createStatus.cshtml?siteId=" + $siteId,
+    full: true
+  });
+  return false;
+}
+
+function reloadPage() {
+  document.getElementById('frmMain').contentWindow.location.reload(true);
+}

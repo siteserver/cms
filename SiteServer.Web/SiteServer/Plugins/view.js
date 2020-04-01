@@ -2,7 +2,9 @@
 var returnUrl = utils.getQueryString('returnUrl');
 var $url = '/pages/plugins/view/' + pluginId;
 
-var data = utils.initData({
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   isNightly: null,
   pluginVersion: null,
   installed: null,
@@ -12,7 +14,7 @@ var data = utils.initData({
   pluginInfo: {},
   releaseInfo: {},
   userInfo: {}
-});
+};
 
 var methods = {
   getIconUrl: function (url) {
@@ -54,17 +56,17 @@ var methods = {
 
         $this.isShouldUpdate = compareversion($this.installedVersion, $this.releaseInfo.version) == -1;
       }).catch(function (error) {
-        utils.error($this, {
+        $this.pageAlert = utils.getPageAlert({
           message: '系统在线获取插件信息失败，请检查网络环境是否能够访问外网'
         });
       }).then(function () {
-        utils.loading($this, false);
+        $this.pageLoad = true;
       });
 
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
     });
   },
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using Quartz;
-using SiteServer.Abstractions;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Core
 {

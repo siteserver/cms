@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 using System.Web.UI;
-using SiteServer.Abstractions;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -75,13 +73,13 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retVal = new NameValueCollection();
-            var request = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
+            var request = new AuthenticatedRequest();
 
             if (type == TypeBackup)
             {
                 var siteId = TranslateUtils.ToInt(Request.Form["siteID"]);
                 var backupType = Request.Form["backupType"];
-                retVal = BackupAsync(siteId, backupType, userKeyPrefix).GetAwaiter().GetResult();
+                retVal = Backup(siteId, backupType, userKeyPrefix);
             }
             else if (type == TypeRecovery)
             {
@@ -93,8 +91,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var path = Request.Form["path"];
                 var isOverride = TranslateUtils.ToBool(Request.Form["isOverride"]);
                 var isUseTable = TranslateUtils.ToBool(Request.Form["isUseTable"]);
-                var site = DataProvider.SiteRepository.GetAsync(siteId).GetAwaiter().GetResult();
-                retVal = RecoveryAsync(site, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, path, isOverride, isUseTable, userKeyPrefix, request).GetAwaiter().GetResult();
+                retVal = Recovery(siteId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, path, isOverride, isUseTable, userKeyPrefix, request);
             }
 
             var jsonString = TranslateUtils.NameValueCollectionToJsonString(retVal);
@@ -102,36 +99,36 @@ namespace SiteServer.BackgroundPages.Ajax
             Page.Response.End();
         }
 
-        public async Task<NameValueCollection> BackupAsync(int siteId, string backupType, string userKeyPrefix)
+        public NameValueCollection Backup(int siteId, string backupType, string userKeyPrefix)
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retVal;
-            var request = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
+            var request = new AuthenticatedRequest(Request);
 
             try
             {
                 var eBackupType = EBackupTypeUtils.GetEnumType(backupType);
 
-                var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                var filePath = PathUtility.GetBackupFilePath(site, eBackupType);
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var filePath = PathUtility.GetBackupFilePath(siteInfo, eBackupType);
                 DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                 FileUtils.DeleteFileIfExists(filePath);
 
                 if (eBackupType == EBackupType.Templates)
                 {
-                    await BackupUtility.BackupTemplatesAsync(site, filePath, request.AdminId);
+                    BackupUtility.BackupTemplates(siteId, filePath, request.AdminName);
                 }
                 else if (eBackupType == EBackupType.ChannelsAndContents)
                 {
-                    await BackupUtility.BackupChannelsAndContentsAsync(site, filePath, request.AdminId);
+                    BackupUtility.BackupChannelsAndContents(siteId, filePath, request.AdminName);
                 }
                 else if (eBackupType == EBackupType.Files)
                 {
-                    await BackupUtility.BackupFilesAsync(site, filePath, request.AdminId);
+                    BackupUtility.BackupFiles(siteId, filePath, request.AdminName);
                 }
                 else if (eBackupType == EBackupType.Site)
                 {
-                    await BackupUtility.BackupSiteAsync(site, filePath, request.AdminId);
+                    BackupUtility.BackupSite(siteId, filePath, request.AdminName);
                 }
 
                 string resultString =
@@ -142,22 +139,22 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                await LogUtils.AddErrorLogAsync(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             return retVal;
         }
 
-        public async Task<NameValueCollection> RecoveryAsync(Site site, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, AuthenticatedRequest request)
+        public NameValueCollection Recovery(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, AuthenticatedRequest request)
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retVal;
 
             try
             {
-                await BackupUtility.RecoverySiteAsync(site, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, PageUtils.UrlDecode(path), isOverride, isUseTable, request.AdminId, userKeyPrefix);
+                BackupUtility.RecoverySite(siteId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, PageUtils.UrlDecode(path), isOverride, isUseTable, request.AdminName);
 
-                await request.AddSiteLogAsync(site.Id, "恢复备份数据", request.AdminName);
+                request.AddSiteLog(siteId, "恢复备份数据", request.AdminName);
 
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection("数据恢复成功!", string.Empty, string.Empty);
 
@@ -167,7 +164,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 //retVal = new string[] { string.Empty, ex.Message, string.Empty };
                 retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                await LogUtils.AddErrorLogAsync(ex);
+                LogUtils.AddErrorLog(ex);
             }
 
             return retVal;

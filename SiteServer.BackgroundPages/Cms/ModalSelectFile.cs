@@ -2,14 +2,14 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Images;
+using SiteServer.Utils;
+using SiteServer.Utils.Images;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Repositories;
-using SiteServer.Abstractions;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
+using SiteServer.Utils.IO;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -84,16 +84,16 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = Site.ConfigSelectFileCurrentUrl.TrimEnd('/');
+                _currentRootPath = SiteInfo.Additional.ConfigSelectFileCurrentUrl.TrimEnd('/');
             }
             else
             {
-                Site.ConfigSelectFileCurrentUrl = _currentRootPath;
-                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
+                SiteInfo.Additional.ConfigSelectFileCurrentUrl = _currentRootPath;
+                DataProvider.SiteDao.Update(SiteInfo);
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 
-			_directoryPath = PathUtility.MapPathAsync(Site, _currentRootPath).GetAwaiter().GetResult();
+			_directoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
 			if (!DirectoryUtils.IsDirectoryExists(_directoryPath))
 			{
@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (Page.IsPostBack) return;
 
-            BtnUpload.Attributes.Add("onclick", ModalUploadFile.GetOpenWindowStringToList(SiteId, UploadType.File, _currentRootPath));
+            BtnUpload.Attributes.Add("onclick", ModalUploadFile.GetOpenWindowStringToList(SiteId, EUploadType.File, _currentRootPath));
 
             DdlListType.Items.Add(new ListItem("显示缩略图", "Image"));
             DdlListType.Items.Add(new ListItem("显示详细信息", "List"));
@@ -143,7 +143,7 @@ namespace SiteServer.BackgroundPages.Cms
                     else if (directoryName.Equals("@"))
                     {
                         navigationBuilder.Append(
-                            $"<a href='{GetRedirectUrl(_rootPath)}'>{DataProvider.SiteRepository.GetAsync(SiteId).GetAwaiter().GetResult().SiteDir}</a>");
+                            $"<a href='{GetRedirectUrl(_rootPath)}'>{SiteManager.GetSiteInfo(SiteId).SiteDir}</a>");
                     }
                     else
                     {
@@ -155,7 +155,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             LtlCurrentDirectory.Text = navigationBuilder.ToString();
 
-            FillFileSystemsAsync(false).GetAwaiter().GetResult();
+            FillFileSystems(false);
         }
 
 		public void LinkButton_Command(object sender, CommandEventArgs e)
@@ -202,7 +202,7 @@ namespace SiteServer.BackgroundPages.Cms
 		}
 
 		#region Helper
-		private async Task FillFileSystemsAsync(bool isReload)
+		private void FillFileSystems(bool isReload)
 		{
 			const string cookieName = "SiteServer.BackgroundPages.Cms.Modal.SelectAttachment";
 			var isSetCookie = AuthRequest.IsQueryExists("ListType");
@@ -232,7 +232,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			if (DdlListType.SelectedValue == "List")
 			{
-                await FillFileSystemsToListAsync(isReload);
+				FillFileSystemsToList(isReload);
 			}
 			else if (DdlListType.SelectedValue == "Image")
 			{
@@ -240,14 +240,14 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 		}
 
-        public static string GetFileSystemIconUrl(Site site, FileSystemInfoExtend fileInfo, bool isLargeIcon)
+        public static string GetFileSystemIconUrl(SiteInfo siteInfo, FileSystemInfoExtend fileInfo, bool isLargeIcon)
         {
             EFileSystemType fileSystemType;
-            if (PathUtility.IsVideoExtensionAllowed(site, fileInfo.Type))
+            if (PathUtility.IsVideoExtenstionAllowed(siteInfo, fileInfo.Type))
             {
                 fileSystemType = EFileSystemType.Video;
             }
-            else if (PathUtility.IsImageExtensionAllowed(site, fileInfo.Type))
+            else if (PathUtility.IsImageExtenstionAllowed(siteInfo, fileInfo.Type))
             {
                 fileSystemType = EFileSystemType.Image;
             }
@@ -263,7 +263,7 @@ namespace SiteServer.BackgroundPages.Cms
 			var builder = new StringBuilder();
 			builder.Append(@"<table class=""table table-noborder table-hover"">");
 			
-			var directoryUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, _directoryPath, true).GetAwaiter().GetResult();
+			var directoryUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, _directoryPath, true);
             var backgroundImageUrl = SiteServerAssets.GetIconUrl("filesystem/management/background.gif");
 			var directoryImageUrl = SiteServerAssets.GetFileSystemIconUrl(EFileSystemType.Directory, true);
 
@@ -291,7 +291,7 @@ namespace SiteServer.BackgroundPages.Cms
 				</td>
 			</tr>
 			<tr>
-				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"">{WebUtils
+				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"">{StringUtils
 				    .MaxLengthText(subDirectoryInfo.Name, 8)}</a></td>
 			</tr>
 		</table>
@@ -345,10 +345,10 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				else
 				{
-					fileImageUrl = GetFileSystemIconUrl(Site, fileInfo, true);
+					fileImageUrl = GetFileSystemIconUrl(SiteInfo, fileInfo, true);
 				}
 
-                var attachmentUrl = PageUtility.GetVirtualUrl(Site, linkUrl);
+                var attachmentUrl = PageUtility.GetVirtualUrl(SiteInfo, linkUrl);
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.SiteId, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(SiteId, attachmentUrl,_hiddenClientId);
 
@@ -366,7 +366,7 @@ namespace SiteServer.BackgroundPages.Cms
 				</td>
 			</tr>
 			<tr>
-				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"" title=""点击此项浏览此附件"" target=""_blank"">{WebUtils
+				<td style=""height:20px; width:100%; text-align:center; vertical-align:middle;""><a href=""{linkUrl}"" title=""点击此项浏览此附件"" target=""_blank"">{StringUtils
 				    .MaxLengthText(fileInfo.Name, 8)}</a></td>
 			</tr>
 		</table>
@@ -384,11 +384,11 @@ namespace SiteServer.BackgroundPages.Cms
 			LtlFileSystems.Text = builder.ToString();
 		}
 
-		private async Task FillFileSystemsToListAsync(bool isReload)
+		private void FillFileSystemsToList(bool isReload)
 		{
 			var builder = new StringBuilder();
 			builder.Append(@"<table class=""table table-bordered table-hover""><tr class=""info thead""><td>名称</td><td width=""80"">大小</td><td width=""120"">类型</td><td width=""120"">修改日期</td></tr>");
-			var directoryUrl = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, _directoryPath, true).GetAwaiter().GetResult();
+			var directoryUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, _directoryPath, true);
 
 			var fileSystemInfoExtendCollection = FileManager.GetFileSystemInfoExtendCollection(_directoryPath, isReload);
 
@@ -400,14 +400,14 @@ namespace SiteServer.BackgroundPages.Cms
 				var fileModifyDateTime = subDirectoryInfo.LastWriteTime;
 				var linkUrl = GetRedirectUrl(PageUtils.Combine(_currentRootPath, subDirectoryInfo.Name));
 				string trHtml =
-				    $"<tr><td><nobr><a href=\"{linkUrl}\">{fileNameString}</a></nobr></td><td align=\"right\">&nbsp;</td><td align=\"center\">{fileSystemTypeString}</td><td align=\"center\">{DateUtils.GetDateString(fileModifyDateTime, DateFormatType.Day)}</td></tr>";
+				    $"<tr><td><nobr><a href=\"{linkUrl}\">{fileNameString}</a></nobr></td><td align=\"right\">&nbsp;</td><td align=\"center\">{fileSystemTypeString}</td><td align=\"center\">{DateUtils.GetDateString(fileModifyDateTime, EDateFormatType.Day)}</td></tr>";
 				builder.Append(trHtml);
 			}
 
 			foreach (FileSystemInfoExtend fileInfo in fileSystemInfoExtendCollection.Files)
 			{
 				string fileNameString =
-				    $"<img src={GetFileSystemIconUrl(Site, fileInfo, false)} border=0 /> {fileInfo.Name}";
+				    $"<img src={GetFileSystemIconUrl(SiteInfo, fileInfo, false)} border=0 /> {fileInfo.Name}";
                 var fileSystemType = EFileSystemTypeUtils.GetEnumType(fileInfo.Type);
                 var fileSystemTypeString = (fileSystemType == EFileSystemType.Unknown) ?
                     $"{fileInfo.Type.TrimStart('.').ToUpper()} 文件"
@@ -419,11 +419,11 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				var fileModifyDateTime = fileInfo.LastWriteTime;
 				var linkUrl = PageUtils.Combine(directoryUrl, fileInfo.Name);
-				var attachmentUrl = linkUrl.Replace(await Site.GetWebUrlAsync(), "@");
+				var attachmentUrl = linkUrl.Replace(SiteInfo.Additional.WebUrl, "@");
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.SiteId, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(SiteId, attachmentUrl,_hiddenClientId);
                 string trHtml =
-                    $"<tr><td><a href=\"javascript:;\" onClick=\"window.parent.SelectAttachment('{_hiddenClientId}', '{attachmentUrl.Replace("'", "\\'")}', '{fileViewUrl.Replace("'", "\\'")}');{LayerUtils.CloseScript}\" title=\"点击此项选择此附件\">{fileNameString}</a></td><td align=\"right\">{fileKbSize} KB</td><td align=\"center\">{fileSystemTypeString}</td><td align=\"center\">{DateUtils.GetDateString(fileModifyDateTime, DateFormatType.Day)}</td></tr>";
+                    $"<tr><td><a href=\"javascript:;\" onClick=\"window.parent.SelectAttachment('{_hiddenClientId}', '{attachmentUrl.Replace("'", "\\'")}', '{fileViewUrl.Replace("'", "\\'")}');{LayerUtils.CloseScript}\" title=\"点击此项选择此附件\">{fileNameString}</a></td><td align=\"right\">{fileKbSize} KB</td><td align=\"center\">{fileSystemTypeString}</td><td align=\"center\">{DateUtils.GetDateString(fileModifyDateTime, EDateFormatType.Day)}</td></tr>";
 				builder.Append(trHtml);
 			}
 

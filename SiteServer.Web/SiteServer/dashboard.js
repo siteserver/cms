@@ -1,56 +1,49 @@
-var $url = "/pages/dashboard";
+var $api = new apiUtils.Api(apiUrl + "/pages/dashboard");
+var $routeUnCheckedList = "unCheckedList";
 
-var data = utils.initData({
-  version: null,
-  lastActivityDate: null,
-  updateDate: null,
-  unCheckedList: null,
-  unCheckedListTotalCount: 0,
-  adminWelcomeHtml: null
-});
-
-var methods = {
-  apiGet: function() {
+new Vue({
+  el: "#main",
+  data: {
+    pageLoad: false,
+    pageAlert: null,
+    version: null,
+    lastActivityDate: null,
+    updateDate: null,
+    unCheckedList: null,
+    unCheckedListTotalCount: 0,
+    adminWelcomeHtml: null
+  },
+  created: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url).then(function (response) {
-      var res = response.data;
+    $api.get(null, function (err, res) {
+      this.pageLoad = true;
+      if (err || !res || !res.value) return;
 
-      $this.version = res.version;
-      $this.lastActivityDate = res.lastActivityDate;
-      $this.updateDate = res.updateDate;
-      $this.adminWelcomeHtml = res.adminWelcomeHtml || '欢迎使用 SiteServer CMS 管理后台';
+      $this.version = res.value.version;
+      $this.lastActivityDate = res.value.lastActivityDate;
+      $this.updateDate = res.value.updateDate;
+      $this.adminWelcomeHtml = res.value.adminWelcomeHtml || '欢迎使用 SiteServer CMS 管理后台';
 
       $this.getUnCheckedList();
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
     });
   },
+  methods: {
+    getUnCheckedList: function () {
+      var $this = this;
+      this.pageLoad = true;
+      $api.get(
+        null,
+        function (err, res) {
+          if (err || !res || !res.value) return;
 
-  getUnCheckedList: function () {
-    var $this = this;
-
-    $api.get($url + '/actions/unCheckedList').then(function (response) {
-      var res = response.data;
-
-      $this.unCheckedList = res.value;
-      for (i = 0; i < $this.unCheckedList.length; i++) {
-        $this.unCheckedListTotalCount += $this.unCheckedList[i].count;
-      }
-    }).catch(function (error) {
-      utils.error($this, error);
-    });
+          $this.unCheckedList = res.value;
+          for (i = 0; i < $this.unCheckedList.length; i++) {
+            $this.unCheckedListTotalCount += $this.unCheckedList[i].count;
+          }
+        },
+        $routeUnCheckedList
+      );
+    }
   }
-};
-
-var $vue = new Vue({
-  el: "#main",
-  data: data,
-  created: function () {
-    this.apiGet();
-  },
-  methods: methods
 });

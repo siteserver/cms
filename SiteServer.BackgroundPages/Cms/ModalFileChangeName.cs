@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -41,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "RootPath");
 
             _rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
-            _directoryPath = PathUtility.MapPathAsync(Site, _rootPath).GetAwaiter().GetResult();
+            _directoryPath = PathUtility.MapPath(SiteInfo, _rootPath);
 
 			if (!Page.IsPostBack)
 			{
@@ -73,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             FileUtils.MoveFile(pathSource, path, true);
             FileUtils.DeleteFileIfExists(pathSource);
 
-            AuthRequest.AddSiteLogAsync(SiteId, "修改文件名", $"文件名:{TbFileName.Text}").GetAwaiter().GetResult();
+            AuthRequest.AddSiteLog(SiteId, "修改文件名", $"文件名:{TbFileName.Text}");
             //JsUtils.SubModal.CloseModalPageWithoutRefresh(Page);
             LayerUtils.CloseAndRedirect(Page, RedirectUrl());
         }

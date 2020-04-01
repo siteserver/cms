@@ -1,196 +1,77 @@
-﻿var $url = '/pages/settings/userStyle';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/userStyle');
 
-var data = utils.initData({
-  urlUpload: null,
-  styles: null,
+var data = {
+  pageLoad: false,
+  pageAlert: null,
+  pageType: null,
+  items: null,
   tableName: null,
-  relatedIdentities: null,
-
-  uploadPanel: false,
-  uploadLoading: false,
-  uploadList: []
-});
+  relatedIdentities: null
+};
 
 var methods = {
-  apiList: function (message) {
+  getList: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url).then(function (response) {
-      var res = response.data;
+    $api.get(null, function (err, res) {
+      if (err || !res || !res.value) return;
 
-      $this.styles = res.styles;
+      $this.items = res.value;
       $this.tableName = res.tableName;
       $this.relatedIdentities = res.relatedIdentities;
 
-      $this.urlUpload = apiUrl + $url + '/actions/import';
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
-      if (message) {
-        $this.$message.success(message);
-      }
+      $this.pageLoad = true;
     });
   },
-
-  apiDelete: function (attributeName) {
+  delete: function (attributeName) {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        attributeName: attributeName
-      }
-    }).then(function (response) {
-      var res = response.data;
+    pageUtils.loading(true);
+    $api.delete({
+      attributeName: attributeName
+    }, function (err, res) {
+      pageUtils.loading(false);
+      if (err || !res || !res.value) return;
 
-      $this.styles = res.value;
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
+      $this.items = res.value;
     });
   },
-
-  apiReset: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url + '/actions/reset').then(function (response) {
-      var res = response.data;
-
-      $this.styles = res.value;
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  getRules: function(rules) {
-    if (!rules || rules.length === 0) return '无验证';
-    return _.map(rules, function (rule) {
-      return rule.message;
-    }).join(',');
-  },
-
   btnEditClick: function (attributeName) {
-    utils.openLayer({
+    parent.pageUtils.openLayer({
       title: '编辑字段',
-      url: '../Shared/tableStyleLayerEditor.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
+      url: 'Shared/tableStyle.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
     });
   },
-
   btnValidateClick: function (attributeName) {
-    utils.openLayer({
+    parent.pageUtils.openLayer({
       title: '设置验证规则',
-      url: '../Shared/tableStyleLayerValidate.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
+      url: 'Shared/tableValidate.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
     });
   },
-
+  btnAddClick: function () {
+    parent.pageUtils.openLayer({
+      title: '新增字段',
+      url: 'Shared/tableStyle.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities
+    });
+  },
   btnDeleteClick: function (attributeName) {
     var $this = this;
 
-    utils.alertDelete({
+    pageUtils.alertDelete({
       title: '删除字段',
       text: '此操作将删除字段 ' + attributeName + '，确定吗？',
       callback: function () {
-        $this.apiDelete(attributeName);
+        $this.delete(attributeName);
       }
     });
-  },
-
-  btnCommandClick: function(command){
-    if (command === 'Add') {
-      this.btnAddClick();
-    } else if (command === 'AddMultiple') {
-      this.btnAddMultipleClick();
-    } else if (command === 'Import') {
-      this.btnImportClick();
-    } else if (command === 'Export') {
-      this.btnExportClick();
-    } else if (command === 'Reset') {
-      this.btnResetClick();
-    }
-  },
-
-  btnAddClick: function () {
-    utils.openLayer({
-      title: '新增字段',
-      url: '../Shared/tableStyleLayerEditor.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities
-    });
-  },
-
-  btnAddMultipleClick: function () {
-    utils.openLayer({
-      title: '批量新增字段',
-      url: '../Shared/tableStyleLayerAddMultiple.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities
-    });
-  },
-
-  btnImportClick: function() {
-    this.uploadPanel = true;
-  },
-
-  btnResetClick: function() {
-    var $this = this;
-
-    utils.alertDelete({
-      title: '重置字段',
-      text: '此操作将清空自定义字段并将用户字段恢复为系统默认值，确定吗？',
-      callback: function () {
-        $this.apiReset();
-      }
-    });
-  },
-
-  uploadBefore(file) {
-    var isZip = file.name.indexOf('.zip', file.name.length - '.zip'.length) !== -1;
-    if (!isZip) {
-      this.$message.error('样式导入文件只能是 Zip 格式!');
-    }
-    return isZip;
-  },
-
-  uploadProgress: function() {
-    utils.loading(this, true);
-  },
-
-  uploadSuccess: function(res, file) {
-    this.uploadList = [];
-    this.uploadPanel = false;
-    this.apiList('字段导入成功！');
-  },
-
-  uploadError: function(err) {
-    this.uploadList = [];
-    utils.loading(this, false);
-    var error = JSON.parse(err.message);
-    this.$message.error(error.message);
-  },
-
-  btnExportClick: function() {
-    var $this = this;
-    
-    utils.loading(this, true);
-    $api.post($url + '/actions/export').then(function (response) {
-      var res = response.data;
-
-      window.open(res.value);
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
+  }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,
   created: function () {
-    this.apiList();
+    this.getList();
   }
 });

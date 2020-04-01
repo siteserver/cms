@@ -1,0 +1,163 @@
+# configuration for "netfx-master" branch
+- branches:
+    only:
+      - netfx-master
+
+  version: 6.15.{build}
+  image: Visual Studio 2017
+
+  assembly_info:
+    patch: true
+    file: '**\AssemblyInfo.cs'
+    assembly_version: "{version}"
+    assembly_file_version: "{version}"
+    assembly_informational_version: "{version}"
+
+  configuration:
+    - Release
+
+  environment:
+    nodejs_version: "6"
+    TreatWarningsAsErrors: false
+
+  install:
+    - ps: Install-Product node $env:nodejs_version
+    - npm install gulp -g
+    - npm install
+    - nuget update -self
+
+  skip_tags: true
+
+  cache:
+    - packages -> **\packages.config
+    - node_modules # local npm modules
+
+  before_build:
+    - nuget restore siteserver-all.sln
+
+  build:
+    project: siteserver-all.sln # path to Visual Studio solution or project
+    publish_nuget: true
+
+  after_build:
+    - gulp build
+    - nuget pack build/SS.CMS.nuspec
+    - gulp zip
+
+  artifacts:
+    - path: siteserver_install.zip
+      name: siteserver_install
+
+    - path: siteserver.exe
+      name: siteserver.exe
+
+    - path: "*.nupkg"
+
+  deploy:
+    - provider: GitHub
+      release: siteserver-v$(appveyor_build_version)
+      description: "SiteServer CMS"
+      auth_token:
+        secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
+      artifact: /.*\.[zip|exe]/
+      draft: false
+      prerelease: false
+
+    - provider: NuGet
+      server: # remove to push to NuGet.org
+      api_key:
+        secure: AtMC4UpS2DWAJIibboq8qPdfBJFvoiPsO7KYNZ5Dpfe7Cr/X+5wV0cLx3Nl9QZCl
+      skip_symbols: false
+      symbol_server: # remove to push symbols to SymbolSource.org
+      artifact: /.*\.nupkg/
+
+  notifications:
+    - provider: GitHubPullRequest
+      on_build_success: true
+      on_build_failure: true
+
+# configuration for "netfx-staging" branch
+- branches:
+    only:
+      - netfx-staging
+
+  version: 6.15.{build}-beta
+  image: Visual Studio 2017
+
+  assembly_info:
+    patch: true
+    file: '**\AssemblyInfo.cs'
+    assembly_version: "{version}"
+    assembly_file_version: "{version}"
+    assembly_informational_version: "{version}"
+
+  configuration:
+    - Release
+
+  environment:
+    nodejs_version: "6"
+    TreatWarningsAsErrors: false
+    DOCKER_USER:
+      secure: plV6NmiOZal0f3H/xNFuoA==
+    DOCKER_PASS:
+      secure: AzfvhYL4heX1Acqv5C3Oug==
+
+  install:
+    - ps: Install-Product node $env:nodejs_version
+    - npm install gulp -g
+    - npm install
+    - docker version
+    - nuget update -self
+
+  skip_tags: true
+
+  cache:
+    - packages -> **\packages.config
+    - node_modules # local npm modules
+
+  before_build:
+    - nuget restore siteserver-all.sln
+
+  build:
+    project: siteserver-all.sln # path to Visual Studio solution or project
+    publish_nuget: true
+
+  after_build:
+    - gulp build
+    - nuget pack build/SS.CMS.nuspec
+    - gulp zip
+    # - docker build -t siteserver/cms:latest -t siteserver/cms:v%appveyor_build_version% .
+    # - docker login -u="%DOCKER_USER%" -p="%DOCKER_PASS%"
+    # - docker push siteserver/cms
+
+  artifacts:
+    - path: siteserver_install.zip
+      name: siteserver_install
+
+    - path: siteserver.exe
+      name: siteserver.exe
+
+    - path: "*.nupkg"
+
+  deploy:
+    - provider: GitHub
+      release: siteserver-v$(appveyor_build_version)
+      description: "SiteServer CMS"
+      auth_token:
+        secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
+      artifact: /.*\.[zip|exe]/
+      draft: false
+      prerelease: true
+
+    - provider: NuGet
+      server: # remove to push to NuGet.org
+      api_key:
+        secure: AtMC4UpS2DWAJIibboq8qPdfBJFvoiPsO7KYNZ5Dpfe7Cr/X+5wV0cLx3Nl9QZCl
+      skip_symbols: false
+      symbol_server: # remove to push symbols to SymbolSource.org
+      artifact: /.*\.nupkg/
+
+  notifications:
+    - provider: GitHubPullRequest
+      on_build_success: true
+      on_build_failure: true

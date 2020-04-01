@@ -1,47 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Framework;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.CMS.Repositories;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    
+    [OpenApiIgnore]
     public class SysStlActionsPageContentsController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsPageContents.Route)]
-        public async Task<IHttpActionResult> Main()
+        public IHttpActionResult Main()
         {
             try
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
+                var request = new AuthenticatedRequest();
 
                 var siteId = request.GetPostInt("siteId");
-                var site = await DataProvider.SiteRepository.GetAsync(siteId);
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
                 var pageChannelId = request.GetPostInt("pageChannelId");
                 var templateId = request.GetPostInt("templateId");
                 var totalNum = request.GetPostInt("totalNum");
                 var pageCount = request.GetPostInt("pageCount");
                 var currentPageIndex = request.GetPostInt("currentPageIndex");
-                var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("stlPageContentsElement"), WebConfigUtils.SecretKey);
+                var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("stlPageContentsElement"));
 
-                var nodeInfo = await DataProvider.ChannelRepository.GetAsync(pageChannelId);
-                var templateInfo = await DataProvider.TemplateRepository.GetAsync(templateId);
-                var pageInfo = await PageInfo.GetPageInfoAsync(nodeInfo.Id, 0, site, templateInfo, new Dictionary<string, object>());
-                pageInfo.User = request.User;
-
+                var nodeInfo = ChannelManager.GetChannelInfo(siteId, pageChannelId);
+                var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
+                var pageInfo = new PageInfo(nodeInfo.Id, 0, siteInfo, templateInfo, new Dictionary<string, object>())
+                {
+                    UserInfo = request.UserInfo
+                };
                 var contextInfo = new ContextInfo(pageInfo);
 
-                var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, pageInfo, contextInfo);
+                var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo);
 
-                var pageHtml = await stlPageContents.ParseAsync(totalNum, currentPageIndex, pageCount, false);
+                var pageHtml = stlPageContents.Parse(totalNum, currentPageIndex, pageCount, false);
 
                 return Ok(pageHtml);
             }

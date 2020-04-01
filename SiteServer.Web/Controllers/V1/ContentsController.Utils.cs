@@ -1,46 +1,46 @@
-﻿using System.Threading.Tasks;
-using Datory;
-using Datory.Utils;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
+﻿using Datory;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Model;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 using SqlKata;
 
 namespace SiteServer.API.Controllers.V1
 {
     public partial class ContentsController
     {
-        private async Task<Query> GetQueryAsync(int siteId, int? channelId, QueryRequest request)
+        private Query GetQuery(int siteId, int? channelId, QueryRequest request)
         {
-            var query = Q.Where(nameof(Abstractions.Content.SiteId), siteId).Where(nameof(Abstractions.Content.ChannelId), ">", 0);
+            var query = Q.Where(nameof(ContentInfo.SiteId), siteId).Where(nameof(ContentInfo.ChannelId), ">", 0);
 
             if (channelId.HasValue)
             {
                 //query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
-                var channelIds = await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, channelId.Value, ScopeType.All);
+                var channel = ChannelManager.GetChannelInfo(siteId, channelId.Value);
+                var channelIds = ChannelManager.GetChannelIdList(channel, EScopeType.All);
 
-                query.WhereIn(nameof(Abstractions.Content.ChannelId), channelIds);
+                query.WhereIn(nameof(ContentInfo.ChannelId), channelIds);
             }
 
             if (request.Checked.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.Checked), request.Checked.Value.ToString());
+                query.Where(nameof(ContentInfo.IsChecked), request.Checked.Value.ToString());
             }
             if (request.Top.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.Top), request.Top.Value.ToString());
+                query.Where(nameof(ContentInfo.IsTop), request.Top.Value.ToString());
             }
             if (request.Recommend.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.Recommend), request.Recommend.Value.ToString());
+                query.Where(nameof(ContentInfo.IsRecommend), request.Recommend.Value.ToString());
             }
             if (request.Color.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.Color), request.Color.Value.ToString());
+                query.Where(nameof(ContentInfo.IsColor), request.Color.Value.ToString());
             }
             if (request.Hot.HasValue)
             {
-                query.Where(nameof(Abstractions.Content.Hot), request.Hot.Value.ToString());
+                query.Where(nameof(ContentInfo.IsHot), request.Hot.Value.ToString());
             }
 
             if (request.GroupNames != null)
@@ -52,10 +52,10 @@ namespace SiteServer.API.Controllers.V1
                         if (!string.IsNullOrEmpty(groupName))
                         {
                             q
-                                .OrWhere(nameof(Abstractions.Content.GroupNames), groupName)
-                                .OrWhereLike(nameof(Abstractions.Content.GroupNames), $"{groupName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.GroupNames), $"%,{groupName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.GroupNames), $"%,{groupName}");
+                                .OrWhere(nameof(ContentInfo.GroupNameCollection), groupName)
+                                .OrWhereLike(nameof(ContentInfo.GroupNameCollection), $"{groupName},%")
+                                .OrWhereLike(nameof(ContentInfo.GroupNameCollection), $"%,{groupName},%")
+                                .OrWhereLike(nameof(ContentInfo.GroupNameCollection), $"%,{groupName}");
                         }
                     }
                     return q;
@@ -71,10 +71,10 @@ namespace SiteServer.API.Controllers.V1
                         if (!string.IsNullOrEmpty(tagName))
                         {
                             q
-                                .OrWhere(nameof(Abstractions.Content.TagNames), tagName)
-                                .OrWhereLike(nameof(Abstractions.Content.TagNames), $"{tagName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.TagNames), $"%,{tagName},%")
-                                .OrWhereLike(nameof(Abstractions.Content.TagNames), $"%,{tagName}");
+                                .OrWhere(nameof(ContentInfo.Tags), tagName)
+                                .OrWhereLike(nameof(ContentInfo.Tags), $"{tagName},%")
+                                .OrWhereLike(nameof(ContentInfo.Tags), $"%,{tagName},%")
+                                .OrWhereLike(nameof(ContentInfo.Tags), $"%,{tagName}");
                         }
                     }
                     return q;
@@ -88,11 +88,11 @@ namespace SiteServer.API.Controllers.V1
                     if (string.IsNullOrEmpty(where.Operator)) where.Operator = OpEquals;
                     if (StringUtils.EqualsIgnoreCase(where.Operator, OpIn))
                     {
-                        query.WhereIn(where.Column, Utilities.GetStringList(where.Value));
+                        query.WhereIn(where.Column, TranslateUtils.StringCollectionToStringList(where.Value));
                     }
                     else if (StringUtils.EqualsIgnoreCase(where.Operator, OpNotIn))
                     {
-                        query.WhereNotIn(where.Column, Utilities.GetStringList(where.Value));
+                        query.WhereNotIn(where.Column, TranslateUtils.StringCollectionToStringList(where.Value));
                     }
                     else if (StringUtils.EqualsIgnoreCase(where.Operator, OpLike))
                     {
@@ -125,10 +125,10 @@ namespace SiteServer.API.Controllers.V1
             }
             else
             {
-                query.OrderByDesc(nameof(Abstractions.Content.Top), 
-                    nameof(Abstractions.Content.ChannelId),
-                    nameof(Abstractions.Content.Taxis),
-                    nameof(Abstractions.Content.Id));
+                query.OrderByDesc(nameof(ContentInfo.IsTop),
+                    nameof(ContentInfo.ChannelId),
+                    nameof(ContentInfo.Taxis),
+                    nameof(ContentInfo.Id));
             }
 
             var page = request.Page > 0 ? request.Page : 1;

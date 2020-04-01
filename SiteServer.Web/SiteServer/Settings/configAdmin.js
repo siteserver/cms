@@ -1,6 +1,8 @@
-﻿var $url = '/pages/settings/configAdmin';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/configAdmin');
 
-var data = utils.initData({
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   pageType: null,
   config: null,
   files: [],
@@ -8,17 +10,16 @@ var data = utils.initData({
   adminTitle: null,
   adminLogoUrl: null,
   adminWelcomeHtml: null,
-});
+};
 
 var methods = {
   getConfig: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url).then(function (response) {
-      var res = response.data;
+    $api.get(null, function (err, res) {
+      if (err || !res || !res.value) return;
 
-      $this.config = _.assign({}, res.value);
+      $this.config = _.clone(res.value);
 
       $this.adminTitle = res.value.adminTitle;
       $this.adminLogoUrl = res.value.adminLogoUrl;
@@ -26,14 +27,10 @@ var methods = {
       $this.uploadUrl = apiUrl + '/pages/settings/configAdmin/upload?adminToken=' + res.adminToken;
 
       $this.pageType = 'list';
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
     });
   },
-
-  inputLogo: function(newFile, oldFile) {
+  inputLogo(newFile, oldFile) {
     if (Boolean(newFile) !== Boolean(oldFile) || oldFile.error !== newFile.error) {
       if (!this.$refs.logo.active) {
         this.$refs.logo.active = true
@@ -44,32 +41,35 @@ var methods = {
       this.adminLogoUrl = newFile.response.value;
     }
   },
-
   getUserRegistrationAttribute: function (val) {
     return val;
   },
-
   submit: function (item) {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.post($url, {
+    pageUtils.loading(true);
+    $api.post({
       adminTitle: $this.adminTitle,
       adminLogoUrl: $this.adminLogoUrl,
       adminWelcomeHtml: $this.adminWelcomeHtml
-    }).then(function (response) {
-      var res = response.data;
+    }, function (err, res) {
+      pageUtils.loading(false);
+      if (err) {
+        $this.pageAlert = {
+          type: 'danger',
+          html: err.message
+        };
+        return;
+      }
 
-      $this.$message.success('管理后台设置保存成功！');
-      $this.config = _.assign({}, res.value);
+      $this.pageAlert = {
+        type: 'success',
+        html: '管理后台设置保存成功！'
+      };
+      $this.config = _.clone(res.value);
       $this.pageType = 'list';
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
     });
   },
-  
   btnSubmitClick: function () {
     var $this = this;
     this.$validator.validate().then(function (result) {
@@ -80,7 +80,7 @@ var methods = {
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   components: {

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
-
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -57,16 +56,16 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.ContentCheckRepository.TableName;
+        private static readonly string NewTableName = DataProvider.ContentCheckDao.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.ContentCheckRepository.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.ContentCheckDao.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(ContentCheck.Id), nameof(CheckId)},
-                {nameof(ContentCheck.SiteId), nameof(PublishmentSystemId)},
-                {nameof(ContentCheck.ChannelId), nameof(NodeId)}
+                {nameof(ContentCheckInfo.Id), nameof(CheckId)},
+                {nameof(ContentCheckInfo.SiteId), nameof(PublishmentSystemId)},
+                {nameof(ContentCheckInfo.ChannelId), nameof(NodeId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

@@ -1,26 +1,25 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    
+    [OpenApiIgnore]
     public class SysStlActionsIfController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsIf.Route)]
-        public async Task<IHttpActionResult> Main()
+        public IHttpActionResult Main()
         {
             try
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
+                var request = new AuthenticatedRequest();
 
-                var dynamicInfo = DynamicInfo.GetDynamicInfo(request.GetPostString("value"), request.GetPostInt("page"), request.User, Request.RequestUri.PathAndQuery);
+                var dynamicInfo = DynamicInfo.GetDynamicInfo(request, request.UserInfo);
                 var ifInfo = TranslateUtils.JsonDeserialize<DynamicInfo.IfInfo>(dynamicInfo.ElementValues);
 
                 var isSuccess = false;
@@ -42,7 +41,7 @@ namespace SiteServer.API.Controllers.Sys
                     }
 
                     var template = isSuccess ? dynamicInfo.SuccessTemplate : dynamicInfo.FailureTemplate;
-                    html = await StlDynamic.ParseDynamicContentAsync(dynamicInfo, template);
+                    html = StlDynamic.ParseDynamicContent(dynamicInfo, template);
                 }
 
                 return Ok(new

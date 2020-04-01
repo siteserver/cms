@@ -1,117 +1,103 @@
-﻿var $url = '/pages/settings/userGroup';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/userGroup');
 
-var data = utils.initData({
-  groups: null,
+var data = {
+  pageLoad: false,
+  pageAlert: null,
+  pageType: 'list',
+  items: null,
   adminNames: null,
-
-  panel: false,
-  form: null
-});
+};
 
 var methods = {
-  apiList: function (message) {
+  getList: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url).then(function (response) {
-      var res = response.data;
+    $api.get(null, function (err, res) {
+      if (err || !res || !res.value) return;
 
-      $this.groups = res.groups;
+      $this.items = res.value;
       $this.adminNames = res.adminNames;
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
-      if (message) {
-        $this.$message.success(message);
+
+      $this.pageLoad = true;
+    });
+  },
+  delete: function (id) {
+    var $this = this;
+
+    pageUtils.loading(true);
+    $api.delete({
+      id: id
+    }, function (err, res) {
+      pageUtils.loading(false);
+      if (err || !res || !res.value) return;
+
+      $this.items = res.value;
+    });
+  },
+  submit: function (item) {
+    var $this = this;
+
+    pageUtils.loading(true);
+    $api.post(item, function (err, res) {
+      pageUtils.loading(false);
+      if (err) {
+        $this.pageAlert = {
+          type: 'danger',
+          html: err.message
+        };
+        return;
       }
+
+      $this.pageAlert = {
+        type: 'success',
+        html: item.id === -1 ? '用户组添加成功！' : '用户组修改成功！'
+      };
+      $this.item = null;
+      $this.items = res.value;
+      $this.pageType = 'list';
     });
   },
-
-  apiDelete: function (id) {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.delete($url, {
-      data: { id: id}
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.groups = res.value;
-      $this.$message.success('用户组删除成功！');
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
+  btnEditClick: function (item) {
+    this.pageType = 'add';
+    this.item = item;
   },
-
-  apiSubmit: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url, this.form).then(function (response) {
-      var res = response.data;
-      
-      $this.groups = res.value;
-      $this.$message.success($this.form.id === -1 ? '用户组添加成功！' : '用户组修改成功！');
-      $this.panel = false;
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  getAdminUrl: function(adminName) {
-    return 'adminView.cshtml?pageType=admin&userName=' + adminName + '&returnUrl=' + encodeURIComponent(location.href);
-  },
-
-  btnEditClick: function (group) {
-    this.panel = true;
-    this.form = _.assign({}, group);
-  },
-
   btnAddClick: function () {
-    this.panel = true;
-    this.form = {
+    this.pageType = 'add';
+    this.item = {
       id: -1,
       groupName: '',
       adminName: ''
     };
   },
-
-  btnDeleteClick: function (group) {
+  btnDeleteClick: function (item) {
     var $this = this;
 
-    utils.alertDelete({
+    pageUtils.alertDelete({
       title: '删除用户组',
-      text: '此操作将删除用户组 ' + group.groupName + '，确定吗？',
+      text: '此操作将删除用户组 ' + item.groupName + '，确定吗？',
       callback: function () {
-        $this.apiDelete(group.id);
+        $this.delete(item.id);
       }
     });
   },
-
   btnSubmitClick: function () {
     var $this = this;
-    this.$refs.form.validate(function(valid) {
-      if (valid) {
-        $this.apiSubmit();
+    this.$validator.validate().then(function (result) {
+      if (result) {
+        $this.submit($this.item);
       }
     });
   },
-
   btnCancelClick: function () {
-    this.panel = false;
+    this.pageType = 'list';
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,
   created: function () {
-    this.apiList();
+    this.getList();
   }
 });

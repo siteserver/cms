@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
-    
+    [OpenApiIgnore]
     [RoutePrefix("pages/plugins/addLayerUpload")]
     public class PagesAddLayerUploadController : ApiController
     {
@@ -17,99 +17,123 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         private const string RouteUpload = "actions/upload";
 
         [HttpGet, Route(Route)]
-        public async Task<IHttpActionResult> GetConfig()
+        public IHttpActionResult GetConfig()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-            if (!request.IsAdminLoggin ||
-                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            try
             {
-                return Unauthorized();
-            }
+                var request = new AuthenticatedRequest();
+                if (!request.IsAdminLoggin ||
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                {
+                    return Unauthorized();
+                }
 
-            return Ok(new
+                return Ok(new
+                {
+                    Value = true
+                });
+            }
+            catch (Exception ex)
             {
-                Value = true
-            });
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
         }
 
         [HttpPost, Route(RouteUpload)]
-        public async Task<IHttpActionResult> Upload()
+        public IHttpActionResult Upload()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-            if (!request.IsAdminLoggin ||
-                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            try
             {
-                return Unauthorized();
-            }
-
-            var fileName = request.HttpRequest["fileName"];
-
-            var fileCount = request.HttpRequest.Files.Count;
-
-            string filePath = null;
-
-            if (fileCount > 0)
-            {
-                var file = request.HttpRequest.Files[0];
-
-                if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(file.FileName);
-
-                var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
-                if (extendName == ".nupkg")
+                var request = new AuthenticatedRequest();
+                if (!request.IsAdminLoggin ||
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
-                    filePath = PathUtility.GetTemporaryFilesPath(fileName);
-                    DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-                    file.SaveAs(filePath);
+                    return Unauthorized();
                 }
-            }
 
-            FileInfo fileInfo = null;
-            if (!string.IsNullOrEmpty(filePath))
-            {
-                fileInfo = new FileInfo(filePath);
-            }
-            if (fileInfo != null)
-            {
+                var fileName = request.HttpRequest["fileName"];
+
+                var fileCount = request.HttpRequest.Files.Count;
+
+                string filePath = null;
+
+                if (fileCount > 0)
+                {
+                    var file = request.HttpRequest.Files[0];
+
+                    if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(file.FileName);
+
+                    var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
+                    if (extendName == ".nupkg")
+                    {
+                        filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+                        file.SaveAs(filePath);
+                    }
+                }
+
+                FileInfo fileInfo = null;
+                if (!string.IsNullOrEmpty(filePath))
+                {
+                    fileInfo = new FileInfo(filePath);
+                }
+                if (fileInfo != null)
+                {
+                    return Ok(new
+                    {
+                        fileName,
+                        length = fileInfo.Length,
+                        ret = 1
+                    });
+                }
+
                 return Ok(new
                 {
-                    fileName,
-                    length = fileInfo.Length,
-                    ret = 1
+                    ret = 0
                 });
             }
-
-            return Ok(new
+            catch (Exception ex)
             {
-                ret = 0
-            });
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
         }
 
         [HttpPost, Route(Route)]
-        public async Task<IHttpActionResult> Submit()
+        public IHttpActionResult Submit()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-            if (!request.IsAdminLoggin ||
-                !await request.AdminPermissionsImpl.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            try
             {
-                return Unauthorized();
+                var request = new AuthenticatedRequest();
+                if (!request.IsAdminLoggin ||
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                {
+                    return Unauthorized();
+                }
+                
+                var fileNames = request.GetPostObject<List<string>>("fileNames");
+
+                foreach (var fileName in fileNames)
+                {
+                    var localFilePath = PathUtils.GetTemporaryFilesPath(fileName);
+
+                    //var importObject = new ImportObject(siteId, request.AdminName);
+                    //importObject.ImportContentsByZipFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
+                }
+
+                request.AddAdminLog("安装离线插件", string.Empty);
+
+                return Ok(new
+                {
+                    Value = true
+                });
             }
-
-            var fileNames = request.GetPostObject<List<string>>("fileNames");
-
-            foreach (var fileName in fileNames)
+            catch (Exception ex)
             {
-                var localFilePath = PathUtility.GetTemporaryFilesPath(fileName);
-
-                //var importObject = new ImportObject(siteId, request.AdminName);
-                //importObject.ImportContentsByZipFile(channel, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
             }
-
-            await request.AddAdminLogAsync("安装离线插件", string.Empty);
-
-            return Ok(new
-            {
-                Value = true
-            });
         }
     }
 }

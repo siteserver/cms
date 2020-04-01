@@ -1,203 +1,220 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Threading.Tasks;
 using System.Web.Http;
-using Datory.Utils;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+using NSwag.Annotations;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.Framework;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
-    
+    [OpenApiIgnore]
     [RoutePrefix("home/contentsLayerWord")]
     public class HomeContentsLayerWordController : ApiController
     {
         private const string Route = "";
         private const string RouteUpload = "actions/upload";
 
-        private readonly ICreateManager _createManager;
-        
-        public HomeContentsLayerWordController(ICreateManager createManager)
-        {
-            _createManager = createManager;
-        }
-
         [HttpGet, Route(Route)]
-        public async Task<IHttpActionResult> GetConfig()
+        public IHttpActionResult GetConfig()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-
-            var siteId = request.GetQueryInt("siteId");
-            var channelId = request.GetQueryInt("channelId");
-
-            if (!request.IsUserLoggin ||
-                !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                    Constants.ChannelPermissions.ContentAdd))
+            try
             {
-                return Unauthorized();
+                var request = new AuthenticatedRequest();
+
+                var siteId = request.GetQueryInt("siteId");
+                var channelId = request.GetQueryInt("channelId");
+
+                if (!request.IsUserLoggin ||
+                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                        ConfigManager.ChannelPermissions.ContentAdd))
+                {
+                    return Unauthorized();
+                }
+
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
+                var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, false);
+
+                return Ok(new
+                {
+                    Value = checkedLevels,
+                    CheckedLevel = CheckManager.LevelInt.CaoGao
+                });
             }
-
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            if (site == null) return BadRequest("无法确定内容对应的站点");
-
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-            if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
-            var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(request.AdminPermissionsImpl, site, siteId);
-            var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, false);
-
-            return Ok(new
+            catch (Exception ex)
             {
-                Value = checkedLevels,
-                CheckedLevel = CheckManager.LevelInt.CaoGao
-            });
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
         }
 
         [HttpPost, Route(RouteUpload)]
-        public async Task<IHttpActionResult> Upload()
+        public IHttpActionResult Upload()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-
-            var siteId = request.GetQueryInt("siteId");
-            var channelId = request.GetQueryInt("channelId");
-
-            if (!request.IsUserLoggin ||
-                !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                    Constants.ChannelPermissions.ContentAdd))
+            try
             {
-                return Unauthorized();
-            }
+                var request = new AuthenticatedRequest();
 
-            var fileName = request.HttpRequest["fileName"];
+                var siteId = request.GetQueryInt("siteId");
+                var channelId = request.GetQueryInt("channelId");
 
-            var fileCount = request.HttpRequest.Files.Count;
-
-            string filePath = null;
-
-            if (fileCount > 0)
-            {
-                var file = request.HttpRequest.Files[0];
-
-                if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(file.FileName);
-
-                var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
-                if (extendName == ".doc" || extendName == ".docx")
+                if (!request.IsUserLoggin ||
+                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                        ConfigManager.ChannelPermissions.ContentAdd))
                 {
-                    filePath = PathUtility.GetTemporaryFilesPath(fileName);
-                    DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-                    file.SaveAs(filePath);
+                    return Unauthorized();
                 }
-            }
 
-            FileInfo fileInfo = null;
-            if (!string.IsNullOrEmpty(filePath))
-            {
-                fileInfo = new FileInfo(filePath);
-            }
-            if (fileInfo != null)
-            {
+                var fileName = request.HttpRequest["fileName"];
+
+                var fileCount = request.HttpRequest.Files.Count;
+
+                string filePath = null;
+
+                if (fileCount > 0)
+                {
+                    var file = request.HttpRequest.Files[0];
+
+                    if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(file.FileName);
+
+                    var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
+                    if (extendName == ".doc" || extendName == ".docx")
+                    {
+                        filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+                        file.SaveAs(filePath);
+                    }
+                }
+
+                FileInfo fileInfo = null;
+                if (!string.IsNullOrEmpty(filePath))
+                {
+                    fileInfo = new FileInfo(filePath);
+                }
+                if (fileInfo != null)
+                {
+                    return Ok(new
+                    {
+                        fileName,
+                        length = fileInfo.Length,
+                        ret = 1
+                    });
+                }
+
                 return Ok(new
                 {
-                    fileName,
-                    length = fileInfo.Length,
-                    ret = 1
+                    ret = 0
                 });
             }
-
-            return Ok(new
+            catch (Exception ex)
             {
-                ret = 0
-            });
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
         }
 
         [HttpPost, Route(Route)]
-        public async Task<IHttpActionResult> Submit()
+        public IHttpActionResult Submit()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
-
-            var siteId = request.GetPostInt("siteId");
-            var channelId = request.GetPostInt("channelId");
-            var isFirstLineTitle = request.GetPostBool("isFirstLineTitle");
-            var isFirstLineRemove = request.GetPostBool("isFirstLineRemove");
-            var isClearFormat = request.GetPostBool("isClearFormat");
-            var isFirstLineIndent = request.GetPostBool("isFirstLineIndent");
-            var isClearFontSize = request.GetPostBool("isClearFontSize");
-            var isClearFontFamily = request.GetPostBool("isClearFontFamily");
-            var isClearImages = request.GetPostBool("isClearImages");
-            var checkedLevel = request.GetPostInt("checkedLevel");
-            var fileNames = Utilities.GetStringList(request.GetPostString("fileNames"));
-
-            if (!request.IsUserLoggin ||
-                !await request.UserPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-                    Constants.ChannelPermissions.ContentAdd))
+            try
             {
-                return Unauthorized();
-            }
+                var request = new AuthenticatedRequest();
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
-            if (site == null) return BadRequest("无法确定内容对应的站点");
+                var siteId = request.GetPostInt("siteId");
+                var channelId = request.GetPostInt("channelId");
+                var isFirstLineTitle = request.GetPostBool("isFirstLineTitle");
+                var isFirstLineRemove = request.GetPostBool("isFirstLineRemove");
+                var isClearFormat = request.GetPostBool("isClearFormat");
+                var isFirstLineIndent = request.GetPostBool("isFirstLineIndent");
+                var isClearFontSize = request.GetPostBool("isClearFontSize");
+                var isClearFontFamily = request.GetPostBool("isClearFontFamily");
+                var isClearImages = request.GetPostBool("isClearImages");
+                var checkedLevel = request.GetPostInt("checkedLevel");
+                var fileNames = TranslateUtils.StringCollectionToStringList(request.GetPostString("fileNames"));
 
-            var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-            if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
-            var tableName = await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo);
-            var styleList = await DataProvider.TableStyleRepository.GetContentStyleListAsync(channelInfo, tableName);
-            var isChecked = checkedLevel >= site.CheckContentLevel;
-
-            var contentIdList = new List<int>();
-
-            foreach (var fileName in fileNames)
-            {
-                if (string.IsNullOrEmpty(fileName)) continue;
-
-                var filePath = PathUtility.GetTemporaryFilesPath(fileName);
-                var (title, content) = await WordManager.GetWordAsync(site, isFirstLineTitle, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, filePath);
-
-                if (string.IsNullOrEmpty(title)) continue;
-
-                var dict = await ColumnsManager.SaveAttributesAsync(site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value);
-
-                var contentInfo = new Content(dict)
+                if (!request.IsUserLoggin ||
+                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                        ConfigManager.ChannelPermissions.ContentAdd))
                 {
-                    ChannelId = channelInfo.Id,
-                    SiteId = siteId,
-                    AddDate = DateTime.Now,
-                    SourceId = SourceManager.User,
-                    AdminId = request.AdminId,
-                    UserId = request.UserId,
-                    LastEditAdminId = request.AdminId,
-                    Checked = isChecked,
-                    CheckedLevel = checkedLevel
-                };
-
-                contentInfo.LastEditDate = contentInfo.AddDate;
-
-                contentInfo.Title = title;
-                contentInfo.Set(ContentAttribute.Content, content);
-
-                contentInfo.Id = await DataProvider.ContentRepository.InsertAsync(site, channelInfo, contentInfo);
-
-                contentIdList.Add(contentInfo.Id);
-            }
-
-            if (isChecked)
-            {
-                foreach (var contentId in contentIdList)
-                {
-                    await _createManager.CreateContentAsync(siteId, channelInfo.Id, contentId);
+                    return Unauthorized();
                 }
-                await _createManager.TriggerContentChangedEventAsync(siteId, channelInfo.Id);
-            }
 
-            return Ok(new
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
+                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+
+                var contentIdList = new List<int>();
+
+                foreach (var fileName in fileNames)
+                {
+                    if (string.IsNullOrEmpty(fileName)) continue;
+
+                    var formCollection = WordUtils.GetWordNameValueCollection(siteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
+
+                    if (string.IsNullOrEmpty(formCollection[ContentAttribute.Title])) continue;
+
+                    var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value);
+
+                    var contentInfo = new ContentInfo(dict)
+                    {
+                        ChannelId = channelInfo.Id,
+                        SiteId = siteId,
+                        AddUserName = request.AdminName,
+                        AddDate = DateTime.Now,
+                        SourceId = SourceManager.User,
+                        AdminId = request.AdminId,
+                        UserId = request.UserId,
+                        IsChecked = isChecked,
+                        CheckedLevel = checkedLevel
+                    };
+
+                    contentInfo.LastEditUserName = contentInfo.AddUserName;
+                    contentInfo.LastEditDate = contentInfo.AddDate;
+
+                    contentInfo.Title = formCollection[ContentAttribute.Title];
+
+                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
+
+                    contentIdList.Add(contentInfo.Id);
+                }
+
+                if (isChecked)
+                {
+                    foreach (var contentId in contentIdList)
+                    {
+                        CreateManager.CreateContent(siteId, channelInfo.Id, contentId);
+                    }
+                    CreateManager.TriggerContentChangedEvent(siteId, channelInfo.Id);
+                }
+
+                return Ok(new
+                {
+                    Value = contentIdList
+                });
+            }
+            catch (Exception ex)
             {
-                Value = contentIdList
-            });
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
         }
     }
 }

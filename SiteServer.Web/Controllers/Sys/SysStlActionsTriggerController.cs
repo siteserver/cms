@@ -2,31 +2,28 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Framework;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
+    [OpenApiIgnore]
     public class SysStlActionsTriggerController : ApiController
     {
-        private readonly ICreateManager _createManager;
-
-        public SysStlActionsTriggerController(ICreateManager createManager)
-        {
-            _createManager = createManager;
-        }
-
         [HttpGet]
         [Route(ApiRouteActionsTrigger.Route)]
         public async Task Main()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
+            var request = new AuthenticatedRequest();
 
             var siteId = request.GetQueryInt("siteId");
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             try
             {
@@ -42,50 +39,50 @@ namespace SiteServer.API.Controllers.Sys
 
                 if (specialId != 0)
                 {
-                    await _createManager.ExecuteAsync(siteId, CreateType.Special, 0, 0, 0, specialId);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Special, 0, 0, 0, specialId);
                 }
                 else if (fileTemplateId != 0)
                 {
-                    await _createManager.ExecuteAsync(siteId, CreateType.File, 0, 0, fileTemplateId, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.File, 0, 0, fileTemplateId, 0);
                 }
                 else if (contentId != 0)
                 {
-                    await _createManager.ExecuteAsync(siteId, CreateType.Content, channelId, contentId, 0, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Content, channelId, contentId, 0, 0);
                 }
                 else if (channelId != 0)
                 {
-                    await _createManager.ExecuteAsync(siteId, CreateType.Channel, channelId, 0, 0, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Channel, channelId, 0, 0, 0);
                 }
                 else if (siteId != 0)
                 {
-                    await _createManager.ExecuteAsync(siteId, CreateType.Channel, siteId, 0, 0, 0);
+                    await FileSystemObjectAsync.ExecuteAsync(siteId, ECreateType.Channel, siteId, 0, 0, 0);
                 }
 
                 if (isRedirect)
                 {
-                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
                     var redirectUrl = string.Empty;
                     if (specialId != 0)
                     {
-                        redirectUrl = await PageUtility.GetFileUrlAsync(site, specialId, false);
+                        redirectUrl = PageUtility.GetFileUrl(siteInfo, specialId, false);
                     }
                     else if (fileTemplateId != 0)
                     {
-                        redirectUrl = await PageUtility.GetFileUrlAsync(site, fileTemplateId, false);
+                        redirectUrl = PageUtility.GetFileUrl(siteInfo, fileTemplateId, false);
                     }
                     else if (contentId != 0)
                     {
-                        var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
-                        redirectUrl = await PageUtility.GetContentUrlAsync(site, contentInfo, false);
+                        var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                        redirectUrl = PageUtility.GetContentUrl(siteInfo, contentInfo, false);
                     }
                     else if (channelId != 0)
                     {
-                        redirectUrl = await PageUtility.GetChannelUrlAsync(site, channelInfo, false);
+                        redirectUrl = PageUtility.GetChannelUrl(siteInfo, channelInfo, false);
                     }
                     else if (siteId != 0)
                     {
-                        redirectUrl = await PageUtility.GetIndexPageUrlAsync(site, false);
+                        redirectUrl = PageUtility.GetIndexPageUrl(siteInfo, false);
                     }
 
                     if (!string.IsNullOrEmpty(redirectUrl))
@@ -99,15 +96,15 @@ namespace SiteServer.API.Controllers.Sys
 
                         parameters["__r"] = StringUtils.GetRandomInt(1, 10000).ToString();
 
-                        ContextUtils.Redirect(PageUtils.AddQueryString(redirectUrl, parameters));
+                        PageUtils.Redirect(PageUtils.AddQueryString(redirectUrl, parameters));
                         return;
                     }
                 }
             }
             catch
             {
-                var redirectUrl = await PageUtility.GetIndexPageUrlAsync(site, false);
-                ContextUtils.Redirect(redirectUrl);
+                var redirectUrl = PageUtility.GetIndexPageUrl(siteInfo, false);
+                PageUtils.Redirect(redirectUrl);
                 return;
             }
 

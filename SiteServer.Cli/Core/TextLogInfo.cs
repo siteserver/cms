@@ -1,5 +1,5 @@
 ﻿using System;
-using SiteServer.Abstractions;
+using SiteServer.Utils;
 
 namespace SiteServer.Cli.Core
 {

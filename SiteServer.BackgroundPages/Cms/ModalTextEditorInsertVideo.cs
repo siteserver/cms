@@ -2,12 +2,10 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.LitJson;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Repositories;
 using SiteServer.CMS.StlParser.StlElement;
+using SiteServer.Utils.LitJson;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -27,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("插入视频", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript2("插入视频", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertVideo), new NameValueCollection
             {
                 {"AttributeName", attributeName}
             }), 600, 520);
@@ -38,8 +36,8 @@ namespace SiteServer.BackgroundPages.Cms
             {"upload", true.ToString()}
         });
 
-        public string VideoTypeCollection => Site.VideoUploadTypeCollection;
-        public string ImageTypeCollection => Site.ImageUploadTypeCollection;
+        public string VideoTypeCollection => SiteInfo.Additional.VideoUploadTypeCollection;
+        public string ImageTypeCollection => SiteInfo.Additional.ImageUploadTypeCollection;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -59,13 +57,13 @@ namespace SiteServer.BackgroundPages.Cms
 
             ControlUtils.AddListControlItems(DdlPlayBy, StlPlayer.PlayByList);
 
-            CbIsImageUrl.Checked = Site.ConfigUEditorVideoIsImageUrl;
-            CbIsAutoPlay.Checked = Site.ConfigUEditorVideoIsAutoPlay;
-            CbIsWidth.Checked = Site.ConfigUEditorVideoIsWidth;
-            CbIsHeight.Checked = Site.ConfigUEditorVideoIsHeight;
-            ControlUtils.SelectSingleItem(DdlPlayBy, Site.ConfigUEditorVideoPlayBy);
-            TbWidth.Text = Site.ConfigUEditorVideoWidth.ToString();
-            TbHeight.Text = Site.ConfigUEditorVideoHeight.ToString();
+            CbIsImageUrl.Checked = SiteInfo.Additional.ConfigUEditorVideoIsImageUrl;
+            CbIsAutoPlay.Checked = SiteInfo.Additional.ConfigUEditorVideoIsAutoPlay;
+            CbIsWidth.Checked = SiteInfo.Additional.ConfigUEditorVideoIsWidth;
+            CbIsHeight.Checked = SiteInfo.Additional.ConfigUEditorVideoIsHeight;
+            ControlUtils.SelectSingleItem(DdlPlayBy, SiteInfo.Additional.ConfigUEditorVideoPlayBy);
+            TbWidth.Text = SiteInfo.Additional.ConfigUEditorVideoWidth.ToString();
+            TbHeight.Text = SiteInfo.Additional.ConfigUEditorVideoHeight.ToString();
         }
 
 	    private Hashtable Upload()
@@ -85,12 +83,12 @@ namespace SiteServer.BackgroundPages.Cms
                         var fileExtName = PathUtils.GetExtension(filePath);
 
                         var isAllow = true;
-                        if (!PathUtility.IsVideoExtensionAllowed(Site, fileExtName))
+                        if (!PathUtility.IsVideoExtenstionAllowed(SiteInfo, fileExtName))
                         {
                             message = "此格式不允许上传，请选择有效的音频文件";
                             isAllow = false;
                         }
-                        if (!PathUtility.IsVideoSizeAllowed(Site, postedFile.ContentLength))
+                        if (!PathUtility.IsVideoSizeAllowed(SiteInfo, postedFile.ContentLength))
                         {
                             message = "上传失败，上传文件超出规定文件大小";
                             isAllow = false;
@@ -98,14 +96,14 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (isAllow)
                         {
-                            var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
-                            var localFileName = PathUtility.GetUploadFileName(Site, filePath);
+                            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
+                            var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
                             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
                             postedFile.SaveAs(localFilePath);
 
-                            url = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localFilePath, true).GetAwaiter().GetResult();
-                            url = PageUtility.GetVirtualUrl(Site, url);
+                            url = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
+                            url = PageUtility.GetVirtualUrl(SiteInfo, url);
 
                             success = true;
                         }
@@ -127,12 +125,12 @@ namespace SiteServer.BackgroundPages.Cms
                         var fileExtName = PathUtils.GetExtension(filePath);
 
                         var isAllow = true;
-                        if (!PathUtility.IsImageExtensionAllowed(Site, fileExtName))
+                        if (!PathUtility.IsImageExtenstionAllowed(SiteInfo, fileExtName))
                         {
                             message = "此格式不允许上传，请选择有效的图片文件";
                             isAllow = false;
                         }
-                        if (!PathUtility.IsImageSizeAllowed(Site, postedFile.ContentLength))
+                        if (!PathUtility.IsImageSizeAllowed(SiteInfo, postedFile.ContentLength))
                         {
                             message = "上传失败，上传文件超出规定文件大小";
                             isAllow = false;
@@ -140,14 +138,14 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (isAllow)
                         {
-                            var localDirectoryPath = PathUtility.GetUploadDirectoryPathAsync(Site, fileExtName).GetAwaiter().GetResult();
-                            var localFileName = PathUtility.GetUploadFileName(Site, filePath);
+                            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
+                            var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
                             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
                             postedFile.SaveAs(localFilePath);
 
-                            url = PageUtility.GetSiteUrlByPhysicalPathAsync(Site, localFilePath, true).GetAwaiter().GetResult();
-                            url = PageUtility.GetVirtualUrl(Site, url);
+                            url = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localFilePath, true);
+                            url = PageUtility.GetVirtualUrl(SiteInfo, url);
 
                             success = true;
                         }
@@ -192,25 +190,25 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-            if (isImageUrl != Site.ConfigUEditorVideoIsImageUrl
-                || isAutoPlay != Site.ConfigUEditorVideoIsAutoPlay
-                || isWidth != Site.ConfigUEditorVideoIsWidth
-                || isHeight != Site.ConfigUEditorVideoIsHeight
-                || playBy != Site.ConfigUEditorVideoPlayBy
-                || width != Site.ConfigUEditorVideoWidth
-                || height != Site.ConfigUEditorVideoHeight)
+            if (isImageUrl != SiteInfo.Additional.ConfigUEditorVideoIsImageUrl
+                || isAutoPlay != SiteInfo.Additional.ConfigUEditorVideoIsAutoPlay
+                || isWidth != SiteInfo.Additional.ConfigUEditorVideoIsWidth
+                || isHeight != SiteInfo.Additional.ConfigUEditorVideoIsHeight
+                || playBy != SiteInfo.Additional.ConfigUEditorVideoPlayBy
+                || width != SiteInfo.Additional.ConfigUEditorVideoWidth
+                || height != SiteInfo.Additional.ConfigUEditorVideoHeight)
             {
-                Site.ConfigUEditorVideoIsImageUrl = isImageUrl;
-                Site.ConfigUEditorVideoIsAutoPlay = isAutoPlay;
-                Site.ConfigUEditorVideoIsWidth = isWidth;
-                Site.ConfigUEditorVideoIsHeight = isHeight;
-                Site.ConfigUEditorVideoPlayBy = playBy;
-                Site.ConfigUEditorVideoWidth = width;
-                Site.ConfigUEditorVideoHeight = height;
-                DataProvider.SiteRepository.UpdateAsync(Site).GetAwaiter().GetResult();
+                SiteInfo.Additional.ConfigUEditorVideoIsImageUrl = isImageUrl;
+                SiteInfo.Additional.ConfigUEditorVideoIsAutoPlay = isAutoPlay;
+                SiteInfo.Additional.ConfigUEditorVideoIsWidth = isWidth;
+                SiteInfo.Additional.ConfigUEditorVideoIsHeight = isHeight;
+                SiteInfo.Additional.ConfigUEditorVideoPlayBy = playBy;
+                SiteInfo.Additional.ConfigUEditorVideoWidth = width;
+                SiteInfo.Additional.ConfigUEditorVideoHeight = height;
+                DataProvider.SiteDao.Update(SiteInfo);
             }
 
-            var script = "parent." + UEditorUtils.GetInsertVideoScript(_attributeName, playUrl, imageUrl, Site);
+            var script = "parent." + UEditorUtils.GetInsertVideoScript(_attributeName, playUrl, imageUrl, SiteInfo);
             LayerUtils.CloseWithoutRefresh(Page, script);
 		}
 

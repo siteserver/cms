@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using Datory.Utils;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -38,8 +40,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
-            _contentIdList = Utilities.GetIntList(AuthRequest.GetQueryString("contentIdCollection"));
-            _tableName = DataProvider.ChannelRepository.GetTableNameAsync(Site, _channelId).GetAwaiter().GetResult();
+            _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
+            _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
 
             if (IsPostBack) return;
 
@@ -53,8 +55,8 @@ namespace SiteServer.BackgroundPages.Cms
             var isUp = DdlTaxisType.SelectedValue == "Up";
             var taxisNum = TranslateUtils.ToInt(TbTaxisNum.Text);
 
-            var nodeInfo = DataProvider.ChannelRepository.GetAsync(_channelId).GetAwaiter().GetResult();
-            if (ETaxisTypeUtils.Equals(nodeInfo.DefaultTaxisType, TaxisType.OrderByTaxis))
+            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            if (ETaxisTypeUtils.Equals(nodeInfo.Additional.DefaultTaxisType, ETaxisType.OrderByTaxis))
             {
                 isUp = !isUp;
             }
@@ -66,31 +68,31 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var contentId in _contentIdList)
             {
-                var isTop = DataProvider.ContentRepository.GetValueAsync(_tableName, contentId, nameof(Abstractions.Content.Top)).GetAwaiter().GetResult();
-                if (string.IsNullOrEmpty(isTop)) continue;
+                var tuple = DataProvider.ContentDao.GetValue(_tableName, contentId, ContentAttribute.IsTop);
+                if (tuple == null) continue;
 
-                var top = TranslateUtils.ToBool(isTop);
+                var isTop = TranslateUtils.ToBool(tuple.Item2);
                 for (var i = 1; i <= taxisNum; i++)
                 {
-                    //if (isUp)
-                    //{
-                    //    if (DataProvider.ContentRepository.SetTaxisToUpAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
-                    //    {
-                    //        break;
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    if (DataProvider.ContentRepository.SetTaxisToDownAsync(_tableName, _channelId, contentId, top).GetAwaiter().GetResult() == false)
-                    //    {
-                    //        break;
-                    //    }
-                    //}
+                    if (isUp)
+                    {
+                        if (DataProvider.ContentDao.SetTaxisToUp(SiteInfo, _tableName, nodeInfo, contentId, isTop) == false)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (DataProvider.ContentDao.SetTaxisToDown(SiteInfo, _tableName, nodeInfo, contentId, isTop) == false)
+                        {
+                            break;
+                        }
+                    }
                 }
             }
 
-            CreateManager.TriggerContentChangedEventAsync(SiteId, _channelId).GetAwaiter().GetResult();
-            AuthRequest.AddSiteLogAsync(SiteId, _channelId, 0, "对内容排序", string.Empty).GetAwaiter().GetResult();
+            CreateManager.TriggerContentChangedEvent(SiteId, _channelId);
+            AuthRequest.AddSiteLog(SiteId, _channelId, 0, "对内容排序", string.Empty);
 
             LayerUtils.CloseAndRedirect(Page, _returnUrl);
         }

@@ -1,9 +1,41 @@
-﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+<li class="nav-item">
+  <a class="nav-link active" href="admin.cshtml">管理员管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="adminRole.cshtml">角色管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="adminConfig.cshtml">管理员设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="adminAccessTokens.cshtml">API密钥管理</a>
+</li>
+}
+@section Styles {
+  <style>
+    .drawer__content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    .drawer__content form {
+        flex: 1;
+    }
+    .drawer__footer {
+        display: flex;
+        padding: 10px;
+    }
+    .drawer__footer button {
+        flex: 1;
+    }
+  </style>
+}
 
 <el-form :inline="true" :model="formInline" size="mini">
   <el-form-item label="角色">
     <el-select v-model="formInline.role" placeholder="管理员角色">
-      <el-option label="<全部角色>" value=""></el-option>
+      <el-option label="全部角色" value=""></el-option>
       <el-option
         v-for="role in roles"
         :key="role.key"
@@ -14,7 +46,7 @@
   </el-form-item>
   <el-form-item label="排序">
     <el-select v-model="formInline.order" placeholder="排序">
-      <el-option label="<默认>" value=""></el-option>
+      <el-option label="默认" value=""></el-option>
       <el-option label="登录名称" value="UserName"></el-option>
       <el-option label="最后登录日期" value="LastActivityDate"></el-option>
       <el-option label="创建日期" value="CreationDate"></el-option>
@@ -23,15 +55,15 @@
   </el-form-item>
   <el-form-item label="最后登录">
     <el-select v-model="formInline.lastActivityDate" placeholder="最后登录">
-      <el-option label="<全部时间>" :value="0"></el-option>
-      <el-option label="1天内" :value="1"></el-option>
-      <el-option label="2天内" :value="2"></el-option>
-      <el-option label="3天内" :value="3"></el-option>
-      <el-option label="1周内" :value="7"></el-option>
-      <el-option label="1个月内" :value="30"></el-option>
-      <el-option label="3个月内" :value="90"></el-option>
-      <el-option label="半年内" :value="180"></el-option>
-      <el-option label="1年内" :value="365"></el-option>
+      <el-option label="全部时间" value="0"></el-option>
+      <el-option label="1天内" value="1"></el-option>
+      <el-option label="2天内" value="2"></el-option>
+      <el-option label="3天内" value="3"></el-option>
+      <el-option label="1周内" value="7"></el-option>
+      <el-option label="1个月内" value="30"></el-option>
+      <el-option label="3个月内" value="90"></el-option>
+      <el-option label="半年内" value="180"></el-option>
+      <el-option label="1年内" value="365"></el-option>
     </el-select>
   </el-form-item>
   <el-form-item label="关键字">
@@ -50,9 +82,9 @@
     label="头像" width="80">
     <template slot-scope="scope">
       <el-badge v-if="scope.row.locked" style="margin-top: 10px;" value="锁定">
-        <img :src="scope.row.avatarUrl || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
+        <img :src="scope.row.avatar || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
       </el-badge>
-      <img v-else :src="scope.row.avatarUrl || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
+      <img v-else :src="scope.row.avatar || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
     </template>
   </el-table-column>
   <el-table-column
@@ -129,14 +161,11 @@
 <hr />
 
 <a href="adminProfile.cshtml?pageType=admin" class="btn btn-primary btn-sm m-r-5">新 增</a>
-<a href="javascript:;" v-on:click="btnImportClick" class="btn btn-sm m-r-5">导 入</a>
-<a href="javascript:;" v-on:click="btnExportClick" class="btn btn-sm m-r-5">导 出</a>
 
 <el-drawer
   title="权限设置"
   ref="drawer"
   :visible.sync="drawer"
-  destroy-on-close
   direction="rtl"
   size="80%">
   <div class="drawer__content">
@@ -158,45 +187,11 @@
       </el-form-item>
     </el-form>
     <div class="drawer__footer">
-      <el-button type="primary" size="small" v-on:click="btnPermissionSubmitClick" :loading="permissionInfo.loading">{{ permissionInfo.loading ? '提交中 ...' : '确 定' }}</el-button>
-      <el-button size="small" v-on:click="drawer = false">取 消</el-button>
+      <el-button type="primary" v-on:click="btnPermissionSubmitClick" :loading="permissionInfo.loading">{{ permissionInfo.loading ? '提交中 ...' : '确 定' }}</el-button>
+      <el-button v-on:click="drawer = false">取 消</el-button>
     </div>
   </div>
-</el-drawer>
-
-<el-drawer
-  title="导入管理员"
-  ref="uploadPanel"
-  :visible.sync="uploadPanel"
-  destroy-on-close
-  direction="rtl"
-  size="50%">
-  <div class="drawer__content">
-    <br />
-    <el-form ref="uploadForm" label-width="200px">
-      <el-upload
-        :drag="true"
-        :limit="1"
-        :action="$urlUpload"
-        :auto-upload="true"
-        :with-credentials="true"
-        :file-list="uploadList"
-        :before-upload="uploadBefore"
-        :on-progress="uploadProgress"
-        :on-success="uploadSuccess"
-        :on-error="uploadError"
-        :multiple="false">
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">
-          <a href="../assets/upload-templates/管理员导入模版.xlsx" target="_blank">
-            <i class="el-icon-download"></i>
-            下载导入模版
-          </a>
-        </div>
-      </el-upload>
-    </el-form>
-  </div>
+  
 </el-drawer>
 
 @section Scripts{

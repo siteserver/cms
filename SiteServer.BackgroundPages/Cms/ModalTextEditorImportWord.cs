@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.LitJson;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
+using SiteServer.Utils.Enumerations;
+using SiteServer.Utils.LitJson;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("导入Word", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorImportWord), new NameValueCollection
+            return LayerUtils.GetOpenScript2("导入Word", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorImportWord), new NameValueCollection
             {
                 {"AttributeName", attributeName}
             }), 600, 400);
@@ -111,8 +111,8 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var fileName in fileNames.Split('|'))
                 {
                     var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                    var (_, wordContent) = WordManager.GetWordAsync(Site, false, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, filePath).GetAwaiter().GetResult();
-                    wordContent = ContentUtility.TextEditorContentDecodeAsync(Site, wordContent, true).GetAwaiter().GetResult();
+                    var wordContent = WordUtils.Parse(SiteId, filePath, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked);
+                    wordContent = ContentUtility.TextEditorContentDecode(SiteInfo, wordContent, true);
                     builder.Append(wordContent);
                     FileUtils.DeleteFileIfExists(filePath);
                 }

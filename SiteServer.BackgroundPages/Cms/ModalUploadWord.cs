@@ -2,17 +2,14 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using Datory.Utils;
-using SiteServer.Abstractions;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
-using Content = SiteServer.Abstractions.Content;
-using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -28,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
         public CheckBox CbIsClearImages;
         public DropDownList DdlContentLevel;
 
-        private Channel _channel;
+        private ChannelInfo _channelInfo;
         private string _returnUrl;
 
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
@@ -49,13 +46,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
             var channelId = int.Parse(AuthRequest.GetQueryString("channelId"));
-            _channel = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _returnUrl = AuthRequest.GetQueryString("ReturnUrl");
 
             if (IsPostBack) return;
 
-            var (isChecked, checkedLevel) = CheckManager.GetUserCheckLevelAsync(AuthRequest.AdminPermissionsImpl, Site, SiteId).GetAwaiter().GetResult();
-            CheckManager.LoadContentLevelToEdit(DdlContentLevel, Site, null, isChecked, checkedLevel);
+            int checkedLevel;
+            var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, SiteId, out checkedLevel);
+            CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, null, isChecked, checkedLevel);
             ControlUtils.SelectSingleItem(DdlContentLevel, CheckManager.LevelInt.CaoGao.ToString());
         }
 
@@ -63,13 +61,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var fileNames = Utilities.GetStringList(HihFileNames.Value);
+            var fileNames = TranslateUtils.StringCollectionToStringList(HihFileNames.Value);
             if (fileNames.Count == 1)
             {
                 var fileName = fileNames[0];
                 if (!string.IsNullOrEmpty(fileName))
                 {
-                    var redirectUrl = WebUtils.GetContentAddUploadWordUrl(SiteId, _channel, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNegative(DdlContentLevel.SelectedValue), fileName, _returnUrl);
+                    var redirectUrl = WebUtils.GetContentAddUploadWordUrl(SiteId, _channelInfo, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue), fileName, _returnUrl);
                     LayerUtils.CloseAndRedirect(Page, redirectUrl);
                 }
 
@@ -78,40 +76,39 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (fileNames.Count > 1)
             {
-                var styleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(Site, _channel).GetAwaiter().GetResult();
+                var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
+                var styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
 
                 foreach (var fileName in fileNames)
                 {
                     if (!string.IsNullOrEmpty(fileName))
                     {
-                        var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                        var (title, content) = WordManager.GetWordAsync(Site, CbIsFirstLineTitle.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, filePath).GetAwaiter().GetResult();
+                        var formCollection = WordUtils.GetWordNameValueCollection(SiteId, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, fileName);
 
-                        if (!string.IsNullOrEmpty(title))
+                        if (!string.IsNullOrEmpty(formCollection[ContentAttribute.Title]))
                         {
-                            var dict = BackgroundInputTypeParser.SaveAttributesAsync(Site, styleList, new NameValueCollection(), ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
+                            var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value);
 
-                            var contentInfo = new Content(dict)
+                            var contentInfo = new ContentInfo(dict)
                             {
-                                ChannelId = _channel.Id,
+                                ChannelId = _channelInfo.Id,
                                 SiteId = SiteId,
-                                //AddUserName = AuthRequest.AdminName,
+                                AddUserName = AuthRequest.AdminName,
                                 AddDate = DateTime.Now
                             };
 
-                            //contentInfo.LastEditUserName = contentInfo.AddUserName;
+                            contentInfo.LastEditUserName = contentInfo.AddUserName;
                             contentInfo.LastEditDate = contentInfo.AddDate;
 
-                            contentInfo.CheckedLevel = TranslateUtils.ToIntWithNegative(DdlContentLevel.SelectedValue);
-                            contentInfo.Checked = contentInfo.CheckedLevel >= Site.CheckContentLevel;
+                            contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
+                            contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
 
-                            contentInfo.Title = title;
-                            contentInfo.Set(ContentAttribute.Content, content);
+                            contentInfo.Title = formCollection[ContentAttribute.Title];
 
-                            contentInfo.Id = DataProvider.ContentRepository.InsertAsync(Site, _channel, contentInfo).GetAwaiter().GetResult();
+                            contentInfo.Id = DataProvider.ContentDao.Insert(tableName, SiteInfo, _channelInfo, contentInfo);
 
-                            CreateManager.CreateContentAsync(SiteId, _channel.Id, contentInfo.Id).GetAwaiter().GetResult();
-                            CreateManager.TriggerContentChangedEventAsync(SiteId, _channel.Id).GetAwaiter().GetResult();
+                            CreateManager.CreateContent(SiteId, _channelInfo.Id, contentInfo.Id);
+                            CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
                         }
                     }
                 }

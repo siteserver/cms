@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -29,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "CurrentRootPath");
 
 			_currentRootPath = AuthRequest.GetQueryString("CurrentRootPath").TrimEnd('/');
-			_directoryPath = PathUtility.MapPathAsync(Site, _currentRootPath).GetAwaiter().GetResult();
+			_directoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -48,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             DirectoryUtils.CreateDirectoryIfNotExists(path);
-            AuthRequest.AddSiteLogAsync(SiteId, "新建文件夹", $"文件夹:{TbDirectoryName.Text}").GetAwaiter().GetResult();
+            AuthRequest.AddSiteLog(SiteId, "新建文件夹", $"文件夹:{TbDirectoryName.Text}");
             LayerUtils.Close(Page);
         }
 	}

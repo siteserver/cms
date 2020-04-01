@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Specialized;
-using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.Preview;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Repositories;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -28,24 +29,25 @@ namespace SiteServer.BackgroundPages.Cms
             var channelId = AuthRequest.ChannelId;
             var contentId = AuthRequest.ContentId;
 
-            var site = DataProvider.SiteRepository.GetAsync(siteId).GetAwaiter().GetResult();
-            var channelInfo = DataProvider.ChannelRepository.GetAsync(channelId).GetAwaiter().GetResult();
-            var styleList = DataProvider.TableStyleRepository.GetContentStyleListAsync(site, channelInfo).GetAwaiter().GetResult();
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
 
             var form = AuthRequest.HttpRequest.Form;
 
-            var dict = BackgroundInputTypeParser.SaveAttributesAsync(site, styleList, form, ContentAttribute.AllAttributes.Value).GetAwaiter().GetResult();
-            var contentInfo = new Content(dict)
+            var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, form, ContentAttribute.AllAttributes.Value);
+            var contentInfo = new ContentInfo(dict)
             {
                 ChannelId = channelId,
                 SiteId = siteId,
-                //AddUserName = AuthRequest.AdminName,
-                //LastEditUserName = AuthRequest.AdminName,
+                AddUserName = AuthRequest.AdminName,
+                LastEditUserName = AuthRequest.AdminName,
                 LastEditDate = DateTime.Now
             };
 
             //contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
-            //var tagCollection = DataProvider.ContentTagRepository.ParseTagsString(form["TbTags"]);
+            var tagCollection = TagUtils.ParseTagsString(form["TbTags"]);
 
             contentInfo.Title = form["TbTitle"];
             var formatString = TranslateUtils.ToBool(form[ContentAttribute.Title + "_formatStrong"]);
@@ -62,10 +64,10 @@ namespace SiteServer.BackgroundPages.Cms
             //}
             //contentInfo.LinkUrl = TbLinkUrl.Text;
             contentInfo.AddDate = TranslateUtils.ToDateTime(form["TbAddDate"]);
-            contentInfo.Checked = false;
-            //contentInfo.TagNames = tagCollection;
+            contentInfo.IsChecked = false;
+            contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
 
-            foreach (var service in PluginManager.GetServicesAsync().GetAwaiter().GetResult())
+            foreach (var service in PluginManager.Services)
             {
                 try
                 {
@@ -73,11 +75,12 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLogAsync(service.PluginId, ex, nameof(IService.ContentFormSubmit)).GetAwaiter().GetResult();
+                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(IService.ContentFormSubmit));
                 }
             }
 
-            contentInfo.Id = DataProvider.ContentRepository.InsertPreviewAsync(site, channelInfo, contentInfo).GetAwaiter().GetResult();
+            contentInfo.SourceId = SourceManager.Preview;
+            contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
 
             return new
             {

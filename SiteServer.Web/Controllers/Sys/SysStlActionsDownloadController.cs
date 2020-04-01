@@ -1,69 +1,71 @@
-﻿using System.Threading.Tasks;
-using System.Web;
+﻿using System.Web;
 using System.Web.Http;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Attributes;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
+    [OpenApiIgnore]
     public class SysStlActionsDownloadController : ApiController
     {
         [HttpGet]
         [Route(ApiRouteActionsDownload.Route)]
-        public async Task Main()
+        public void Main()
         {
             try
             {
-                var request = await AuthenticatedRequest.GetAuthAsync();
+                var request = new AuthenticatedRequest();
 
                 if (!string.IsNullOrEmpty(request.GetQueryString("siteId")) && !string.IsNullOrEmpty(request.GetQueryString("fileUrl")) && string.IsNullOrEmpty(request.GetQueryString("contentId")))
                 {
                     var siteId = request.GetQueryInt("siteId");
-                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"), WebConfigUtils.SecretKey);
+                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
-                        ContextUtils.Redirect(fileUrl);
+                        PageUtils.Redirect(fileUrl);
                         return;
                     }
 
-                    var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                    var filePath = await PathUtility.MapPathAsync(site, fileUrl);
-                    var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
-                    if (FileUtils.IsDownload(fileType))
+                    var siteInfo = SiteManager.GetSiteInfo(siteId);
+                    var filePath = PathUtility.MapPath(siteInfo, fileUrl);
+                    var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
+                    if (EFileSystemTypeUtils.IsDownload(fileType))
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            request.Download(HttpContext.Current.Response, filePath);
+                            PageUtils.Download(HttpContext.Current.Response, filePath);
                             return;
                         }
                     }
                     else
                     {
-                        ContextUtils.Redirect(await PageUtility.ParseNavigationUrlAsync(site, fileUrl, false));
+                        PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
                         return;
                     }
                 }
                 else if (!string.IsNullOrEmpty(request.GetQueryString("filePath")))
                 {
-                    var filePath = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("filePath"), WebConfigUtils.SecretKey);
-                    var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
-                    if (FileUtils.IsDownload(fileType))
+                    var filePath = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("filePath"));
+                    var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
+                    if (EFileSystemTypeUtils.IsDownload(fileType))
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            request.Download(HttpContext.Current.Response, filePath);
+                            PageUtils.Download(HttpContext.Current.Response, filePath);
                             return;
                         }
                     }
                     else
                     {
                         var fileUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
-                        ContextUtils.Redirect(PageUtils.ParseNavigationUrl(fileUrl));
+                        PageUtils.Redirect(PageUtils.ParseNavigationUrl(fileUrl));
                         return;
                     }
                 }
@@ -72,34 +74,34 @@ namespace SiteServer.API.Controllers.Sys
                     var siteId = request.GetQueryInt("siteId");
                     var channelId = request.GetQueryInt("channelId");
                     var contentId = request.GetQueryInt("contentId");
-                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"), WebConfigUtils.SecretKey);
-                    var site = await DataProvider.SiteRepository.GetAsync(siteId);
-                    var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
-                    var contentInfo = await DataProvider.ContentRepository.GetAsync(site, channelInfo, contentId);
+                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
+                    var siteInfo = SiteManager.GetSiteInfo(siteId);
+                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                    var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
 
-                    await DataProvider.ContentRepository.AddDownloadsAsync(await DataProvider.ChannelRepository.GetTableNameAsync(site, channelInfo), channelId, contentId);
+                    DataProvider.ContentDao.AddDownloads(siteInfo, ChannelManager.GetTableName(siteInfo, channelInfo), channelInfo, contentId);
 
-                    if (!string.IsNullOrEmpty(contentInfo?.Get<string>(ContentAttribute.FileUrl)))
+                    if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
                     {
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {
-                            ContextUtils.Redirect(fileUrl);
+                            PageUtils.Redirect(fileUrl);
                             return;
                         }
 
-                        var filePath = await PathUtility.MapPathAsync(site, fileUrl, true);
-                        var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
-                        if (FileUtils.IsDownload(fileType))
+                        var filePath = PathUtility.MapPath(siteInfo, fileUrl, true);
+                        var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
+                        if (EFileSystemTypeUtils.IsDownload(fileType))
                         {
                             if (FileUtils.IsFileExists(filePath))
                             {
-                                request.Download(HttpContext.Current.Response, filePath);
+                                PageUtils.Download(HttpContext.Current.Response, filePath);
                                 return;
                             }
                         }
                         else
                         {
-                            ContextUtils.Redirect(await PageUtility.ParseNavigationUrlAsync(site, fileUrl, false));
+                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
                             return;
                         }
                     }

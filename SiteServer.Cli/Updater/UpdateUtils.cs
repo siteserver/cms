@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater.Tables;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Provider;
+using SiteServer.Utils;
 using TableInfo = SiteServer.Cli.Core.TableInfo;
 
 namespace SiteServer.Cli.Updater
@@ -125,28 +126,28 @@ namespace SiteServer.Cli.Updater
 
         public static async Task UpdateSitesSplitTableNameAsync(TreeInfo newTreeInfo, Dictionary<int, TableInfo> splitSiteTableDict)
         {
-            var siteMetadataFilePath = newTreeInfo.GetTableMetadataFilePath(DataProvider.SiteRepository.TableName);
+            var siteMetadataFilePath = newTreeInfo.GetTableMetadataFilePath(DataProvider.SiteDao.TableName);
             if (FileUtils.IsFileExists(siteMetadataFilePath))
             {
                 var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(siteMetadataFilePath, Encoding.UTF8));
                 foreach (var fileName in siteTableInfo.RowFiles)
                 {
-                    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteRepository.TableName, fileName);
+                    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteDao.TableName, fileName);
                     var oldRows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
                     var newRows = new List<Dictionary<string, object>>();
                     foreach (var row in oldRows)
                     {
                         var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
-                        if (dict.ContainsKey(nameof(Site.Id)))
+                        if (dict.ContainsKey(nameof(SiteInfo.Id)))
                         {
-                            var siteId = Convert.ToInt32(dict[nameof(Site.Id)]);
-                            dict[nameof(Site.TableName)] = ContentRepository.GetContentTableName(siteId);
+                            var siteId = Convert.ToInt32(dict[nameof(SiteInfo.Id)]);
+                            dict[nameof(SiteInfo.TableName)] = ContentDao.GetContentTableName(siteId);
                         }
 
                         newRows.Add(dict);
                     }
 
-                    await FileUtils.WriteTextAsync(filePath, TranslateUtils.JsonSerialize(newRows));
+                    await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
                 }
             }
 
@@ -162,7 +163,7 @@ namespace SiteServer.Cli.Updater
             //if (FileUtils.IsFileExists(tableFilePath))
             //{
             //    var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(tableFilePath, Encoding.UTF8));
-            //    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteRepository.TableName, siteTableInfo.RowFiles[siteTableInfo.RowFiles.Count]);
+            //    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteDao.TableName, siteTableInfo.RowFiles[siteTableInfo.RowFiles.Count]);
             //    var tableInfoList = TranslateUtils.JsonDeserialize<List<CMS.Model.TableInfo>>(FileUtils.ReadText(filePath, Encoding.UTF8));
                 
 

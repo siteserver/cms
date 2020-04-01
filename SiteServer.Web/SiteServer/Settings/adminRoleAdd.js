@@ -1,7 +1,9 @@
-﻿var $url = '/pages/settings/adminRoleAdd';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/adminRoleAdd');
+var $roleId = pageUtils.getQueryInt('roleId');
 
-var data = utils.initData({
-  roleId: utils.getQueryInt('roleId'),
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   pageType: null,
   roleName: null,
   description: null,
@@ -10,23 +12,21 @@ var data = utils.initData({
   checkedPermissions: null,
   systemCheckAll: false,
   isSystemIndeterminate: true,
-  siteList: null,
+  siteInfoList: null,
   checkedSiteIdList: null,
-  site: null,
+  siteInfo: null,
+  
   permissionInfo: null
-});
+};
 
 var methods = {
   getConfig: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url, {
-      params: {
-        roleId: this.roleId
-      }
-    }).then(function (response) {
-      var res = response.data;
+    $api.get({
+      roleId: $roleId
+    }, function (err, res) {
+      if (err || !res || !res.value) return;
 
       if (res.roleInfo) {
         $this.roleName = res.roleInfo.roleName;
@@ -41,24 +41,21 @@ var methods = {
           $this.checkedPermissions.push(res.permissions[i].name)
         }
       }
-      $this.siteList = res.siteList;
+      $this.siteInfoList = res.siteInfoList;
       $this.checkedSiteIdList = res.checkedSiteIdList || [];
 
       for (var i = 0; i < res.sitePermissionsList.length; i++){
         var permissionInfo = $this.getPermissionInfo(res.sitePermissionsList[i]);
-        for (var j = 0; j < res.siteList.length; j++){
-          var site = res.siteList[j];
-          if (site.id === permissionInfo.siteId) {
-            site.permissionInfo = permissionInfo;
+        for (var j = 0; j < res.siteInfoList.length; j++){
+          var siteInfo = res.siteInfoList[j];
+          if (siteInfo.id === permissionInfo.siteId) {
+            siteInfo.permissionInfo = permissionInfo;
           }
         }
       }
 
       $this.pageType = 'role';
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
     });
   },
 
@@ -146,31 +143,26 @@ var methods = {
     };
   },
 
-  btnPermissionClick: function(site) {
-    this.site = site;
-    if (this.site.permissionInfo) {
-      this.permissionInfo = this.site.permissionInfo;
+  btnPermissionClick: function(siteInfo) {
+    this.siteInfo = siteInfo;
+    if (this.siteInfo.permissionInfo) {
+      this.permissionInfo = this.siteInfo.permissionInfo;
       this.pageType = 'permissions';
       return;
     }
 
+    pageUtils.loading(true);
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url + '/' + this.site.id, {
-      params: {
-        roleId: this.roleId
-      }
-    }).then(function (response) {
-      var res = response.data;
+    $api.getAt(this.siteInfo.id, {
+      roleId: $roleId
+    }, function (err, res) {
+      pageUtils.loading(false);
+      if (err || !res || !res.value) return;
 
-      $this.site.permissionInfo = $this.getPermissionInfo(res);
-      $this.permissionInfo = $this.site.permissionInfo;
+      $this.siteInfo.permissionInfo = $this.getPermissionInfo(res);
+      $this.permissionInfo = $this.siteInfo.permissionInfo;
       $this.pageType = 'permissions';
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
     });
   },
   
@@ -255,58 +247,68 @@ var methods = {
 
   apiSubmit: function () {
     var $this = this;
-    utils.loading(this, true);
+    pageUtils.loading(true);
 
     var sitePermissions = [];
-    for (var i = 0; i < this.siteList.length; i++){
-      var site = this.siteList[i];
-      if (site.permissionInfo) {
+    for (var i = 0; i < this.siteInfoList.length; i++){
+      var siteInfo = this.siteInfoList[i];
+      if (siteInfo.permissionInfo) {
         sitePermissions.push({
-          siteId: site.id,
-          channelIdCollection: _.join(site.permissionInfo.checkedChannelIdList, ','),
-          channelPermissions: _.join(site.permissionInfo.checkedChannelPermissions, ','),
-          websitePermissions: _.join(_.union(site.permissionInfo.checkedSitePermissions, site.permissionInfo.checkedPluginPermissions), ','),
+          siteId: siteInfo.id,
+          channelIdCollection: _.join(siteInfo.permissionInfo.checkedChannelIdList, ','),
+          channelPermissions: _.join(siteInfo.permissionInfo.checkedChannelPermissions, ','),
+          websitePermissions: _.join(_.union(siteInfo.permissionInfo.checkedSitePermissions, siteInfo.permissionInfo.checkedPluginPermissions), ','),
         });
       }
     }
 
-    if (this.roleId > 0) {
-      utils.loading(this, true);
-      $api.put($url + '/' + this.roleId, {
+    if ($roleId > 0) {
+      $api.putAt($roleId, {
         roleName: this.roleName,
         description: this.description,
         generalPermissions: this.checkedPermissions,
         sitePermissions: sitePermissions
-      }).then(function (response) {
-        var res = response.data;
+      }, function (err, res) {
+        pageUtils.loading(false);
+        if (err) {
+          $this.pageAlert = {
+            type: 'danger',
+            html: err.message
+          };
+          return;
+        }
   
+        $this.pageAlert = {
+          type: 'success',
+          html: '角色保存成功！'
+        };
         setTimeout(function() {
           location.href = 'adminRole.cshtml';
         }, 1000);
-        $this.$message.success('角色保存成功！');
-      }).catch(function (error) {
-        utils.error($this, error);
-      }).then(function () {
-        utils.loading($this, false);
       });
     } else {
-      utils.loading(this, true);
-      $api.post($url, {
+      $api.post({
         roleName: this.roleName,
         description: this.description,
         generalPermissions: this.checkedPermissions,
         sitePermissions: sitePermissions
-      }).then(function (response) {
-        var res = response.data;
+      }, function (err, res) {
+        pageUtils.loading(false);
+        if (err) {
+          $this.pageAlert = {
+            type: 'danger',
+            html: err.message
+          };
+          return;
+        }
   
+        $this.pageAlert = {
+          type: 'success',
+          html: '角色保存成功！'
+        };
         setTimeout(function() {
           location.href = 'adminRole.cshtml';
         }, 1000);
-        $this.$message.success('角色保存成功！');
-      }).catch(function (error) {
-        utils.error($this, error);
-      }).then(function () {
-        utils.loading($this, false);
       });
     }
   },
@@ -325,8 +327,8 @@ var methods = {
   },
 
   btnSubmitClick: function () {
-    if (this.checkedSiteIdList.indexOf(this.site.id) === -1) {
-      this.checkedSiteIdList.push(this.site.id);
+    if (this.checkedSiteIdList.indexOf(this.siteInfo.id) === -1) {
+      this.checkedSiteIdList.push(this.siteInfo.id);
     }
     this.pageType = 'role';
   },
@@ -336,7 +338,7 @@ var methods = {
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,

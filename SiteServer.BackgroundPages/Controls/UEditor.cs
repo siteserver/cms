@@ -5,8 +5,9 @@ using System.Web;
 using System.Web.UI;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Editors;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Controls
 {

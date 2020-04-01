@@ -3,15 +3,12 @@ using NDesk.Options;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Dapper;
-using Datory.Utils;
-using SiteServer.CMS.Repositories;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Framework;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -36,9 +33,9 @@ namespace SiteServer.Cli.Jobs
                 { "c|config-file=", "指定配置文件Web.config路径或文件名",
                     v => _configFile = v },
                 { "includes=", "指定需要还原的表，多个表用英文逗号隔开，默认还原所有表",
-                    v => _includes = v == null ? null : Utilities.GetStringList(v) },
+                    v => _includes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
                 { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
-                    v => _excludes = v == null ? null : Utilities.GetStringList(v) },
+                    v => _excludes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
                 { "data-only",  "仅恢复数据",
                     v => _dataOnly = v != null },
                 { "h|help",  "命令说明",
@@ -99,27 +96,26 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.GetValue()}");
+            await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.Value}");
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
             await Console.Out.WriteLineAsync($"恢复文件夹: {treeInfo.DirectoryPath}");
 
-            var (isConnectionWorks, errorMessage) = await WebConfigUtils.Database.IsConnectionWorksAsync();
-            if (!isConnectionWorks)
+            if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
-                await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
+                await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigPath} 中设置的数据库");
                 return;
             }
 
             if (!_dataOnly)
             {
-                if (!await DataProvider.ConfigRepository.IsNeedInstallAsync())
+                if (!SystemManager.IsNeedInstall())
                 {
                     await CliUtils.PrintErrorAsync("数据无法在已安装系统的数据库中恢复，命令执行失败");
                     return;
                 }
 
                 // 恢复前先创建表，确保系统在恢复的数据库中能够使用
-                await DataProvider.DatabaseRepository.CreateSiteServerTablesAsync();
+                SystemManager.CreateSiteServerTables();
             }
 
             await CliUtils.PrintRowLineAsync();
@@ -128,12 +124,12 @@ namespace SiteServer.Cli.Jobs
 
             var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName);
 
-            await RestoreAsync(_includes, _excludes, _dataOnly, tablesFilePath, treeInfo, errorLogFilePath);
+            await Restore(_includes, _excludes, _dataOnly, tablesFilePath, treeInfo, errorLogFilePath);
 
             await Console.Out.WriteLineAsync($"恭喜，成功从文件夹：{treeInfo.DirectoryPath} 恢复数据！");
         }
 
-        public static async Task RestoreAsync(List<string> includes, List<string> excludes, bool dataOnly, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
+        public static async Task Restore(List<string> includes, List<string> excludes, bool dataOnly, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
         {
             var tableNames =
                 TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
@@ -162,39 +158,49 @@ namespace SiteServer.Cli.Jobs
 
                     await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                    if (await WebConfigUtils.Database.IsTableExistsAsync(tableName))
+                    if (DataProvider.DatabaseDao.IsTableExists(tableName))
                     {
-                        await WebConfigUtils.Database.DropTableAsync(tableName);
+                        DataProvider.DatabaseDao.DropTable(tableName);
                     }
 
-                    await WebConfigUtils.Database.CreateTableAsync(tableName, tableInfo.Columns);
+                    if (!DataProvider.DatabaseDao.CreateTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
+                    {
+                        await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
+                        {
+                            DateTime = DateTime.Now,
+                            Detail = $"创建表 {tableName}: {sqlString}",
+                            Exception = ex
+                        });
+
+                        continue;
+                    }
 
                     if (tableInfo.RowFiles.Count > 0)
                     {
-                        using var progress = new ProgressBar();
-                        for (var i = 0; i < tableInfo.RowFiles.Count; i++)
+                        using (var progress = new ProgressBar())
                         {
-                            progress.Report((double)i / tableInfo.RowFiles.Count);
-
-                            var fileName = tableInfo.RowFiles[i];
-
-                            var objects = TranslateUtils.JsonDeserialize<List<JObject>>(
-                                await FileUtils.ReadTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8));
-
-                            try
+                            for (var i = 0; i < tableInfo.RowFiles.Count; i++)
                             {
-                                var repository = new Repository(WebConfigUtils.Database, tableName,
-                                    tableInfo.Columns);
-                                await repository.BulkInsertAsync(objects);
-                            }
-                            catch (Exception exception)
-                            {
-                                await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
+                                progress.Report((double)i / tableInfo.RowFiles.Count);
+
+                                var fileName = tableInfo.RowFiles[i];
+
+                                var objects = TranslateUtils.JsonDeserialize<List<JObject>>(
+                                    await FileUtils.ReadTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8));
+
+                                try
                                 {
-                                    DateTime = DateTime.Now,
-                                    Detail = $"插入表 {tableName}, 文件名 {fileName}",
-                                    Exception = exception
-                                });
+                                    DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
+                                }
+                                catch (Exception exception)
+                                {
+                                    await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
+                                    {
+                                        DateTime = DateTime.Now,
+                                        Detail = $"插入表 {tableName}, 文件名 {fileName}",
+                                        Exception = exception
+                                    });
+                                }
                             }
                         }
                     }
@@ -214,36 +220,18 @@ namespace SiteServer.Cli.Jobs
 
             if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                var database = DataProvider.DatabaseRepository.GetDatabase();
-                var allTableNames = await database.GetTableNamesAsync();
-                foreach (var tableName in allTableNames)
+                var tableNameList = DataProvider.DatabaseDao.GetTableNameList();
+                foreach (var tableName in tableNameList)
                 {
-                    try
-                    {
-                        var sqlString =
-                            $"ALTER TABLE {tableName} MODIFY Id GENERATED ALWAYS AS IDENTITY(START WITH LIMIT VALUE)";
-
-                        using (var connection = WebConfigUtils.Database.GetConnection())
-                        {
-                            await connection.ExecuteAsync(sqlString);
-                        }
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
+                    DataProvider.DatabaseDao.AlterOracleAutoIncresementIdToMaxValue(tableName);
                 }
-                //foreach (var tableName in tableNameList)
-                //{
-                //    DataProvider.DatabaseRepository.AlterOracleAutoIncresementIdToMaxValue(tableName);
-                //}
             }
 
             if (!dataOnly)
             {
                 // 恢复后同步表，确保内容辅助表字段与系统一致
-                await DataProvider.DatabaseRepository.SyncContentTablesAsync();
-                await DataProvider.ConfigRepository.UpdateConfigVersionAsync(SystemManager.ProductVersion);
+                SystemManager.SyncContentTables();
+                SystemManager.UpdateConfigVersion();
             }
         }
     }

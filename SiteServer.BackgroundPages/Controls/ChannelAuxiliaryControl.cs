@@ -1,20 +1,19 @@
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using SiteServer.Abstractions;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
-
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Controls
 {
 	public class ChannelAuxiliaryControl : Control
 	{
-        public IDictionary<string, object> Attributes { get; set; }
+        public AttributesImpl Attributes { get; set; }
 
-        public Site Site { get; set; }
+        public SiteInfo SiteInfo { get; set; }
 
         public int ChannelId { get; set; }
 
@@ -24,24 +23,24 @@ namespace SiteServer.BackgroundPages.Controls
 		{
             if (Attributes == null) return;
 
-		    var channelInfo = DataProvider.ChannelRepository.GetAsync(ChannelId).GetAwaiter().GetResult();
-            var styleList = DataProvider.TableStyleRepository.GetChannelStyleListAsync(channelInfo).GetAwaiter().GetResult();
+		    var channelInfo = ChannelManager.GetChannelInfo(SiteInfo.Id, ChannelId);
+            var styleInfoList = TableStyleManager.GetChannelStyleInfoList(channelInfo);
 
-		    if (styleList == null) return;
+		    if (styleInfoList == null) return;
 
             var builder = new StringBuilder();
 		    var pageScripts = new NameValueCollection();
-		    foreach (var style in styleList)
+		    foreach (var styleInfo in styleInfoList)
 		    {
-		        var (value, extra) = BackgroundInputTypeParser.ParseAsync(Site, ChannelId, style, Attributes, pageScripts).GetAwaiter().GetResult();
+		        var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out var extra);
 
 		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (style.InputType == InputType.TextEditor)
+                if (styleInfo.InputType == InputType.TextEditor)
                 {
                     builder.Append($@"
 <div class=""form-group form-row"">
-    <label class=""col-sm-2 col-form-label text-right"">{style.DisplayName}</label>
+    <label class=""col-sm-2 col-form-label text-right"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-9"">
         {value}
     </div>
@@ -54,7 +53,7 @@ namespace SiteServer.BackgroundPages.Controls
                 {
                     builder.Append($@"
 <div class=""form-group form-row"">
-    <label class=""col-sm-2 col-form-label text-right"">{style.DisplayName}</label>
+    <label class=""col-sm-2 col-form-label text-right"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-4"">
         {value}
     </div>

@@ -1,0 +1,16 @@
+<script type="text/javascript">
+  function validateControls() {
+    $(".form-control").removeClass("is-invalid");
+    var val = Page_ClientValidate();
+    if (!val) {
+      var i = 0;
+      for (; i < Page_Validators.length; i++) {
+
+        if (!Page_Validators[i].isvalid) {
+          $("#" + Page_Validators[i].controltovalidate).addClass("is-invalid");
+        }
+      }
+    }
+    return val;
+  }
+</script>

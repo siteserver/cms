@@ -1,15 +1,14 @@
 ﻿using System.Text;
+using SiteServer.Utils;
+using SiteServer.CMS.Model;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.CMS.Repositories;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -20,28 +19,28 @@ namespace SiteServer.BackgroundPages.Core
         private readonly string _iconMinusUrl;
         private readonly string _iconPlusUrl;
 
-        private readonly Site _site;
-        private readonly Channel _channel;
+        private readonly SiteInfo _siteInfo;
+        private readonly ChannelInfo _channelInfo;
         private readonly bool _enabled;
         private readonly PermissionsImpl _permissionsImpl;
 
-        public static ChannelTreeItem CreateInstance(Site site, Channel channel, bool enabled, PermissionsImpl permissionsImpl)
+        public static ChannelTreeItem CreateInstance(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
         {
-            return new ChannelTreeItem(site, channel, enabled, permissionsImpl);
+            return new ChannelTreeItem(siteInfo, channelInfo, enabled, permissionsImpl);
         }
 
-        private ChannelTreeItem(Site site, Channel channel, bool enabled, PermissionsImpl permissionsImpl)
+        private ChannelTreeItem(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, PermissionsImpl permissionsImpl)
         {
-            _site = site;
-            _channel = channel;
+            _siteInfo = siteInfo;
+            _channelInfo = channelInfo;
             _enabled = enabled;
             _permissionsImpl = permissionsImpl;
 
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
             
             //为后台栏目树中的首页和外链栏目添加图标
-            if (_channel.ParentId == 0) _contentModelIconClass = "ion-ios-home";
-            else if (!string.IsNullOrEmpty(_channel.LinkUrl)) _contentModelIconClass = "ion-link";
+            if (_channelInfo.ParentId == 0) _contentModelIconClass = "ion-ios-home";
+            else if (_channelInfo.LinkUrl.Length != 0) _contentModelIconClass = "ion-link";
             else _contentModelIconClass = "ion-folder";
 
             _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
@@ -49,22 +48,22 @@ namespace SiteServer.BackgroundPages.Core
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
         }
 
-        public async Task<string> GetItemHtmlAsync(ELoadingType loadingType, string returnUrl, NameValueCollection additional)
+        public string GetItemHtml(ELoadingType loadingType, string returnUrl, NameValueCollection additional)
         {
             var htmlBuilder = new StringBuilder();
-            var parentsCount = _channel.ParentsCount;
+            var parentsCount = _channelInfo.ParentsCount;
             for (var i = 0; i < parentsCount; i++)
             {
                 htmlBuilder.Append($@"<img align=""absmiddle"" src=""{_iconEmptyUrl}"" />");
             }
 
-            if (_channel.ChildrenCount > 0)
+            if (_channelInfo.ChildrenCount > 0)
             {
                 htmlBuilder.Append(
-                    _channel.SiteId == _channel.Id
-                        ? $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""event.stopPropagation();displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_channel
+                    _channelInfo.SiteId == _channelInfo.Id
+                        ? $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""event.stopPropagation();displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_channelInfo
                             .Id}"" src=""{_iconMinusUrl}"" />"
-                        : $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""event.stopPropagation();displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_channel
+                        : $@"<img align=""absmiddle"" style=""cursor:pointer; margin-top: -5px; margin-right: 2px;"" onClick=""event.stopPropagation();displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_channelInfo
                             .Id}"" src=""{_iconPlusUrl}"" />");
             }
             else
@@ -74,9 +73,9 @@ namespace SiteServer.BackgroundPages.Core
 
             var contentModelIconHtml = $@"<i class=""{_contentModelIconClass}""></i>";
 
-            if (_channel.Id > 0)
+            if (_channelInfo.Id > 0)
             {
-                contentModelIconHtml = $@"<a href=""{PageUtils.GetRedirectUrlToChannel(_channel.SiteId, _channel.Id)}"" target=""_blank"" title=""浏览页面"" onclick=""event.stopPropagation()"">{contentModelIconHtml}</a>";
+                contentModelIconHtml = $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_channelInfo.SiteId, _channelInfo.Id)}"" target=""_blank"" title=""浏览页面"" onclick=""event.stopPropagation()"">{contentModelIconHtml}</a>";
             }
 
             htmlBuilder.Append(contentModelIconHtml);
@@ -86,28 +85,28 @@ namespace SiteServer.BackgroundPages.Core
             {
                 if (loadingType == ELoadingType.ContentTree)
                 {
-                    var linkUrl = CmsPages.GetContentsUrl(_channel.SiteId, _channel.Id);
+                    var linkUrl = CmsPages.GetContentsUrl(_channelInfo.SiteId, _channelInfo.Id);
                     if (!string.IsNullOrEmpty(additional?["linkUrl"]))
                     {
                         linkUrl = PageUtils.AddQueryStringIfNotExists(additional["linkUrl"], new NameValueCollection
                         {
-                            ["channelId"] = _channel.Id.ToString()
+                            ["channelId"] = _channelInfo.Id.ToString()
                         });
                     }
 
                     //linkUrl = PageUtils.GetLoadingUrl(linkUrl);
 
                     htmlBuilder.Append(
-                        $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_channel.ChannelName}</a>");
+                        $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_channelInfo.ChannelName}</a>");
                 }
                 else if (loadingType == ELoadingType.ChannelClickSelect)
                 {
-                    var linkUrl = ModalChannelSelect.GetRedirectUrl(_channel.SiteId, _channel.Id);
+                    var linkUrl = ModalChannelSelect.GetRedirectUrl(_channelInfo.SiteId, _channelInfo.Id);
                     if (additional != null)
                     {
                         if (!string.IsNullOrEmpty(additional["linkUrl"]))
                         {
-                            linkUrl = additional["linkUrl"] + _channel.Id;
+                            linkUrl = additional["linkUrl"] + _channelInfo.Id;
                         }
                         else
                         {
@@ -117,35 +116,35 @@ namespace SiteServer.BackgroundPages.Core
                             }
                         }
                     }
-                    htmlBuilder.Append($"<a href='{linkUrl}'>{_channel.ChannelName}</a>");
+                    htmlBuilder.Append($"<a href='{linkUrl}'>{_channelInfo.ChannelName}</a>");
                 }
                 else
                 {
-                    if (await _permissionsImpl.HasChannelPermissionsAsync(_channel.SiteId, _channel.Id, Constants.ChannelPermissions.ChannelEdit))
+                    if (_permissionsImpl.HasChannelPermissions(_channelInfo.SiteId, _channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
                     {
-                        var onClickUrl = ModalChannelEdit.GetOpenWindowString(_channel.SiteId, _channel.Id, returnUrl);
+                        var onClickUrl = ModalChannelEdit.GetOpenWindowString(_channelInfo.SiteId, _channelInfo.Id, returnUrl);
                         htmlBuilder.Append(
-                            $@"<a href=""javascript:;;"" onClick=""{onClickUrl}"" title=""快速编辑栏目"">{_channel.ChannelName}</a>");
+                            $@"<a href=""javascript:;;"" onClick=""{onClickUrl}"" title=""快速编辑栏目"">{_channelInfo.ChannelName}</a>");
 
                     }
                     else
                     {
-                        htmlBuilder.Append($@"<a href=""javascript:;"">{_channel.ChannelName}</a>");
+                        htmlBuilder.Append($@"<a href=""javascript:;"">{_channelInfo.ChannelName}</a>");
                     }
                 }
             }
             else
             {
-                htmlBuilder.Append($"<span>{_channel.ChannelName}</span>");
+                htmlBuilder.Append($"<span>{_channelInfo.ChannelName}</span>");
             }
 
-            if (_channel.SiteId != 0)
+            if (_channelInfo.SiteId != 0)
             {
                 htmlBuilder.Append("&nbsp;");
 
-                htmlBuilder.Append(DataProvider.ChannelRepository.GetNodeTreeLastImageHtmlAsync(_site, _channel).GetAwaiter().GetResult());
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_siteInfo, _channelInfo));
 
-                var count = DataProvider.ContentRepository.GetCountAsync(_site, _channel).GetAwaiter().GetResult();
+                var count = DataProvider.ContentDao.GetCount(_siteInfo, _channelInfo);
 
                 htmlBuilder.Append(
                     $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span>");
@@ -154,7 +153,7 @@ namespace SiteServer.BackgroundPages.Core
             return htmlBuilder.ToString();
         }
 
-        public static string GetScript(Site site, ELoadingType loadingType, string contentModelPluginId, NameValueCollection additional)
+        public static string GetScript(SiteInfo siteInfo, ELoadingType loadingType, string contentModelPluginId, NameValueCollection additional)
         {
             var script = @"
 <script language=""JavaScript"">
@@ -288,7 +287,7 @@ function displayChildren(img){
             script += $@"
 function loadingChannels(tr, img, div, channelId){{
     var url = '{AjaxOtherService.GetGetLoadingChannelsUrl()}';
-    var pars = '{AjaxOtherService.GetGetLoadingChannelsParameters(site.Id, contentModelPluginId, loadingType, additional)}&parentID=' + channelId;
+    var pars = '{AjaxOtherService.GetGetLoadingChannelsParameters(siteInfo.Id, contentModelPluginId, loadingType, additional)}&parentID=' + channelId;
 
     jQuery.post(url, pars, function(data, textStatus)
     {{

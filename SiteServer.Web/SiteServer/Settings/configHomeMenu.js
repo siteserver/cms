@@ -1,11 +1,14 @@
-﻿var $url = '/pages/settings/configHomeMenu';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/configHomeMenu');
+var $apiReset = new apiUtils.Api(apiUrl + '/pages/settings/configHomeMenu/actions/reset');
 
-var data = utils.initData({
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   pageType: 'list',
   items: null,
   groups: null,
   item: null
-});
+};
 
 var methods = {
   getItems: function (menus) {
@@ -37,23 +40,18 @@ var methods = {
 
     return items;
   },
-
   getList: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url).then(function (response) {
-      var res = response.data;
+    $api.get(null, function (err, res) {
+      if (err || !res || !res.value) return;
 
       $this.items = $this.getItems(res.value);
       $this.groups = res.groups;
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
+
+      $this.pageLoad = true;
     });
   },
-
   getUserGroups: function (item) {
     if (item.isGroup) {
       var str = '';
@@ -66,57 +64,51 @@ var methods = {
     }
     return '所有用户组';
   },
-  
   delete: function (id) {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        id: id
-      }
-    }).then(function (response) {
-      var res = response.data;
+    pageUtils.loading(true);
+    $api.delete({
+      id: id
+    }, function (err, res) {
+      pageUtils.loading(false);
+      if (err || !res || !res.value) return;
 
       $this.items = $this.getItems(res.value);
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
     });
   },
-
   reset: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.post($url + '/actions/reset').then(function (response) {
-      var res = response.data;
+    pageUtils.loading(true);
+    $apiReset.post(null, function (err, res) {
+      pageUtils.loading(false);
+      if (err || !res || !res.value) return;
 
       $this.items = $this.getItems(res.value);
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
     });
   },
-
   submit: function (item) {
     var $this = this;
     item.groupIdCollection = item.isGroup ? item.groupIds.join(',') : '';
+    pageUtils.loading(true);
+    $api.post(item, function (err, res) {
+      pageUtils.loading(false);
+      if (err) {
+        $this.pageAlert = {
+          type: 'danger',
+          html: err.message
+        };
+        return;
+      }
 
-    utils.loading(this, true);
-    $api.post($url, item).then(function (response) {
-      var res = response.data;
-
+      $this.pageAlert = {
+        type: 'success',
+        html: item.id === -1 ? '用户菜单添加成功！' : '用户菜单修改成功！'
+      };
       $this.item = null;
       $this.items = $this.getItems(res.value);
       $this.pageType = 'list';
-      $this.$message.success(item.id === -1 ? '用户菜单添加成功！' : '用户菜单修改成功！');
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
     });
   },
 
@@ -162,7 +154,7 @@ var methods = {
   btnResetClick: function () {
     var $this = this;
 
-    utils.alertDelete({
+    pageUtils.alertDelete({
       title: '重置用户菜单',
       text: '此操作将把用户菜单恢复为系统默认值，确定吗？',
       button: '确认重置',
@@ -180,7 +172,7 @@ var methods = {
   btnDeleteClick: function (item) {
     var $this = this;
 
-    utils.alertDelete({
+    pageUtils.alertDelete({
       title: '删除用户菜单',
       text: '此操作将删除用户菜单 ' + item.text + '，确定吗？',
       callback: function () {
@@ -188,7 +180,6 @@ var methods = {
       }
     });
   },
-
   btnSubmitClick: function () {
     var $this = this;
     this.$validator.validate().then(function (result) {
@@ -197,13 +188,12 @@ var methods = {
       }
     });
   },
-  
   btnCancelClick: function () {
     this.pageType = 'list';
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,

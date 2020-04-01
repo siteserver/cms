@@ -1,5 +1,5 @@
 ﻿using System.Web.UI;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -9,12 +9,12 @@ namespace SiteServer.BackgroundPages.Controls
 		{
 			get 
 			{
-				var type = ViewState["InputType"] as string;
+				var type = ViewState["Type"] as string;
 				return !string.IsNullOrEmpty(type) ? type : string.Empty;
 			}
 			set 
 			{
-				ViewState["InputType"] = value;
+				ViewState["Type"] = value;
 			}
 		}
 

@@ -2,9 +2,8 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using NDesk.Options;
-using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
-
+using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Jobs
 {

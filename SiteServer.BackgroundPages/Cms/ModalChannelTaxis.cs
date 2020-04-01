@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using Datory.Utils;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -27,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("siteId", "ChannelIDCollection");
 
-            _channelIdList = Utilities.GetIntList(AuthRequest.GetQueryString("channelIDCollection"));
+            _channelIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("channelIDCollection"));
 
             if (IsPostBack) return;
 
@@ -45,10 +43,10 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 for (var num = 0; num < taxisNum; num++)
                 {
-                    DataProvider.ChannelRepository.UpdateTaxisAsync(SiteId, channelId, isSubtract).GetAwaiter().GetResult();
+                    DataProvider.ChannelDao.UpdateTaxis(SiteId, channelId, isSubtract);
                 }
 
-                AuthRequest.AddSiteLogAsync(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"), $"栏目:{DataProvider.ChannelRepository.GetChannelNameAsync(SiteId, channelId).GetAwaiter().GetResult()}").GetAwaiter().GetResult();
+                AuthRequest.AddSiteLog(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"), $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}");
             }
             LayerUtils.Close(Page);
         }

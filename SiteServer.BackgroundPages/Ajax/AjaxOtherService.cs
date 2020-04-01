@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.UI;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Context;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Repositories;
-using WebUtils = SiteServer.CMS.Context.WebUtils;
-using SiteServer.Abstractions;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -56,7 +55,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
-                {"downloadUrl", WebConfigUtils.EncryptStringBySecretKey(downloadUrl)},
+                {"downloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)},
                 {"directoryName", directoryName},
                 {"userKeyPrefix", userKeyPrefix},
             });
@@ -66,7 +65,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
-                {"downloadUrl", WebConfigUtils.EncryptStringBySecretKey(downloadUrl)},
+                {"downloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)},
                 {"userKeyPrefix", userKeyPrefix}
             });
         }
@@ -120,7 +119,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 {"siteId", siteId.ToString() },
                 {"contentModelPluginId", contentModelPluginId },
                 {"loadingType", ELoadingTypeUtils.GetValue(loadingType)},
-                {"additional", WebConfigUtils.EncryptStringBySecretKey(TranslateUtils.NameValueCollectionToString(additional))}
+                {"additional", TranslateUtils.EncryptStringBySecretKey(TranslateUtils.NameValueCollectionToString(additional))}
             });
         }
 
@@ -129,7 +128,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request["type"];
             var retVal = new NameValueCollection();
             string retString = null;
-            var request = AuthenticatedRequest.GetAuthAsync().GetAwaiter().GetResult();
+            var request = new AuthenticatedRequest();
             if (!request.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)
@@ -140,7 +139,7 @@ namespace SiteServer.BackgroundPages.Ajax
             else if (type == TypeSiteTemplateDownload)
             {
                 var userKeyPrefix = Request["userKeyPrefix"];
-                var downloadUrl = WebConfigUtils.DecryptStringBySecretKey(Request["downloadUrl"]);
+                var downloadUrl = TranslateUtils.DecryptStringBySecretKey(Request["downloadUrl"]);
                 var directoryName = Request["directoryName"];
                 retVal = SiteTemplateDownload(downloadUrl, directoryName, userKeyPrefix);
             }
@@ -163,12 +162,12 @@ namespace SiteServer.BackgroundPages.Ajax
                 var parentId = TranslateUtils.ToInt(Request["parentId"]);
                 var loadingType = Request["loadingType"];
                 var additional = Request["additional"];
-                retString = GetLoadingChannelsAsync(siteId, contentModelPluginId, parentId, loadingType, additional, request).GetAwaiter().GetResult();
+                retString = GetLoadingChannels(siteId, contentModelPluginId, parentId, loadingType, additional, request);
             }
             else if (type == TypePluginDownload)
             {
                 var userKeyPrefix = Request["userKeyPrefix"];
-                var downloadUrl = WebConfigUtils.DecryptStringBySecretKey(Request["downloadUrl"]);
+                var downloadUrl = TranslateUtils.DecryptStringBySecretKey(Request["downloadUrl"]);
                 retVal = PluginDownload(downloadUrl, userKeyPrefix);
             }
             //else if (type == "GetLoadingGovPublicCategories")
@@ -289,14 +288,14 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "开始下载插件压缩包，可能需要几分钟，请耐心等待");
 
                 var fileName = PageUtils.GetFileNameFromUrl(downloadUrl);
-                var filePath = WebUtils.GetPluginPath(fileName);
+                var filePath = PathUtils.GetPluginPath(fileName);
                 FileUtils.DeleteFileIfExists(filePath);
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "4");
                 CacheUtils.Insert(cacheMessageKey, "插件压缩包下载成功，开始安装");
 
-                ZipUtils.ExtractZip(filePath, WebUtils.GetPluginPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
+                ZipUtils.ExtractZip(filePath, PathUtils.GetPluginPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
 
                 CacheUtils.Insert(cacheCurrentCountKey, "5");
                 CacheUtils.Insert(cacheMessageKey, string.Empty);
@@ -395,24 +394,26 @@ namespace SiteServer.BackgroundPages.Ajax
             return retVal;
         }
 
-        public async Task<string> GetLoadingChannelsAsync(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, AuthenticatedRequest request)
+        public string GetLoadingChannels(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, AuthenticatedRequest request)
         {
             var list = new List<string>();
 
             var eLoadingType = ELoadingTypeUtils.GetEnumType(loadingType);
 
             var channelIdList =
-                await DataProvider.ChannelRepository.GetChannelIdsAsync(siteId, parentId == 0 ? siteId : parentId, EScopeType.Children);
+                ChannelManager.GetChannelIdList(
+                    ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children,
+                    string.Empty, string.Empty, string.Empty);
 
-            var site = await DataProvider.SiteRepository.GetAsync(siteId);
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
 
-            var nameValueCollection = TranslateUtils.ToNameValueCollection(WebConfigUtils.DecryptStringBySecretKey(additional));
+            var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
 
             foreach (var channelId in channelIdList)
             {
-                var channelInfo = await DataProvider.ChannelRepository.GetAsync(channelId);
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-                var enabled = await request.AdminPermissionsImpl.IsOwningChannelIdAsync(channelId);
+                var enabled = request.AdminPermissionsImpl.IsOwningChannelId(channelId);
                 if (!string.IsNullOrEmpty(contentModelPluginId) &&
                             !StringUtils.EqualsIgnoreCase(channelInfo.ContentModelPluginId, contentModelPluginId))
                 {
@@ -420,11 +421,11 @@ namespace SiteServer.BackgroundPages.Ajax
                 }
                 if (!enabled)
                 {
-                    if (!await request.AdminPermissionsImpl.IsDescendantOwningChannelIdAsync(siteId, channelId)) continue;
-                    if (!await IsDesendantContentModelPluginIdExistsAsync(channelInfo, contentModelPluginId)) continue;
+                    if (!request.AdminPermissionsImpl.IsDescendantOwningChannelId(siteId, channelId)) continue;
+                    if (!IsDesendantContentModelPluginIdExists(channelInfo, contentModelPluginId)) continue;
                 }
 
-                list.Add(ChannelLoading.GetChannelRowHtmlAsync(site, channelInfo, enabled, eLoadingType, nameValueCollection, request.AdminPermissionsImpl).GetAwaiter().GetResult());
+                list.Add(ChannelLoading.GetChannelRowHtml(siteInfo, channelInfo, enabled, eLoadingType, nameValueCollection, request.AdminPermissionsImpl));
             }
 
             //arraylist.Reverse();
@@ -437,11 +438,11 @@ namespace SiteServer.BackgroundPages.Ajax
             return builder.ToString();
         }
 
-        private async Task<bool> IsDesendantContentModelPluginIdExistsAsync(Channel channel, string contentModelPluginId)
+        private bool IsDesendantContentModelPluginIdExists(ChannelInfo channelInfo, string contentModelPluginId)
         {
             if (string.IsNullOrEmpty(contentModelPluginId)) return true;
 
-            var channelIdList = await DataProvider.ChannelRepository.GetChannelIdsAsync(channel, EScopeType.Descendant, string.Empty, string.Empty, contentModelPluginId);
+            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant, string.Empty, string.Empty, contentModelPluginId);
             return channelIdList.Count > 0;
         }
     }

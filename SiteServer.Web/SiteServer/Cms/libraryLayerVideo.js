@@ -1,7 +1,9 @@
-﻿var $urlUploadVideo = apiUrl + '/pages/cms/library/libraryLayerVideo/actions/uploadVideo?siteId=' + utils.getQueryInt('siteId');
-var $urlUploadImage = apiUrl + '/pages/cms/library/libraryLayerVideo/actions/uploadImage?siteId=' + utils.getQueryInt('siteId');
+﻿var $urlUploadVideo = apiUrl + '/pages/cms/libraryLayerVideo/actions/uploadVideo?siteId=' + utils.getQueryInt('siteId');
+var $urlUploadImage = apiUrl + '/pages/cms/libraryLayerVideo/actions/uploadImage?siteId=' + utils.getQueryInt('siteId');
 
-var data = utils.initData({
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   activeName: 'first',
   form: {
     siteId: utils.getQueryInt('siteId'),
@@ -17,7 +19,7 @@ var data = utils.initData({
     isLinkToOriginal: true,
   },
   player: null
-});
+};
 
 var methods = {
   btnTabsClick: function() {
@@ -50,12 +52,12 @@ var methods = {
     var width = this.form.isWidth ? ' width="' + this.form.width + '"' : '';
     var height = this.form.isHeight ? ' height="' + this.form.height + '"' : '';
 
-    parent.$vue.insertHtml('<img ' + imageUrl + isAutoPlay + width + height + ' playUrl="' + this.form.videoUrl + '" class="siteserver-stl-player" style="width: 333px; height: 333px" src="../assets/ueditor/video-clip.png" /><br/>');
-    utils.closeLayer();
+    parent.insertHtml('<img ' + imageUrl + isAutoPlay + width + height + ' playUrl="' + this.form.videoUrl + '" class="siteserver-stl-player" style="width: 333px; height: 333px" src="../assets/ueditor/video-clip.png" /><br/>');
+    parent.layer.closeAll();
   },
 
   btnCancelClick: function () {
-    utils.closeLayer();
+    parent.layer.closeAll();
   },
 
   uploadVideoBefore(file) {
@@ -85,28 +87,28 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(this, true);
+    utils.loading(true)
   },
 
   uploadVideoSuccess: function(res) {
     this.form.videoUrl = res.url;
     this.form.type = 'url';
-    utils.loading(this, false);
+    utils.loading(false);
   },
 
   uploadImageSuccess: function(res) {
     this.form.imageUrl = res.url;
-    utils.loading(this, false);
+    utils.loading(false);
   },
 
   uploadError: function(err) {
-    utils.loading(this, false);
+    utils.loading(false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,

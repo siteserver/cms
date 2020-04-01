@@ -1,21 +1,19 @@
-﻿using System.Threading.Tasks;
-using System.Web.Http;
-using SiteServer.API.Context;
+﻿using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Framework;
-using SiteServer.CMS.Repositories;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    
+    [OpenApiIgnore]
     public class SysPackagesClearCacheController : ApiController
     {
         private const string Route = "sys/packaging/clear/cache";
 
         [HttpPost, Route(Route)]
-        public async Task<IHttpActionResult> Main()
+        public IHttpActionResult Main()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
+            var request = new AuthenticatedRequest();
 
             if (!request.IsAdminLoggin)
             {
@@ -23,7 +21,7 @@ namespace SiteServer.API.Controllers.Sys
             }
 
             CacheUtils.ClearAll();
-            await DataProvider.DbCacheRepository.ClearAsync();
+            CacheDbUtils.Clear();
 
             return Ok(new {});
         }

@@ -2,7 +2,6 @@
 backup/
 update/
 build/
-*.sql
 *.exe
 *.exe.config
 package-lock.json

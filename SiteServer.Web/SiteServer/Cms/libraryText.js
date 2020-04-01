@@ -1,7 +1,8 @@
-﻿var $url = '/pages/cms/library/libraryText';
+﻿var $url = '/pages/cms/libraryText';
 
-var data = utils.initData({
+var data = {
   siteId: utils.getQueryInt("siteId"),
+  pageLoad: false,
   pageType: 'card',
   drawer: false,
   isGroupForm: false,
@@ -26,14 +27,13 @@ var data = utils.initData({
     page: 1,
     perPage: 24
   }
-});
+};
 
 var methods = {
   apiList: function (page) {
     var $this = this;
     this.form.page = page;
 
-    utils.loading(this, true);
     $api.post($url + '/list', this.form).then(function (response) {
       var res = response.data;
 
@@ -44,16 +44,17 @@ var methods = {
         return item.imageUrl;
       });
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.notifyError($this, error);
     }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
+      utils.loading(false);
     });
   },
 
   apiCreateGroup: function () {
     var $this = this;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.post($url + '/groups', this.groupForm).then(function (response) {
       var res = response.data;
 
@@ -65,14 +66,14 @@ var methods = {
         });
     }).then(function () {
       $this.isGroupForm = false;
-      utils.loading($this, false);
+      utils.loading(false);
     });
   },
 
   apiRenameGroup: function () {
     var $this = this;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.put($url + '/groups/' + this.form.groupId, this.groupForm).then(function (response) {
       var res = response.data;
 
@@ -85,14 +86,14 @@ var methods = {
         });
     }).then(function () {
       $this.isGroupForm = false;
-      utils.loading($this, false);
+      utils.loading(false);
     });
   },
 
   apiDeleteGroup: function () {
     var $this = this;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.delete($url + '/groups/' + this.form.groupId).then(function (response) {
       var res = response.data;
 
@@ -107,22 +108,22 @@ var methods = {
     }).then(function () {
       $this.isGroupForm = false;
       $this.form.groupId = 0;
-      utils.loading($this, false);
+      utils.loading(false);
     });
   },
 
   apiDelete: function (library) {
     var $this = this;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.delete($url + '/' + library.id).then(function (response) {
       var res = response.data;
 
       $this.items.splice($this.items.indexOf(library), 1);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.notifyError($this, error);
     }).then(function () {
-      utils.loading($this, false);
+      utils.loading(false);
     });
   },
 
@@ -144,7 +145,7 @@ var methods = {
   },
 
   btnCreateClick: function() {
-    parent.utils.openLayer({
+    top.utils.openLayer({
       title: "创建图文",
       url: 'cms/' + this.getLinkUrl('Editor'),
       full: true,
@@ -153,7 +154,7 @@ var methods = {
   },
 
   btnUpdateClick: function(library) {
-    parent.utils.openLayer({
+    top.utils.openLayer({
       title: "修改图文",
       url: 'cms/' + this.getLinkUrl('Editor') + '&textId=' + library.id,
       full: true,
@@ -179,7 +180,7 @@ var methods = {
         $this.btnSearchClick();
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.notifyError($this, error);
     });
   },
 
@@ -200,7 +201,7 @@ var methods = {
 
       $this.$message.success('编辑名称成功');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.notifyError($this, error);
     });
 
     return false;
@@ -212,7 +213,7 @@ var methods = {
     this.form.groupId = groupId;
     this.form.page = 1;
 
-    utils.loading(this, true);
+    utils.loading(true);
     $api.post($url + '/list', this.form).then(function (response) {
       var res = response.data;
 
@@ -228,7 +229,8 @@ var methods = {
           message: error.message
         });
     }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
+      utils.loading(false);
     });
   },
 
@@ -288,12 +290,12 @@ var methods = {
   },
 
   btnSearchClick() {
-    utils.loading(this, true);
+    utils.loading(true);
     this.apiList(1);
   },
 
   btnPageClick: function(val) {
-    utils.loading(this, true);
+    utils.loading(true);
     this.apiList(val);
   },
 
@@ -308,23 +310,23 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(this, true);
+    utils.loading(true)
   },
 
   uploadSuccess: function(res) {
     this.items.splice(0, 0, res);
     this.count++;
-    utils.loading(this, false);
+    utils.loading(false);
   },
 
   uploadError: function(err) {
-    utils.loading(this, false);
+    utils.loading(false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,

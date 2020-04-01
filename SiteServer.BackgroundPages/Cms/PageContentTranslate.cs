@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using Datory;
-using SiteServer.CMS.Context;
+using SiteServer.Utils;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Context.Enumerations;
-using SiteServer.CMS.Repositories;
-using WebUtils = SiteServer.BackgroundPages.Core.WebUtils;
-using SiteServer.Abstractions;
+using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -80,21 +79,21 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = DataProvider.ContentRepository.GetAsync(Site, channelId, contentId).GetAwaiter().GetResult();
+                        var contentInfo = DataProvider.ContentDao.Get(SiteInfo, channelId, contentId);
                         if (contentInfo != null)
                         {
                             builder.Append(
-                                $@"{WebUtils.GetContentTitle(Site, contentInfo, _returnUrl)}<br />");
+                                $@"{WebUtils.GetContentTitle(SiteInfo, contentInfo, _returnUrl)}<br />");
                         }
                     }
                 }
             }
             LtlContents.Text = builder.ToString();
 
-            BtnTranslateAdd.Attributes.Add("onClick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
+            BtnTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
-            ETranslateContentTypeUtilsExtensions.AddListItems(RblTranslateType, isCut);
-            ControlUtils.SelectSingleItem(RblTranslateType, TranslateContentType.Copy.GetValue());
+            ETranslateContentTypeUtils.AddListItems(RblTranslateType, isCut);
+            ControlUtils.SelectSingleItem(RblTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -105,7 +104,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    var translateType = TranslateUtils.ToEnum(RblTranslateType.SelectedValue, TranslateContentType.Copy);
+                    var translateType = ETranslateContentTypeUtils.GetEnumType(RblTranslateType.SelectedValue);
 
                     foreach (var channelId in _idsDictionary.Keys)
                     {
@@ -117,9 +116,9 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 foreach (var contentId in contentIdList)
                                 {
-                                    ContentUtility.TranslateAsync(Site, channelId, contentId, Request.Form["translateCollection"], translateType).GetAwaiter().GetResult();
+                                    ContentUtility.Translate(SiteInfo, channelId, contentId, Request.Form["translateCollection"], translateType, AuthRequest.AdminName);
 
-                                    AuthRequest.AddSiteLogAsync(Site.Id, channelId, contentId, "转移内容", string.Empty).GetAwaiter().GetResult();
+                                    AuthRequest.AddSiteLog(SiteInfo.Id, channelId, contentId, "转移内容", string.Empty);
                                 }
                             }
                         }
@@ -130,7 +129,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLogAsync(ex).GetAwaiter().GetResult();
+                    LogUtils.AddErrorLog(ex);
                     FailMessage(ex, "内容转移失败！");
                 }
             }

@@ -1,56 +1,34 @@
-﻿var $url = '/pages/cms/library/libraryLayerImage';
-var $urlUpload = apiUrl + '/pages/cms/library/libraryLayerImage/actions/upload?siteId=' + utils.getQueryInt('siteId');
+﻿var $url = '/pages/cms/libraryLayerImage';
+var $urlUpload = apiUrl + '/pages/cms/libraryLayerImage/actions/upload?siteId=' + utils.getQueryInt('siteId');
 
-var data = utils.initData({
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   uploadList: [],
   dialogImageUrl: '',
   dialogVisible: false,
-  form: {
-    siteId: utils.getQueryInt('siteId'),
-    isThumb: false,
-    thumbWidth: 500,
-    thumbHeight: 500,
-    isLinkToOriginal: true,
-    filePaths: []
-  }
-});
+  fileUrls: []
+};
 
 var methods = {
   btnSubmitClick: function () {
     var $this = this;
 
-    if (this.form.filePaths.length === 0) {
+    if (this.fileUrls.length === 0) {
       this.$message.error('请选择需要插入的图片文件！');
       return false;
     }
 
-    utils.loading(this, true);
-    $api.post($url, this.form).then(function(response) {
-      var res = response.data;
+    for (var i = 0; i < this.fileUrls.length; i++) {
+      var fileUrl = this.fileUrls[i];
+      parent.insertHtml('<img src="' + fileUrl + '" border="0" /><br/>');
+    }
 
-      if (res && res.length > 0) {
-        for (var i = 0; i < res.length; i++) {
-          var result = res[i];
-          if (result.thumbUrl) {
-            parent.$vue.insertHtml('<a href="' + result.url + '" target="_blank"><img src="' + result.thumbUrl + '" border="0" /></a><br/>');
-          } else {
-            parent.$vue.insertHtml('<img src="' + result.url + '" border="0" /><br/>');
-          }
-        }
-      }
-      
-      utils.closeLayer();
-    })
-    .catch(function(error) {
-      utils.error($this, error);
-    })
-    .then(function() {
-      utils.loading($this, false);
-    });
+    parent.layer.closeAll();
   },
 
   btnCancelClick: function () {
-    utils.closeLayer();
+    parent.layer.closeAll();
   },
 
   uploadBefore(file) {
@@ -70,23 +48,23 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(this, true);
+    utils.loading(true)
   },
 
   uploadSuccess: function(res) {
-    this.form.filePaths.push(res.path);
-    utils.loading(this, false);
+    this.fileUrls.push(res.url);
+    utils.loading(false);
   },
 
   uploadError: function(err) {
-    utils.loading(this, false);
+    utils.loading(false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
   },
 
   uploadRemove(file) {
     if (file.response) {
-      this.form.filePaths.splice(this.form.filePaths.indexOf(file.response.path), 1);
+      this.fileUrls.splice(this.fileUrls.indexOf(file.response.url), 1);
     }
   },
 
@@ -96,7 +74,7 @@ var methods = {
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,

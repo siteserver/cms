@@ -2,11 +2,10 @@
 using System.Collections.Specialized;
 using System.Web;
 using System.Web.UI.WebControls;
-using Datory.Utils;
-using SiteServer.Abstractions;
+using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Context;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -75,7 +74,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"SiteTemplateDownload", true.ToString()},
-                    {"DownloadUrl", WebConfigUtils.EncryptStringBySecretKey(downloadUrl)}
+                    {"DownloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)}
                 }), 460, 360);
         }
 
@@ -84,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
             return PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
             {
                 {"SiteTemplateDownload", true.ToString()},
-                {"DownloadUrl", WebConfigUtils.EncryptStringBySecretKey(downloadUrl)}
+                {"DownloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)}
             });
         }
 
@@ -125,9 +124,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (AuthRequest.IsQueryExists("CreateChannelsOneByOne") && AuthRequest.IsQueryExists("ChannelIDCollection"))
             {
-                foreach (var channelId in Utilities.GetIntList(AuthRequest.GetQueryString("ChannelIDCollection")))
+                foreach (var channelId in TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("ChannelIDCollection")))
                 {
-                    CreateManager.CreateChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+                    CreateManager.CreateChannel(SiteId, channelId);
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
@@ -136,10 +135,10 @@ namespace SiteServer.BackgroundPages.Cms
             else if (AuthRequest.IsQueryExists("CreateContentsOneByOne") && AuthRequest.IsQueryExists("channelId") &&
                      AuthRequest.IsQueryExists("contentIdCollection"))
             {
-                foreach (var contentId in Utilities.GetIntList(AuthRequest.GetQueryString("contentIdCollection")))
+                foreach (var contentId in TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection")))
                 {
-                    CreateManager.CreateContentAsync(SiteId, AuthRequest.GetQueryInt("channelId"),
-                        contentId).GetAwaiter().GetResult();
+                    CreateManager.CreateContent(SiteId, AuthRequest.GetQueryInt("channelId"),
+                        contentId);
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
@@ -148,7 +147,7 @@ namespace SiteServer.BackgroundPages.Cms
             else if (AuthRequest.IsQueryExists("CreateByTemplate") && AuthRequest.IsQueryExists("templateId"))
             {
                 var templateId = AuthRequest.GetQueryInt("templateId");
-                CreateManager.CreateByTemplateAsync(SiteId, templateId).GetAwaiter().GetResult();
+                CreateManager.CreateByTemplate(SiteId, templateId);
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
                 //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
@@ -156,11 +155,11 @@ namespace SiteServer.BackgroundPages.Cms
             else if (AuthRequest.IsQueryExists("CreateByIDsCollection") && AuthRequest.IsQueryExists("IDsCollection"))
             {
                 foreach (var channelIdContentId in
-                    Utilities.GetStringList(AuthRequest.GetQueryString("IDsCollection")))
+                    TranslateUtils.StringCollectionToStringCollection(AuthRequest.GetQueryString("IDsCollection")))
                 {
                     var pair = channelIdContentId.Split('_');
-                    CreateManager.CreateContentAsync(SiteId, TranslateUtils.ToInt(pair[0]),
-                        TranslateUtils.ToInt(pair[1])).GetAwaiter().GetResult();
+                    CreateManager.CreateContent(SiteId, TranslateUtils.ToInt(pair[0]),
+                        TranslateUtils.ToInt(pair[1]));
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
@@ -171,7 +170,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var userKeyPrefix = StringUtils.Guid();
 
-                var downloadUrl = WebConfigUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("DownloadUrl"));
+                var downloadUrl = TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("DownloadUrl"));
                 var directoryName = PathUtils.GetFileNameWithoutExtension(downloadUrl);
 
                 var parameters = AjaxOtherService.GetSiteTemplateDownloadParameters(downloadUrl, directoryName, userKeyPrefix);

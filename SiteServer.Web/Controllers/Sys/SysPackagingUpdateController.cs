@@ -1,21 +1,19 @@
-﻿using System.Threading.Tasks;
-using System.Web.Http;
-using Datory;
-using SiteServer.Abstractions;
-using SiteServer.API.Context;
+﻿using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    
+    [OpenApiIgnore]
     public class SysPackagesUpdateController : ApiController
     {
         [HttpPost, Route(ApiRouteUpdate.Route)]
-        public async Task<IHttpActionResult> Main()
+        public IHttpActionResult Main()
         {
-            var request = await AuthenticatedRequest.GetAuthAsync();
+            var request = new AuthenticatedRequest();
 
             if (!request.IsAdminLoggin)
             {
@@ -27,11 +25,12 @@ namespace SiteServer.API.Controllers.Sys
             var packageType = request.GetPostString("packageType");
             if (StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSsCms))
             {
-                packageType = PackageType.SsCms.GetValue();
+                packageType = PackageType.SsCms.Value;
             }
 
+            string errorMessage;
             var idWithVersion = $"{packageId}.{version}";
-            if (!PackageUtils.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(packageType, PackageType.Library), out var errorMessage))
+            if (!PackageUtils.UpdatePackage(idWithVersion, PackageType.Parse(packageType), out errorMessage))
             {
                 return BadRequest(errorMessage);
             }

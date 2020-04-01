@@ -1,5 +1,5 @@
 ﻿<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.Net.Compilers.3.3.1\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.3.3.1\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.3.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.3.0.0\build\Microsoft.Net.Compilers.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -47,145 +47,99 @@
     <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
       <HintPath>..\packages\AngleSharp.0.9.11\lib\net45\AngleSharp.dll</HintPath>
     </Reference>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.5.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>..\packages\BouncyCastle.1.8.5\lib\BouncyCastle.Crypto.dll</HintPath>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.3.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.3.1\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="CacheManager.Core, Version=1.2.0.0, Culture=neutral, PublicKeyToken=5b450b4fb65c4cdb, processorArchitecture=MSIL">
-      <HintPath>..\packages\CacheManager.Core.1.2.0\lib\net45\CacheManager.Core.dll</HintPath>
+    <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.60.6\lib\net451\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="CacheManager.Microsoft.Extensions.Caching.Memory, Version=1.2.0.0, Culture=neutral, PublicKeyToken=5b450b4fb65c4cdb, processorArchitecture=MSIL">
-      <HintPath>..\packages\CacheManager.Microsoft.Extensions.Caching.Memory.1.2.0\lib\net451\CacheManager.Microsoft.Extensions.Caching.Memory.dll</HintPath>
+    <Reference Include="Datory, Version=0.1.20.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Datory.0.1.20\lib\net452\Datory.dll</HintPath>
     </Reference>
-    <Reference Include="CacheManager.Serialization.Json, Version=1.2.0.0, Culture=neutral, PublicKeyToken=5b450b4fb65c4cdb, processorArchitecture=MSIL">
-      <HintPath>..\packages\CacheManager.Serialization.Json.1.2.0\lib\net45\CacheManager.Serialization.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="CacheManager.StackExchange.Redis, Version=1.2.0.0, Culture=neutral, PublicKeyToken=5b450b4fb65c4cdb, processorArchitecture=MSIL">
-      <HintPath>..\packages\CacheManager.StackExchange.Redis.1.2.0\lib\net461\CacheManager.StackExchange.Redis.dll</HintPath>
-    </Reference>
-    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.2.0.30\lib\net461\Dapper.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Protobuf, Version=3.10.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Protobuf.3.10.1\lib\net45\Google.Protobuf.dll</HintPath>
+    <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="HtmlSanitizer, Version=4.0.0.0, Culture=neutral, PublicKeyToken=61c49a1a9e79cc28, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlSanitizer.4.0.217\lib\net45\HtmlSanitizer.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=1.2.0.246, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpZipLib.1.2.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+      <HintPath>..\packages\HtmlSanitizer.4.0.210\lib\net45\HtmlSanitizer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Extensions.Caching.Abstractions, Version=1.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Caching.Abstractions.1.0.2\lib\netstandard1.0\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
+    <Reference Include="Microsoft.Owin, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.0.0\lib\net451\Microsoft.Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Caching.Memory, Version=1.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Caching.Memory.1.0.2\lib\net451\Microsoft.Extensions.Caching.Memory.dll</HintPath>
+    <Reference Include="Microsoft.Owin.FileSystems, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.FileSystems.3.0.1\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=3.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.0\lib\net451\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Options, Version=1.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Options.1.0.2\lib\netstandard1.0\Microsoft.Extensions.Options.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.4.0.0\lib\net451\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Primitives, Version=1.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Primitives.1.0.1\lib\netstandard1.0\Microsoft.Extensions.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.4.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.FileSystems, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.FileSystems.4.0.1\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.4.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.StaticFiles, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.StaticFiles.4.0.1\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
+    <Reference Include="Microsoft.Owin.StaticFiles, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.StaticFiles.3.0.1\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=8.0.18.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.8.0.18\lib\net452\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=8.0.16.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.0.16\lib\net452\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Namotion.Reflection, Version=1.0.7.0, Culture=neutral, PublicKeyToken=c2f9c3bdfae56102, processorArchitecture=MSIL">
-      <HintPath>..\packages\Namotion.Reflection.1.0.7\lib\net45\Namotion.Reflection.dll</HintPath>
+    <Reference Include="Namotion.Reflection, Version=1.0.6.0, Culture=neutral, PublicKeyToken=c2f9c3bdfae56102, processorArchitecture=MSIL">
+      <HintPath>..\packages\Namotion.Reflection.1.0.6\lib\net45\Namotion.Reflection.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NJsonSchema, Version=10.0.27.0, Culture=neutral, PublicKeyToken=c2f9c3bdfae56102, processorArchitecture=MSIL">
-      <HintPath>..\packages\NJsonSchema.10.0.27\lib\net45\NJsonSchema.dll</HintPath>
+    <Reference Include="NJsonSchema, Version=10.0.23.0, Culture=neutral, PublicKeyToken=c2f9c3bdfae56102, processorArchitecture=MSIL">
+      <HintPath>..\packages\NJsonSchema.10.0.23\lib\net45\NJsonSchema.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=4.1.1.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.4.1.1\lib\net461\Npgsql.dll</HintPath>
+    <Reference Include="Npgsql, Version=4.0.7.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.4.0.7\lib\net451\Npgsql.dll</HintPath>
     </Reference>
-    <Reference Include="NSwag.Annotations, Version=13.1.3.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
-      <HintPath>..\packages\NSwag.Annotations.13.1.3\lib\net45\NSwag.Annotations.dll</HintPath>
+    <Reference Include="NSwag.Annotations, Version=13.0.6.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
+      <HintPath>..\packages\NSwag.Annotations.13.0.6\lib\net45\NSwag.Annotations.dll</HintPath>
     </Reference>
-    <Reference Include="NSwag.AspNet.Owin, Version=13.1.3.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
-      <HintPath>..\packages\NSwag.AspNet.Owin.13.1.3\lib\net45\NSwag.AspNet.Owin.dll</HintPath>
+    <Reference Include="NSwag.AspNet.Owin, Version=13.0.6.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
+      <HintPath>..\packages\NSwag.AspNet.Owin.13.0.6\lib\net45\NSwag.AspNet.Owin.dll</HintPath>
     </Reference>
-    <Reference Include="NSwag.AspNet.WebApi, Version=13.1.3.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
-      <HintPath>..\packages\NSwag.AspNet.WebApi.13.1.3\lib\net45\NSwag.AspNet.WebApi.dll</HintPath>
+    <Reference Include="NSwag.AspNet.WebApi, Version=13.0.6.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
+      <HintPath>..\packages\NSwag.AspNet.WebApi.13.0.6\lib\net45\NSwag.AspNet.WebApi.dll</HintPath>
     </Reference>
-    <Reference Include="NSwag.Core, Version=13.1.3.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
-      <HintPath>..\packages\NSwag.Core.13.1.3\lib\net45\NSwag.Core.dll</HintPath>
+    <Reference Include="NSwag.Core, Version=13.0.6.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
+      <HintPath>..\packages\NSwag.Core.13.0.6\lib\net45\NSwag.Core.dll</HintPath>
     </Reference>
-    <Reference Include="NSwag.Generation, Version=13.1.3.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
-      <HintPath>..\packages\NSwag.Generation.13.1.3\lib\net45\NSwag.Generation.dll</HintPath>
+    <Reference Include="NSwag.Generation, Version=13.0.6.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
+      <HintPath>..\packages\NSwag.Generation.13.0.6\lib\net45\NSwag.Generation.dll</HintPath>
     </Reference>
-    <Reference Include="NSwag.Generation.WebApi, Version=13.1.3.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
-      <HintPath>..\packages\NSwag.Generation.WebApi.13.1.3\lib\net45\NSwag.Generation.WebApi.dll</HintPath>
+    <Reference Include="NSwag.Generation.WebApi, Version=13.0.6.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
+      <HintPath>..\packages\NSwag.Generation.WebApi.13.0.6\lib\net45\NSwag.Generation.WebApi.dll</HintPath>
     </Reference>
-    <Reference Include="Oracle.ManagedDataAccess, Version=2.0.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
-      <HintPath>..\packages\Oracle.ManagedDataAccess.Core.2.19.50\lib\netstandard2.0\Oracle.ManagedDataAccess.dll</HintPath>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <HintPath>..\packages\Oracle.ManagedDataAccess.19.3.1\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Pipelines.Sockets.Unofficial, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42ea0a778e13fbe2, processorArchitecture=MSIL">
-      <HintPath>..\packages\Pipelines.Sockets.Unofficial.1.0.7\lib\net461\Pipelines.Sockets.Unofficial.dll</HintPath>
-    </Reference>
     <Reference Include="QueryBuilder, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SqlKata.1.1.7\lib\net45\QueryBuilder.dll</HintPath>
     </Reference>
-    <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
-      <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=2.3.15.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.2.3.15\lib\net452\SiteServer.Plugin.dll</HintPath>
     </Reference>
-    <Reference Include="StackExchange.Redis, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
-      <HintPath>..\packages\StackExchange.Redis.2.0.513\lib\net461\StackExchange.Redis.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Concurrent" />
     <Reference Include="System.ComponentModel" />
-    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Data.Common, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.Common.4.3.0\lib\net451\System.Data.Common.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data.SqlClient, Version=4.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SqlClient.4.7.0\lib\net461\System.Data.SqlClient.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SQLite, Version=1.0.112.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.112.0\lib\net46\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Diagnostics.PerformanceCounter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.PerformanceCounter.4.5.0\lib\net461\System.Diagnostics.PerformanceCounter.dll</HintPath>
+    <Reference Include="System.Data.SqlClient, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SqlClient.4.6.1\lib\net451\System.Data.SqlClient.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing.Design" />
-    <Reference Include="System.IO.Pipelines, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.Pipelines.4.5.1\lib\netstandard2.0\System.IO.Pipelines.dll</HintPath>
-    </Reference>
     <Reference Include="System.Management" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard1.1\System.Memory.dll</HintPath>
@@ -195,26 +149,12 @@
     <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Text.Encodings.Web, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Encodings.Web.4.6.0\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Json, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Json.4.6.0\lib\net461\System.Text.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Channels, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Channels.4.5.0\lib\netstandard2.0\System.Threading.Channels.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -226,6 +166,7 @@
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -262,6 +203,25 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\Home\HomeContentAddLayerFileController.cs" />
+    <Compile Include="Controllers\Home\HomeContentAddLayerVideoController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerImageController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerImageController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryEditorController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryImageController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryImageController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerImageController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerImageController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerVideoController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerVideoController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerWordController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryLayerWordController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerTextController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryTextController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesEditorLayerTextController.Dto.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesLibraryTextController.Dto.cs" />
+    <Compile Include="Controllers\RequestExtensions.cs" />
+    <Compile Include="Controllers\V1\ContentsController.Dto.cs" />
     <None Include="packages.config" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -276,24 +236,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CentralizedPrefixProvider.cs" />
-    <Compile Include="Context\ApiContentsParameters.cs" />
-    <Compile Include="Context\AuthenticatedRequest.cs" />
-    <Compile Include="Context\AuthenticatedRequest.Utils.cs" />
-    <Compile Include="Context\CaptchaManager.cs" />
-    <Compile Include="Context\ContextUtils.cs" />
-    <Compile Include="Context\CookieUtils.cs" />
-    <Compile Include="Context\Extensions.cs" />
-    <Compile Include="Context\PageResponse.cs" />
-    <Compile Include="Context\StlRequest.cs" />
-    <Compile Include="Context\UEditor\Config.cs" />
-    <Compile Include="Context\UEditor\ConfigHandler.cs" />
-    <Compile Include="Context\UEditor\CrawlerHandler.cs" />
-    <Compile Include="Context\UEditor\Handler.cs" />
-    <Compile Include="Context\UEditor\ListFileHandler.cs" />
-    <Compile Include="Context\UEditor\NotSupportedHandler.cs" />
-    <Compile Include="Context\UEditor\PathFormater.cs" />
-    <Compile Include="Context\UEditor\UEditorUploader.cs" />
-    <Compile Include="Context\UEditor\UploadHandler.cs" />
     <Compile Include="Controllers\Home\HomeContentAddLayerImageController.cs" />
     <Compile Include="Controllers\Home\HomeContentsController.cs" />
     <Compile Include="Controllers\Home\HomeContentsLayerArrangeController.cs" />
@@ -311,262 +253,58 @@
     <Compile Include="Controllers\Home\HomeContentsLayerViewController.cs" />
     <Compile Include="Controllers\Home\HomeContentsLayerWordController.cs" />
     <Compile Include="Controllers\Home\HomeController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsController.Edit.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerCreateController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerCreateController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsTranslateController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsTranslateController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerTaxisController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerTaxisController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerGroupController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsLayerGroupController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerViewController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsCheckController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsCheckController.Columns.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsRecycleController.Delete.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsRecycleController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsRecycleController.Columns.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsCheckController.List.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsCheckController.Tree.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsSearchController.Columns.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsSearchController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.All.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsSearchController.Create.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsRecycleController.List.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsSearchController.List.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.List.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.Create.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.Columns.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsRecycleController.Tree.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsSearchController.Tree.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.Tree.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerArrangeController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerCheckController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerCopyController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerTagController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerTagController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerTranslateController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerDeleteController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerGroupController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerHitsController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerHitsController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerAttributesController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerExportController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerImportController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerStateController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerWordController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerTaxisController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Create\PagesCreateSpecialController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Create\PagesCreateFileController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Create\PagesCreateSpecialController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Create\PagesCreateFileController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Create\PagesCreatePageController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.Preview.cs" />
-    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.Update.cs" />
-    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.Get.cs" />
-    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorLayerTranslateController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorLayerTranslateController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryFileController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryFileController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryVideoController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryVideoController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesAddController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesAddController.Utils.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesLayerSelectController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesLayerSelectController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Utility\PagesUtilityCacheController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesGroupContentLayerAddController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesGroupChannelLayerAddController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesAdminLayerViewController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesGroupContentLayerAddController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesGroupChannelLayerAddController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesAdminLayerViewController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesVideoLayerSelectController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesVideoLayerSelectController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesVideoLayerUploadController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesFileLayerUploadController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerFileController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerAudioController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesVideoLayerUploadController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesFileLayerUploadController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerFileController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerAudioController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsUploadFileController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsWaterMarkController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsUploadVideoController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsUploadImageController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsUploadFileController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsWaterMarkController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsUploadVideoController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsUploadImageController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCrossSiteTransChannelsController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCrossSiteTransChannelsController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCrossSiteTransController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCrossSiteTransController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCreateTriggerController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCreateTriggerController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCreateRuleLayerSetController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCreateRuleLayerSetController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCreateRuleController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsContentController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsContentTagController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsContentGroupController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsChannelGroupController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsContentTagController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsContentGroupController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsChannelGroupController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesFileLayerSelectController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesImageLayerSelectController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesFileLayerSelectController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesImageLayerSelectController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesImageLayerUploadController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesImageLayerUploadController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerTextController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerTextController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryLayerImageController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryLayerImageController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryLayerVideoController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryLayerVideoController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryLayerWordController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryLayerWordController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryTextController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryImageController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryTextController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryImageController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Channels\PagesChannelsController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsContentController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCreateRuleController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCreateController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsSiteController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerVideoController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerImageController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerVideoController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerImageController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerWordController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesEditorLayerWordController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Editor\PagesEditorController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerArrangeController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerAttributesController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerCheckController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerCopyController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerTranslateController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerDeleteController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerExportController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerGroupController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerImportController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerStateController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerTaxisController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerViewController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Contents\PagesContentsLayerWordController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Create\PagesCreatePageController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Create\PagesCreateStatusController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Library\PagesLibraryEditorController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsCreateController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsSiteController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesSpecialController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesSpecialEditorController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesSpecialController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsStyleContentController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsStyleChannelController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsStyleContentController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsStyleChannelController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsStyleRelatedFieldController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsStyleRelatedFieldController.Items.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsStyleRelatedFieldController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesAssetsEditorController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesAssetsEditorController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesEditorLayerRestoreController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesEditorLayerRestoreController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesMatchController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesPreviewController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesMatchController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesReferenceController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesPreviewController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesEditorController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesAssetsController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesReferenceController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesEditorController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesAssetsController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Templates\PagesTemplatesController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsStyleSiteController.cs" />
-    <Compile Include="Controllers\Pages\Cms\Settings\PagesSettingsStyleSiteController.Dto.cs" />
-    <Compile Include="Controllers\Pages\PagesDashboardController.Dto.cs" />
-    <Compile Include="Controllers\Pages\PagesInstallController.Dto.cs" />
-    <Compile Include="Controllers\Pages\PagesInstallController.cs" />
-    <Compile Include="Controllers\Pages\PagesRedirectController.cs" />
-    <Compile Include="Controllers\Pages\PagesLoadingController.cs" />
-    <Compile Include="Controllers\Pages\PagesUpdateSystemController.cs" />
+    <Compile Include="Controllers\Pages\Cms\Config\PagesConfigContentController.cs" />
+    <Compile Include="Controllers\Pages\Cms\Config\PagesConfigSiteController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerArrangeController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerAttributesController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCheckController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerOptionsController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCopyController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCutController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerDeleteController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerExportController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerGroupController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerImportController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerStateController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerTaxisController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerViewController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerWordController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesCreateController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesCreateStatusController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesSpecialEditorController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesSpecialAddLayerController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesSpecialController.cs" />
     <Compile Include="Controllers\Pages\PagesDashboardController.cs" />
+    <Compile Include="Controllers\Pages\PagesLoginController.cs" />
+    <Compile Include="Controllers\Pages\PagesMainController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesAddController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesAddLayerUploadController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesInstallController.cs" />
-    <Compile Include="Controllers\Pages\Plugins\PagesManageController.Dto.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesManageController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesViewController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminViewController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisSiteController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisSiteController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisUserController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisUserController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisAdminWorkController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisAdminLoginController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisAdminWorkController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Analysis\PagesAnalysisAdminLoginController.Dto.cs" />
     <Compile Include="Controllers\Pages\Settings\Config\PagesConfigAdminController.cs" />
     <Compile Include="Controllers\Pages\Settings\Config\PagesConfigHomeController.cs" />
     <Compile Include="Controllers\Pages\Settings\Config\PagesConfigHomeMenuController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Log\PagesLogErrorController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Log\PagesLogErrorController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Log\PagesLogUserController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Log\PagesLogUserController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Log\PagesLogAdminController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Log\PagesLogSiteController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\Log\PagesLogSiteController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Log\PagesLogConfigController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Log\PagesLogAdminController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesTemplatesOnlineController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesTemplatesController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesChangeRootController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesUrlController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesSaveController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesController.cs" />
-    <Compile Include="Controllers\Pages\Settings\User\PagesUserGroupController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\User\PagesUserStyleController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\User\PagesUserViewController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Settings\User\PagesUserPasswordController.cs" />
-    <Compile Include="Controllers\Pages\Settings\User\PagesUserProfileController.cs" />
-    <Compile Include="Controllers\Pages\Settings\User\PagesUserViewController.cs" />
-    <Compile Include="Controllers\Pages\Settings\User\PagesUserController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminRoleAddController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminRoleController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminAccessTokensController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminAccessTokensViewLayerController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminConfigController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminPasswordController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminProfileController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminViewController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesAddController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Sites\PagesSitesTableController.cs" />
-    <Compile Include="Controllers\Pages\Settings\User\PagesUserConfigController.cs" />
-    <Compile Include="Controllers\Pages\Settings\User\PagesUserGroupController.cs" />
-    <Compile Include="Controllers\Pages\Settings\User\PagesUserStyleController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Utility\PagesUtilityDbLogDeleteController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Utility\PagesUtilityEncryptController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Utility\PagesUtilityCacheController.cs" />
-    <Compile Include="Controllers\Pages\Settings\Utility\PagesUtilityParametersController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesTableStyleLayerAddMultipleController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesTableStyleLayerAddMultipleController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesTableStyleLayerValidateController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesTableStyleLayerEditorController.Dto.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesTableStyleLayerEditorController.cs" />
-    <Compile Include="Controllers\Pages\Shared\PagesTableStyleLayerValidateController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesAdminRoleAddController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesAdminRoleController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesAdminController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesAdminAccessTokensController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesAdminAccessTokensViewLayerController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesAdminConfigController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesAdminPasswordController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesAdminProfileController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesAdminViewController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesSiteAddController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesSiteTemplateOnlineController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesSiteTableController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesUserConfigController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesUserGroupController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesUserStyleController.cs" />
+    <Compile Include="Controllers\Pages\Shared\PagesTableStyleController.cs" />
+    <Compile Include="Controllers\Pages\Shared\PagesTableValidateController.cs" />
     <Compile Include="Controllers\Preview\PreviewController.cs" />
-    <Compile Include="Controllers\Pages\PagesErrorController.cs" />
+    <Compile Include="Controllers\Sys\SysErrorController.cs" />
     <Compile Include="Controllers\Sys\SysPackagingClearCacheController.cs" />
     <Compile Include="Controllers\Sys\SysPackagingDownloadController.cs" />
     <Compile Include="Controllers\Sys\SysPackagingSyncDatabaseController.cs" />
@@ -575,42 +313,46 @@
     <Compile Include="Controllers\Sys\SysStlActionsDownloadController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsDynamicController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsIfController.cs" />
+    <Compile Include="Controllers\Sys\SysStlActionsLoadingChannelsController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsPageContentsController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsRelatedFieldController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsSearchController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsTriggerController.cs" />
     <Compile Include="Controllers\Sys\SysUEditorController.cs" />
-    <Compile Include="Controllers\V1\AdministratorsController.Dto.cs" />
     <Compile Include="Controllers\V1\AdministratorsController.cs" />
     <Compile Include="Controllers\V1\CaptchaController.cs" />
     <Compile Include="Controllers\V1\ChannelsController.cs" />
-    <Compile Include="Controllers\V1\ContentsController.Utils.cs" />
-    <Compile Include="Controllers\V1\ContentsController.Dto.cs" />
     <Compile Include="Controllers\V1\ContentsController.cs" />
+    <Compile Include="Controllers\V1\ContentsController.Utils.cs" />
     <Compile Include="Controllers\V1\PingController.cs" />
     <Compile Include="Controllers\V1\StlController.cs" />
     <Compile Include="Controllers\V1\UsersController.cs" />
     <Compile Include="ErrorRedirectModule.cs" />
     <Compile Include="NamespaceHttpControllerSelector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Controllers\Pages\Settings\Admin\PagesAdminRoleAddController.Dto.cs" />
+    <Compile Include="Results\DefaultResult.cs" />
+    <Compile Include="Results\GenericResult.cs" />
+    <Compile Include="Results\Pages\Settings\Permission.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="WebApiConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Datory\src\Datory\Datory.csproj">
-      <Project>{c6df816e-0eb3-4e71-b446-0b24bbb2f6f0}</Project>
-      <Name>Datory</Name>
+    <ProjectReference Include="..\SiteServer.BackgroundPages\SiteServer.BackgroundPages.csproj">
+      <Project>{6aa1713a-3b77-4b20-b8c7-fcb6de556f64}</Project>
+      <Name>SiteServer.BackgroundPages</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\SiteServer.Abstractions\SiteServer.Abstractions.csproj">
-      <Project>{66353195-4727-453e-8303-17a6a8d0471d}</Project>
-      <Name>SiteServer.Abstractions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\src\SiteServer.CMS\SiteServer.CMS.csproj">
-      <Project>{0be74ec6-cfe6-438d-b966-a968ed39ba37}</Project>
+    <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
+      <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
       <Name>SiteServer.CMS</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
+      <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>
+      <Name>SiteServer.Utils</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Requests\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -619,6 +361,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <ProjectExtensions>
     <VisualStudio>
@@ -633,10 +376,8 @@
     <PropertyGroup>
       <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.112.0\build\net46\System.Data.SQLite.Core.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.3.3.1\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.3.3.1\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.3.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.3.0.0\build\Microsoft.Net.Compilers.props'))" />
   </Target>
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.112.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.112.0\build\net46\System.Data.SQLite.Core.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

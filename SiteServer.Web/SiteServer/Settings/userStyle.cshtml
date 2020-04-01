@@ -1,128 +1,67 @@
-﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+<li class="nav-item">
+  <a class="nav-link" href="pageUser.aspx">用户管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userGroup.cshtml">用户组管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link active" href="userStyle.cshtml">用户字段</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userConfig.cshtml">用户设置</a>
+</li>
+}
 
-<el-card>
-  <div slot="header" class="clearfix">
-    <span>用户字段</span>
+<div class="table-responsive">
+  <table class="table tablesaw table-hover m-0">
+    <thead>
+      <tr>
+        <th class="text-center">排序</th>
+        <th>字段名 </th>
+        <th>显示名称 </th>
+        <th class="text-center">提交类型</th>
+        <th class="text-center">验证规则</th>
+        <th class="text-center">操作</th>
+      </tr>
+    </thead>
+    <tbody>
 
-    <el-dropdown
-      style="float: right; margin-top: -8px;"
-      v-on:command="btnCommandClick">
-      <el-button type="text" :underline="false">
-        操作 <i class="el-icon-arrow-down el-icon--right"></i>
-      </el-button>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="Add">新增字段</el-dropdown-item>
-        <el-dropdown-item command="AddMultiple">批量新增字段</el-dropdown-item>
-        <el-dropdown-item command="Import">导 入</el-dropdown-item>
-        <el-dropdown-item command="Export">导 出</el-dropdown-item>
-        <el-dropdown-item command="Reset">重 置</el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
-  </div>
+      <tr v-for="item in items">
+        <td class="text-center">
+          {{ item.taxis }}
+        </td>
+        <td>
+          {{ item.attributeName }}
+        </td>
+        <td>
+          {{ item.displayName }}
+        </td>
+        <td class="text-center">
+          {{ item.inputType }}
+        </td>
+        <td class="text-center">
+          <a href="javascript:;" v-on:click="btnValidateClick(item.attributeName)">{{ item.validate || '无验证' }}</a>
+        </td>
+        <td class="text-center">
+          <a href="javascript:;" v-on:click="btnEditClick(item.attributeName)">编辑</a>
+          <a v-if="!item.isSystem" class="text-danger ml-2" href="javascript:;" v-on:click="btnDeleteClick(item.attributeName)">删除</a>
+        </td>
+      </tr>
 
-  <el-table :data="styles" style="width: 100%">
-    <el-table-column label="排序" prop="taxis" width="60">
-      <template slot-scope="scope">
-        {{ scope.row.taxis ? scope.row.taxis : '' }}
-      </template>
-    </el-table-column>
-    <el-table-column label="字段名" prop="attributeName"></el-table-column>
-    <el-table-column label="显示名称" prop="displayName"></el-table-column>
-    <el-table-column label="提交类型" prop="inputType"></el-table-column>
-    <el-table-column label="验证规则">
-      <template slot-scope="scope">
-        <el-link
-          :underline="false"
-          v-on:click="btnValidateClick(scope.row.attributeName)"
-          type="primary">
-          {{ getRules(scope.row.rules) }}
-        </el-link>
-      </template>
-    </el-table-column>
-    <el-table-column label="操作" width="130">
-      <template slot-scope="scope">
-        <el-link
-          :underline="false"
-          v-on:click="btnEditClick(scope.row.attributeName)"
-          type="primary">
-          编辑
-        </el-link>
-        <el-link
-          :underline="false"
-          v-if="!scope.row.isSystem"
-          type="danger"
-          v-on:click="btnDeleteClick(scope.row.attributeName)">
-          删除
-        </el-link>
-      </template>
-    </el-table-column>
-  </el-table>
+    </tbody>
+  </table>
+</div>
 
-  <div style="height: 10px"></div>
-  <el-divider></el-divider>
-  <div style="height: 10px"></div>
+<hr />
 
-  <el-button
-    size="small"
-    type="primary"
-    v-on:click="btnAddClick">
-    新增字段
-  </el-button>
-  <el-button
-    size="small"
-    type="primary"
-    v-on:click="btnAddMultipleClick">
-    批量新增字段
-  </el-button>
-  <el-button
-    size="small"
-    type="primary"
-    v-on:click="btnImportClick">
-    导 入
-  </el-button>
-  <el-button
-    size="small"
-    type="primary"
-    v-on:click="btnExportClick">
-    导 出
-  </el-button>
-  <el-button
-    size="small"
-    type="primary"
-    v-on:click="btnResetClick">
-    重 置
-  </el-button>
-
-</el-card>
-
-<el-drawer
-  title="导入样式"
-  ref="uploadPanel"
-  :visible.sync="uploadPanel"
-  destroy-on-close
-  direction="rtl"
-  size="50%">
-  <div class="drawer__content">
-    <br />
-    <el-form ref="uploadForm" label-width="200px">
-      <el-upload
-        :drag="true"
-        :limit="1"
-        :action="urlUpload"
-        :auto-upload="true"
-        :with-credentials="true"
-        :file-list="uploadList"
-        :before-upload="uploadBefore"
-        :on-progress="uploadProgress"
-        :on-success="uploadSuccess"
-        :on-error="uploadError"
-        :multiple="false">
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或 <em>点击上传</em></div>
-      </el-upload>
-    </el-form>
-  </div>
-</el-drawer>
+<a href="javascript:;" v-on:click="btnAddClick" class="btn btn-sm btn-outline-primary pl-3 pr-3">
+  <i class="ion-plus"></i>
+  新增字段
+</a>
+<!-- <a href="javascript:;" class="btn btn-sm btn-outline-secondary pl-3 pr-3">批量新增字段</a>
+<a href="javascript:;" class="btn btn-sm btn-outline-secondary pl-3 pr-3">导 入</a>
+<a href="javascript:;" class="btn btn-sm btn-outline-secondary pl-3 pr-3">导 出</a> -->
 
 @section Scripts{
 <script src="userStyle.js" type="text/javascript"></script> }

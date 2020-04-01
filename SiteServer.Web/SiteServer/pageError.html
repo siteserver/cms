@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>SiteServer 管理后台</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="renderer" content="webkit" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+  <link href="assets/icons/favicon.png" rel="icon" type="image/png">
+  <script src="assets/js/rollbar.js"></script>
+</head>
+
+<body>
+  <div id="main" class="container m-t-20">
+
+    <div class="text-center" style="margin-top: 100px" v-bind:style="{ display: message ? 'none' : '' }">
+      <img class="mt-3" src="assets/images/loading.gif" />
+      <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
+    </div>
+
+    <div class="card" v-bind:style="{ display: message ? '' : 'none' }" style="display: none">
+      <div class="card-header" style="border-top: 3px solid #ef5350 !important;border-radius: 3px;">
+        <strong>错误信息</strong>
+      </div>
+      <div class="card-body">
+        <blockquote class="blockquote mb-0">
+          <p style="word-wrap: break-word;" v-html="message" v-show="message"></p>
+          <p style="word-wrap: break-word;" v-html="stacktrace" v-show="stacktrace"></p>
+          <p style="word-wrap: break-word;" v-html="addDate" v-show="addDate"></p>
+        </blockquote>
+      </div>
+      <div class="card-footer text-muted">
+        <span class="m-r-5">如需帮助，请点击链接向 SiteServer CMS 官方 <a target="_blank" v-bind:href="'https://github.com/siteserver/cms/issues/new?title=' + message + '&body=' + stacktrace">提交问题</a></span>
+      </div>
+    </div>
+
+  </div>
+</body>
+
+</html>
+
+<script src="assets/vue/vue.min.js"></script>
+<script src="assets/js/apiUtils.js"></script>
+<script type="text/javascript">
+  var errorApi = new apiUtils.Api('../api/sys/');
+  var logId = errorApi.getQueryStringByName('logId');
+  var message = errorApi.getQueryStringByName('message');
+
+  var data = {
+    message: message,
+    stacktrace: null,
+    addDate: null
+  };
+
+  var $vue = new Vue({
+    el: '#main',
+    data: data,
+    methods: {
+      loadError: function () {
+        var $this = this;
+
+        errorApi.get(null, function (err, res) {
+          if (!err && res && res.logInfo) {
+            $this.message = res.logInfo.summary + ' ' + res.logInfo.message;
+            $this.stacktrace = res.logInfo.stacktrace;
+            $this.addDate = res.logInfo.addDate;
+            $this.reportError(res.logInfo, res.version);
+          }
+        }, 'errors', logId);
+      },
+      reportError: function (logInfo, version) {
+        if (!logInfo) return;
+        Rollbar.error(logInfo.summary + ' ' + logInfo.message, {
+          version: version,
+          stacktrace: logInfo.stacktrace
+        });
+      }
+    }
+  });
+
+  if (logId) {
+    $vue.loadError();
+  }
+</script>

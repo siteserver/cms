@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using NDesk.Options;
-using SiteServer.Abstractions;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Repositories;
-using Datory;
-using SiteServer.CMS.Framework;
+using SiteServer.Plugin;
+using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Cli.Jobs
 {
@@ -83,26 +82,25 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            if (!PasswordRestrictionUtils.IsValid(_password, PasswordRestriction.LetterAndDigit.GetValue()))
+            if (!EUserPasswordRestrictionUtils.IsValid(_password, EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit)))
             {
-                await CliUtils.PrintErrorAsync($"管理员密码不符合规则，请包含{PasswordRestriction.LetterAndDigit.GetDisplayName()}");
+                await CliUtils.PrintErrorAsync($"管理员密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestriction.LetterAndDigit)}");
                 return;
             }
 
             WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigPath);
 
-            await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.GetValue()}");
+            await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.Value}");
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
             await Console.Out.WriteLineAsync($"系统文件夹: {CliUtils.PhysicalApplicationPath}");
 
-            var (isConnectionWorks, errorMessage) = await WebConfigUtils.Database.IsConnectionWorksAsync();
-            if (!isConnectionWorks)
+            if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
-                await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
+                await CliUtils.PrintErrorAsync("系统无法连接到 web.config 中设置的数据库");
                 return;
             }
 
-            if (!await DataProvider.ConfigRepository.IsNeedInstallAsync())
+            if (!SystemManager.IsNeedInstall())
             {
                 await CliUtils.PrintErrorAsync("系统已安装在 web.config 指定的数据库中，命令执行失败");
                 return;
@@ -112,7 +110,7 @@ namespace SiteServer.Cli.Jobs
 
             DataProvider.Reset();
 
-            await DataProvider.DatabaseRepository.InstallDatabaseAsync(_userName, _password);
+            SystemManager.InstallDatabase(_userName, _password);
 
             await Console.Out.WriteLineAsync("恭喜，系统安装成功！");
         }

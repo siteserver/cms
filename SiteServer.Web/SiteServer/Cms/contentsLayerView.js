@@ -1,84 +1,51 @@
-﻿var $url = '/pages/cms/contents/contentsLayerView';
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerView');
 
-var data = utils.initData({
-  siteId: utils.getQueryInt('siteId'),
-  channelId: utils.getQueryInt('channelId'),
-  contentId: utils.getQueryInt('contentId'),
-  content: null,
-  channelName: null,
-  state: null,
-  columns: null,
-  siteUrl: null,
-  groupNames: null,
-  tagNames: null,
-  editorColumns: null,
-  activeName: 'attributes'
+Object.defineProperty(Object.prototype, "getProp", {
+  value: function (prop) {
+    var key, self = this;
+    for (key in self) {
+      if (key.toLowerCase() == prop.toLowerCase()) {
+        return self[key];
+      }
+    }
+  }
 });
 
+var data = {
+  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
+  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
+  contentId: parseInt(pageUtils.getQueryStringByName('contentId')),
+  pageLoad: false,
+  pageAlert: null,
+  content: null,
+  channelName: null,
+  attributes: null
+};
+
 var methods = {
-  apiGet: function () {
+  loadConfig: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url, {
-      params: {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        contentId: this.contentId
-      }
-    }).then(function (response) {
-      var res = response.data;
+    $api.get({
+      siteId: $this.siteId,
+      channelId: $this.channelId,
+      contentId: $this.contentId
+    }, function (err, res) {
+      if (err || !res || !res.value) return;
 
-      $this.content = res.content;
+      $this.content = res.value;
       $this.channelName = res.channelName;
-      $this.state = res.state,
-      $this.columns = res.columns;
-      $this.siteUrl = res.siteUrl;
-      $this.groupNames = res.groupNames;
-      $this.tagNames = res.tagNames;
-      $this.editorColumns = res.editorColumns;
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
+      $this.attributes = res.attributes;
+      $this.pageLoad = true;
     });
-  },
-
-  isDisplay: function (attributeName) {
-    return attributeName !== 'Sequence' && attributeName !== 'Title' && attributeName !== 'ChannelId';
-  },
-
-  getUrl: function(virtualUrl) {
-    if (!virtualUrl) return '';
-    return _.replace(virtualUrl, '@/', this.siteUrl + '/');
-  },
-
-  getContentUrl: function (content) {
-    if (content.checked) {
-      return '../redirect.cshtml?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
-    }
-    return apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
-  },
-
-  btnAdminClick: function(adminId) {
-    utils.openLayer({
-      title: "管理员查看",
-      url: '../Shared/adminLayerView.cshtml?adminId=' + adminId,
-      width: 550,
-      height: 450
-    });
-  },
-
-  btnCancelClick: function () {
-    utils.closeLayer();
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,
   created: function () {
-    this.apiGet();
+    this.loadConfig();
   }
 });

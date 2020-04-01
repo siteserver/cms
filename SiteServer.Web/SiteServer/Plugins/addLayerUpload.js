@@ -1,24 +1,27 @@
 ﻿var $url = '/pages/plugins/addLayerUpload';
 var $urlUpload = apiUrl + '/pages/plugins/addLayerUpload/actions/upload';
 
-var data = utils.initData({
+var data = {
+  pageLoad: false,
+  pageAlert: null,
   importType: 'nupkg',
   file: null,
   files: []
-});
+};
 
 var methods = {
   loadConfig: function () {
     var $this = this;
-    
+    $this.pageLoad = true;
+
     $api.get($url).then(function (response) {
       setTimeout(function () {
         $this.loadUploader();
       }, 100);
     }).catch(function (error) {
-      utils.error($this, error);
+      $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      utils.loading($this, false);
+      $this.pageLoad = true;
     });
   },
 
@@ -109,17 +112,17 @@ var methods = {
       });
     }
 
-    parent.utils.loading(this, true);
+    parent.pageUtils.loading(true);
     $api.post({
-        siteId: this.siteId,
-        channelId: this.channelId,
-        importType: this.importType,
-        fileNames: this.getFileNames(),
-        checkedLevel: this.checkedLevel,
-        isOverride: this.isOverride
+        siteId: $this.siteId,
+        channelId: $this.channelId,
+        importType: $this.importType,
+        fileNames: $this.getFileNames(),
+        checkedLevel: $this.checkedLevel,
+        isOverride: $this.isOverride
       },
       function (err, res) {
-        parent.utils.loading($this, false);
+        parent.pageUtils.loading(false);
 
         if (err) {
           return $this.pageAlert = {
@@ -134,7 +137,7 @@ var methods = {
   }
 };
 
-var $vue = new Vue({
+new Vue({
   el: '#main',
   data: data,
   methods: methods,

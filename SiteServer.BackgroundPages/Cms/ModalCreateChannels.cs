@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using Datory.Utils;
-using SiteServer.Abstractions;
-using SiteServer.CMS.Context;
-using SiteServer.CMS.Context.Enumerations;
+using SiteServer.Utils;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Repositories;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -36,21 +34,21 @@ namespace SiteServer.BackgroundPages.Cms
             var isIncludeChildren = TranslateUtils.ToBool(DdlIsIncludeChildren.SelectedValue);
             var isCreateContents = TranslateUtils.ToBool(DdlIsCreateContents.SelectedValue);
 
-            foreach (var channelId in Utilities.GetIntList(_channelIdCollection))
+            foreach (var channelId in TranslateUtils.StringCollectionToIntList(_channelIdCollection))
             {
-                CreateManager.CreateChannelAsync(SiteId, channelId).GetAwaiter().GetResult();
+                CreateManager.CreateChannel(SiteId, channelId);
                 if (isCreateContents)
                 {
-                    CreateManager.CreateAllContentAsync(SiteId, channelId).GetAwaiter().GetResult();
+                    CreateManager.CreateAllContent(SiteId, channelId);
                 }
                 if (isIncludeChildren)
                 {
-                    foreach (var childChannelId in DataProvider.ChannelRepository.GetChannelIdsAsync(SiteId, channelId, EScopeType.Descendant).GetAwaiter().GetResult())
+                    foreach (var childChannelId in ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(SiteId, channelId), EScopeType.Descendant, string.Empty, string.Empty, string.Empty))
                     {
-                        CreateManager.CreateChannelAsync(SiteId, childChannelId).GetAwaiter().GetResult();
+                        CreateManager.CreateChannel(SiteId, childChannelId);
                         if (isCreateContents)
                         {
-                            CreateManager.CreateAllContentAsync(SiteId, channelId).GetAwaiter().GetResult();
+                            CreateManager.CreateAllContent(SiteId, channelId);
                         }
                     }
                 }

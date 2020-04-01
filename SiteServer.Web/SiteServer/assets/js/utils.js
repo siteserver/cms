@@ -1,35 +1,3 @@
-Object.defineProperty(Object.prototype,"getValue",{value:function(t){var e;for(e in this)if(e.toLowerCase()==t.toLowerCase())return this[e]}});
-
-if (window.swal && swal.mixin) {
-  var alert = swal.mixin({
-    confirmButtonClass: 'btn btn-primary',
-    cancelButtonClass: 'btn btn-default ml-3',
-    buttonsStyling: false,
-  });
-}
-
-if (window.Vue && window.VeeValidate) {
-  VeeValidate.Validator.localize('zh_CN');
-  Vue.use(VeeValidate);
-  VeeValidate.Validator.localize({
-    zh_CN: {
-      messages: {
-        required: function (name) {
-          return name + '不能为空'
-        },
-      }
-    }
-  });
-  VeeValidate.Validator.extend('mobile', {
-    getMessage: function () {
-      return " 请输入正确的手机号码"
-    },
-    validate: function (value, args) {
-      return value.length == 11 && /^((13|14|15|16|17|18|19)[0-9]{1}\d{8})$/.test(value)
-    }
-  });
-}
-
 var $api = axios.create({
   baseURL: window.apiUrl || '../api',
   withCredentials: true
@@ -42,15 +10,27 @@ var $apiCloud = axios.create({
 });
 
 var utils = {
-  PER_PAGE: 30,
+  alertDelete: function (config) {
+    if (!config) return false;
 
-  initData: function(data) {
-    return _.assign({
-      pageLoad: false,
-      loading: null
-    }, data);
+    alert({
+        title: config.title,
+        text: config.text,
+        type: 'warning',
+        confirmButtonText: config.button || '删 除',
+        confirmButtonClass: 'btn btn-danger',
+        showCancelButton: true,
+        cancelButtonText: '取 消'
+      })
+      .then(function (result) {
+        if (result.value) {
+          config.callback();
+        }
+      });
+
+    return false;
   },
-
+  
   getQueryString: function (name) {
     var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
     if (!result || result.length < 1) {
@@ -59,12 +39,20 @@ var utils = {
     return decodeURIComponent(result[1]);
   },
 
-  getQueryStringList: function (name) {
-    var value = utils.getQueryString(name);
-    if (value) {
-      return value.split(',');
+  notifyError: function (app, error) {
+    var message = error.message;
+    if (error.response && error.response.data) {
+      if (error.response.data.exceptionMessage) {
+        message = error.response.data.exceptionMessage;
+      } else if (error.response.data.message) {
+        message = error.response.data.message;
+      }
     }
-    return [];
+
+    app.$notify.error({
+      title: '错误',
+      message: message
+    });
   },
 
   getQueryBoolean: function (name) {
@@ -75,92 +63,15 @@ var utils = {
     return result[1] === 'true' || result[1] === 'True';
   },
 
-  getQueryInt: function (name, defaultValue) {
+  getQueryInt: function (name) {
     var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
     if (!result || result.length < 1) {
-      return defaultValue || 0;
+      return 0;
     }
-    return utils.toInt(result[1]);
+    return parseInt(result[1]);
   },
 
-  getQueryIntList: function (name) {
-    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
-    if (!result || result.length < 1) {
-      return [];
-    }
-    return _.map(result[1].split(','), function (x) {
-      return utils.toInt(x);
-    });
-  },
-
-  toInt: function (val) {
-    if (!val) return 0;
-    return parseInt(val, 10) || 0;
-  },
-
-  getQueryIntList: function (name) {
-    var value = utils.getQueryString(name);
-    if (value) {
-      return _.map(value.split(','), function(item) {
-        return parseInt(item, 10);
-      });
-    }
-    return [];
-  },
-
-  getCountName(attributeName) {
-    return _.camelCase(attributeName + '_Count');
-  },
-
-  getExtendName(attributeName, n) {
-    return _.camelCase(n ? attributeName + '_' + n : attributeName);
-  },
-
-  alertDelete: function (config) {
-    if (!config) return false;
-
-    alert({
-        title: config.title,
-        text: config.text,
-        type: 'warning',
-        confirmButtonText: config.button || '删 除',
-        confirmButtonClass: 'el-button el-button--danger',
-        cancelButtonClass: 'el-button el-button--default',
-        showCancelButton: true,
-        cancelButtonText: '取 消'
-      })
-      .then(function (result) {
-        if (result.value) {
-          config.callback();
-        }
-      });
-
-    return false;
-  },
-
-  alertWarning: function (config) {
-    if (!config) return false;
-
-    alert({
-        title: config.title,
-        text: config.text,
-        type: 'question',
-        confirmButtonText: config.button || '确 认',
-        confirmButtonClass: 'el-button el-button--primary',
-        cancelButtonClass: 'el-button el-button--default',
-        showCancelButton: true,
-        cancelButtonText: '取 消'
-      })
-      .then(function (result) {
-        if (result.value) {
-          config.callback();
-        }
-      });
-
-    return false;
-  },
-
-  error: function (app, error) {
+  getPageAlert: function (error) {
     var message = error.message;
     if (error.response && error.response.data) {
       if (error.response.data.exceptionMessage) {
@@ -170,28 +81,24 @@ var utils = {
       }
     }
 
-    app.$message({
-      type: 'error',
-      message: message
-    });
+    return {
+      type: "danger",
+      html: message
+    };
   },
 
-  loading: function (app, isLoading) {
+  loading: function (isLoading) {
     if (isLoading) {
-      if (app.pageLoad) {
-        app.loading = app.$loading({text: '页面加载中'});
-      }
+      return layer.load(1, {
+        shade: [0.2, '#000']
+      });
     } else {
-      app.loading ? app.loading.close() : app.pageLoad = true;
+      layer.close(layer.index);
     }
   },
 
-  closeLayer: function (reload) {
-    if (reload) {
-      parent.location.reload();
-    } else {
-      parent.layer.closeAll();
-    }
+  closeLayer: function () {
+    parent.layer.closeAll();
     return false;
   },
 
@@ -205,13 +112,18 @@ var utils = {
       config.height = $(window).height() - 50;
     }
 
+    if (config.full) {
+      config.width = $(window).width() - 50;
+      config.height = $(window).height() - 50;
+    }
+
     var index = layer.open({
       type: 2,
       btn: null,
       title: config.title,
       area: [config.width + 'px', config.height + 'px'],
-      maxmin: !config.max,
-      resize: !config.max,
+      maxmin: true,
+      resize: true,
       shadeClose: true,
       content: config.url
     });
@@ -221,25 +133,5 @@ var utils = {
     }
 
     return false;
-  },
-
-  contains: function(str, val) {
-    return str && val && str.indexOf(val) !== -1;
-  },
-
-  getRules: function(rules) {
-    if (rules) {
-      var array = [];
-      for (var i = 0; i < rules.length; i++) {
-        var rule = rules[i];
-        if (rule.type === 'Required') {
-          array.push({ required: true, message: rule.message });
-        } else if (rule.type === '') {
-          
-        }
-      }
-      return array;
-    }
-    return null;
   }
 };
