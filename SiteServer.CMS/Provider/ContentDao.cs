@@ -1440,7 +1440,10 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
 
         public int GetCountCheckedImage(int siteId, int channelId)
         {
-            var tableName = SiteManager.GetSiteInfo(siteId).TableName;
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            if (siteInfo == null) return 0;
+
+            var tableName = siteInfo.TableName;
             var sqlString =
                 $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {nameof(ContentInfo.ImageUrl)} != '' AND {ContentAttribute.IsChecked} = '{true}' AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
 
@@ -1449,7 +1452,10 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
 
         public int GetCountChecking(int siteId)
         {
-            var tableName = SiteManager.GetSiteInfo(siteId).TableName;
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            if (siteInfo == null) return 0;
+
+            var tableName = siteInfo.TableName;
             var sqlString =
                 $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} > 0 AND {ContentAttribute.IsChecked} = '{false}' AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
 

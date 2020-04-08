@@ -129,7 +129,7 @@ namespace SiteServer.CMS.Core
 
                 if (isExists) continue;
 
-                tabs.Add(PluginMenuManager.GetPluginTab(menu.PluginId, string.Empty, menu));
+                tabs.Add(PluginMenuManager.GetPluginTab(menu.PluginId, null, menu));
 
                 //if (string.IsNullOrEmpty(menu.ParentId))
                 //{
