@@ -188,7 +188,7 @@ namespace SSCMS.Web
                 var dir = "wwwroot/SiteFiles/assets";
                 if (env.IsDevelopment())
                 {
-                    dir = "Pages/ss-admin/assets";
+                    dir = "assets";
                 }
 
                 assets.UseStaticFiles(new StaticFileOptions

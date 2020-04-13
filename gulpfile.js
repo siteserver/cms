@@ -48,7 +48,7 @@ gulp.task("copy-files", async function () {
   fs.copySync('./appsettings.json', publishDir + '/appsettings.json');
   fs.copySync('./sscms.json', publishDir + '/sscms.json');
   fs.copySync('./web.config', publishDir + '/web.config');
-  fs.copySync('./src/SSCMS.Web/Pages/ss-admin/assets', publishDir + '/wwwroot/SiteFiles/assets');
+  fs.copySync('./src/SSCMS.Web/assets', publishDir + '/wwwroot/SiteFiles/assets');
   fs.copySync('./404.html', publishDir + '/wwwroot/404.html');
   fs.copySync('./favicon.ico', publishDir + '/wwwroot/favicon.ico');
   fs.copySync('./index.html', publishDir + '/wwwroot/index.html');
@@ -68,7 +68,7 @@ gulp.task("copy-sscms-win", async function () {
 
 gulp.task("copy-css", function () {
   return gulp
-    .src(["./src/SSCMS.Web/Pages/ss-admin/assets/**/*.css"])
+    .src(["./src/SSCMS.Web/assets/**/*.css"])
     .pipe(
       minifier({
         minify: true,
@@ -86,7 +86,7 @@ gulp.task("copy-css", function () {
 gulp.task("copy-js", function () {
   const f = filter(['**/*-min.js']);
   return gulp
-    .src(["./src/SSCMS.Web/Pages/ss-admin/assets/**/*.js"])
+    .src(["./src/SSCMS.Web/assets/**/*.js"])
     .pipe(minify())
     .pipe(f)
     .pipe(rename(function (path) {
