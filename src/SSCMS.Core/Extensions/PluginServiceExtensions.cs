@@ -23,11 +23,12 @@ namespace SSCMS.Core.Extensions
             foreach (var folderPath in Directory.GetDirectories(pluginManager.DirectoryPath))
             {
                 if (string.IsNullOrEmpty(folderPath)) continue;
-                
                 var folderName = Path.GetFileName(folderPath);
                 if (string.IsNullOrEmpty(folderName) || StringUtils.StartsWith(folderName, ".")) continue;
-                Assembly assembly = null;
+                var configPath = PathUtils.Combine(folderPath, Constants.PluginPackageFileName);
+                if (!FileUtils.IsFileExists(configPath)) continue;
 
+                Assembly assembly = null;
                 var assemblyPath = PathUtils.Combine(folderPath, $"{folderName}.dll");
                 if (FileUtils.IsFileExists(assemblyPath))
                 {

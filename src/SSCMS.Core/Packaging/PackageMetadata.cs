@@ -72,11 +72,6 @@ namespace SSCMS.Core.Packaging
             Owners = GetValue(PackageMetadataStrings.Owners, string.Empty);
             Authors = GetValue(PackageMetadataStrings.Authors, string.Empty);
 
-            if (Version == "$version$")
-            {
-                Version = Constants.VersionDev;
-            }
-
             if (Version.IndexOf('.') < 0)
             {
                 throw new FormatException($"版本号不正确：{Version}");

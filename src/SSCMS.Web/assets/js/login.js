@@ -15,7 +15,7 @@ var data = utils.initData({
   captchaToken: null,
   captchaValue: null,
   captchaUrl: null,
-  productVersion: null,
+  version: null,
   adminTitle: null
 });
 
@@ -28,7 +28,7 @@ var methods = {
       var res = response.data;
 
       if (res.success) {
-        $this.productVersion = res.productVersion;
+        $this.version = res.version;
         $this.adminTitle = res.adminTitle;
         $this.reload();
       } else {

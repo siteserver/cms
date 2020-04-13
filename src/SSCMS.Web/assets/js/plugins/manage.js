@@ -3,7 +3,7 @@
 var data = utils.initData({
   pageType: utils.getQueryString("pageType", "1"),
   isNightly: null,
-  pluginVersion: null,
+  version: null,
   allPackages: null,
   packageIds: null,
   enabledPackages: [],
@@ -27,7 +27,7 @@ var methods = {
       var res = response.data;
 
       $this.isNightly = res.isNightly;
-      $this.pluginVersion = res.pluginVersion;
+      $this.version = res.version;
       $this.enabledPackages = res.enabledPackages;
       $this.packageIds = res.packageIds;
 
@@ -47,7 +47,7 @@ var methods = {
       $apiCloud.get('updates', {
         params: {
           isNightly: $this.isNightly,
-          pluginVersion: $this.pluginVersion,
+          version: $this.version,
           packageIds: $this.packageIds
         }
       }).then(function (response) {

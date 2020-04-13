@@ -12,7 +12,7 @@ namespace SSCMS.Repositories
 
         Task<bool> IsInitializedAsync();
 
-        Task UpdateConfigVersionAsync(string productVersion);
+        Task UpdateConfigVersionAsync(string version);
 
         Task<bool> IsNeedInstallAsync();
     }

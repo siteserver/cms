@@ -31,8 +31,7 @@ namespace SSCMS.Web.Controllers.Admin
             public string RedirectUrl { get; set; }
             public string DefaultPageUrl { get; set; }
             public bool IsNightly { get; set; }
-            public string AppVersion { get; set; }
-            public string SdkVersion { get; set; }
+            public string Version { get; set; }
             public string TargetFramework { get; set; }
             public string AdminLogoUrl { get; set; }
             public string AdminTitle { get; set; }
@@ -238,7 +237,7 @@ namespace SSCMS.Web.Controllers.Admin
                 redirectUrl = _pathManager.GetAdminUrl(InstallController.Route);
             }
             else if (config.Initialized &&
-                     config.DatabaseVersion != _settingsManager.AppVersion)
+                     config.DatabaseVersion != _settingsManager.Version)
             {
                 redirect = true;
                 redirectUrl = _pathManager.GetAdminUrl(SyncDatabaseController.Route);

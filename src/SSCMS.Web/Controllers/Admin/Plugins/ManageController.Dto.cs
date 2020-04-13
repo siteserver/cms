@@ -8,7 +8,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         public class GetResult
         {
             public bool IsNightly { get; set; }
-            public string PluginVersion { get; set; }
+            public string Version { get; set; }
             public IEnumerable<IPackageMetadata> EnabledPackages { get; set; }
             public string PackageIds { get; set; }
             public IEnumerable<IPluginMetadata> EnabledPlugins { get; set; }

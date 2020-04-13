@@ -47,7 +47,7 @@
                 <div class="submenu card bg-light text-dark" style="width: 19rem; z-index: 11; position: absolute;">
                   <div class="card-body" style="padding-bottom: 0;">
                     <h5 class="card-title text-success">发现 CMS 新版本</h5>
-                    <p class="card-text"> 当前版本：{{ productVersion }} <br /> 最新版本： {{ newVersion.version }} <br /> 发布日期：
+                    <p class="card-text"> 当前版本：{{ version }} <br /> 最新版本： {{ newVersion.version }} <br /> 发布日期：
                       {{ newVersion.published }} <br />
                       <hr /> {{ newVersion.releaseNotes }} <br />
                       <a class="text-primary" :href="newVersion.updatesUrl" target="_blank">查看发行说明</a>
@@ -74,7 +74,7 @@
                   <li><a :href="utils.getSettingsUrl('administratorsView', {pageType: 'user', userId: local.userId})" target="right">{{local.level}}：{{local.userName}}</a></li>
                   <li><a :href="utils.getSettingsUrl('administratorsProfile', {pageType: 'user', userId: local.userId})" target="right">修改资料</a></li>
                   <li><a :href="utils.getSettingsUrl('administratorsPassword', {pageType: 'user', userId: local.userId})" target="right">更改密码</a></li>
-                  <li><a href="~/logout/">退出系统</a></li>
+                  <li><a href="~/ss-admin/logout/">退出系统</a></li>
                 </ul>
               </li>
               <li>

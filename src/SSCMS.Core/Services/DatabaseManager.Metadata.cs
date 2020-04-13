@@ -129,7 +129,7 @@ namespace SSCMS.Core.Services
 
             if (configInfo.Id > 0)
             {
-                configInfo.DatabaseVersion = _settingsManager.AppVersion;
+                configInfo.DatabaseVersion = _settingsManager.Version;
                 configInfo.UpdateDate = DateTime.UtcNow;
                 await ConfigRepository.UpdateAsync(configInfo);
             }

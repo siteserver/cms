@@ -5,7 +5,7 @@
         public class GetResult
         {
             public bool IsNightly { get; set; }
-            public string SdkVersion { get; set; }
+            public string Version { get; set; }
             public string PackageIds { get; set; }
         }
     }

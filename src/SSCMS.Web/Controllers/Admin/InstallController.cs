@@ -54,7 +54,7 @@ namespace SSCMS.Web.Controllers.Admin
             try
             {
                 var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, "version.txt");
-                FileUtils.WriteText(filePath, _settingsManager.AppVersion);
+                FileUtils.WriteText(filePath, _settingsManager.Version);
 
                 var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, _settingsManager.ContentRootPath);
                 ioPermission.Demand();
@@ -84,8 +84,8 @@ namespace SSCMS.Web.Controllers.Admin
 
             var result = new GetResult
             {
-                ProductVersion = _settingsManager.AppVersion,
-                NetVersion = _settingsManager.TargetFramework,
+                Version = _settingsManager.Version,
+                TargetFramework = _settingsManager.TargetFramework,
                 ContentRootPath = _settingsManager.ContentRootPath,
                 WebRootPath = _settingsManager.WebRootPath,
                 RootWritable = rootWritable,

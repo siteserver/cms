@@ -7,6 +7,7 @@ namespace SSCMS.Utils
     {
         public const string ConfigDirectoryName = "config";
         public const string ConfigFileName = "sscms.json";
+        public const string PluginPackageFileName = "package.json";
         public const string AdminDirectory = "ss-admin";
         public const string HomeDirectory = "home";
         public const string DefaultLanguage = "en";
@@ -43,9 +44,7 @@ namespace SSCMS.Utils
         public const string RouteActionsSearch = "sys/stl/actions/search";
         public const string RouteActionsTrigger = "sys/stl/actions/trigger";
 
-        public const string PackageIdApp = "SS.CMS.App";
-        public const string PackageIdSdk = "SSCMS";
-        public const string VersionDev = "0.0.0";
+        public const string PackageId = "SS.CMS.App";
 
         public static readonly List<string> ScopeList = new List<string>
         {

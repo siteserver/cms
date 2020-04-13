@@ -25,7 +25,7 @@ namespace SSCMS.Web.Controllers.Admin
             var isDownload = PackageUtils.IsPackageDownload(_pathManager, request.PackageId, request.Version);
             if (isDownload)
             {
-                if (StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageIdApp))
+                if (StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageId))
                 {
                     await _dbCacheRepository.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
                 }

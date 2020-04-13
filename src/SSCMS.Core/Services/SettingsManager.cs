@@ -14,7 +14,7 @@ namespace SSCMS.Core.Services
     {
         private readonly IConfiguration _config;
 
-        public SettingsManager(IConfiguration config, string contentRootPath, string webRootPath, Assembly entryAssembly, IEnumerable<Assembly> assemblies)
+        public SettingsManager(IConfiguration config, string contentRootPath, string webRootPath, Assembly entryAssembly)
         {
             _config = config;
             ContentRootPath = contentRootPath;
@@ -22,7 +22,7 @@ namespace SSCMS.Core.Services
 
             if (entryAssembly != null)
             {
-                AppVersion = entryAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                Version = entryAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
                     .InformationalVersion;
 
                 if (entryAssembly
@@ -30,14 +30,6 @@ namespace SSCMS.Core.Services
                     .SingleOrDefault() is TargetFrameworkAttribute targetFrameworkAttribute)
                 {
                     TargetFramework = targetFrameworkAttribute.FrameworkName;
-                }
-            }
-            if (assemblies != null)
-            {
-                var sdkAssembly = assemblies.FirstOrDefault(x => x.GetName().Name == Constants.PackageIdSdk);
-                if (sdkAssembly != null)
-                {
-                    SdkVersion = sdkAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
                 }
             }
 
@@ -67,8 +59,7 @@ namespace SSCMS.Core.Services
 
         public string ContentRootPath { get; }
         public string WebRootPath { get; }
-        public string AppVersion { get; }
-        public string SdkVersion { get; }
+        public string Version { get; }
         public string TargetFramework { get; }
         public bool IsNightlyUpdate => _config.GetValue<bool>(nameof(IsNightlyUpdate));
         public bool IsProtectData => _config.GetValue<bool>(nameof(IsProtectData));

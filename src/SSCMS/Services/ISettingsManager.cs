@@ -10,8 +10,7 @@ namespace SSCMS
     {
         string ContentRootPath { get; }
         string WebRootPath { get; }
-        string AppVersion { get; }
-        string SdkVersion { get; }
+        string Version { get; }
         string TargetFramework { get; }
         bool IsNightlyUpdate { get; }
         bool IsProtectData { get; }

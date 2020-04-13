@@ -41,7 +41,7 @@ var methods = {
     $apiCloud.get('updates', {
       params: {
         isNightly: this.isNightly,
-        pluginVersion: this.version,
+        version: this.version,
         packageIds: this.packageId
       }
     }).then(function (response) {

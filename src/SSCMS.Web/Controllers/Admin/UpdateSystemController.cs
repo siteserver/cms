@@ -47,21 +47,20 @@ namespace SSCMS.Web.Controllers.Admin
             return new GetResult
             {
                 Value = true,
-                PackageId = Constants.PackageIdApp,
-                InstalledVersion = _settingsManager.AppVersion,
+                PackageId = Constants.PackageId,
                 IsNightly = _settingsManager.IsNightlyUpdate,
-                Version = _settingsManager.SdkVersion
+                Version = _settingsManager.Version
             };
         }
 
         [HttpPost, Route(Route)]
         public ActionResult<BoolResult> UpdateSsCms([FromBody] UpdateRequest request)
         {
-            var idWithVersion = $"{Constants.PackageIdApp}.{request.Version}";
+            var idWithVersion = $"{Constants.PackageId}.{request.Version}";
             var packagePath = _pathManager.GetPackagesPath(idWithVersion);
             var packageWebConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
 
-            if (!PackageUtils.IsPackageDownload(_pathManager, Constants.PackageIdApp, request.Version))
+            if (!PackageUtils.IsPackageDownload(_pathManager, Constants.PackageId, request.Version))
             {
                 return this.Error($"升级包 {idWithVersion} 不存在");
             }

@@ -73,7 +73,7 @@ namespace SSCMS.Core.Packaging
                 }
             }
 
-            if (StringUtils.EqualsIgnoreCase(packageId, Constants.PackageIdApp))
+            if (StringUtils.EqualsIgnoreCase(packageId, Constants.PackageId))
             {
                 if (!Directory.Exists(directoryPath))
                 {
@@ -130,7 +130,7 @@ namespace SSCMS.Core.Packaging
                 return false;
             }
 
-            if (StringUtils.EqualsIgnoreCase(packageId, Constants.PackageIdApp))
+            if (StringUtils.EqualsIgnoreCase(packageId, Constants.PackageId))
             {
                 var packageWebConfigPath = PathUtils.Combine(directoryPath, Constants.ConfigFileName);
                 if (!FileUtils.IsFileExists(packageWebConfigPath))
@@ -230,7 +230,7 @@ namespace SSCMS.Core.Packaging
                 return null;
             }
 
-            if (!StringUtils.EqualsIgnoreCase(packageId, Constants.PackageIdApp))
+            if (!StringUtils.EqualsIgnoreCase(packageId, Constants.PackageId))
             {
                 dllDirectoryPath = FindDllDirectoryPath(directoryPath);
 

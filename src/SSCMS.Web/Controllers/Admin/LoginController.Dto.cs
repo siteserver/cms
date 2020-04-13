@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin
@@ -16,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin
         {
             public bool Success { get; set; }
             public string RedirectUrl { get; set; }
-            public string ProductVersion { get; set; }
+            public string Version { get; set; }
             public string AdminTitle { get; set; }
         }
 
@@ -48,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin
                 redirectUrl = _pathManager.GetAdminUrl(InstallController.Route);
             }
             else if (config.Initialized &&
-                     config.DatabaseVersion != _settingsManager.AppVersion)
+                     config.DatabaseVersion != _settingsManager.Version)
             {
                 redirect = true;
                 redirectUrl = _pathManager.GetAdminUrl(SyncDatabaseController.Route);

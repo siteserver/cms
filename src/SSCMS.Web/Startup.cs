@@ -44,7 +44,7 @@ namespace SSCMS.Web
             var entryAssembly = Assembly.GetExecutingAssembly();
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
 
-            var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath, entryAssembly, assemblies);
+            var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath, entryAssembly);
             var pluginManager = services.AddPlugins(settingsManager);
 
             services.AddCors(options =>

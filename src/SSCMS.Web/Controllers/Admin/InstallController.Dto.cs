@@ -11,9 +11,9 @@ namespace SSCMS.Web.Controllers.Admin
         public class GetResult
         {
             public bool Forbidden { get; set; }
-            public string ProductVersion { get; set; }
+            public string Version { get; set; }
 
-            public string NetVersion { get; set; }
+            public string TargetFramework { get; set; }
 
             public string ContentRootPath { get; set; }
             public string WebRootPath { get; set; }

@@ -1,3 +1,6 @@
+body {
+  font-family: 'Microsoft YaHei', sans-serif;
+}
 .nav .nav-link {
   font-weight: normal;
   border-radius: 1.25rem;

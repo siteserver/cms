@@ -4,8 +4,8 @@ var $sqlite = 'SQLite';
 
 var data = utils.initData({
   forbidden: false,
-  productVersion: null,
-  netVersion: null,
+  version: null,
+  targetFramework: null,
   contentRootPath: null,
   webRootPath: null,
   rootWritable: null,
@@ -61,8 +61,8 @@ var methods = {
       var res = response.data;
 
       $this.forbidden = res.forbidden;
-      $this.productVersion = res.productVersion;
-      $this.netVersion = res.netVersion;
+      $this.version = res.version;
+      $this.targetFramework = res.targetFramework;
       $this.contentRootPath = res.contentRootPath;
       $this.webRootPath = res.webRootPath;
       $this.rootWritable = res.rootWritable;

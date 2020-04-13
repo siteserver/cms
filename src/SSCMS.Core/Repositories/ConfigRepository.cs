@@ -58,7 +58,7 @@ namespace SSCMS.Core.Repositories
             return false;
         }
 
-        public async Task UpdateConfigVersionAsync(string productVersion)
+        public async Task UpdateConfigVersionAsync(string version)
         {
             var config = await GetAsync();
             if (config.Id == 0)
@@ -66,14 +66,14 @@ namespace SSCMS.Core.Repositories
                 config = new Config
                 {
                     Id = 0,
-                    DatabaseVersion = productVersion,
+                    DatabaseVersion = version,
                     UpdateDate = DateTime.Now
                 };
                 config.Id = await InsertAsync(config);
             }
             else
             {
-                config.DatabaseVersion = productVersion;
+                config.DatabaseVersion = version;
                 config.UpdateDate = DateTime.Now;
                 await UpdateAsync(config);
             }

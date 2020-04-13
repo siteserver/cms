@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -19,7 +18,6 @@ namespace SSCMS.Web.Controllers.Admin
         private const string RouteCaptcha = "login/captcha";
         private const string RouteCheckCaptcha = "login/captcha/actions/check";
 
-        private readonly ICacheManager<bool> _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -28,9 +26,8 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IDbCacheRepository _dbCacheRepository;
         private readonly ILogRepository _logRepository;
 
-        public LoginController(ICacheManager<bool> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, IDbCacheRepository dbCacheRepository, ILogRepository logRepository)
+        public LoginController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, IDbCacheRepository dbCacheRepository, ILogRepository logRepository)
         {
-            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
@@ -59,7 +56,7 @@ namespace SSCMS.Web.Controllers.Admin
             return new GetResult
             {
                 Success = true,
-                ProductVersion = _settingsManager.AppVersion,
+                Version = _settingsManager.Version,
                 AdminTitle = config.AdminTitle
             };
         }

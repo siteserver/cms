@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin
             return new GetResult
             {
                 DatabaseVersion = config.DatabaseVersion,
-                ProductVersion = _settingsManager.AppVersion
+                Version = _settingsManager.Version
             };
         }
 
@@ -57,7 +57,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             return new SubmitResult
             {
-                Version = _settingsManager.AppVersion
+                Version = _settingsManager.Version
             };
         }
     }

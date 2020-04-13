@@ -252,7 +252,7 @@ namespace SSCMS.Cli.Services
             {
                 // 恢复后同步表，确保内容辅助表字段与系统一致
                 await _databaseManager.SyncContentTablesAsync(_pluginManager);
-                await _configRepository.UpdateConfigVersionAsync(_settingsManager.AppVersion);
+                await _configRepository.UpdateConfigVersionAsync(_settingsManager.Version);
             }
         }
     }

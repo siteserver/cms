@@ -13,8 +13,7 @@ var data = utils.initData({
   pageAlert: null,
   defaultPageUrl: null,
   isNightly: null,
-  sdkVersion: null,
-  appVersion: null,
+  version: null,
   targetFramework: null,
   adminLogoUrl: null,
   adminTitle: null,
@@ -65,8 +64,7 @@ var methods = {
       if (res.value) {
         $this.defaultPageUrl = res.defaultPageUrl;
         $this.isNightly = res.isNightly;
-        $this.sdkVersion = res.sdkVersion;
-        $this.appVersion = res.appVersion;
+        $this.version = res.version;
         $this.targetFramework = res.targetFramework;
         $this.adminLogoUrl = res.adminLogoUrl || utils.getAssetsUrl('images/logo.png');
         $this.adminTitle = res.adminTitle || 'SS CMS';
@@ -141,7 +139,7 @@ var methods = {
     $apiCloud.get('updates', {
       params: {
         isNightly: $this.isNightly,
-        sdkVersion: $this.sdkVersion,
+        version: $this.version,
         targetFramework: $this.targetFramework,
         packageIds: $this.packageIds.join(',')
       }
@@ -173,7 +171,7 @@ var methods = {
 
   downloadSsCms: function (release) {
     var $this = this;
-    if (utils.compareVersion($this.appVersion, release.version) != -1) return;
+    if (utils.compareVersion($this.version, release.version) != -1) return;
     var major = release.version.split('.')[0];
     var minor = release.version.split('.')[1];
 

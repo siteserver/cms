@@ -2,7 +2,7 @@
 
 var data = utils.initData({
   isNightly: null,
-  sdkVersion: null,
+  version: null,
   packageIds: null,
   q: utils.getQueryString('q'),
   keyword: utils.getQueryString('q') || '',
@@ -29,13 +29,13 @@ var methods = {
       var res = response.data;
 
       $this.isNightly = res.isNightly;
-      $this.sdkVersion = res.sdkVersion;
+      $this.version = res.version;
       $this.packageIds = res.packageIds;
 
       $apiCloud.get('plugins', {
         params: {
           isNightly: $this.isNightly,
-          sdkVersion: $this.sdkVersion,
+          version: $this.version,
           keyword: $this.keyword
         }
       }).then(function (response) {

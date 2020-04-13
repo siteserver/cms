@@ -123,7 +123,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             var packageIds = new List<string>
             {
-                Constants.PackageIdApp
+                Constants.PackageId
             };
             var packageList = new List<object>();
             var plugins = _pluginManager.GetPlugins();
@@ -173,8 +173,7 @@ namespace SSCMS.Web.Controllers.Admin
                 Value = true,
                 DefaultPageUrl = await _pluginManager.GetSystemDefaultPageUrlAsync(request.SiteId) ?? _pathManager.GetAdminUrl(DashboardController.Route),
                 IsNightly = _settingsManager.IsNightlyUpdate,
-                AppVersion = _settingsManager.AppVersion,
-                SdkVersion = _settingsManager.SdkVersion,
+                Version = _settingsManager.Version,
                 TargetFramework = _settingsManager.TargetFramework,
                 AdminLogoUrl = config.AdminLogoUrl,
                 AdminTitle = config.AdminTitle,

@@ -14,9 +14,9 @@ namespace SSCMS.Core.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static ISettingsManager AddSettingsManager(this IServiceCollection services, IConfiguration configuration, string contentRootPath, string webRootPath, Assembly entryAssembly, IEnumerable<Assembly> assemblies)
+        public static ISettingsManager AddSettingsManager(this IServiceCollection services, IConfiguration configuration, string contentRootPath, string webRootPath, Assembly entryAssembly)
         {
-            var settingsManager = new SettingsManager(configuration, contentRootPath, webRootPath, entryAssembly, assemblies);
+            var settingsManager = new SettingsManager(configuration, contentRootPath, webRootPath, entryAssembly);
             services.TryAdd(ServiceDescriptor.Singleton<ISettingsManager>(settingsManager));
 
             return settingsManager;

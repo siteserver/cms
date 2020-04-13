@@ -3,7 +3,7 @@ var $url = '/admin/syncDatabase';
 var data = utils.initData({
   pageType: 'prepare',
   databaseVersion: null,
-  productVersion: null
+  version: null
 });
 
 var methods = {
@@ -15,7 +15,7 @@ var methods = {
       var res = response.data;
 
       $this.databaseVersion = res.databaseVersion;
-      $this.productVersion = res.productVersion;
+      $this.version = res.version;
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {

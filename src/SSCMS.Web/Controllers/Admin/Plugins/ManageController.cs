@@ -65,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             return new GetResult
             {
                 IsNightly = _settingsManager.IsNightlyUpdate,
-                PluginVersion = _settingsManager.SdkVersion,
+                Version = _settingsManager.Version,
                 EnabledPackages = enabledPackages,
                 PackageIds = Utilities.ToString(packagesIds),
                 EnabledPlugins = enabledPlugins,

@@ -4,14 +4,14 @@ var data = utils.initData({
   pluginId: utils.getQueryString('pluginId'),
   returnUrl: utils.getQueryString('returnUrl'),
   isNightly: null,
-  pluginVersion: null,
+  version: null,
   installed: null,
   installedVersion: null,
   package: null,
   isShouldUpdate: false,
-  pluginInfo: {},
-  releaseInfo: {},
-  userInfo: {}
+  plugin: {},
+  release: {},
+  user: {}
 });
 
 var methods = {
@@ -26,7 +26,7 @@ var methods = {
       var res = response.data;
 
       $this.isNightly = res.isNightly;
-      $this.pluginVersion = res.pluginVersion;
+      $this.version = res.version;
       $this.installed = res.installed;
       $this.installedVersion = res.installedVersion;
       $this.package = res.package || {};
@@ -34,16 +34,16 @@ var methods = {
       $apiCloud.get('plugins/' + this.pluginId, {
         params: {
           isNightly: $this.isNightly,
-          pluginVersion: $this.pluginVersion
+          version: $this.version
         }
       }).then(function (response) {
         var res = response.data;
 
-        $this.pluginInfo = res.value.pluginInfo;
-        $this.releaseInfo = res.value.releaseInfo;
-        $this.userInfo = res.value.userInfo;
+        $this.plugin = res.value.plugin;
+        $this.release = res.value.release;
+        $this.user = res.value.user;
 
-        $this.isShouldUpdate = utils.compareVersion($this.installedVersion, $this.releaseInfo.version) == -1;
+        $this.isShouldUpdate = utils.compareVersion($this.installedVersion, $this.release.version) == -1;
       }).then(function () {
         utils.loading($this, false);
       });
@@ -60,10 +60,10 @@ var methods = {
     return 'https://www.siteserver.cn/plugins/' + url;
   },
 
-  getTagNames: function (pluginInfo) {
+  getTagNames: function (plugin) {
     var tagNames = [];
-    if (pluginInfo.tags) {
-      tagNames = pluginInfo.tags.split(',');
+    if (plugin.tags) {
+      tagNames = plugin.tags.split(',');
     }
     return tagNames;
   },

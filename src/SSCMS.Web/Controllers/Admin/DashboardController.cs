@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             return new GetResult
             {
-                Version = _settingsManager.AppVersion == Constants.VersionDev ? "dev" : _settingsManager.AppVersion,
+                Version = _settingsManager.Version,
                 LastActivityDate = DateUtils.GetDateString(lastActivityDate, DateFormatType.Chinese),
                 UpdateDate = DateUtils.GetDateString(config.UpdateDate, DateFormatType.Chinese),
                 AdminWelcomeHtml = config.AdminWelcomeHtml

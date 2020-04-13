@@ -93,7 +93,7 @@ namespace SSCMS.Cli
         {
             if (_isHelp || string.IsNullOrEmpty(commandName))
             {
-                await Console.Out.WriteLineAsync($"Cli 命令行版本: {_settingsManager.AppVersion}");
+                await Console.Out.WriteLineAsync($"Cli 命令行版本: {_settingsManager.Version}");
                 await Console.Out.WriteLineAsync($"当前文件夹: {_settingsManager.ContentRootPath}");
                 await Console.Out.WriteLineAsync();
 

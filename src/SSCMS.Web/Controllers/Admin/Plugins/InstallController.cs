@@ -51,7 +51,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             return new GetResult
             {
                 IsNightly = _settingsManager.IsNightlyUpdate,
-                PluginVersion = _settingsManager.SdkVersion,
+                Version = _settingsManager.Version,
                 DownloadPlugins = _pluginManager.PackagesIdAndVersionList
             };
         }
@@ -64,7 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            if (!StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageIdSdk))
+            if (!StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageId))
             {
                 try
                 {
@@ -90,7 +90,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            if (!StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageIdSdk))
+            if (!StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageId))
             {
                 var idWithVersion = $"{request.PackageId}.{request.Version}";
                 if (!_pluginManager.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))

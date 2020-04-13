@@ -45,7 +45,7 @@ namespace SSCMS.Cli
                 IConfigurationRoot configuration = builder.Build();
 
                 var services = new ServiceCollection();
-                var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"), null, null);
+                var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"), null);
                 
                 var application = new Application(settingsManager);
                 services.AddSingleton(application);
