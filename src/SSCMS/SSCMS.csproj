@@ -25,7 +25,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Datory" Version="1.0.18" />
-    <PackageReference Include="HtmlSanitizer" Version="5.0.298" />
+    <PackageReference Include="HtmlSanitizer" Version="5.0.310" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="SqlKata" Version="1.1.7" />
     <PackageReference Include="YamlDotNet" Version="8.1.0" />
