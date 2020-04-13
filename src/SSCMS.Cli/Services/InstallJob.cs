@@ -5,6 +5,9 @@ using Mono.Options;
 using SSCMS;
 using SSCMS.Cli.Core;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Cli.Services
@@ -20,11 +23,11 @@ namespace SSCMS.Cli.Services
 
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly OptionSet _options;
 
-        public InstallJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IConfigRepository configRepository)
+        public InstallJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IConfigRepository configRepository)
         {
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;

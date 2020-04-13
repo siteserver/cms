@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NSwag;
 using NSwag.Annotations;
 
 namespace SSCMS.Web.Controllers
 {
-    [Route("ping")]
+    [Route("api/ping")]
     public class PingController : ControllerBase
     {
         private const string Route = "";

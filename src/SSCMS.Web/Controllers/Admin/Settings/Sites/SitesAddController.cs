@@ -1,15 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CacheManager.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Dto;
-using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesAddController : ControllerBase
     {
@@ -22,12 +28,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public SitesAddController(ICacheManager<CacheUtils.Process> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
+        public SitesAddController(ICacheManager<CacheUtils.Process> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
@@ -44,9 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }
@@ -79,8 +83,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(Route)]
         public async Task<ActionResult<IntResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }
@@ -133,7 +136,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 }
             }
 
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
 
             var siteId = await _siteRepository.InsertSiteAsync(_pathManager, channelInfo, new Site
             {
@@ -211,9 +214,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteProcess)]
         public async Task<ActionResult<CacheUtils.Process>> Process([FromBody] ProcessRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }

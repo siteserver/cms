@@ -6,6 +6,7 @@ using SSCMS.Parse;
 using SSCMS.Core.StlParser.Mock;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
+using SSCMS.Services;
 
 namespace SSCMS.Core.StlParser.StlElement
 {

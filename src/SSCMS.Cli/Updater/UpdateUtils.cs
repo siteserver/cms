@@ -6,6 +6,8 @@ using Newtonsoft.Json.Linq;
 using SSCMS;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Updater.Tables;
+using SSCMS.Models;
+using SSCMS.Services;
 using SSCMS.Utils;
 using TableInfo = SSCMS.Cli.Core.TableInfo;
 

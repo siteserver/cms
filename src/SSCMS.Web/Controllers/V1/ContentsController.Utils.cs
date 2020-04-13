@@ -2,6 +2,7 @@
 using Datory;
 using Datory.Utils;
 using SqlKata;
+using SSCMS.Enums;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
@@ -10,35 +11,35 @@ namespace SSCMS.Web.Controllers.V1
     {
         private async Task<Query> GetQueryAsync(int siteId, int? channelId, QueryRequest request)
         {
-            var query = Q.Where(nameof(SSCMS.Content.SiteId), siteId).Where(nameof(SSCMS.Content.ChannelId), ">", 0);
+            var query = Q.Where(nameof(Models.Content.SiteId), siteId).Where(nameof(Models.Content.ChannelId), ">", 0);
 
             if (channelId.HasValue)
             {
                 //query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
                 var channelIds = await _channelRepository.GetChannelIdsAsync(siteId, channelId.Value, ScopeType.All);
 
-                query.WhereIn(nameof(SSCMS.Content.ChannelId), channelIds);
+                query.WhereIn(nameof(Models.Content.ChannelId), channelIds);
             }
 
             if (request.Checked.HasValue)
             {
-                query.Where(nameof(SSCMS.Content.Checked), request.Checked.Value.ToString());
+                query.Where(nameof(Models.Content.Checked), request.Checked.Value.ToString());
             }
             if (request.Top.HasValue)
             {
-                query.Where(nameof(SSCMS.Content.Top), request.Top.Value.ToString());
+                query.Where(nameof(Models.Content.Top), request.Top.Value.ToString());
             }
             if (request.Recommend.HasValue)
             {
-                query.Where(nameof(SSCMS.Content.Recommend), request.Recommend.Value.ToString());
+                query.Where(nameof(Models.Content.Recommend), request.Recommend.Value.ToString());
             }
             if (request.Color.HasValue)
             {
-                query.Where(nameof(SSCMS.Content.Color), request.Color.Value.ToString());
+                query.Where(nameof(Models.Content.Color), request.Color.Value.ToString());
             }
             if (request.Hot.HasValue)
             {
-                query.Where(nameof(SSCMS.Content.Hot), request.Hot.Value.ToString());
+                query.Where(nameof(Models.Content.Hot), request.Hot.Value.ToString());
             }
 
             if (request.GroupNames != null)
@@ -50,10 +51,10 @@ namespace SSCMS.Web.Controllers.V1
                         if (!string.IsNullOrEmpty(groupName))
                         {
                             q
-                                .OrWhere(nameof(SSCMS.Content.GroupNames), groupName)
-                                .OrWhereLike(nameof(SSCMS.Content.GroupNames), $"{groupName},%")
-                                .OrWhereLike(nameof(SSCMS.Content.GroupNames), $"%,{groupName},%")
-                                .OrWhereLike(nameof(SSCMS.Content.GroupNames), $"%,{groupName}");
+                                .OrWhere(nameof(Models.Content.GroupNames), groupName)
+                                .OrWhereLike(nameof(Models.Content.GroupNames), $"{groupName},%")
+                                .OrWhereLike(nameof(Models.Content.GroupNames), $"%,{groupName},%")
+                                .OrWhereLike(nameof(Models.Content.GroupNames), $"%,{groupName}");
                         }
                     }
                     return q;
@@ -69,10 +70,10 @@ namespace SSCMS.Web.Controllers.V1
                         if (!string.IsNullOrEmpty(tagName))
                         {
                             q
-                                .OrWhere(nameof(SSCMS.Content.TagNames), tagName)
-                                .OrWhereLike(nameof(SSCMS.Content.TagNames), $"{tagName},%")
-                                .OrWhereLike(nameof(SSCMS.Content.TagNames), $"%,{tagName},%")
-                                .OrWhereLike(nameof(SSCMS.Content.TagNames), $"%,{tagName}");
+                                .OrWhere(nameof(Models.Content.TagNames), tagName)
+                                .OrWhereLike(nameof(Models.Content.TagNames), $"{tagName},%")
+                                .OrWhereLike(nameof(Models.Content.TagNames), $"%,{tagName},%")
+                                .OrWhereLike(nameof(Models.Content.TagNames), $"%,{tagName}");
                         }
                     }
                     return q;
@@ -123,10 +124,10 @@ namespace SSCMS.Web.Controllers.V1
             }
             else
             {
-                query.OrderByDesc(nameof(SSCMS.Content.Top), 
-                    nameof(SSCMS.Content.ChannelId),
-                    nameof(SSCMS.Content.Taxis),
-                    nameof(SSCMS.Content.Id));
+                query.OrderByDesc(nameof(Models.Content.Top), 
+                    nameof(Models.Content.ChannelId),
+                    nameof(Models.Content.Taxis),
+                    nameof(Models.Content.Id));
             }
 
             var page = request.Page > 0 ? request.Page : 1;

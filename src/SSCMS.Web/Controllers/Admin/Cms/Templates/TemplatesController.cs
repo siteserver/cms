@@ -1,20 +1,26 @@
 ﻿using System.Threading.Tasks;
 using Datory;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
-    [Route("admin/cms/templates/templates")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class TemplatesController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteCreate = "actions/create";
-        private const string RouteCopy = "actions/copy";
-        private const string RouteDefault = "actions/default";
+        private const string Route = "cms/templates/templates";
+        private const string RouteCreate = "cms/templates/templates/actions/create";
+        private const string RouteCopy = "cms/templates/templates/actions/copy";
+        private const string RouteDefault = "cms/templates/templates/actions/default";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -36,9 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> List([FromQuery] SiteRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -52,9 +56,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteDefault)]
         public async Task<ActionResult<GetResult>> Default([FromBody] TemplateRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -77,9 +79,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteCreate)]
         public async Task<ActionResult<BoolResult>> Create([FromBody] TemplateRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -98,9 +98,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteCopy)]
         public async Task<ActionResult<GetResult>> Copy([FromBody] TemplateRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -138,7 +136,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
             var content = await _pathManager.GetTemplateContentAsync(site, template);
 
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
             templateInfo.Id = await _templateRepository.InsertAsync(_pathManager, site, templateInfo, content, adminId);
 
             return await GetResultAsync(site);
@@ -147,9 +145,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<GetResult>> Delete([FromBody] TemplateRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }

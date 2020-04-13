@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -39,7 +40,6 @@ namespace SSCMS.Web.Controllers.V1
         {
             public User User { get; set; }
             public string AccessToken { get; set; }
-            public DateTime? ExpiresAt { get; set; }
         }
 
         public class GetLogsRequest

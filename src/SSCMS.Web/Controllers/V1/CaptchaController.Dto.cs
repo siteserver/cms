@@ -5,6 +5,7 @@
         public class CheckRequest
         {
             public string Captcha { get; set; }
+            public string Value { get; set; }
         }
     }
 }

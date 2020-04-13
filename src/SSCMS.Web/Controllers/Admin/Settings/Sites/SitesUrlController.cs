@@ -1,17 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
+using SSCMS.Dto;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
-    [Route("admin/settings/sitesUrl")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class SitesUrlController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteWeb = "actions/web";
-        private const string RouteApi = "actions/api";
+        private const string Route = "settings/sitesUrl";
+        private const string RouteWeb = "settings/sitesUrl/actions/web";
+        private const string RouteApi = "settings/sitesUrl/actions/api";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -29,9 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
             {
                 return Unauthorized();
             }
@@ -55,9 +60,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPut, Route(RouteWeb)]
         public async Task<ActionResult<EditWebResult>> EditWeb([FromBody]EditWebRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
             {
                 return Unauthorized();
             }
@@ -95,9 +98,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPut, Route(RouteApi)]
         public async Task<ActionResult<BoolResult>> EditApi([FromBody]EditApiRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesUrl))
             {
                 return Unauthorized();
             }

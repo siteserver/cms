@@ -1,14 +1,21 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
+using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home
 {
-    [Route("home/contentsLayerTaxis")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeUser)]
+    [Route(Constants.ApiHomePrefix)]
     public partial class ContentsLayerTaxisController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "contentsLayerTaxis";
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
@@ -28,8 +35,7 @@ namespace SSCMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.IsUserAuthenticatedAsync() ||
-                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentEdit))
             {
                 return Unauthorized();
             }

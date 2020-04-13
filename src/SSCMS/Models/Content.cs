@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     public class Content : Entity
     {

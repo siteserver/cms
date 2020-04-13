@@ -2,15 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
 {
-    [Route("admin/settings/analysisAdminWork")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class AnalysisAdminWorkController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "settings/analysisAdminWork";
 
         private const string YTypeNew = "YType_New";
         private const string YTypeUpdate = "YType_Update";
@@ -31,9 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
         [HttpPost, Route(Route)]
         public async Task<ActionResult<QueryResult>> List([FromBody] QueryRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAnalysisAdminWork))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAnalysisAdminWork))
             {
                 return Unauthorized();
             }

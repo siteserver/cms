@@ -1,7 +1,7 @@
 ﻿using Datory;
 using Datory.Annotations;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_LibraryText")]
     public class LibraryText : Entity

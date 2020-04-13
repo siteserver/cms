@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using SSCMS;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Cli.Updater.Tables
@@ -41,7 +42,7 @@ namespace SSCMS.Cli.Updater.Tables
             {
                 if (isVisible != null && StringUtils.EqualsIgnoreCase(isVisible.ToString(), "False"))
                 {
-                    row[nameof(TableStyle.InputType)] = SSCMS.InputType.Hidden.GetValue();
+                    row[nameof(TableStyle.InputType)] = Enums.InputType.Hidden.GetValue();
                 }
             }
 

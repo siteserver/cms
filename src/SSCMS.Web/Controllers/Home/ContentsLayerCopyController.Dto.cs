@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Dto.Request;
+using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Home
 {

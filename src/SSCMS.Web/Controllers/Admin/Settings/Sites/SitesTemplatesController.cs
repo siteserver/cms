@@ -2,30 +2,35 @@
 using System.IO;
 using System.Threading.Tasks;
 using CacheManager.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
-    [Route("admin/settings/sitesTemplates")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class SitesTemplatesController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteZip = "actions/zip";
-        private const string RouteUnZip = "actions/unZip";
-        private const string RouteUpload = "actions/upload";
+        private const string Route = "settings/sitesTemplates";
+        private const string RouteZip = "settings/sitesTemplates/actions/zip";
+        private const string RouteUnZip = "settings/sitesTemplates/actions/unZip";
+        private const string RouteUpload = "settings/sitesTemplates/actions/upload";
 
         private readonly ICacheManager<CacheUtils.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
 
-        public SitesTemplatesController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager)
+        public SitesTemplatesController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
@@ -78,9 +83,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> GetList()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -91,9 +94,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteZip)]
         public async Task<ActionResult<StringResult>> Zip([FromBody]ZipRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -116,9 +117,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteUnZip)]
         public async Task<ActionResult<ListResult>> UnZip([FromBody]UnZipRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -136,9 +135,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody]DeleteRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -166,9 +163,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<ListResult>> Upload([FromForm]IFormFile file)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }

@@ -1,10 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Core.StlParser.StlElement;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Stl
 {
+    [OpenApiIgnore]
     public partial class ActionsPageContentsController : ControllerBase
     {
         private readonly ISettingsManager _settingsManager;

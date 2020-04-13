@@ -5,6 +5,9 @@ using Datory;
 using Datory.Utils;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Core.Utils.Serialization.Components;
+using SSCMS.Enums;
+using SSCMS.Models;
+using SSCMS.Services;
 using SSCMS.Utils;
 using FileUtils = SSCMS.Utils.FileUtils;
 
@@ -15,10 +18,10 @@ namespace SSCMS.Core.Utils.Serialization
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly CacheUtils _caching;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly Site _site;
 
-        public ExportObject(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IPluginManager pluginManager, Site site)
+        public ExportObject(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IOldPluginManager pluginManager, Site site)
         {
             _pathManager = pathManager;
             _databaseManager = databaseManager;

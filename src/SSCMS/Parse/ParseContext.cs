@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using SSCMS.Models;
 
 namespace SSCMS.Parse
 {

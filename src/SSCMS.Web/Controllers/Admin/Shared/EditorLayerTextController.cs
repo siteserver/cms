@@ -1,21 +1,27 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
+using SSCMS.Enums;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
-    [Route("admin/shared/editorLayerText")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class EditorLayerTextController : ControllerBase
     {
-        private const string RouteId = "{id}";
-        private const string RouteList = "list";
+        private const string RouteId = "shared/editorLayerText/{id}";
+        private const string RouteList = "shared/editorLayerText/list";
 
-        private readonly IAuthManager _authManager;
         private readonly ILibraryGroupRepository _libraryGroupRepository;
         private readonly ILibraryTextRepository _libraryTextRepository;
 
-        public EditorLayerTextController(IAuthManager authManager, ILibraryGroupRepository libraryGroupRepository, ILibraryTextRepository libraryTextRepository)
+        public EditorLayerTextController(ILibraryGroupRepository libraryGroupRepository, ILibraryTextRepository libraryTextRepository)
         {
-            _authManager = authManager;
             _libraryGroupRepository = libraryGroupRepository;
             _libraryTextRepository = libraryTextRepository;
         }
@@ -23,9 +29,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(RouteList)]
         public async Task<ActionResult<QueryResult>> List([FromBody]QueryRequest req)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Text);
             groups.Insert(0, new LibraryGroup
             {
@@ -46,9 +49,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(RouteId)]
         public async Task<ActionResult<LibraryText>> Get([FromQuery]int id)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             return await _libraryTextRepository.GetAsync(id);
         }
     }

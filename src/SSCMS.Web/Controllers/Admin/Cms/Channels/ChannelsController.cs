@@ -4,34 +4,40 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CacheManager.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Serialization;
+using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
-    [Route("admin/cms/channels/channels")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class ChannelsController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteGet = "{siteId:int}/{channelId:int}";
-        private const string RouteAppend = "actions/append";
-        private const string RouteUpload = "actions/upload";
-        private const string RouteImport = "actions/import";
-        private const string RouteExport = "actions/export";
-        private const string RouteOrder = "actions/order";
+        private const string Route = "cms/channels/channels";
+        private const string RouteGet = "cms/channels/channels/{siteId:int}/{channelId:int}";
+        private const string RouteAppend = "cms/channels/channels/actions/append";
+        private const string RouteUpload = "cms/channels/channels/actions/upload";
+        private const string RouteImport = "cms/channels/channels/actions/import";
+        private const string RouteExport = "cms/channels/channels/actions/export";
+        private const string RouteOrder = "cms/channels/channels/actions/order";
 
         private readonly ICacheManager<CacheUtils.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
@@ -39,7 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly ITemplateRepository _templateRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ChannelsController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
+        public ChannelsController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
@@ -58,8 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ChannelsResult>> List([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
@@ -106,8 +111,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteAppend)]
         public async Task<ActionResult<List<int>>> Append([FromBody] AppendRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, Constants.ChannelPermissions.ChannelAdd))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, Constants.ChannelPermissions.ChannelAdd))
             {
                 return Unauthorized();
             }
@@ -194,8 +198,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<List<int>>> Delete([FromBody] DeleteRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelDelete))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelDelete))
             {
                 return Unauthorized();
             }
@@ -218,7 +221,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 await _createManager.DeleteChannelsAsync(site, channelIdList);
             }
 
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
 
             foreach (var channelId in channelIdList)
             {
@@ -235,11 +238,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             };
         }
 
+        
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int siteId, [FromForm]IFormFile file)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.ChannelAdd))
+            if (!await _authManager.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.ChannelAdd))
             {
                 return Unauthorized();
             }
@@ -271,8 +274,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<List<int>>> Import([FromBody] ImportRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelAdd))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelAdd))
             {
                 return Unauthorized();
             }
@@ -281,7 +283,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             {
                 var site = await _siteRepository.GetAsync(request.SiteId);
                 var filePath = _pathManager.GetTemporaryFilesPath(request.FileName);
-                var adminId = await _authManager.GetAdminIdAsync();
+                var adminId = _authManager.AdminId;
                 var caching = new CacheUtils(_cacheManager);
 
                 var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, caching, site, adminId);
@@ -305,8 +307,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteExport)]
         public async Task<ActionResult<StringResult>> Export([FromBody] ChannelIdsRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
             }
@@ -329,8 +330,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteOrder)]
         public async Task<ActionResult<List<int>>> Order([FromBody] OrderRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();

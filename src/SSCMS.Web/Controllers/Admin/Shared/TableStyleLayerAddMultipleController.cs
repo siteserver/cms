@@ -1,15 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
-    [Route("admin/shared/tableStyleLayerAddMultiple")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class TableStyleLayerAddMultipleController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "shared/tableStyleLayerAddMultiple";
 
         private readonly IAuthManager _authManager;
         private readonly IDatabaseManager _databaseManager;
@@ -23,11 +32,8 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         }
 
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public ActionResult<GetResult> Get()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var styles = new List<Style>
             {
                 new Style {
@@ -45,9 +51,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             foreach (var style in request.Styles)
             {
                 var styleDatabase =

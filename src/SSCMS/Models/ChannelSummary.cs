@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     public class ChannelSummary : IChannelSummary
     {

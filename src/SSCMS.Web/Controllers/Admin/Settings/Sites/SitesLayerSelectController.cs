@@ -1,9 +1,15 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesLayerSelectController : ControllerBase
     {
@@ -11,10 +17,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
 
-        public SitesLayerSelectController(IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, ISiteRepository siteRepository)
+        public SitesLayerSelectController(IAuthManager authManager, IPathManager pathManager, IOldPluginManager pluginManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
@@ -25,9 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSites))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }

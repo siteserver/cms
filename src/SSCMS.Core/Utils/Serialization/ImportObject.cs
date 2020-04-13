@@ -8,6 +8,9 @@ using Datory;
 using SSCMS.Core.Utils.Office;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Core.Utils.Serialization.Components;
+using SSCMS.Enums;
+using SSCMS.Models;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Serialization
@@ -15,13 +18,13 @@ namespace SSCMS.Core.Utils.Serialization
     public class ImportObject
     {
         private readonly IPathManager _pathManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly CacheUtils _caching;
         private readonly Site _site;
         private readonly int _adminId;
 
-        public ImportObject(IPathManager pathManager, IPluginManager pluginManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, int adminId)
+        public ImportObject(IPathManager pathManager, IOldPluginManager pluginManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, int adminId)
         {
             _pathManager = pathManager;
             _pluginManager = pluginManager;

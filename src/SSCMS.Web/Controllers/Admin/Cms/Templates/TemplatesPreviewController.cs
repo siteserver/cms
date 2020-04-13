@@ -1,20 +1,28 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CacheManager.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
-    [Route("admin/cms/templates/templatesPreview")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class TemplatesPreviewController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteCache = "actions/cache";
+        private const string Route = "cms/templates/templatesPreview";
+        private const string RouteCache = "cms/templates/templatesPreview/actions/cache";
+
         private static readonly string CacheKey = CacheUtils.GetClassKey(typeof(TemplatesPreviewController));
 
         private readonly ICacheManager<string> _cacheManager;
@@ -37,9 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery] SiteRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
             {
                 return Unauthorized();
             }
@@ -69,9 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteCache)]
         public async Task<ActionResult<BoolResult>> Cache([FromBody]CacheRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
             {
                 return Unauthorized();
             }
@@ -88,9 +92,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(Route)]
         public async Task<ActionResult<StringResult>> Submit([FromBody]SubmitRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplatePreview))
             {
                 return Unauthorized();
             }

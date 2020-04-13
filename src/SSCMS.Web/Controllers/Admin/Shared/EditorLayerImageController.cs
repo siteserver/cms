@@ -1,28 +1,33 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.Images;
+using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
-    [Route("admin/shared/editorLayerImage")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class EditorLayerImageController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteUpload = "actions/upload";
+        private const string Route = "shared/editorLayerImage";
+        private const string RouteUpload = "shared/editorLayerImage/actions/upload";
 
-        private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public EditorLayerImageController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public EditorLayerImageController(IPathManager pathManager, ISiteRepository siteRepository)
         {
-            _authManager = authManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
         }
@@ -30,9 +35,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             if (file == null)
@@ -65,9 +67,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(Route)]
         public async Task<ActionResult<List<SubmitResult>>> Submit([FromBody] SubmitRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 

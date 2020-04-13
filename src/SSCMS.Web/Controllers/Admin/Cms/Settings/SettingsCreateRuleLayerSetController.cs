@@ -1,17 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.PathRules;
+using SSCMS.Dto;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
-    [Route("admin/cms/settings/settingsCreateRuleLayerSet")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class SettingsCreateRuleLayerSetController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "cms/settings/settingsCreateRuleLayerSet";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -29,9 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ObjectResult<List<KeyValuePair<string, string>>>>> Get([FromQuery] GetRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigCreateRule))
             {
                 return Unauthorized();

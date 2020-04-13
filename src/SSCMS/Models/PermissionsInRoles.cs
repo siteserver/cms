@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_PermissionsInRoles")]
     public class PermissionsInRoles : Entity

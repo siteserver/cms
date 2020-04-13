@@ -2,6 +2,8 @@
 using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Extensions;
+using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
@@ -66,7 +68,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
 			Template template;
 
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
 			if (request.Id > 0)
 			{
 				var templateId = request.Id;

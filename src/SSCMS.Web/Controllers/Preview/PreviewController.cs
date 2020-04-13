@@ -6,14 +6,19 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Admin;
 
 namespace SSCMS.Web.Controllers.Preview
 {
+    [OpenApiIgnore]
     public partial class PreviewController : ControllerBase
     {
         private readonly IPathManager _pathManager;

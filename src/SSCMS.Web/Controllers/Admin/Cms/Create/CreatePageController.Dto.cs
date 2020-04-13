@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SSCMS.Dto;
-using SSCMS.Dto.Request;
+using SSCMS.Enums;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Create
 {

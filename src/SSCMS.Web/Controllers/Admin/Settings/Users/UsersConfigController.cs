@@ -1,14 +1,20 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
+using SSCMS.Dto;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
-    [Route("admin/settings/usersConfig")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class UsersConfigController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "settings/usersConfig";
 
         private readonly IAuthManager _authManager;
         private readonly IConfigRepository _configRepository;
@@ -22,9 +28,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersConfig))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersConfig))
             {
                 return Unauthorized();
             }
@@ -40,9 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersConfig))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersConfig))
             {
                 return Unauthorized();
             }

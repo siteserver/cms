@@ -1,15 +1,22 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
-    [Route("admin/settings/usersGroup")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class UsersGroupController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "settings/usersGroup";
 
         private readonly IAuthManager _authManager;
         private readonly IConfigRepository _configRepository;
@@ -27,9 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
             {
                 return Unauthorized();
             }
@@ -44,9 +49,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<GetResult>> Delete([FromBody]IdRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
             {
                 return Unauthorized();
             }
@@ -62,9 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(Route)]
         public async Task<ActionResult<GetResult>> Submit([FromBody] UserGroup request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
             {
                 return Unauthorized();
             }

@@ -1,4 +1,5 @@
-﻿using SSCMS.Dto.Request;
+﻿using SSCMS.Dto;
+using SSCMS.Enums;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {

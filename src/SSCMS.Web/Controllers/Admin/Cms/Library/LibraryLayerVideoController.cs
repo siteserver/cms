@@ -1,18 +1,25 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
-    [Route("admin/cms/library/libraryLayerVideo")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class LibraryLayerVideoController : ControllerBase
     {
-        private const string RouteUploadVideo = "actions/uploadVideo";
-        private const string RouteUploadImage = "actions/uploadImage";
+        private const string RouteUploadVideo = "cms/library/libraryLayerVideo/actions/uploadVideo";
+        private const string RouteUploadImage = "cms/library/libraryLayerVideo/actions/uploadImage";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -28,9 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         [HttpPost, Route(RouteUploadVideo)]
         public async Task<ActionResult<UploadResult>> UploadVideo([FromQuery]SiteRequest request, [FromForm] IFormFile file)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();
@@ -68,9 +73,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         [HttpPost, Route(RouteUploadImage)]
         public async Task<ActionResult<UploadResult>> UploadImage([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Library))
             {
                 return Unauthorized();

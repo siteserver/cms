@@ -3,22 +3,28 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Office;
+using SSCMS.Dto;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home
 {
-    [Route("home/contentsLayerWord")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeUser)]
+    [Route(Constants.ApiHomePrefix)]
     public partial class ContentsLayerWordController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteUpload = "actions/upload";
+        private const string Route = "contentsLayerWord";
+        private const string RouteUpload = "contentsLayerWord/actions/upload";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -42,8 +48,7 @@ namespace SSCMS.Web.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
-            if (!await _authManager.IsUserAuthenticatedAsync() ||
-                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentAdd))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentAdd))
             {
                 return Unauthorized();
             }
@@ -67,8 +72,7 @@ namespace SSCMS.Web.Controllers.Home
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
         {
-            if (!await _authManager.IsUserAuthenticatedAsync() ||
-                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
                     Constants.ChannelPermissions.ContentAdd))
             {
                 return Unauthorized();
@@ -113,8 +117,7 @@ namespace SSCMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.IsUserAuthenticatedAsync() ||
-                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
                     Constants.ChannelPermissions.ContentAdd))
             {
                 return Unauthorized();
@@ -129,8 +132,8 @@ namespace SSCMS.Web.Controllers.Home
             var tableName = _channelRepository.GetTableName(site, channel);
             var styleList = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
-            var adminId = await _authManager.GetAdminIdAsync();
-            var userId = await _authManager.GetUserIdAsync();
+            var adminId = _authManager.AdminId;
+            var userId = _authManager.UserId;
 
             var contentIdList = new List<int>();
             foreach (var fileName in request.FileNames)

@@ -1,4 +1,6 @@
-﻿namespace SSCMS.Web.Controllers.Admin.Settings.Logs
+﻿using SSCMS.Models;
+
+namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
     public partial class LogsConfigController
     {

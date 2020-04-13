@@ -1,22 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.Serialization;
+using SSCMS.Dto;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
-    [Route("admin/cms/settings/settingsStyleRelatedField")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class SettingsStyleRelatedFieldController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteImport = "actions/import";
-        private const string RouteExport = "actions/export";
+        private const string Route = "cms/settings/settingsStyleRelatedField";
+        private const string RouteImport = "cms/settings/settingsStyleRelatedField/actions/import";
+        private const string RouteExport = "cms/settings/settingsStyleRelatedField/actions/export";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -38,9 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(Route)]
         public async Task<ActionResult<IEnumerable<RelatedField>>> Get([FromQuery] SiteRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();
@@ -52,9 +56,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<IEnumerable<RelatedField>>> Delete([FromBody] DeleteRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();
@@ -70,9 +72,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(Route)]
         public async Task<ActionResult<IEnumerable<RelatedField>>> Add([FromBody]RelatedField request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();
@@ -88,9 +88,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpPut, Route(Route)]
         public async Task<ActionResult<IEnumerable<RelatedField>>> Edit([FromBody]RelatedField request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();
@@ -106,9 +104,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<BoolResult>> Import([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();
@@ -148,9 +144,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(RouteExport)]
         public async Task<ActionResult<StringResult>> Export([FromBody] SiteRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigTableStyles))
             {
                 return Unauthorized();

@@ -5,28 +5,18 @@ namespace SSCMS.Utils
 {
     public static class Constants
     {
-        public const string AdminRootDirectory = "Pages";
         public const string ConfigFileName = "sscms.json";
-        public const string DefaultAdminDirectory = "siteserver";
-        public const string DefaultHomeDirectory = "home";
+        public const string AdminDirectory = "ss-admin";
+        public const string HomeDirectory = "home";
         public const string DefaultLanguage = "en";
         public const string DefaultLocalDbFileName = "database.sqlite";
-        public const string ApiPrefix = "/api";
-        public const string ApiAdminPrefix = "admin";
-        public const string AbstractionsAssemblyName = "SSCMS.dll";
         public const string EncryptStingIndicator = "0secret0";
 
-        public const string AuthKeyAdminCaptchaCookie = "SS-ADMIN-CAPTCHA";
-        public const string AuthKeyUserHeader = "X-SS-USER-TOKEN";
-        public const string AuthKeyUserCookie = "SS-USER-TOKEN";
-        public const string AuthKeyUserQuery = "userToken";
-        public const string AuthKeyAdminHeader = "X-SS-ADMIN-TOKEN";
-        public const string AuthKeyAdminCookie = "SS-ADMIN-TOKEN";
-        public const string AuthKeyAdminQuery = "adminToken";
-        public const string AuthKeyApiHeader = "X-SS-API-KEY";
-        public const string AuthKeyApiCookie = "SS-API-KEY";
-        public const string AuthKeyApiQuery = "apiKey";
         public const int AccessTokenExpireDays = 7;
+
+        public const string RoleTypeAdministrator = "Administrator";
+        public const string RoleTypeUser = "User";
+        public const string RoleTypeApi = "Api";
 
         public const string ScopeChannels = "Channels";
         public const string ScopeContents = "Contents";
@@ -36,6 +26,10 @@ namespace SSCMS.Utils
 
         public const string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页占位符
 
+        public const string ApiPrefix = "/api";
+        public const string ApiAdminPrefix = "/api/admin";
+        public const string ApiHomePrefix = "/api/home";
+        public const string ApiV1Prefix = "/api/v1";
         public const string RoutePreview = "preview/{siteId}";
         public const string RoutePreviewChannel = "preview/{siteId}/{channelId}";
         public const string RoutePreviewContent = "preview/{siteId}/{channelId}/{contentId}";
@@ -47,6 +41,10 @@ namespace SSCMS.Utils
         public const string RouteActionsPageContents = "sys/stl/actions/pagecontents";
         public const string RouteActionsSearch = "sys/stl/actions/search";
         public const string RouteActionsTrigger = "sys/stl/actions/trigger";
+
+        public const string PackageIdApp = "SS.CMS.App";
+        public const string PackageIdSdk = "SSCMS";
+        public const string VersionDev = "0.0.0";
 
         public static readonly List<string> ScopeList = new List<string>
         {

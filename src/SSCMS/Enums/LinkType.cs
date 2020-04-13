@@ -2,7 +2,7 @@ using Datory.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace SSCMS
+namespace SSCMS.Enums
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum LinkType

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using SSCMS.Dto;
-using SSCMS.Dto.Request;
+using SSCMS.Enums;
+using SSCMS.Models;
+using SSCMS.Plugins;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {

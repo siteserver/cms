@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils

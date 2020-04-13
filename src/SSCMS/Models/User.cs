@@ -2,8 +2,9 @@
 using Datory;
 using Datory.Annotations;
 using Newtonsoft.Json;
+using SSCMS.Enums;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_User")]
     public class User : Entity

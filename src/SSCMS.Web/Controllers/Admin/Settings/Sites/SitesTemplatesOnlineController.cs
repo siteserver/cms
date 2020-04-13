@@ -1,15 +1,18 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Route("admin/settings/sitesTemplatesOnline")]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class SitesTemplatesOnlineController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "settings/sitesTemplatesOnline";
 
         private readonly IAuthManager _authManager;
 
@@ -21,9 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplatesOnline))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplatesOnline))
             {
                 return Unauthorized();
             }

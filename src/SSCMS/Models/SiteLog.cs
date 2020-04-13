@@ -1,8 +1,7 @@
-using System;
 using Datory;
 using Datory.Annotations;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_SiteLog")]
 	public class SiteLog : Entity

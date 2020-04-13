@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SSCMS.Enums;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {

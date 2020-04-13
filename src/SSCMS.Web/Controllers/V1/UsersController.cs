@@ -1,24 +1,27 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Route("v1/users")]
+    [Authorize(Roles = Constants.RoleTypeApi)]
+    [Route(Constants.ApiV1Prefix)]
     public partial class UsersController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteActionsLogin = "actions/login";
-        private const string RouteActionsLogout = "actions/logout";
-        private const string RouteUser = "{id:int}";
-        private const string RouteUserAvatar = "{id:int}/avatar";
-        private const string RouteUserLogs = "{id:int}/logs";
-        private const string RouteUserResetPassword = "{id:int}/actions/resetPassword";
+        private const string Route = "users";
+        private const string RouteActionsLogin = "users/actions/login";
+        private const string RouteUser = "users/{id:int}";
+        private const string RouteUserAvatar = "users/{id:int}/avatar";
+        private const string RouteUserLogs = "users/{id:int}/logs";
+        private const string RouteUserResetPassword = "users/{id:int}/actions/resetPassword";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -63,11 +66,11 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPut, Route(RouteUser)]
         public async Task<ActionResult<User>> Update(int id, [FromBody]User request)
         {
-            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
-                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeUsers) ||
-                         await _authManager.IsUserAuthenticatedAsync() &&
-                         await _authManager.GetUserIdAsync() == id ||
-                         await _authManager.IsAdminAuthenticatedAsync() &&
+            var isAuth = await
+                             _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
+                         _authManager.IsUser &&
+                         _authManager.UserId == id ||
+                         _authManager.IsAdmin &&
                          await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
@@ -86,15 +89,13 @@ namespace SSCMS.Web.Controllers.V1
         [HttpDelete, Route(RouteUser)]
         public async Task<ActionResult<User>> Delete(int id)
         {
-            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
-                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeUsers) ||
-                         await _authManager.IsUserAuthenticatedAsync() &&
-                         await _authManager.GetUserIdAsync() == id ||
-                         await _authManager.IsAdminAuthenticatedAsync() &&
+            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
+                         _authManager.IsUser &&
+                         _authManager.UserId == id ||
+                         _authManager.IsAdmin &&
                          await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
-            _authManager.UserLogout();
             var user = await _userRepository.DeleteAsync(id);
 
             return user;
@@ -103,11 +104,10 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(RouteUser)]
         public async Task<ActionResult<User>> Get(int id)
         {
-            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
-                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeUsers) ||
-                         await _authManager.IsUserAuthenticatedAsync() &&
-                         await _authManager.GetUserIdAsync() == id ||
-                         await _authManager.IsAdminAuthenticatedAsync() &&
+            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
+                         _authManager.IsUser &&
+                         _authManager.UserId == id ||
+                         _authManager.IsAdmin &&
                          await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
@@ -135,11 +135,10 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteUserAvatar)]
         public async Task<ActionResult<User>> UploadAvatar([FromQuery] int id, [FromForm] IFormFile file)
         {
-            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
-                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeUsers) ||
-                         await _authManager.IsUserAuthenticatedAsync() &&
-                         await _authManager.GetUserIdAsync() == id ||
-                         await _authManager.IsAdminAuthenticatedAsync() &&
+            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
+                         _authManager.IsUser &&
+                         _authManager.UserId == id ||
+                         _authManager.IsAdmin &&
                          await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
@@ -173,9 +172,8 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> List([FromQuery]ListRequest request)
         {
-            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
-                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeUsers) ||
-                         await _authManager.IsAdminAuthenticatedAsync() &&
+            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
+                         _authManager.IsAdmin &&
                          await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
@@ -206,34 +204,25 @@ namespace SSCMS.Web.Controllers.V1
                 return this.Error(valid.ErrorMessage);
             }
 
-            var accessToken = await _authManager.UserLoginAsync(valid.UserName, request.IsAutoLogin);
-            var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
+            var accessToken = _authManager.AuthenticateUser(valid.User, request.IsAutoLogin);
+
+            await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(valid.User);
+            await _userLogRepository.AddUserLoginLogAsync(valid.User.Id);
 
             return new LoginResult
             {
                 User = valid.User,
-                AccessToken = accessToken,
-                ExpiresAt = expiresAt
+                AccessToken = accessToken
             };
-        }
-
-        [HttpPost, Route(RouteActionsLogout)]
-        public async Task<User> Logout()
-        {
-            var user = await _authManager.GetUserAsync();
-            _authManager.UserLogout();
-
-            return user;
         }
 
         [HttpPost, Route(RouteUserLogs)]
         public async Task<ActionResult<UserLog>> CreateLog(int id, [FromBody] UserLog log)
         {
-            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
-                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeUsers) ||
-                         await _authManager.IsUserAuthenticatedAsync() &&
-                         await _authManager.GetUserIdAsync() == id ||
-                         await _authManager.IsAdminAuthenticatedAsync() &&
+            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
+                         _authManager.IsUser &&
+                         _authManager.UserId == id ||
+                         _authManager.IsAdmin &&
                          await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
@@ -248,11 +237,10 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(RouteUserLogs)]
         public async Task<ActionResult<GetLogsResult>> GetLogs(int id, [FromQuery]GetLogsRequest request)
         {
-            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
-                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeUsers) ||
-                         await _authManager.IsUserAuthenticatedAsync() &&
-                         await _authManager.GetUserIdAsync() == id ||
-                         await _authManager.IsAdminAuthenticatedAsync() &&
+            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
+                         _authManager.IsUser &&
+                         _authManager.UserId == id ||
+                         _authManager.IsAdmin &&
                          await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
@@ -278,11 +266,10 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteUserResetPassword)]
         public async Task<ActionResult<User>> ResetPassword(int id, [FromBody]ResetPasswordRequest request)
         {
-            var isAuth = await _authManager.IsApiAuthenticatedAsync() && await
-                             _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeUsers) ||
-                         await _authManager.IsUserAuthenticatedAsync() &&
-                         await _authManager.GetUserIdAsync() == id ||
-                         await _authManager.IsAdminAuthenticatedAsync() &&
+            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
+                         _authManager.IsUser &&
+                         _authManager.UserId == id ||
+                         _authManager.IsAdmin &&
                          await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 

@@ -1,4 +1,6 @@
-﻿namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
+﻿using SSCMS.Models;
+
+namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     public partial class AdministratorsPasswordController
     {

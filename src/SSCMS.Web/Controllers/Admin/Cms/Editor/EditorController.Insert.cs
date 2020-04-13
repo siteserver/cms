@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
@@ -11,9 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Insert([FromBody] SaveRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Contents) ||
                 !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentAdd))
             {
@@ -28,7 +26,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             var content = request.Content;
             content.SiteId = site.Id;
             content.ChannelId = channel.Id;
-            content.LastEditAdminId = await _authManager.GetAdminIdAsync();
+            content.LastEditAdminId = _authManager.AdminId;
 
             content.Checked = request.Content.CheckedLevel >= site.CheckContentLevel;
             if (content.Checked)

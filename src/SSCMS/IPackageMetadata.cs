@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SSCMS
+﻿namespace SSCMS
 {
     /// <summary>
     /// 插件元数据接口。

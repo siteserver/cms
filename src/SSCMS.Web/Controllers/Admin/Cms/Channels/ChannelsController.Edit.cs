@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
@@ -15,9 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpGet, Route(RouteGet)]
         public async Task<ActionResult<ChannelResult>> Get(int siteId, int channelId)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(siteId,
+            if (!await _authManager.HasSitePermissionsAsync(siteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
@@ -78,9 +78,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPut, Route(Route)]
         public async Task<ActionResult<List<int>>> Edit([FromBody] PutRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasChannelPermissionsAsync(request.SiteId, request.Id, Constants.ChannelPermissions.ChannelEdit))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.Id, Constants.ChannelPermissions.ChannelEdit))
             {
                 return Unauthorized();
             }

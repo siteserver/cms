@@ -1,8 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
+using SSCMS.Repositories;
 
 namespace SSCMS.Web.Controllers.Stl
 {
+    [OpenApiIgnore]
     public partial class ActionsRelatedFieldController : ControllerBase
     {
         private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;

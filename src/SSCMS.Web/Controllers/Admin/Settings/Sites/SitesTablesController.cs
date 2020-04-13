@@ -2,18 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Core.Utils;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
-    [Route("admin/settings/sitesTables")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class SitesTablesController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteTable = "{tableName}";
-        private const string RouteTableActionsRemoveCache = "{tableName}/actions/removeCache";
+        private const string Route = "settings/sitesTables";
+        private const string RouteTable = "settings/sitesTables/{tableName}";
+        private const string RouteTableActionsRemoveCache = "settings/sitesTables/{tableName}/actions/removeCache";
 
         private readonly IAuthManager _authManager;
         private readonly IDatabaseManager _databaseManager;
@@ -29,9 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }
@@ -61,9 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(RouteTable)]
         public async Task<ActionResult<GetColumnsResult>> GetColumns(string tableName)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }
@@ -80,9 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteTableActionsRemoveCache)]
         public async Task<ActionResult<GetColumnsResult>> RemoveCache(string tableName)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }

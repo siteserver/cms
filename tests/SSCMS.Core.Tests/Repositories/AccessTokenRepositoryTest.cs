@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using SSCMS;
+using SSCMS.Models;
+using SSCMS.Repositories;
 using SSCMS.Tests;
 using Xunit;
 

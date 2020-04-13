@@ -1,20 +1,25 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
-    [Route("admin/settings/usersView")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class UsersViewController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "settings/usersView";
 
-        private readonly IAuthManager _authManager;
         private readonly IUserRepository _userRepository;
         private readonly IUserGroupRepository _userGroupRepository;
 
-        public UsersViewController(IAuthManager authManager, IUserRepository userRepository, IUserGroupRepository userGroupRepository)
+        public UsersViewController(IUserRepository userRepository, IUserGroupRepository userGroupRepository)
         {
-            _authManager = authManager;
             _userRepository = userRepository;
             _userGroupRepository = userGroupRepository;
         }
@@ -22,12 +27,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync())
-            {
-                return Unauthorized();
-            }
-
             User user = null;
             if (request.UserId > 0)
             {

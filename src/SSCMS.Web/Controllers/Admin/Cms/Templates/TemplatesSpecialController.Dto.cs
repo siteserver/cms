@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Dto.Request;
+using SSCMS.Dto;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {

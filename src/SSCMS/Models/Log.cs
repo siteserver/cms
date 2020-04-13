@@ -2,8 +2,7 @@
 using Datory;
 using Datory.Annotations;
 
-
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_Log")]
     public class Log: Entity

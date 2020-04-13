@@ -1,22 +1,18 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
 using SSCMS.Core.Packaging;
+using SSCMS.Dto;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
     public partial class IndexController
     {
+        [Authorize(Roles = Constants.RoleTypeAdministrator)]
         [HttpPost, Route(RouteActionsDownload)]
         public async Task<ActionResult<BoolResult>> Download([FromBody] DownloadRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync())
-            {
-                return Unauthorized();
-            }
-
             try
             {
                 PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
@@ -29,7 +25,7 @@ namespace SSCMS.Web.Controllers.Admin
             var isDownload = PackageUtils.IsPackageDownload(_pathManager, request.PackageId, request.Version);
             if (isDownload)
             {
-                if (StringUtils.EqualsIgnoreCase(request.PackageId, PackageUtils.PackageIdSsCms))
+                if (StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageIdApp))
                 {
                     await _dbCacheRepository.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
                 }

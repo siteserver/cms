@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin
 {

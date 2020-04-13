@@ -1,15 +1,21 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
+using SSCMS.Dto;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
-    [Route("admin/settings/logsSite")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class LogsSiteController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "settings/logsSite";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -69,9 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SiteLogPageResult>> List([FromBody] SearchRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsSite))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsSite))
             {
                 return Unauthorized();
             }
@@ -116,9 +120,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsSite))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsSite))
             {
                 return Unauthorized();
             }

@@ -1,24 +1,29 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Enums;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
-    [Route("admin/shared/fileLayerUpload")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class FileLayerUploadController : ControllerBase
     {
-        private const string RouteUpload = "actions/upload";
+        private const string RouteUpload = "shared/fileLayerUpload/actions/upload";
 
-        private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public FileLayerUploadController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public FileLayerUploadController(IPathManager pathManager, ISiteRepository siteRepository)
         {
-            _authManager = authManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
         }
@@ -26,9 +31,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             if (file == null)

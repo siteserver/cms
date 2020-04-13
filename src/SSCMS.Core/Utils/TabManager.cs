@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CacheManager.Core;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
@@ -10,9 +11,9 @@ namespace SSCMS.Core.Utils
     {
         private readonly ICacheManager<object> _cacheManager;
         private readonly IPathManager _pathManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
 
-        public TabManager(ICacheManager<object> cacheManager, IPathManager pathManager, IPluginManager pluginManager)
+        public TabManager(ICacheManager<object> cacheManager, IPathManager pathManager, IOldPluginManager pluginManager)
         {
             _cacheManager = cacheManager;
             _pathManager = pathManager;
@@ -29,16 +30,11 @@ namespace SSCMS.Core.Utils
 	        return tc;
 	    }
 
-        public string GetMenusPath(params string[] paths)
-        {
-            return PathUtils.Combine(_pathManager.ContentRootPath, "assets/menus", PathUtils.Combine(paths));
-        }
-
         public List<Tab> GetTopMenuTabs()
         {
             var list = new List<Tab>();
 
-            var menuPath = GetMenusPath("Top.config");
+            var menuPath = _pathManager.GetConfigPath("menus", "Top.config");
             if (!FileUtils.IsFileExists(menuPath)) return list;
 
             var tabs = GetTabs(menuPath);
@@ -54,7 +50,7 @@ namespace SSCMS.Core.Utils
 	    {
 	        var list = new List<Tab>();
 
-	        var menuPath = GetMenusPath("Top.config");
+	        var menuPath = _pathManager.GetConfigPath("menus", "Top.config");
 	        if (!FileUtils.IsFileExists(menuPath)) return list;
 
 	        var tabs = GetTabs(menuPath);
@@ -98,7 +94,7 @@ namespace SSCMS.Core.Utils
 
             if (!string.IsNullOrEmpty(topId))
             {
-                var filePath = GetMenusPath($"{topId}.config");
+                var filePath = _pathManager.GetConfigPath("menus", $"{topId}.config");
                 var tabCollection = GetTabs(filePath);
                 if (tabCollection?.Tabs != null)
                 {

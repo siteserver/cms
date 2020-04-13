@@ -1,4 +1,6 @@
-﻿namespace SSCMS.Web.Controllers.Admin.Shared
+﻿using SSCMS.Models;
+
+namespace SSCMS.Web.Controllers.Admin.Shared
 {
     public partial class UserLayerViewController
     {

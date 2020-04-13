@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Core.Utils;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home
 {
-    [Route("home")]
+    [OpenApiIgnore]
+    [Route(Constants.ApiHomePrefix)]
     public partial class IndexController : ControllerBase
     {
         private const string Route = "";
@@ -20,7 +25,7 @@ namespace SSCMS.Web.Controllers.Home
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly IUserGroupRepository _userGroupRepository;
@@ -30,7 +35,7 @@ namespace SSCMS.Web.Controllers.Home
         private readonly IContentRepository _contentRepository;
         private readonly IContentGroupRepository _contentGroupRepository;
 
-        public IndexController(IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, ITableStyleRepository tableStyleRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository)
+        public IndexController(IAuthManager authManager, IPathManager pathManager, IOldPluginManager pluginManager, IConfigRepository configRepository, ITableStyleRepository tableStyleRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
@@ -98,7 +103,7 @@ namespace SSCMS.Web.Controllers.Home
             var defaultPageUrl = string.Empty;
             var user = await _authManager.GetUserAsync();
 
-            if (await _authManager.IsUserAuthenticatedAsync())
+            if (_authManager.IsUser)
             {
                 var userMenus = await _userMenuRepository.GetUserMenuListAsync();
 
@@ -165,7 +170,7 @@ namespace SSCMS.Web.Controllers.Home
             object siteInfo = null;
             object channel = null;
 
-            if (await _authManager.IsUserAuthenticatedAsync())
+            if (_authManager.IsUser)
             {
                 Site site = null;
                 Channel channelInfo = null;
@@ -252,7 +257,7 @@ namespace SSCMS.Web.Controllers.Home
             List<KeyValuePair<int, string>> checkedLevels = null;
             var checkedLevel = 0;
 
-            if (await _authManager.IsUserAuthenticatedAsync())
+            if (_authManager.IsUser)
             {
                 Site siteInfo = null;
                 Channel channelInfo = null;

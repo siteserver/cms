@@ -1,19 +1,24 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
-    [Route("admin/plugins/addLayerUpload")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class AddLayerUploadController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteUpload = "actions/upload";
+        private const string Route = "plugins/addLayerUpload";
+        private const string RouteUpload = "plugins/addLayerUpload/actions/upload";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -27,9 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(Route)]
         public async Task<ActionResult<BoolResult>> GetConfig()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -43,9 +46,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromForm]IFormFile file)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -90,9 +91,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }

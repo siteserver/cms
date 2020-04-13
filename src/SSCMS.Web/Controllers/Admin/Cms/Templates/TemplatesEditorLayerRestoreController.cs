@@ -1,14 +1,20 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
-    [Route("admin/cms/templates/templatesEditorLayerRestore")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class TemplatesEditorLayerRestoreController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "cms/templates/templatesEditorLayerRestore";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -28,9 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] TemplateRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -62,9 +66,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<GetResult>> Delete([FromBody] TemplateRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Templates))
             {
                 return Unauthorized();
             }

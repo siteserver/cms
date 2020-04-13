@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Parse;
+using SSCMS.Repositories;
 
 namespace SSCMS.Core.Utils.PluginImpls
 {

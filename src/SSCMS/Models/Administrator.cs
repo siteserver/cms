@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
 using Newtonsoft.Json;
+using SSCMS.Enums;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_Administrator")]
     public class Administrator : Entity

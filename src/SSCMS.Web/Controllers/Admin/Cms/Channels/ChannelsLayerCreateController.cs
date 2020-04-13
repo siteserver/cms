@@ -1,14 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
+using SSCMS.Enums;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
-    [Route("admin/cms/channels/channelsLayerCreate")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class ChannelsLayerCreateController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "cms/channels/channelsLayerCreate";
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
@@ -26,9 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(Route)]
         public async Task<ActionResult<List<int>>> Create([FromBody] CreateRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
             }

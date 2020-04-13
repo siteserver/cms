@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.PluginImpls
@@ -6,10 +7,10 @@ namespace SSCMS.Core.Utils.PluginImpls
     public class PluginDebugger
     {
         private static FileSystemWatcher _watcher;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IPathManager _pathManager;
 
-        public PluginDebugger(IPluginManager pluginManager, IPathManager pathManager)
+        public PluginDebugger(IOldPluginManager pluginManager, IPathManager pathManager)
         {
             _pluginManager = pluginManager;
             _pathManager = pathManager;

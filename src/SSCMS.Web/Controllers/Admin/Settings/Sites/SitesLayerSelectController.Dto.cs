@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {

@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             public string PluginVersion { get; set; }
             public bool Installed { get; set; }
             public string InstalledVersion { get; set; }
-            public PackageMetadata Package { get; set; }
+            public PackageMetadata Plugin { get; set; }
         }
     }
 }

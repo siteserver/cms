@@ -1,8 +1,7 @@
 using Datory;
 using Datory.Annotations;
 
-
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_ContentGroup")]
     public class ContentGroup : Entity

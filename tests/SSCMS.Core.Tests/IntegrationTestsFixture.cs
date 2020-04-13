@@ -27,7 +27,7 @@ namespace SSCMS.Core.Tests
                 .Build();
 
             var services = new ServiceCollection();
-            SettingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
+            SettingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"), null, null);
             services.AddCache(SettingsManager.Redis.ConnectionString);
 
             var executingAssembly = Assembly.GetExecutingAssembly();
@@ -45,9 +45,8 @@ namespace SSCMS.Core.Tests
             {
                 assemblies.Add(executingAssembly);
             }
-            AssemblyUtils.SetAssemblies(assemblies);
 
-            services.AddRepositories();
+            services.AddRepositories(assemblies);
             services.AddServices();
             Provider = services.BuildServiceProvider();
             Configuration = configuration;

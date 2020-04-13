@@ -1,10 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Stl
 {
+    [OpenApiIgnore]
     public partial class ActionsDownloadController : ControllerBase
     {
         private readonly ISettingsManager _settingsManager;

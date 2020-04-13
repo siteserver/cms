@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SSCMS.Plugins;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
@@ -10,6 +11,8 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             public string PluginVersion { get; set; }
             public IEnumerable<IPackageMetadata> EnabledPackages { get; set; }
             public string PackageIds { get; set; }
+            public IEnumerable<IPluginMetadata> EnabledPlugins { get; set; }
+            public IEnumerable<string> PluginIds { get; set; }
         }
     }
 }

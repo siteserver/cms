@@ -1,20 +1,25 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
-    [Route("admin/shared/userLayerView")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class UserLayerViewController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "shared/userLayerView";
 
-        private readonly IAuthManager _authManager;
         private readonly IUserRepository _userRepository;
         private readonly IUserGroupRepository _userGroupRepository;
 
-        public UserLayerViewController(IAuthManager authManager, IUserRepository userRepository, IUserGroupRepository userGroupRepository)
+        public UserLayerViewController(IUserRepository userRepository, IUserGroupRepository userGroupRepository)
         {
-            _authManager = authManager;
             _userRepository = userRepository;
             _userGroupRepository = userGroupRepository;
         }
@@ -22,9 +27,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             User user = null;
             if (request.UserId > 0)
             {

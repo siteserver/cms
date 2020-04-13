@@ -1,27 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
-using SSCMS.Plugins;
 using SSCMS.Core.Extensions;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web
 {
     public class Startup
     {
+        private const string CorsPolicy = "CorsPolicy";
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _config;
 
@@ -33,47 +41,83 @@ namespace SSCMS.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath);
+            var entryAssembly = Assembly.GetExecutingAssembly();
+            var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
 
-            services.AddRazorPages(config => { config.RootDirectory = $"/{Constants.AdminRootDirectory}"; });
+            var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath, entryAssembly, assemblies);
+            var pluginManager = services.AddPlugins(settingsManager);
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(CorsPolicy,
+                    builder => builder
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .SetIsOriginAllowed(_ => true)
+                        .AllowCredentials()
+                );
+            });
 
             services.AddHttpContextAccessor();
+
+            var key = Encoding.ASCII.GetBytes(settingsManager.SecurityKey);
+            services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
 
             services.Configure<FormOptions>(options =>
             {
                 options.MultipartBodyLengthLimit = 524288000;//500MB
             });
 
+            services.AddHealthChecks();
+            services.AddRazorPages()
+                .AddPluginApplicationParts(pluginManager)
+                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+
             services.AddCache(settingsManager.Redis.ConnectionString);
 
-            var executingAssembly = Assembly.GetExecutingAssembly();
-            var assemblies = executingAssembly.GetReferencedAssemblies().Select(Assembly.Load).ToList();
-            var path = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
-            var fileAssemblies = Directory.GetFiles(path, $"{nameof(SSCMS)}*.dll").Select(Assembly.LoadFrom).ToArray();
-            foreach (var referencedAssembly in fileAssemblies)
-            {
-                if (!assemblies.Contains(referencedAssembly))
-                {
-                    assemblies.Add(referencedAssembly);
-                }
-            }
-            if (!assemblies.Contains(executingAssembly))
-            {
-                assemblies.Add(executingAssembly);
-            }
-            AssemblyUtils.SetAssemblies(assemblies);
-
-            services.AddRepositories();
+            services.AddRepositories(assemblies);
             services.AddServices();
-            services.AddPlugins();
 
-            services.AddControllers()
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services
+                .AddControllers()
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization()
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
                     options.SerializerSettings.ContractResolver
                         = new CamelCasePropertyNamesContractResolver();
                 });
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new List<CultureInfo>
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("zh-CN")
+                };
+
+                options.DefaultRequestCulture = new RequestCulture("zh-CN");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
 
             //http://localhost:5000/api/swagger/v1/swagger.json
             //http://localhost:5000/api/swagger/
@@ -100,14 +144,12 @@ namespace SSCMS.Web
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider provider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IPluginManager pluginManager)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            var settingsManager = provider.GetRequiredService<ISettingsManager>();
 
             app.UseExceptionHandler(a => a.Run(async context =>
             {
@@ -124,6 +166,8 @@ namespace SSCMS.Web
                 await context.Response.WriteAsync(result);
             }));
 
+            app.UseCors(CorsPolicy);
+
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
@@ -139,39 +183,170 @@ namespace SSCMS.Web
                 }
             });
             app.UseStaticFiles();
-
-            app.Map("/admin/assets", assets =>
+            app.Map("/ss-admin/assets", assets =>
             {
+                var dir = "wwwroot/SiteFiles/assets";
+                if (env.IsDevelopment())
+                {
+                    dir = "Pages/ss-admin/assets";
+                }
+
                 assets.UseStaticFiles(new StaticFileOptions
                 {
-                    FileProvider = new PhysicalFileProvider(
-                        Path.Combine(Directory.GetCurrentDirectory(), "assets"))
+                    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), dir))
                 });
             });
 
-            app.Map("/" + settingsManager.AdminDirectory, admin =>
+            var supportedCultures = new[]
             {
-                admin.UseRouting();
-                admin.UseEndpoints(endpoints => { endpoints.MapRazorPages(); });
+                new CultureInfo("en-US"),
+                new CultureInfo("zh-CN")
+            };
+
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("zh-CN"),
+                // Formatting numbers, dates, etc.
+                SupportedCultures = supportedCultures,
+                // UI strings that we have localized.
+                SupportedUICultures = supportedCultures
             });
 
-            app.Map(Constants.ApiPrefix, api =>
-            {
-                api.UseRouting();
-                api.UseAuthentication();
-                api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-                //api.UseEndpoints(endpoints => { endpoints.MapControllerRoute("default", "{controller}/{action}/{id?}"); });
+            app.UsePlugins(pluginManager);
 
-                api.UseOpenApi();
-                api.UseSwaggerUi3();
-                api.UseReDoc(options =>
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGet("/xx", async context =>
                 {
-                    options.Path = "/docs";
-                    options.DocumentPath = "/swagger/v1/swagger.json";
+                    await context.Response.WriteAsync("Hello World!");
                 });
-            });
 
-            app.UsePlugins();
+                endpoints.MapHealthChecks("/healthz");
+
+                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+            });
+            //api.UseEndpoints(endpoints => { endpoints.MapControllerRoute("default", "{controller}/{action}/{id?}"); });
+
+            app.UseRequestLocalization();
+
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
+            app.UseReDoc(options =>
+            {
+                options.Path = "/docs";
+                options.DocumentPath = "/swagger/v1/swagger.json";
+            });
         }
+
+        //public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager)
+        //{
+        //    if (env.IsDevelopment())
+        //    {
+        //        app.UseDeveloperExceptionPage();
+        //    }
+
+        //    app.UseExceptionHandler(a => a.Run(async context =>
+        //    {
+        //        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+        //        var exception = exceptionHandlerPathFeature.Error;
+
+        //        var result = TranslateUtils.JsonSerialize(new
+        //        {
+        //            exception.Message,
+        //            exception.StackTrace,
+        //            AddDate = DateTime.Now
+        //        });
+        //        context.Response.ContentType = "application/json";
+        //        await context.Response.WriteAsync(result);
+        //    }));
+
+        //    app.UseCors(CorsPolicy);
+
+        //    app.UseForwardedHeaders(new ForwardedHeadersOptions
+        //    {
+        //        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        //    });
+
+        //    //app.UseHttpsRedirection();
+
+        //    app.UseDefaultFiles(new DefaultFilesOptions
+        //    {
+        //        DefaultFileNames = new List<string>
+        //        {
+        //            "index.html"
+        //        }
+        //    });
+        //    app.UseStaticFiles();
+
+        //    app.Map("/admin/assets", assets =>
+        //    {
+        //        assets.UseStaticFiles(new StaticFileOptions
+        //        {
+        //            FileProvider = new PhysicalFileProvider(
+        //                Path.Combine(Directory.GetCurrentDirectory(), "assets"))
+        //        });
+        //    });
+
+        //    var supportedCultures = new[]
+        //    {
+        //        new CultureInfo("en-US"),
+        //        new CultureInfo("zh-CN")
+        //    };
+
+        //    app.Map("/" + settingsManager.AdminDirectory, admin =>
+        //    {
+        //        admin.UseRequestLocalization(new RequestLocalizationOptions
+        //        {
+        //            DefaultRequestCulture = new RequestCulture("zh-CN"),
+        //            // Formatting numbers, dates, etc.
+        //            SupportedCultures = supportedCultures,
+        //            // UI strings that we have localized.
+        //            SupportedUICultures = supportedCultures
+        //        });
+
+        //        admin.UseRouting();
+        //        admin.UseEndpoints(endpoints => { endpoints.MapRazorPages(); });
+
+        //        admin.UseRequestLocalization();
+        //    });
+
+        //    app.Map(Constants.ApiPrefix, api =>
+        //    {
+        //        api.UseRequestLocalization(new RequestLocalizationOptions
+        //        {
+        //            DefaultRequestCulture = new RequestCulture("zh-CN"),
+        //            // Formatting numbers, dates, etc.
+        //            SupportedCultures = supportedCultures,
+        //            // UI strings that we have localized.
+        //            SupportedUICultures = supportedCultures
+        //        });
+
+        //        api.UseRouting();
+
+        //        api.UseAuthentication();
+        //        api.UseAuthorization();
+
+        //        api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        //        //api.UseEndpoints(endpoints => { endpoints.MapControllerRoute("default", "{controller}/{action}/{id?}"); });
+
+        //        api.UseRequestLocalization();
+
+        //        api.UseOpenApi();
+        //        api.UseSwaggerUi3();
+        //        api.UseReDoc(options =>
+        //        {
+        //            options.Path = "/docs";
+        //            options.DocumentPath = "/swagger/v1/swagger.json";
+        //        });
+        //    });
+
+        //    app.UsePlugins();
+        //}
     }
 }

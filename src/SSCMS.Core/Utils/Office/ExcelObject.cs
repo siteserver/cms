@@ -2,6 +2,8 @@
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
+using SSCMS.Models;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Office
@@ -9,10 +11,10 @@ namespace SSCMS.Core.Utils.Office
     public class ExcelObject
     {
         private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IPathManager _pathManager;
 
-        public ExcelObject(IDatabaseManager databaseManager, IPluginManager pluginManager, IPathManager pathManager)
+        public ExcelObject(IDatabaseManager databaseManager, IOldPluginManager pluginManager, IPathManager pathManager)
         {
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;

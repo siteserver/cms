@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SSCMS.Dto;
-using SSCMS.Dto.Request;
-using SSCMS.Dto.Result;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {

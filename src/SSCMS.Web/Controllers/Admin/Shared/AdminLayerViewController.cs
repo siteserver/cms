@@ -2,33 +2,39 @@
 using System.Threading.Tasks;
 using CacheManager.Core;
 using Datory.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Core.Services.AuthManager;
+using NSwag.Annotations;
+using SSCMS.Core.Services;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
-    [Route("admin/shared/adminLayerView")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class AdminLayerViewController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "shared/adminLayerView";
 
         private readonly IHttpContextAccessor _context;
         private readonly ICacheManager<object> _cacheManager;
         private readonly ISettingsManager _settingsManager;
-        private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public AdminLayerViewController(IHttpContextAccessor context, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
+        public AdminLayerViewController(IHttpContextAccessor context, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
         {
             _context = context;
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
-            _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
@@ -39,9 +45,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             Administrator admin = null;
             if (request.AdminId > 0)
             {

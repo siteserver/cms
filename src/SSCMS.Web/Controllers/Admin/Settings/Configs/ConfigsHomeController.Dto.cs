@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Configs
 {
@@ -7,8 +8,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
         public class GetResult
         {
             public Config Config { get; set; }
-            public string HomeDirectory { get; set; }
-            public string AdminToken { get; set; }
             public List<TableStyle> Styles { get; set; }
         }
 

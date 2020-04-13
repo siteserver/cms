@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using SSCMS.Dto;
-using SSCMS.Dto.Request;
+using SSCMS.Enums;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {

@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
     public partial class IndexController
     {
+        [Authorize(Roles = Constants.RoleTypeAdministrator)]
         [HttpPost, Route(RouteActionsCreate)]
         public async Task<ActionResult<IntResult>> Create([FromBody] CreateRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync())
-            {
-                return Unauthorized();
-            }
-
             var admin = await _authManager.GetAdminAsync();
             var cacheKey = Constants.GetSessionIdCacheKey(admin.Id);
             var sessionId = await _dbCacheRepository.GetValueAsync(cacheKey);

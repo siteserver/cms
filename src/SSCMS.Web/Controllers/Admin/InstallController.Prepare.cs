@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
@@ -35,8 +35,7 @@ namespace SSCMS.Web.Controllers.Admin
             var databaseConnectionString = GetDatabaseConnectionString(true, request.DatabaseType, request.DatabaseHost, request.IsDatabaseDefaultPort, TranslateUtils.ToInt(request.DatabasePort), request.DatabaseUserName, request.DatabasePassword, request.DatabaseName, request.OracleDatabase, request.OracleIsSid, request.OraclePrivilege);
             var redisConnectionString = GetRedisConnectionString(request);
 
-            await _settingsManager.SaveSettingsAsync(false, request.IsProtectData, Constants.DefaultAdminDirectory,
-                Constants.DefaultHomeDirectory, securityKey, request.DatabaseType, databaseConnectionString,
+            await _settingsManager.SaveSettingsAsync(false, request.IsProtectData, securityKey, request.DatabaseType, databaseConnectionString,
                 redisConnectionString);
 
             return new StringResult

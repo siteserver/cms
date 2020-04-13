@@ -1,4 +1,7 @@
-﻿namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
+﻿using SSCMS.Enums;
+using SSCMS.Models;
+
+namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     public partial class AdministratorsConfigController
     {

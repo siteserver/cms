@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Core.StlParser.Model;
+using SSCMS.Services;
 
 namespace SSCMS.Core.StlParser.StlEntity
 {

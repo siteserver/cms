@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
-    [Route("admin/settings/administratorsProfile")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsProfileController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteUpload = "actions/upload";
+        private const string Route = "settings/administratorsProfile";
+        private const string RouteUpload = "settings/administratorsProfile/actions/upload";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -28,9 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]int userId)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
             if (adminId != userId &&
                 !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
@@ -52,12 +57,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int userId, [FromForm]IFormFile file)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var administrator = await _administratorRepository.GetByUserIdAsync(userId);
             if (administrator == null) return NotFound();
 
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
             if (adminId != userId &&
                 !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
@@ -86,9 +89,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
             var userId = request.UserId;
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
 
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
             if (adminId != userId &&
                 !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
@@ -109,7 +111,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             if (administrator.Id == 0)
             {
                 administrator.UserName = request.UserName;
-                administrator.CreatorUserName = await _authManager.GetAdminNameAsync();
+                administrator.CreatorUserName = _authManager.AdminName;
                 administrator.CreationDate = DateTime.Now;
             }
             else

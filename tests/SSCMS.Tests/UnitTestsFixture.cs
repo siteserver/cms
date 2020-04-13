@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Microsoft.Extensions.Configuration;
-using SSCMS.Core.Services.SettingsManager;
+using SSCMS.Core.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Tests
@@ -18,7 +18,7 @@ namespace SSCMS.Tests
                 .AddJsonFile("ss.json")
                 .Build();
 
-            SettingsManager = new SettingsManager(config, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
+            SettingsManager = new SettingsManager(config, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"), null, null);
         }
     }
 }

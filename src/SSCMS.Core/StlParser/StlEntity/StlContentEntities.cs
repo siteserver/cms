@@ -5,6 +5,8 @@ using Datory.Utils;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.StlEntity
@@ -14,17 +16,17 @@ namespace SSCMS.Core.StlParser.StlEntity
     {
         public const string EntityName = "content";
 
-        public const string Id = nameof(SSCMS.Content.Id);
-        public const string Title = nameof(SSCMS.Content.Title);
+        public const string Id = nameof(Models.Content.Id);
+        public const string Title = nameof(Models.Content.Title);
         public const string FullTitle = "FullTitle";
         public const string NavigationUrl = "NavigationUrl";
-        public const string ImageUrl = nameof(SSCMS.Content.ImageUrl);
-        public const string VideoUrl = nameof(SSCMS.Content.VideoUrl);
-        public const string FileUrl = nameof(SSCMS.Content.FileUrl);
+        public const string ImageUrl = nameof(Models.Content.ImageUrl);
+        public const string VideoUrl = nameof(Models.Content.VideoUrl);
+        public const string FileUrl = nameof(Models.Content.FileUrl);
         public const string DownloadUrl = "DownloadUrl";
-        public const string AddDate = nameof(SSCMS.Content.AddDate);
-        public const string LastModifiedDate = nameof(SSCMS.Content.LastModifiedDate);
-        public const string Content = nameof(SSCMS.Content.Body);
+        public const string AddDate = nameof(Models.Content.AddDate);
+        public const string LastModifiedDate = nameof(Models.Content.LastModifiedDate);
+        public const string Content = nameof(Models.Content.Body);
         public const string Group = "Group";
         public const string Tags = "Tags";
         public const string ItemIndex = "ItemIndex";
@@ -81,7 +83,7 @@ namespace SSCMS.Core.StlParser.StlEntity
                     var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
                     var attributeName = entityName.Substring(9, entityName.Length - 10);
 
-                    if (StringUtils.EqualsIgnoreCase(nameof(SSCMS.Content.Id), attributeName))//内容ID
+                    if (StringUtils.EqualsIgnoreCase(nameof(Models.Content.Id), attributeName))//内容ID
                     {
                         if (contentInfo != null)
                         {

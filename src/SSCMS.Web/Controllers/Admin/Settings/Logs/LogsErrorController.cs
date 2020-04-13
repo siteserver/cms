@@ -1,23 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Dto;
-using SSCMS.Dto.Result;
 using SSCMS.Core.Utils;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
-    [Route("admin/settings/logsError")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class LogsErrorController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "settings/logsError";
 
         private readonly IAuthManager _authManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public LogsErrorController(IAuthManager authManager, IPluginManager pluginManager, IErrorLogRepository errorLogRepository)
+        public LogsErrorController(IAuthManager authManager, IOldPluginManager pluginManager, IErrorLogRepository errorLogRepository)
         {
             _authManager = authManager;
             _pluginManager = pluginManager;
@@ -27,9 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SearchResult>> List([FromBody] SearchRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsError))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsError))
             {
                 return Unauthorized();
             }
@@ -61,9 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsError))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsError))
             {
                 return Unauthorized();
             }

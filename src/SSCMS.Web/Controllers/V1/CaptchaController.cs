@@ -1,68 +1,67 @@
 ﻿using System;
-using CacheManager.Core;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Route("v1/captcha")]
+    [Authorize(Roles = Constants.RoleTypeApi)]
+    [Route(Constants.ApiV1Prefix)]
     public partial class CaptchaController : ControllerBase
     {
-        private const string ApiRoute = "{name}";
-        private const string ApiRouteActionsCheck = "{name}/actions/check";
+        private const string Route = "captcha";
+        private const string RouteActionsCheck = "captcha/actions/check";
 
-        private readonly ICacheManager<bool> _cacheManager;
+        private readonly ISettingsManager _settingsManager;
 
-        public CaptchaController(ICacheManager<bool> cacheManager)
+        public CaptchaController(ISettingsManager settingsManager)
         {
-            _cacheManager = cacheManager;
+            _settingsManager = settingsManager;
         }
 
-        [HttpGet, Route(ApiRoute)]
-        public FileResult Get(string name)
+        [HttpPost, Route(Route)]
+        public StringResult New()
         {
-            var (code, bytes) = ImageManager.GetCaptcha();
-
-            var cookieName = "SS-" + name;
-
-            Response.Cookies.Delete(cookieName);
-            Response.Cookies.Append(cookieName, code, new CookieOptions
+            var captcha = new CaptchaUtils.Captcha
             {
-                Expires = DateTime.Now.AddMinutes(10)
-            });
+                Value = CaptchaUtils.GetCode(),
+                ExpireAt = DateTime.Now.AddMinutes(10)
+            };
+            var json = TranslateUtils.JsonSerialize(captcha);
+
+            return new StringResult
+            {
+                Value = _settingsManager.Encrypt(json)
+            };
+        }
+
+        [HttpGet, Route(Route)]
+        public FileResult Get([FromQuery]string captcha)
+        {
+            var info = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(captcha));
+
+            var bytes = CaptchaUtils.GetCaptcha(info.Value);
 
             return File(bytes, "image/png");
         }
 
-        [HttpPost, Route(ApiRouteActionsCheck)]
-        public ActionResult<BoolResult> Check(string name, [FromBody] CheckRequest checkRequest)
+        [HttpPost, Route(RouteActionsCheck)]
+        public ActionResult<BoolResult> Check(string name, [FromBody] CheckRequest request)
         {
-            var cookieName = "SS-" + name;
+            var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Captcha));
 
-            if (!HttpContext.Request.Cookies.TryGetValue(cookieName, out var code))
+            if (captcha == null || string.IsNullOrEmpty(captcha.Value) || captcha.ExpireAt < DateTime.Now)
             {
                 return this.Error("验证码已超时，请点击刷新验证码！");
             }
 
-            var cacheKey = $"{cookieName}:{code}";
-
-            if (_cacheManager.Exists(cacheKey))
-            {
-                return this.Error("验证码已超时，请点击刷新验证码！");
-            }
-
-            HttpContext.Response.Cookies.Delete(Constants.AuthKeyAdminCaptchaCookie);
-
-            if (!StringUtils.EqualsIgnoreCase(code, checkRequest.Captcha))
+            if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value))
             {
                 return this.Error("验证码不正确，请重新输入！");
             }
-
-            _cacheManager.Put(cacheKey, true);
 
             return new BoolResult
             {

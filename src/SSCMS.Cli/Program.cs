@@ -45,7 +45,7 @@ namespace SSCMS.Cli
                 IConfigurationRoot configuration = builder.Build();
 
                 var services = new ServiceCollection();
-                var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
+                var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"), null, null);
                 
                 var application = new Application(settingsManager);
                 services.AddSingleton(application);
@@ -66,9 +66,8 @@ namespace SSCMS.Cli
                 {
                     assemblies.Add(executingAssembly);
                 }
-                AssemblyUtils.SetAssemblies(assemblies);
 
-                services.AddRepositories();
+                services.AddRepositories(assemblies);
                 services.AddServices();
                 services.AddScoped<UpdaterManager>();
 

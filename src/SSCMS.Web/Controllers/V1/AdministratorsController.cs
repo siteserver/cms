@@ -1,19 +1,26 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Extensions;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Route("v1/administrators")]
+    [ApiController]
+    [Authorize(Roles = Constants.RoleTypeApi)]
+    [ApiConventionType(typeof(DefaultApiConventions))]
+    [Route(Constants.ApiV1Prefix)]
     public partial class AdministratorsController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteActionsLogin = "actions/login";
-        private const string RouteActionsLogout = "actions/logout";
-        private const string RouteActionsResetPassword = "actions/resetPassword";
-        private const string RouteAdministrator = "{id:int}";
+        private const string Route = "administrators";
+        private const string RouteActionsLogin = "administrators/actions/login";
+        private const string RouteActionsResetPassword = "administrators/actions/resetPassword";
+        private const string RouteAdministrator = "administrators/{id:int}";
 
         private readonly IAuthManager _authManager;
         private readonly IConfigRepository _configRepository;
@@ -30,10 +37,17 @@ namespace SSCMS.Web.Controllers.V1
             _dbCacheRepository = dbCacheRepository;
         }
 
+        /// <summary>
+        /// 新增管理员API
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost, Route(Route)]
         public async Task<ActionResult<Administrator>> Create([FromBody] Administrator request)
         {
-            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
+            var isApiAuthorized = _authManager.IsApi && await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             var (isValid, errorMessage) = await _administratorRepository.InsertAsync(request, request.Password);
@@ -45,10 +59,13 @@ namespace SSCMS.Web.Controllers.V1
             return request;
         }
 
+        /// <summary>
+        /// 修改管理员API
+        /// </summary>
         [HttpPut, Route(RouteAdministrator)]
         public async Task<ActionResult<Administrator>> Update(int id, [FromBody] Administrator administrator)
         {
-            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
+            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             if (administrator == null) return this.Error("Could not read administrator from body");
@@ -69,7 +86,7 @@ namespace SSCMS.Web.Controllers.V1
         [HttpDelete, Route(RouteAdministrator)]
         public async Task<ActionResult<Administrator>> Delete(int id)
         {
-            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
+            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
@@ -82,7 +99,7 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(RouteAdministrator)]
         public async Task<ActionResult<Administrator>> Get(int id)
         {
-            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
+            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
@@ -95,7 +112,7 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> List([FromQuery]ListRequest request)
         {
-            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
+            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
             var top = request.Top;
@@ -115,11 +132,9 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteActionsLogin)]
         public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
         {
-            Administrator administrator;
+            var (administrator, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
 
-            var (isValid, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
-
-            if (!isValid)
+            if (administrator == null)
             {
                 administrator = await _administratorRepository.GetByUserNameAsync(userName);
                 if (administrator != null)
@@ -132,8 +147,7 @@ namespace SSCMS.Web.Controllers.V1
 
             administrator = await _administratorRepository.GetByUserNameAsync(userName);
             await _administratorRepository.UpdateLastActivityDateAndCountOfLoginAsync(administrator); // 记录最后登录时间、失败次数清零
-            var accessToken = await _authManager.AdminLoginAsync(administrator.UserName, request.IsAutoLogin);
-            var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
+            var accessToken = _authManager.AuthenticateAdministrator(administrator, request.IsAutoLogin);
 
             var sessionId = StringUtils.Guid();
             var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);
@@ -162,35 +176,24 @@ namespace SSCMS.Web.Controllers.V1
             {
                 Administrator = administrator,
                 AccessToken = accessToken,
-                ExpiresAt = expiresAt,
                 SessionId = sessionId,
                 IsEnforcePasswordChange = isEnforcePasswordChange
             };
         }
 
-        [HttpPost, Route(RouteActionsLogout)]
-        public async Task<Administrator> Logout()
-        {
-            var administrator = await _authManager.GetAdminAsync();
-            _authManager.AdminLogout();
-
-            return administrator;
-        }
-
         [HttpPost, Route(RouteActionsResetPassword)]
         public async Task<ActionResult<Administrator>> ResetPassword([FromBody]ResetPasswordRequest request)
         {
-            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeAdministrators);
+            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
             if (!isApiAuthorized) return Unauthorized();
 
-            var (isValid, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
-            if (!isValid)
+            var (administrator, _, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
+            if (administrator == null)
             {
                 return this.Error(errorMessage);
             }
 
-            var administrator = await _administratorRepository.GetByUserNameAsync(userName);
-
+            bool isValid;
             (isValid, errorMessage) = await _administratorRepository.ChangePasswordAsync(administrator, request.NewPassword);
             if (!isValid)
             {

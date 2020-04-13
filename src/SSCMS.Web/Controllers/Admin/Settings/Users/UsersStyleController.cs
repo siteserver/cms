@@ -3,22 +3,29 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.Serialization;
+using SSCMS.Dto;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
-    [Route("admin/settings/usersStyle")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class UsersStyleController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteImport = "actions/import";
-        private const string RouteExport = "actions/export";
-        private const string RouteReset = "actions/reset";
+        private const string Route = "settings/usersStyle";
+        private const string RouteImport = "settings/usersStyle/actions/import";
+        private const string RouteExport = "settings/usersStyle/actions/export";
+        private const string RouteReset = "settings/usersStyle/actions/reset";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -38,9 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersStyle))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersStyle))
             {
                 return Unauthorized();
             }
@@ -73,9 +78,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<DeleteResult>> Delete([FromBody] DeleteRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersStyle))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersStyle))
             {
                 return Unauthorized();
             }
@@ -108,9 +111,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<BoolResult>> Import([FromForm] IFormFile file)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -147,9 +148,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(RouteExport)]
         public async Task<ActionResult> Export()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -163,9 +162,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteReset)]
         public async Task<ActionResult<ResetResult>> Reset()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersStyle))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersStyle))
             {
                 return Unauthorized();
             }

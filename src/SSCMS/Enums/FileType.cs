@@ -1,4 +1,4 @@
-namespace SSCMS
+namespace SSCMS.Enums
 {
 	public enum FileType
 	{

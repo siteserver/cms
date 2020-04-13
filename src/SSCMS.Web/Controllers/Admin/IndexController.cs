@@ -3,14 +3,18 @@ using System.Threading.Tasks;
 using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using SSCMS.Core.Extensions;
-using SSCMS.Core.Packaging;
 using SSCMS.Core.Utils;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Admin.Settings.Sites;
+using NSwag.Annotations;
+using SSCMS.Repositories;
+using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.Admin
 {
+    [OpenApiIgnore]
     [Route(Constants.ApiAdminPrefix)]
     public partial class IndexController : ControllerBase
     {
@@ -19,12 +23,13 @@ namespace SSCMS.Web.Controllers.Admin
         private const string RouteActionsCache = "index/actions/cache";
         private const string RouteActionsDownload = "index/actions/download";
 
+        private readonly IStringLocalizer<IndexController> _local;
         private readonly ICacheManager<object> _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
@@ -32,8 +37,9 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IContentRepository _contentRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public IndexController(ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public IndexController(IStringLocalizer<IndexController> local, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IOldPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
         {
+            _local = local;
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _authManager = authManager;
@@ -65,7 +71,7 @@ namespace SSCMS.Web.Controllers.Admin
             }
 
             
-            if (!await _authManager.IsAdminAuthenticatedAsync())
+            if (!_authManager.IsAdmin)
             {
                 return Unauthorized();
             }
@@ -112,12 +118,12 @@ namespace SSCMS.Web.Controllers.Admin
                     };
                 }
 
-                return this.Error("您没有可以管理的站点，请联系超级管理员协助解决");
+                return this.Error(_local["You do not have a site to manage, please contact the super administrator for assistance"]);
             }
 
             var packageIds = new List<string>
             {
-                PackageUtils.PackageIdSsCms
+                Constants.PackageIdApp
             };
             var packageList = new List<object>();
             var plugins = _pluginManager.GetPlugins();
@@ -167,8 +173,8 @@ namespace SSCMS.Web.Controllers.Admin
                 Value = true,
                 DefaultPageUrl = await _pluginManager.GetSystemDefaultPageUrlAsync(request.SiteId) ?? _pathManager.GetAdminUrl(DashboardController.Route),
                 IsNightly = _settingsManager.IsNightlyUpdate,
-                ProductVersion = _settingsManager.ProductVersion,
-                PluginVersion = _settingsManager.PluginVersion,
+                AppVersion = _settingsManager.AppVersion,
+                SdkVersion = _settingsManager.SdkVersion,
                 TargetFramework = _settingsManager.TargetFramework,
                 AdminLogoUrl = config.AdminLogoUrl,
                 AdminTitle = config.AdminTitle,

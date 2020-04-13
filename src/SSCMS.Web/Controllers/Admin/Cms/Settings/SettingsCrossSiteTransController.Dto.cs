@@ -1,4 +1,4 @@
-﻿using SSCMS.Dto.Request;
+﻿using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {

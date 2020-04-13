@@ -1,4 +1,6 @@
-﻿namespace SSCMS
+﻿using SSCMS.Enums;
+
+namespace SSCMS
 {
     public class ContentColumn
     {

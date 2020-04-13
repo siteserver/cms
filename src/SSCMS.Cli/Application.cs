@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Mono.Options;
 using Quartz;
 using Quartz.Impl;
-using SSCMS;
 using SSCMS.Cli.Core;
 using SSCMS.Utils;
 
@@ -94,7 +93,7 @@ namespace SSCMS.Cli
         {
             if (_isHelp || string.IsNullOrEmpty(commandName))
             {
-                await Console.Out.WriteLineAsync($"Cli 命令行版本: {_settingsManager.ProductVersion}");
+                await Console.Out.WriteLineAsync($"Cli 命令行版本: {_settingsManager.AppVersion}");
                 await Console.Out.WriteLineAsync($"当前文件夹: {_settingsManager.ContentRootPath}");
                 await Console.Out.WriteLineAsync();
 

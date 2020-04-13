@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using SSCMS.Enums;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_Channel")]
     public class Channel : Entity, IChannelSummary

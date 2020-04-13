@@ -1,18 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
+using SSCMS.Dto;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
-    [Route("admin/cms/channels/channelsLayerGroup")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class ChannelsLayerGroupController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteAdd = "actions/add";
+        private const string Route = "cms/channels/channelsLayerGroup";
+        private const string RouteAdd = "cms/channels/channelsLayerGroup/actions/add";
 
         private readonly IAuthManager _authManager;
         private readonly ISiteRepository _siteRepository;
@@ -30,8 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ObjectResult<IEnumerable<string>>>> Get([FromQuery] ChannelRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
@@ -51,8 +56,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteAdd)]
         public async Task<ActionResult<List<int>>> Add([FromBody] AddRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();
@@ -108,8 +112,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(Route)]
         public async Task<ActionResult<List<int>>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.Channels))
             {
                 return Unauthorized();

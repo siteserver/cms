@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NuGet.Packaging;
 using SSCMS.Core.Utils;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Packaging
@@ -13,10 +14,6 @@ namespace SSCMS.Core.Packaging
     // https://github.com/caleb-vear/NuSelfUpdate
     public static class PackageUtils
     {
-        public const string PackageIdSsCms = "SS.CMS";
-        public const string PackageIdSiteServerPlugin = "SSCMS";
-        public const string VersionDev = "0.0.0";
-
         public const string CacheKeySsCmsIsDownload = nameof(CacheKeySsCmsIsDownload);
 
         //private const string NuGetPackageSource = "https://packages.nuget.org/api/v2";
@@ -76,7 +73,7 @@ namespace SSCMS.Core.Packaging
                 }
             }
 
-            if (StringUtils.EqualsIgnoreCase(packageId, PackageIdSsCms))
+            if (StringUtils.EqualsIgnoreCase(packageId, Constants.PackageIdApp))
             {
                 if (!Directory.Exists(directoryPath))
                 {
@@ -133,7 +130,7 @@ namespace SSCMS.Core.Packaging
                 return false;
             }
 
-            if (StringUtils.EqualsIgnoreCase(packageId, PackageIdSsCms))
+            if (StringUtils.EqualsIgnoreCase(packageId, Constants.PackageIdApp))
             {
                 var packageWebConfigPath = PathUtils.Combine(directoryPath, Constants.ConfigFileName);
                 if (!FileUtils.IsFileExists(packageWebConfigPath))
@@ -233,7 +230,7 @@ namespace SSCMS.Core.Packaging
                 return null;
             }
 
-            if (!StringUtils.EqualsIgnoreCase(packageId, PackageIdSsCms))
+            if (!StringUtils.EqualsIgnoreCase(packageId, Constants.PackageIdApp))
             {
                 dllDirectoryPath = FindDllDirectoryPath(directoryPath);
 

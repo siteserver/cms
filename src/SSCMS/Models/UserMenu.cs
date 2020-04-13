@@ -2,7 +2,7 @@
 using Datory;
 using Datory.Annotations;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_UserMenu")]
     public class UserMenu : Entity

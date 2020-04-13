@@ -1,15 +1,22 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
+using NSwag.Annotations;
+using SSCMS.Dto;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Configs
 {
-    [Route("admin/settings/configsHomeMenu")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class ConfigsHomeMenuController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteReset = "actions/reset";
+        private const string Route = "settings/configsHomeMenu";
+        private const string RouteReset = "settings/configsHomeMenu/actions/reset";
 
         private readonly IAuthManager _authManager;
         private readonly IUserMenuRepository _userMenuRepository;
@@ -25,9 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
             {
                 return Unauthorized();
             }
@@ -42,9 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<UserMenusResult>> Delete([FromBody]IdRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
             {
                 return Unauthorized();
             }
@@ -60,9 +63,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<UserMenusResult>> Submit([FromBody] SubmitRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
             {
                 return Unauthorized();
             }
@@ -110,9 +111,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
         [HttpPost, Route(RouteReset)]
         public async Task<ActionResult<UserMenusResult>> Reset()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
             {
                 return Unauthorized();
             }

@@ -7,6 +7,7 @@ using Mono.Options;
 using SSCMS;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Updater;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Cli.Services

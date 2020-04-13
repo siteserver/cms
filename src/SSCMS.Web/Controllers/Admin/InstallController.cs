@@ -3,12 +3,16 @@ using System.Security.Permissions;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
+    [OpenApiIgnore]
     [Route(Constants.ApiAdminPrefix)]
     public partial class InstallController : ControllerBase
     {
@@ -21,11 +25,11 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public InstallController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
+        public InstallController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
@@ -50,7 +54,7 @@ namespace SSCMS.Web.Controllers.Admin
             try
             {
                 var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, "version.txt");
-                FileUtils.WriteText(filePath, _settingsManager.ProductVersion);
+                FileUtils.WriteText(filePath, _settingsManager.AppVersion);
 
                 var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, _settingsManager.ContentRootPath);
                 ioPermission.Demand();
@@ -80,7 +84,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             var result = new GetResult
             {
-                ProductVersion = _settingsManager.ProductVersion,
+                ProductVersion = _settingsManager.AppVersion,
                 NetVersion = _settingsManager.TargetFramework,
                 ContentRootPath = _settingsManager.ContentRootPath,
                 WebRootPath = _settingsManager.WebRootPath,

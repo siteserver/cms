@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     [Serializable]
     public class PermissionsSettings

@@ -5,6 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory.Utils;
 using SSCMS.Core.Utils.PluginImpls;
+using SSCMS.Enums;
+using SSCMS.Models;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
@@ -12,10 +15,10 @@ namespace SSCMS.Core.Utils
     public class ColumnsManager
     {
         private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IPathManager _pathManager;
 
-        public ColumnsManager(IDatabaseManager databaseManager, IPluginManager pluginManager, IPathManager pathManager)
+        public ColumnsManager(IDatabaseManager databaseManager, IOldPluginManager pluginManager, IPathManager pathManager)
         {
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;

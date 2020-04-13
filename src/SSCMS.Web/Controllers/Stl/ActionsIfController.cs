@@ -1,11 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.StlElement;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Stl
 {
+    [OpenApiIgnore]
     public partial class ActionsIfController : ControllerBase
     {
         private readonly ISettingsManager _settingsManager;
@@ -34,15 +37,15 @@ namespace SSCMS.Web.Controllers.Stl
             {
                 if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsUserLoggin))
                 {
-                    isSuccess = await _authManager.IsUserAuthenticatedAsync();
+                    isSuccess = _authManager.IsUser;
                 }
                 else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsAdministratorLoggin))
                 {
-                    isSuccess = await _authManager.IsAdminAuthenticatedAsync();
+                    isSuccess = _authManager.IsAdmin;
                 }
                 else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsUserOrAdministratorLoggin))
                 {
-                    isSuccess = await _authManager.IsUserAuthenticatedAsync() || await _authManager.IsAdminAuthenticatedAsync();
+                    isSuccess = _authManager.IsUser || _authManager.IsAdmin;
                 }
 
                 var template = isSuccess ? dynamicInfo.SuccessTemplate : dynamicInfo.FailureTemplate;

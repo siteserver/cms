@@ -1,21 +1,26 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Datory.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
-    [Route("admin/plugins/add")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class AddController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "plugins/add";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
 
-        public AddController(ISettingsManager settingsManager, IAuthManager authManager, IPluginManager pluginManager)
+        public AddController(ISettingsManager settingsManager, IAuthManager authManager, IOldPluginManager pluginManager)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
@@ -25,9 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -38,7 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             return new GetResult
             {
                 IsNightly = _settingsManager.IsNightlyUpdate,
-                PluginVersion = _settingsManager.PluginVersion,
+                SdkVersion = _settingsManager.SdkVersion,
                 PackageIds = packageIds
             };
         }

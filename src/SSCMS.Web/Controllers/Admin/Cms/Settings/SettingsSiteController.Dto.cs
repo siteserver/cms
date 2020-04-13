@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Datory;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {

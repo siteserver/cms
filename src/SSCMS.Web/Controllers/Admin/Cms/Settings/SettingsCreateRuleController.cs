@@ -1,16 +1,22 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
-    [Route("admin/cms/settings/settingsCreateRule")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class SettingsCreateRuleController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteGet = "{siteId:int}/{channelId:int}";
+        private const string Route = "cms/settings/settingsCreateRule";
+        private const string RouteGet = "cms/settings/settingsCreateRule/{siteId:int}/{channelId:int}";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -32,9 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> List([FromQuery] SiteRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigCreateRule))
             {
                 return Unauthorized();
@@ -70,10 +74,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(RouteGet)]
         public async Task<ActionResult<ChannelResult>> Get(int siteId, int channelId)
         {
-            
-
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(siteId,
+            if (!await _authManager.HasSitePermissionsAsync(siteId,
                     Constants.SitePermissions.ConfigCreateRule))
             {
                 return Unauthorized();
@@ -102,9 +103,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpPut, Route(Route)]
         public async Task<ActionResult<GetResult>> Submit([FromBody] SubmitRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigCreateRule))
             {
                 return Unauthorized();

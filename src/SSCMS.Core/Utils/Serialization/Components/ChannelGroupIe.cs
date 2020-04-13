@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
+using SSCMS.Models;
+using SSCMS.Repositories;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Serialization.Components

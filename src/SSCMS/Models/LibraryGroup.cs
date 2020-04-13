@@ -1,7 +1,8 @@
 ﻿using Datory;
 using Datory.Annotations;
+using SSCMS.Enums;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_LibraryGroup")]
     public class LibraryGroup : Entity

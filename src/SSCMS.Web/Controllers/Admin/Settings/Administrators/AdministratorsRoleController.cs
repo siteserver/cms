@@ -1,15 +1,21 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
+using NSwag.Annotations;
+using SSCMS.Dto;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
-    [Route("admin/settings/administratorsRole")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsRoleController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "settings/administratorsRole";
 
         private readonly IAuthManager _authManager;
         private readonly IRoleRepository _roleRepository;
@@ -27,16 +33,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListRequest>> GetList()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
 
             var roleInfoList = await _authManager.IsSuperAdminAsync()
                 ? await _roleRepository.GetRoleListAsync()
-                : await _roleRepository.GetRoleListByCreatorUserNameAsync(await _authManager.GetAdminNameAsync());
+                : await _roleRepository.GetRoleListByCreatorUserNameAsync(_authManager.AdminName);
 
             var roles = roleInfoList.Where(x => !_roleRepository.IsPredefinedRole(x.RoleName)).ToList();
 
@@ -49,9 +53,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<ListRequest>> Delete([FromBody] IdRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -66,7 +68,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             var roles = await _authManager.IsSuperAdminAsync()
                 ? await _roleRepository.GetRoleListAsync()
-                : await _roleRepository.GetRoleListByCreatorUserNameAsync(await _authManager.GetAdminNameAsync());
+                : await _roleRepository.GetRoleListByCreatorUserNameAsync(_authManager.AdminName);
 
             return new ListRequest
             {

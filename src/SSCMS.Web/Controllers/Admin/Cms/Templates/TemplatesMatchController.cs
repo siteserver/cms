@@ -1,17 +1,23 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Dto;
-using SSCMS.Dto.Request;
-using SSCMS.Dto.Result;
+using SSCMS.Enums;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
-    [Route("admin/cms/templates/templatesMatch")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class TemplatesMatchController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteCreate = "actions/create";
+        private const string Route = "cms/templates/templatesMatch";
+        private const string RouteCreate = "cms/templates/templatesMatch/actions/create";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -33,9 +39,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery] SiteRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
             {
                 return Unauthorized();
             }
@@ -70,9 +74,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(Route)]
         public async Task<ActionResult<ObjectResult<Cascade<int>>>> Submit([FromBody]MatchRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
             {
                 return Unauthorized();
             }
@@ -126,9 +128,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteCreate)]
         public async Task<ActionResult<GetResult>> Create([FromBody]CreateRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateMatch))
             {
                 return Unauthorized();
             }
@@ -136,7 +136,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
             if (request.IsChannelTemplate && request.IsChildren)
             {
                 await CreateChannelChildrenTemplateAsync(site, request, adminId);

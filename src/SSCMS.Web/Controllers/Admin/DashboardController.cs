@@ -1,13 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
-using SSCMS.Core.Packaging;
+using NSwag.Annotations;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class DashboardController : ControllerBase
     {
@@ -32,15 +38,13 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var admin = await _authManager.GetAdminAsync();
             var lastActivityDate = admin.LastActivityDate ?? Constants.SqlMinValue;
             var config = await _configRepository.GetAsync();
 
             return new GetResult
             {
-                Version = _settingsManager.ProductVersion == PackageUtils.VersionDev ? "dev" : _settingsManager.ProductVersion,
+                Version = _settingsManager.AppVersion == Constants.VersionDev ? "dev" : _settingsManager.AppVersion,
                 LastActivityDate = DateUtils.GetDateString(lastActivityDate, DateFormatType.Chinese),
                 UpdateDate = DateUtils.GetDateString(config.UpdateDate, DateFormatType.Chinese),
                 AdminWelcomeHtml = config.AdminWelcomeHtml
@@ -50,8 +54,6 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpGet, Route(RouteUnCheckedList)]
         public async Task<ActionResult<ObjectResult<List<Checking>>>> GetUnCheckedList()
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var checkingList = new List<Checking>();
 
             if (await _authManager.IsSuperAdminAsync())

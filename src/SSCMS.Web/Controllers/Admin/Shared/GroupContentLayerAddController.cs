@@ -1,14 +1,22 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
-    [Route("admin/shared/groupContentLayerAdd")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class GroupContentLayerAddController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "shared/groupContentLayerAdd";
 
         private readonly IAuthManager _authManager;
         private readonly IContentGroupRepository _contentGroupRepository;
@@ -22,9 +30,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var group = await _contentGroupRepository.GetAsync(request.SiteId, request.GroupId);
 
             return new GetResult
@@ -37,9 +42,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(Route)]
         public async Task<ActionResult<ListResult>> Add([FromBody] AddRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             if (await _contentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
             {
                 return this.Error("保存失败，已存在相同名称的内容组！");
@@ -69,9 +71,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpPut, Route(Route)]
         public async Task<ActionResult<ListResult>> Edit([FromBody] EditRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var groupInfo = await _contentGroupRepository.GetAsync(request.SiteId, request.GroupId);
 
             if (groupInfo.GroupName != request.GroupName && await _contentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))

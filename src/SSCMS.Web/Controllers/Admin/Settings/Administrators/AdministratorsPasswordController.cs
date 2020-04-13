@@ -1,15 +1,21 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
-    [Route("admin/settings/administratorsPassword")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsPasswordController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "settings/administratorsPassword";
 
         private readonly IAuthManager _authManager;
         private readonly IAdministratorRepository _administratorRepository;
@@ -24,10 +30,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
             var userId = request.UserId;
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
 
             if (userId == 0) userId = adminId;
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
             var administrator = await _administratorRepository.GetByUserIdAsync(userId);
             if (administrator == null) return NotFound();
             if (adminId != userId &&
@@ -46,10 +51,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
             var userId = request.UserId;
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
 
             if (userId == 0) userId = adminId;
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
             var adminInfo = await _administratorRepository.GetByUserIdAsync(userId);
             if (adminInfo == null) return NotFound();
             if (adminId != userId &&

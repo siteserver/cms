@@ -1,28 +1,34 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
-    [Route("admin/shared/imageLayerSelect")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class ImageLayerSelectController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteSelect = "actions/select";
+        private const string Route = "shared/imageLayerSelect";
+        private const string RouteSelect = "shared/imageLayerSelect/actions/select";
 
         private readonly ISettingsManager _settingsManager;
-        private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ILibraryGroupRepository _libraryGroupRepository;
         private readonly ILibraryImageRepository _libraryImageRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public ImageLayerSelectController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository, ISiteRepository siteRepository)
+        public ImageLayerSelectController(ISettingsManager settingsManager, IPathManager pathManager, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository, ISiteRepository siteRepository)
         {
             _settingsManager = settingsManager;
-            _authManager = authManager;
             _pathManager = pathManager;
             _libraryGroupRepository = libraryGroupRepository;
             _libraryImageRepository = libraryImageRepository;
@@ -33,9 +39,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpGet, Route(Route)]
         public async Task<ActionResult<QueryResult>> List([FromQuery]QueryRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Image);
             groups.Insert(0, new LibraryGroup
             {
@@ -56,9 +59,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(RouteSelect)]
         public async Task<ActionResult<StringResult>> Select([FromBody]SelectRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var site = await _siteRepository.GetAsync(request.SiteId);
             var library = await _libraryImageRepository.GetAsync(request.LibraryId);
 

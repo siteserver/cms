@@ -2,8 +2,6 @@
   "Urls": "http://*:5000",
   "IsNightlyUpdate": false,
   "IsProtectData": false,
-  "AdminDirectory": "siteserver",
-  "HomeDirectory": "home",
   "SecurityKey": "",
   "Database": {
     "Type": "",

@@ -1,17 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CacheManager.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Core.Services.AuthManager;
+using NSwag.Annotations;
+using SSCMS.Core.Services;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
-    [Route("admin/settings/administratorsView")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsViewController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "settings/administratorsView";
 
         private readonly IHttpContextAccessor _context;
         private readonly ICacheManager<object> _cacheManager;
@@ -19,11 +26,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IAdministratorRepository _administratorRepository;
+        private readonly IUserRepository _userRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public AdministratorsViewController(IHttpContextAccessor context, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
+        public AdministratorsViewController(IHttpContextAccessor context, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IAdministratorRepository administratorRepository, IUserRepository userRepository, ISiteRepository siteRepository)
         {
             _context = context;
             _cacheManager = cacheManager;
@@ -33,17 +41,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
             _administratorRepository = administratorRepository;
+            _userRepository = userRepository;
             _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            if (!await _authManager.IsAdminAuthenticatedAsync())
-            {
-                return Unauthorized();
-            }
-
             Administrator admin = null;
             if (request.UserId > 0)
             {
@@ -59,7 +63,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 return NotFound();
             }
 
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
             if (adminId != admin.Id &&
                 !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Dto.Request;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {

@@ -1,25 +1,30 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
-    [Route("admin/shared/videoLayerUpload")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class VideoLayerUploadController : ControllerBase
     {
-        private const string RouteUpload = "actions/upload";
+        private const string RouteUpload = "shared/videoLayerUpload/actions/upload";
 
-        private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public VideoLayerUploadController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public VideoLayerUploadController(IPathManager pathManager, ISiteRepository siteRepository)
         {
-            _authManager = authManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
         }
@@ -27,9 +32,6 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             if (file == null)

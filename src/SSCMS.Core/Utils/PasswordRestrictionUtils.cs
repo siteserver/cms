@@ -1,4 +1,5 @@
-﻿using SSCMS.Utils;
+﻿using SSCMS.Enums;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {

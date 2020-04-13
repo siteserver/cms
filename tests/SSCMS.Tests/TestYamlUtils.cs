@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using SSCMS.Models;
 using SSCMS.Utils;
 using Xunit;
 using Xunit.Abstractions;

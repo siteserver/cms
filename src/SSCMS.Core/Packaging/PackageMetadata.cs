@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using NuGet.Packaging;
 using NuGet.Versioning;
+using SSCMS.Plugins;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Packaging
 {
-    public class PackageMetadata : SSCMS.IPackageMetadata
+    public class PackageMetadata : IPackageMetadata
     {
         private readonly Dictionary<string, string> _metadata;
         private readonly IReadOnlyCollection<PackageDependencyGroup> _dependencyGroups;
@@ -21,7 +23,7 @@ namespace SSCMS.Core.Packaging
             Version = "0.0.0";
         }
 
-        public PackageMetadata(IPlugin plugin)
+        public PackageMetadata(IOldPlugin plugin)
         {
             PluginId = plugin.PluginId;
             Version = plugin.Version;
@@ -72,7 +74,7 @@ namespace SSCMS.Core.Packaging
 
             if (Version == "$version$")
             {
-                Version = PackageUtils.VersionDev;
+                Version = Constants.VersionDev;
             }
 
             if (Version.IndexOf('.') < 0)

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SSCMS;
+using SSCMS.Repositories;
 using Xunit;
 
 namespace SSCMS.Core.Tests.Services

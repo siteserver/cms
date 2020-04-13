@@ -1,7 +1,6 @@
 ﻿using System;
 
-
-namespace SSCMS
+namespace SSCMS.Models
 {
     [Serializable]
     public class ContentCount

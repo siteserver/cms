@@ -1,13 +1,19 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
-    [Route("admin/cms/templates/templatesAssetsEditor")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class TemplatesAssetsEditorController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "cms/templates/templatesAssetsEditor";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -23,9 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] FileRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
             {
                 return Unauthorized();
             }
@@ -69,9 +73,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(Route)]
         public async Task<ActionResult<ContentResult>> Add([FromBody] ContentRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
             {
                 return Unauthorized();
             }
@@ -85,9 +87,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPut, Route(Route)]
         public async Task<ActionResult<ContentResult>> Edit([FromBody] ContentRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
             {
                 return Unauthorized();
             }

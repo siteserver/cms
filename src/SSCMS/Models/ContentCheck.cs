@@ -2,7 +2,7 @@ using System;
 using Datory;
 using Datory.Annotations;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_ContentCheck")]
 	public class ContentCheck : Entity

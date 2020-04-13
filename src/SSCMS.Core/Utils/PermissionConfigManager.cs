@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
 using CacheManager.Core;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
@@ -18,17 +19,16 @@ namespace SSCMS.Core.Utils
 
         public List<PermissionConfig> ChannelPermissions { get; } = new List<PermissionConfig>();
 
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
 
-        private PermissionConfigManager(IPluginManager pluginManager)
+        private PermissionConfigManager(IOldPluginManager pluginManager)
         {
             _pluginManager = pluginManager;
         }
 
-        public static async Task<PermissionConfigManager> GetInstanceAsync(ICacheManager<object> cacheManager, IPathManager pathManager, IPluginManager pluginManager)
+        public static async Task<PermissionConfigManager> GetInstanceAsync(ICacheManager<object> cacheManager, IPathManager pathManager, IOldPluginManager pluginManager)
 		{
-            var tabManager = new TabManager(cacheManager, pathManager, pluginManager);
-			var path = tabManager.GetMenusPath("Permissions.config");
+            var path = pathManager.GetConfigPath("Permissions.config");
 
 			var permissionManager = cacheManager.Get<PermissionConfigManager>(CacheUtils.GetPathKey(path));
             if (permissionManager != null) return permissionManager;

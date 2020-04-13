@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using SSCMS.Core.Utils.Serialization;
+using SSCMS.Models;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
@@ -9,12 +11,12 @@ namespace SSCMS.Core.Utils
     public class SiteTemplateManager
     {
         private readonly IPathManager _pathManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly CacheUtils _caching;
         private readonly string _rootPath;
 
-        public SiteTemplateManager(IPathManager pathManager, IPluginManager pluginManager, IDatabaseManager databaseManager, CacheUtils caching)
+        public SiteTemplateManager(IPathManager pathManager, IOldPluginManager pluginManager, IDatabaseManager databaseManager, CacheUtils caching)
         {
             _pathManager = pathManager;
             _pluginManager = pluginManager;
@@ -122,7 +124,7 @@ namespace SSCMS.Core.Utils
             }
         }
 
-        public static async Task ExportSiteToSiteTemplateAsync(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IPluginManager pluginManager, Site site, string siteTemplateDir)
+        public static async Task ExportSiteToSiteTemplateAsync(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IOldPluginManager pluginManager, Site site, string siteTemplateDir)
         {
             var exportObject = new ExportObject(pathManager, databaseManager, caching, pluginManager, site);
 

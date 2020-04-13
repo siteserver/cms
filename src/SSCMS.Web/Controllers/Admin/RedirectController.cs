@@ -1,23 +1,27 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
+using SSCMS.Dto;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
-    [Route("admin/redirect")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class RedirectController : ControllerBase
     {
-        private const string Route = "";
+        private const string Route = "redirect";
 
-        private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public RedirectController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public RedirectController(IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
-            _authManager = authManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
@@ -26,9 +30,6 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpPost, Route(Route)]
         public async Task<ActionResult<StringResult>> Submit([FromBody]SubmitRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync()) return Unauthorized();
-
             var site = await _siteRepository.GetAsync(request.SiteId);
             var url = string.Empty;
 
@@ -96,7 +97,7 @@ namespace SSCMS.Web.Controllers.Admin
                 }
                 else
                 {
-                    url = _pathManager.WebUrl;
+                    url = "/";
                 }
             }
 

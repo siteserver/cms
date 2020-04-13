@@ -1,4 +1,4 @@
-﻿namespace SSCMS
+﻿namespace SSCMS.Models
 {
     public class ContentSummary
     {

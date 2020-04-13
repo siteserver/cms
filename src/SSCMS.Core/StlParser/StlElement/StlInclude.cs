@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Core.StlParser.Model;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.StlElement

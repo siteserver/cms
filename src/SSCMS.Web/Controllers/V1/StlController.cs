@@ -1,13 +1,17 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Route("v1/stl")]
+    [Authorize(Roles = Constants.RoleTypeApi)]
+    [Route(Constants.ApiV1Prefix)]
     public partial class StlController : ControllerBase
     {
-        private const string Route = "{elementName}";
+        private const string Route = "stl/{elementName}";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -29,7 +33,7 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            var isApiAuthorized = await _authManager.IsApiAuthenticatedAsync() && await _accessTokenRepository.IsScopeAsync(_authManager.GetApiToken(), Constants.ScopeStl);
+            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeStl);
 
             var stlRequest = new StlRequest();
             await stlRequest.LoadAsync(_authManager, _pathManager, _configRepository, _siteRepository, isApiAuthorized, request);

@@ -3,16 +3,21 @@ using System.Threading.Tasks;
 using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
+    [OpenApiIgnore]
     [Route(Constants.ApiAdminPrefix)]
     public partial class LoginController : ControllerBase
     {
         public const string Route = "login";
-        private const string RouteCaptcha = "login/actions/captcha";
+        private const string RouteCaptcha = "login/captcha";
+        private const string RouteCheckCaptcha = "login/captcha/actions/check";
 
         private readonly ICacheManager<bool> _cacheManager;
         private readonly ISettingsManager _settingsManager;
@@ -21,8 +26,9 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
+        private readonly ILogRepository _logRepository;
 
-        public LoginController(ICacheManager<bool> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, IDbCacheRepository dbCacheRepository)
+        public LoginController(ICacheManager<bool> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, IDbCacheRepository dbCacheRepository, ILogRepository logRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
@@ -31,6 +37,7 @@ namespace SSCMS.Web.Controllers.Admin
             _configRepository = configRepository;
             _administratorRepository = administratorRepository;
             _dbCacheRepository = dbCacheRepository;
+            _logRepository = logRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -52,7 +59,7 @@ namespace SSCMS.Web.Controllers.Admin
             return new GetResult
             {
                 Success = true,
-                ProductVersion = _settingsManager.ProductVersion,
+                ProductVersion = _settingsManager.AppVersion,
                 AdminTitle = config.AdminTitle
             };
         }
@@ -62,30 +69,28 @@ namespace SSCMS.Web.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
         {
-            
+            var (administrator, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
 
-            Administrator adminInfo;
-
-            var (isValid, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
-
-            if (!isValid)
+            if (administrator == null)
             {
-                adminInfo = await _administratorRepository.GetByUserNameAsync(userName);
-                if (adminInfo != null)
+                administrator = await _administratorRepository.GetByUserNameAsync(userName);
+                if (administrator != null)
                 {
-                    await _administratorRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(adminInfo); // 记录最后登录时间、失败次数+1
+                    await _administratorRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(administrator); // 记录最后登录时间、失败次数+1
                 }
 
                 return this.Error(errorMessage);
             }
 
-            adminInfo = await _administratorRepository.GetByUserNameAsync(userName);
-            await _administratorRepository.UpdateLastActivityDateAndCountOfLoginAsync(adminInfo); // 记录最后登录时间、失败次数清零
-            var accessToken = await _authManager.AdminLoginAsync(adminInfo.UserName, request.IsAutoLogin);
-            var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
+            administrator = await _administratorRepository.GetByUserNameAsync(userName);
+            await _administratorRepository.UpdateLastActivityDateAndCountOfLoginAsync(administrator); // 记录最后登录时间、失败次数清零
+
+            var token = _authManager.AuthenticateAdministrator(administrator, request.IsPersistent);
+
+            await _logRepository.AddAdminLogAsync(administrator, "管理员登录");
 
             var sessionId = StringUtils.Guid();
-            var cacheKey = Constants.GetSessionIdCacheKey(adminInfo.Id);
+            var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);
             await _dbCacheRepository.RemoveAndInsertAsync(cacheKey, sessionId);
 
             var config = await _configRepository.GetAsync();
@@ -93,13 +98,13 @@ namespace SSCMS.Web.Controllers.Admin
             var isEnforcePasswordChange = false;
             if (config.IsAdminEnforcePasswordChange)
             {
-                if (adminInfo.LastChangePasswordDate == null)
+                if (administrator.LastChangePasswordDate == null)
                 {
                     isEnforcePasswordChange = true;
                 }
                 else
                 {
-                    var ts = new TimeSpan(DateTime.Now.Ticks - adminInfo.LastChangePasswordDate.Value.Ticks);
+                    var ts = new TimeSpan(DateTime.Now.Ticks - administrator.LastChangePasswordDate.Value.Ticks);
                     if (ts.TotalDays > config.AdminEnforcePasswordChangeDays)
                     {
                         isEnforcePasswordChange = true;
@@ -109,11 +114,10 @@ namespace SSCMS.Web.Controllers.Admin
 
             return new LoginResult
             {
-                Administrator = adminInfo,
-                AccessToken = accessToken,
-                ExpiresAt = expiresAt,
+                Administrator = administrator,
                 SessionId = sessionId,
-                IsEnforcePasswordChange = isEnforcePasswordChange
+                IsEnforcePasswordChange = isEnforcePasswordChange,
+                Token = token
             };
         }
     }

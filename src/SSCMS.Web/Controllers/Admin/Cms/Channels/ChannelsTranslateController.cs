@@ -1,30 +1,35 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Dto;
-using SSCMS.Dto.Request;
-using SSCMS.Dto.Result;
 using SSCMS.Core.Extensions;
+using SSCMS.Enums;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
-    [Route("admin/cms/channels/channelsTranslate")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class ChannelsTranslateController : ControllerBase
     {
-        private const string Route = "";
-        private const string RouteOptions = "actions/options";
+        private const string Route = "cms/channels/channelsTranslate";
+        private const string RouteOptions = "cms/channels/channelsTranslate/actions/options";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ChannelsTranslateController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ChannelsTranslateController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
@@ -40,9 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery] SiteRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
             {
                 return Unauthorized();
             }
@@ -75,10 +78,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteOptions)]
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody]GetOptionsRequest request)
         {
-            
-
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Constants.SitePermissions.ConfigCrossSiteTrans))
             {
                 return Unauthorized();
@@ -110,9 +110,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [Route(Route)]
         public async Task<ActionResult<BoolResult>> Translate([FromBody] SubmitRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
             {
                 return Unauthorized();
             }
@@ -120,7 +118,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var adminId = await _authManager.GetAdminIdAsync();
+            var adminId = _authManager.AdminId;
             await TranslateAsync(site, request.TransSiteId, request.TransChannelId, request.TranslateType, request.ChannelIds, request.IsDeleteAfterTranslate, adminId);
 
             return new BoolResult

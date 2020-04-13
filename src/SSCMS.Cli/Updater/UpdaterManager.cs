@@ -10,6 +10,8 @@ using SSCMS.Cli.Updater.Tables;
 using SSCMS.Cli.Updater.Tables.GovInteract;
 using SSCMS.Cli.Updater.Tables.GovPublic;
 using SSCMS.Cli.Updater.Tables.Jobs;
+using SSCMS.Models;
+using SSCMS.Services;
 using SSCMS.Utils;
 using TableInfo = SSCMS.Cli.Core.TableInfo;
 

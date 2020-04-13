@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SSCMS.Enums;
+using SSCMS.Models;
 
 namespace SSCMS
 {

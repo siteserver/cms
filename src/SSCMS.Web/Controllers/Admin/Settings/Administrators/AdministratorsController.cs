@@ -4,38 +4,44 @@ using System.Linq;
 using System.Threading.Tasks;
 using CacheManager.Core;
 using Datory;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto.Request;
-using SSCMS.Dto.Result;
+using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Office;
+using SSCMS.Dto;
+using SSCMS.Models;
+using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
-    [Route("admin/settings/administrators")]
+    [OpenApiIgnore]
+    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsController : ControllerBase
     {
-        private const string Route = "";
-        private const string RoutePermissions = "permissions/{adminId:int}";
-        private const string RouteLock = "actions/lock";
-        private const string RouteUnLock = "actions/unLock";
-        private const string RouteImport = "actions/import";
-        private const string RouteExport = "actions/export";
+        private const string Route = "settings/administrators";
+        private const string RoutePermissions = "settings/administrators/permissions/{adminId:int}";
+        private const string RouteLock = "settings/administrators/actions/lock";
+        private const string RouteUnLock = "settings/administrators/actions/unLock";
+        private const string RouteImport = "settings/administrators/actions/import";
+        private const string RouteExport = "settings/administrators/actions/export";
 
         private readonly ICacheManager<object> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IOldPluginManager _pluginManager;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IAdministratorsInRolesRepository _administratorsInRolesRepository;
 
-        public AdministratorsController(ICacheManager<object> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IAdministratorRepository administratorRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IAdministratorsInRolesRepository administratorsInRolesRepository)
+        public AdministratorsController(ICacheManager<object> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IAdministratorRepository administratorRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IAdministratorsInRolesRepository administratorsInRolesRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
@@ -51,17 +57,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery]GetRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
 
             var roles = new List<KeyValuePair<string, string>>();
 
-            var adminId = await _authManager.GetAdminIdAsync();
-            var adminName = await _authManager.GetAdminNameAsync();
+            var adminId = _authManager.AdminId;
+            var adminName = _authManager.AdminName;
             var roleNameList = await _authManager.IsSuperAdminAsync() ? await _roleRepository.GetRoleNameListAsync() : await _roleRepository.GetRoleNameListByCreatorUserNameAsync(adminName);
 
             var predefinedRoles = TranslateUtils.GetEnums<PredefinedRole>();
@@ -113,9 +117,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(RoutePermissions)]
         public async Task<ActionResult<GetPermissionsResult>> GetPermissions(int adminId)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -168,9 +170,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RoutePermissions)]
         public async Task<ActionResult<SavePermissionsResult>> SavePermissions([FromRoute]int adminId, [FromBody]SavePermissionsRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -215,9 +215,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody]IdRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -237,9 +235,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteLock)]
         public async Task<ActionResult<BoolResult>> Lock([FromBody]IdRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -262,9 +258,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteUnLock)]
         public async Task<ActionResult<BoolResult>> UnLock([FromBody]IdRequest request)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -287,9 +281,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<ImportResult>> Import([FromForm] IFormFile file)
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -367,9 +359,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteExport)]
         public async Task<ActionResult<StringResult>> Export()
         {
-            
-            if (!await _authManager.IsAdminAuthenticatedAsync() ||
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }

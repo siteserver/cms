@@ -2,7 +2,7 @@ using System;
 using Datory;
 using Datory.Annotations;
 
-namespace SSCMS
+namespace SSCMS.Models
 {
     [DataTable("siteserver_Special")]
     public class Special : Entity
