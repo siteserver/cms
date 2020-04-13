@@ -3,7 +3,7 @@
 build/
 dist/
 packages/
-plugins/
+all-plugins/
 .config/
 src/SSCMS.Web/plugins/
 src/SSCMS.Web/.vs/
