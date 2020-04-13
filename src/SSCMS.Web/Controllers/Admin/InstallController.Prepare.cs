@@ -24,23 +24,22 @@ namespace SSCMS.Web.Controllers.Admin
 
             if (request.DatabaseType == DatabaseType.SQLite)
             {
-                var filePath = PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFilesDirectoryName, Constants.DefaultLocalDbFileName);
+                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.ConfigDirectoryName, Constants.DefaultLocalDbFileName);
                 if (!FileUtils.IsFileExists(filePath))
                 {
                     await FileUtils.WriteTextAsync(filePath, string.Empty);
                 }
             }
 
-            var securityKey = StringUtils.GetShortGuid();
             var databaseConnectionString = GetDatabaseConnectionString(true, request.DatabaseType, request.DatabaseHost, request.IsDatabaseDefaultPort, TranslateUtils.ToInt(request.DatabasePort), request.DatabaseUserName, request.DatabasePassword, request.DatabaseName, request.OracleDatabase, request.OracleIsSid, request.OraclePrivilege);
             var redisConnectionString = GetRedisConnectionString(request);
 
-            await _settingsManager.SaveSettingsAsync(false, request.IsProtectData, securityKey, request.DatabaseType, databaseConnectionString,
+            await _settingsManager.SaveSettingsAsync(false, request.IsProtectData, request.DatabaseType, databaseConnectionString,
                 redisConnectionString);
 
             return new StringResult
             {
-                Value = securityKey
+                Value = _settingsManager.SecurityKey
             };
         }
     }

@@ -48,7 +48,7 @@ gulp.task("copy-files", async function () {
   fs.copySync('./appsettings.json', publishDir + '/appsettings.json');
   fs.copySync('./sscms.json', publishDir + '/sscms.json');
   fs.copySync('./web.config', publishDir + '/web.config');
-  fs.copySync('./src/SSCMS.Web/assets', publishDir + '/wwwroot/SiteFiles/assets');
+  fs.copySync('./src/SSCMS.Web/assets', publishDir + '/wwwroot/sitefiles/assets');
   fs.copySync('./404.html', publishDir + '/wwwroot/404.html');
   fs.copySync('./favicon.ico', publishDir + '/wwwroot/favicon.ico');
   fs.copySync('./index.html', publishDir + '/wwwroot/index.html');
@@ -80,7 +80,7 @@ gulp.task("copy-css", function () {
         ignoreFiles: ['.min.css']
       })
     )
-    .pipe(gulp.dest(publishDir + "/wwwroot/SiteFiles/assets"));
+    .pipe(gulp.dest(publishDir + "/wwwroot/sitefiles/assets"));
 });
 
 gulp.task("copy-js", function () {
@@ -92,7 +92,7 @@ gulp.task("copy-js", function () {
     .pipe(rename(function (path) {
       path.basename = path.basename.substring(0, path.basename.length - 4);
     }))
-    .pipe(gulp.dest(publishDir + "/wwwroot/SiteFiles/assets"));
+      .pipe(gulp.dest(publishDir + "/wwwroot/sitefiles/assets"));
 });
 
 gulp.task("copy-osx-x64", async function (callback) {

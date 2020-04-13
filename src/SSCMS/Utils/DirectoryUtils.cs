@@ -14,7 +14,7 @@ namespace SSCMS.Utils
 
         public const string BinDirectoryName = "Bin";
         public const string HomeDirectoryName = "Home";
-        public const string SiteFilesDirectoryName = "SiteFiles";
+        public const string SiteFilesDirectoryName = "sitefiles";
 
         public static class PublishmentSytem
         {

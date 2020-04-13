@@ -151,7 +151,7 @@ namespace SSCMS.Web.Controllers.Admin
             }
             else if (databaseType == DatabaseType.SQLite)
             {
-                connectionString = $"Data Source=~/wwwroot/{DirectoryUtils.SiteFilesDirectoryName}/{Constants.DefaultLocalDbFileName};Version=3;";
+                connectionString = $"Data Source=~/{Constants.ConfigDirectoryName}/{Constants.DefaultLocalDbFileName};Version=3;";
             }
 
             return connectionString;

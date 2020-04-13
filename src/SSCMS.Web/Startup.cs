@@ -60,7 +60,7 @@ namespace SSCMS.Web
 
             services.AddHttpContextAccessor();
 
-            var key = Encoding.ASCII.GetBytes(settingsManager.SecurityKey);
+            var key = Encoding.UTF8.GetBytes(settingsManager.SecurityKey);
             services.AddAuthentication(x =>
                 {
                     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -183,19 +183,16 @@ namespace SSCMS.Web
                 }
             });
             app.UseStaticFiles();
-            app.Map("/ss-admin/assets", assets =>
+            if (env.IsDevelopment())
             {
-                var dir = "wwwroot/SiteFiles/assets";
-                if (env.IsDevelopment())
+                app.Map($"/{DirectoryUtils.SiteFilesDirectoryName}/assets", assets =>
                 {
-                    dir = "assets";
-                }
-
-                assets.UseStaticFiles(new StaticFileOptions
-                {
-                    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), dir))
+                    assets.UseStaticFiles(new StaticFileOptions
+                    {
+                        FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "assets"))
+                    });
                 });
-            });
+            }
 
             var supportedCultures = new[]
             {

@@ -96,7 +96,7 @@ var utils = {
   },
 
   getAssetsUrl: function(url) {
-    return '/admin/assets/' + url;
+    return '/sitefiles/assets/' + url;
   },
 
   getCmsUrl: function(name, query) {

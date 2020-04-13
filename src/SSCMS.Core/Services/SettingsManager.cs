@@ -41,6 +41,16 @@ namespace SSCMS.Core.Services
                 }
             }
 
+            if (string.IsNullOrEmpty(SecurityKey))
+            {
+                var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) +
+                                  StringUtils.GetShortGuid(false);
+                var filePath = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
+                var json = FileUtils.ReadText(filePath);
+                json = json.Replace(@"""SecurityKey"": """",", $@"""SecurityKey"": ""{securityKey}"",");
+                FileUtils.WriteText(filePath, json);
+            }
+
 
             var menusPath = PathUtils.GetLangPath(contentRootPath, "en", "menus.yml");
             if (FileUtils.IsFileExists(menusPath))
@@ -62,7 +72,7 @@ namespace SSCMS.Core.Services
         public string TargetFramework { get; }
         public bool IsNightlyUpdate => _config.GetValue<bool>(nameof(IsNightlyUpdate));
         public bool IsProtectData => _config.GetValue<bool>(nameof(IsProtectData));
-        public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey)) ?? StringUtils.GetShortGuid();
+        public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey));
         public DatabaseType DatabaseType => TranslateUtils.ToEnum(IsProtectData ? Decrypt(_config.GetValue<string>("Database:Type")) : _config.GetValue<string>("Database:Type"), DatabaseType.MySql);
         public string DatabaseConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Database:ConnectionString")) : _config.GetValue<string>("Database:ConnectionString");
         public IDatabase Database => new Database(DatabaseType, DatabaseConnectionString);
@@ -82,7 +92,7 @@ namespace SSCMS.Core.Services
             return TranslateUtils.DecryptStringBySecretKey(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
         }
 
-        public async Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, string securityKey, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString)
+        public async Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString)
         {
             var path = PathUtils.Combine(ContentRootPath, Constants.ConfigFileName);
 
@@ -91,16 +101,16 @@ namespace SSCMS.Core.Services
             var redisConnectionStringValue = redisConnectionString;
             if (isProtectData)
             {
-                type = Encrypt(type, securityKey);
-                databaseConnectionStringValue = Encrypt(databaseConnectionStringValue, securityKey);
-                redisConnectionStringValue = Encrypt(redisConnectionString, securityKey);
+                type = Encrypt(type, SecurityKey);
+                databaseConnectionStringValue = Encrypt(databaseConnectionStringValue, SecurityKey);
+                redisConnectionStringValue = Encrypt(redisConnectionString, SecurityKey);
             }
 
             var json = $@"
 {{
   ""IsNightlyUpdate"": {isNightlyUpdate.ToString().ToLower()},
   ""IsProtectData"": {isProtectData.ToString().ToLower()},
-  ""SecurityKey"": ""{securityKey}"",
+  ""SecurityKey"": ""{SecurityKey}"",
   ""Database"": {{
     ""Type"": ""{type}"",
     ""ConnectionString"": ""{databaseConnectionStringValue}""

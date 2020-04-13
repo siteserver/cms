@@ -78,17 +78,12 @@ namespace SSCMS.Utils
             await sourceStream.WriteAsync(encodedText, 0, encodedText.Length);
         }
 
-	    public static void WriteText(string filePath, string content)
-	    {
-	        WriteText(filePath, Encoding.UTF8, content);
-	    }
-
-        public static void WriteText(string filePath, Encoding encoding, string content)
+        public static void WriteText(string filePath, string content)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
             var file = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
-            using var writer = new StreamWriter(file, encoding);
+            using var writer = new StreamWriter(file, Encoding.UTF8);
             writer.Write(content);
             writer.Flush();
             writer.Close();

@@ -25,6 +25,6 @@ namespace SSCMS
         PermissionsSettings Permissions { get; }
         string Encrypt(string inputString, string securityKey = null);
         string Decrypt(string inputString, string securityKey = null);
-        Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, string securityKey, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString);
+        Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString);
     }
 }

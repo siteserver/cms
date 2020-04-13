@@ -5,6 +5,7 @@ namespace SSCMS.Utils
 {
     public static class Constants
     {
+        public const string ConfigDirectoryName = "config";
         public const string ConfigFileName = "sscms.json";
         public const string AdminDirectory = "ss-admin";
         public const string HomeDirectory = "home";
