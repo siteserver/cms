@@ -331,6 +331,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     LogUtils.AddErrorLog(ex);
                     FailMessage($"内容添加失败：{ex.Message}");
+                    return;
                 }
             }
             else

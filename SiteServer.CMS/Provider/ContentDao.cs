@@ -1197,15 +1197,15 @@ INSERT INTO {tableName} (
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
             ////出现IsTop与Taxis不同步情况
-            //if (contentInfo.IsTop == false && contentInfo.Taxis >= TaxisIsTopStartValue)
-            //{
-            //    contentInfo.Taxis = GetMaxTaxis(tableName, contentInfo.ChannelId, false) + 1;
-            //}
-            //else if (contentInfo.IsTop && contentInfo.Taxis < TaxisIsTopStartValue)
-            //{
-            //    contentInfo.Taxis = GetMaxTaxis(tableName, contentInfo.ChannelId, true) + 1;
-            //}
-            contentInfo.Taxis = SyncTaxis(channelInfo, tableName, contentInfo);
+            if (contentInfo.IsTop == false && contentInfo.Taxis >= TaxisIsTopStartValue)
+            {
+                contentInfo.Taxis = GetMaxTaxis(tableName, contentInfo.ChannelId, false) + 1;
+            }
+            else if (contentInfo.IsTop && contentInfo.Taxis < TaxisIsTopStartValue)
+            {
+                contentInfo.Taxis = GetMaxTaxis(tableName, contentInfo.ChannelId, true) + 1;
+            }
+            //contentInfo.Taxis = SyncTaxis(channelInfo, tableName, contentInfo);
 
             contentInfo.LastEditDate = DateTime.Now;
 
