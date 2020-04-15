@@ -202,17 +202,17 @@ namespace SSCMS.Core.Services
                 menu.Target = "right";
             }
 
-            if (metadataMenu.Menus != null && metadataMenu.Menus.Count > 0)
+            if (metadataMenu.Children != null && metadataMenu.Children.Count > 0)
             {
                 var children = new List<Menu>();
                 var x = 1;
-                foreach (var childMetadataMenu in metadataMenu.Menus)
+                foreach (var childMetadataMenu in metadataMenu.Children)
                 {
                     var child = GetMenu(pluginId, siteId, channelId, contentId, childMetadataMenu, x++);
 
                     children.Add(child);
                 }
-                menu.Menus = children;
+                menu.Children = children;
             }
 
             return menu;
@@ -232,12 +232,12 @@ namespace SSCMS.Core.Services
             };
 
             var permissions = new List<string>();
-            if (menu.Menus != null && menu.Menus.Count > 0)
+            if (menu.Children != null && menu.Children.Count > 0)
             {
-                tab.Children = new Tab[menu.Menus.Count];
-                for (var i = 0; i < menu.Menus.Count; i++)
+                tab.Children = new Tab[menu.Children.Count];
+                for (var i = 0; i < menu.Children.Count; i++)
                 {
-                    var child = menu.Menus[i];
+                    var child = menu.Children[i];
                     var childPermission = GetMenuPermission(pluginId, menu.Text, child);
                     permissions.Add(childPermission);
 
@@ -296,9 +296,9 @@ namespace SSCMS.Core.Services
                     {
                         if (siteMenu == null) continue;
 
-                        if (siteMenu.Menus != null && siteMenu.Menus.Count > 0)
+                        if (siteMenu.Children != null && siteMenu.Children.Count > 0)
                         {
-                            foreach (var menu in siteMenu.Menus)
+                            foreach (var menu in siteMenu.Children)
                             {
                                 var permission = GetMenuPermission(plugin.PluginId, siteMenu.Text, menu);
                                 permissions.Add(new PermissionConfig(permission, $"{plugin.Name} -> {menu.Text}"));

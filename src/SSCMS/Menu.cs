@@ -43,7 +43,7 @@ namespace SSCMS
         /// <summary>
         /// 获取或设置菜单的下级菜单列表。
         /// </summary>
-        public IList<Menu> Menus { get; set; }
+        public IList<Menu> Children { get; set; }
 
         public object Clone()
         {

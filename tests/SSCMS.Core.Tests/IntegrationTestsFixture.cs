@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Datory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SSCMS.Core.Extensions;
@@ -39,6 +40,15 @@ namespace SSCMS.Core.Tests
 
             Provider = services.BuildServiceProvider();
 
+            var settingsManager = Provider.GetService<ISettingsManager>();
+            if (settingsManager.Database.DatabaseType == DatabaseType.SQLite)
+            {
+                var filePath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.ConfigDirectoryName, Constants.DefaultLocalDbFileName);
+                if (!FileUtils.IsFileExists(filePath))
+                {
+                    FileUtils.WriteText(filePath, string.Empty);
+                }
+            }
             var databaseManager = Provider.GetService<IDatabaseManager>();
             var pluginManager = Provider.GetService<IOldPluginManager>();
             databaseManager.SyncDatabaseAsync(pluginManager).GetAwaiter().GetResult();
