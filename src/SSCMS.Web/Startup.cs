@@ -145,7 +145,7 @@ namespace SSCMS.Web
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IPluginManager pluginManager)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager, IPluginManager pluginManager)
         {
             if (env.IsDevelopment())
             {
@@ -190,7 +190,7 @@ namespace SSCMS.Web
                 {
                     assets.UseStaticFiles(new StaticFileOptions
                     {
-                        FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "assets"))
+                        FileProvider = new PhysicalFileProvider(Path.Combine(settingsManager.ContentRootPath, "assets"))
                     });
                 });
             }
@@ -219,11 +219,6 @@ namespace SSCMS.Web
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/xx", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
-
                 endpoints.MapHealthChecks("/healthz");
 
                 endpoints.MapControllers();
