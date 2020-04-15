@@ -12,7 +12,6 @@ src/SSCMS.Web/.vscode/
 src/SSCMS.Web/.config/
 src/SSCMS.Web/wwwroot/
 src/SSCMS.Web/version.txt
-src/SSCMS.Web/sscms.json
 sscms-all.sln
 
 *.zip

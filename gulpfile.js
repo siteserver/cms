@@ -16,12 +16,8 @@ gulp.task("build-src", function () {
   return gulp.src("./src/**/*").pipe(gulp.dest("./build/src"));
 });
 
-gulp.task("build-tests", function () {
-  return gulp.src("./tests/**/*").pipe(gulp.dest("./build/tests"));
-});
-
 gulp.task("build-sln", function () {
-  return gulp.src("./sscms.sln").pipe(gulp.dest("./build"));
+  return gulp.src("./build.sln").pipe(gulp.dest("./build"));
 });
 
 gulp.task("build-cshtml", function () {
@@ -36,7 +32,6 @@ gulp.task("build", async function () {
     console.log("build version: " + version);
     return runSequence(
         "build-src",
-        "build-tests",
         "build-sln",
         "build-cshtml"
     );
