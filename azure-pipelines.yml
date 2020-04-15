@@ -92,7 +92,7 @@ jobs:
     displayName: Build
     inputs:
       command: build
-      projects: './build/**/*.csproj'
+      projects: './build/src/**/*.csproj'
       arguments: '--configuration $(buildConfiguration)'
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x64 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64 /p:PublishSingleFile=true
   - script: npm run copy-win-x64
