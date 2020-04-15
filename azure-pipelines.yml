@@ -17,16 +17,15 @@ jobs:
   pool:
     vmImage: 'macOS-10.15'
   steps:
-  - task: DotNetCoreInstaller@0
+  - task: UseDotNet@2
     inputs:
-      packageType: 'sdk'
       version: $(netCoreSdkVersion)
   - task: NodeTool@0
     inputs:
       versionSpec: '12.x'
   - script: npm install
   - script: npm run build
-  - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
+  - script: dotnet build ./build/build.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r osx-x64 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-osx-x64 /p:PublishSingleFile=true
   - script: npm run copy-osx-x64
   - task: DotNetCoreCLI@2
@@ -49,16 +48,15 @@ jobs:
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
-  - task: DotNetCoreInstaller@0
+  - task: UseDotNet@2
     inputs:
-      packageType: 'sdk'
       version: $(netCoreSdkVersion)
   - task: NodeTool@0
     inputs:
       versionSpec: '12.x'
   - script: npm install
   - script: npm run build
-  - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
+  - script: dotnet build ./build/build.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r linux-x64 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-linux-x64 /p:PublishSingleFile=true
   - script: npm run copy-linux-x64
   - task: DotNetCoreCLI@2
@@ -82,16 +80,15 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   steps:
-  - task: DotNetCoreInstaller@0
+  - task: UseDotNet@2
     inputs:
-      packageType: 'sdk'
       version: $(netCoreSdkVersion)
   - task: NodeTool@0
     inputs:
       versionSpec: '12.x'
   - script: npm install
   - script: npm run build
-  - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
+  - script: dotnet build ./build/build.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x64 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64 /p:PublishSingleFile=true
   - script: npm run copy-win-x64
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x86 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x86 /p:PublishSingleFile=true
