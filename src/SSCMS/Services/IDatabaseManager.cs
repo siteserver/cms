@@ -26,7 +26,6 @@ namespace SSCMS.Services
         ILogRepository LogRepository { get; }
         IPermissionsInRolesRepository PermissionsInRolesRepository { get; }
         IPluginConfigRepository PluginConfigRepository { get; }
-        IPluginRepository PluginRepository { get; }
         IRelatedFieldItemRepository RelatedFieldItemRepository { get; }
         IRelatedFieldRepository RelatedFieldRepository { get; }
         IRoleRepository RoleRepository { get; }

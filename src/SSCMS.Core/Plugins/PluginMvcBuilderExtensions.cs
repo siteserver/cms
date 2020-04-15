@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SSCMS.Plugins;
 using SSCMS.Services;
 
-namespace SSCMS.Core.Extensions
+namespace SSCMS.Core.Plugins
 {
     public static class PluginMvcBuilderExtensions
     {
@@ -13,21 +13,24 @@ namespace SSCMS.Core.Extensions
         {
             foreach (var plugin in pluginManager.Plugins)
             {
-                AddApplicationPart(mvcBuilder.PartManager, plugin);
+                if (plugin.Assembly != null)
+                {
+                    AddApplicationPart(mvcBuilder.PartManager, plugin);
+                }
             }
             return mvcBuilder;
         }
 
-        private static void AddApplicationPart(ApplicationPartManager applicationPartManager, IPluginMetadata pluginMetadata)
+        private static void AddApplicationPart(ApplicationPartManager applicationPartManager, IPlugin plugin)
         {
-            var partFactory = ApplicationPartFactory.GetApplicationPartFactory(pluginMetadata.Assembly);
+            var partFactory = ApplicationPartFactory.GetApplicationPartFactory(plugin.Assembly);
 
-            foreach (var part in partFactory.GetApplicationParts(pluginMetadata.Assembly))
+            foreach (var part in partFactory.GetApplicationParts(plugin.Assembly))
             {
                 applicationPartManager.ApplicationParts.Add(part);
             }
 
-            var relatedAssemblies = RelatedAssemblyAttribute.GetRelatedAssemblies(pluginMetadata.Assembly, throwOnError: true);
+            var relatedAssemblies = RelatedAssemblyAttribute.GetRelatedAssemblies(plugin.Assembly, throwOnError: true);
             foreach (var assembly in relatedAssemblies)
             {
                 partFactory = ApplicationPartFactory.GetApplicationPartFactory(assembly);

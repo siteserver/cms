@@ -107,6 +107,13 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task<Content> GetAsync(int siteId, int channelId, int contentId)
+        {
+            var site = await _siteRepository.GetAsync(siteId);
+            var tableName = await _channelRepository.GetTableNameAsync(site, channelId);
+            return await GetAsync(tableName, contentId);
+        }
+
         public async Task<Content> GetAsync(Site site, int channelId, int contentId)
         {
             var tableName = await _channelRepository.GetTableNameAsync(site, channelId);

@@ -22,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using SSCMS.Core.Extensions;
+using SSCMS.Core.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
 

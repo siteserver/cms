@@ -12,6 +12,8 @@ namespace SSCMS.Repositories
 
         Task<int> GetCountAsync(Site site, IChannelSummary channel);
 
+        Task<Content> GetAsync(int siteId, int channelId, int contentId);
+
         Task<Content> GetAsync(Site site, int channelId, int contentId);
 
         Task<Content> GetAsync(Site site, Channel channel, int contentId);

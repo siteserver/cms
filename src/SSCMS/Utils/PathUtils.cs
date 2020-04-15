@@ -8,7 +8,7 @@ namespace SSCMS.Utils
 {
     public static class PathUtils
     {
-        public static char SeparatorChar = Path.DirectorySeparatorChar;
+        public static readonly char SeparatorChar = Path.DirectorySeparatorChar;
         public static readonly char[] InvalidPathChars = Path.GetInvalidPathChars();
 
         public static string Combine(params string[] paths)

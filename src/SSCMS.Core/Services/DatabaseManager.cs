@@ -37,7 +37,6 @@ namespace SSCMS.Core.Services
         public ILogRepository LogRepository { get; }
         public IPermissionsInRolesRepository PermissionsInRolesRepository { get; }
         public IPluginConfigRepository PluginConfigRepository { get; }
-        public IPluginRepository PluginRepository { get; }
         public IRelatedFieldItemRepository RelatedFieldItemRepository { get; }
         public IRelatedFieldRepository RelatedFieldRepository { get; }
         public IRoleRepository RoleRepository { get; }
@@ -53,7 +52,7 @@ namespace SSCMS.Core.Services
         public IUserMenuRepository UserMenuRepository { get; }
         public IUserRepository UserRepository { get; }
 
-        public DatabaseManager(ISettingsManager settingsManager, ICacheManager<object> cacheManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelGroupRepository channelGroupRepository, IChannelRepository channelRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILibraryFileRepository libraryFileRepository, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository, ILibraryTextRepository libraryTextRepository, ILibraryVideoRepository libraryVideoRepository, ILogRepository logRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IPluginRepository pluginRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, IUserGroupRepository userGroupRepository, IUserLogRepository userLogRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository)
+        public DatabaseManager(ISettingsManager settingsManager, ICacheManager<object> cacheManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelGroupRepository channelGroupRepository, IChannelRepository channelRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILibraryFileRepository libraryFileRepository, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository, ILibraryTextRepository libraryTextRepository, ILibraryVideoRepository libraryVideoRepository, ILogRepository logRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, IUserGroupRepository userGroupRepository, IUserLogRepository userLogRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository)
         {
             _settingsManager = settingsManager;
             _cacheManager = cacheManager;
@@ -77,7 +76,6 @@ namespace SSCMS.Core.Services
             LogRepository = logRepository;
             PermissionsInRolesRepository = permissionsInRolesRepository;
             PluginConfigRepository = pluginConfigRepository;
-            PluginRepository = pluginRepository;
             RelatedFieldItemRepository = relatedFieldItemRepository;
             RelatedFieldRepository = relatedFieldRepository;
             RoleRepository = roleRepository;
@@ -118,7 +116,6 @@ namespace SSCMS.Core.Services
                 LogRepository,
                 PermissionsInRolesRepository,
                 PluginConfigRepository,
-                PluginRepository,
                 RelatedFieldItemRepository,
                 RelatedFieldRepository,
                 RoleRepository,

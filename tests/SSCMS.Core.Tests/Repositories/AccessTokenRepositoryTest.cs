@@ -1,10 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS;
 using SSCMS.Models;
 using SSCMS.Repositories;
-using SSCMS.Tests;
 using Xunit;
 
 namespace SSCMS.Core.Tests.Repositories
@@ -12,22 +10,16 @@ namespace SSCMS.Core.Tests.Repositories
     [Collection("Database collection")]
     public class AccessTokenRepositoryTest
     {
-        private readonly IntegrationTestsFixture _fixture;
         private readonly IAccessTokenRepository _accessTokenRepository;
 
         public AccessTokenRepositoryTest(IntegrationTestsFixture fixture)
         {
-            _fixture = fixture;
-            _accessTokenRepository = _fixture.Provider.GetService<IAccessTokenRepository>();
-
-            if (!TestEnv.IsTestMachine) return;
+            _accessTokenRepository = fixture.Provider.GetService<IAccessTokenRepository>();
         }
 
-        [SkippableFact]
+        [Fact]
         public async Task TestBasic()
         {
-            Skip.IfNot(TestEnv.IsTestMachine);
-
             var accessTokenInfo = new AccessToken();
             await _accessTokenRepository.InsertAsync(accessTokenInfo);
             Assert.True(accessTokenInfo.Id > 0);
@@ -48,11 +40,9 @@ namespace SSCMS.Core.Tests.Repositories
             Assert.True(deleted);
         }
 
-        [SkippableFact]
+        [Fact]
         public async Task TestIsTitleExists()
         {
-            Skip.IfNot(TestEnv.IsTestMachine);
-
             const string testTitle = "IsTitleExists";
 
             var exists = await _accessTokenRepository.IsTitleExistsAsync(testTitle);
@@ -73,11 +63,9 @@ namespace SSCMS.Core.Tests.Repositories
             Assert.True(deleted);
         }
 
-        [SkippableFact]
+        [Fact]
         public async Task TestGetAccessTokenInfoList()
         {
-            Skip.IfNot(TestEnv.IsTestMachine);
-
             var accessTokenInfo = new AccessToken
             {
                 Title = "title"

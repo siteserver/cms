@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using SSCMS;
 using SSCMS.Tests;
 using SSCMS.Core.Utils.Office;
 using SSCMS.Utils;
@@ -9,7 +8,7 @@ namespace SSCMS.Core.Tests.Common.Office
 {
     public class WordManagerTests : IClassFixture<UnitTestsFixture>
     {
-        private UnitTestsFixture _fixture { get; }
+        private readonly UnitTestsFixture _fixture;
 
         public WordManagerTests(UnitTestsFixture fixture)
         {
@@ -21,7 +20,7 @@ namespace SSCMS.Core.Tests.Common.Office
         {
             var projDirectoryPath = _fixture.SettingsManager.ContentRootPath;
 
-            var htmlDirectoryPath = PathUtils.Combine(projDirectoryPath, "output");
+            var htmlDirectoryPath = PathUtils.Combine(projDirectoryPath, "build");
             var imageDirectoryPath = PathUtils.Combine(htmlDirectoryPath, "images");
             const string imageDirectoryUrl = "images";
             DirectoryUtils.DeleteDirectoryIfExists(htmlDirectoryPath);

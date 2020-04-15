@@ -16,9 +16,9 @@ namespace SSCMS.Services
 
         List<string> PackagesIdAndVersionList { get; }
 
-        Task UpdateDisabledAsync(string pluginId, bool isDisabled);
+        //Task UpdateDisabledAsync(string pluginId, bool isDisabled);
 
-        Task UpdateTaxisAsync(string pluginId, int taxis);
+        //Task UpdateTaxisAsync(string pluginId, int taxis);
 
         string GetPluginIconUrl(IOldPlugin pluginService);
     }

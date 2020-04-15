@@ -1,42 +1,52 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
+using SSCMS.Plugins;
 using SSCMS.Utils;
 
-namespace SSCMS
+namespace SSCMS.Core.Plugins
 {
-    public static class AssemblyUtils
+    public static class PluginUtils
     {
         private static ConcurrentDictionary<Type, IEnumerable<Type>> _types;
 
-        static AssemblyUtils()
+        static PluginUtils()
         {
             _types = new ConcurrentDictionary<Type, IEnumerable<Type>>();
         }
 
-        public static string GetPluginId(Type type)
+        public static string GetPluginId(IPlugin plugin)
         {
-            var assemblyName = type.Assembly.GetName();
-            return assemblyName.Name;
+            return $"{plugin.Publisher ?? plugin.FolderName}.{plugin.Name ?? plugin.FolderName}".ToLower();
         }
 
-        public static string GetPluginName(Type type)
+        public static string GetPluginId(string publisher, string name)
         {
-            var name = GetPluginId(type);
-            return StringUtils.Contains(name, ".") ? name.Substring(name.LastIndexOf('.') + 1) : name;
+            return $"{publisher}.{name}".ToLower();
         }
 
-        public static string GetPluginVersion(Type type)
+        public static Assembly LoadAssembly(string assemblyPath)
         {
-            var assemblyName = type.Assembly.GetName();
-            if (assemblyName.Version == null)
+            var loadContext = new PluginLoadContext(assemblyPath);
+            var assembly = loadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath)));
+
+            var dllPath = Path.GetDirectoryName(assemblyPath);
+
+            var assemblyFiles = Directory.GetFiles(dllPath, "*.dll", SearchOption.AllDirectories);
+            foreach (var assemblyFile in assemblyFiles)
             {
-                return "1.0.0";
+                Assembly.LoadFile(assemblyFile);
+                if (AssemblyLoadContext.Default.Assemblies.All(a => !StringUtils.EqualsIgnoreCase(Path.GetFileName(a.Location), Path.GetFileName(assemblyFile))))
+                {
+                    AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile);
+                }
             }
 
-            return StringUtils.TrimEnd(assemblyName.Version.ToString(), ".0");
+            return AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
         }
 
         /// <summary>
@@ -68,17 +78,23 @@ namespace SSCMS
         /// <returns>Found implementations of the given type.</returns>
         public static IEnumerable<Type> GetImplementations<T>(IEnumerable<Assembly> assemblies, bool useCaching = false)
         {
-            Type type = typeof(T);
+            var type = typeof(T);
 
             if (useCaching && _types.ContainsKey(type))
                 return _types[type];
 
-            List<Type> implementations = new List<Type>();
+            var implementations = new List<Type>();
 
-            foreach (Assembly assembly in assemblies)
-                foreach (Type exportedType in assembly.GetExportedTypes())
+            foreach (var assembly in assemblies)
+            {
+                foreach (var exportedType in assembly.GetExportedTypes())
+                {
                     if (type.GetTypeInfo().IsAssignableFrom(exportedType) && exportedType.GetTypeInfo().IsClass)
+                    {
                         implementations.Add(exportedType);
+                    }
+                }
+            }
 
             if (useCaching)
                 _types[type] = implementations;
@@ -153,13 +169,13 @@ namespace SSCMS
         public static IEnumerable<T> GetInstances<T>(IEnumerable<Assembly> assemblies, bool useCaching = false,
             params object[] args)
         {
-            List<T> instances = new List<T>();
+            var instances = new List<T>();
 
-            foreach (Type implementation in GetImplementations<T>(assemblies, useCaching))
+            foreach (var implementation in GetImplementations<T>(assemblies, useCaching))
             {
                 if (!implementation.GetTypeInfo().IsAbstract)
                 {
-                    T instance = (T)Activator.CreateInstance(implementation, args);
+                    var instance = (T)Activator.CreateInstance(implementation, args);
 
                     instances.Add(instance);
                 }

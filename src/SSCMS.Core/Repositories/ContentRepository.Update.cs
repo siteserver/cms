@@ -8,6 +8,16 @@ namespace SSCMS.Core.Repositories
 {
     public partial class ContentRepository
     {
+        public async Task UpdateAsync(Content content)
+        {
+            if (content == null) return;
+
+            var site = await _siteRepository.GetAsync(content.SiteId);
+            var channel = await _channelRepository.GetAsync(content.ChannelId);
+            await UpdateAsync(site, channel, content);
+        }
+
+
         public async Task UpdateAsync(Site site, Channel channel, Content content)
         {
             if (content == null) return;

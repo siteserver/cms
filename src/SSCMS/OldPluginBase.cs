@@ -3,17 +3,40 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using SSCMS.Models;
-using SSCMS.Plugins;
+using SSCMS.Utils;
 
 namespace SSCMS
 {
     public abstract class OldPluginBase : IOldPlugin
     {
-        public string PluginId => AssemblyUtils.GetPluginId(GetType());
+        private static string GetPluginId(Type type)
+        {
+            var assemblyName = type.Assembly.GetName();
+            return assemblyName.Name;
+        }
 
-        public virtual string Name => AssemblyUtils.GetPluginName(GetType());
+        private static string GetPluginName(Type type)
+        {
+            var name = GetPluginId(type);
+            return StringUtils.Contains(name, ".") ? name.Substring(name.LastIndexOf('.') + 1) : name;
+        }
 
-        public virtual string Version => AssemblyUtils.GetPluginVersion(GetType());
+        private static string GetPluginVersion(Type type)
+        {
+            var assemblyName = type.Assembly.GetName();
+            if (assemblyName.Version == null)
+            {
+                return "1.0.0";
+            }
+
+            return StringUtils.TrimEnd(assemblyName.Version.ToString(), ".0");
+        }
+
+        public string PluginId => GetPluginId(GetType());
+
+        public virtual string Name => GetPluginName(GetType());
+
+        public virtual string Version => GetPluginVersion(GetType());
 
         public virtual string IconUrl => null;
 

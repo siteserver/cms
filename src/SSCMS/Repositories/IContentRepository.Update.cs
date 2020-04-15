@@ -8,6 +8,8 @@ namespace SSCMS.Repositories
     {
         Task UpdateAsync(Site site, Channel channel, Content content);
 
+        Task UpdateAsync(Content content);
+
         Task SetAutoPageContentToSiteAsync(IOldPluginManager pluginManager, Site site);
 
         Task UpdateArrangeTaxisAsync(Site site, Channel channel, string attributeName, bool isDesc);

@@ -6,7 +6,7 @@ using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Core.Extensions
+namespace SSCMS.Core.Plugins
 {
     public static class PluginApplicationBuilderExtensions
     {
@@ -16,7 +16,7 @@ namespace SSCMS.Core.Extensions
             var logger = app.ApplicationServices.GetService<ILoggerFactory>()
                 .CreateLogger<IApplicationBuilder>();
 
-            var instances = AssemblyUtils.GetInstances<IPluginConfigure>(pluginManager.Assemblies);
+            var instances = PluginUtils.GetInstances<IPluginConfigure>(pluginManager.Assemblies);
             if (instances != null)
             {
                 foreach (var pluginConfigure in instances)

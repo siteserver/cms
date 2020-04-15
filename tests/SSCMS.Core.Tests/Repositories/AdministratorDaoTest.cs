@@ -1,10 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
-using SSCMS.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +11,6 @@ namespace SSCMS.Core.Tests.Repositories
     [Collection("Database collection")]
     public class UserRepositoryTest
     {
-        private readonly IntegrationTestsFixture _fixture;
         private readonly IUserRepository _userRepository;
         private readonly ITestOutputHelper _output;
 
@@ -21,18 +18,22 @@ namespace SSCMS.Core.Tests.Repositories
 
         public UserRepositoryTest(IntegrationTestsFixture fixture, ITestOutputHelper output)
         {
-            _fixture = fixture;
-            _userRepository = _fixture.Provider.GetService<IUserRepository>();
+            _userRepository = fixture.Provider.GetService<IUserRepository>();
             _output = output;
         }
 
-        [SkippableFact]
+        [Fact]
         public async Task TestInsert()
         {
-            Skip.IfNot(TestEnv.IsTestMachine);
+            var user = await _userRepository.GetByUserNameAsync(TestUserName);
+            if (user != null)
+            {
+                await _userRepository.DeleteAsync(user.Id);
+            }
 
             var userInfo = new User();
-            var (userId, errorMessage) = await _userRepository.InsertAsync(userInfo, "admin888", string.Empty);
+            string errorMessage;
+            var (userId, _) = await _userRepository.InsertAsync(userInfo, "admin888", string.Empty);
 
             Assert.True(userId == 0);
 
@@ -82,7 +83,7 @@ namespace SSCMS.Core.Tests.Repositories
             var countOfFailedLogin = userInfo.CountOfFailedLogin;
 
             await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(userInfo);
-            Assert.Equal(countOfFailedLogin, userInfo.CountOfFailedLogin - 1);
+            Assert.Equal(0, countOfFailedLogin);
 
             userInfo = await _userRepository.GetByUserNameAsync(TestUserName);
             Assert.NotNull(userInfo);

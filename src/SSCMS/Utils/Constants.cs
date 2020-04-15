@@ -8,8 +8,10 @@ namespace SSCMS.Utils
         public const string ConfigDirectoryName = "config";
         public const string ConfigFileName = "sscms.json";
         public const string PluginPackageFileName = "package.json";
+        public const string PluginConfigFileName = "config.json";
         public const string AdminDirectory = "ss-admin";
         public const string HomeDirectory = "home";
+        public const string PluginsDirectory = "plugins";
         public const string DefaultLanguage = "en";
         public const string DefaultLocalDbFileName = "database.sqlite";
         public const string EncryptStingIndicator = "0secret0";

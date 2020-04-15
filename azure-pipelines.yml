@@ -7,7 +7,7 @@ trigger:
 - staging
 
 variables:
-  netCoreSdkVersion: '3.1.100'
+  netCoreSdkVersion: '3.1.201'
   buildConfiguration: 'Release'
   productVersion: '7.0.0-preview6'
 
@@ -29,6 +29,11 @@ jobs:
   - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r osx-x64 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-osx-x64 /p:PublishSingleFile=true
   - script: npm run copy-osx-x64
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*Tests/*.csproj'
+      arguments: '--configuration $(buildConfiguration)'
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-osx-x64' 
@@ -56,6 +61,11 @@ jobs:
   - script: dotnet build ./build/sscms.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r linux-x64 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-linux-x64 /p:PublishSingleFile=true
   - script: npm run copy-linux-x64
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*Tests/*.csproj'
+      arguments: '--configuration $(buildConfiguration)'
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-linux-x64' 
@@ -86,6 +96,11 @@ jobs:
   - script: npm run copy-win-x64
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x86 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x86 /p:PublishSingleFile=true
   - script: npm run copy-win-x86
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*Tests/*.csproj'
+      arguments: '--configuration $(buildConfiguration)'
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-win-x64' 

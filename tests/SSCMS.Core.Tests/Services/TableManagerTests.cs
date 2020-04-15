@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS;
 using SSCMS.Repositories;
 using Xunit;
 
@@ -8,13 +7,13 @@ namespace SSCMS.Core.Tests.Services
     [Collection("Database collection")]
     public partial class TableManagerTests
     {
-        private readonly IntegrationTestsFixture _fixture;
+        private readonly ISettingsManager _settingsManager;
         private readonly IContentRepository _contentRepository;
 
         public TableManagerTests(IntegrationTestsFixture fixture)
         {
-            _fixture = fixture;
-            _contentRepository = _fixture.Provider.GetService<IContentRepository>();
+            _settingsManager = fixture.Provider.GetService<ISettingsManager>();
+            _contentRepository = fixture.Provider.GetService<IContentRepository>();
         }
     }
 }

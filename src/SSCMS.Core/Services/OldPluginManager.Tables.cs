@@ -6,7 +6,6 @@ using Datory;
 using Datory.Utils;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
-using SSCMS.Plugins;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services

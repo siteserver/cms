@@ -1,24 +1,41 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using SSCMS.Plugins;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Plugins
 {
-    public class PluginMetadata : IPluginMetadata
+    public class Plugin : IPlugin
     {
-        public PluginMetadata(string folderName, string pluginPath, Assembly assembly)
+        public Plugin(string pluginPath, string folderName)
         {
-            PluginId = folderName;
-            Assembly = assembly;
+            FolderName = folderName;
 
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(pluginPath)
-                .AddJsonFile("package.json", optional: true, reloadOnChange: true)
+                .AddJsonFile(Constants.PluginPackageFileName, optional: false, reloadOnChange: true)
+                .AddJsonFile("config.json", optional: true, reloadOnChange: true)
                 .Build();
+
+            var assemblyPath = PathUtils.Combine(pluginPath, Main);
+            if (FileUtils.IsFileExists(assemblyPath))
+            {
+                try
+                {
+                    Assembly = PluginUtils.LoadAssembly(assemblyPath);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
         }
 
-        public string PluginId { get; }
+        public string PluginId => PluginUtils.GetPluginId(this);
+
+        public string FolderName { get; }
 
         public Assembly Assembly { get; }
 
@@ -36,5 +53,12 @@ namespace SSCMS.Core.Plugins
         public IEnumerable<string> Categories => Configuration.GetSection(nameof(Categories)).Get<string[]>();
         public IEnumerable<string> Keywords => Configuration.GetSection(nameof(Keywords)).Get<string[]>();
         public string Homepage => Configuration[nameof(Homepage)];
+        public string Main => Configuration[nameof(Main)] ?? $"{FolderName}.dll";
+
+        // config.json
+
+        public bool Disabled => Configuration.GetValue<bool>(nameof(Disabled));
+
+        public int Taxis => Configuration.GetValue<int>(nameof(Taxis));
     }
 }

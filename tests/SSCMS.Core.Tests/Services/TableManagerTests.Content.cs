@@ -1,25 +1,28 @@
 ﻿using System.Threading.Tasks;
-using SSCMS.Tests;
+using Datory;
+using SSCMS.Models;
 using Xunit;
 
 namespace SSCMS.Core.Tests.Services
 {
     public partial class TableManagerTests
     {
-        [SkippableFact]
+        [Fact]
         public async Task CreateContentTableAsyncTest()
         {
-            Skip.IfNot(TestEnv.IsTestMachine);
+            const string tableName = "testContentTable";
 
-            var tableName = "testContentTable";
+            var database = _settingsManager.Database;
 
-            var database = _fixture.SettingsManager.Database;
+            await database.DropTableAsync(tableName);
 
-            await database.CreateTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
+            var contentRepository = new Repository<Content>(database, tableName);
+
+            await database.CreateTableAsync(tableName, contentRepository.TableColumns);
 
             Assert.True(await database.IsTableExistsAsync(tableName));
 
-            await database.AlterTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
+            await database.AlterTableAsync(tableName, contentRepository.TableColumns);
         }
     }
 }

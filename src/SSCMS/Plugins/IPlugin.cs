@@ -5,9 +5,10 @@ using Newtonsoft.Json;
 
 namespace SSCMS.Plugins
 {
-    public interface IPluginMetadata
+    public interface IPlugin
     {
         public string PluginId { get; }
+        public string FolderName { get; }
         [JsonIgnore]
         public Assembly Assembly { get; }
         [JsonIgnore]
@@ -23,5 +24,8 @@ namespace SSCMS.Plugins
         public IEnumerable<string> Categories { get; }
         public IEnumerable<string> Keywords { get; }
         public string Homepage { get; }
+        public string Main { get; }
+        public bool Disabled { get; }
+        public int Taxis { get; }
     }
 }

@@ -246,25 +246,25 @@ namespace SSCMS.Core.Services
             DirectoryUtils.DeleteDirectoryIfExists(_pathManager.GetPluginPath(pluginId));
         }
 
-        public async Task UpdateDisabledAsync(string pluginId, bool isDisabled)
-        {
-            var plugin = GetPlugin(pluginId);
-            if (plugin != null)
-            {
-                //pluginInfo.IsDisabled = isDisabled;
-                await _databaseManager.PluginRepository.UpdateIsDisabledAsync(pluginId, isDisabled);
-            }
-        }
+        //public async Task UpdateDisabledAsync(string pluginId, bool isDisabled)
+        //{
+        //    var plugin = GetPlugin(pluginId);
+        //    if (plugin != null)
+        //    {
+        //        //pluginInfo.IsDisabled = isDisabled;
+        //        await _databaseManager.PluginRepository.UpdateIsDisabledAsync(pluginId, isDisabled);
+        //    }
+        //}
 
-        public async Task UpdateTaxisAsync(string pluginId, int taxis)
-        {
-            var plugin = GetPlugin(pluginId);
-            if (plugin != null)
-            {
-                //pluginInfo.Taxis = taxis;
-                await _databaseManager.PluginRepository.UpdateTaxisAsync(pluginId, taxis);
-            }
-        }
+        //public async Task UpdateTaxisAsync(string pluginId, int taxis)
+        //{
+        //    var plugin = GetPlugin(pluginId);
+        //    if (plugin != null)
+        //    {
+        //        //pluginInfo.Taxis = taxis;
+        //        await _databaseManager.PluginRepository.UpdateTaxisAsync(pluginId, taxis);
+        //    }
+        //}
 
         //public PluginMetadata UpdateDatabase(string pluginId, string databaseType, string connectionString)
         //{

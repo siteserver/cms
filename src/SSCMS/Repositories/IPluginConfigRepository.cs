@@ -15,5 +15,13 @@ namespace SSCMS.Repositories
         Task<string> GetValueAsync(string pluginId, int siteId, string configName);
 
         Task<bool> IsExistsAsync(string pluginId, int siteId, string configName);
+
+        Task<bool> SetConfigAsync(string pluginId, int siteId, object config);
+
+        Task<bool> SetConfigAsync(string pluginId, int siteId, string name, object config);
+
+        Task<T> GetConfigAsync<T>(string pluginId, int siteId, string name = "");
+
+        Task<bool> RemoveConfigAsync(string pluginId, int siteId, string name = "");
     }
 }

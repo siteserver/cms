@@ -44,17 +44,17 @@ namespace SSCMS.Core.Services
             }
 
 
-            var menusPath = PathUtils.GetLangPath(contentRootPath, "en", "menus.yml");
-            if (FileUtils.IsFileExists(menusPath))
-            {
-                Menus = YamlUtils.FileToObject<IList<Menu>>(menusPath);
-            }
+            //var menusPath = PathUtils.GetLangPath(contentRootPath, "en", "menus.yml");
+            //if (FileUtils.IsFileExists(menusPath))
+            //{
+            //    Menus = YamlUtils.FileToObject<IList<Menu>>(menusPath);
+            //}
 
-            var permissionsPath = PathUtils.GetLangPath(contentRootPath, "en", "permissions.yml");
-            if (FileUtils.IsFileExists(permissionsPath))
-            {
-                Permissions = YamlUtils.FileToObject<PermissionsSettings>(permissionsPath);
-            }
+            //var permissionsPath = PathUtils.GetLangPath(contentRootPath, "en", "permissions.yml");
+            //if (FileUtils.IsFileExists(permissionsPath))
+            //{
+            //    Permissions = YamlUtils.FileToObject<PermissionsSettings>(permissionsPath);
+            //}
         }
 
         public string ContentRootPath { get; }
@@ -70,8 +70,8 @@ namespace SSCMS.Core.Services
         public string RedisConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Redis:ConnectionString")) : _config.GetValue<string>("Redis:ConnectionString");
         public IRedis Redis => new Redis(RedisConnectionString);
 
-        public IList<Menu> Menus { get; }
-        public PermissionsSettings Permissions { get; }
+        //public IList<Menu> Menus { get; }
+        //public PermissionsSettings Permissions { get; }
 
         public string Encrypt(string inputString, string securityKey = null)
         {

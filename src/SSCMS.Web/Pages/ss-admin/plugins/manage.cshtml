@@ -17,22 +17,22 @@
   v-on:select="handleSelect">
   <el-menu-item index="1">
       <el-link :underline="false">
-        <el-badge type="primary" :value="enabledPackages.length">已启用</el-badge>
+        <el-badge type="primary" :value="enabledPlugins.length">已启用</el-badge>
       </el-link>
   </el-menu-item>
   <el-menu-item index="2">
     <el-link :underline="false">
-      <el-badge type="warning" :value="disabledPackages.length">已禁用</el-badge>
+      <el-badge type="warning" :value="disabledPlugins.length">已禁用</el-badge>
     </el-link>
   </el-menu-item>
-  <el-menu-item index="3" v-if="errorPackages.length > 0">
+  <el-menu-item index="3" v-if="errorPlugins.length > 0">
     <el-link :underline="false">
-      <el-badge :value="errorPackages.length">运行错误</el-badge>
+      <el-badge :value="errorPlugins.length">运行错误</el-badge>
     </el-link>
   </el-menu-item>
-  <el-menu-item index="4" v-if="updatePackages.length > 0">
+  <el-menu-item index="4" v-if="updatePlugins.length > 0">
     <el-link :underline="false">
-      <el-badge type="warning" :value="updatePackages.length">发现新版本</el-badge>
+      <el-badge type="warning" :value="updatePlugins.length">发现新版本</el-badge>
     </el-link>
   </el-menu-item>
 </el-menu>
@@ -51,7 +51,7 @@
   </div>
   
 
-  <el-table v-if="pageType == '1'" :data="enabledPackages" style="width: 100%">
+  <el-table v-if="pageType == '1'" :data="enabledPlugins" style="width: 100%">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
         <img :src="scope.row.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
@@ -86,21 +86,21 @@
       <template slot-scope="scope">
         <el-link
           :underline="false"
-          v-on:click="enablePackage(scope.row)"
+          v-on:click="enablePlugin(scope.row)"
           type="primary">
           {{ scope.row.isDisabled ? '启用' : '禁用' }}
         </el-link>
         <el-link
           :underline="false"
           type="danger"
-          v-on:click="deletePackage(scope.row)">
+          v-on:click="deletePlugin(scope.row)">
           删除插件
         </el-link>
       </template>
     </el-table-column>
   </el-table>
 
-  <el-table v-else-if="pageType == '2'" :data="disabledPackages" style="width: 100%">
+  <el-table v-else-if="pageType == '2'" :data="disabledPlugins" style="width: 100%">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
         <img :src="scope.row.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
@@ -135,21 +135,21 @@
       <template slot-scope="scope">
         <el-link
           :underline="false"
-          v-on:click="enablePackage(scope.row)"
+          v-on:click="enablePlugin(scope.row)"
           type="primary">
           {{ scope.row.isDisabled ? '启用' : '禁用' }}
         </el-link>
         <el-link
           :underline="false"
           type="danger"
-          v-on:click="deletePackage(scope.row)">
+          v-on:click="deletePlugin(scope.row)">
           删除插件
         </el-link>
       </template>
     </el-table-column>
   </el-table>
 
-  <el-table v-else-if="pageType == '3'" :data="errorPackages" style="width: 100%">
+  <el-table v-else-if="pageType == '3'" :data="errorPlugins" style="width: 100%">
     <el-table-column label="插件Id" width="200">
       <template slot-scope="scope">
         <el-link :underline="false" type="primary" :href="utils.getPluginsUrl('view', {pluginId: scope.row.id, returnUrl: location.href})">{{ scope.row.id }}</el-link>
@@ -161,14 +161,14 @@
         <el-link
           :underline="false"
           type="danger"
-          v-on:click="deletePackage(scope.row)">
+          v-on:click="deletePlugin(scope.row)">
           删除插件
         </el-link>
       </template>
     </el-table-column>
   </el-table>
 
-  <el-table v-else-if="pageType == '4'" :data="updatePackages" style="width: 100%">
+  <el-table v-else-if="pageType == '4'" :data="updatePlugins" style="width: 100%">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
         <img :src="scope.row.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
@@ -176,7 +176,7 @@
     </el-table-column>
     <el-table-column label="插件Id">
       <template slot-scope="scope">
-        <el-link :underline="false" type="primary" :href="utils.getPluginsUrl('view', {pluginId: scope.row.updatePackage.pluginId, returnUrl: location.href})">{{ scope.row.updatePackage.pluginId }}</el-link>
+        <el-link :underline="false" type="primary" :href="utils.getPluginsUrl('view', {pluginId: scope.row.updatePlugin.pluginId, returnUrl: location.href})">{{ scope.row.updatePlugin.pluginId }}</el-link>
       </template>
     </el-table-column>
     <el-table-column label="插件名称">
@@ -191,17 +191,17 @@
     </el-table-column>
     <el-table-column label="新版本">
       <template slot-scope="scope">
-        {{ scope.row.updatePackage.version }}
+        {{ scope.row.updatePlugin.version }}
       </template>
     </el-table-column>
     <el-table-column label="更新说明">
       <template slot-scope="scope">
-        {{ scope.row.updatePackage.releaseNotes }}
+        {{ scope.row.updatePlugin.releaseNotes }}
       </template>
     </el-table-column>
     <el-table-column label="发布时间">
       <template slot-scope="scope">
-        {{ scope.row.updatePackage.published }}
+        {{ scope.row.updatePlugin.published }}
       </template>
     </el-table-column>
     <el-table-column label="操作" width="100">
@@ -209,7 +209,7 @@
         <el-link
           :underline="false"
           type="warning"
-          :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: package.id})">
+          :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: plugin.id})">
           插件升级
         </el-link>
       </template>
@@ -224,7 +224,7 @@
     <el-button
       size="small"
       type="warning"
-      v-on:click="location.href = utils.getPluginsUrl('install', {isUpdate: true, pluginIds: updatePackageIds.join(',')})">
+      v-on:click="location.href = utils.getPluginsUrl('install', {isUpdate: true, pluginIds: updatePluginIds.join(',')})">
       一键升级所有插件
     </el-button>
   </div>

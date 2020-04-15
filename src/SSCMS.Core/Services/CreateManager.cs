@@ -11,18 +11,16 @@ namespace SSCMS.Core.Services
     {
         private readonly IPathManager _pathManager;
         private readonly IParseManager _parseManager;
-        private readonly IConfigRepository _configRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly ISpecialRepository _specialRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public CreateManager(IPathManager pathManager, IParseManager parseManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelGroupRepository channelGroupRepository, IChannelRepository channelRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILibraryFileRepository libraryFileRepository, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository, ILibraryTextRepository libraryTextRepository, ILibraryVideoRepository libraryVideoRepository, ILogRepository logRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IPluginRepository pluginRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, IUserGroupRepository userGroupRepository, IUserLogRepository userLogRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository)
+        public CreateManager(IPathManager pathManager, IParseManager parseManager, IChannelRepository channelRepository, IContentRepository contentRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, ITemplateRepository templateRepository)
         {
             _pathManager = pathManager;
             _parseManager = parseManager;
-            _configRepository = configRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
             _siteRepository = siteRepository;

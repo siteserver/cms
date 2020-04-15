@@ -70,7 +70,6 @@ namespace SSCMS.Web.Controllers.Admin
                 };
             }
 
-            
             if (!_authManager.IsAdmin)
             {
                 return Unauthorized();
